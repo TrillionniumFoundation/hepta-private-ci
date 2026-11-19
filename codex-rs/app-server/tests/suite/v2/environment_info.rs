@@ -36,10 +36,12 @@ async fn environment_info_probes_executor_even_when_metadata_is_cached() -> Resu
         let mut websocket = accept_async(stream).await?;
         let initialize = read_exec_server_json(&mut websocket).await?;
         assert_eq!(initialize["method"], "initialize");
+        assert_eq!(initialize["params"]["processExitObservation"], true);
         let response = json!({
             "id": initialize["id"],
             "result": {
                 "sessionId": "test-session",
+                "processExitObservation": true,
                 "environmentInfo": {"shell": {"name": "bash", "path": "/bin/bash"}},
             },
         });

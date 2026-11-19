@@ -1,0 +1,15 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+codex_rust_crate(
+    name = "i18n-config",
+    crate_edition = "2018",
+    crate_name = "i18n_config",
+)
+
+# rules_rust names the patched workspace dependency with its versioned target.
+# Keep the existing unversioned target for any direct repository consumers.
+alias(
+    name = "i18n-config-0.4.8",
+    actual = ":i18n-config",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,778 @@
+{
+  "schema": "hepta.common-native-validation.manifest.v1",
+  "host": "ai395",
+  "remote_directory": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/",
+  "retention_rule": "Only completed, non-null command records and terminal controller results. Files are discovered with h_view and read through h_binary_read. A first read establishes the file version; all additional chunks are explicitly pinned to that version. No running log is retained as final.",
+  "verification": "Every chunk SHA256 and contiguous byte range was checked, including the six chunks of f070 eight-library JUnit. Whole-file hashes, gzip decompression, raw command-log digests and JUnit bindings agree. Every completed command has clean equal before/after source identity.",
+  "max_git_blob_bytes": 512000,
+  "files": [
+    {
+      "path": "agentd-binaries-8857-v1.json",
+      "bytes": 2501,
+      "sha256": "dadf9a0370096c905686d6e0a3fd672e32bd738d8d0c5829d63ec3978e247a91",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/agentd-binaries-8857-v1.json",
+        "remote_version": "66306:86141443:2501:1794225227809056253:1794225227809056253",
+        "first_offset": 0,
+        "next_offset": 2501,
+        "eof": true,
+        "chunk_sha256": "dadf9a0370096c905686d6e0a3fd672e32bd738d8d0c5829d63ec3978e247a91",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+      "completed_unix": 1794225227.808742
+    },
+    {
+      "path": "agentd-binaries-8857-v1.log.gz",
+      "bytes": 187,
+      "sha256": "c09168c88948f3fbd1b08af965512d6e8e5db807e3fcb9b2ff5b390c7c05fc45",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/agentd-binaries-8857-v1.log.gz",
+        "remote_version": "66306:86141446:187:1794225227808892079:1794225227808892079",
+        "first_offset": 0,
+        "next_offset": 187,
+        "eof": true,
+        "chunk_sha256": "c09168c88948f3fbd1b08af965512d6e8e5db807e3fcb9b2ff5b390c7c05fc45",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 216,
+        "sha256": "a19e0cd55656796e79236d240bb27130d54b6796369970e0b8fbe5e797feaa94",
+        "record": "agentd-binaries-8857-v1.json"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b"
+    },
+    {
+      "path": "agentd-binaries-f070-v1.json",
+      "bytes": 2463,
+      "sha256": "aeefdbfc284a87616c3eed720b0d60e17abc337af152cbafa6a7e1122bab8e4b",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/agentd-binaries-f070-v1.json",
+        "remote_version": "66306:86141467:2463:1794226684053422458:1794226684053422458",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 2463,
+            "chunk_sha256": "aeefdbfc284a87616c3eed720b0d60e17abc337af152cbafa6a7e1122bab8e4b",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "completed_unix": 1794226684.051572
+    },
+    {
+      "path": "agentd-binaries-f070-v1.log.gz",
+      "bytes": 8623,
+      "sha256": "59cf856d1e80f788b6da9899513ad2200e177a3914804eee70c8b2eef5f42702",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/agentd-binaries-f070-v1.log.gz",
+        "remote_version": "66306:86142358:8623:1794226684053257623:1794226684053257623",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 8623,
+            "chunk_sha256": "59cf856d1e80f788b6da9899513ad2200e177a3914804eee70c8b2eef5f42702",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "uncompressed": {
+        "bytes": 43627,
+        "sha256": "fb186d1b89932f86b0ee327ee63fe4a14ff52d6717d25b454939a03e6705477d",
+        "record": "agentd-binaries-f070-v1.json"
+      }
+    },
+    {
+      "path": "helper-build-4795-v1.json",
+      "bytes": 2490,
+      "sha256": "a94b341344d47615f92733d026e4f61884413d6798b380d045481d0e9b1a65ff",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-4795-v1.json",
+        "remote_version": "66306:86141421:2490:1794224690585992811:1794224690585992811",
+        "first_offset": 0,
+        "next_offset": 2490,
+        "eof": true,
+        "chunk_sha256": "a94b341344d47615f92733d026e4f61884413d6798b380d045481d0e9b1a65ff",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "source_tree": "f07883603839fcabdc20f114c4ee0800e266fcb6",
+      "completed_unix": 1794224690.5854702
+    },
+    {
+      "path": "helper-build-4795-v1.log.gz",
+      "bytes": 1671,
+      "sha256": "0c6198acaca39326310103c29b59e72b40cbd083f58d698b8e68e0209a4e3a39",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-4795-v1.log.gz",
+        "remote_version": "66306:86127514:1671:1794224690585819308:1794224690585819308",
+        "first_offset": 0,
+        "next_offset": 1671,
+        "eof": true,
+        "chunk_sha256": "0c6198acaca39326310103c29b59e72b40cbd083f58d698b8e68e0209a4e3a39",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 12872,
+        "sha256": "10333b8b142a5ed2ad77c10edd87bb9f522dadc4155c6fb0b2e898b38453d0d8",
+        "record": "helper-build-4795-v1.json"
+      },
+      "source_commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "source_tree": "f07883603839fcabdc20f114c4ee0800e266fcb6"
+    },
+    {
+      "path": "helper-build-84b-online-v2.json",
+      "bytes": 2145,
+      "sha256": "19204b13b6920f239ae9c2f0d860af3ca97dbd7e534ca1cbe4b80fe20e3f116b",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-84b-online-v2.json",
+        "remote_version": "66306:86116066:2145:1794222846626711851:1794222846626711851",
+        "first_offset": 0,
+        "next_offset": 2145,
+        "eof": true,
+        "chunk_sha256": "19204b13b6920f239ae9c2f0d860af3ca97dbd7e534ca1cbe4b80fe20e3f116b",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "completed_unix": 1794222846.6248794
+    },
+    {
+      "path": "helper-build-84b-online-v2.log.gz",
+      "bytes": 9639,
+      "sha256": "ef5e1d99f9c5d803b9717c38e88ff9fa22017b91abb689a00b27ffb7b4e1d0ab",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-84b-online-v2.log.gz",
+        "remote_version": "66306:86127485:9639:1794222846626572055:1794222846626572055",
+        "first_offset": 0,
+        "next_offset": 9639,
+        "eof": true,
+        "chunk_sha256": "ef5e1d99f9c5d803b9717c38e88ff9fa22017b91abb689a00b27ffb7b4e1d0ab",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 48824,
+        "sha256": "8d15a4bb5f52a473bd85bd4f9cec914baa44e70a9b82d9165eda881d81b32b93",
+        "record": "helper-build-84b-online-v2.json"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd"
+    },
+    {
+      "path": "helper-build-84b-v1.json",
+      "bytes": 2144,
+      "sha256": "a3a983ade47b352323ea41ce84dca64c56e978cb0542824f8642f5eb024d8563",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-84b-v1.json",
+        "remote_version": "66306:86116063:2144:1794222648730659735:1794222648730659735",
+        "first_offset": 0,
+        "next_offset": 2144,
+        "eof": true,
+        "chunk_sha256": "a3a983ade47b352323ea41ce84dca64c56e978cb0542824f8642f5eb024d8563",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "completed_unix": 1794222648.730382
+    },
+    {
+      "path": "helper-build-84b-v1.log.gz",
+      "bytes": 132,
+      "sha256": "3bf0c2a6dfffb27f29c5d5456a52af6ca8efb4beadf63564ad2c834c5e733a84",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-84b-v1.log.gz",
+        "remote_version": "66306:86116065:132:1794222648730524950:1794222648730524950",
+        "first_offset": 0,
+        "next_offset": 132,
+        "eof": true,
+        "chunk_sha256": "3bf0c2a6dfffb27f29c5d5456a52af6ca8efb4beadf63564ad2c834c5e733a84",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 130,
+        "sha256": "e3ea3d5c18d25f62f64ddf10aa8d1babaa1dde8327d5198121858b6a9de900dd",
+        "record": "helper-build-84b-v1.json"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd"
+    },
+    {
+      "path": "helper-build-8857-v1.json",
+      "bytes": 2481,
+      "sha256": "f54a39bf1fd72d7de0c611406c0b2520790692061b193f2397213de09b075162",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-8857-v1.json",
+        "remote_version": "66306:86141449:2481:1794225082832522891:1794225082832522891",
+        "first_offset": 0,
+        "next_offset": 2481,
+        "eof": true,
+        "chunk_sha256": "f54a39bf1fd72d7de0c611406c0b2520790692061b193f2397213de09b075162",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+      "completed_unix": 1794225082.8319623
+    },
+    {
+      "path": "helper-build-8857-v1.log.gz",
+      "bytes": 1622,
+      "sha256": "f34532e9b14687fab06fb413ae0e98a3dae2b0a118c161f894e8d02c773c4384",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-8857-v1.log.gz",
+        "remote_version": "66306:86141404:1622:1794225082832328858:1794225082832328858",
+        "first_offset": 0,
+        "next_offset": 1622,
+        "eof": true,
+        "chunk_sha256": "f34532e9b14687fab06fb413ae0e98a3dae2b0a118c161f894e8d02c773c4384",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 12662,
+        "sha256": "4e6748f25e598bfb23ca965e721a89bb1e82e36aca0e28968ca7dca80afeb93a",
+        "record": "helper-build-8857-v1.json"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b"
+    },
+    {
+      "path": "helper-build-f070-v1.json",
+      "bytes": 2488,
+      "sha256": "3ab7041e6e5f66c96becc4d8897f5a8b5fdaddb9a5a88647a17672c51cd76cba",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-f070-v1.json",
+        "remote_version": "66306:86141450:2488:1794226437328115912:1794226437328115912",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 2488,
+            "chunk_sha256": "3ab7041e6e5f66c96becc4d8897f5a8b5fdaddb9a5a88647a17672c51cd76cba",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "completed_unix": 1794226437.327691
+    },
+    {
+      "path": "helper-build-f070-v1.log.gz",
+      "bytes": 530,
+      "sha256": "3dbf47a561d9da39f9246ce1a60ca6db2960d15ad42424a7429eda1e4a362a9f",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/helper-build-f070-v1.log.gz",
+        "remote_version": "66306:86141454:530:1794226437327918969:1794226437327918969",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 530,
+            "chunk_sha256": "3dbf47a561d9da39f9246ce1a60ca6db2960d15ad42424a7429eda1e4a362a9f",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "uncompressed": {
+        "bytes": 1977,
+        "sha256": "203aa73f0bfd84461005e5cec3918bb02e860581aa1851db04a2dcab69f8df90",
+        "record": "helper-build-f070-v1.json"
+      }
+    },
+    {
+      "path": "matrix-sdk-8857-v1.json",
+      "bytes": 2708,
+      "sha256": "921820defb8762d21c56e22bdd2e7ed8f76fe9e0b9934bfe7f0e341582a33a2c",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-8857-v1.json",
+        "remote_version": "66306:86141436:2708:1794225224051910213:1794225224051910213",
+        "first_offset": 0,
+        "next_offset": 2708,
+        "eof": true,
+        "chunk_sha256": "921820defb8762d21c56e22bdd2e7ed8f76fe9e0b9934bfe7f0e341582a33a2c",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+      "completed_unix": 1794225224.0514038
+    },
+    {
+      "path": "matrix-sdk-8857-v1.junit.xml",
+      "bytes": 7049,
+      "sha256": "79c489bd23426143ae0d12ae48108d8b0a75bafa9b3310ec97271cf95f2b5cb8",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-8857-v1.junit.xml",
+        "remote_version": "66306:86141442:7049:1794225224051804417:1794225224051804417",
+        "first_offset": 0,
+        "next_offset": 7049,
+        "eof": true,
+        "chunk_sha256": "79c489bd23426143ae0d12ae48108d8b0a75bafa9b3310ec97271cf95f2b5cb8",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b"
+    },
+    {
+      "path": "matrix-sdk-8857-v1.log.gz",
+      "bytes": 2662,
+      "sha256": "8472ff9e0e09126e4de516bcde6a0f66ab5d412a1f4ab7d3625b166f5f1230d1",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-8857-v1.log.gz",
+        "remote_version": "66306:86141440:2662:1794225224051695131:1794225224051695131",
+        "first_offset": 0,
+        "next_offset": 2662,
+        "eof": true,
+        "chunk_sha256": "8472ff9e0e09126e4de516bcde6a0f66ab5d412a1f4ab7d3625b166f5f1230d1",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 17535,
+        "sha256": "0aded908594d3f0d47bd4268e4bbee7e74fdf6105b5b0cf1538199f1f2691009",
+        "record": "matrix-sdk-8857-v1.json"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b"
+    },
+    {
+      "path": "matrix-sdk-f070-v1.json",
+      "bytes": 2715,
+      "sha256": "f328bba88b09aba29773f64d6b05ac020ea3159666f5fa3ae29b95364e9cd159",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-f070-v1.json",
+        "remote_version": "66306:86141461:2715:1794226605993004628:1794226605993004628",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 2715,
+            "chunk_sha256": "f328bba88b09aba29773f64d6b05ac020ea3159666f5fa3ae29b95364e9cd159",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "completed_unix": 1794226605.9925878
+    },
+    {
+      "path": "matrix-sdk-f070-v1.junit.xml",
+      "bytes": 7049,
+      "sha256": "0d5c0a7fb89c151f12f1f89e85ee805869f7ac1735ec2a5311a9ec469323c1f2",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-f070-v1.junit.xml",
+        "remote_version": "66306:86141466:7049:1794226605992918691:1794226605992918691",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 7049,
+            "chunk_sha256": "0d5c0a7fb89c151f12f1f89e85ee805869f7ac1735ec2a5311a9ec469323c1f2",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24"
+    },
+    {
+      "path": "matrix-sdk-f070-v1.log.gz",
+      "bytes": 2522,
+      "sha256": "32d701a84e04915713f3e5a650f1b8c291cd2c70a088e89ad9abb59349470450",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/matrix-sdk-f070-v1.log.gz",
+        "remote_version": "66306:86141465:2522:1794226605992835554:1794226605992835554",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 2522,
+            "chunk_sha256": "32d701a84e04915713f3e5a650f1b8c291cd2c70a088e89ad9abb59349470450",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "uncompressed": {
+        "bytes": 16370,
+        "sha256": "1eb12e75bce5868047bf882f045a760765f6310e7222a3defb007fc94121b81b",
+        "record": "matrix-sdk-f070-v1.json"
+      }
+    },
+    {
+      "path": "native-4795-controller.json",
+      "bytes": 247,
+      "sha256": "e956cadf1a40613b9634af30dc6014e7848a71d7e15b71642482ca5211368b28",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-4795-controller.json",
+        "remote_version": "66306:86141402:247:1794224773933375722:1794224773933375722",
+        "first_offset": 0,
+        "next_offset": 247,
+        "eof": true,
+        "chunk_sha256": "e956cadf1a40613b9634af30dc6014e7848a71d7e15b71642482ca5211368b28",
+        "read_method": "h_binary_read single complete chunk"
+      }
+    },
+    {
+      "path": "native-8857-controller.json",
+      "bytes": 434,
+      "sha256": "012d9d1feff9a9016aa82b5c830e84738768d8b9b408b22acb762f14a4d70610",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-8857-controller.json",
+        "remote_version": "66306:86141434:434:1794225227815056524:1794225227815056524",
+        "first_offset": 0,
+        "next_offset": 434,
+        "eof": true,
+        "chunk_sha256": "012d9d1feff9a9016aa82b5c830e84738768d8b9b408b22acb762f14a4d70610",
+        "read_method": "h_binary_read single complete chunk"
+      }
+    },
+    {
+      "path": "native-8857-process-status.json",
+      "bytes": 733,
+      "sha256": "c24e808f58ad5cc4df62e41ae05c2465e90f4bdc10af857f23490ff6ccc9fea5",
+      "provenance": {
+        "method": "h_process_status",
+        "host": "ai395",
+        "job_id": "1a1c024c77f-5e21-925",
+        "encoding": "Exact UTF-8 text block returned by the status API",
+        "remote_file_version": null
+      }
+    },
+    {
+      "path": "native-compile-84b-v1.json",
+      "bytes": 2728,
+      "sha256": "38121dd85bb27c30c27721dddbd1740741a1b6008239d8f646eaa3053f08410f",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-compile-84b-v1.json",
+        "remote_version": "66306:86127486:2728:1794223077301471872:1794223077301471872",
+        "first_offset": 0,
+        "next_offset": 2728,
+        "eof": true,
+        "chunk_sha256": "38121dd85bb27c30c27721dddbd1740741a1b6008239d8f646eaa3053f08410f",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "completed_unix": 1794223077.301151
+    },
+    {
+      "path": "native-compile-84b-v1.log.gz",
+      "bytes": 319,
+      "sha256": "bad389f26cdd0e39e3cb44cbe5e79143b6d1e6758c1ec374f9baced68466b2e0",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-compile-84b-v1.log.gz",
+        "remote_version": "66306:86127497:319:1794223077301295368:1794223077301295368",
+        "first_offset": 0,
+        "next_offset": 319,
+        "eof": true,
+        "chunk_sha256": "bad389f26cdd0e39e3cb44cbe5e79143b6d1e6758c1ec374f9baced68466b2e0",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 416,
+        "sha256": "2e36c11e67aefabc58d332f8b9b119223cd4eca512142293d4fa32e608ece430",
+        "record": "native-compile-84b-v1.json"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd"
+    },
+    {
+      "path": "native-f070-controller.json",
+      "bytes": 432,
+      "sha256": "9e53923bd8264d8b077ebdc02a350d7fe8a38e832c8e0a08dcdb52b64b85dac2",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-f070-controller.json",
+        "remote_version": "66306:86141447:432:1794226684066283625:1794226684066283625",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 432,
+            "chunk_sha256": "9e53923bd8264d8b077ebdc02a350d7fe8a38e832c8e0a08dcdb52b64b85dac2",
+            "eof": true
+          }
+        ]
+      }
+    },
+    {
+      "path": "native-f070-process-status.json",
+      "bytes": 736,
+      "sha256": "39f5029e2c114b080d88f4a81ad6f1acecfb46d26662e5398f2be2caabcd19f9",
+      "provenance": {
+        "method": "h_process_status",
+        "host": "ai395",
+        "job_id": "1a1c03ab679-5e21-975",
+        "encoding": "Exact UTF-8 text block returned by status API",
+        "remote_file_version": null
+      }
+    },
+    {
+      "path": "native-libraries-4795-v1.json",
+      "bytes": 2808,
+      "sha256": "eff925e5599ee5cf589e849a4c8bf64293b36a4155afc07e1222f853227ba94d",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-4795-v1.json",
+        "remote_version": "66306:86141403:2808:1794224773928610450:1794224773928610450",
+        "first_offset": 0,
+        "next_offset": 2808,
+        "eof": true,
+        "chunk_sha256": "eff925e5599ee5cf589e849a4c8bf64293b36a4155afc07e1222f853227ba94d",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "source_tree": "f07883603839fcabdc20f114c4ee0800e266fcb6",
+      "completed_unix": 1794224773.9281454
+    },
+    {
+      "path": "native-libraries-4795-v1.log.gz",
+      "bytes": 2580,
+      "sha256": "1e1962342c63ef3b79f04edd93d9cfc508863e9b70a5806f9cf48979f640593f",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-4795-v1.log.gz",
+        "remote_version": "66306:86141568:2580:1794224773928464936:1794224773928464936",
+        "first_offset": 0,
+        "next_offset": 2580,
+        "eof": true,
+        "chunk_sha256": "1e1962342c63ef3b79f04edd93d9cfc508863e9b70a5806f9cf48979f640593f",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 15371,
+        "sha256": "52e6d32c962eececa586ed96e592c292c42f00b4de1ac78b46d657f4e125d448",
+        "record": "native-libraries-4795-v1.json"
+      },
+      "source_commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "source_tree": "f07883603839fcabdc20f114c4ee0800e266fcb6"
+    },
+    {
+      "path": "native-libraries-8857-v1.json",
+      "bytes": 2818,
+      "sha256": "4dc87fe3a8bf2d60ea991ccd60e923a7388a21cfc5339dd4e7016cf178eb970f",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-8857-v1.json",
+        "remote_version": "66306:86141430:2818:1794225189382039502:1794225189382039502",
+        "first_offset": 0,
+        "next_offset": 2818,
+        "eof": true,
+        "chunk_sha256": "4dc87fe3a8bf2d60ea991ccd60e923a7388a21cfc5339dd4e7016cf178eb970f",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+      "completed_unix": 1794225189.3816338
+    },
+    {
+      "path": "native-libraries-8857-v1.log.gz",
+      "bytes": 2166,
+      "sha256": "6175de039b5f893c42510bb8955382a8b091e9a1554935f3c869e261f9048552",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-8857-v1.log.gz",
+        "remote_version": "66306:86141433:2166:1794225189381895307:1794225189381895307",
+        "first_offset": 0,
+        "next_offset": 2166,
+        "eof": true,
+        "chunk_sha256": "6175de039b5f893c42510bb8955382a8b091e9a1554935f3c869e261f9048552",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 13843,
+        "sha256": "4e290e606a6257d665b74244bd2208dc43fbc9ace4aaa656b42d49b4cf26ce61",
+        "record": "native-libraries-8857-v1.json"
+      },
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b"
+    },
+    {
+      "path": "native-libraries-f070-v1.json",
+      "bytes": 3030,
+      "sha256": "3dc1bc80d6a8bbf79b2a3ae39979531efd96268e87cd40000633ad1674885e18",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-f070-v1.json",
+        "remote_version": "66306:86141455:3030:1794226594222647207:1794226594222647207",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 3030,
+            "chunk_sha256": "3dc1bc80d6a8bbf79b2a3ae39979531efd96268e87cd40000633ad1674885e18",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "completed_unix": 1794226594.2166355
+    },
+    {
+      "path": "native-libraries-f070-v1.junit.xml",
+      "bytes": 341353,
+      "sha256": "2aca464a895539940ad13a2ab0aee68c703e4bf81ada332cc7b1b9c7120fbcc4",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-f070-v1.junit.xml",
+        "remote_version": "66306:86141460:341353:1794226594222367607:1794226594222367607",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 65536,
+            "chunk_sha256": "fa64dbdd60c47989b609126596c9de658cf8f28c6db2fc32815877e886f83a3a",
+            "eof": false
+          },
+          {
+            "offset": 65536,
+            "next_offset": 131072,
+            "chunk_sha256": "b8e6459506faa03cdb53e668a90c21dfc730a76fbd13b6800b5e0cd38ebe79b8",
+            "eof": false
+          },
+          {
+            "offset": 131072,
+            "next_offset": 196608,
+            "chunk_sha256": "82305eac04b17e0fd4c6b8d89ec9e3292c8133fba9ab7ea7dae6b93cc272cda1",
+            "eof": false
+          },
+          {
+            "offset": 196608,
+            "next_offset": 262144,
+            "chunk_sha256": "f89f8ffe676b2777260a9be8eb643504a20fa208181a9e1e7f06c1f0e152ac77",
+            "eof": false
+          },
+          {
+            "offset": 262144,
+            "next_offset": 327680,
+            "chunk_sha256": "e5a42f5d1346676a053ceb297a0bc2a4809b36749762df2ee17b743bb313e718",
+            "eof": false
+          },
+          {
+            "offset": 327680,
+            "next_offset": 341353,
+            "chunk_sha256": "e117a7fd36e092047de06dad0cae835838cfa0259383b06d144cf5c4c1116098",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24"
+    },
+    {
+      "path": "native-libraries-f070-v1.log.gz",
+      "bytes": 40958,
+      "sha256": "4361742ae66a0b446e020cbdbe2399db5209d65f302ddd4acc6d03b5d0197533",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/native-libraries-f070-v1.log.gz",
+        "remote_version": "66306:86141459:40958:1794226594222187633:1794226594222187633",
+        "read_method": "h_binary_read; all later chunks explicitly bound to first version",
+        "chunks": [
+          {
+            "offset": 0,
+            "next_offset": 40958,
+            "chunk_sha256": "4361742ae66a0b446e020cbdbe2399db5209d65f302ddd4acc6d03b5d0197533",
+            "eof": true
+          }
+        ]
+      },
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "uncompressed": {
+        "bytes": 226556,
+        "sha256": "22e64e91dfd1dc77931adf29914c1ea6ba7c0c2ca3bd5c9614480e3043119533",
+        "record": "native-libraries-f070-v1.json"
+      }
+    },
+    {
+      "path": "scoped-controls-84b-v2.json",
+      "bytes": 2689,
+      "sha256": "760d2d663362b90d61fbeee76fd098e3b38d44bfd63fd6cccebd2486fec53a71",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/scoped-controls-84b-v2.json",
+        "remote_version": "66306:86127802:2689:1794223354618582403:1794223354618582403",
+        "first_offset": 0,
+        "next_offset": 2689,
+        "eof": true,
+        "chunk_sha256": "760d2d663362b90d61fbeee76fd098e3b38d44bfd63fd6cccebd2486fec53a71",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "completed_unix": 1794223354.6179154
+    },
+    {
+      "path": "scoped-controls-84b-v2.log.gz",
+      "bytes": 2581,
+      "sha256": "98e4cb008645d47d5897a60cf46aac8f611c1799b1cd2a297af1e3c10a3199c8",
+      "transport": {
+        "host": "ai395",
+        "remote_path": "/home/qq/hepta-cell-common-e1c98-20261109/evidence/scoped-controls-84b-v2.log.gz",
+        "remote_version": "66306:86127950:2581:1794223354618393879:1794223354618393879",
+        "first_offset": 0,
+        "next_offset": 2581,
+        "eof": true,
+        "chunk_sha256": "98e4cb008645d47d5897a60cf46aac8f611c1799b1cd2a297af1e3c10a3199c8",
+        "read_method": "h_binary_read single complete chunk"
+      },
+      "uncompressed": {
+        "bytes": 16523,
+        "sha256": "d68e9ec59f1fb26b63537ca1b858e473ed7f1709b4c404ce9607bbe63063ac0f",
+        "record": "scoped-controls-84b-v2.json"
+      },
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd"
+    }
+  ],
+  "derived_files": [
+    {
+      "path": "README.md",
+      "bytes": 6440,
+      "sha256": "75b2ae0c8bcfaa3debab841c56a245efdfb760256f7ece1b247806d069f84d34",
+      "provenance": "Local explanation derived only from archived evidence; not an additional remote execution."
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 12875,
+      "sha256": "4baf2105f56c5d9decf8ac80e14d808ced596b4a251839e3bad28ffc9e621f91",
+      "provenance": "Local explanation derived only from archived evidence; not an additional remote execution."
+    }
+  ]
+}

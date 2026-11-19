@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.root-publication-cli-followup.v1",
+  "source_base": "caa34b7e77f5aa134dc1335f5f143af948874157",
+  "prior_manifest": "85bc8463deab16ddec14b1911b0dbf31927a59c1",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "mode": "100644",
+      "before": {
+        "git_blob": "24803f92d97a04f8a4e13550054e3c6c16dd6d06",
+        "sha256": "944a000af59dbb8f11a7a8d359375e84d9e9811d28b48b0fb5cf3494c77bc425",
+        "bytes": 10882
+      },
+      "git_blob": "746deee25e13ecad8704880a19825cf599a9e07a",
+      "sha256": "00269487717225f87eef9a12052b1bccd2e6b0d3945d697341347901eeb72145",
+      "bytes": 10852,
+      "additions": 1,
+      "deletions": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "mode": "100644",
+      "before": {
+        "git_blob": "3b4703b9cd720ce5e4fb3a578b7542c2835034d1",
+        "sha256": "4b384c4bb4486aa633d6ac56c5461a5e0c7bc936b5e5b9eeec158a1a657f6820",
+        "bytes": 19061
+      },
+      "git_blob": "80ebebbd3fe71cc861d7b05a094afdc3e79c14f8",
+      "sha256": "3171ffcdc1a98581ba8989a4c784334920eed448e06530abb3f357a904238e9c",
+      "bytes": 19695,
+      "additions": 14,
+      "deletions": 3
+    }
+  ],
+  "line_ops": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs",
+      "additions": 1,
+      "deletions": 2,
+      "operations": [
+        {
+          "old_start_line": 3,
+          "old": "\nuse std::io;\nuse std::path::Path;\nuse std::sync::Arc;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n",
+          "new": "\nuse std::io;\nuse std::path::Path;\nuse std::sync::atomic::AtomicBool;\nuse std::sync::atomic::AtomicU64;\nuse std::sync::atomic::Ordering;\n"
+        },
+        {
+          "old_start_line": 99,
+          "old": "        files::require_absolute(&data.trigger)?;\n        files::require_absolute(&data.late_material)?;\n        let inputs = OriginalInputs {\n            current: Arc::new(RootAuthorityDirectory::open(&data.current_directory).map_err(io::Error::other)?),\n            previous_journal: OriginalFile::open_original(&data.previous_journal)?,\n            previous_witness: OriginalFile::open_original(&data.previous_witness)?,\n            target_journal: OriginalFile::open_original(&data.target_journal)?,\n",
+          "new": "        files::require_absolute(&data.trigger)?;\n        files::require_absolute(&data.late_material)?;\n        let inputs = OriginalInputs {\n            current: RootAuthorityDirectory::open(&data.current_directory).map_err(io::Error::other)?,\n            previous_journal: OriginalFile::open_original(&data.previous_journal)?,\n            previous_witness: OriginalFile::open_original(&data.previous_witness)?,\n            target_journal: OriginalFile::open_original(&data.target_journal)?,\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "additions": 14,
+      "deletions": 3,
+      "operations": [
+        {
+          "old_start_line": 2,
+          "old": "\n#[cfg(target_os = \"linux\")]\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    use std::os::fd::AsFd;\n    use std::path::PathBuf;\n    let mut args = std::env::args_os().skip(1);\n",
+          "new": "\n#[cfg(target_os = \"linux\")]\nfn main() -> Result<(), Box<dyn std::error::Error>> {\n    use std::io::Write;\n    use std::os::fd::AsFd;\n    use std::path::PathBuf;\n    let mut args = std::env::args_os().skip(1);\n"
+        },
+        {
+          "old_start_line": 320,
+          "old": "            }\n            if let Some(session) = deployment_ready {\n                println!(\"{{\\\"publication_deployment_session\\\":{session}}}\");\n            }\n            Ok(())\n        };\n",
+          "new": "            }\n            if let Some(session) = deployment_ready {\n                println!(\"{{\\\"publication_deployment_session\\\":{session}}}\");\n                std::io::stdout().flush()?;\n            }\n            Ok(())\n        };\n"
+        },
+        {
+          "old_start_line": 331,
+          "old": "            let stop_ref = &stopping;\n            let worker = deployment.map(|deployment| scope.spawn(move || {\n                let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;\n                deployment.wait_and_register(stop_ref)\n            }));\n            let served = match (native_profile, text) {\n                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),\n",
+          "new": "            let stop_ref = &stopping;\n            let worker = deployment.map(|deployment| scope.spawn(move || {\n                let deployment: codex_hepta_agentd::RootGenerationPublicationDeploymentV1 = deployment;\n                let registered = deployment.wait_and_register(stop_ref)?;\n                // Report the original completed registration while serving, so\n                // the trusted host can connect without racing its short timeout.\n                let stdout = std::io::stdout();\n                let mut output = stdout.lock();\n                writeln!(output, \"{{\\\"publication_registered_binding\\\":\\\"{}\\\"}}\", registered.binding())\n                    .and_then(|()| output.flush())\n                    .map_err(|error| std::io::Error::other(format!(\n                        \"original publication registered; acknowledgement output uncertain: {error}\",\n                    )))?;\n                Ok::<_, std::io::Error>(registered)\n            }));\n            let served = match (native_profile, text) {\n                (Some(profile), None) => prepared.launch_native_with_ready(&config, &registration, &profile, ready),\n"
+        },
+        {
+          "old_start_line": 346,
+          "old": "            };\n            served?;\n            if let Some(registered) = registered {\n                let registered = registered?;\n                println!(\"{{\\\"publication_registered_binding\\\":\\\"{}\\\"}}\", registered.binding());\n            }\n            Ok(())\n        })?;\n",
+          "new": "            };\n            served?;\n            if let Some(registered) = registered {\n                registered?;\n            }\n            Ok(())\n        })?;\n"
+        }
+      ]
+    }
+  ],
+  "callers_delta": {
+    "source_base": "caa34b7e77f5aa134dc1335f5f143af948874157",
+    "edits": [
+      {
+        "kind": "replace_exact",
+        "id": "protected:codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+        "count": 1,
+        "before": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0.store(\",\"std::sync::atomic::Ordering::Release\"] }]\n",
+        "after": "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\"\nrequired = [\"register-learning\",\"--learning-profile\",\"--root-learning-handoff-fd\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"learning_profile.is_some() && root_fd.is_none()\",\"PreparedHostAuthoritySession::open(&config, &registration, owner)?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"send_root_learning_handoff(\",\"prepared.serve_with_ready(ready)\",\"--generation-publication-deployment\",\"--root-generation-publication-handoff-fd\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"capability.with_original_deployment(&path)?\",\"deployment.wait_and_register(stop_ref)\",\"PublicationDeploymentStop\",\"let served = match\",\"drop(stop)\",\"served?\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]\nrequired_order = [[\"let learning_handoff = learning_handoff\\n            .as_deref()\",\"inherited_descriptor(fd, &mut claimed)\",\"learning_profile.is_some() != learning_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.seal_learning_bootstrap()\",\"let ready = ||\",\"send_root_learning_handoff(\",\"prepared.launch_native_with_ready(\",\"prepared.serve_with_text_and_ready(\",\"prepared.serve_with_ready(ready)\"],[\"let publication_handoff = publication_handoff\",\"inherited_descriptor(fd, &mut claimed)\",\"publication_deployment.is_some() != publication_handoff.is_some()\",\"let owner = std::io::stdin().as_fd().try_clone_to_owned()?\",\"prepared.with_registered_learning(&profile)?\",\"prepared.enable_generation_publication()?\",\"capability.with_original_deployment(&path)?\",\"send_root_generation_publication_handoff(\",\"let stop = PublicationDeploymentStop\",\"deployment.wait_and_register(stop_ref)\",\"let served = match\",\"prepared.serve_with_ready(ready)\",\"drop(stop)\",\"worker.join()\",\"served?\"],[\"let registered = deployment.wait_and_register(stop_ref)?\",\"let stdout = std::io::stdout()\",\"let mut output = stdout.lock()\",\"writeln!(output,\",\"output.flush()\",\"Ok::<_, std::io::Error>(registered)\",\"let served = match\",\"drop(stop)\",\"worker.join()\",\"served?\",\"registered?\"]]\n\nrequired_function_order = [{ function = \"fn drop(\", sequence = [\"self.0.store(\",\"std::sync::atomic::Ordering::Release\"] }]\n"
+      }
+    ],
+    "inventory_add": [],
+    "append": "",
+    "note": "Keep original stop-before-join/error propagation; add original ACK before serve completion. Root Arc fix has no CALLERS semantic change."
+  },
+  "fixes": [
+    {
+      "id": "actual-root-directory-return-type",
+      "evidence": "Parent native v7 E0308 at deployment.rs:109; RootAuthorityDirectory::open returns Arc<RootAuthorityDirectory>.",
+      "change": "Use the original returned Arc directly and remove only the now-unused Arc import."
+    },
+    {
+      "id": "same-live-session-registration-ack",
+      "evidence": "Independent static audit identified ACK was printed only after serve returned.",
+      "change": "Actual wait_and_register postchecks complete before worker writes/flushed original binding ACK; join only propagates result. No duplicate ACK, no capability or retry added. Original session correlation output is flushed."
+    }
+  ],
+  "tests_executed": false,
+  "compiler_executed": false,
+  "shared_source_changed": false,
+  "ordinary_counts": [
+    0,
+    0,
+    0
+  ]
+}

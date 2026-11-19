@@ -1,0 +1,917 @@
+{
+  "schema": "cell-joint-hcsn-source-import-v1",
+  "before_head": "485a400a9b6f90b5c89a2da38bdc40b9ba966dba",
+  "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+  "source_baseline": "bb048cb811c2b755b7e54e97d24c63ec7ec8d1b7",
+  "old_baseline_is_ancestor_of_joint_base": false,
+  "baseline_module_introduction": "5f127e5c99197ab4f37b9be53abb93c2e5382f37",
+  "reason": "Delta-only source import against the earlier research baseline omitted required pre-existing Python modules that are absent from the joint engineering lineage.",
+  "missing_baseline_files": [
+    {
+      "path": "qualification/hcsn_differentiable/MODEL.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "cea98ef09f306aa0792c7a8084e8edec906f5061",
+      "bytes": 23128,
+      "sha256": "059a76bd635f95e6dfc467237f25b661859c61c94a09067aeb9165c28924f5ee"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/README.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "8b82f2ff5dde49160e052d3de8214e35b78e35fa",
+      "bytes": 11058,
+      "sha256": "04c0380de4ed9f0e9f7322962188d5c2fb95aa5d81193216acb4b51fb8468600"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/checkpoint.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9080bd46bfeb49cbb7202b660b5f08deae729842",
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/encoder.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3920420439e3a23c5bfabaf4602648dc6c81420d",
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/network.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "490d2d46c686e8b8f7b9ba63ff89b60993fe13c1",
+      "bytes": 27553,
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "c7c326c3bc3db3d9a1bbbc24d44438a71a89f04c",
+      "bytes": 24715,
+      "sha256": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/run_qualification.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "be995e6afb0a7ddb8127ce3f0210ef01554fd05d",
+      "bytes": 8166,
+      "sha256": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_encoder.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4be2ed5d3cb29dcb9895abe30186106fc2e3febd",
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_network.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a41d64930f407e06228e85de2f8736f53d13be50",
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_operator.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "760071bdf44c48fe21ead6fe7165dcb5f75f709a",
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779"
+    }
+  ],
+  "source_files": [
+    {
+      "path": ".github/workflows/codespell.yml",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "caf88a02d2644b8e61df0859629d44c77ac9a0fb",
+      "bytes": 1118,
+      "sha256": "602fcfb939e2b79e3f41757a163da7d22353f4f246bf075b734939b2295aae92",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "54796b13102ee63345348270029f4f1d28f6d75e",
+      "bytes": 6821,
+      "sha256": "b67cf5d771ec888a96e0a5d9344c101a36037dba6b7aebceac03cff68efd76bd",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/PROTOCOL.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "92c5f3812d5a325c393eba738010255085782e15",
+      "bytes": 10223,
+      "sha256": "7f785054f4d54a5c51d9229a70f6319eb9c773b70d2daaf25dc5f77182cb8ffa",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/TRAINER.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "f30ecc682260b2413612e765e35dc5d7acd08e6e",
+      "bytes": 8948,
+      "sha256": "aff17f9b5e36bab8de8c92412079a0e5cb83655b6e9ba1c76feccac81a0ff450",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/audit_training.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "d28f7dbdf4a88e6b8502211ccfc8080079427ddb",
+      "bytes": 7635,
+      "sha256": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/capacity.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9bf1081d1656eda1200216e43835e0fefe76969c",
+      "bytes": 7699,
+      "sha256": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/data.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4d3578b43c258091f6513823e8fc14e4189ba642",
+      "bytes": 6767,
+      "sha256": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/dependencies.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "656a5fadc5ad5082a893b8652e38cee303391aca",
+      "bytes": 3749,
+      "sha256": "e1c30b2349dac31be5b13a76eb1115911088acdc76903858bbf67f4f2480726f",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/episodes.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "91c457dffa6a6203c9c2e8021cde788707cd56ff",
+      "bytes": 9697,
+      "sha256": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/formal_protocol.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "c77110c8693dfa888ae2037138e663e4ed35cce0",
+      "bytes": 5721,
+      "sha256": "c9a7e3c4f98a131e9fb639832b413e18c00e25ba6f608a0d97c83d728c0a0465",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/models.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "eb26e4b1e621486ae96f61e75b4e89e4be27c674",
+      "bytes": 11471,
+      "sha256": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/run_interface.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "2e3f464fb71709b7b25571bf8df5a8dee3db8259",
+      "bytes": 16208,
+      "sha256": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/test_capacity.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "6bc3b00c416b104d9a6b45c463e929579977518c",
+      "bytes": 3589,
+      "sha256": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/test_episodes.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ee3c8ffca6540201f739a89933c5a56672bb7009",
+      "bytes": 4688,
+      "sha256": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "proposals/localization-v2/train_development.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "66f08f695749b836998db72eb92bbfebc1788255",
+      "bytes": 17218,
+      "sha256": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/BLOB_POLICY_BACKPORT.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "b4133ffd5266fd111f9d0ba117064a1ac04f18ad",
+      "bytes": 3064,
+      "sha256": "bd0a7e70d16466737c04d71289799b37f29b233411b7c9dedf2424bb9d59abe6",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/FORMATTING.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "335584b21577367a5d1a381395d362782be46ec8",
+      "bytes": 10852,
+      "sha256": "6e2df53f77f7745019f8be17030a44490dec4ad3384470d6798f00e40d966c6c",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/FUNCTIONAL_COMMITS.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3ccf4811a0ca3fef3e06c761ef4eba0cc96f622d",
+      "bytes": 4650,
+      "sha256": "5ea27455015affd2ff1d42f41fe8a99284c277eb4bbd6f3e2ebeb784e9a39ecb",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/MANIFEST.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4ea768ba058f5ccc4eb286c8d9733f56cbc5c838",
+      "bytes": 2200,
+      "sha256": "9207b835b557bf2eb28a1282bcae2b693b12fec0438f0c20edf3cf1eb896e06e",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/NATIVE_AUDIT_SUMMARY.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a155338979008ec74e3a3901d88609bfb4897189",
+      "bytes": 3398,
+      "sha256": "eed311caf6e3b97ad37a2c4a5d81b815d52c8b984b0d9c4b83a79845db8ff1db",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/README.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5ee4f6f558b382bf38bc51cb2332b62bf702097d",
+      "bytes": 1809,
+      "sha256": "33562fd21e3ee5798b5a5937123064643ae21656b7a83daf9704991fe3e83ae0",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/hcsn-trainer-native-evidence.zip",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3c427d48aa759a4a4bad8258c951fbb94c0c616d",
+      "bytes": 1843158,
+      "sha256": "27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/lint-followup/FOLLOWUP.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "19149e01a894a892a02d843c1fd7929c086799bf",
+      "bytes": 3661,
+      "sha256": "0a922440f147dbe31fcc361125fba398cf72b9d3095b187e6a69290eab84acac",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/lint-followup/local-scope-failure.stderr",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "7792fc55ecbab5e970391ca7dadddfae9306f1b0",
+      "bytes": 27,
+      "sha256": "759fd7af152f586b73f3d37a9119feed05e5d57e829207f60045eaeb024935a8",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/lint-followup/local-scope-failure.stdout.gz",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "df3e6c96baab736dc1f01462ab9b4863ef148c86",
+      "bytes": 167,
+      "sha256": "20cc561c07246d1abe73899d17d4d9fcdd90803c8e3f0c09db8a4f6c5d9f0b29",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-localization-trainer-20261108/lint-followup/original-ci.log.gz",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a9d5e82911b12da610dca6362eb00b60fc4f58be",
+      "bytes": 7258,
+      "sha256": "ba78833564e0bd8d78e197660a70d7470ccd203aabd4075ac669ce72fc059104",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-plif-zero-moment-20261108/README.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "1e00d9497c754027a4bd125913ecd37729563c2b",
+      "bytes": 7955,
+      "sha256": "c8c8785695279e2cebb9fb6a8bff5b188243e8f94f81bb6db3d8fc94d1fe95d1",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-plif-zero-moment-20261108/SUMMARY.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9edddded743e0ef02444c5b2b3ad60142b3f4273",
+      "bytes": 4423,
+      "sha256": "5ff3e4547b1610415bab53779bccf52f2b392a58a97f22b3c8de4b5a00f5b5a0",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-plif-zero-moment-20261108/diagnose_readonly.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "d0098451d81029ff41c1fe0d2fd9fcee53bf57b4",
+      "bytes": 11132,
+      "sha256": "69ad51addbff60a858b620f594fae3d5a9a4819e415287ce6f38fd51eca51011",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn-plif-zero-moment-20261108/readonly-evidence.zip",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3bc62bb9ca220b8c9dbc0d85283ef2aa7dee4ebf",
+      "bytes": 126859,
+      "sha256": "87f57ad2d58977d5c9847a0d5419586a285b0ac68b5955ba926b2aaea73931da",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/BENCHMARK.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "f0244f5c5a71d4253c432ac02858ef89ef689df4",
+      "bytes": 10923,
+      "sha256": "bcfbeb4174d834115017d23e4921838c401aa741fd49eef2572776ed633bc969",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/CURRENT.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "46f89b2c44ae27ae3897547c95c34265f0e60c9d",
+      "bytes": 9763,
+      "sha256": "7a23d12a528d9c2fe78ba7250d3cea07cfa79d05513ac5945894b4129b840757",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/DATASET.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "614ab1d4937984e92bd119531f68ba8f68e08316",
+      "bytes": 7173,
+      "sha256": "820da5ac36a1553346a756eedac57aa9928a97e4e8c566ef5ca8beff01359bbd",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/MODEL.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "cea98ef09f306aa0792c7a8084e8edec906f5061",
+      "bytes": 23128,
+      "sha256": "059a76bd635f95e6dfc467237f25b661859c61c94a09067aeb9165c28924f5ee",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/README.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "8b82f2ff5dde49160e052d3de8214e35b78e35fa",
+      "bytes": 11058,
+      "sha256": "04c0380de4ed9f0e9f7322962188d5c2fb95aa5d81193216acb4b51fb8468600",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/benchmark_admission.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5827e9affb0746ce43755fc7d267964010d07a88",
+      "bytes": 11635,
+      "sha256": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/checkpoint.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9080bd46bfeb49cbb7202b660b5f08deae729842",
+      "bytes": 7943,
+      "sha256": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/ci_baseline.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a173cb89084bde9c74761e3d1c485f092bec5cc1",
+      "bytes": 12807,
+      "sha256": "9788b360050963ea0aee86fb825335fa45cdb4f32e0db60adfdf25812c9c4db2",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/encoder.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3920420439e3a23c5bfabaf4602648dc6c81420d",
+      "bytes": 7996,
+      "sha256": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/error_budget.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5ad3f0ca55b03f103252363df60d34b760d74804",
+      "bytes": 1686,
+      "sha256": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/error_budget.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5996c74b31ea83a4e63897abc049ebd5c16e411b",
+      "bytes": 7352,
+      "sha256": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "b54d149a205a72bc2ff5ac88dee6b819ca4eb23a",
+      "bytes": 8061,
+      "sha256": "804150071e9142ff7d8ccd883b060522b241d8595622d25fd3e137d219252dec",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/PUBLICATION_REDACTIONS.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5d36d42232d8b590f1ad7861915515414cb5a5f2",
+      "bytes": 736,
+      "sha256": "6cd6c70e369b933b3078883cafb8d73bd383d388062a5a0cec689c0fafcfd511",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/README.md",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "0cca73065dfa2621653c88fa5132cc10dd933504",
+      "bytes": 10824,
+      "sha256": "a3ad5479a04cb6e6e97a882c68034461f2af05b9217af8bbea582a420ad7774a",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/STATUS.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ffc97c6a307f6dcbe88140703866168f49ff2732",
+      "bytes": 6034,
+      "sha256": "162564d02fcbb9eb11ecf775063960bac464014e9b93ae783390e40434d7df0a",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/attempt-001/capsule-manifest.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "0d02650b4ba321f6d524e1ae25beff0ee3fbd5e2",
+      "bytes": 2625,
+      "sha256": "2bb86739a9fd05d4abd0a4975b76d34fbe08c67561faae2bdf7b77a0174bb053",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/attempt-001/error-budget.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "93948a8b571e73acaf4f705320dbc27fb559baee",
+      "bytes": 22571,
+      "sha256": "c2609d02dd8fb075ed026ef7e3f719e90717bbdd3627fc354f43a763e52985b5",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/attempt-001/qualification.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "fdb6bdb057a58c3f0ffa7c7fdabe5de78ea402fe",
+      "bytes": 42606,
+      "sha256": "201c3a945672c09dce7521369461ccb42dd8dc56f29f24c47e05eb83bdfdd9ae",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/attempt-001/source.zip",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "bffde92c23ea84e55e7238837bd3154197fed5fb",
+      "bytes": 69620,
+      "sha256": "2573a514e48ccb32a1d1f28823c1f01769360173f16cc4503ace2cd8715b1df9",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/attempt-002/error-budget.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "399b3adedd3b69ae9f4ba9f9c1a52477486c04f9",
+      "bytes": 28489,
+      "sha256": "a60eac7a37cc6303e5861fb6baf557df45e14416a68d340bbd0fb2cce576331d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/bind.process-read.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9dd690085114755f15e5aaf3fee6413047322b6e",
+      "bytes": 509,
+      "sha256": "374a04ee7a988616ed1ae065780f00ee3275653bcc9013c14b63850c6a20c774",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/bind.process-status.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "76c22493f0a5477705ca08e0c3c970022c4a14a3",
+      "bytes": 725,
+      "sha256": "d4e0122d746f2029fa5db2ac8e3c7d6f292a43b4032100517305a14da102f2e6",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/bind.stdout.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5fd47f72dbaf8c9f545e2e4ed2e75c4ba6304eb4",
+      "bytes": 60,
+      "sha256": "6cde861f9c5c41bf48f3e99fd24a58cdaef5526f52f3899d5eeda618aaa0e300",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/cleanup-diagnostic.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a05dad666fc338f9ccf840db1e4dacfcc2b9baf8",
+      "bytes": 1293,
+      "sha256": "1ad3147d6e0662b074e7051434bca200fb41f7a8f22f76e7f6ce865440873e8e",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/create.process-read.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9617c3c62c8e674837e1b405b0b159e571f35276",
+      "bytes": 1474,
+      "sha256": "6e16cb3e535bd07adbfd5fb06f1593b713490064c01902b7f58b7c354c24d797",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/create.process-status.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "f8068464069f7e08fe70aed8e2e9bcdf0890b787",
+      "bytes": 730,
+      "sha256": "6c37c999f34e6c4916b21f0f08120c50eb76c4dfa5e9abd799c339daf6ac7d6d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/create.stdout.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4d5ff44fd9efc895ce617509659400526d7e91b7",
+      "bytes": 1180,
+      "sha256": "464eab4dd7cda66a618555fa628008de3bd834dd7855751f552aed8664c3573f",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/reconcile.process-read.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "bc9438e4e0528021970c060755015e0dceb8c696",
+      "bytes": 509,
+      "sha256": "6fd3d9e3a708ef190fac7986aaaa8008a772c94683ab777034045f766a00fec7",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/reconcile.process-start.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "d8c5d9f144ca3f6682a0fab9fd1c8962a33be467",
+      "bytes": 1087,
+      "sha256": "dfa52daa4bd94f2f4ceeb0ca79761cb7485f7e4f537cb78d5b0a8bd3ef32fb7e",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/reconcile.process-status.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "1fb706d187f52350cc8468ef0ea55dac128899d3",
+      "bytes": 725,
+      "sha256": "2acb463fd388c7530bdc88ae4f0bd97e81a14c52c5cc9dce1c65423ca2f04d0e",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/reconcile.stdout.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "5fd47f72dbaf8c9f545e2e4ed2e75c4ba6304eb4",
+      "bytes": 60,
+      "sha256": "6cde861f9c5c41bf48f3e99fd24a58cdaef5526f52f3899d5eeda618aaa0e300",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/release.process-read.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "7a170a6aec5fd9b976b979e0dab3dc862815d00a",
+      "bytes": 569,
+      "sha256": "08ddf6446fa47631c403ff8a16cb9f49552b9ba62ea84d01b36d4f371a1067c9",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/release.process-start.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "2e659c493203c29b6d8d5b0062a1401ca3cc69f9",
+      "bytes": 1080,
+      "sha256": "f1ebace2db7154cfea05a35556969fa1c888da6f1e82aaeebb55f25203da121b",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/release.process-status.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "292a0c389bfebb40bb17b11de67c28cc90466883",
+      "bytes": 725,
+      "sha256": "24096b6eface3a669fa46698bd66ed6c8c8bb44f766bd87f01c096b9dbb11051",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/release.stdout.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "798f75e9c1807f3e59f97e38c035406a36142a36",
+      "bytes": 80,
+      "sha256": "ff98c2bc059e663ea14831761801b6ceb7ecfbb2e71c24b6a7a699e4fa793216",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/colab-v1/summary.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ca5ffc468d23adda1b80c61f7eba31943b7998ac",
+      "bytes": 2597,
+      "sha256": "30dcf934c4ed3719649d458c3e048e44d51099c54bf69aa98d1694215268cfac",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/capsule-manifest.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "64fa43d861be233c1d07970618612582b35f9cd2",
+      "bytes": 3638,
+      "sha256": "b5f43a05e49301f8b108161c9eb1dfc971d48b14940b23ca63a9ddd37706f4ff",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/error-budget.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "597f90dee11745df732e39de121291181cd81eef",
+      "bytes": 29805,
+      "sha256": "8364e156946204e7c6722e2f3b4a3ee5c371803afb53b820abc75b7d6d98841a",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/execution.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a939e4d2188183d264aa44b3af1150998270362a",
+      "bytes": 180,
+      "sha256": "843b9163768755d4339fcec6b2bf0f87b18814b6f8170f7893578ddf753a4187",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/process-status.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ec811101e516f2405281abf16a666944cb2278f7",
+      "bytes": 731,
+      "sha256": "e6b71fe9c186e23970f48f80167ee685a5c38f9f714a9763af97468f630df5ab",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/qualification.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ae6a18d1da948deaa9614d4b78334d4cf4020779",
+      "bytes": 46265,
+      "sha256": "e45f7cc610746ca99a8d5dbc0d9904739f409164285b26806495af3a8078d316",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/source-manifest.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "2f1f93851bf2d970b3ab10806884fbd0aa1525d8",
+      "bytes": 3482,
+      "sha256": "494b8718e41106d7b80bd8dd1122fe0dbe8bac737a853cb0c400e13e0e163d03",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/final-native/source.zip",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4560a563bbd8485a692cec2c66a5e7b741193e26",
+      "bytes": 99479,
+      "sha256": "353f7c0f50d187adeccbd1fff0638d1a649fe2c547c03ebf23e3fceafa846ff8",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/localization-v1/clock-diagnostic.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "bde23fae73b13cdc8241aa492e14b8a7af1212b8",
+      "bytes": 17014,
+      "sha256": "d9b1dfd4c09a4b66961b3fb4fab5828725349a60c168fd9dab5e5a6cdce01654",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/localization-v1/events.jsonl",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "ad40879e405067e85dc55f99879c55ae899ed824",
+      "bytes": 152,
+      "sha256": "f944b4c71f8943f82a6e5126631111618ca4b6d8099428b12413cf5c867fb3fb",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/localization-v1/locked-spec.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "9dd42740074a19221c8b3bbab11db2879e473f0a",
+      "bytes": 1949,
+      "sha256": "be3ed4b30aeaca8e8343b1544dead85f22aaf6f2377ddc0b478692c9c1293046",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/localization-v1/report.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "f076ee057850c8c076cfb894cbd5cc43cd4f318d",
+      "bytes": 10678,
+      "sha256": "0bcffc424762d3c53df6fd3de4fd251cd2f46ab6943a7584bbf66a1b6ce0d84c",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/localization-v1/sql-clock-diagnostic.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "722ba0642d8dd1b47bdc5f676c089d33d9fd2b31",
+      "bytes": 16722,
+      "sha256": "8a8b312b5a3c1e3102849aaedfb114cd3e0bcd62646c0a6d0436f52fe63ac36b",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/reproduction/colab/build_worker.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "d00c0a1b5c54932d67d146f58576040a4ec773f8",
+      "bytes": 3975,
+      "sha256": "903a34e8dbee44c585533c97cd35c11fffa3c5cd321cb1ba3b1101ed074b64d5",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/reproduction/colab/worker_template.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "c4dfaea059fea031a5a000bcd33ebe2228d0d34c",
+      "bytes": 8182,
+      "sha256": "3a40eacde366693ff30db7d1d4e4db7a5a5fc739af5616564f28eb9bf6c78462",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/reproduction/localization_clock_diagnostic.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "33e86eac898ecd8bcb0c568ef4073479268ddccb",
+      "bytes": 4745,
+      "sha256": "8a022a2472be68f92677d9b6d3428f9772d0897bf83e10f9c4e6e613c07b5086",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/reproduction/localization_sql_clock_diagnostic.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "03c3b5eb1a36ee5b767862b0190690a364e78583",
+      "bytes": 4603,
+      "sha256": "e8f3cbe1fd61848568e669886177c2d6f2f913192f8594ffb3e19ceb1df3040d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/math-closure-20261108/reproduction/native_publish.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "3cec275680cf6d4df577ccfea4a1ed357784edba",
+      "bytes": 13356,
+      "sha256": "df754d13a4841d8127881f91e19823715f5c33337ad4f76a36c4c968f561a88d",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/finite_renewal.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/localization_smoke.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "bb47ccc437a852f9c24c65b3b15a4acd19a7e5fc",
+      "bytes": 18604,
+      "sha256": "99c214040e1c2bd3057fb77641c2b75faad3c3c61d48c27fda33629d1332e372",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/network.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "490d2d46c686e8b8f7b9ba63ff89b60993fe13c1",
+      "bytes": 27553,
+      "sha256": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "c7c326c3bc3db3d9a1bbbc24d44438a71a89f04c",
+      "bytes": 24715,
+      "sha256": "a372ca8eef2b41714f632e0b1db2a58f98409fbb23858eb83bfe93a7833f1677",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/regenerative.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "fa8cb0f6d2b723a23e453c369c152498c20054c0",
+      "bytes": 7508,
+      "sha256": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/research_protocol.json",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "f6aa1a2f00a5778b5ce2d9d9ed9ced736d88d5ee",
+      "bytes": 1989,
+      "sha256": "27c84c4867f3967e2544639ca188fae865768dfc9d6928074062e027ca2a83e8",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/run_qualification.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "be995e6afb0a7ddb8127ce3f0210ef01554fd05d",
+      "bytes": 8166,
+      "sha256": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_benchmark_admission.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "8db7690d473fb3c2483ad007954a7dcae5593289",
+      "bytes": 6889,
+      "sha256": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_encoder.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "4be2ed5d3cb29dcb9895abe30186106fc2e3febd",
+      "bytes": 4515,
+      "sha256": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_finite_renewal.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "51755b97a55a0775640132fe85b45f366ec0f04a",
+      "bytes": 8131,
+      "sha256": "394014c3c8b569af4436619e3c2a846970c282d5a3ff6d7248c1b091e89038aa",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_network.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "a41d64930f407e06228e85de2f8736f53d13be50",
+      "bytes": 24930,
+      "sha256": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_operator.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "760071bdf44c48fe21ead6fe7165dcb5f75f709a",
+      "bytes": 28682,
+      "sha256": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779",
+      "imported_missing_baseline": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_probability_intervals.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "223b43f477713bd9aa53ba62ed4c7fa8c3acd454",
+      "bytes": 4928,
+      "sha256": "14aba48940fbc279532a6a081d708f3a42fc3c94bcfeefad2aaaee09ff945ba9",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_regenerative.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "084a445f325e542357229a34f911634abb04aa8b",
+      "bytes": 8948,
+      "sha256": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_value.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "748f4ff3962ae3bd960af0fb5d9e4df6748ac209",
+      "bytes": 5704,
+      "sha256": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9",
+      "imported_missing_baseline": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/value.py",
+      "source_head": "60af6862c23d94a45e30c39e3de91ade8b058ae6",
+      "source_blob": "252f48cf172596a8524f09a9bc621eeb689f0adb",
+      "bytes": 3174,
+      "sha256": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101",
+      "imported_missing_baseline": false
+    }
+  ],
+  "local_import_resolution": {
+    "python_source_files": 21,
+    "unresolved": []
+  },
+  "excluded_history": "qualification/hcsn_differentiable/evidence/20261108 was not imported; current mathematical closure evidence already staged by the parent remains intact.",
+  "rust_or_finaluse_imports": [],
+  "scientific_admission": "HOLD",
+  "new_training_runs": 0,
+  "optimizer_steps": 0,
+  "tests_executed": 0,
+  "original_composition_sha256": "45f2af299c5fae0892fbf585e0c5005959fc852f2f2e7040ac58a5743fcfc11a",
+  "recorded_utc": "2026-11-08T18:39:12.091793+00:00"
+}

@@ -1,0 +1,65 @@
+{
+  "after": {
+    "commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "dirty": false,
+    "parents": [
+      "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+    ],
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+    "dirty": false,
+    "parents": [
+      "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "5066cb8bdd3e4f598d747d48aae0a64a21e8cbfc"
+    ],
+    "tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--run-ignored",
+    "only",
+    "-E",
+    "test(=authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history) | test(=authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint) | test(=authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client) | test(=authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen) | test(=root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin) | test(=authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history) | test(=learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd)",
+    "--test-threads",
+    "1",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 1.3044038369999953,
+  "exit_code": 0,
+  "finished_at": "2026-11-11T03:25:28.889526+00:00",
+  "job": "native",
+  "lane": "source-head",
+  "log_bytes": 36355,
+  "log_file": "root.json.7b0e6e1a25bf4abc8e725ca2cbfedfd3.log",
+  "log_sha256": "97fa4622c80fc447a997c09600b54b59962e8f7f6de310cb0e650d8f2a312828",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 7,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "42946454461",
+  "schema_version": 1,
+  "source_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "started_at": "2026-11-11T03:25:27.584615+00:00",
+  "status": "passed",
+  "tested_sha": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

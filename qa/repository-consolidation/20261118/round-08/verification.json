@@ -1,0 +1,276 @@
+{
+  "publication_parent": "7f66ba922ad96d3b2153c2b12f5e28bc56ce3e1a",
+  "native_scope": {
+    "base_commit": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+    "tested_patch_sha256": "89a4464fb1156e48de1badec331c3021c889781427f4635cb6314e67cc3f8958",
+    "tested_files": {
+      "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d"
+    },
+    "test_evidence": [
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--test-threads",
+          "4"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 12.452615171991056,
+        "log_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-native-tests/test-0.log",
+        "log_sha256": "12e3d884452dd06c063fe783258de5502e02f599e2ef75f23dc0ba79366f9c4f",
+        "log_bytes": 36188,
+        "summary": [
+          "     Summary [   0.330s] 226 tests run: 226 passed, 0 skipped"
+        ],
+        "timings": [],
+        "source_unchanged": true
+      },
+      {
+        "parent_job_id": "1a1edf7e352-392-4a1f",
+        "parent_report_sha256": "144fd2aa29dcbc0416988d20b8919dd23cef479af505d5a6b9c1fe5dbd19e70d",
+        "base_commit": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+        "patch_sha256": "89a4464fb1156e48de1badec331c3021c889781427f4635cb6314e67cc3f8958",
+        "source_files": {
+          "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+          "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+          "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+          "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+          "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d"
+        },
+        "workspace_projection_repaired": [
+          "docs/modules",
+          "qualification/neuron-v13-generation"
+        ],
+        "diagnostic_command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "test",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "-E",
+          "test(original_next_use_evidence_timing_diagnostic)",
+          "--no-tests",
+          "fail",
+          "--retries",
+          "0",
+          "--no-capture"
+        ],
+        "deadline_ms_unchanged": 500,
+        "exit_code": 0,
+        "elapsed_seconds": 186.85617236200778,
+        "log_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-native-projection-repair-v1/test.log",
+        "log_sha256": "9857139ed92c111b617249d36c533c3eca4646e7d5bcdb2c6a881d97d66b021a",
+        "log_bytes": 76379,
+        "summary": [
+          "     Summary [   1.706s] 1 test run: 1 passed, 1699 skipped"
+        ],
+        "timings": [
+          "LEARN_FDE_C_TIMING command_readback_elapsed_us=248483 result=Ok(())",
+          "LEARN_FDE_C_TIMING evidence_readback_elapsed_us=245866 result=Ok(())",
+          "LEARN_FDE_C_TIMING evidence_peer_terminal=Ok(1)",
+          "LEARN_FDE_C_TIMING command_peer_terminal=Ok(2)",
+          "LEARN_FDE_C_TIMING underlying_peer_terminal=Ok(6)"
+        ],
+        "source_unchanged": true
+      }
+    ],
+    "initial_projection_failure_retained": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "-E",
+        "test(original_next_use_evidence_timing_diagnostic)",
+        "--no-tests",
+        "fail",
+        "--retries",
+        "0",
+        "--no-capture"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 159.1158357499953,
+      "log_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-native-tests/test-1.log",
+      "log_sha256": "226d949902a4d3cb1a360199fe0fd30acbfb5bcd96c0ba7b2e6b85ae24aa1636",
+      "log_bytes": 47208,
+      "summary": [],
+      "timings": [],
+      "source_unchanged": true
+    },
+    "no_tests_after_fix_fmt": true,
+    "rows": [
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fix",
+          "--offline",
+          "--locked",
+          "-p",
+          "codex-hepta-intelligence-eval"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 6.980603361997055,
+        "log_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-native-finalize/command-0.log",
+        "log_bytes": 2428,
+        "log_sha256": "ac7ea7518bc03c0f16f05ab145a9f2d2e038a5ec4719f35f2816596f027e490d"
+      },
+      {
+        "command": [
+          "/home/qian-qi/.cargo/bin/just",
+          "fmt"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.21400762499251869,
+        "log_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-native-finalize/command-1.log",
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "post_files": {
+      "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+      "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d"
+    },
+    "changed_after_tests": [],
+    "final_patch_sha256": "01f5ce00c4953acbfa7adf3d891fa39e3e5d04ec17316cc406fc40e4ce3f67c0",
+    "post_test_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff_check_exit": 0,
+    "diff_check_output": ""
+  },
+  "caller_proof": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "authorityGranted": false,
+    "boundary_count": 1645,
+    "protected_count": 820,
+    "rustFilesScanned": 7873,
+    "raw_sha256": "298f9b7affc74d9df1cec362725a8ae1ce3167a9d63dd267ea3264336a1d8d7d",
+    "gzip_sha256": "4a15f47bae4ff0a3bd83a1f24b5353c3350cda0fa9c8e02c6399b569c849b083"
+  },
+  "caller_manifest": {
+    "source_base": "7f66ba922ad96d3b2153c2b12f5e28bc56ce3e1a",
+    "boundary_count": 1645,
+    "protected_before": 819,
+    "protected_after": 820,
+    "unrelated_817_protected_records_unchanged": true,
+    "manifest_sha256": "cfaf6065969993d8ec70a5442ae9496f477731583675ee4c8e8a8a8b6250ad7f",
+    "files": [
+      {
+        "path": "scripts/hepta_callers_manifest_parts/part-0000.toml.gz",
+        "sha256": "16b249e92c24695ad70b8b4507106c7c384e953ad03f076fc4065964f6d2340c",
+        "bytes": 457780
+      },
+      {
+        "path": "CALLERS.toml",
+        "sha256": "e505b3bc0bc85c7156f9de63561aceb365394dcb50541157d418f772029824ed",
+        "bytes": 571
+      }
+    ],
+    "authority_and_all_caller_allowlists_unchanged": true,
+    "definition_marker_updates": [
+      {
+        "id": "learning_original_owner_physical_current",
+        "old": [
+          "pub fn read_current_anchor(",
+          "replay(&mut records, payload)?",
+          "current != self.anchor || records != self.records"
+        ],
+        "new": [
+          "pub fn read_current_anchor(",
+          "if self.poisoned {",
+          "physical::read_stable_image(&mut self.file)?",
+          "let replayed = self.replay_current_image(&bytes)?;",
+          "bytes.len() as u64 != self.length",
+          "replayed.anchor != self.anchor",
+          "replayed.records != self.records",
+          "Digest32::of_bytes(&bytes) != self.image_digest",
+          "let stable = physical::read_stable_image(&mut self.file)?;",
+          "if stable != bytes || Digest32::of_bytes(&stable) != self.image_digest",
+          "let restored = self.file.seek(SeekFrom::Start(cursor)).map_err(io_error);",
+          "if position == cursor",
+          "self.remember_verified_replay(&bytes, replayed);",
+          "if result.is_err() {\n            self.poisoned = true;"
+        ],
+        "reason": "Replay moved into the shared physical parser through a bounded exact-image memo; retain physical reads, all image/state checks, exact cursor restoration and sticky poison markers at the real definition."
+      }
+    ]
+  },
+  "codespell_regression": {
+    "source": "scripts/test_ndu_bimodal_semantic_eval.py",
+    "payload_bytes_preserved": true,
+    "new_expression": "\"u\" + \"e\" * 127",
+    "existing_tests_passed": 3,
+    "ci_job": 134704956166,
+    "before_source_blob": "b77c1806d7a2d457740c320a8012a699e548acf2",
+    "after_source_sha256": "04f8fb3559012a78ce6308b00f317a0de752ae93a91eeac72b8e2440b6d20522",
+    "payload_bytes": 128,
+    "payload_sha256": "662f6dbfdd11be4b3fb852784aa905bf801be8c18b5a047eb638744418cbcfae"
+  },
+  "main_updated": false,
+  "branches_deleted": 0,
+  "hia_refs_modified": false,
+  "qualification_scope": "Exact five-file parser memo, its caller proof, and three existing Python semantic tests; whole-repository CI remains required.",
+  "round08_final_format": {
+    "report_sha256": "2a3d3a62930a69153c714262dd7ff6171ea3ca50c2f6e19a523684de23367c09",
+    "report": {
+      "base_commit": "6c6cf2f0aa296fb27d2e120a648dd961b79f9d9b",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-fd5fe50decf2-20261118/nextuse-memo-repo",
+      "rust_files_pre_fmt": {
+        "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d"
+      },
+      "fixture_pre_fmt_sha256": "04f8fb3559012a78ce6308b00f317a0de752ae93a91eeac72b8e2440b6d20522",
+      "fixture_previous_sha256": "04f8fb3559012a78ce6308b00f317a0de752ae93a91eeac72b8e2440b6d20522",
+      "formatter_inputs_hydrated": [],
+      "uv_path": "/home/qian-qi/work/hepta-consolidate-4be89e6b/dependency-evidence/tools/uv",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "no_test_rerun": true,
+      "exit_code": 0,
+      "elapsed_seconds": 8.578788415994495,
+      "files_post_fmt": {
+        "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs": "9371c924c603e0cc239c53cf50cd8ede3f2a79174334d54469e903f7de7ea0f8",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs": "b7b4d5cd93adbc09bd137c0798f764134380b708bee3a26feae45f782b98d4cc",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs": "f8e9d0de8327350f2c61168ee14119bceeb8c522d8d61470c508952aacacbd4d",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs": "478ae6828753c1766cc161c8293f09789c5c23630013b35bbbc0fb6cc2e3570d",
+        "scripts/test_ndu_bimodal_semantic_eval.py": "04f8fb3559012a78ce6308b00f317a0de752ae93a91eeac72b8e2440b6d20522"
+      },
+      "rust_unchanged": true,
+      "all_six_unchanged": true,
+      "changed_paths_after": [
+        "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_file_tests.rs",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache.rs",
+        "codex-rs/hepta-intelligence-eval/src/product_execution_replay_cache_tests.rs",
+        "scripts/test_ndu_bimodal_semantic_eval.py"
+      ],
+      "changed_paths_same": true,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "format_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

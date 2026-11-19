@@ -45,26 +45,33 @@ struct Fixture {
 }
 
 async fn fixture() -> Fixture {
-    let temp = tempfile::tempdir().expect("temporary root");
-    let root = temp.path().canonicalize().expect("canonical root");
-    let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("registry");
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temporary root: {error:?}"));
+    let root = temp
+        .path()
+        .canonicalize()
+        .unwrap_or_else(|error| panic!("canonical root: {error:?}"));
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))
+        .unwrap_or_else(|error| panic!("fleet root: {error:?}"));
+    let registry = FleetRegistry::initialize(fleet_root.clone())
+        .unwrap_or_else(|error| panic!("registry: {error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).expect("workspace");
-    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("workspace: {error:?}"));
+    let agent_id = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")
+        .unwrap_or_else(|error| panic!("agent: {error:?}"));
     let record = registry
         .register(
             AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(&workspace, &fleet_root)
+                    .unwrap_or_else(|error| panic!("workspace binding: {error:?}")),
                 ResourceBudget::local_default(),
             )
-            .expect("manifest"),
+            .unwrap_or_else(|error| panic!("manifest: {error:?}")),
         )
-        .expect("register");
+        .unwrap_or_else(|error| panic!("register: {error:?}"));
     registry
         .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
-        .expect("starting");
+        .unwrap_or_else(|error| panic!("starting: {error:?}"));
     let identity = AgentdIdentity {
         agent_id,
         layout: record.layout.clone(),
@@ -77,12 +84,16 @@ async fn fixture() -> Fixture {
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
-    let state =
-        Arc::new(AgentdState::new(identity.clone(), registry.clone(), 128).expect("Agentd state"));
-    let store = AutomationStore::open(&record.layout).await.expect("owner");
+    let state = Arc::new(
+        AgentdState::new(identity.clone(), registry.clone(), 128)
+            .unwrap_or_else(|error| panic!("Agentd state: {error:?}")),
+    );
+    let store = AutomationStore::open(&record.layout)
+        .await
+        .unwrap_or_else(|error| panic!("owner: {error:?}"));
     state
         .attach_automation_store(store.clone())
-        .expect("real attachment");
+        .unwrap_or_else(|error| panic!("real attachment: {error:?}"));
     Fixture {
         _temp: temp,
         registry,
@@ -94,7 +105,8 @@ async fn fixture() -> Fixture {
 
 fn host() -> (RuntimeTasks, CancellationToken) {
     let stop = CancellationToken::new();
-    let tasks = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).expect("host");
+    let tasks = RuntimeTasks::new(stop.clone(), Duration::from_secs(2))
+        .unwrap_or_else(|error| panic!("host: {error:?}"));
     (tasks, stop)
 }
 
@@ -107,7 +119,7 @@ async fn install(fixture: &Fixture, tasks: &mut RuntimeTasks, stop: &Cancellatio
         stop.clone(),
     )
     .await
-    .expect("production constructor");
+    .unwrap_or_else(|error| panic!("production constructor: {error:?}"));
 }
 
 fn draft() -> AutomationTaskDraft {

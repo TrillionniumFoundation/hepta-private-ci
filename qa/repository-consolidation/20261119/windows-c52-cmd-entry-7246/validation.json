@@ -1,0 +1,26 @@
+{
+  "status": "PASS_LOCAL_STATIC_REVIEW_CHECKS_ONLY",
+  "checked_at": "2026-11-19T22:25:59.631498+00:00",
+  "baseline_commit": "73e307cae6537bff831ae6abcc7e8ababedfa8c6",
+  "manifest_sha256": "a57eae1edd124888d0d91f70dbd0c1bcfbf7682b33bdb37844ac369f031e1aa0",
+  "execution_request_sha256": "65aed9e6b9f2053da5e5387cd6909c4493950cd627c362b696ba6d99114a0d91",
+  "checks": {
+    "before_bytes_match_fixed_git_commit": true,
+    "python_compile_only_no_import_or_execution": true,
+    "whole_win32_api_ast_equal_except_fixed_selector": true,
+    "original_workflow_steps_equal_except_two_updated_api_pins": true,
+    "workflow_event_kind_permissions_jobs_timeout_and_checkout_unchanged": true,
+    "original_probe_bytes_and_direct_original_batch_call_preserved": true,
+    "diagnostic_still_requires_original_batch_pass": true,
+    "all_source_pins_match": true,
+    "git_apply_check_with_whitespace_error_all": 0
+  },
+  "not_run": [
+    "Windows",
+    "PowerShell parser/runtime",
+    "remote jobs",
+    "Rust/Bazel",
+    "publication"
+  ],
+  "scope": "Static staging only, not native qualification or an ACL change."
+}

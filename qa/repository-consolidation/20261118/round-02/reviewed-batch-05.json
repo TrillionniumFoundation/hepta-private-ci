@@ -1,0 +1,152 @@
+{
+  "candidate": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "heads": [
+    {
+      "sha": "1d8eb33c2a12bac17b686af27b5162b69733547f",
+      "parents": [
+        "a062749d768ea09838921c7f3bfd8b644541b873"
+      ],
+      "names": [
+        "research/cell-field-v3-cost-mechanism-20261025-1d8eb33"
+      ],
+      "complete_changed_path_count": 10,
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "preserve_complete_read_only_frozen_research_evidence_with_reproduced_arithmetic",
+      "patch": "1d8eb33c.patch",
+      "decisions": [
+        "All ten paths are absent in 6ffe and belong to one dated research evidence directory. Add their complete original bytes; no active Rust, workflow, authority, dependency, blob allowlist or gate changes. Every file is below the unchanged 512,000-byte blob limit.",
+        "Both Python readers only parse fixed recorded scores and write explicitly supplied output paths. The main reader verifies the exact 20-file Git-blob manifest, 18 anchor identities, 342 completed conditions, common initial and H1 final states, cost decompositions, and frozen protocol constants. The independent reader imports neither the main reader nor a training/evaluator implementation and independently validates arithmetic and source bindings.",
+        "The current tree retains 19 exact frozen inputs; external-analysis.json is intentionally retained in original history via the existing Cell history custody manifest. Restore only this exact 573,657-byte historical blob into an isolated 20-input data directory, verify its Git and SHA-256 identities, and do not reintroduce the oversized input into the maintained tree. Current consumers can use the documented cell-history-custody --current-inputs restoration before passing an explicit input directory.",
+        "Both entrypoints were executed after source review against the verified 20 inputs. All three resulting artifacts are byte-identical to the original historical report, Markdown summary and independent audit. This validates recorded arithmetic only, with no new training, labels, actions, policy selection, confidence interval, platform result or production qualification.",
+        "The proposed retention-pressure design remains explicitly proposed_not_executed and DENY_ALL. The report retains distinctions between dependent anchors and independent tasks, action penalty and measured compute, and point estimates versus statistically supported outcomes."
+      ],
+      "validation": [
+        "all 10 original Git blob identities verified",
+        "8 supporting/reproduction SHA-256 identities verified",
+        "20 frozen input Git-blob identities verified, including 19 current-tree files and one retained-history asset",
+        "objective_decomposition.py exit 0 and independent_cost_audit.py exit 0",
+        "3/3 reproduced artifacts byte-identical; 342 actual score sets, 684 predicted score sets, 1,926 independent scalar equalities",
+        "just fmt pass; new-file diff whitespace checks pass; uvx codespell selected new evidence paths exit 0",
+        "see 1d8-reproduction-check.json and v3-reproduction/command-*.log"
+      ],
+      "native_rust_or_scientific_qualification_claimed": false,
+      "files": [
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/README.md",
+          "historical_final_blob": "1bda7add7d54eb89aa2ab1014933b8e20d54d7ef",
+          "candidate_blob": null,
+          "resolved_blob": "1bda7add7d54eb89aa2ab1014933b8e20d54d7ef",
+          "changed_from_candidate": true,
+          "resolved_bytes": 10836,
+          "resolved_sha256": "c069b39b348d0bcf5c12659e5ddd29d4e58edbe187c638ab9096ae5bdc408d0b",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/README.md"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent-cost-audit.json",
+          "historical_final_blob": "81c324bf82394ed77f72be64d316da63091e493f",
+          "candidate_blob": null,
+          "resolved_blob": "81c324bf82394ed77f72be64d316da63091e493f",
+          "changed_from_candidate": true,
+          "resolved_bytes": 52552,
+          "resolved_sha256": "c5e2f0376f286c066601f4da49a47770f2c10b21e92b8427ad71f37e804c58b6",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent-cost-audit.json"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent-source-binding.json",
+          "historical_final_blob": "3538cc4c678ba2ddcae4e95e465289d5bd8c3e09",
+          "candidate_blob": null,
+          "resolved_blob": "3538cc4c678ba2ddcae4e95e465289d5bd8c3e09",
+          "changed_from_candidate": true,
+          "resolved_bytes": 3707,
+          "resolved_sha256": "bcd15e4bcc028a84886d34f7246593efae89ef5fc1397f1e3f128772e37af251",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent-source-binding.json"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent_cost_audit.py",
+          "historical_final_blob": "5758cebbeed9286e83f3e8a2411eac384ee000c0",
+          "candidate_blob": null,
+          "resolved_blob": "5758cebbeed9286e83f3e8a2411eac384ee000c0",
+          "changed_from_candidate": true,
+          "resolved_bytes": 10570,
+          "resolved_sha256": "dfc7dadb277098bfe6f92a641de5a7dca2c0fb10857ec093bc90bd76b31abae4",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/independent_cost_audit.py"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective-decomposition.json",
+          "historical_final_blob": "d3e18dd635d7ac93a9277d38bc0869903790ac02",
+          "candidate_blob": null,
+          "resolved_blob": "d3e18dd635d7ac93a9277d38bc0869903790ac02",
+          "changed_from_candidate": true,
+          "resolved_bytes": 144457,
+          "resolved_sha256": "cc1d2365a3ae627620cacbbd93c46afe9580ea42ca8f5d72ee73e0214d55b5b6",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective-decomposition.json"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective-decomposition.md",
+          "historical_final_blob": "4d58ca761a5250b7fd8969b113009fefa2440eb1",
+          "candidate_blob": null,
+          "resolved_blob": "4d58ca761a5250b7fd8969b113009fefa2440eb1",
+          "changed_from_candidate": true,
+          "resolved_bytes": 2473,
+          "resolved_sha256": "9dba31914151735bde6e3555b0ebfdcac415e2e25aef6ca72c6ab19a3c4e2118",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective-decomposition.md"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective_decomposition.py",
+          "historical_final_blob": "10f14cd6226c0deb3d673b3dfa11882d6384c053",
+          "candidate_blob": null,
+          "resolved_blob": "10f14cd6226c0deb3d673b3dfa11882d6384c053",
+          "changed_from_candidate": true,
+          "resolved_bytes": 15072,
+          "resolved_sha256": "aeaf081993358ad5fcae8abf5197962b8cd2e89cb4d4c145aa78b4f17e5dde12",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/objective_decomposition.py"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/retention-pressure-design.json",
+          "historical_final_blob": "3d50102272f9cb384df8e35feed5c34218a03202",
+          "candidate_blob": null,
+          "resolved_blob": "3d50102272f9cb384df8e35feed5c34218a03202",
+          "changed_from_candidate": true,
+          "resolved_bytes": 6386,
+          "resolved_sha256": "dd66e03e0cc788d3206e275dc60d6a406bb84c4b23e1dd5233d9862e7eddd8de",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/retention-pressure-design.json"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/source_manifest.json",
+          "historical_final_blob": "e26f8ae901b0995fc5a4f53a6c42cfb5c828723a",
+          "candidate_blob": null,
+          "resolved_blob": "e26f8ae901b0995fc5a4f53a6c42cfb5c828723a",
+          "changed_from_candidate": true,
+          "resolved_bytes": 2583,
+          "resolved_sha256": "d3280bc76ccdaffe2199d7265052ec6085279bd218063c4cfc539d530a6e25f8",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/source_manifest.json"
+        },
+        {
+          "path": "qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/verification.json",
+          "historical_final_blob": "d83097b5f583f4a9fee4983cacd0936415daf26d",
+          "candidate_blob": null,
+          "resolved_blob": "d83097b5f583f4a9fee4983cacd0936415daf26d",
+          "changed_from_candidate": true,
+          "resolved_bytes": 3479,
+          "resolved_sha256": "a8b5ce58156b43459cf78196f9682966d2b0ac6f0858c149cafa426647a8fca6",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/1d8eb33c2a12bac17b686af27b5162b69733547f/qa/stem-bakeoff/evidence/20261025-cell-action-cost-mechanism/verification.json"
+        }
+      ]
+    }
+  ],
+  "remote_writes": false,
+  "shared_checkout_edits": false
+}

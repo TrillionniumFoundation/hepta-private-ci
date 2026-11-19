@@ -1,0 +1,1885 @@
+[
+  {
+    "path": "experiments/multimodal_output_portfolio/analysis/plot_results.py",
+    "lines": 258,
+    "imports": [
+      "argparse",
+      "collections",
+      "hashlib",
+      "json",
+      "matplotlib",
+      "matplotlib.lines",
+      "matplotlib.pyplot",
+      "numpy",
+      "pathlib"
+    ],
+    "tests": [],
+    "functions": [
+      "read_summary",
+      "observed_nondominated",
+      "plot"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/audit.py",
+    "lines": 232,
+    "imports": [
+      "collections",
+      "numpy",
+      "time"
+    ],
+    "tests": [],
+    "functions": [
+      "_forward_preference",
+      "_gamma",
+      "_entropic_utility",
+      "_reachable_states",
+      "bottom_up_reference",
+      "audit_planner"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/control.py",
+    "lines": 207,
+    "imports": [
+      "functools",
+      "itertools",
+      "numpy",
+      "time"
+    ],
+    "tests": [],
+    "functions": [
+      "portfolio_grid",
+      "certainty_equivalent",
+      "next_preference",
+      "fixed_policies",
+      "fixed_portfolio",
+      "__init__",
+      "posterior",
+      "predictive",
+      "__init__",
+      "risk_aversion",
+      "candidates",
+      "stop",
+      "solve",
+      "compile",
+      "visit"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/controlled_model.py",
+    "lines": 309,
+    "imports": [
+      "collections.abc",
+      "copy",
+      "dataclasses",
+      "metrics",
+      "model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "_depth",
+      "_portfolios",
+      "_canonical",
+      "loss_table",
+      "_distances",
+      "external_loss_tensor",
+      "evaluation_loss_table",
+      "train_controlled",
+      "latent",
+      "sealed",
+      "__init__",
+      "initialize",
+      "_check",
+      "refine_step",
+      "decode_state",
+      "emit",
+      "outputs_by_depth",
+      "losses"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/evaluate.py",
+    "lines": 182,
+    "imports": [
+      "control",
+      "metrics",
+      "model",
+      "numpy",
+      "time"
+    ],
+    "tests": [],
+    "functions": [
+      "predict_all",
+      "symbol_rollout",
+      "select_policies",
+      "rollout",
+      "evaluate_rollout",
+      "acquire"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/generation_control.py",
+    "lines": 361,
+    "imports": [
+      "collections",
+      "control",
+      "copy",
+      "dataclasses",
+      "functools",
+      "math",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "_state_cache",
+      "generation_cost",
+      "certainty_equivalent",
+      "bottom_up_reference",
+      "evaluate",
+      "__init__",
+      "state_count",
+      "compile",
+      "risk_aversion",
+      "_validate_state",
+      "candidates",
+      "generate",
+      "solve",
+      "evaluate_policy_torch",
+      "aggregate",
+      "ce",
+      "visit"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/metrics.py",
+    "lines": 250,
+    "imports": [
+      "collections.abc",
+      "numpy"
+    ],
+    "tests": [],
+    "functions": [
+      "_finite_array",
+      "_check_modalities",
+      "_squared_distances",
+      "score_outputs",
+      "_cvar_rows",
+      "cvar",
+      "summarize",
+      "paired_bootstrap",
+      "row_statistic"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/model.py",
+    "lines": 284,
+    "imports": [
+      "hashlib",
+      "json",
+      "numpy",
+      "pathlib",
+      "time",
+      "torch",
+      "torch.nn"
+    ],
+    "tests": [],
+    "functions": [
+      "_matrix",
+      "_weight_hashes",
+      "mac_counts",
+      "_mixtures",
+      "_diagnostics",
+      "train_model",
+      "encode",
+      "generate",
+      "save_model",
+      "load_model",
+      "__init__",
+      "forward"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/audio_codec_smoke.py",
+    "lines": 323,
+    "imports": [
+      "argparse",
+      "dac",
+      "datetime",
+      "hashlib",
+      "importlib.metadata",
+      "json",
+      "math",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "resource",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "torchaudio",
+      "traceback",
+      "warnings",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "memory_snapshot",
+      "write_pcm",
+      "load_pinned_codec",
+      "execute",
+      "main",
+      "timed"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/codec_smoke.py",
+    "lines": 255,
+    "imports": [
+      "PIL",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib.util",
+      "json",
+      "math",
+      "numpy",
+      "pathlib",
+      "platform",
+      "resource",
+      "subprocess",
+      "time",
+      "torch",
+      "urllib.request"
+    ],
+    "tests": [],
+    "functions": [
+      "sha256",
+      "prepare_assets",
+      "tensor_stats",
+      "errors",
+      "rgb_image",
+      "measured_forward",
+      "main",
+      "__init__",
+      "hook",
+      "since"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-001-source.py",
+    "lines": 279,
+    "imports": [
+      "argparse",
+      "dac",
+      "datetime",
+      "hashlib",
+      "importlib.metadata",
+      "json",
+      "math",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "resource",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "torchaudio",
+      "traceback",
+      "warnings",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "memory_snapshot",
+      "write_pcm",
+      "execute",
+      "main",
+      "timed"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002-source.py",
+    "lines": 285,
+    "imports": [
+      "argparse",
+      "dac",
+      "datetime",
+      "hashlib",
+      "importlib.metadata",
+      "json",
+      "math",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "resource",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "torchaudio",
+      "traceback",
+      "warnings",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "memory_snapshot",
+      "write_pcm",
+      "execute",
+      "main",
+      "timed"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-003-source.py",
+    "lines": 323,
+    "imports": [
+      "argparse",
+      "dac",
+      "datetime",
+      "hashlib",
+      "importlib.metadata",
+      "json",
+      "math",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "resource",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "torchaudio",
+      "traceback",
+      "warnings",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "memory_snapshot",
+      "write_pcm",
+      "load_pinned_codec",
+      "execute",
+      "main",
+      "timed"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/evidence/verify_audio_codec.py",
+    "lines": 138,
+    "imports": [
+      "argparse",
+      "dac",
+      "datetime",
+      "hashlib",
+      "importlib.util",
+      "json",
+      "math",
+      "numpy",
+      "pathlib",
+      "time",
+      "torch",
+      "warnings",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "main"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/ingest.py",
+    "lines": 194,
+    "imports": [
+      "PIL",
+      "argparse",
+      "datetime",
+      "hashlib",
+      "json",
+      "numpy",
+      "pathlib",
+      "subprocess",
+      "time",
+      "urllib.request",
+      "wave"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "download",
+      "run",
+      "probe",
+      "stats",
+      "ingest"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/natural_io/text_model_smoke.py",
+    "lines": 193,
+    "imports": [
+      "argparse",
+      "datetime",
+      "hashlib",
+      "importlib.metadata",
+      "json",
+      "numpy",
+      "pathlib",
+      "platform",
+      "resource",
+      "sys",
+      "time",
+      "torch",
+      "transformers",
+      "urllib.request"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "prepare_assets",
+      "execute",
+      "count_linear"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/run_experiment.py",
+    "lines": 304,
+    "imports": [
+      "argparse",
+      "audit",
+      "control",
+      "csv",
+      "evaluate",
+      "gzip",
+      "hashlib",
+      "json",
+      "metrics",
+      "model",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "write_json",
+      "source_manifest",
+      "runtime_receipt",
+      "clear_controller_caches",
+      "execute",
+      "main",
+      "progress"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/test_controlled_model.py",
+    "lines": 170,
+    "imports": [
+      "controlled_model",
+      "dataclasses",
+      "model",
+      "numpy",
+      "torch",
+      "unittest"
+    ],
+    "tests": [
+      "test_original_depth_three_and_actual_intermediate_outputs",
+      "test_stream_is_immutable_and_emission_cannot_be_rewound",
+      "test_invalid_portfolios_depth_and_cross_generator_states",
+      "test_smooth_loss_reaches_shared_field_and_all_decoders",
+      "test_finite_difference_of_exact_external_loss_away_from_boundaries",
+      "test_external_loss_parity_including_clips_and_contradictions",
+      "test_warmup_updates_copy_and_counts_executed_linear_work"
+    ],
+    "functions": [
+      "setUp",
+      "test_original_depth_three_and_actual_intermediate_outputs",
+      "test_stream_is_immutable_and_emission_cannot_be_rewound",
+      "test_invalid_portfolios_depth_and_cross_generator_states",
+      "test_smooth_loss_reaches_shared_field_and_all_decoders",
+      "test_finite_difference_of_exact_external_loss_away_from_boundaries",
+      "test_external_loss_parity_including_clips_and_contradictions",
+      "test_warmup_updates_copy_and_counts_executed_linear_work",
+      "record"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/test_generation_control.py",
+    "lines": 168,
+    "imports": [
+      "control",
+      "dataclasses",
+      "gc",
+      "generation_control",
+      "itertools",
+      "math",
+      "numpy",
+      "torch",
+      "unittest",
+      "weakref"
+    ],
+    "tests": [
+      "test_ce_support_neutral_limit_and_validation",
+      "test_cost_depth_and_no_false_fallback",
+      "test_supported_outputs_and_explicit_uniform_fallback",
+      "test_independent_bottom_up_all_modes_and_preference_order",
+      "test_independent_near_tie_portfolio_parity",
+      "test_complete_contingent_policy_enumeration",
+      "test_torch_value_and_envelope_finite_difference",
+      "test_caches_and_loss_snapshots_are_instance_local",
+      "test_torch_extreme_finite_risk_uses_stable_anchor"
+    ],
+    "functions": [
+      "sparse_model",
+      "setUp",
+      "test_ce_support_neutral_limit_and_validation",
+      "test_cost_depth_and_no_false_fallback",
+      "test_supported_outputs_and_explicit_uniform_fallback",
+      "test_independent_bottom_up_all_modes_and_preference_order",
+      "test_independent_near_tie_portfolio_parity",
+      "test_complete_contingent_policy_enumeration",
+      "test_torch_value_and_envelope_finite_difference",
+      "test_caches_and_loss_snapshots_are_instance_local",
+      "test_torch_extreme_finite_risk_uses_stable_anchor"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/evaluation.py",
+    "lines": 161,
+    "imports": [
+      "control",
+      "controlled_model",
+      "generation_control",
+      "hashlib",
+      "metrics",
+      "model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "select_static",
+      "rollout",
+      "acquire"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/evidence/audit_confirmation.py",
+    "lines": 442,
+    "imports": [
+      "argparse",
+      "collections",
+      "csv",
+      "datetime",
+      "gzip",
+      "hashlib",
+      "itertools",
+      "json",
+      "math",
+      "numpy",
+      "pathlib",
+      "subprocess",
+      "time",
+      "torch",
+      "torch.nn.functional"
+    ],
+    "tests": [],
+    "functions": [
+      "read",
+      "sha",
+      "commit_bytes",
+      "cv90",
+      "paired_interval",
+      "checkpoint_hashes",
+      "prototypes",
+      "replay",
+      "independent_scores",
+      "main",
+      "linear",
+      "arrays"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/reporting.py",
+    "lines": 173,
+    "imports": [
+      "generation_control",
+      "hashlib",
+      "json",
+      "metrics",
+      "numpy",
+      "os",
+      "pathlib",
+      "platform",
+      "socket",
+      "subprocess",
+      "sys",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "write_json",
+      "digest",
+      "source_manifest",
+      "runtime_receipt",
+      "audit",
+      "contrasts",
+      "report_text"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/run.py",
+    "lines": 285,
+    "imports": [
+      "argparse",
+      "control",
+      "controlled_model",
+      "csv",
+      "evaluate",
+      "evaluation",
+      "generation_control",
+      "gzip",
+      "hashlib",
+      "json",
+      "model",
+      "numpy",
+      "pathlib",
+      "reporting",
+      "sys",
+      "time",
+      "torch",
+      "traceback",
+      "training",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "paid_predictions",
+      "world_receipt",
+      "candidate_table",
+      "execute",
+      "main",
+      "progress"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/test_evaluation.py",
+    "lines": 101,
+    "imports": [
+      "control",
+      "evaluation",
+      "model",
+      "numpy",
+      "pathlib",
+      "sys",
+      "torch",
+      "unittest",
+      "world"
+    ],
+    "tests": [
+      "test_actual_linear_work_lazy_inputs_and_complete_emission",
+      "test_truth_and_hidden_metadata_cannot_change_generation",
+      "test_infeasible_generation_cannot_claim_complete_output"
+    ],
+    "functions": [
+      "__getitem__",
+      "__array__",
+      "setUp",
+      "test_actual_linear_work_lazy_inputs_and_complete_emission",
+      "test_truth_and_hidden_metadata_cannot_change_generation",
+      "test_infeasible_generation_cannot_claim_complete_output",
+      "count_linear"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/test_training.py",
+    "lines": 166,
+    "imports": [
+      "control",
+      "controlled_model",
+      "generation_control",
+      "model",
+      "numpy",
+      "torch",
+      "unittest",
+      "unittest.mock",
+      "v2.training"
+    ],
+    "tests": [
+      "test_actual_forward_and_optimizer_work_match_with_frozen_parent",
+      "test_zero_utility_refinement_credit_is_not_conflated_with_anchor",
+      "test_supervised_objective_has_convex_target_gradient",
+      "test_policy_distribution_records_reached_acquisition_branches"
+    ],
+    "functions": [
+      "fixture",
+      "test_actual_forward_and_optimizer_work_match_with_frozen_parent",
+      "test_zero_utility_refinement_credit_is_not_conflated_with_anchor",
+      "test_supervised_objective_has_convex_target_gradient",
+      "test_policy_distribution_records_reached_acquisition_branches",
+      "record",
+      "record_step"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v2/training.py",
+    "lines": 257,
+    "imports": [
+      "collections",
+      "control",
+      "controlled_model",
+      "copy",
+      "generation_control",
+      "hashlib",
+      "math",
+      "model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "all_depth_macs",
+      "_gradient_norms",
+      "_selected_policy_distribution",
+      "train_ndu",
+      "train_matched_supervised",
+      "_train"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_confirmation.py",
+    "lines": 698,
+    "imports": [
+      "argparse",
+      "collections",
+      "gzip",
+      "hashlib",
+      "itertools",
+      "json",
+      "math",
+      "numpy",
+      "pathlib",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "torch.nn",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "sha",
+      "digest",
+      "read",
+      "require",
+      "close",
+      "ce",
+      "tail_mean",
+      "bootstrap",
+      "banks_for",
+      "oracle",
+      "audit",
+      "source_audit",
+      "finish_audit",
+      "main",
+      "__init__",
+      "linear",
+      "anchor",
+      "refine",
+      "decode",
+      "encode",
+      "scores",
+      "trajectory",
+      "tree",
+      "__init__",
+      "exchange",
+      "world",
+      "finish",
+      "contrast"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_source_control.py",
+    "lines": 227,
+    "imports": [
+      "argparse",
+      "audit_confirmation",
+      "collections",
+      "gzip",
+      "itertools",
+      "json",
+      "model",
+      "numpy",
+      "pathlib",
+      "source_control",
+      "sys",
+      "time",
+      "torch",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "encode_reports",
+      "indices",
+      "audit",
+      "main"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/feedback_control.py",
+    "lines": 213,
+    "imports": [
+      "dataclasses",
+      "feedback_model",
+      "hashlib",
+      "math",
+      "numpy",
+      "risk",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "tensor_digest",
+      "noise_banks",
+      "build_tree",
+      "torch_ce",
+      "selected_utility",
+      "physical_weights",
+      "compile_policy",
+      "choose_static_depth",
+      "audit_policy",
+      "observe",
+      "ce",
+      "solve"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/feedback_evaluation.py",
+    "lines": 117,
+    "imports": [
+      "feedback_control",
+      "feedback_model",
+      "hashlib",
+      "metrics",
+      "model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "rollout_feedback",
+      "score_feedback",
+      "__init__",
+      "draw"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/feedback_model.py",
+    "lines": 375,
+    "imports": [
+      "controlled_model",
+      "copy",
+      "dataclasses",
+      "hashlib",
+      "metrics",
+      "model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "innovation_bank",
+      "external_loss_from_outputs",
+      "weight_hashes",
+      "train_feedback_denoiser",
+      "latent",
+      "sealed",
+      "receipt",
+      "__init__",
+      "cost_profile",
+      "reset_costs",
+      "work_receipt",
+      "_record",
+      "_tensor",
+      "anchor_tensor",
+      "initialize_tensor",
+      "refine_tensor",
+      "decode_tensor",
+      "initialize",
+      "_check",
+      "_charge",
+      "feedback",
+      "refine_step",
+      "preview",
+      "emit",
+      "reconstruction",
+      "diagnostics"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/feedback_training.py",
+    "lines": 65,
+    "imports": [
+      "copy",
+      "feedback_control",
+      "feedback_model",
+      "numpy",
+      "time",
+      "torch"
+    ],
+    "tests": [],
+    "functions": [
+      "train_pair"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/native_bridge.py",
+    "lines": 99,
+    "imports": [
+      "hashlib",
+      "pathlib",
+      "subprocess",
+      "time"
+    ],
+    "tests": [],
+    "functions": [
+      "__init__",
+      "_exchange",
+      "begin",
+      "choose",
+      "refined",
+      "emitted",
+      "close"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/native_parity.py",
+    "lines": 187,
+    "imports": [
+      "argparse",
+      "gzip",
+      "hashlib",
+      "json",
+      "pathlib",
+      "random",
+      "subprocess",
+      "time"
+    ],
+    "tests": [],
+    "functions": [
+      "sha256",
+      "run_audit",
+      "main",
+      "request",
+      "error"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/preference.py",
+    "lines": 185,
+    "imports": [
+      "dataclasses",
+      "math",
+      "numpy"
+    ],
+    "tests": [],
+    "functions": [
+      "_scalar",
+      "_design",
+      "_labels",
+      "_logits",
+      "_sigmoid",
+      "pair_choice_probabilities",
+      "randomized_lottery_pairs",
+      "simulate_choices",
+      "_statistics",
+      "fit_preference",
+      "identifiability_report",
+      "evaluate_preference"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/reporting.py",
+    "lines": 69,
+    "imports": [
+      "metrics",
+      "numpy"
+    ],
+    "tests": [],
+    "functions": [
+      "feedback_report",
+      "contrast"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/risk.py",
+    "lines": 243,
+    "imports": [
+      "dataclasses",
+      "math",
+      "numpy",
+      "types"
+    ],
+    "tests": [],
+    "functions": [
+      "_nonnegative_scalar",
+      "validate_probabilities",
+      "entropic_ce",
+      "robust_ce",
+      "conditional_rows",
+      "rectangular_bellman",
+      "gaussian_entropic_bsde",
+      "binomial_entropic_step",
+      "__post_init__"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/run.py",
+    "lines": 252,
+    "imports": [
+      "argparse",
+      "dataclasses",
+      "feedback_control",
+      "feedback_evaluation",
+      "feedback_model",
+      "feedback_training",
+      "gzip",
+      "hashlib",
+      "json",
+      "model",
+      "native_bridge",
+      "numpy",
+      "pathlib",
+      "platform",
+      "preference",
+      "reporting",
+      "risk",
+      "source_control",
+      "subprocess",
+      "sys",
+      "time",
+      "torch",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "digest",
+      "write",
+      "source_receipt",
+      "preference_study",
+      "execute",
+      "scalar",
+      "progress"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/source_control.py",
+    "lines": 191,
+    "imports": [
+      "control",
+      "controlled_model",
+      "hashlib",
+      "metrics",
+      "model",
+      "numpy",
+      "time",
+      "torch",
+      "world"
+    ],
+    "tests": [],
+    "functions": [
+      "observed_reports",
+      "report_indices",
+      "compile_source_policy",
+      "source_inputs",
+      "source_rollout",
+      "run_sources",
+      "__init__",
+      "query"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/test_feedback_control.py",
+    "lines": 244,
+    "imports": [
+      "feedback_control",
+      "feedback_model",
+      "feedback_training",
+      "itertools",
+      "math",
+      "metrics",
+      "model",
+      "numpy",
+      "torch",
+      "unittest",
+      "unittest.mock"
+    ],
+    "tests": [
+      "test_batched_tree_matches_every_independently_executed_path_and_class",
+      "test_nominal_and_robust_backups_equal_exhaustive_terminal_strategy_game",
+      "test_continuation_option_is_distinct_from_one_step_myopia_and_static_cost",
+      "test_decisions_bind_the_actual_current_latent_without_future_draws",
+      "test_offline_tree_and_compilation_cost_equal_real_linear_hooks",
+      "test_selected_global_utility_gradient_matches_independent_strategy_difference",
+      "test_matched_training_hooks_frozen_parent_and_utility_credit"
+    ],
+    "functions": [
+      "scalar_ce",
+      "strategy_oracle",
+      "plans",
+      "distributions",
+      "setUp",
+      "test_batched_tree_matches_every_independently_executed_path_and_class",
+      "test_nominal_and_robust_backups_equal_exhaustive_terminal_strategy_game",
+      "test_continuation_option_is_distinct_from_one_step_myopia_and_static_cost",
+      "test_decisions_bind_the_actual_current_latent_without_future_draws",
+      "test_offline_tree_and_compilation_cost_equal_real_linear_hooks",
+      "test_selected_global_utility_gradient_matches_independent_strategy_difference",
+      "test_matched_training_hooks_frozen_parent_and_utility_credit",
+      "record",
+      "record"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/test_feedback_model.py",
+    "lines": 193,
+    "imports": [
+      "dataclasses",
+      "metrics",
+      "model",
+      "numpy",
+      "torch",
+      "unittest",
+      "v3.feedback_model"
+    ],
+    "tests": [
+      "test_actual_outputs_causal_noise_and_noiseless_contraction",
+      "test_stream_feedback_budget_previews_and_sealing",
+      "test_depth_zero_is_legal_and_rejected_work_does_not_spend_budget",
+      "test_linear_forward_accounting_matches_actual_executed_layers",
+      "test_exact_external_metric_and_direct_gradient_finite_difference",
+      "test_supervised_training_only_changes_refiner_and_reports_real_work",
+      "test_invalid_inputs_foreign_stream_and_horizon"
+    ],
+    "functions": [
+      "setUp",
+      "test_actual_outputs_causal_noise_and_noiseless_contraction",
+      "test_stream_feedback_budget_previews_and_sealing",
+      "test_depth_zero_is_legal_and_rejected_work_does_not_spend_budget",
+      "test_linear_forward_accounting_matches_actual_executed_layers",
+      "test_exact_external_metric_and_direct_gradient_finite_difference",
+      "test_supervised_training_only_changes_refiner_and_reports_real_work",
+      "test_invalid_inputs_foreign_stream_and_horizon",
+      "count",
+      "loss"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/test_preference.py",
+    "lines": 79,
+    "imports": [
+      "dataclasses",
+      "math",
+      "numpy",
+      "preference",
+      "unittest"
+    ],
+    "tests": [
+      "test_closed_form_log_odds_mle_and_information",
+      "test_equal_variance_is_unidentified_and_scale_is_a_real_assumption",
+      "test_independent_synthetic_train_test_and_frozen_scoring",
+      "test_boundary_and_input_contracts"
+    ],
+    "functions": [
+      "test_closed_form_log_odds_mle_and_information",
+      "test_equal_variance_is_unidentified_and_scale_is_a_real_assumption",
+      "test_independent_synthetic_train_test_and_frozen_scoring",
+      "test_boundary_and_input_contracts"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/test_risk.py",
+    "lines": 152,
+    "imports": [
+      "itertools",
+      "math",
+      "numpy",
+      "risk",
+      "unittest"
+    ],
+    "tests": [
+      "test_entropic_sign_translation_and_extreme_finite_inputs",
+      "test_probability_and_risk_rejection",
+      "test_ambiguity_convex_hull_and_worst_row",
+      "test_same_marginals_different_dependence_and_history_support",
+      "test_bellman_matches_full_control_and_nature_policy_enumeration",
+      "test_rectangle_is_strictly_larger_than_fixed_regime_set",
+      "test_symmetric_shared_wrong_bound_and_new_information",
+      "test_gaussian_closed_form_quadrature_and_parameter_gradient_separation",
+      "test_binomial_decomposition_and_quadratic_driver_limit"
+    ],
+    "functions": [
+      "test_entropic_sign_translation_and_extreme_finite_inputs",
+      "test_probability_and_risk_rejection",
+      "test_ambiguity_convex_hull_and_worst_row",
+      "test_same_marginals_different_dependence_and_history_support",
+      "test_bellman_matches_full_control_and_nature_policy_enumeration",
+      "test_rectangle_is_strictly_larger_than_fixed_regime_set",
+      "test_symmetric_shared_wrong_bound_and_new_information",
+      "test_gaussian_closed_form_quadrature_and_parameter_gradient_separation",
+      "test_binomial_decomposition_and_quadratic_driver_limit"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v3/test_source_control.py",
+    "lines": 215,
+    "imports": [
+      "control",
+      "inspect",
+      "math",
+      "model",
+      "numpy",
+      "source_control",
+      "torch",
+      "unittest",
+      "unittest.mock",
+      "world"
+    ],
+    "tests": [
+      "test_compilation_joint_axes_query_expectation_and_actual_offline_macs",
+      "test_witness_channel_includes_actual_encoder_mistakes",
+      "test_online_work_queries_and_all_outputs_match_actual_linear_calls",
+      "test_paid_witness_copy_nonrepeat_and_model_api_has_no_truth_argument",
+      "test_rollout_does_not_read_metadata_or_call_world_renderer",
+      "test_witness_is_new_information_and_error_channel_is_evaluator_only"
+    ],
+    "functions": [
+      "fixture_worlds",
+      "__init__",
+      "__enter__",
+      "__exit__",
+      "setUp",
+      "compile",
+      "assert_joint_query_value",
+      "test_compilation_joint_axes_query_expectation_and_actual_offline_macs",
+      "test_witness_channel_includes_actual_encoder_mistakes",
+      "test_online_work_queries_and_all_outputs_match_actual_linear_calls",
+      "test_paid_witness_copy_nonrepeat_and_model_api_has_no_truth_argument",
+      "test_rollout_does_not_read_metadata_or_call_world_renderer",
+      "test_witness_is_new_information_and_error_channel_is_evaluator_only",
+      "__getitem__",
+      "record"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/counterfactual_audit.py",
+    "lines": 305,
+    "imports": [
+      "__future__",
+      "itertools",
+      "math",
+      "portfolio",
+      "typing"
+    ],
+    "tests": [],
+    "functions": [
+      "check_joint_law",
+      "scenarios",
+      "check_dependence_regime",
+      "advance_joint",
+      "dependent_scenarios",
+      "rollout",
+      "empirical_cvar90",
+      "_public_state_policy",
+      "evaluate",
+      "evaluate_dependence",
+      "summarize_records",
+      "fixed_plan_policy",
+      "_admissible_fixed_plan",
+      "best_open_loop",
+      "paired_nominal_shift",
+      "paired_dependence_shift",
+      "checked",
+      "choose",
+      "dynamic_policy"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/information_acquisition.py",
+    "lines": 192,
+    "imports": [
+      "__future__",
+      "fractions",
+      "portfolio"
+    ],
+    "tests": [],
+    "functions": [
+      "prior_from_public",
+      "witness_probability",
+      "posterior",
+      "map_label",
+      "stop_value",
+      "query_value",
+      "action_for_public",
+      "all_outputs",
+      "score_raw_outputs",
+      "weighted_cvar90",
+      "enumerate_outcomes",
+      "evaluate_policy",
+      "shared_wrong_no_new_information_bound"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/joint_evidence_generation.py",
+    "lines": 310,
+    "imports": [
+      "__future__",
+      "dataclasses",
+      "fractions",
+      "hashlib",
+      "information_acquisition",
+      "json",
+      "portfolio",
+      "typing"
+    ],
+    "tests": [],
+    "functions": [
+      "admitted_actions",
+      "query_successor",
+      "generation_successor",
+      "terminal_value",
+      "materialize_four",
+      "independent_fixture_score",
+      "full_outcome_audit",
+      "mode_state",
+      "__post_init__",
+      "__init__",
+      "resource_receipt",
+      "solve",
+      "observed_policy_action",
+      "visit"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/portfolio.py",
+    "lines": 331,
+    "imports": [
+      "__future__",
+      "dataclasses",
+      "decimal",
+      "functools",
+      "hashlib",
+      "json",
+      "math",
+      "random",
+      "typing"
+    ],
+    "tests": [],
+    "functions": [
+      "decode_all",
+      "decoded_external_loss",
+      "charge",
+      "feasible",
+      "actions",
+      "advance",
+      "conditional_ce",
+      "covariance_for_action",
+      "execute",
+      "__post_init__",
+      "emission_reserve",
+      "__post_init__",
+      "__post_init__",
+      "stop",
+      "mask",
+      "__init__",
+      "_terminal",
+      "solve"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_audit.py",
+    "lines": 96,
+    "imports": [
+      "counterfactual_audit",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_independent_complete_tree_matches_controller_value",
+      "test_dependence_shift_can_reverse_risk_utility_and_cvar",
+      "test_no_controller_access_to_future_noise",
+      "test_four_outputs_always_charge_mandatory_reserve",
+      "test_fractional_weighted_upper_tail_cvar",
+      "test_negative_cross_modal_dependence_is_observable",
+      "test_invalid_regimes_fail_closed",
+      "test_exponential_open_loop_search_rejects_over_cap"
+    ],
+    "functions": [
+      "test_independent_complete_tree_matches_controller_value",
+      "test_dependence_shift_can_reverse_risk_utility_and_cvar",
+      "test_no_controller_access_to_future_noise",
+      "test_four_outputs_always_charge_mandatory_reserve",
+      "test_fractional_weighted_upper_tail_cvar",
+      "test_negative_cross_modal_dependence_is_observable",
+      "test_invalid_regimes_fail_closed",
+      "test_exponential_open_loop_search_rejects_over_cap"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_path_mass.py",
+    "lines": 73,
+    "imports": [
+      "counterfactual_audit",
+      "decimal",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_scalar_supported_products_cannot_silently_disappear",
+      "test_dependent_supported_products_cannot_silently_disappear",
+      "test_full_audits_reject_instead_of_omitting_rare_bad_tail",
+      "test_mathematically_zero_paths_remain_impossible_not_errors",
+      "test_representable_tiny_supported_paths_are_retained"
+    ],
+    "functions": [
+      "test_scalar_supported_products_cannot_silently_disappear",
+      "test_dependent_supported_products_cannot_silently_disappear",
+      "test_full_audits_reject_instead_of_omitting_rare_bad_tail",
+      "test_mathematically_zero_paths_remain_impossible_not_errors",
+      "test_representable_tiny_supported_paths_are_retained"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_public_state_replay.py",
+    "lines": 54,
+    "imports": [
+      "counterfactual_audit",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_nominal_replay_rejects_alternating_first_action",
+      "test_dependence_replay_rejects_alternating_first_action",
+      "test_repeated_identical_public_decisions_remain_admitted"
+    ],
+    "functions": [
+      "setUp",
+      "alternating_policy",
+      "test_nominal_replay_rejects_alternating_first_action",
+      "test_dependence_replay_rejects_alternating_first_action",
+      "test_repeated_identical_public_decisions_remain_admitted",
+      "choose",
+      "choose"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_exact_fraction_support.py",
+    "lines": 54,
+    "imports": [
+      "fractions",
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_unrepresentable_positive_truth_class_is_not_declared_impossible",
+      "test_supported_truth_shock_path_must_not_disappear",
+      "test_representable_small_fraction_retains_all_paths"
+    ],
+    "functions": [
+      "test_unrepresentable_positive_truth_class_is_not_declared_impossible",
+      "test_supported_truth_shock_path_must_not_disappear",
+      "test_representable_small_fraction_retains_all_paths",
+      "choose",
+      "choose"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_execute_boundary.py",
+    "lines": 54,
+    "imports": [
+      "counterfactual_audit",
+      "fractions",
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_supplied_state_changes_suffix_cost_not_provenance",
+      "test_paid_successor_retains_activation_and_prefix_cost_is_separate",
+      "test_full_episode_audits_reject_continuation_as_root"
+    ],
+    "functions": [
+      "setUp",
+      "test_supplied_state_changes_suffix_cost_not_provenance",
+      "test_paid_successor_retains_activation_and_prefix_cost_is_separate",
+      "test_full_episode_audits_reject_continuation_as_root"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_extreme_risk.py",
+    "lines": 120,
+    "imports": [
+      "decimal",
+      "math",
+      "portfolio",
+      "sys",
+      "unittest"
+    ],
+    "tests": [
+      "test_two_sided_extremes_and_subnormal_risk",
+      "test_caller_decimal_context_does_not_change_float_function",
+      "test_subnormal_positive_mass_is_preserved",
+      "test_rare_outcome_at_ordinary_scaled_risk",
+      "test_wide_support_is_not_neutralized",
+      "test_zero_mass_extremes_and_permutation",
+      "test_scaled_span_threshold_both_sides",
+      "test_translation_and_support_bounds",
+      "test_existing_probability_mass_conventions_are_explicit",
+      "test_large_risk_and_degenerate_extreme_support"
+    ],
+    "functions": [
+      "oracle",
+      "assert_reference",
+      "test_two_sided_extremes_and_subnormal_risk",
+      "test_caller_decimal_context_does_not_change_float_function",
+      "test_subnormal_positive_mass_is_preserved",
+      "test_rare_outcome_at_ordinary_scaled_risk",
+      "test_wide_support_is_not_neutralized",
+      "test_zero_mass_extremes_and_permutation",
+      "test_scaled_span_threshold_both_sides",
+      "test_translation_and_support_bounds",
+      "test_existing_probability_mass_conventions_are_explicit",
+      "test_large_risk_and_degenerate_extreme_support"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_fresh_audit_admission.py",
+    "lines": 59,
+    "imports": [
+      "collections",
+      "counterfactual_audit",
+      "fractions",
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_counterfactual_audits_reject_structural_roots",
+      "test_joint_audit_rejects_structural_outer_state",
+      "test_ordinary_subclasses_preserve_full_episode_cost"
+    ],
+    "functions": [
+      "test_counterfactual_audits_reject_structural_roots",
+      "test_joint_audit_rejects_structural_outer_state",
+      "test_ordinary_subclasses_preserve_full_episode_cost",
+      "policy",
+      "policy"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_fresh_root_custody.py",
+    "lines": 53,
+    "imports": [
+      "fractions",
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_root_cannot_forge_paid_activation",
+      "test_root_cannot_claim_unpaid_independent_witness",
+      "test_true_successors_retain_earned_state",
+      "test_fresh_root_remains_eligible_for_four_output_audit"
+    ],
+    "functions": [
+      "setUp",
+      "test_root_cannot_forge_paid_activation",
+      "test_root_cannot_claim_unpaid_independent_witness",
+      "test_true_successors_retain_earned_state",
+      "test_fresh_root_remains_eligible_for_four_output_audit"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_immutable_portfolio_admission.py",
+    "lines": 55,
+    "imports": [
+      "counterfactual_audit",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_mutable_observation_container_cannot_enter_public_state",
+      "test_mutable_action_cannot_enter_policy_or_cost_ledger",
+      "test_non_tuple_iterable_is_not_an_immutable_proof",
+      "test_legitimate_tuple_policy_and_four_outputs_remain_valid"
+    ],
+    "functions": [
+      "test_mutable_observation_container_cannot_enter_public_state",
+      "test_mutable_action_cannot_enter_policy_or_cost_ledger",
+      "test_non_tuple_iterable_is_not_an_immutable_proof",
+      "test_legitimate_tuple_policy_and_four_outputs_remain_valid",
+      "__init__",
+      "__len__",
+      "__iter__"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_information_acquisition.py",
+    "lines": 89,
+    "imports": [
+      "fractions",
+      "information_acquisition",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_exogenous_bayes_channel_has_full_mass",
+      "test_query_only_if_public_evidence_is_ambiguous",
+      "test_selective_witness_is_cheaper_at_equal_fixture_accuracy",
+      "test_four_agreeing_outputs_can_still_all_be_wrong",
+      "test_joint_truth_witness_mass_and_budget_accounting",
+      "test_no_information_purchase_when_price_exceeds_value",
+      "test_shared_wrong_upper_bound_without_new_information",
+      "test_fractional_tail_and_input_rejection"
+    ],
+    "functions": [
+      "test_exogenous_bayes_channel_has_full_mass",
+      "test_query_only_if_public_evidence_is_ambiguous",
+      "test_selective_witness_is_cheaper_at_equal_fixture_accuracy",
+      "test_four_agreeing_outputs_can_still_all_be_wrong",
+      "test_joint_truth_witness_mass_and_budget_accounting",
+      "test_no_information_purchase_when_price_exceeds_value",
+      "test_shared_wrong_upper_bound_without_new_information",
+      "test_fractional_tail_and_input_rejection"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_joint_evidence_generation.py",
+    "lines": 214,
+    "imports": [
+      "fractions",
+      "information_acquisition",
+      "joint_evidence_generation",
+      "math",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_evidence_and_generation_compete_in_one_action_set",
+      "test_full_decoded_terminal_law_matches_recursion",
+      "test_solver_state_budget_rejects_before_unbounded_expansion",
+      "test_no_query_is_a_nested_subset_not_a_strong_baseline",
+      "test_shared_wrong_modal_agreement_is_not_factual_accuracy",
+      "test_frozen_controller_fails_when_witness_reuses_common_wrong_source",
+      "test_query_cannot_spend_mandatory_emission_reserve",
+      "test_allocation_response_changes_after_real_observed_shock",
+      "test_fraction_risk_neutral_oracle_independent_of_value_solver",
+      "test_deny_invalid_actions_beliefs_and_witness_provenance"
+    ],
+    "functions": [
+      "setUp",
+      "test_evidence_and_generation_compete_in_one_action_set",
+      "test_full_decoded_terminal_law_matches_recursion",
+      "test_solver_state_budget_rejects_before_unbounded_expansion",
+      "test_no_query_is_a_nested_subset_not_a_strong_baseline",
+      "test_shared_wrong_modal_agreement_is_not_factual_accuracy",
+      "test_frozen_controller_fails_when_witness_reuses_common_wrong_source",
+      "test_query_cannot_spend_mandatory_emission_reserve",
+      "test_allocation_response_changes_after_real_observed_shock",
+      "test_fraction_risk_neutral_oracle_independent_of_value_solver",
+      "test_deny_invalid_actions_beliefs_and_witness_provenance",
+      "oracle"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_joint_generation_admission.py",
+    "lines": 72,
+    "imports": [
+      "collections",
+      "fractions",
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_structural_generation_cannot_bypass_root_activation_guard",
+      "test_non_state_generation_rejects_before_field_access",
+      "test_ordinary_state_subclass_keeps_paid_transition_and_audit",
+      "test_nonregistered_priors_remain_explicit_model_parameters"
+    ],
+    "functions": [
+      "test_structural_generation_cannot_bypass_root_activation_guard",
+      "test_non_state_generation_rejects_before_field_access",
+      "test_ordinary_state_subclass_keeps_paid_transition_and_audit",
+      "test_nonregistered_priors_remain_explicit_model_parameters"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_near_neutral_risk.py",
+    "lines": 86,
+    "imports": [
+      "decimal",
+      "math",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_positive_tiny_risk_agrees_with_decimal_oracle",
+      "test_near_neutral_ignores_impossible_extreme_outcome",
+      "test_roundoff_mass_and_subnormal_risk_stay_continuous",
+      "test_tiny_risk_can_still_be_material_on_wide_finite_support",
+      "test_registered_ordinary_risk_uses_unchanged_evaluation"
+    ],
+    "functions": [
+      "decimal_reference",
+      "test_positive_tiny_risk_agrees_with_decimal_oracle",
+      "test_near_neutral_ignores_impossible_extreme_outcome",
+      "test_roundoff_mass_and_subnormal_risk_stay_continuous",
+      "test_tiny_risk_can_still_be_material_on_wide_finite_support",
+      "test_registered_ordinary_risk_uses_unchanged_evaluation"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_numeric_admission.py",
+    "lines": 83,
+    "imports": [
+      "math",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_zero_probability_extreme_is_not_part_of_conditional_support",
+      "test_support_permutation_and_impossible_outcome_invariance",
+      "test_tiny_supported_probability_is_not_silently_dropped",
+      "test_invalid_normalization_beyond_absolute_tolerance_rejects",
+      "test_exact_zero_mass_law_is_rejected",
+      "test_budget_horizon_and_sync_units_are_exact_integers",
+      "test_risk_and_shadow_prices_reject_bools_nonfinite_and_strings",
+      "test_valid_zero_risk_profile_preserves_solver_and_budget"
+    ],
+    "functions": [
+      "test_zero_probability_extreme_is_not_part_of_conditional_support",
+      "test_support_permutation_and_impossible_outcome_invariance",
+      "test_tiny_supported_probability_is_not_silently_dropped",
+      "test_invalid_normalization_beyond_absolute_tolerance_rejects",
+      "test_exact_zero_mass_law_is_rejected",
+      "test_budget_horizon_and_sync_units_are_exact_integers",
+      "test_risk_and_shadow_prices_reject_bools_nonfinite_and_strings",
+      "test_valid_zero_risk_profile_preserves_solver_and_budget"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_policy_replay_admission.py",
+    "lines": 64,
+    "imports": [
+      "joint_evidence_generation",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_declared_query_cannot_mask_actual_emit",
+      "test_identical_public_state_cannot_branch_on_private_world_order",
+      "test_true_public_state_policy_preserves_external_audit"
+    ],
+    "functions": [
+      "setUp",
+      "test_declared_query_cannot_mask_actual_emit",
+      "test_identical_public_state_cannot_branch_on_private_world_order",
+      "test_true_public_state_policy_preserves_external_audit",
+      "dishonest",
+      "changing"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_portfolio.py",
+    "lines": 141,
+    "imports": [
+      "fractions",
+      "itertools",
+      "math",
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_four_distinct_outputs_and_true_emission_reserve",
+      "test_different_observed_states_change_modal_allocation",
+      "test_non_linear_joint_decoder_and_joint_action",
+      "test_joint_shock_produces_positive_cross_modal_covariance",
+      "test_cost_charged_once_per_activation_and_budget_never_negative",
+      "test_entropy_penalizes_downside_and_stable_large_values",
+      "test_exact_fraction_reference_for_risk_neutral_bellman",
+      "test_future_noise_not_known_at_decision_and_hashed_trace_is_consistent",
+      "test_fail_closed_on_missing_output_illegal_state_and_action"
+    ],
+    "functions": [
+      "test_four_distinct_outputs_and_true_emission_reserve",
+      "test_different_observed_states_change_modal_allocation",
+      "test_non_linear_joint_decoder_and_joint_action",
+      "test_joint_shock_produces_positive_cross_modal_covariance",
+      "test_cost_charged_once_per_activation_and_budget_never_negative",
+      "test_entropy_penalizes_downside_and_stable_large_values",
+      "test_exact_fraction_reference_for_risk_neutral_bellman",
+      "test_future_noise_not_known_at_decision_and_hashed_trace_is_consistent",
+      "test_fail_closed_on_missing_output_illegal_state_and_action",
+      "reference"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v4/test_reallocation.py",
+    "lines": 22,
+    "imports": [
+      "portfolio",
+      "unittest"
+    ],
+    "tests": [
+      "test_within_one_episode_switches_modality_after_observation"
+    ],
+    "functions": [
+      "test_within_one_episode_switches_modality_after_observation"
+    ]
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/world.py",
+    "lines": 228,
+    "imports": [
+      "numpy"
+    ],
+    "tests": [],
+    "functions": [
+      "_class_array",
+      "_render_modality",
+      "render",
+      "canonical",
+      "sample_worlds"
+    ]
+  }
+]

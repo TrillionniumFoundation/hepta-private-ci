@@ -1,0 +1,188 @@
+{
+  "schema": "hcsn-neardense-new-reproduction-v1",
+  "identity": "new source and new attempt after old raw loss; never recovered old receipt",
+  "status": "HOLD_NO_GO",
+  "all_closed": false,
+  "prospective_scientific_gate": false,
+  "profile": "near960",
+  "near_intervals": 960,
+  "near_endpoint": 0.48,
+  "total_intervals": 1024,
+  "endpoint": 8,
+  "reset": 0.32725,
+  "mode": "dde",
+  "atol": 1e-18,
+  "rtol": 1e-12,
+  "max_step": 0.0025,
+  "rows": [
+    {
+      "time": 0.001,
+      "positive": {
+        "M": 2.1091616132150155e-176,
+        "truncation_bound": 1.6590755423181466e-63,
+        "terms": 901,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 4.9404924595819466e-14,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 4.934918992332144e-196,
+      "reference128": 4.934918992339255e-196,
+      "relative_reference_difference": -1.4409624585055785e-12,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": false,
+      "positive_relative_error": 4.273953871358744e+19,
+      "dde_M": 1.5326036988835916e-173,
+      "dde_relative_error": 3.1056309156497525e+22,
+      "dde_minus_positive": 1.5304945372703765e-173
+    },
+    {
+      "time": 0.003,
+      "positive": {
+        "M": 2.857407383985965e-67,
+        "truncation_bound": 3.992263183236298e-56,
+        "terms": 2108,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 1.156852391659413e-13,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 2.7366671379523396e-68,
+      "reference128": 2.736667137953564e-68,
+      "relative_reference_difference": -4.4736719351063803e-13,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": false,
+      "positive_relative_error": 9.441194489303836,
+      "dde_M": 3.1609864609079e-67,
+      "dde_relative_error": 10.550496649993155,
+      "dde_minus_positive": 3.0357907692193464e-68
+    },
+    {
+      "time": 0.02,
+      "positive": {
+        "M": 1.7458119698919143e-12,
+        "truncation_bound": 4.6437753234475994e-49,
+        "terms": 11287,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 6.152856002472618e-13,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 1.7287836235621651e-12,
+      "reference128": 1.7287836235623087e-12,
+      "relative_reference_difference": -8.305568410512687e-14,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": true,
+      "positive_relative_error": 0.009849900298405882,
+      "dde_M": 1.745813153784239e-12,
+      "dde_relative_error": 0.009850585110726293,
+      "dde_minus_positive": 1.1838923247413767e-18
+    },
+    {
+      "time": 0.04,
+      "positive": {
+        "M": 4.896493124312168e-07,
+        "truncation_bound": 1.3207704600829474e-47,
+        "terms": 21662,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 1.176614361497741e-12,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 4.889430242324876e-07,
+      "reference128": 4.889430242324997e-07,
+      "relative_reference_difference": -2.4902898729138324e-14,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": true,
+      "positive_relative_error": 0.0014445204527168947,
+      "dde_M": 4.896493125245825e-07,
+      "dde_relative_error": 0.0014445206436710229,
+      "dde_minus_positive": 9.336568891876295e-17
+    },
+    {
+      "time": 0.08,
+      "positive": {
+        "M": 0.0005249558073276016,
+        "truncation_bound": 2.0511794887169076e-46,
+        "terms": 42073,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 2.2418733536255786e-12,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 0.0005248389126623004,
+      "reference128": 0.0005248389126623017,
+      "relative_reference_difference": -2.478937013993355e-15,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": true,
+      "positive_relative_error": 0.00022272484467087832,
+      "dde_M": 0.00052495580734725,
+      "dde_relative_error": 0.00022272488210799168,
+      "dde_minus_positive": 1.9648453870868554e-14
+    },
+    {
+      "time": 0.16,
+      "positive": {
+        "M": 0.020523973760551727,
+        "truncation_bound": 1.5889785134844545e-45,
+        "terms": 82422,
+        "nu": 490000.0000000536,
+        "max_power_mass_drift": 4.190092717237803e-12,
+        "minimum_transition_weight": 1.1102230246251565e-16,
+        "roundoff_certified": false
+      },
+      "reference64": 0.020523383629792186,
+      "reference128": 0.020523383629792186,
+      "relative_reference_difference": 0.0,
+      "relative_report_floor": 1e-12,
+      "relative_diagnostic_eligible": true,
+      "positive_relative_error": 2.875406756435948e-05,
+      "dde_M": 0.02052397376033293,
+      "dde_relative_error": 2.875405690348569e-05,
+      "dde_minus_positive": -2.1879720257800273e-13
+    }
+  ],
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/run.py": "6d361487b8ea2ec857f79ecc12668573549a9bf4246fd781ae5e61d46c4d3432",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/run.py": "6d361487b8ea2ec857f79ecc12668573549a9bf4246fd781ae5e61d46c4d3432",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_unchanged": true,
+  "internal_steps": 3262,
+  "wall_seconds": 11.550189326000009,
+  "cpu_seconds": 11.549646963,
+  "peak_rss_kib_linux": 458032,
+  "versions": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "thread_environment": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "raw_sha256": "6afdbbcaf7ae4a76676e6abc3b2d19ba170b4075f685a3e2f8dc0ebbca954705",
+  "limitations": [
+    "post-failure exposed profiles; no new admission",
+    "Poisson bound excludes roundoff and continuum error",
+    "upper escape permanently active nonreturning",
+    "no full old-state trajectory or training replay",
+    "no new-profile gradients or performance advantage",
+    "right-tail value cost remains separately required"
+  ]
+}

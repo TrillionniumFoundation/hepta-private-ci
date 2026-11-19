@@ -1,0 +1,121 @@
+[
+  {
+    "name": "sparse-init",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "init",
+      "--cone"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 0.032914161682128906
+  },
+  {
+    "name": "sparse-set",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--skip-checks",
+      "--cone",
+      ".cargo",
+      ".config",
+      ".github",
+      "codex-rs",
+      "scripts",
+      "tools",
+      "third_party",
+      "qa",
+      "external",
+      "docs/modules/learning.plasticity"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 0.008817911148071289
+  },
+  {
+    "name": "sparse-checkout",
+    "command": [
+      "git",
+      "checkout",
+      "--detach",
+      "3247636513f4cddaede6e9b45110925e9065d507"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 25.887609004974365
+  },
+  {
+    "name": "sparse-identity",
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD",
+      "HEAD^{tree}"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 0.009056329727172852
+  },
+  {
+    "name": "sparse-status",
+    "command": [
+      "git",
+      "status",
+      "--porcelain=v1",
+      "--untracked-files=no"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 0.1155846118927002
+  },
+  {
+    "name": "runtime-error-consumers",
+    "command": [
+      "/usr/bin/rg",
+      "-n",
+      "RuntimeTopologyExecutionError",
+      "codex-rs"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source",
+    "exit_code": 0,
+    "seconds": 0.11456179618835449
+  },
+  {
+    "name": "show-test",
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "--show",
+      "test"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+    "exit_code": 0,
+    "seconds": 0.008403778076171875
+  },
+  {
+    "name": "show-fmt",
+    "command": [
+      "/home/qian-qi/.cargo/bin/just",
+      "--show",
+      "fmt"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+    "exit_code": 0,
+    "seconds": 0.008498191833496094
+  },
+  {
+    "name": "metadata-preflight",
+    "command": [
+      "/home/qian-qi/.cargo/bin/cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--format-version=1",
+      "--no-deps"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-admission-r2-20261105/source/codex-rs",
+    "exit_code": 0,
+    "seconds": 0.5160477161407471
+  }
+]

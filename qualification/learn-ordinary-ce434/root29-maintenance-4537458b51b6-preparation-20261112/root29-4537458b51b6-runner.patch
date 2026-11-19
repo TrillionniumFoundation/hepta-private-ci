@@ -1,0 +1,50 @@
+--- a/root29-a671-runner.py
++++ b/root29-4537458b51b6-runner.py
+@@ -2,1 +2,1 @@
+-"""Prepared a671-only Root29 append. Not dispatched by the preparing agent.
++"""Prepared 4537458b51b6-only Root29 append. Not dispatched by the preparing agent.
+@@ -19,1 +19,1 @@
+-SOURCE = "a6717d7228045e6cb60532966f06e6e02c4a6abe"
++SOURCE = "4537458b51b6ca936264aecea7cfe384b941d0d1"
+@@ -20,1 +20,1 @@
+-TREE = "647b9e78151299c1e7de455eae9c530ca93b28c9"
++TREE = "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+@@ -23,1 +23,1 @@
+-MAIN = EVIDENCE / "live-owners-full-a6717d722804-v1"
++MAIN = EVIDENCE / "live-owners-full-4537458b51b6-v1"
+@@ -33,1 +33,1 @@
+-NATIVE_DRIVER = EVIDENCE / "unified-a6717d722804-validation-v1/native-runner.py"
++NATIVE_DRIVER = EVIDENCE / "unified-4537458b51b6-validation-v1/native-runner.py"
+@@ -133,1 +133,1 @@
+-            "Root29 requires the same clean a671 checkout")
++            "Root29 requires the same clean 4537458b51b6 checkout")
+@@ -174,1 +174,1 @@
+-            "original helper verifier did not certify this clean a671 source")
++            "original helper verifier did not certify this clean 4537458b51b6 source")
+@@ -271,1 +271,1 @@
+-assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-a6717d722804-")
++assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-4537458b51b6-")
+@@ -313,1 +313,1 @@
+-    raise SystemExit("usage: root29-a671-runner.py vN (new, explicitly selected attempt)")
++    raise SystemExit("usage: root29-4537458b51b6-runner.py vN (new, explicitly selected attempt)")
+@@ -318,1 +318,1 @@
+-out = EVIDENCE / ("root-uid-29-a6717d722804-" + attempt)
++out = EVIDENCE / ("root-uid-29-4537458b51b6-" + attempt)
+@@ -319,1 +319,1 @@
+-root_dir = Path("/run") / ("hepta-learn-root29-a6717d722804-" + attempt)
++root_dir = Path("/run") / ("hepta-learn-root29-4537458b51b6-" + attempt)
+@@ -332,1 +332,1 @@
+-require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original a671 native driver differs")
++require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original 4537458b51b6 native driver differs")
+@@ -359,1 +359,1 @@
+-    "schema": "hepta.learn.root29-a671-original-ci-append.v1",
++    "schema": "hepta.learn.root29-4537458b51b6-original-ci-append.v1",
+@@ -410,1 +410,1 @@
+-        "resource_values_and_path_prefix": "fixed original a671 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
++        "resource_values_and_path_prefix": "fixed original 4537458b51b6 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+@@ -415,1 +415,1 @@
+-        "helper": "same-a671 original helper --verify-only and exact env.json",
++        "helper": "same-4537458b51b6 original helper --verify-only and exact env.json",
+@@ -578,1 +578,1 @@
+-    report["source_identity_claim"] = "same fixed a671 fixture mechanisms only; no ordinary daemon cold-start or adoption claim"
++    report["source_identity_claim"] = "same fixed 4537458b51b6 fixture mechanisms only; no ordinary daemon cold-start or adoption claim"

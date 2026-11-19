@@ -1,0 +1,120 @@
+{
+  "adoption_authorized": false,
+  "check_source_sha256": "25409eb598e989fd0e3913683497059e937c69dabcee1580018bb81da24815e2",
+  "device": "cpu",
+  "entrypoints": {
+    "actor_decisions": 2,
+    "actor_memory_changed_across_actions": true,
+    "different_planner_profile_rejected": true,
+    "fixture_is_real_task_evidence": false,
+    "legacy_reset_status": "FITTED_NOT_ADOPTED",
+    "policy_gradient_norm": 0.0011797887696140083,
+    "recursive_gradient_norm": 0.08667889355943327,
+    "reference_unchanged": true,
+    "training_status": "FITTED_NOT_ADOPTED"
+  },
+  "gradients": {
+    "binary_exact_policy_derivative": 0.1466749870144475,
+    "directional_checks": [
+      {
+        "absolute_error": 2.59140023892504e-12,
+        "autograd": 0.00016151461297950106,
+        "central_difference": 0.0001615146155709013,
+        "epsilon": 1e-05,
+        "objective": "recursive",
+        "risk": 0.0
+      },
+      {
+        "absolute_error": 1.491632541343878e-12,
+        "autograd": 2.7954179598408936e-06,
+        "central_difference": 2.795419451473435e-06,
+        "epsilon": 1e-05,
+        "objective": "policy",
+        "risk": 0.0
+      },
+      {
+        "deployment_training_value_max_error": 0.0,
+        "risk": 0.0,
+        "same_counted_forecasts": 12
+      },
+      {
+        "absolute_error": 5.3669578004879315e-12,
+        "autograd": 0.00016151461297950106,
+        "central_difference": 0.00016151461834645886,
+        "epsilon": 1e-05,
+        "objective": "recursive",
+        "risk": 1e-20
+      },
+      {
+        "absolute_error": 1.49163257353113e-12,
+        "autograd": 2.7954179598408614e-06,
+        "central_difference": 2.795419451473435e-06,
+        "epsilon": 1e-05,
+        "objective": "policy",
+        "risk": 1e-20
+      },
+      {
+        "deployment_training_value_max_error": 0.0,
+        "risk": 1e-20,
+        "same_counted_forecasts": 12
+      },
+      {
+        "absolute_error": 1.3922916639041993e-12,
+        "autograd": 0.0001615224801087391,
+        "central_difference": 0.00016152248150103077,
+        "epsilon": 1e-05,
+        "objective": "recursive",
+        "risk": 0.25
+      },
+      {
+        "absolute_error": 2.6352297377051147e-12,
+        "autograd": 2.7774089987842772e-06,
+        "central_difference": 2.777411634014015e-06,
+        "epsilon": 1e-05,
+        "objective": "policy",
+        "risk": 0.25
+      },
+      {
+        "deployment_training_value_max_error": 3.885780586188048e-16,
+        "risk": 0.25,
+        "same_counted_forecasts": 12
+      }
+    ],
+    "frozen_reference_has_no_parameter_gradients": true,
+    "policy_finite_difference_holds_Q_fixed": true
+  },
+  "memory": {
+    "hepta": {
+      "episode_reinitialization_exact": true,
+      "parameter_bytes_unchanged": true,
+      "persistent_reset_max_difference": 0.14989049629406612,
+      "prior_input_gradient_norm": 0.4680613119143548
+    },
+    "ordinary": {
+      "episode_reinitialization_exact": true,
+      "parameter_bytes_unchanged": true,
+      "persistent_reset_max_difference": 0.16258534690900828,
+      "prior_input_gradient_norm": 0.5372063468439946
+    }
+  },
+  "schema": "ndu.real.recursive-numerical-check.v1",
+  "scientific_task_evidence": false,
+  "source_pins": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+    "scripts/ndu_real_materials/evaluator.py": "6c79c906eb021069f8e3df36dc2029909d2dd152a47dbc30ad64b1391ba59cfd",
+    "scripts/ndu_real_runtime/controllers.py": "32a5c663fc860302e47a85365a405b6e12044ebf49b3a41d7d3e66713eb0217c",
+    "scripts/ndu_real_runtime/finite_entropic_golden.json": "361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc",
+    "scripts/ndu_real_runtime/fit_loop.py": "f315c980dee4f89e669d2f154b566d2cccd46cfd452203c440627292d1d40788",
+    "scripts/ndu_real_runtime/metering.py": "48c78da966e6902b840c65f2024d9302f90623a486fbfc17471b3ed40265b869",
+    "scripts/ndu_real_runtime/neural.py": "58989ece2e8f60beb65fe8cc8f6736042b739ed77cf561437a7fdcb72bbe9f2a",
+    "scripts/ndu_real_runtime/objective.py": "232077c1579713356cd13604530b71cca2dc798b20f5faae911235fa1e0d82a3",
+    "scripts/ndu_real_runtime/ocr.py": "1c0d5b47dafd9a797257e8ec59be08da5d6f9bc2abfb0512716b13ab295ff14f",
+    "scripts/ndu_real_runtime/recursive_objective.py": "2ab0f7dfd9194205c2da6e4155fdc379586b81892edf1b86790965f03c056265",
+    "scripts/ndu_real_runtime/span_meter.py": "7b3417caabbd952ae77f743593db15820c1fbf7afb9f6d3dcd2327fe34a03372",
+    "scripts/ndu_real_runtime/training.py": "08f0735849e00ec1eaa80e6752b369f2ee4b2cc4c7a8bc1f68b2f2c7e1f1fdef",
+    "scripts/ndu_real_runtime/trajectory.py": "fabce42bf1ed1783bc1bf824a1a2c5d5f9f197c5f75c3febf8e06a97899a7c89"
+  },
+  "status": "PASS",
+  "torch_version": "2.11.0+cpu",
+  "wall_seconds": 1.8618481640000937
+}

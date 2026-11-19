@@ -1,0 +1,60 @@
+{
+  "upstream": {
+    "commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "manifest_sha256": "317539083a5b5b055402cdbdc3f343172e94d1514ecdd4550d4dcc1b387949d1",
+    "unchanged_source_files": 62
+  },
+  "steps": [
+    {
+      "command": [
+        "/tmp/chain-pon-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "--version"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.02202620799653232,
+      "output": "rustc 1.95.0 (59807616e 2026-04-14)\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "generate-lockfile",
+        "--offline"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.03586713799450081,
+      "output": "     Locking 24 packages to latest Rust 1.95.0 compatible versions\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "fmt"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.06651444599265233,
+      "output": "cargo fmt --manifest-path Cargo.toml\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "build"
+      ],
+      "returncode": 0,
+      "wall_seconds": 3.1454420920053963,
+      "output": "cargo build --release --locked --offline --manifest-path Cargo.toml\n   Compiling codex-rrsnn-native-owner-components v0.1.0 (/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build)\n    Finished `release` profile [optimized] target(s) in 3.13s\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "test"
+      ],
+      "returncode": 0,
+      "wall_seconds": 0.20942366900271736,
+      "output": "{\"functional_checks\": 5, \"actual_sigkill_cases\": 4, \"recoverable\": 3, \"first_commit_recovery_blocker\": true}\n\"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3\" \"/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_components.py\" --validate-only --binary \"/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-owner\"\n"
+    }
+  ],
+  "all_passed": true,
+  "binary_sha256": "b161a4131076b2b795b47609fe787256deeae508340089c46762990c181659ba",
+  "manifest_sha256": "d9bac7189d4b413e50e3fa96f1e9a016d7f270b38d0189c9952e997730d1a2e0",
+  "lock_sha256": "dfb155157938ae075dd6a3d7d471486decf4ed4550ae64192ce8486491f0f9c3",
+  "scope": "reduced native dependency build; not full upstream workspace CI"
+}

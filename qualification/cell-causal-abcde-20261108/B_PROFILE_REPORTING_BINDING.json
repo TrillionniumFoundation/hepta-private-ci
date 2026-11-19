@@ -1,0 +1,150 @@
+{
+  "schema": "hepta.causal-b.locked-comparator-descriptions.v1",
+  "observed_utc": "2026-11-08T10:20:41.139631+00:00",
+  "inputs": {
+    "analysis": {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_ANALYSIS.json",
+      "bytes": 603081,
+      "sha256": "64886fec9deca29abe5b9cb52b383f8cee5dd073a76bf8d894580d9953bb3f70"
+    },
+    "profiles": {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/analysis-return-v1/B_PROFILE_SUMMARIES.json",
+      "bytes": 245333,
+      "sha256": "5e23ba3e7b7cc79bc969eaac5bb067dc0547aa4449ac87009310600f9c99d018"
+    },
+    "original_selection_lock": {
+      "path": "/workspace/scratch/cf0b0141e32e/execution/evaluation-build-v2/final-evidence/study/selection-lock.json",
+      "bytes": 260903,
+      "sha256": "19d508875481336823ec9075c631ee0ab70df5f525406181a131e6dda04ea3a5"
+    }
+  },
+  "method": "Use the original pre-pilot tuning winner among six fixed/VOI/MPC profiles on either core separately for each fit/regime/memory mode. Verify the original max(tuning utility, arm) selection. Subtract its corresponding source-group/family-balanced profile mean from NDU on each core, then equally weight the two fits. Do not choose a comparator from pilot outcomes.",
+  "validated_original_choices": [
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "ordinary_tuned_fixed_reset",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-01",
+      "mean_tuning_utility": 0.28316792022880666,
+      "memory_mode": "reset",
+      "profile_id": "pilot-fit-01-frozen-ordinary_tuned_fixed_reset-trial-0",
+      "regime": "frozen",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "ordinary_voi_persistent",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-01",
+      "mean_tuning_utility": 0.288591686966,
+      "memory_mode": "persistent",
+      "profile_id": "pilot-fit-01-frozen-ordinary_voi_persistent-trial-0",
+      "regime": "frozen",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "hepta_voi_reset",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-01",
+      "mean_tuning_utility": 0.479479617132,
+      "memory_mode": "reset",
+      "profile_id": "pilot-fit-01-joint-hepta_voi_reset-trial-0",
+      "regime": "joint",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "hepta_tuned_fixed_persistent",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-01",
+      "mean_tuning_utility": 0.4801364523196985,
+      "memory_mode": "persistent",
+      "profile_id": "pilot-fit-01-joint-hepta_tuned_fixed_persistent-trial-0",
+      "regime": "joint",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "hepta_tuned_fixed_reset",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-02",
+      "mean_tuning_utility": 0.28955088999460565,
+      "memory_mode": "reset",
+      "profile_id": "pilot-fit-02-frozen-hepta_tuned_fixed_reset-trial-0",
+      "regime": "frozen",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "hepta_tuned_fixed_persistent",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-02",
+      "mean_tuning_utility": 0.286368379819277,
+      "memory_mode": "persistent",
+      "profile_id": "pilot-fit-02-frozen-hepta_tuned_fixed_persistent-trial-0",
+      "regime": "frozen",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "ordinary_tuned_fixed_reset",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-02",
+      "mean_tuning_utility": 0.2868243345407434,
+      "memory_mode": "reset",
+      "profile_id": "pilot-fit-02-joint-ordinary_tuned_fixed_reset-trial-0",
+      "regime": "joint",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    },
+    {
+      "all_comparators_available": true,
+      "all_eight_comparators_available": null,
+      "arm": "hepta_tuned_fixed_persistent",
+      "available_comparator_profiles": 6,
+      "expected_comparator_profiles": 6,
+      "fit_id": "pilot-fit-02",
+      "mean_tuning_utility": 0.2845096149102684,
+      "memory_mode": "persistent",
+      "profile_id": "pilot-fit-02-joint-hepta_tuned_fixed_persistent-trial-0",
+      "regime": "joint",
+      "selection_verified_from_all_six_original_tuning_profiles": true
+    }
+  ],
+  "new_contrast_added_to_preregistered_inventory": false,
+  "intervals_or_significance_claimed": false,
+  "scientific_acceptance": "HOLD",
+  "adoption_authorized": false,
+  "original_report": {
+    "path": "B_LOCKED_COMPARATOR_DESCRIPTIONS.json",
+    "bytes": 55611,
+    "sha256": "048d2f4ead2982448f155bd78d83385ca6b29ec9eb5a71c3e75cad85c3da7af1"
+  },
+  "profile_report": {
+    "path": "B_PROFILE_SUMMARIES.json",
+    "bytes": 245333,
+    "sha256": "5e23ba3e7b7cc79bc969eaac5bb067dc0547aa4449ac87009310600f9c99d018"
+  },
+  "profiles_csv": {
+    "path": "B_PROFILES.csv",
+    "sha256": "e25828849ad81e7f72abf6dfe9b171c4c72e8757d2848041de1f9633b2a392ef"
+  },
+  "contrasts_csv": {
+    "path": "B_LOCKED_COMPARATOR.csv",
+    "sha256": "cd6465cc612c2aff04b65d9e314e1392f384c064f685211b1172548c4f90f8c8"
+  }
+}

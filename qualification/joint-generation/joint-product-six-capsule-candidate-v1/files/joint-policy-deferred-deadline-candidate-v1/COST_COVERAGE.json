@@ -1,0 +1,24 @@
+{
+  "status": "PASS_SCOPED_INDEPENDENT_SAVED_REVIEW",
+  "whole_reaped_subtree_CPU_seconds": 0.546653,
+  "sum_worker_CPU_seconds": 0.305486,
+  "complete_supervisor_CPU_seconds": 0.24116699999999996,
+  "outer_prefix_CPU_seconds": 0.052969023,
+  "known_CPU_lower_bound_seconds": 0.5996220229999999,
+  "outer_tail": "unknown_not_zero",
+  "wall_seconds": 3.4107392209989484,
+  "retained_run_bytes": 3252983,
+  "largest_RSS_kib": 33672,
+  "work": {
+    "allocation_restores": 2,
+    "serving_calls": 1,
+    "Actor_predictions": 1,
+    "encoded_rows": 1,
+    "Adam": 0,
+    "fresh_models": 0,
+    "fresh_references": 0,
+    "recovery_models": 0
+  },
+  "scope": "Whole subtree includes real model compute,deliberate return wait,IPC,all checks/serialization/hash/IO,recovery and teardown once. Worker/supervisor values decomposition only. Outer prefix additional,tailunknown. Prior training/engineering/source/review additional;not lifetime or strict globalCPU proof.",
+  "independent_saved_review_sha256": "d5a2f0ceb35e358920fa4fe04edac40c4252757437ee26ef7d49fcd362399062"
+}

@@ -1,0 +1,163 @@
+{
+  "arms": {
+    "dense_active": {
+      "cost": 1841,
+      "critical_fidelity": 1,
+      "evidence_recall": 1.0,
+      "task_success": 1.0
+    },
+    "dense_fixed": {
+      "cost": 2751.5,
+      "critical_fidelity": 1,
+      "evidence_recall": 1.0,
+      "task_success": 1.0
+    },
+    "global_active": {
+      "cost": 1760,
+      "critical_fidelity": 1,
+      "evidence_recall": 1.0,
+      "task_success": 1.0
+    },
+    "global_fixed": {
+      "cost": 2630,
+      "critical_fidelity": 1,
+      "evidence_recall": 1.0,
+      "task_success": 1.0
+    }
+  },
+  "bootstrap_replicates": 2000,
+  "confidence_method": "95% percentile bootstrap resampling source groups and training seeds, paired across all arms; unadjusted diagnostic intervals",
+  "cost_metric": "incurred online charges plus unresolved reservations; final unknown cost is not imputed as zero",
+  "costs": {
+    "evaluation_total_once": 1,
+    "online_by_phase": {
+      "acquisition": 80,
+      "cancellation": 0,
+      "communication": 71508,
+      "decision": 80,
+      "encoding": 80,
+      "evaluation": 0,
+      "failure": 0,
+      "inference": 80,
+      "planning": 32,
+      "training": 0,
+      "wait": 0
+    },
+    "online_total": 71860,
+    "pending_reservations": 0,
+    "training_total_once": 200
+  },
+  "effects": {
+    "cost": {
+      "active": {
+        "ci95": [
+          -992.5,
+          -829.0
+        ],
+        "estimate": -890.25
+      },
+      "dense": {
+        "ci95": [
+          0.0,
+          303.75
+        ],
+        "estimate": 101.25
+      },
+      "interaction": {
+        "ci95": [
+          -121.5,
+          0
+        ],
+        "estimate": -40.5
+      },
+      "joint": {
+        "ci95": [
+          -992.5,
+          -545.5
+        ],
+        "estimate": -789.0
+      }
+    },
+    "critical_fidelity": {
+      "active": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      },
+      "dense": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      },
+      "interaction": {
+        "ci95": [
+          0,
+          0
+        ],
+        "estimate": 0
+      },
+      "joint": {
+        "ci95": [
+          0,
+          0
+        ],
+        "estimate": 0
+      }
+    },
+    "task_success": {
+      "active": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      },
+      "dense": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      },
+      "interaction": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      },
+      "joint": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "estimate": 0.0
+      }
+    }
+  },
+  "episodes": 4,
+  "hold_reasons": [
+    "Synthetic protocol fixture: features are deterministic shape diagnostics, not learned latents.",
+    "Origin-to-view mapping, source authenticity, training independence and billing receipts need independent attestation.",
+    "No controlled continuation branches: per-observation terminal causal gain is unmeasured.",
+    "No immutable preregistration timestamp or adjusted confirmatory multiple-comparison audit is established.",
+    "Synthetic sources cannot establish real-task qualification.",
+    "Confirmation thresholds were not preregistered."
+  ],
+  "independent_training_verified": false,
+  "manifest_sha256": "4207c9418ca5127f316dbf14941f1ee8b6045b7a468e6f5ec8ea94b336c17ac2",
+  "paired_traces": 32,
+  "per_observation_causal_gain": null,
+  "schema": "perc1.report.v1",
+  "scientific_qualified": false,
+  "source_groups": 4,
+  "source_provenance": "UNATTESTED",
+  "status": "HOLD",
+  "structural_validation": "PASS",
+  "thresholds_met": null,
+  "training_seed_receipts": 2
+}

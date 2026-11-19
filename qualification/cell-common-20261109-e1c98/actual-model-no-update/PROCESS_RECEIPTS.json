@@ -1,0 +1,170 @@
+{
+  "requests": {
+    "prepare_001": {
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py",
+        "smollm-prepare-f070-v1",
+        "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "/usr/bin/python3",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-001-prepare_and_run-v1.py",
+        "prepare",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-001-plan-f070.json",
+        "fa871a67f7a7c54c08493bc842e7c23ea5b2f250caf76d1c4d7ff7cd80b92c6a"
+      ],
+      "cwd": "/home/qq/hepta-cell-common-e1c98-20261109",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "cpu_quota_percent": 400,
+      "memory_max_bytes": 8589934592,
+      "timeout_seconds": 900,
+      "idempotency_key": "e1c98-smollm-prepare-f070-v1"
+    },
+    "prepare_002": {
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py",
+        "smollm-prepare-f070-v2",
+        "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "/usr/bin/python3",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-prepare_and_run-v2.py",
+        "prepare",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-plan-f070.json",
+        "429b01e4955c816ff154457e8555ee30f41b879479999df218280727930bf4c2"
+      ],
+      "cwd": "/home/qq/hepta-cell-common-e1c98-20261109",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "cpu_quota_percent": 400,
+      "memory_max_bytes": 8589934592,
+      "timeout_seconds": 900,
+      "idempotency_key": "e1c98-smollm-prepare-f070-v2"
+    },
+    "model": {
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py",
+        "smollm-execute-f070-v1",
+        "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "/usr/bin/python3",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-prepare_and_run-v2.py",
+        "execute",
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-plan-f070.json",
+        "429b01e4955c816ff154457e8555ee30f41b879479999df218280727930bf4c2"
+      ],
+      "cwd": "/home/qq/hepta-cell-common-e1c98-20261109",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "cpu_quota_percent": 400,
+      "memory_max_bytes": 8589934592,
+      "timeout_seconds": 240,
+      "idempotency_key": "e1c98-smollm-execute-f070-v1"
+    },
+    "collection": {
+      "host": "ai395",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-collect-v1.py"
+      ],
+      "cwd": "/home/qq/hepta-cell-common-e1c98-20261109",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "cpu_quota_percent": 200,
+      "memory_max_bytes": 2147483648,
+      "timeout_seconds": 180,
+      "idempotency_key": "e1c98-smollm-collect-f070-v1"
+    }
+  },
+  "launches": {
+    "prepare_001": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py\",\n      \"smollm-prepare-f070-v1\",\n      \"f070113bb61cda492d2668b3afbbcda13e11fa52\",\n      \"/usr/bin/python3\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-001-prepare_and_run-v1.py\",\n      \"prepare\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-001-plan-f070.json\",\n      \"fa871a67f7a7c54c08493bc842e7c23ea5b2f250caf76d1c4d7ff7cd80b92c6a\"\n    ],\n    \"created_unix_ms\": 1794226798609,\n    \"cwd\": \"/home/qq/hepta-cell-common-e1c98-20261109\",\n    \"env_keys\": [\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1c0404011-5e21-981\",\n    \"idempotency_key\": \"e1c98-smollm-prepare-f070-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c0404011-5e21-981\",\n    \"request_digest\": \"b2330f77d9353b6a729120700a17ca835665a5246a48a528af93395715303614\",\n    \"request_fingerprint\": 12840623969983085418,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1c0404011-5e21-981\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1c0404011-5e21-981\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "prepare_002": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py\",\n      \"smollm-prepare-f070-v2\",\n      \"f070113bb61cda492d2668b3afbbcda13e11fa52\",\n      \"/usr/bin/python3\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-prepare_and_run-v2.py\",\n      \"prepare\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-plan-f070.json\",\n      \"429b01e4955c816ff154457e8555ee30f41b879479999df218280727930bf4c2\"\n    ],\n    \"created_unix_ms\": 1794226931697,\n    \"cwd\": \"/home/qq/hepta-cell-common-e1c98-20261109\",\n    \"env_keys\": [\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1c04247f1-5e21-98b\",\n    \"idempotency_key\": \"e1c98-smollm-prepare-f070-v2\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c04247f1-5e21-98b\",\n    \"request_digest\": \"e7458a7c2bb046b9d044e68c5e05f87138b2e0dc544e7bb6d356e656899061fa\",\n    \"request_fingerprint\": 16664878262067939001,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1c04247f1-5e21-98b\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1c04247f1-5e21-98b\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "model": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/hepta-cell-common-e1c98-20261109/run_common_native.py\",\n      \"smollm-execute-f070-v1\",\n      \"f070113bb61cda492d2668b3afbbcda13e11fa52\",\n      \"/usr/bin/python3\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-prepare_and_run-v2.py\",\n      \"execute\",\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-plan-f070.json\",\n      \"429b01e4955c816ff154457e8555ee30f41b879479999df218280727930bf4c2\"\n    ],\n    \"created_unix_ms\": 1794227002993,\n    \"cwd\": \"/home/qq/hepta-cell-common-e1c98-20261109\",\n    \"env_keys\": [\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1c0435e71-5e21-994\",\n    \"idempotency_key\": \"e1c98-smollm-execute-f070-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c0435e71-5e21-994\",\n    \"request_digest\": \"bdd2476c342a84f86723659f5f55541decf5bd707e3bfd1ce20423f690536930\",\n    \"request_fingerprint\": 13678073548334859512,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1c0435e71-5e21-994\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1c0435e71-5e21-994\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "collection": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"/home/qq/hepta-cell-common-e1c98-20261109/model-no-update-002-collect-v1.py\"\n    ],\n    \"created_unix_ms\": 1794227570238,\n    \"cwd\": \"/home/qq/hepta-cell-common-e1c98-20261109\",\n    \"env_keys\": [\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"ai395\",\n    \"id\": \"1a1c04c063e-5e21-9bc\",\n    \"idempotency_key\": \"e1c98-smollm-collect-f070-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qq/.local/state/hepta-runtime-mac-worker/jobs/1a1c04c063e-5e21-9bc\",\n    \"request_digest\": \"43cda4c95a39390d05e777a9a3a439413d3002eb49687f13213d93f5a081942d\",\n    \"request_fingerprint\": 4885742355475937549,\n    \"ssh_target\": \"ai395-lan\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1c04c063e-5e21-9bc\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1c04c063e-5e21-9bc\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "terminals": {
+    "prepare_001": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"at_unix_ms\": 1794226810137,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 1,\n  \"job_id\": \"1a1c0404011-5e21-981\",\n  \"launch_nonce\": \"ec020d0e97145924fdaa27b7d59eb304\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 6792,\n      \"stored\": 6792\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"failed\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "prepare_002": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"at_unix_ms\": 1794226943686,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1c04247f1-5e21-98b\",\n  \"launch_nonce\": \"cf374bf3711575c82f0ff3d5313d25b7\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 5638,\n      \"stored\": 5638\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "model": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"at_unix_ms\": 1794227050029,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1c0435e71-5e21-994\",\n  \"launch_nonce\": \"9a5a0193250a48f97bdcd09509c6bc5a\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 6445,\n      \"stored\": 6445\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "collection": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"at_unix_ms\": 1794227571447,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1c04c063e-5e21-9bc\",\n  \"launch_nonce\": \"686cfc065ea6422dce72ecca55224583\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 965,\n      \"stored\": 965\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "notes": "Requests are requested resource envelopes; terminal records report actual exits and output durability. Post-collection systemd defaults after unit removal are not evidence of runtime resource limits."
+}

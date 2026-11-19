@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.learn.isolated-453-main-validation-peer-review.v1",
+  "status": "STATIC PEER REVIEW ONLY; no blocking finding in the exact artifacts reviewed",
+  "reviewer": "/root/learn_evaluator_budget",
+  "source": {
+    "sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184"
+  },
+  "reviewed_artifacts": [
+    {
+      "role": "outer",
+      "git_blob": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+      "bytes": 101858,
+      "sha256": "98ebeb50134af56141dfbc06f5c3cf9d24d552719f8d004e6387b47009db00a3"
+    },
+    {
+      "role": "request",
+      "git_blob": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+      "bytes": 106352,
+      "sha256": "fb6d46182ec9fc9d49ffb6ed1e5611175ab93986afc0fcf4aa955344f81784cd"
+    },
+    {
+      "role": "contract",
+      "git_blob": "452892758cc2b9bbe0d907407556555bcabf9ffe",
+      "bytes": 9306,
+      "sha256": "f3e161a8e9ce81dd59ad2b8e22da7ed5d81e76e0cf3341358232138db83537ce"
+    },
+    {
+      "role": "edits",
+      "git_blob": "0ca99ee2e0328d5f8699febd0a3bd4d987308f8a",
+      "bytes": 17709,
+      "sha256": "2c801fc39b1d022022c84c2865525805ff0a5d4c1ba6eb6bc4ec5ecad3b356b0"
+    },
+    {
+      "role": "patch",
+      "git_blob": "05bf3d5f1975e04bc33c5921bd1de8db62efa296",
+      "bytes": 42650,
+      "sha256": "2541c060ac0fa96ae0b53fe8ce4a6153b2d0e1346eba8a690fd8a333112fe377"
+    }
+  ],
+  "baseline": {
+    "outer": "d446168389b2d43af74e2d7066b1e3bb9db5de87",
+    "request": "b9c37cebd498393cdfa87dc52c8820a24a4f10bc",
+    "native": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+    "source_runner": "0397e37ba2f93117bede8ab547404a72b8f9946c"
+  },
+  "exact_reconstruction": {
+    "edits": 21,
+    "forward_and_reverse_body_equal": true,
+    "forward_and_reverse_whole_equal": true,
+    "native_single_literal_reverse_whole": true,
+    "source_assignment_raw_equal": true
+  },
+  "independent_unified_patch_reconstruction": [
+    {
+      "old_path": "a/prepare-and-validate.py",
+      "new_path": "b/prepare-isolated-and-validate.py",
+      "hunks": 20,
+      "removed": 23,
+      "added": 139,
+      "complete_reconstruction_equal": true
+    },
+    {
+      "old_path": "a/native-runner.py",
+      "new_path": "b/native-runner.py",
+      "hunks": 1,
+      "removed": 1,
+      "added": 1,
+      "complete_reconstruction_equal": true
+    }
+  ],
+  "complete_embedded_checks": {
+    "embedded_native": {
+      "blob": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "bytes": 13265,
+      "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+    },
+    "embedded_source": {
+      "blob": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126,
+      "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+      "equal_old": true
+    },
+    "old_native": {
+      "blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "bytes": 13257
+    }
+  },
+  "request": {
+    "keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "argc": 3,
+    "prefix": [
+      "-B",
+      "-c"
+    ],
+    "cwd": "/home/qian-qi",
+    "env": {
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "key": "learn-ce434-4537458b51b6-isolated-full-source-native-v1",
+    "outer_equal": true,
+    "all_other_fields_equal": true
+  },
+  "actual_helper_source_pins": [
+    {
+      "path": "scripts/hepta_cell_test_helpers.py",
+      "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "git_blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "bytes": 18658,
+      "sha256": "43802e867f91225efcef9ea4763567c0aeabd5a07b6c03000eb033501b4eb9ae",
+      "actual_fixed_path_and_full_blob_verified": true
+    },
+    {
+      "path": "scripts/hepta_ci_v8.py",
+      "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "git_blob": "088b737c0cca7386161e06b254c794bf972380ad",
+      "bytes": 3153,
+      "sha256": "92bae0083c04bc510d198d4b3c93ba4ced5bf842889dea0914d6a836422ff23c",
+      "actual_fixed_path_and_full_blob_verified": true
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "bytes": 10206,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "actual_fixed_path_and_full_blob_verified": true
+    }
+  ],
+  "findings": [
+    {
+      "area": "Original worktree preservation",
+      "result": "Exact old path/head a671/tree647b/clean is observed before any output/fetch, after fetch, after worktree creation, before tests and after both runners/self-test. The original directory identity is retained and checked before a success; errors retain paths and attempt a new read-only old-source observation. No switch/reset/clean/force/remove command targets the old worktree."
+    },
+    {
+      "area": "Actual earlier main terminals",
+      "result": "The original2396-byte outer and51057-byte native files retain their exact known SHA256 values. The new bounded single-descriptor reader checks owned regular single-link files, O_NOFOLLOW and pre/open/post/path identities; hashes and JSON checks use the same full bytes. The exact old failed-source/clean completion is required, without inventing a schema field."
+    },
+    {
+      "area": "Exclusive new checkout",
+      "result": "All new repo/output destinations reject any existing path, including broken symlinks. The existing owned parent/common Git directory is checked. Only the new empty0700 directory is passed to one git worktree add --detach exact453; there is no force or automatic recovery/reuse. Afterwards exact HEAD/tree/clean, root identity and original common directory are required."
+    },
+    {
+      "area": "Space and shared storage",
+      "result": "Admission computes the actual fetched candidate's listed blob lengths with allocation rounding, directory blocks, path-dependent index estimate and fixed64MiB admin reserve against current home bytes/inodes. This is a checkout precondition, not a new testing budget or a proof that Cargo will fit. Original Git objects and targetV2 are intentionally still shared."
+    },
+    {
+      "area": "Real execution locations",
+      "result": "Source/native/self-test calls explicitly pass the isolated repo cwd; perform also resolves default cwd at call time. The complete native driver sets CODEX_REPO_ROOT from its strictly matched new path and retains fresh helper output. Actual453 helper source derives its root from invoked __file__, V8 uses CODEX_REPO_ROOT/codex-rs and nextest derives fixed config from its invoked script. No old-repo default capture was found."
+    },
+    {
+      "area": "Child and exception semantics",
+      "result": "Each outer operation creates one Popen and waits/communicates on that same handle. Exceptions do not dispatch another process, send signals, clean/reset paths or overwrite prior evidence. Unknown old-source observation is marked uncertain and cannot pass. These statements concern new outer code; original native/CI child deadline behavior is preserved."
+    },
+    {
+      "area": "Original validation gates",
+      "result": "Entire source0397 assignment is byte-identical. Native21cb differs from dd7 only in the authorized exact-repository literal, with strict resolve and equality retained. Counts443/201/43,6777 Rust, original helper/V8/history/target identities, native just test selection, threads2/retries0 and original bounds remain. No gate result is prefilled."
+    },
+    {
+      "area": "Published contract and request",
+      "result": "Read the complete452892 contract and0ca99 exact edits; metadata agrees with actual artifacts. All21 body edits apply uniquely in both directions and recover complete outer files after restoring both embedded literals. Independently applied all20 outer and1 native unified-patch hunks. New request embeds whole ae3c and changes only the outer and independent key from b9c; original[-B,-c], host/executable/cwd/env metadata stay exact."
+    }
+  ],
+  "limitations": [
+    "No H dispatch, OS command, Python parser/test/verifier, Rust/native run, formatter, source edit or PR action was performed by this peer.",
+    "This is worktree/check-out isolation, not whole-filesystem or target isolation. It does not establish actual free space, worktree creation, helper validity or pass results.",
+    "The earlier frame exporter's registry terminal remains separately unknown. Published Git evidence and this preparation do not make that job complete or absent.",
+    "The old453 request is reported never dispatched; this review checks a separate explicit new key and does not dispatch either request.",
+    "Source453 has not gained ordinary A/B/C acceptance, evaluator-only custody, deployment authority or any new permissions from this preparation."
+  ],
+  "actual_results": {
+    "isolated_creation": null,
+    "source443": null,
+    "native201": null,
+    "Root29": null,
+    "fullcaller": null,
+    "maintenance": null,
+    "ordinary_acceptance": 0
+  }
+}

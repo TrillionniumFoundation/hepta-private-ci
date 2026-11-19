@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-existing-backup-c2-inventory-summary-v1",
+  "inventory_sha256": "6e54a6c3f75e0e676d8e5e214f11f52d9affb61d9166f0fe742f6eb4f295a613",
+  "inventory_bytes": 46780,
+  "archive_bytes": 63631371,
+  "archive_sha256": "5e2e8a3192b2e7d238b095aaa34cb6abf1a981d654af1cc94bb86272cc681fe1",
+  "outer_members": 354,
+  "nested_archives": 10,
+  "nested_members": 445,
+  "pt_files": 57,
+  "pt_size_range_bytes": [
+    23399,
+    34481
+  ],
+  "selected_c2_checkpoint_size_matches": 0,
+  "reported_conclusion": "Existing backup contains factorial/GRU checkpoints, not six selected original C2 states or original c385 source/data; these cannot replace the fixed real export.",
+  "scope": "summary of retained same-session inventory, no additional archive scan or model execution"
+}

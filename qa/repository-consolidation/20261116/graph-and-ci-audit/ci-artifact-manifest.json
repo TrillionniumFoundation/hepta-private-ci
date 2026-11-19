@@ -1,0 +1,1103 @@
+{
+  "schema": "hepta.repository-consolidation.ci-artifacts/v1",
+  "repository_prefix": "qa/repository-consolidation/20261116/graph-and-ci-audit",
+  "source_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+  "source_tree": "751e50a0172e467176be68a1331519c8ea171307",
+  "entry_count": 65,
+  "maximum_blob_bytes": 500000,
+  "gzip_parameters": {
+    "mtime": 0,
+    "filename": "",
+    "compression_level": 9
+  },
+  "self_integrity": "The delivery index records this manifest's own hashes; its entries exclude itself to avoid self-reference.",
+  "artifacts": [
+    {
+      "path": "ci-evidence/baseline-285e971-check-runs.json.gz",
+      "encoding": "gzip",
+      "bytes": 8033,
+      "sha256": "51ba77afb29361bb17aae82cc95c065f83ef562abf5b7ae8c425b4e577c12310",
+      "git_blob_sha": "73a7cf4a403f1b786e7d8dfac5b7d13988179219",
+      "source": "audit/ci_audit/baseline-285e971-check-runs.json",
+      "uncompressed_bytes": 110138,
+      "uncompressed_sha256": "9ae46c7c8a77d0747adf47439394c6ba798a6dd8df6cd973f37697221a429ace",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/checkpoint-source-manifest-v6.json.gz",
+      "encoding": "gzip",
+      "bytes": 4045,
+      "sha256": "7e71c3e7c66ec8f727c8af8dad0a352f8234c8e05cd534fa38e82493d1ebb2e7",
+      "git_blob_sha": "243d14541ab7ac76285135d7149a1ca363ded22e",
+      "source": "audit/checkpoint-source-manifest-v6.json",
+      "uncompressed_bytes": 13499,
+      "uncompressed_sha256": "b30ac03e8717c59d8a04598bbb302dd25b2970461d414d232e91f02767dd5b65",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-alerts-pr-head-page1.json.gz",
+      "encoding": "gzip",
+      "bytes": 15066,
+      "sha256": "4bb1878ddec1bba4998850d3290ec905f1d67a0e68c425d42fc6e1013b312ab3",
+      "git_blob_sha": "4333444fe3516b83243d6d93e6774af404b246b7",
+      "source": "audit/ci_audit/codeql-285e971-alerts-pr-head-page1.json",
+      "uncompressed_bytes": 371593,
+      "uncompressed_sha256": "aa2c9fb5132315e525d42778ded1b4e3d841ffd327c90e773329ce448575ecde",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-alerts-pr-head-page2.json.gz",
+      "encoding": "gzip",
+      "bytes": 11951,
+      "sha256": "1628627bba240abefeec697215438a46170dca0d02d583ee0618905ac920f585",
+      "git_blob_sha": "f8757cee8713365eec1d729a9996c4851430eaff",
+      "source": "audit/ci_audit/codeql-285e971-alerts-pr-head-page2.json",
+      "uncompressed_bytes": 220360,
+      "uncompressed_sha256": "7f85a1ef92570599f741b7af89435a805a34e2adf4d765d0f1a96c214fcc8279",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-analysis2176372976.sarif.json.gz",
+      "encoding": "gzip",
+      "bytes": 52475,
+      "sha256": "acf7c4f9052b48affe88c6b21a1f9def724f8dfe1632898063b118dc267f841b",
+      "git_blob_sha": "5c1758c6b72ce29732edfab73b0df3153ba0cb08",
+      "source": "audit/ci_audit/codeql-285e971-analysis2176372976.sarif.json",
+      "uncompressed_bytes": 946187,
+      "uncompressed_sha256": "72e2c576fc5231498229f871e7bef98b78bb4e6606b8d1ecab1f5c5fea39774e",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-annotations.json.gz",
+      "encoding": "gzip",
+      "bytes": 1039,
+      "sha256": "ff78986907961e4840c084c51d7ea4937e731f5f582097b3fe0ab48a903070be",
+      "git_blob_sha": "1c5940e0c9b4d5e0399229349c3d4b3e6acd1e45",
+      "source": "audit/ci_audit/codeql-285e971-annotations.json",
+      "uncompressed_bytes": 10906,
+      "uncompressed_sha256": "cdaf05efc330a56c734d85a4ccc28c0f47b30ba66e1ae241a591403cdf8bba12",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-fixture-triage-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 11314,
+      "sha256": "2a4e830d5f317ce6215b711a7e4cb1f6e24dbbcea0175e88d96673bc3ffd1aa9",
+      "git_blob_sha": "847e7d36e6ef59bce10df1ccd6d54ccd6caccc33",
+      "source": "audit/ci_audit/codeql-285e971-fixture-triage-v1.json",
+      "uncompressed_bytes": 82469,
+      "uncompressed_sha256": "71eb15ab53f83e9b5e0a98c831f063aefb4368ca16b848a54684d3f5c6bf8001",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-285e971-triage-queue-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 2995,
+      "sha256": "7216427e1316f1e10605efe622dc6b054b4fffab691eb4a23008437eb2db13a1",
+      "git_blob_sha": "183d63e49fe4334a066d4e5f2dcbcd06c462632e",
+      "source": "audit/ci_audit/codeql-285e971-triage-queue-v1.json",
+      "uncompressed_bytes": 37778,
+      "uncompressed_sha256": "4d7525198d94d0111e7c2319d062f48ec5f96374bccf4815e826037763fb5c23",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-login-nine-review-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 7093,
+      "sha256": "1fe6271109b4a63e22ad0e15ca1bf966e16b2ebc70f92ee8dccb949338e36d6e",
+      "git_blob_sha": "b5a6a1ac3b6a3251e41fbbb61ea141dab1c43c06",
+      "source": "audit/rust_review/codeql-login-nine-review-v1.json",
+      "uncompressed_bytes": 19471,
+      "uncompressed_sha256": "440006c5344a9da9144fff00acc502f6142d2900b63aa48e897a8b585e89ce93",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/codeql-root-four-source-review.json.gz",
+      "encoding": "gzip",
+      "bytes": 2466,
+      "sha256": "b02d3656ad42d834e4582cfe240a0aa99a4a860f7d144adbad8d617dcd2b922a",
+      "git_blob_sha": "aee336493d3fa4230ae5a4635d87e693d9f038ff",
+      "source": "audit/root-publication/codeql-root-four-source-review.json",
+      "uncompressed_bytes": 6278,
+      "uncompressed_sha256": "5cc3139342a8325ead479ba22d84120e44aed6ad322a14af941b52c9d6b446d0",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v4-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 1563,
+      "sha256": "d1cc19ef91e074d9e63e74f101d348682776d035786400cf170b7ffe0e324620",
+      "git_blob_sha": "54576e78be1f38e7f37b4230abf301a709aa2688",
+      "source": "audit/combined-native-v4-invocation.json",
+      "uncompressed_bytes": 4004,
+      "uncompressed_sha256": "ceb4b7be0bd6c3e8e2dfa73221586ae32419654661e1bb64a5a0428f9a3d75ea",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v4-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 1604,
+      "sha256": "01508eb31a0aa0c14d7a711edd8254d7df39f1135c8e5b88daf6d1c619330bce",
+      "git_blob_sha": "54cb25157a5ff4ecf2749d869f8372676dd05a0c",
+      "source": "audit/combined-native-v4-result.json",
+      "uncompressed_bytes": 4079,
+      "uncompressed_sha256": "a762a6408dbc5f4191a5a384ce11ed6546da6f7af9268fa49b8f3b657ee8ceee",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v4-tests.log.gz",
+      "encoding": "gzip",
+      "bytes": 13903,
+      "sha256": "30b63518d958ac6f64775747e4247ae8e263b27c8d726b20f89eba0054501229",
+      "git_blob_sha": "3153d1a6669440b2dcf35ca7250e1f8351a51dad",
+      "source": "audit/combined-native-v4-tests.log",
+      "uncompressed_bytes": 107869,
+      "uncompressed_sha256": "1fd434ffc64c85a1798cb00a999db4d32e5f948ee83ea9fbeec39892005f13f8",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v5-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 1957,
+      "sha256": "741d51c4f8da46ac428ca92bf1a2b2bb7e5f6009be42b407cc2b65c8e8766e0d",
+      "git_blob_sha": "2299ac30acefc8147a13e00b2268484c0f68cc8f",
+      "source": "audit/combined-native-v5-invocation.json",
+      "uncompressed_bytes": 5005,
+      "uncompressed_sha256": "64ffa69e6b53a21b0898cbd5a0d76ff639a7a4f399c0fcbfb419ea14ed153f23",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v5-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 2040,
+      "sha256": "64382c6e6584f611645df8ba8bb17eba80c39714fdbb16559eeb9f01b7f6a976",
+      "git_blob_sha": "02136014ecc75829227244cfcd62f7479594f64b",
+      "source": "audit/combined-native-v5-result.json",
+      "uncompressed_bytes": 5158,
+      "uncompressed_sha256": "31e983452b5dcbb11371b08235d823f277c03832ed5961593cb176b5d1f65e5f",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/combined-native-v5-tests.log.gz",
+      "encoding": "gzip",
+      "bytes": 15468,
+      "sha256": "c865b8ee39200155c04de140dd9cd81ee389cad2981c94ec4d5ff671d32072e8",
+      "git_blob_sha": "214ef373789b90406fa476f00362e5900fabcda5",
+      "source": "audit/combined-native-v5-tests.log",
+      "uncompressed_bytes": 254414,
+      "uncompressed_sha256": "f6cf3bf16e3be4cb56ecc094766e3751fab359716e03c83b24a8eb2d60a74746",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/control-drain-diagnosis-285e971.json.gz",
+      "encoding": "gzip",
+      "bytes": 4848,
+      "sha256": "42dadb60a7946c195e19926103f250f43a303bd1b60853b8cd140071b78f89fc",
+      "git_blob_sha": "0e47da7473237f357bb6e55d52ddc67398dd71e3",
+      "source": "audit/ci_audit/control-drain-diagnosis-285e971.json",
+      "uncompressed_bytes": 16226,
+      "uncompressed_sha256": "ae1512c9a5ff92d590face198e84d0d6b1744f13c414a70b56cc38353472bd87",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/feature-clippy-v2-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 335,
+      "sha256": "d9f62c784777a7c5ef57ac2120e560bb4a482ee148cc4a60751bc339d853048c",
+      "git_blob_sha": "f8a04c4fca8b3d5ee5de8f2cbf80469a6bede9da",
+      "source": "audit/feature-clippy-v2-result.json",
+      "uncompressed_bytes": 517,
+      "uncompressed_sha256": "c1fea4224bbabcfc49cd3226b7afada2808902a352f454793ee96c6fe988b411",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/feature-clippy-v2-tests.log.gz",
+      "encoding": "gzip",
+      "bytes": 29388,
+      "sha256": "d7be96a90c710e6c496e8bc2f914d5cbed6ae884a959e1e29288227f3fbf0ee6",
+      "git_blob_sha": "80aaabef574c048c3e95d5dd2bbaea5ac271755d",
+      "source": "audit/feature-clippy-v2-tests.log",
+      "uncompressed_bytes": 203756,
+      "uncompressed_sha256": "51fd72562a8078754e47d6e080e4a0d485fc13410ce2effc77d3145b6642784d",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-full-b4-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 3414,
+      "sha256": "8085e33c7a8b58d2fb5054c28c4cc673be72fb5579b4c4149ff78d949527ae5e",
+      "git_blob_sha": "6cbb23f70fc2d9d15c651ea4acb372dc279cb482",
+      "source": "audit/ci_audit/final55/full-b4-invocation.json",
+      "uncompressed_bytes": 8063,
+      "uncompressed_sha256": "790074a2c030d07db89c847b58d22627ed66fa33a3312b8b9eda671ce5c0afe4",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-full-b4-receipt.json.gz",
+      "encoding": "gzip",
+      "bytes": 3687,
+      "sha256": "f2fc516e2855dc7d5d76bbf1089f79e5e16719e42c777428ed3c03e7f4fc54d9",
+      "git_blob_sha": "b3e723a5539a8e91686d68a7cda03b49c4cf90d6",
+      "source": "audit/ci_audit/final55/full-b4-receipt.json",
+      "uncompressed_bytes": 15873,
+      "uncompressed_sha256": "30252ebb9d8a3bff4cef5c6ea2d3886448db895bdbee443863317ebe584c1d7f",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-full-b4.log.gz",
+      "encoding": "gzip",
+      "bytes": 68,
+      "sha256": "278e64af3abaf91afd9ce1f8c8a87da5e618d251e073a6ecc1e1caf1da9f3671",
+      "git_blob_sha": "96a09650ceff63eaff2b60108018fb2e6b6055da",
+      "source": "audit/ci_audit/final55/full-b4.log",
+      "uncompressed_bytes": 1418,
+      "uncompressed_sha256": "a6a5c0245f93b86741dcbca92bcf0de5d5edf297c56ae7acded75c0e91f264e2",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-caller-proof-boundaries.jsonl.gz",
+      "encoding": "gzip",
+      "bytes": 78155,
+      "sha256": "d9b9ea879ec189fec8acc1d2a5c8dc86a56ac68cf46443c32b7fad97ac1daf50",
+      "git_blob_sha": "7c42655dfa04e9d32ae04665445fbd931131224d",
+      "source": "audit/ci_audit/final55/parallel-caller-proof-boundaries.jsonl",
+      "uncompressed_bytes": 715924,
+      "uncompressed_sha256": "7e9452634ba019ac65c8d81a329a6352f10ccfe3eb25a5c952841ce0b385f325",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-caller-proof-inputs.json.gz",
+      "encoding": "gzip",
+      "bytes": 379590,
+      "sha256": "b160ea04a0dc81c835703d62d07c6b575b571da8ece1c7798b2fffe070a6cb67",
+      "git_blob_sha": "71e5d0f6b915997ca7832d4cf4e9a8117f8eb060",
+      "source": "audit/ci_audit/final55/parallel-caller-proof-inputs.json",
+      "uncompressed_bytes": 1178534,
+      "uncompressed_sha256": "f850ee8e70f72e8c457f2f8adb4323676d1ce183cd0a2055fd8ee37d132aac54",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-callers-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 3428,
+      "sha256": "2e3ed29d45fdd577c6f447531763ebb4c59b0e7be8e3f221a5b01a98c499da8f",
+      "git_blob_sha": "4125750ef574253d5ff4f08a55ac054c1f96ae3c",
+      "source": "audit/ci_audit/final55/parallel-callers-invocation.json",
+      "uncompressed_bytes": 8122,
+      "uncompressed_sha256": "3f7a7e131cbf9914e8f34e6106eb514b6215278e68d351114a433ff2b30f4978",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-callers-receipt.json.gz",
+      "encoding": "gzip",
+      "bytes": 3691,
+      "sha256": "515794e5fd3e40254c3ebb7295001ea7c6cb7cf3fa459a74db7fd0f246144f86",
+      "git_blob_sha": "e70378e876f393cca4eb4b6bee030a25df537365",
+      "source": "audit/ci_audit/final55/parallel-callers-receipt.json",
+      "uncompressed_bytes": 15940,
+      "uncompressed_sha256": "5cda0174bb8ede7b70619f0519250e1214fff0170a924af06d4d4407974c565f",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-callers.log.gz",
+      "encoding": "gzip",
+      "bytes": 884,
+      "sha256": "94c64a87cda9bf7623817b844642bb78d13ca6f20fe9c71a014dc3356e68aead",
+      "git_blob_sha": "5b83d64bffa3eeb1d1d2da6d33182897d6521747",
+      "source": "audit/ci_audit/final55/parallel-callers.log",
+      "uncompressed_bytes": 2791,
+      "uncompressed_sha256": "2b5dcf1c5edca8f834aed145c6e16b08ee640dcf17fcfc61f2afb9930c17f3c6",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-full-caller-proof.json.gz",
+      "encoding": "gzip",
+      "bytes": 59709,
+      "sha256": "09221655ac57b0bf49ff4f053e2fdfecbe6679e3b0454998528403ca0defc405",
+      "git_blob_sha": "5061af50694d9d2a14ec9cc50e4ca860aee1da3a",
+      "source": "audit/ci_audit/final55/parallel-full-caller-proof.json",
+      "uncompressed_bytes": 766890,
+      "uncompressed_sha256": "3c40218e1134ab84502894aa552f5b2cfd7034697e4049de16b2537da66be6d2",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-parallel-full-caller-proof.receipt.json.gz",
+      "encoding": "gzip",
+      "bytes": 538,
+      "sha256": "6dd0457f2888442bebe5023894664ef1d8303e0e2025dee91d3053b3c42643c4",
+      "git_blob_sha": "44654f4d8bd52032527e01373bae3a14d7a96fbd",
+      "source": "audit/ci_audit/final55/parallel-full-caller-proof.receipt.json",
+      "uncompressed_bytes": 894,
+      "uncompressed_sha256": "2f9aac72c187cbef1983a5f92acff52b0741266d8f9583f8fde247b967442e5c",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-run_parallel_full_caller_proof.py.gz",
+      "encoding": "gzip",
+      "bytes": 2565,
+      "sha256": "bf39c6734419fd78cde552050c2824391ae30eec030ed0a04b0b7dd8f96d7cc7",
+      "git_blob_sha": "f389eef3f4a6a286d52667cf348ec489a448e406",
+      "source": "audit/ci_audit/final55/run_parallel_full_caller_proof.py",
+      "uncompressed_bytes": 7835,
+      "uncompressed_sha256": "7e0c7a40f37eaf162ba1160ec4c2dab5cc3a00e19d308f492817d5aad33b544f",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-runner-adaptation-receipt.json.gz",
+      "encoding": "gzip",
+      "bytes": 362,
+      "sha256": "de0bc7371465d989c6b053d1ebebc3f401f4799bcfbcf371d1685369a82fe648",
+      "git_blob_sha": "1389391a8d3c24cf8c33d21f9cc35c282772ef52",
+      "source": "audit/ci_audit/final55/runner-adaptation-receipt.json",
+      "uncompressed_bytes": 629,
+      "uncompressed_sha256": "e80b4760b0ee4c8dcd28a31d3ca442f3e89700490cc5742bd5c4f518f3e16e35",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/final55-setup-receipt.json.gz",
+      "encoding": "gzip",
+      "bytes": 402,
+      "sha256": "4042ac635ab576ad4bff9c401c6b2f1670e483e081199b614c321d4ac39749f8",
+      "git_blob_sha": "80ba60a7ff6911e28d70787098dc75506639e8dd",
+      "source": "audit/ci_audit/final55-setup-receipt.json",
+      "uncompressed_bytes": 641,
+      "uncompressed_sha256": "eca1747cde65ae37f12b4b41c5374c76d3f02a7865a2ca2d2a36bde180d57d55",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/followup-platform-provider-findings-285e971.json.gz",
+      "encoding": "gzip",
+      "bytes": 5127,
+      "sha256": "124c9d82623cbe49694c0ccd6add7155e42c77c81a5bc01c87b26e48474ffe94",
+      "git_blob_sha": "8cebbbe1fe0d27ea5ade1ef85616bd79de6e5c41",
+      "source": "audit/ci_audit/followup-platform-provider-findings-285e971.json",
+      "uncompressed_bytes": 14819,
+      "uncompressed_sha256": "c53a79472739ddbbf90d08c326c089965fc201843a8fee05a86f5502637ed669",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/hosted-codespell-log-133206221195.txt.gz",
+      "encoding": "gzip",
+      "bytes": 11209,
+      "sha256": "6e6d361540d59354aa6b29ce16f947a96bf2adfc993d2c28448115e50d31a12c",
+      "git_blob_sha": "4ba580490fc73c3c9ca680f5dc91ce0623c979e4",
+      "source": "audit/ci_audit/hosted-codespell-log-133206221195.txt",
+      "uncompressed_bytes": 58273,
+      "uncompressed_sha256": "3d339d434ec2edd9354122933fbfdeb079db48db888a5baed4c86434b175e96d",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/linux-control-close-order-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 700,
+      "sha256": "80b0f47391738e4619423780d4162cedd06da6205f864eff5cb9191490b6e6aa",
+      "git_blob_sha": "4a99ea2c4ad7f481ed947b15a2e8e3d94f8816bf",
+      "source": "audit/ci_audit/linux-control-close-order-v1.json",
+      "uncompressed_bytes": 6339,
+      "uncompressed_sha256": "59727552b8686677a44a7e129933db5ab03a0a86909d21f6dd651177cabe70ca",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/mac-control-close-order-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 720,
+      "sha256": "0c7e63bc32c443882d5e942b98c32f9601965b30e31e2ea61624dee1d303a16d",
+      "git_blob_sha": "4cd3d22b2ff4c42a2d22fd275a801fb3810c4b5a",
+      "source": "audit/ci_audit/mac-control-close-order-v1.json",
+      "uncompressed_bytes": 7399,
+      "uncompressed_sha256": "8f74e18f28511ecfab958d79f12ad6b855c2ca1b91565c7ab0d4b14ec949ef08",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/mac-pty-probe-reproduction-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 1152,
+      "sha256": "10622d65ce0d62de03b9ff6e746fa0e0b21f2b9a013e063e1f1c93918da99d40",
+      "git_blob_sha": "e945cf7ff29952ba8178702b79821fc9b0e86008",
+      "source": "audit/ci_audit/mac-pty-probe-reproduction-v1.json",
+      "uncompressed_bytes": 10735,
+      "uncompressed_sha256": "46d8b69a237b4f8ffb59806e3401ca6ee7f6ce2644b60062013fcdcae36c2952",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/mac-pty-probe-reproduction-v1.py.gz",
+      "encoding": "gzip",
+      "bytes": 2540,
+      "sha256": "a79633b9a9ec5e78417d87bcaf676c7ec3bb100974588291b690e7abe8a25905",
+      "git_blob_sha": "03f72721f1baec07ef7d8bee7de0426118c07eda",
+      "source": "audit/ci_audit/mac-pty-probe-reproduction-v1.py",
+      "uncompressed_bytes": 8686,
+      "uncompressed_sha256": "1514be0ca0767d132c0b14d1baa586f34e09d9cb04909da3322dd4d55dcfebb6",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/native-control-close-order-v1.py.gz",
+      "encoding": "gzip",
+      "bytes": 1187,
+      "sha256": "e8134f06162a0f86686a0b06d587fb1f19046b72be0e4ad1c26c310321abfeb1",
+      "git_blob_sha": "ff257c813d4e6a79ad16ec17ec10eefd4a95cc04",
+      "source": "audit/ci_audit/native-control-close-order-v1.py",
+      "uncompressed_bytes": 2869,
+      "uncompressed_sha256": "54527edb4d78445c41708ee373cc085e98d0e8a7c8417b7076007964dbbf1035",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/native-v6-applied-source.json.gz",
+      "encoding": "gzip",
+      "bytes": 398,
+      "sha256": "eff98a97f6003545a8dabcc11ddc2395f99883781555ccb09cb7f62075b12d84",
+      "git_blob_sha": "e9d94e2590c3d3f05db33a826530f755a4481841",
+      "source": "audit/native-v6-applied-source.json",
+      "uncompressed_bytes": 787,
+      "uncompressed_sha256": "e1e2d8cc50dec8d75c54f559166600c46b772f28ee88d96191da7b8debc8b080",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/native-v6-candidate-source-bridge.json.gz",
+      "encoding": "gzip",
+      "bytes": 1052,
+      "sha256": "3d597a478a11634b59f9fafa4ab3fe9fd0ef3f036ac654df89dc38186a2a278a",
+      "git_blob_sha": "98e24e51b1c41135ee99600e43a73deb9fc3c53c",
+      "source": "audit/ci_audit/native-v6-candidate-source-bridge.json",
+      "uncompressed_bytes": 2195,
+      "uncompressed_sha256": "8c071a6bbba5ac9ca75a97585ce9af2332bd5fc2ecf03a245390a69d4892e95e",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/native-v6-input-sources.json.gz",
+      "encoding": "gzip",
+      "bytes": 363725,
+      "sha256": "44d3757371fb044cf1b5fe7271ca0c596f822a6d5859b2434db272bd8fc972c5",
+      "git_blob_sha": "f8219709887cb5af102d9bc7d1c246ccd8faacba",
+      "source": "audit/native-v6-input-sources.json",
+      "uncompressed_bytes": 986541,
+      "uncompressed_sha256": "dad507ff42decaa40f9c82533242932875805901df4a701343a44544b874a26e",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/native-v6-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 427,
+      "sha256": "139f805cf5adc2ffe7159d002f0f0b9607f8af700e6a1ef0ca5dccd2602aa15b",
+      "git_blob_sha": "aa58b0d90d38c01918ab568de280e08c63fccebb",
+      "source": "audit/native-v6-invocation.json",
+      "uncompressed_bytes": 678,
+      "uncompressed_sha256": "324d4cf497361e177822b0cdbc563beba8ec924c5c9a0af8c9bed37e9c86b6bb",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/publication-custody-validation-v1.json.gz",
+      "encoding": "gzip",
+      "bytes": 1718,
+      "sha256": "e09bb9a8e281c75b61a6da52db5071cb9f8e753ffa30470d266b9caeeb76c285",
+      "git_blob_sha": "cbd7fbf3718842f1600f94fcc7a1bd257701bb5c",
+      "source": "audit/ci_audit/publication-custody-validation-v1.json",
+      "uncompressed_bytes": 4180,
+      "uncompressed_sha256": "ea05b3ca142534d5f21cbbbcf50143fbf0072629f0be91b4e2cff2f776bdeb6f",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/remaining-bazel-excerpts-285e971.json.gz",
+      "encoding": "gzip",
+      "bytes": 10500,
+      "sha256": "5c93d204f0add10e8e012dc1434c1e03231092cc868107e8ec87350bfd558193",
+      "git_blob_sha": "e2f200b22f66766f568a0f436b1c15b4e6e35a3e",
+      "source": "audit/ci_audit/remaining-bazel-excerpts-285e971.json",
+      "uncompressed_bytes": 85959,
+      "uncompressed_sha256": "3aff8a1a1d2fbf209ca8da0b691c2902c6c449610404681fb1ce0a21b4b6e225",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/remaining-required-bazel-inventory-285e971.json.gz",
+      "encoding": "gzip",
+      "bytes": 5656,
+      "sha256": "6731998c9502aba74f7233bf208eeb3c0055819d5abc132bd3362e6cd5d4116d",
+      "git_blob_sha": "d1ffb20fdcb206078b275d29e5a86503450b5ddb",
+      "source": "audit/ci_audit/remaining-required-bazel-inventory-285e971.json",
+      "uncompressed_bytes": 18105,
+      "uncompressed_sha256": "6ac16f4b594c086ff49e722137a7865f4c8f04c1ea712b11e270e1f948993033",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-0.log.gz",
+      "encoding": "gzip",
+      "bytes": 6604,
+      "sha256": "84bafb3d9c1ae91c117c7ecb0e044d1aac4d6f7edf002a9c509ffdb3c8148d3b",
+      "git_blob_sha": "7db3b799c7174003e7eb6d4afdc8aaec258e5bfd",
+      "source": "audit/ci_audit/rog-lock-memory-fix-0.log",
+      "uncompressed_bytes": 34761,
+      "uncompressed_sha256": "cafaf1cc534aa89601a9046d221ae5edf38eabbaeea077d838ede8975ffd4f4d",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-1.log.gz",
+      "encoding": "gzip",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "git_blob_sha": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "source": "audit/ci_audit/rog-lock-memory-fix-1.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-2.log.gz",
+      "encoding": "gzip",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "git_blob_sha": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "source": "audit/ci_audit/rog-lock-memory-fix-2.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-3.log.gz",
+      "encoding": "gzip",
+      "bytes": 6816,
+      "sha256": "b32bd91379865069e7c382a5722ddb851c5c7ad4a9fd5d3c79c58b05514275f1",
+      "git_blob_sha": "4f6674aa388a9429c5645762f4b839445815c581",
+      "source": "audit/ci_audit/rog-lock-memory-fix-3.log",
+      "uncompressed_bytes": 43475,
+      "uncompressed_sha256": "ad7a721fa2384dd377d29adb537217a5d770f0f7fcdc6b2e6aefd2da39ca8d8d",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 299,
+      "sha256": "63dfccf70e9596791a0e1981f29ed473db370f83ff463562b9ff008680937f80",
+      "git_blob_sha": "60d9417cc7daa18c11f26a83a5b342c1cb8a6397",
+      "source": "audit/ci_audit/rog-lock-memory-fix-invocation.json",
+      "uncompressed_bytes": 697,
+      "uncompressed_sha256": "70007b837df1fdd8e255fed53a42eeb69246452a16d89f4603c37cbf6bce0aad",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-lock-memory-fix-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 325,
+      "sha256": "be52b8d017f2ad2a3b9cb1670ab2befad1a43e9858d28a3d00436a444603a226",
+      "git_blob_sha": "da8c221af23e9e26a5778eb4e5581ba19aee84ce",
+      "source": "audit/ci_audit/rog-lock-memory-fix-result.json",
+      "uncompressed_bytes": 1142,
+      "uncompressed_sha256": "6f12258e2b1b1963cd3fc303289860529741d5abc95850820da8d9977f1de451",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-0.log.gz",
+      "encoding": "gzip",
+      "bytes": 336,
+      "sha256": "23795f4fcab4046dd10f7fa75baacb92e98fd7181fb5910ac82b198fc300c8e2",
+      "git_blob_sha": "d85b4d6774e6682b0d3e7c841030dfad91a17764",
+      "source": "audit/ci_audit/rog-pty-repaired-0.log",
+      "uncompressed_bytes": 574,
+      "uncompressed_sha256": "bebf3003549058396a220a51e2038c3c580fc6cc5bc4343c7fcf4c7a2087cbbc",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-1.log.gz",
+      "encoding": "gzip",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "git_blob_sha": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "source": "audit/ci_audit/rog-pty-repaired-1.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-2.log.gz",
+      "encoding": "gzip",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "git_blob_sha": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "source": "audit/ci_audit/rog-pty-repaired-2.log",
+      "uncompressed_bytes": 0,
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-3.log.gz",
+      "encoding": "gzip",
+      "bytes": 1192,
+      "sha256": "edfc32fa9c2b9a6f3c1584b927592cb1ec5d1d9fbf44a19a3900be52caad7eec",
+      "git_blob_sha": "53b6480c3a76800cbd818727489b68d81f52fd54",
+      "source": "audit/ci_audit/rog-pty-repaired-3.log",
+      "uncompressed_bytes": 4331,
+      "uncompressed_sha256": "eb8e5bd4c22fce861894362671f58a794b39816758f44ead18666b7363ee8a49",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 218,
+      "sha256": "a8bde332bb21e71973a39fff2f743c58a340ebe9fd82a960d62b7b7a2714b567",
+      "git_blob_sha": "3faf7008641b770b41968bc880d82ef9160af83b",
+      "source": "audit/ci_audit/rog-pty-repaired-invocation.json",
+      "uncompressed_bytes": 487,
+      "uncompressed_sha256": "036e26a50d853f097c103371bf0ba063e69035f56fb975b0d3631ae3b2ef6994",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-pty-repaired-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 278,
+      "sha256": "1db2922bfa4576186c3360c4e37063db76ece8aa7f3234a77b750f350f3e1ac1",
+      "git_blob_sha": "83c09e48c0bf6ec59f002d0a877f2eec3924f8fc",
+      "source": "audit/ci_audit/rog-pty-repaired-result.json",
+      "uncompressed_bytes": 983,
+      "uncompressed_sha256": "06de4eaf3d915d74a381a35c6c0d7380201b611e87afd22c9851597d33459fb5",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-validation-candidate-source-bindings.json.gz",
+      "encoding": "gzip",
+      "bytes": 781,
+      "sha256": "36bdb65c0f926e2f05a50cb195c7ecab82ee7d126b35cb436138c92bd757137e",
+      "git_blob_sha": "57b62098aa89a40ba84f55aecc03d9d0fdefeb8e",
+      "source": "audit/ci_audit/rog-validation-candidate-source-bindings.json",
+      "uncompressed_bytes": 1965,
+      "uncompressed_sha256": "270fccee87af1cad201e90e6cc09e26f486143a2d9eff7271a9b2fe34f999717",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-windows-fixtures-linux-invocation.json.gz",
+      "encoding": "gzip",
+      "bytes": 413,
+      "sha256": "9d74ed03b97883621a1a630dd9aaa478bfb48e38833a649ce5302b9937a72867",
+      "git_blob_sha": "410d7f4db8e40dcdc9932bd6f3b5a8f90600da32",
+      "source": "audit/ci_audit/rog-windows-fixtures-linux-invocation.json",
+      "uncompressed_bytes": 728,
+      "uncompressed_sha256": "4f933e2f0ad3459690102f719d978579d9a2100b6ff3f0d774e27d9b2d259d1c",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-windows-fixtures-linux-result.json.gz",
+      "encoding": "gzip",
+      "bytes": 438,
+      "sha256": "957023956ba09ebf772565f8f6dbc6a06bf23dccb41f0e5dd03973ecb85b2974",
+      "git_blob_sha": "305d4eeb25854f3eb715e5feac534262de356bb8",
+      "source": "audit/ci_audit/rog-windows-fixtures-linux-result.json",
+      "uncompressed_bytes": 781,
+      "uncompressed_sha256": "af2630cea3c699b270e4a6ef61edb008739951fc0690a007484ef402a4d5d2d4",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/rog-windows-fixtures-linux-tests.log.gz",
+      "encoding": "gzip",
+      "bytes": 1592,
+      "sha256": "a81a504b195663e1ac3d90190c7c3fe4ee5e2107dba6f58460497467d90e84be",
+      "git_blob_sha": "a1801da4c77ce873bfd0d0d4874ce33debe5e4ef",
+      "source": "audit/ci_audit/rog-windows-fixtures-linux-tests.log",
+      "uncompressed_bytes": 6023,
+      "uncompressed_sha256": "ebd149c090f34ce8b67ff313ceeafaa9facd1b574cec4b062a8920d700cd779a",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-evidence/windows-four-admission-contract-review.json.gz",
+      "encoding": "gzip",
+      "bytes": 4484,
+      "sha256": "9d425663bcd076a20213c574174c8ee4f54ea91d51654ffb1e73915048dc3bab",
+      "git_blob_sha": "f53f45a058e55cfc586a18290ec673f866a56549",
+      "source": "audit/rust_review/windows_four_admission_contract_review.json",
+      "uncompressed_bytes": 12280,
+      "uncompressed_sha256": "5be0111d020d868075ec21200a7673efff6ddbce940c8c672780f339c6d7fa88",
+      "gzip": {
+        "mtime": 0,
+        "filename": "",
+        "compression_level": 9
+      },
+      "round_trip_verified": true,
+      "deterministic_compression_verified": true
+    },
+    {
+      "path": "ci-validation-audit.json",
+      "encoding": "utf-8",
+      "bytes": 13484,
+      "sha256": "94e6a6e5ef899106b1734f8c5921caddf9e6c1873857b5225bc2a6781229c33e",
+      "git_blob_sha": "fa615003dafa5f580d2c8d299e33d8a4cf6d2c77",
+      "source": "Generated audit narrative from the archived receipts."
+    },
+    {
+      "path": "ci-validation-audit.md",
+      "encoding": "utf-8",
+      "bytes": 11068,
+      "sha256": "0f09eec192c811f5b9247eb6e948dbfad638cacf4d0f1dffa0d56cd09ba3221f",
+      "git_blob_sha": "583e9d03fdf36d2384e6452fa46277f830074966",
+      "source": "Generated audit narrative from the archived receipts."
+    }
+  ]
+}

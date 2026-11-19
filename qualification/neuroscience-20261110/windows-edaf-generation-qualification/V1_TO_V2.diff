@@ -1,0 +1,187 @@
+diff --git a/codex-rs/hepta-neuron/src/lib.rs b/codex-rs/hepta-neuron/src/lib.rs
+--- a/codex-rs/hepta-neuron/src/lib.rs
++++ b/codex-rs/hepta-neuron/src/lib.rs
+@@ -61,8 +61,6 @@
+ mod inference_control;
+ mod journal;
+ mod journal_lock;
+-#[cfg(feature = "qualification-file-observation")]
+-mod qualification_file;
+ mod perception;
+ mod perception_encoder;
+ mod perception_proposal;
+@@ -73,6 +71,8 @@
+ mod population_v2;
+ mod protocol;
+ mod qualification;
++#[cfg(feature = "qualification-file-observation")]
++mod qualification_file;
+ mod runtime;
+ mod runtime_types;
+ mod sparse;
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
+@@ -306,24 +306,46 @@
+     );
+     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
+     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+-    let journal_bytes = checked(owner.journal_mut().qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024));
++    let journal_bytes = checked(
++        owner
++            .journal_mut()
++            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
++    );
+     assert_eq!(
+         checked(owner.step(req.clone(), || panic!(
+             "exact replay must not sample a clock"
+         ))),
+         receipt
+     );
+-    assert_eq!(checked(owner.journal_mut().qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)), journal_bytes);
++    assert_eq!(
++        checked(
++            owner
++                .journal_mut()
++                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
++        ),
++        journal_bytes
++    );
+     assert!(checked(owner.drain()));
+     drop(owner);
+     let mut owner = fixture.owner(model.clone());
+-    let journal_bytes = checked(owner.journal_mut().qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024));
++    let journal_bytes = checked(
++        owner
++            .journal_mut()
++            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
++    );
+     assert_eq!(
+         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
+         receipt
+     );
+     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+-    assert_eq!(checked(owner.journal_mut().qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)), journal_bytes);
++    assert_eq!(
++        checked(
++            owner
++                .journal_mut()
++                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
++        ),
++        journal_bytes
++    );
+     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+ }
+ 
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_tests.rs b/codex-rs/hepta-neuron/src/cell_generation_tests.rs
+--- a/codex-rs/hepta-neuron/src/cell_generation_tests.rs
++++ b/codex-rs/hepta-neuron/src/cell_generation_tests.rs
+@@ -16,11 +16,11 @@
+ 
+ #[path = "cell_generation_observation_tests.rs"]
+ mod observation;
++#[path = "cell_generation_physical_current_tests.rs"]
++mod physical_current;
+ #[cfg(feature = "qualification-file-observation")]
+ #[path = "cell_generation_qualification_tests.rs"]
+ mod qualification;
+-#[path = "cell_generation_physical_current_tests.rs"]
+-mod physical_current;
+ #[path = "cell_generation_test_support.rs"]
+ mod support;
+ use support::*;
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
+@@ -2,6 +2,7 @@
+ //! deliberately returns an unknown result; no model execution is qualified.
+ 
+ use std::fs;
++use std::fs::OpenOptions;
+ use std::sync::Arc;
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::AtomicUsize;
+@@ -177,21 +178,21 @@
+     original
+ }
+ 
+-async fn durable_bytes(
+-    fixture: &Fixture,
+-    handle: &NeuronGenerationRuntimeHandleV2,
+-) -> [Vec<u8>; 3] {
+-    let [journal, witness] = checked(GenerationFiles::new(handle).read().await);
+-    [
+-        journal,
+-        witness,
+-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+-    ]
+-}
+-
+ #[tokio::test]
+ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost() {
+     let mut fixture = Fixture::new().await;
++    // Prepare the same empty input before its first exclusive Control owner.
++    // create_new refuses replacement; the baseline is an actual closed-file read.
++    let control_path = fixture.directory.path().join(CONTROL_FILE);
++    let mut options = OpenOptions::new();
++    options.create_new(true).append(true).read(true);
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::OpenOptionsExt;
++        options.mode(0o600);
++    }
++    drop(checked(options.open(&control_path)));
++    let control_before = checked(fs::read(&control_path));
+     let clock = clock();
+     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
+     let worker = Arc::new(UnknownWorker::default());
+@@ -203,7 +204,6 @@
+         Arc::clone(&contacts),
+     )
+     .await;
+-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+     let original = original(&fixture, &clock);
+     let receipt = checked(handle.step(original.clone()).await);
+     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
+@@ -233,9 +233,9 @@
+     let mut expected = fixture.config.initial.clone();
+     expected.revision = 1;
+     assert_eq!(checked(handle.snapshot().await), expected);
+-    let bytes = durable_bytes(&fixture, &handle).await;
++    let bytes = checked(GenerationFiles::new(&handle).read().await);
+     assert_eq!(checked(handle.step(original.clone()).await), receipt);
+-    assert_eq!(durable_bytes(&fixture, &handle).await, bytes);
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
+     assert!(checked(handle.drain().await));
+     assert_eq!(
+         checked(fixture.state().neuron_generation_drain_blockers()),
+@@ -248,9 +248,10 @@
+         )
+         .await,
+     ));
+-    let drained_bytes = durable_bytes(&fixture, &handle).await;
++    let drained_bytes = checked(GenerationFiles::new(&handle).read().await);
+     tasks.shutdown().await;
+     drop(handle);
++    assert_eq!(checked(fs::read(&control_path)), control_before);
+ 
+     fixture.reopen_state().await;
+     let (handle, mut tasks) = start(
+@@ -264,14 +265,12 @@
+     assert_eq!(checked(handle.task_cost().await), receipt.cost);
+     assert_eq!(checked(handle.snapshot().await), expected);
+     assert!(checked(handle.drain().await));
+-    assert_eq!(durable_bytes(&fixture, &handle).await, drained_bytes);
+-    assert_eq!(
+-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+-        control_before
+-    );
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);
+     assert_eq!(contacts.load(Ordering::SeqCst), 0);
+     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
+     tasks.shutdown().await;
++    drop(handle);
++    assert_eq!(checked(fs::read(&control_path)), control_before);
+ }
+ 
+ #[tokio::test]

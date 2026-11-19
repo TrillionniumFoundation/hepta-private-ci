@@ -51,7 +51,7 @@ pub struct TemporalEvaluationReceipt {
     pub estimate: ClusterOpeEstimate,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
-    receipt_seal: Digest32,
+    pub(crate) receipt_seal: Digest32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

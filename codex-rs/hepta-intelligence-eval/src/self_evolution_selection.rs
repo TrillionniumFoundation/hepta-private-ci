@@ -30,11 +30,14 @@ use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricRoleContractV2;
+use crate::ProductEvaluationError;
+use crate::ProductQualificationReceiptV1;
+use crate::ProductTimingEvidenceV1;
 use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
-use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::future_window_signing_payload_v1;
 use crate::longitudinal_evaluation_signing_payload_v3;
+use crate::revalidate_product_qualification_v1;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
 
@@ -74,6 +77,8 @@ pub struct SelfEvolutionSelectionReceiptV1 {
     pub evaluation_evidence_digest: Digest32,
     pub evaluation_authentication_digest: Digest32,
     pub evaluation_trust_digest: Digest32,
+    pub qualification_evidence_digest: Digest32,
+    pub qualification_publication_digest: Digest32,
     pub frozen_plan_digest: Digest32,
     pub minimum_dataset_records: u32,
     pub minimum_future_window_micros: u64,
@@ -90,6 +95,8 @@ pub struct PreparedSelfEvolutionSelectionV1 {
     generator: VerifiedLearningEvidenceV1,
     evaluator: VerifiedLearningEvidenceV1,
     observer: VerifiedLearningEvidenceV1,
+    snapshot_ids: Vec<StableId>,
+    timing: LongitudinalTimeEvidenceV1,
 }
 
 impl PreparedSelfEvolutionSelectionV1 {
@@ -108,9 +115,41 @@ pub struct VerifiedSelfEvolutionSelectionV1 {
     selector: VerifiedLearningEvidenceV1,
     selector_evidence_digest: Digest32,
     selection_digest: Digest32,
+    admitted_at: u64,
+    evaluation_actors: [VerifiedLearningEvidenceV1; 3],
+    pub(crate) snapshot_ids: Vec<StableId>,
+    pub(crate) timing: LongitudinalTimeEvidenceV1,
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    pub(crate) fn check_observer(
+        &self,
+        observer: &VerifiedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        self.revalidate_current(verifier, now)?;
+        verify_verified_role_separation(&self.selector, observer, now)?;
+        Ok(())
+    }
+
+    /// Cached selection cannot outlive its evidence or a host trust rotation.
+    /// This grants no model effect: consumers still need their final-use token.
+    pub fn revalidate_current(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        if verifier.trust_digest() != self.receipt.evaluation_trust_digest || now < self.admitted_at
+        {
+            return Err(SelfEvolutionSelectionError::BindingMismatch);
+        }
+        for actor in &self.evaluation_actors {
+            verify_verified_role_separation(&self.selector, actor, now)?;
+        }
+        Ok(())
+    }
+
     #[must_use]
     pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
         &self.receipt
@@ -140,9 +179,32 @@ pub struct VerifiedSelfEvolutionRollbackV1 {
     evaluator: VerifiedLearningEvidenceV1,
     regression_evidence_digest: Digest32,
     rollback_generation: Generation,
+    rollback_digest: Digest32,
+    admitted_at: u64,
 }
 
 impl VerifiedSelfEvolutionRollbackV1 {
+    /// A rollback restores previously admitted bytes, but its new authorization
+    /// must remain live. It cannot outlive current selector/evaluator trust.
+    pub fn revalidate_current(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        if verifier.trust_digest() != self.selection.receipt.evaluation_trust_digest
+            || now < self.admitted_at
+        {
+            return Err(SelfEvolutionSelectionError::BindingMismatch);
+        }
+        verify_verified_role_separation(&self.selection.selector, &self.evaluator, now)?;
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn rollback_digest(&self) -> Digest32 {
+        self.rollback_digest
+    }
+
     #[must_use]
     pub fn selection(&self) -> &VerifiedSelfEvolutionSelectionV1 {
         &self.selection
@@ -168,6 +230,7 @@ impl VerifiedSelfEvolutionRollbackV1 {
 pub fn prepare_self_evolution_selection_v1(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: SelfEvolutionSelectionRequestV1,
+    qualification: &ProductQualificationReceiptV1,
     evaluation_bundle: IndependentEvaluationBundleV1,
     metric_roles: Vec<MetricRoleContractV2>,
     evaluation_evidence: &SignedEvaluationEvidenceV1,
@@ -193,15 +256,28 @@ pub fn prepare_self_evolution_selection_v1(
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
 
-    let evaluation = decide_with_signed_longitudinal_evidence_v3(
+    let evaluation = revalidate_product_qualification_v1(
+        qualification,
         evaluation_bundle.clone(),
         metric_roles.clone(),
         evaluation_evidence,
-        longitudinal_time,
-        policy.minimum_future_window_micros,
+        ProductTimingEvidenceV1::SystemLongitudinal {
+            timing: longitudinal_time,
+            minimum_window_micros: policy.minimum_future_window_micros,
+        },
         verifier,
         now,
-    )?;
+    )
+    .map_err(|error| match error {
+        ProductEvaluationError::Signed(error) => SelfEvolutionSelectionError::Evaluation(error),
+        ProductEvaluationError::Binding(_)
+        | ProductEvaluationError::Integrity(_)
+        | ProductEvaluationError::Frozen(_)
+        | ProductEvaluationError::Temporal(_)
+        | ProductEvaluationError::Holdout(_)
+        | ProductEvaluationError::Provider(_)
+        | ProductEvaluationError::Sink(_) => SelfEvolutionSelectionError::QualificationRejected,
+    })?;
     if evaluation.decision.disposition
         != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     {
@@ -262,6 +338,8 @@ pub fn prepare_self_evolution_selection_v1(
         evaluation_evidence_digest: evaluation.decision.evidence_digest,
         evaluation_authentication_digest: evaluation.authentication_digest,
         evaluation_trust_digest: evaluation.trust_digest,
+        qualification_evidence_digest: qualification.evidence_digest,
+        qualification_publication_digest: qualification.publication_digest,
         frozen_plan_digest: evaluation_bundle.frozen_plan.plan_digest,
         minimum_dataset_records: policy.minimum_dataset_records,
         minimum_future_window_micros: policy.minimum_future_window_micros,
@@ -272,14 +350,16 @@ pub fn prepare_self_evolution_selection_v1(
         generator,
         evaluator,
         observer,
+        snapshot_ids: evaluation_bundle.snapshot_ids,
+        timing: longitudinal_time.clone(),
     })
 }
 
-pub fn selection_signing_payload_v1(
+pub fn selection_signing_payload_v2(
     receipt: &SelfEvolutionSelectionReceiptV1,
 ) -> Result<Vec<u8>, SelfEvolutionSelectionError> {
     validate_receipt(receipt)?;
-    let mut bytes = b"hepta.intelligence-eval.self-evolution-selection.v1\0".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.self-evolution-selection.v2\0".to_vec();
     for id in [
         &receipt.selection_id,
         &receipt.predecessor_id,
@@ -300,6 +380,8 @@ pub fn selection_signing_payload_v1(
         receipt.evaluation_evidence_digest,
         receipt.evaluation_authentication_digest,
         receipt.evaluation_trust_digest,
+        receipt.qualification_evidence_digest,
+        receipt.qualification_publication_digest,
         receipt.frozen_plan_digest,
     ] {
         require_digest(digest)?;
@@ -319,7 +401,7 @@ pub fn admit_self_evolution_selection_v1(
     if verifier.trust_digest() != prepared.receipt.evaluation_trust_digest {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
-    let payload = selection_signing_payload_v1(&prepared.receipt)?;
+    let payload = selection_signing_payload_v2(&prepared.receipt)?;
     let selector = verifier.verify(
         LearningEvidenceRoleV1::Selector,
         selector_evidence,
@@ -331,7 +413,7 @@ pub fn admit_self_evolution_selection_v1(
     }
     let selector_evidence_digest = Digest32::of_bytes(&selector_evidence.signing_bytes());
     let mut digest_bytes =
-        b"hepta.intelligence-eval.self-evolution-selection-receipt.v1\0".to_vec();
+        b"hepta.intelligence-eval.self-evolution-selection-receipt.v2\0".to_vec();
     digest_bytes.extend_from_slice(&payload);
     digest_bytes.extend_from_slice(selector_evidence_digest.as_array());
     digest_bytes.extend_from_slice(&selector_evidence.signature);
@@ -340,6 +422,10 @@ pub fn admit_self_evolution_selection_v1(
         selector,
         selector_evidence_digest,
         selection_digest: Digest32::of_bytes(&digest_bytes),
+        admitted_at: now,
+        evaluation_actors: [prepared.generator, prepared.evaluator, prepared.observer],
+        snapshot_ids: prepared.snapshot_ids,
+        timing: prepared.timing,
     })
 }
 
@@ -381,11 +467,17 @@ pub fn admit_self_evolution_rollback_v1(
         .candidate_generation
         .next()
         .map_err(|_| SelfEvolutionSelectionError::GenerationMismatch)?;
+    let mut signed_bytes = b"hepta.intelligence-eval.verified-rollback.v1\0".to_vec();
+    signed_bytes.extend_from_slice(&payload);
+    signed_bytes.extend_from_slice(&evaluator_evidence.signing_bytes());
+    signed_bytes.extend_from_slice(&evaluator_evidence.signature);
     Ok(VerifiedSelfEvolutionRollbackV1 {
         selection: selection.clone(),
         evaluator,
         regression_evidence_digest,
         rollback_generation,
+        rollback_digest: Digest32::of_bytes(&signed_bytes),
+        admitted_at: now,
     })
 }
 
@@ -431,6 +523,8 @@ fn validate_receipt(
         || receipt.minimum_dataset_records == 0
         || receipt.minimum_dataset_records > MAX_DATASET_RECORDS
         || receipt.minimum_future_window_micros == 0
+        || receipt.qualification_evidence_digest.is_zero()
+        || receipt.qualification_publication_digest.is_zero()
     {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
@@ -465,6 +559,7 @@ pub enum SelfEvolutionSelectionError {
     BindingMismatch,
     GenerationMismatch,
     EvaluationRejected,
+    QualificationRejected,
     EmptyDigest,
     Arithmetic,
 }
@@ -496,251 +591,9 @@ impl From<SignedEvidenceError> for SelfEvolutionSelectionError {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+#[path = "self_evolution_selection_tests.rs"]
+mod tests;
 
-    fn id(value: &str) -> StableId {
-        StableId::new(value).expect("id")
-    }
-
-    fn digest(value: &str) -> Digest32 {
-        Digest32::of_bytes(value.as_bytes())
-    }
-
-    fn generation(value: u64) -> Generation {
-        Generation::new(value).expect("generation")
-    }
-
-    fn receipt() -> SelfEvolutionSelectionReceiptV1 {
-        SelfEvolutionSelectionReceiptV1 {
-            selection_id: id("selection"),
-            objective_digest: digest("objective"),
-            predecessor_id: id("baseline"),
-            predecessor_generation: generation(7),
-            predecessor_artifact_digest: digest("baseline-bytes"),
-            candidate_id: id("candidate"),
-            candidate_generation: generation(8),
-            candidate_artifact_digest: digest("candidate-bytes"),
-            no_change_baseline_id: id("baseline"),
-            no_change_baseline_digest: digest("baseline-bytes"),
-            dataset_digest: digest("dataset"),
-            ledger_head_digest: digest("ledger"),
-            evaluation_evidence_digest: digest("evaluation"),
-            evaluation_authentication_digest: digest("authentication"),
-            evaluation_trust_digest: digest("trust"),
-            frozen_plan_digest: digest("plan"),
-            minimum_dataset_records: 10,
-            minimum_future_window_micros: 1_000,
-            authority: AuthorityPosture::DENY_ALL,
-        }
-    }
-
-    #[test]
-    fn signing_payload_binds_predecessor_candidate_and_longitudinal_policy() {
-        let first = selection_signing_payload_v1(&receipt()).expect("payload");
-        let mut changed = receipt();
-        changed.predecessor_artifact_digest = digest("other-baseline");
-        changed.no_change_baseline_digest = changed.predecessor_artifact_digest;
-        let second = selection_signing_payload_v1(&changed).expect("payload");
-        assert_ne!(first, second);
-    }
-
-    fn principal(
-        name: &str,
-        scope: Digest32,
-        key: &ed25519_dalek::SigningKey,
-    ) -> codex_hepta_learning_ledger::AuthenticatedPrincipalV1 {
-        codex_hepta_learning_ledger::AuthenticatedPrincipalV1 {
-            principal_id: id(name),
-            credential_chain_digest: digest(&format!("{name}-credential")),
-            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            scope_digest: scope,
-            authority_epoch: 7,
-            authenticated_at: 10,
-            expires_at: 100,
-        }
-    }
-
-    fn signed(
-        verifier: &LearningEvidenceVerifierV1,
-        key: &ed25519_dalek::SigningKey,
-        name: &str,
-        role: LearningEvidenceRoleV1,
-        payload: &[u8],
-    ) -> SignedLearningEvidenceV1 {
-        use ed25519_dalek::Signer;
-        let mut evidence = SignedLearningEvidenceV1 {
-            evidence_id: id(&format!("{name}-evidence")),
-            principal_id: id(name),
-            role,
-            trust_digest: verifier.trust_digest(),
-            scope_digest: digest("selection-scope"),
-            objective_digest: digest("objective"),
-            authority_epoch: 7,
-            issued_at: 20,
-            expires_at: 90,
-            payload_digest: Digest32::of_bytes(payload),
-            signature: [0; 64],
-        };
-        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
-        evidence
-    }
-
-    #[test]
-    fn selector_and_rollback_are_opaque_independent_admissions() {
-        use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-        use codex_hepta_learning_ledger::TrustedLearningSignerV1;
-        use ed25519_dalek::SigningKey;
-
-        let scope = digest("selection-scope");
-        let roles = [
-            (
-                "generator",
-                "controller-generator",
-                LearningEvidenceRoleV1::Generator,
-                11_u8,
-            ),
-            (
-                "evaluator",
-                "controller-evaluator",
-                LearningEvidenceRoleV1::Evaluator,
-                22_u8,
-            ),
-            (
-                "observer",
-                "controller-observer",
-                LearningEvidenceRoleV1::Observer,
-                33_u8,
-            ),
-            (
-                "selector",
-                "controller-selector",
-                LearningEvidenceRoleV1::Selector,
-                44_u8,
-            ),
-        ];
-        let keys = roles.map(|(_, _, _, seed)| SigningKey::from_bytes(&[seed; 32]));
-        let signers = roles
-            .iter()
-            .zip(keys.iter())
-            .map(
-                |((name, controller, role, _), key)| TrustedLearningSignerV1 {
-                    principal: principal(name, scope, key),
-                    controller_id: id(controller),
-                    verifying_key: key.verifying_key().to_bytes(),
-                    roles: vec![*role],
-                    revoked_at: None,
-                },
-            )
-            .collect();
-        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
-            scope_digest: scope,
-            objective_digest: digest("objective"),
-            authority_epoch: 7,
-            signers,
-        })
-        .expect("trust");
-
-        let generator = verifier
-            .verify(
-                LearningEvidenceRoleV1::Generator,
-                &signed(
-                    &verifier,
-                    &keys[0],
-                    "generator",
-                    LearningEvidenceRoleV1::Generator,
-                    b"generator",
-                ),
-                b"generator",
-                50,
-            )
-            .expect("generator");
-        let evaluator = verifier
-            .verify(
-                LearningEvidenceRoleV1::Evaluator,
-                &signed(
-                    &verifier,
-                    &keys[1],
-                    "evaluator",
-                    LearningEvidenceRoleV1::Evaluator,
-                    b"evaluator",
-                ),
-                b"evaluator",
-                50,
-            )
-            .expect("evaluator");
-        let observer = verifier
-            .verify(
-                LearningEvidenceRoleV1::Observer,
-                &signed(
-                    &verifier,
-                    &keys[2],
-                    "observer",
-                    LearningEvidenceRoleV1::Observer,
-                    b"observer",
-                ),
-                b"observer",
-                50,
-            )
-            .expect("observer");
-
-        let mut admitted_receipt = receipt();
-        admitted_receipt.evaluation_trust_digest = verifier.trust_digest();
-        let prepared = PreparedSelfEvolutionSelectionV1 {
-            receipt: admitted_receipt,
-            generator,
-            evaluator,
-            observer,
-        };
-        let selector_payload =
-            selection_signing_payload_v1(prepared.receipt()).expect("selection payload");
-        let selector_evidence = signed(
-            &verifier,
-            &keys[3],
-            "selector",
-            LearningEvidenceRoleV1::Selector,
-            &selector_payload,
-        );
-        let selected =
-            admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
-                .expect("independent selection");
-        assert_eq!(selected.selector_id(), &id("selector"));
-
-        let regression = digest("observed-regression");
-        let rollback_payload =
-            rollback_signing_payload_v1(&selected, regression).expect("rollback payload");
-        let rollback_evidence = signed(
-            &verifier,
-            &keys[1],
-            "evaluator",
-            LearningEvidenceRoleV1::Evaluator,
-            &rollback_payload,
-        );
-        let rollback = admit_self_evolution_rollback_v1(
-            &selected,
-            regression,
-            &rollback_evidence,
-            &verifier,
-            50,
-        )
-        .expect("independent rollback");
-        assert_eq!(rollback.rollback_generation(), generation(9));
-        assert_eq!(rollback.evaluator_id(), &id("evaluator"));
-    }
-
-    #[test]
-    fn receipt_rejects_generation_rewind_and_baseline_drift() {
-        let mut changed = receipt();
-        changed.candidate_generation = generation(9);
-        assert_eq!(
-            selection_signing_payload_v1(&changed),
-            Err(SelfEvolutionSelectionError::BindingMismatch)
-        );
-        let mut changed = receipt();
-        changed.no_change_baseline_id = id("other-baseline");
-        assert_eq!(
-            selection_signing_payload_v1(&changed),
-            Err(SelfEvolutionSelectionError::BindingMismatch)
-        );
-    }
-}
+#[cfg(test)]
+#[path = "self_evolution_ingress_tests.rs"]
+mod ingress_tests;

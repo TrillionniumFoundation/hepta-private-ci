@@ -11,6 +11,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
 use super::AgentHealthProbeIdentity;
+use super::interpret_agent_drain_response;
 use super::query_agent_drain_once;
 use crate::ProcessDriverError;
 
@@ -112,5 +113,38 @@ fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult 
         snapshot.fenced = true;
     }
     assert!(exchange(&identity, frame(&fenced)?)?.is_err());
+    Ok(())
+}
+
+#[test]
+fn disconnected_drain_transport_does_not_abort_polling_or_acknowledge_drain() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    assert!(!interpret_agent_drain_response(
+        &identity,
+        /*request_id*/ 17,
+        Err(std::io::Error::from_raw_os_error(libc::ENOTCONN)),
+    )?);
+    let response = acknowledgement(&identity);
+    assert!(interpret_agent_drain_response(
+        &identity,
+        /*request_id*/ 17,
+        Ok(frame(&response)?),
+    )?);
+    Ok(())
+}
+
+#[test]
+fn drain_permission_failure_still_propagates() -> TestResult {
+    let temp = tempfile::tempdir()?;
+    let identity = identity(&temp)?;
+    assert!(
+        interpret_agent_drain_response(
+            &identity,
+            /*request_id*/ 17,
+            Err(std::io::ErrorKind::PermissionDenied.into()),
+        )
+        .is_err()
+    );
     Ok(())
 }

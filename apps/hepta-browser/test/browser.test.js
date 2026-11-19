@@ -9,8 +9,7 @@ import {
 } from "../src/browser.js";
 
 const digest = "ab".repeat(32);
-const navigationSchema =
-  "hepta.browser.local-navigation-proposal-input.v1";
+const navigationSchema = "hepta.browser.local-navigation-proposal-input.v1";
 const pageSchema = "hepta.browser.local-page-observation.v1";
 
 function canonicalJson(value) {
@@ -89,9 +88,7 @@ test("legacy V1 navigation normalization remains unchanged", () => {
 
 test("canonical navigation produces an unregistered authority-free proposal", () => {
   const proposal = buildLocalNavigationProposalFromCanonicalJson(
-    canonicalJson(
-      navigationInput("https://EXAMPLE.test:443/a/../b#fragment"),
-    ),
+    canonicalJson(navigationInput("https://EXAMPLE.test:443/a/../b#fragment")),
   );
   assert.deepEqual(proposal, {
     localSchema: "hepta.browser.local-navigation-proposal.v1",
@@ -140,11 +137,10 @@ test("credentials, controls, non-web schemes, and coercion fail closed", () => {
     "https://example.test/\npath",
     "file:///etc/passwd",
   ]) {
-    assert.throws(
-      () =>
-        buildLocalNavigationProposalFromCanonicalJson(
-          canonicalJson(navigationInput(url)),
-        ),
+    assert.throws(() =>
+      buildLocalNavigationProposalFromCanonicalJson(
+        canonicalJson(navigationInput(url)),
+      ),
     );
   }
 
@@ -411,11 +407,10 @@ test("encoded controls and all empty userinfo slash forms are rejected", () => {
     "https:///\\@example.test/path",
     "HTTPS:/@example.test/path",
   ]) {
-    assert.throws(
-      () =>
-        buildLocalNavigationProposalFromCanonicalJson(
-          canonicalJson(navigationInput(url)),
-        ),
+    assert.throws(() =>
+      buildLocalNavigationProposalFromCanonicalJson(
+        canonicalJson(navigationInput(url)),
+      ),
     );
   }
 });

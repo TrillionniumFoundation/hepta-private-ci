@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.act1.staging-preflight.v1",
+  "job_id": "1a1baaf9318-12894-1c84",
+  "exit_code": 1,
+  "stage": "before-file identity check",
+  "source_mutation": false,
+  "test_run": false,
+  "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 7, in <module>\n    p=source/item['path']; assert hashlib.sha256(p.read_bytes()).hexdigest()==item['before']\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "reason": "Copied reference had an extra trailing newline. Expected before hash was corrected to exact baseline bytes before any mutation.",
+  "subsequent_red_job_id": "1a1bab200e5-12894-1c99"
+}

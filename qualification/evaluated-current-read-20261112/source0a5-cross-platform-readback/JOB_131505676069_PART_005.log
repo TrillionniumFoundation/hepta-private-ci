@@ -1,0 +1,1048 @@
+rsized_and_partial_frames_permanently_close_the_lane ... ok
+2026-11-12T21:40:57.1214120Z test root_production_handoff::tests::ordered_descriptor_frame_preserves_open_objects_and_sets_cloexec ... ok
+2026-11-12T21:40:57.1214781Z test root_production_inputs::tests::invalid_timing_refuses_before_any_descriptor_or_connection_use ... ok
+2026-11-12T21:40:57.1215491Z test root_production_learning_inputs::tests::learning_bundle_refuses_other_agent_initial_operation_and_profile_bytes ... ok
+2026-11-12T21:40:57.1216375Z test runtime::hos2_recovery_tests::notes_tests::objective_tests::signed_notes_objective_uses_original_run_and_operation_then_recovers_lost_ack_without_reentry ... ok
+2026-11-12T21:40:57.1217386Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_survives_new_consumer_generation_without_readmitting_old_task ... ok
+2026-11-12T21:40:57.1218055Z HEPTA_DEEP_S_C_STAGE stage=fixture_start elapsed_ms=0
+2026-11-12T21:40:57.1218792Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel ... ok
+2026-11-12T21:40:57.1220123Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_renewed_original_signatures ... ok
+2026-11-12T21:40:57.1220854Z HEPTA_DEEP_S_C_STAGE stage=fixture_done elapsed_ms=26708
+2026-11-12T21:40:57.1221243Z HEPTA_DEEP_S_C_STAGE stage=selection_command_start elapsed_ms=27361
+2026-11-12T21:40:57.1221655Z HEPTA_DEEP_S_C_STAGE stage=selection_command_done elapsed_ms=30941
+2026-11-12T21:40:57.1222059Z HEPTA_DEEP_S_C_STAGE stage=selection_command_join elapsed_ms=30941
+2026-11-12T21:40:57.1222481Z HEPTA_DEEP_S_C_STAGE stage=selection_command_joined elapsed_ms=30941
+2026-11-12T21:40:57.1222889Z HEPTA_DEEP_S_C_STAGE stage=ordinary_c_start elapsed_ms=31652
+2026-11-12T21:40:57.1223284Z HEPTA_DEEP_S_C_STAGE stage=ordinary_c_done elapsed_ms=36198
+2026-11-12T21:40:57.1223684Z HEPTA_DEEP_S_C_STAGE stage=c_attestation_start elapsed_ms=36423
+2026-11-12T21:40:57.1224575Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows ... ok
+2026-11-12T21:40:57.1225393Z HEPTA_DEEP_S_C_STAGE stage=c_attestation_done elapsed_ms=46460
+2026-11-12T21:40:57.1225777Z HEPTA_DEEP_S_C_STAGE stage=hot_readback_start elapsed_ms=46460
+2026-11-12T21:40:57.1226160Z HEPTA_DEEP_S_C_STAGE stage=hot_readback_done elapsed_ms=56370
+2026-11-12T21:40:57.1226533Z HEPTA_DEEP_S_C_STAGE stage=hot_command_join elapsed_ms=56371
+2026-11-12T21:40:57.1226912Z HEPTA_DEEP_S_C_STAGE stage=hot_publication_join elapsed_ms=56371
+2026-11-12T21:40:57.1227311Z HEPTA_DEEP_S_C_STAGE stage=hot_selector_join elapsed_ms=56371
+2026-11-12T21:40:57.1227680Z HEPTA_DEEP_S_C_STAGE stage=hot_trainer_join elapsed_ms=56371
+2026-11-12T21:40:57.1228047Z HEPTA_DEEP_S_C_STAGE stage=hot_owners_joined elapsed_ms=56371
+2026-11-12T21:40:57.1228448Z HEPTA_DEEP_S_C_STAGE stage=selection_publication_join elapsed_ms=56371
+2026-11-12T21:40:57.1228874Z HEPTA_DEEP_S_C_STAGE stage=selection_trainer_join elapsed_ms=56371
+2026-11-12T21:40:57.1229378Z HEPTA_DEEP_S_C_STAGE stage=material_shutdown_start elapsed_ms=56371
+2026-11-12T21:40:57.1229784Z HEPTA_DEEP_S_C_STAGE stage=material_shutdown_done elapsed_ms=56377
+2026-11-12T21:40:57.1230532Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_hot_readback_preserves_sources ... ok
+2026-11-12T21:40:57.1231819Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c ... ok
+2026-11-12T21:40:57.1233497Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal ... ok
+2026-11-12T21:40:57.1235242Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_cold_missing_cannot_claim_and_legacy_profile_stays_closed ... ok
+2026-11-12T21:40:57.1237085Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming has been running for over 60 seconds
+2026-11-12T21:40:57.1239083Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming ... FAILED
+2026-11-12T21:40:57.1241075Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut has been running for over 60 seconds
+2026-11-12T21:40:57.1242904Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::remote_tests::evaluated_remote_s_reads_original_task_and_recovers_exact_five_cut ... FAILED
+2026-11-12T21:40:57.1243940Z ================================================================================
+2026-11-12T21:40:57.2526988Z [37,996 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8); 318s remote, remote-cache ... (4 actions running)
+2026-11-12T21:40:58.2528032Z [37,996 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8); 319s remote, remote-cache ... (4 actions running)
+2026-11-12T21:41:00.6686816Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8):
+2026-11-12T21:41:00.6688160Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 6 of 8):
+2026-11-12T21:41:00.6689066Z 
+2026-11-12T21:41:00.6689666Z running 153 tests
+2026-11-12T21:41:00.6690669Z test app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly ... ok
+2026-11-12T21:41:00.6692081Z test android_runtime::tests::android_runtime_invalidation_after_start_keeps_job_without_accepting_late_ack ... ok
+2026-11-12T21:41:00.6693625Z test authority_host_admin::deadline::tests::late_actual_owner_check_cannot_enter_registry_or_issuer_cas ... ok
+2026-11-12T21:41:00.6695043Z test authority_host_admin::tests::strict_admin_schema_rejects_duplicate_unknown_and_oversized_inputs ... ok
+2026-11-12T21:41:00.6696854Z test authority_host_checkpoint::adoption::tests::physical_material::physical_current_survives_live_source_loss_and_refuses_corrupt_retained_image ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:00.6698421Z test authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_expiry_is_unknown_but_new_head_is_reconciled ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:00.6700112Z test authority_host_checkpoint::fresh_tests::root_fresh_publication_binds_original_exclusive_owner_and_checkpoint_client ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:00.6701499Z test authority_host_checkpoint::tests::root_two_independent_handles_cannot_both_win_the_same_original_cas ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:00.6702916Z test authority_host_learning_service_root_tests::root_learning_registered_service_dedicated_uid_child ... ignored, only the actual Root parent supplies this dedicated-UID child handoff
+2026-11-12T21:41:00.6704234Z test authority_host_runtime::session::desktop_startup::tests::joint_root_bounds_every_saved_selector_and_original_helper_path ... ok
+2026-11-12T21:41:00.6705403Z test authority_host_runtime::session::desktop_startup::tests::joint_root_fresh_and_recovery_profiles_cannot_relabel_each_other ... ok
+2026-11-12T21:41:00.6706522Z test authority_host_service::admin_issuer::tests::terminal_confirmation_refuses_new_epoch_without_reconstructing_original_lease ... ok
+2026-11-12T21:41:00.6707978Z test authority_host_service::resident::authority::tests::origin::resident_root_consuming_origins_match_before_cas_issuance_and_dispatch ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:00.6709915Z test authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_missing_extra_wrong_stage_or_reordered_evidence ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:00.6712034Z test authority_host_service::resident::authority::tests::original_model::resident_root_model_unknown_dispatch_never_recommits_or_mints_fresh_gate ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:00.6713818Z test authority_host_service::resident::authority::tests::resident_root_exact_lease_revocation_fences_without_restarting_dispatch ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:00.6715492Z test authority_host_service::resident::authority::tests::resident_root_structured_uncertain_allows_only_same_operation_readback ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:00.6716729Z test authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack ... ok
+2026-11-12T21:41:00.6717773Z test cell_q24_dataset::tests::original_task_and_signed_cut_materialize_exact_q24_without_writes_or_new_claims ... ok
+2026-11-12T21:41:00.6718645Z test cell_q24_material_receipt_owner::tests::original_material_pair_withdrawal_refuses_cached_material_without_dataset_claim ... ok
+2026-11-12T21:41:00.6719978Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_withdrawal_after_claim_preserves_pending_without_signature ... ok
+2026-11-12T21:41:00.6721173Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_wrong_context_cannot_claim_or_consume_admission ... ok
+2026-11-12T21:41:00.6722330Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_candidate_source_read_keeps_legacy_missing_then_permanent_native_refusal ... ok
+2026-11-12T21:41:00.6723308Z test circuit_cell::tests::batch_tests::partial_batch_receipt_failure_recovers_only_original_pending_work ... ok
+2026-11-12T21:41:00.6724219Z test circuit_cell::tests::ports_tests::committed_q24_ports_feed_successor_features_and_replay_original_output ... ok
+2026-11-12T21:41:00.6725015Z test circuit_task::source::tests::ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history ... ok
+2026-11-12T21:41:00.6725813Z test circuit_task::source::tests::ordinary_source_withdrawal_and_uncertain_withdrawal_survive_reopen ... ok
+2026-11-12T21:41:00.6726567Z test cognitive_checkpoint_unix::tests::invalid_request_is_refused_before_io_without_consuming_the_channel ... ok
+2026-11-12T21:41:00.6727385Z test cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded ... ok
+2026-11-12T21:41:00.6728255Z test config::root_handoff::late_writer::custody_tests::postload_birth_refusal_consumes_config_but_retains_active_original_session_file ... ok
+2026-11-12T21:41:00.6729368Z test config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed ... ok
+2026-11-12T21:41:00.6730459Z test control::tests::missing_control_socket_path_is_preparable_without_a_listener ... ok
+2026-11-12T21:41:00.6731486Z test cpu_policy::tests::fast_polling_cannot_create_pressure_or_repeated_proposals ... ok
+2026-11-12T21:41:00.6732494Z test cpu_policy::tests::fixed_target_obeys_slew_bound_and_does_not_refill_same_budget ... ok
+2026-11-12T21:41:00.6733390Z test cpu_policy::tests::old_future_and_replayed_measurements_are_refused ... ok
+2026-11-12T21:41:00.6734282Z test cpu_policy::tests::proposal_revalidates_original_sample_age_even_with_a_fresh_read ... ok
+2026-11-12T21:41:00.6735220Z test cpu_policy::tests::retained_charge_above_a_lowered_cap_is_a_valid_observation ... ok
+2026-11-12T21:41:00.6735736Z test cpu_policy::tests::reversed_pressure_does_not_reuse_the_old_streak ... ok
+2026-11-12T21:41:00.6736489Z test deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::registered_objective_text_and_human_signatures_cap_parent_and_refuse_new_use_after_expiry ... ok
+2026-11-12T21:41:00.6737424Z test deployment_issuer::calculator::issuer_final_tests::calculator_original_signature_is_capped_by_its_shorter_independent_parent ... ok
+2026-11-12T21:41:00.6738395Z test deployment_issuer::notes::observation::tests::oversized_metadata_and_counter_overflow_cannot_fall_back_to_old_latest ... ok
+2026-11-12T21:41:00.6739362Z test deployment_issuer::notes::tests::deployment_notes_distinct_payloads_share_canonical_signer_and_original_counter ... ok
+2026-11-12T21:41:00.6740110Z test deployment_issuer::root::tests::deployment_final_use_discards_post_io_expiry_without_reusing_its_sequence ... ok
+2026-11-12T21:41:00.6740836Z test deployment_issuer::root::tests::deployment_protected_factory_rejects_unprotected_parent_without_creating_key ... ok
+2026-11-12T21:41:00.6741867Z test deployment_issuer::root::tests::deployment_protected_root_factory_retains_original_key_head_counter_and_lease ... ignored, explicit root-only canonical issuer factory qualification on selected protected filesystem
+2026-11-12T21:41:00.6742834Z test deployment_issuer::tests::actual_random_key_signs_original_grant_and_ids_survive_reopen ... ok
+2026-11-12T21:41:00.6743623Z test deployment_issuer::text::recovery::tests::encoded_capacity_preserves_original_refs_and_does_not_consume_next_intent ... ok
+2026-11-12T21:41:00.6744419Z test deployment_issuer::text::retirement::tests::retiring_later_input_keeps_unknown_earlier_identity_and_rejects_wrong_proof ... ok
+2026-11-12T21:41:00.6745158Z test deployment_issuer::text::tests::full_retention_refuses_new_identity_without_eviction_or_new_signature ... ok
+2026-11-12T21:41:00.6745852Z test deployment_issuer::text::tests::retained_text_signature_uses_original_key_store_and_sequence_after_reopen ... ok
+2026-11-12T21:41:00.6746584Z test deployment_issuer::writer::tests::rotation::concurrent_exact_rotations_reconcile_one_original_counter_reservation ... ok
+2026-11-12T21:41:00.6747295Z test desktop_thread_seed::tests::new_desktop_seed_binds_six_tools_and_cannot_enter_legacy_notes_recovery ... ok
+2026-11-12T21:41:00.6747984Z test desktop_thread_tool::proof::tests::neither_app_can_choose_authority_or_replace_the_original_callback_route ... ok
+2026-11-12T21:41:00.6748676Z test final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing ... ok
+2026-11-12T21:41:00.6749655Z test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_training_cold_identity_rejects_valid_material_signature_renewal ... ok
+2026-11-12T21:41:00.6750375Z test hos2_device::tests::production_owner_request_and_a02_wire_vectors_match ... ok
+2026-11-12T21:41:00.6750933Z test hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values ... ok
+2026-11-12T21:41:00.6751538Z test intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use ... ok
+2026-11-12T21:41:00.6752132Z test lane_b_runtime::tests::cancellation_deadline_overflow_preserves_dispatched_run ... ok
+2026-11-12T21:41:00.6752688Z test lane_b_runtime::tests::last_representable_cancel_deadline_remains_reconcilable ... ok
+2026-11-12T21:41:00.6753257Z test lane_b_runtime::tests::revision_overflow_preserves_dispatched_and_cancelling_state ... ok
+2026-11-12T21:41:00.6753865Z test lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed ... ok
+2026-11-12T21:41:00.6754561Z test learning_iteration_checkpoint::ports_tests::cancelled_checkpoint_waiter_keeps_the_original_persistence_lane ... ok
+2026-11-12T21:41:00.6755332Z test learning_iteration_checkpoint::profile::tests::learning_profile_refuses_a_progress_checkpoint_as_initial_registration ... ok
+2026-11-12T21:41:00.6756136Z test learning_iteration_checkpoint::profile_tests::both_no_update_paths_keep_the_frozen_profile_and_full_parent_after_cold_reopen ... ok
+2026-11-12T21:41:00.6756963Z test learning_iteration_checkpoint::transport::tests::ports_tests::root_checkpoint_ports_recover_original_stages_for_all_decisions ... ok
+2026-11-12T21:41:00.6757788Z test hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_refuses_changed_identity_revision_age_and_missing_proposal ... ok
+2026-11-12T21:41:00.6758653Z test learning_iteration_evidence_client::ordinary_stage_owners::lane::tests::conflicting_return_fences_without_replacing_the_existing_value ... ok
+2026-11-12T21:41:00.6759891Z test learning_iteration_evidence_client::tests::evaluation::missing_original_trainer_refuses_no_update_before_contacting_evaluator ... ok
+2026-11-12T21:41:00.6760787Z test learning_iteration_evidence_client::material::source::tests::material_source_peer_rejects_raw_batch_provenance_and_frozen_optimizer_rebinding ... ok
+2026-11-12T21:41:00.6761734Z test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update ... ok
+2026-11-12T21:41:00.6762643Z test learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit ... ok
+2026-11-12T21:41:00.6763548Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody ... ok
+2026-11-12T21:41:00.6764415Z test neuron_cell_evaluation::tests::learning::insufficient_evidence_keeps_the_original_training_cut ... ok
+2026-11-12T21:41:00.6765119Z test neuron_generation::tests::ordinary_owner_reopen_reads_original_worker_and_committed_prefix_without_dispatch ... ok
+2026-11-12T21:41:00.6765950Z test neuron_generation_current::test_support::drained_tests::same_model::same_model_cannot_bypass_ack_or_drain_and_original_updates_keep_rejecting_it ... ok
+2026-11-12T21:41:00.6766776Z test neuron_generation_current::tests::actual_new_current_or_withdrawal_cut_rejects_stale_selection_before_claim ... ok
+2026-11-12T21:41:00.6767469Z test neuron_generation_runtime::tests::both_drain_paths_retain_unknown_work_and_unacknowledged_output ... ok
+2026-11-12T21:41:00.6768179Z test neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent ... ok
+2026-11-12T21:41:00.6769035Z test neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends ... ok
+2026-11-12T21:41:00.6769811Z test neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome ... ok
+2026-11-12T21:41:00.6770446Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:00.6770940Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:00.6771595Z test neuron_generation_runtime::tests::update::expected_context::ordinary_runtime_rechecks_revocation_after_dispatch_and_readback ... ok
+2026-11-12T21:41:00.6772417Z test neuron_generation_runtime::tests::update::learning::ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution ... ok
+2026-11-12T21:41:00.6773167Z test neuron_generation_runtime::tests::update::normal_runtime_reset_and_journal_reopen_keep_original_receipt ... ok
+2026-11-12T21:41:00.6773997Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::q24_loaded_bytes_survive_path_replacement_and_changed_bytes_need_new_bundle ... ok
+2026-11-12T21:41:00.6775056Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_distinguishes_missing_receipt_from_missing_native ... ok
+2026-11-12T21:41:00.6776128Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::q24_native_sgd_changes_one_row_and_serves_distinct_inputs_after_reopen ... ok
+2026-11-12T21:41:00.6777115Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training_plan::q24_frozen_plan_returns_exact_candidate_for_actual_worker_execution ... ok
+2026-11-12T21:41:00.6778051Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms ... ok
+2026-11-12T21:41:00.6778858Z test neuron_v13_generation_bootstrap::tests::identity_epoch_and_closure_mismatch_leave_all_owner_files_untouched ... ok
+2026-11-12T21:41:00.6779615Z test notes_bootstrap::startup::tests::notes_startup_refuses_invalid_reservations_before_send ... ok
+2026-11-12T21:41:00.6780263Z test notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes ... ok
+2026-11-12T21:41:00.6780907Z test notes_document_observer::tests::notes_objective_recovery_handle_retains_no_effect_descriptor_and_correlates_discovery ... ok
+2026-11-12T21:41:00.6781943Z test notes_literal_adapter::thread_sender_tests::a_retained_original_turn_source_cannot_be_attributed_to_a_new_call ... ok
+2026-11-12T21:41:00.6782686Z test notes_thread_tool::human::tests::queue_reconciliation_must_observe_the_same_persisted_turn_without_new_admission ... ok
+2026-11-12T21:41:00.6783382Z test notes_thread_tool::tests::retained_unknown_item_can_only_be_referenced_for_read_only_status ... ok
+2026-11-12T21:41:00.6784127Z test notes_ui_endpoint::tests::notes_ui_rejects_wrong_pidfd_and_non_listener_before_accepting_bytes ... ok
+2026-11-12T21:41:00.6784877Z test notes_ui_queue::tests::original_actions_remain_fifo_while_refresh_is_coalesced_and_cannot_fill_them ... ok
+2026-11-12T21:41:00.6785552Z test objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field ... ok
+2026-11-12T21:41:00.6786194Z test objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use ... ok
+2026-11-12T21:41:00.6786826Z test objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust ... ok
+2026-11-12T21:41:00.6787419Z test plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail ... ok
+2026-11-12T21:41:00.6788062Z test plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner ... ok
+2026-11-12T21:41:00.6788730Z test plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution ... ok
+2026-11-12T21:41:00.6789661Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::evaluated_no_update_waits_for_selection_and_cannot_resume_after_expiry ... ok
+2026-11-12T21:41:00.6790633Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::actual_delivery_backpressure_precedes_claim_and_prior_claim_stays_readback_only ... ok
+2026-11-12T21:41:00.6791788Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once ... ok
+2026-11-12T21:41:00.6792980Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::expired_completed_learning_readback_can_finish_after_one_second_without_new_work ... ok
+2026-11-12T21:41:00.6794123Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_app_ready_with_closed_admission_never_claims ... ok
+2026-11-12T21:41:00.6795234Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::registry_tests::explicit_registry_rejects_aliases_foreign_agents_and_capacity ... ok
+2026-11-12T21:41:00.6796414Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::root_learning_post_claim_source_refusal_keeps_original_claim_without_stage_work ... ok
+2026-11-12T21:41:00.6797464Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing ... ok
+2026-11-12T21:41:00.6798281Z test production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas ... ok
+2026-11-12T21:41:00.6799204Z test production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner ... ok
+2026-11-12T21:41:00.6799913Z test root_authority_session::tests::both_original_frontiers_finish_before_new_head_is_published ... ok
+2026-11-12T21:41:00.6800571Z test root_observation_cache::tests::revocations_only_accumulate_and_update_barrier_does_not_publish_early ... ok
+2026-11-12T21:41:00.6801240Z test root_observation_stream::tests::cancelled_original_exchange_discards_late_reply_and_stays_closed ... ok
+2026-11-12T21:41:00.6802056Z test root_production_handoff::learning::tests::learning_and_original_v1_handoffs_refuse_each_others_purpose ... ok
+2026-11-12T21:41:00.6802906Z test runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_protected_factory_checks_complete_binding_before_recovery_and_reuses_owner ... ok
+2026-11-12T21:41:00.6804125Z test runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart ... ignored, requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries
+2026-11-12T21:41:00.6805248Z test runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay ... ok
+2026-11-12T21:41:00.6806074Z test runtime::tests::circuit_task_ingress::drain_tests::unavailable_owner_blocks_drain_even_without_a_circuit_profile ... ok
+2026-11-12T21:41:00.6806930Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_joins_signed_objective_and_committed_circuit_without_writes ... ok
+2026-11-12T21:41:00.6807851Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_rejects_foreign_operation_result_objective_and_agent ... ok
+2026-11-12T21:41:00.6808760Z test neuron_v13_generation_bootstrap::tests::guarded::initial::runtime::actual_initial_v13_rejection_replays_then_retires_to_a_new_selected_task ... ok
+2026-11-12T21:41:00.6809948Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows ... ok
+2026-11-12T21:41:00.6811232Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication ... ok
+2026-11-12T21:41:00.6812483Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows ... ok
+2026-11-12T21:41:00.6814118Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback has been running for over 60 seconds
+2026-11-12T21:41:00.6816052Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence has been running for over 60 seconds
+2026-11-12T21:41:00.6817974Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence ... FAILED
+2026-11-12T21:41:00.6819869Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback ... FAILED
+2026-11-12T21:41:00.6821748Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim has been running for over 60 seconds
+2026-11-12T21:41:00.6823769Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection has been running for over 60 seconds
+2026-11-12T21:41:00.6825864Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection ... FAILED
+2026-11-12T21:41:00.6826961Z ================================================================================
+2026-11-12T21:41:01.2532630Z [37,997 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8); 322s remote, remote-cache ... (3 actions running)
+2026-11-12T21:41:03.1250559Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 8 of 8):
+2026-11-12T21:41:03.1252173Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 8 of 8):
+2026-11-12T21:41:03.1252946Z 
+2026-11-12T21:41:03.1253135Z running 159 tests
+2026-11-12T21:41:03.1254151Z test app_runtime::tests::notes_embedding_keeps_the_store_but_removes_general_cognitive_tool_state ... ok
+2026-11-12T21:41:03.1255460Z test authority_host_admin::tests::live_route_rejects_each_changed_root_lifetime_and_nonce ... ok
+2026-11-12T21:41:03.1256546Z test authority_host_bootstrap_seal::tests::bounded_encoder_does_not_append_an_oversized_fragment ... ok
+2026-11-12T21:41:03.1258222Z test authority_host_checkpoint::adoption::tests::root_current_handoff_post_cas_clock_failure_is_unknown_not_definite_conflict ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:03.1260792Z test authority_host_checkpoint::adoption::tests::root_retired_adoption_post_cas_clock_error_is_unknown_and_exactly_reconciled ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:03.1263406Z test authority_host_checkpoint::tests::root_unavailable_read_permanently_fences_even_after_original_file_returns ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:03.1265626Z test authority_host_runtime::issuer_renewal::tests::concurrent_canonical_revision_or_epoch_change_is_not_overwritten ... ok
+2026-11-12T21:41:03.1267385Z test authority_host_runtime::issuer_renewal::tests::ordinary_process_is_rejected_before_opening_config ... ok
+2026-11-12T21:41:03.1269265Z test authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing ... ok
+2026-11-12T21:41:03.1271559Z test authority_host_service::resident::authority::tests::resident_root_formatter_and_original_registration_pin_both_scopes ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:03.1273774Z test authority_host_service::tests::observation_discards_a_lease_expiring_during_io_or_a_different_epoch ... ok
+2026-11-12T21:41:03.1275389Z test authority_host_service::tests::observation_never_truncates_a_complete_revocation_head_to_fit ... ok
+2026-11-12T21:41:03.1277618Z test authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer ... ignored, explicit root/data-bind canonical three-lane service qualification
+2026-11-12T21:41:03.1280512Z test authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history ... ignored, explicit actual Root registered learning CAS qualification
+2026-11-12T21:41:03.1282867Z test authority_host_wire::tests::shared_proof_digest_covers_signature_and_closed_nested_original_lease ... ok
+2026-11-12T21:41:03.1284716Z test authority_host_runtime::session::notes_startup::reservation::tests::original_reservation_consume_keeps_the_elapsed_episode_budget ... ok
+2026-11-12T21:41:03.1286457Z test calculator_recovery_process::tests::calculator_recovery_process_seals_bytes_and_refuses_effect_or_foreign_operation_without_spawn ... ok
+2026-11-12T21:41:03.1288343Z test automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn ... ok
+2026-11-12T21:41:03.1289550Z test cell_q24_dataset::tests::source_identity_signed_freeze_and_ledger_domain_cannot_be_rebound ... ok
+2026-11-12T21:41:03.1290920Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_public_bootstrap_refuses_same_process_custody ... ok
+2026-11-12T21:41:03.1292491Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_cancel_keeps_occupied_lane_and_consumed_channel ... ok
+2026-11-12T21:41:03.1293947Z test cell_temporal_q24::tests::temporal_q24_changed_model_refuses_old_bundle_and_state ... ok
+2026-11-12T21:41:03.1294931Z test cell_temporal_q24::tests::temporal_q24_prefix_capacity_settles_and_survives_cold_reopen ... ok
+2026-11-12T21:41:03.1296344Z test circuit_cell::tests::batch_tests::one_frozen_batch_keeps_scoped_state_and_ack_replay_independent ... ok
+2026-11-12T21:41:03.1297563Z test circuit_cell::tests::lost_claim_before_cell_admission_cannot_start_new_work_from_recovery ... ok
+2026-11-12T21:41:03.1299172Z test cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback ... ok
+2026-11-12T21:41:03.1300699Z test circuit_cell::tests::ports_tests::representation_encoder_rejects_cross_scope_frontier_shape_and_noncanonical_bytes ... ok
+2026-11-12T21:41:03.1301907Z test circuit_task::driver::tests::circuit_deadline_wakes_before_a_later_feedback_activation ... ok
+2026-11-12T21:41:03.1303071Z test circuit_task::source::tests::ordinary_source_publishes_original_circuit_result_and_reopens_exact_inputs ... ok
+2026-11-12T21:41:03.1304512Z test circuit_task::source::tests::physical_current::original_source_input_read_is_readonly_and_requires_live_original_configuration ... ok
+2026-11-12T21:41:03.1305976Z test cognitive_checkpoint_unix::tests::bootstrap_rejects_wrong_lifetime_peer_and_non_pidfd_capabilities ... ok
+2026-11-12T21:41:03.1307306Z test cognitive_checkpoint_unix::tests::initial::non_current_handoff_is_rejected_before_output_and_closes_owned_lane ... ok
+2026-11-12T21:41:03.1308732Z test cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention ... ok
+2026-11-12T21:41:03.1310243Z test cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot ... ok
+2026-11-12T21:41:03.1311432Z test cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed ... ok
+2026-11-12T21:41:03.1312668Z test circuit_task::source::tests::ordinary_source_input_and_result_ack_loss_never_repeat_committed_inference ... ok
+2026-11-12T21:41:03.1313953Z test cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback ... ok
+2026-11-12T21:41:03.1315253Z test cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records ... ok
+2026-11-12T21:41:03.1316554Z test cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently ... ok
+2026-11-12T21:41:03.1317788Z test control::tests::dangling_control_symlink_is_not_treated_as_a_missing_entry ... ok
+2026-11-12T21:41:03.1318660Z test cpu_policy::tests::both_bounds_saturate_without_generating_equal_cap_writes ... ok
+2026-11-12T21:41:03.1319731Z test cpu_policy::tests::feedback_requires_two_separated_same_direction_samples ... ok
+2026-11-12T21:41:03.1320664Z test deployment_frontier::tests::unsafe_permissions_and_hardlinks_are_refused ... ok
+2026-11-12T21:41:03.1322055Z test cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it ... ok
+2026-11-12T21:41:03.1323433Z test deployment_issuer::notes::observation::tests::dropped_capture_cannot_return_an_older_artifact_as_latest_issue ... ok
+2026-11-12T21:41:03.1325069Z test deployment_issuer::authbus::tests::writer_tests::issuer_final_tests::original_five_clock_samples_keep_post_io_expiry_consumed_and_text_history_exact ... ok
+2026-11-12T21:41:03.1327019Z test deployment_issuer::text::human::tests::exact_human_binding_survives_reopen_and_readback_never_changes_the_original_cas ... ok
+2026-11-12T21:41:03.1328429Z test deployment_issuer::notes::tests::deployment_notes_preserves_original_objective_route_across_exact_policy_replacement ... ok
+2026-11-12T21:41:03.1330089Z test deployment_issuer::writer::tests::issuer_parent::writer_rotation_revoked_issuer_parent_cannot_replace_retained_proof ... ok
+2026-11-12T21:41:03.1331512Z test deployment_issuer::writer::tests::rotation::original_revocation_allows_one_rotation_and_exact_lost_ack_reconcile ... ok
+2026-11-12T21:41:03.1332822Z test desktop_thread_seed::tests::desktop_seed_rechecks_actual_configuration_and_session_metadata ... ok
+2026-11-12T21:41:03.1334130Z test desktop_thread_tool::runtime::tests::missing_history_and_current_state_do_not_manufacture_an_effect_success ... ok
+2026-11-12T21:41:03.1335802Z test final_use_issuer::root_client::tests::root_text_sign_then_lookup_keeps_original_generation_and_signature_identity ... ok
+2026-11-12T21:41:03.1337152Z test hos2_device::bootstrap_tests::g2_initial_and_successor_attach_only_the_original_matching_role ... ok
+2026-11-12T21:41:03.1338282Z test hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable ... ok
+2026-11-12T21:41:03.1339620Z test intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission ... ok
+2026-11-12T21:41:03.1341089Z test learning_iteration_checkpoint::profile::tests::learning_profile_refuses_unknown_storage_fields_and_incompatible_schema ... ok
+2026-11-12T21:41:03.1342504Z test learning_iteration_checkpoint::profile::tests::scoped_learning_profile_roundtrips_and_refuses_scope_substitution ... ok
+2026-11-12T21:41:03.1343882Z test deployment_issuer::writer::tests::rotation::expired_or_original_pruned_predecessor_keeps_strict_signed_identity ... ok
+2026-11-12T21:41:03.1345359Z test learning_iteration_checkpoint::tests::foreign_owner_request_skipped_stage_and_divergent_successor_leave_current_unchanged ... ok
+2026-11-12T21:41:03.1347080Z test learning_iteration_checkpoint::tests::scope_tests::scoped_checkpoint_exchange_rejects_legacy_or_rebound_transport_before_storage ... ok
+2026-11-12T21:41:03.1348688Z test learning_iteration_checkpoint::transport::tests::learning_checkpoint_commit_without_ack_requires_fresh_original_connection ... ok
+2026-11-12T21:41:03.1350412Z test learning_iteration_checkpoint::tests::each_checkpoint_reopens_and_exact_retry_performs_no_second_cas ... ok
+2026-11-12T21:41:03.1351945Z test learning_iteration_evidence_client::material::tests::material_readback_service_never_finishes_missing_dataset ... ok
+2026-11-12T21:41:03.1353477Z test learning_iteration_evidence_client::material::tests::material_readback_service_rejects_same_uid_peer_and_widened_transport ... ok
+2026-11-12T21:41:03.1355127Z test learning_iteration_evidence_client::ordinary_stage_owners::lane::tests::poisoned_return_drops_original_and_never_reopens_admission ... ok
+2026-11-12T21:41:03.1357038Z test learning_iteration_evidence_client::material::command::serving::tests::material_command_pins_original_signatures_and_consumes_invalid_replies ... ok
+2026-11-12T21:41:03.1359150Z test learning_iteration_evidence_client::tests::generation::substituted_receipt_and_unpublished_actor_never_contact_evidence_owner ... ok
+2026-11-12T21:41:03.1360684Z test learning_iteration_evidence_client::tests::public_constructor_refuses_the_daemons_own_uid_before_any_request ... ok
+2026-11-12T21:41:03.1362316Z test learning_iteration_evidence_client::tests::generation::retained_and_updated_original_evidence_survives_actor_and_runtime_reopen ... ok
+2026-11-12T21:41:03.1364273Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_generator_journal_after_cache ... ok
+2026-11-12T21:41:03.1366627Z test learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_rejects_experience_and_valid_other_freeze_context ... ok
+2026-11-12T21:41:03.1369329Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_source_after_cache ... ok
+2026-11-12T21:41:03.1371574Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation ... ok
+2026-11-12T21:41:03.1373797Z test learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_unready_and_wrong_purpose_never_initialize ... ok
+2026-11-12T21:41:03.1375670Z test learning_iteration_research_external_material::tests::research_material_canonicalization_sorts_every_object_level ... ok
+2026-11-12T21:41:03.1377342Z test learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases ... ok
+2026-11-12T21:41:03.1379214Z test learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner ... ok
+2026-11-12T21:41:03.1380888Z test learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation ... ok
+2026-11-12T21:41:03.1382674Z test native_g2_socket_publication::tests::configured_inode_is_published_and_accepts_the_dedicated_role ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:41:03.1384778Z test native_g2_socket_publication::tests::existing_final_is_not_replaced_and_own_pending_is_removed ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:41:03.1386826Z test native_g2_socket_publication::tests::pending_collision_is_preserved_without_publishing ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:41:03.1388543Z test neuron_cell_evaluation::tests::learning::repeated_current_checks_keep_original_bytes_and_expiry_is_an_error ... ok
+2026-11-12T21:41:03.1390134Z test neuron_cell_evaluation::tests::missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown ... ok
+2026-11-12T21:41:03.1391728Z test neuron_cell_evaluation::tests::original_owner::original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_original ... ok
+2026-11-12T21:41:03.1393455Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_cold_recovery_refuses_corruption_and_retains_exact_completion ... ok
+2026-11-12T21:41:03.1394895Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_claim_ack_preserves_pending_or_uncertainty ... ok
+2026-11-12T21:41:03.1396291Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_lost_completion_ack_preserves_completed_or_uncertainty ... ok
+2026-11-12T21:41:03.1397702Z test neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model ... ok
+2026-11-12T21:41:03.1399289Z test neuron_generation_current::test_support::drained_tests::retirement_requires_both_settled_request_and_actual_output_ack ... ok
+2026-11-12T21:41:03.1400989Z test neuron_generation_current::test_support::drained_tests::same_model::same_model_requires_own_signed_purpose_and_lost_ack_recovery_never_claims_again ... ok
+2026-11-12T21:41:03.1402783Z test neuron_generation_current::test_support::expected_context_tests::expected_context_cold_pending_replay_and_cancellation_keep_original_identity ... ok
+2026-11-12T21:41:03.1404224Z test neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback ... ok
+2026-11-12T21:41:03.1405051Z test neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen ... ok
+2026-11-12T21:41:03.1405805Z test neuron_generation_runtime::tests::queued_old_cancel_and_reconcile_cannot_target_a_new_pending_operation ... ok
+2026-11-12T21:41:03.1406603Z test neuron_generation_runtime::tests::update::adopted_learning::contract::backend_without_encoder_retains_its_explicit_optional_contract ... ok
+2026-11-12T21:41:03.1407955Z test neuron_generation_runtime::tests::update::real_learning::actual_smollm_external_artifact_native_adoption_and_cold_readback ... ignored, explicit external-artifact research owner, real pinned model and fresh operation required
+2026-11-12T21:41:03.1409420Z test neuron_generation_runtime::tests::update::real_learning::learning_iteration_real_model_task_input_routing_is_stage_bound ... ok
+2026-11-12T21:41:03.1410245Z test neuron_generation_runtime::tests::update::successive::cold_takeover_rejects_real_stopped_drained_but_unacknowledged_output ... ok
+2026-11-12T21:41:03.1411167Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::private_head::q24_single_private_head_rejects_frozen_changes_extra_rows_and_no_change ... ok
+2026-11-12T21:41:03.1412333Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::feature::q24_feature_original_pending_reopens_control_and_cell_without_native_reexecution ... ok
+2026-11-12T21:41:03.1413467Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization ... ok
+2026-11-12T21:41:03.1414638Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::observation::q24_anchored_training_observation_preserves_actual_result_and_refuses_rebound_prefix ... ok
+2026-11-12T21:41:03.1415783Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains ... ok
+2026-11-12T21:41:03.1416788Z test learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature ... ok
+2026-11-12T21:41:03.1417731Z test neuron_v13_generation_bootstrap::tests::guarded::initial::initial_unsigned_bad_signature_wrong_binding_and_changed_current_never_activate ... ok
+2026-11-12T21:41:03.1418670Z test neuron_v13_generation_bootstrap::tests::guarded::initial::runtime::initial_ready_rejects_wrong_runtime_identity_and_queue_before_preparation_cost ... ok
+2026-11-12T21:41:03.1419702Z test neuron_v13_generation_bootstrap::tests::guarded::initial::uncertain_initial_claim_remains_pending_until_new_signed_forward_publication ... ok
+2026-11-12T21:41:03.1420524Z test neuron_v13_generation_bootstrap::tests::preparation_scope_is_sticky_after_lock_failure_and_atomic_between_tasks ... ok
+2026-11-12T21:41:03.1421148Z test notes_channel::tests::closed_peer_buffered_frame_remains_readable ... ok
+2026-11-12T21:41:03.1421714Z test notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams ... ok
+2026-11-12T21:41:03.1422340Z test notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent ... ok
+2026-11-12T21:41:03.1423012Z test notes_literal_adapter::desktop_recorded::recovery::tests::empty_validated_cut_has_no_previous_operation ... ok
+2026-11-12T21:41:03.1423721Z test notes_literal_adapter::ui_worker::tests::notes_ui_failed_or_cancelled_refresh_cannot_renew_cached_ready ... ok
+2026-11-12T21:41:03.1424405Z test notes_thread_seed::tests::persisted_seed_metadata_requires_exact_original_identity_and_catalog ... ok
+2026-11-12T21:41:03.1425094Z test notes_thread_tool::status::tests::selector_and_exact_references_are_exclusive_and_cannot_supply_authority ... ok
+2026-11-12T21:41:03.1425681Z test plasticity_host::tests::owner_evidence_receipt_is_context_bound ... ok
+2026-11-12T21:41:03.1426212Z test plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds ... ok
+2026-11-12T21:41:03.1427145Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint ... ok
+2026-11-12T21:41:03.1428494Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::retirement_recovery_tests::ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutation ... ok
+2026-11-12T21:41:03.1429757Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::partial_and_completed_recovery_preserve_deadlines_and_only_resume_after_authentication ... ok
+2026-11-12T21:41:03.1430692Z test neuron_v13_generation_bootstrap::tests::real_v13_rejection_retains_cost_and_reopens_original_result_without_repreparation ... ok
+2026-11-12T21:41:03.1431563Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_readback_rechecks_training_before_requesting_any_attestation ... ok
+2026-11-12T21:41:03.1432805Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::training_no_update_auth_tests::trainer_no_update_recovery_authenticates_generator_selector_and_observer_without_evaluator ... ok
+2026-11-12T21:41:03.1433874Z test plasticity_runtime::lifetime_tests::terminal_learning_tests::recovered_ledger_does_not_invent_a_durable_iteration_checkpoint ... ok
+2026-11-12T21:41:03.1434668Z test production_launcher::desktop_deployment::tests::joint_wire_never_defaults_a_release_interaction_or_old_recovery ... ok
+2026-11-12T21:41:03.1435296Z test prompt_runtime::tests::final_delivered_terminal_releases_staged_turn ... ok
+2026-11-12T21:41:03.1435874Z test prompt_runtime::tests::owner_drop_releases_retained_descriptor_without_releasing_successor_lock ... ok
+2026-11-12T21:41:03.1436440Z test prompt_runtime::tests::owner_remains_send_sync_with_fault_injection ... ok
+2026-11-12T21:41:03.1437234Z test root_bound_socket::tests::original_root_bound_listener_preserves_peer_identity_and_path_custody ... ignored, explicit actual Root fixture, held descriptors and dedicated-UID child
+2026-11-12T21:41:03.1438114Z test root_production_inputs::tests::empty_or_oversized_handoff_is_refused_before_custody_or_parsing ... ok
+2026-11-12T21:41:03.1438738Z test root_production_inputs::tests::ordinary_json_file_is_not_a_root_production_handoff ... ok
+2026-11-12T21:41:03.1439511Z test root_writer_proof::tests::observation_requires_full_fixed_identity_but_allows_unrelated_store_advancement ... ok
+2026-11-12T21:41:03.1440203Z test root_writer_proof::tests::verified_complete_proof_and_ascii_signature_create_exact_original_lease ... ok
+2026-11-12T21:41:03.1440914Z test production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install ... ok
+2026-11-12T21:41:03.1441556Z test runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor ... ok
+2026-11-12T21:41:03.1442327Z test runtime::hos2_recovery_tests::notes_tests::objective_tests::finite_notes_static_execution_uses_original_publication_owner_and_recovers_lost_ack_fixture ... ok
+2026-11-12T21:41:03.1443327Z test runtime::tests::circuit_task_ingress::q24_tests::cold_recovery::q24_ordinary_cold_recovery_rebuilds_completed_predecessor_without_retained_token_or_repairs ... ok
+2026-11-12T21:41:03.1444814Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion has been running for over 60 seconds
+2026-11-12T21:41:03.1446784Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut has been running for over 60 seconds
+2026-11-12T21:41:03.1448666Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion ... FAILED
+2026-11-12T21:41:03.1450643Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut ... FAILED
+2026-11-12T21:41:03.1452336Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::fixture::training_read_support::tests::original_panel_cancel_keeps_the_held_lane_and_consumed_channel ... ok
+2026-11-12T21:41:03.1453697Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures ... ok
+2026-11-12T21:41:03.1454819Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::q24_source_bound_model_selector_fences_changed_execution_bytes ... ok
+2026-11-12T21:41:03.1456084Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute has been running for over 60 seconds
+2026-11-12T21:41:03.1457446Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::qualification_owner::original_qualification_publishes_and_recovers_exact_completed_decision ... ok
+2026-11-12T21:41:03.1458567Z test runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::retained_publication::retained_publication_lost_ack_recovers_original_files_without_another_grant ... ok
+2026-11-12T21:41:03.1459416Z ================================================================================
+2026-11-12T21:41:03.2536242Z [37,998 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8); 324s remote, remote-cache ... (2 actions running)
+2026-11-12T21:41:06.7399646Z [37,998 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8); 327s remote, remote-cache ... (2 actions running)
+2026-11-12T21:41:06.7701965Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8):
+2026-11-12T21:41:06.7702861Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 1 of 8):
+2026-11-12T21:41:06.7703257Z 
+2026-11-12T21:41:06.7703370Z running 160 tests
+2026-11-12T21:41:06.7704196Z test authority_host_checkpoint::adoption::tests::root_current_adoption_without_any_retained_old_pidfd_preserves_exact_cut ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:06.7705748Z test authority_host_checkpoint::tests::root_read_ids_do_not_advance_mutation_highwater_or_revive_fenced_state ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:06.7707172Z test authority_host_runtime::issuer_renewal::tests::exact_postimage_retry_does_not_advance_frontier_or_extend_deadline ... ok
+2026-11-12T21:41:06.7708402Z test authority_host_runtime::issuer_renewal::tests::pruned_original_cannot_be_recreated_from_the_plan ... ok
+2026-11-12T21:41:06.7709886Z test authority_host_runtime::session::filesystem::tests::original_registry_reader_child ... ignored, only the explicit Root filesystem test launches this exact dedicated-UID child
+2026-11-12T21:41:06.7711243Z test authority_host_runtime::session::notes_startup::reservation::tests::reservation_rejects_extra_authority_fields_zero_nonce_and_wrong_destination ... ok
+2026-11-12T21:41:06.7712705Z test authority_host_runtime::session::notes_startup::tests::original_root_seals_only_empty_private_deployment_and_readonly_consumer_observes_it ... ignored, requires actual Root; execute the user-built test ELF in the isolated Root runner
+2026-11-12T21:41:06.7714890Z test authority_host_runtime::session::notes_startup::tests::successor_policy_contract_requires_the_exact_old_identity_and_distinct_reserved_target ... ok
+2026-11-12T21:41:06.7716438Z test authority_host_service::admin_issuer::tests::actual_issuer_receipt_matches_exact_retained_canonical_postimage ... ok
+2026-11-12T21:41:06.7717951Z test authority_host_service::resident::authority::tests::original_model::resident_root_model_refuses_changed_record_context_and_signature_window ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:06.7719938Z test authority_host_service::resident::authority::tests::resident_root_only_actual_vacant_cas_creates_one_live_continuation ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:06.7721758Z test authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_refuses_changed_order_bundle_role_and_window ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:06.7723381Z test authority_host_service::tests::lane_decoders_reject_unknown_duplicate_and_self_selected_authority ... ok
+2026-11-12T21:41:06.7724519Z test authority_host_service::text_ui::deadline_tests::timely_text_frame_still_uses_the_original_peer_channel ... ok
+2026-11-12T21:41:06.7725955Z test authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen ... ignored, explicit actual Root scoped learning handoff and cold CAS qualification
+2026-11-12T21:41:06.7727414Z test authority_host_wire::tests::shared_typed_proof_signature_binds_original_identity_epochs_lease_and_sequence ... ok
+2026-11-12T21:41:06.7728437Z test automation::service_tests::production_constructor_never_resumes_a_draining_owner ... ok
+2026-11-12T21:41:06.7729978Z test authority_host_checkpoint::session_custody_tests::escaped_original_root_session_and_live_verifier_retain_same_registered_file ... ok
+2026-11-12T21:41:06.7731041Z test browser_servo::tests::non_effect_calls_never_enter_final_use_authority ... ok
+2026-11-12T21:41:06.7732041Z test cell_q24_material_receipt_owner::tests::original_material_pair_signs_recovers_and_feeds_actual_no_update_training ... ok
+2026-11-12T21:41:06.7733178Z test automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation ... ok
+2026-11-12T21:41:06.7734541Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_rechecks_withdrawal_after_actual_native_read ... ok
+2026-11-12T21:41:06.7735854Z test cell_temporal_q24::tests::temporal_q24_owner_restores_and_continues_recurrence_then_stop_preserves_state ... ok
+2026-11-12T21:41:06.7736978Z test circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact ... ok
+2026-11-12T21:41:06.7738074Z test circuit_experience_intake::tests::exact_request_continues_a_previously_committed_decision ... ok
+2026-11-12T21:41:06.7739321Z test circuit_experience_intake::tests::independent_measurement_v2_still_refuses_signed_source_and_measurement_substitution ... ok
+2026-11-12T21:41:06.7740517Z test circuit_task::source::tests::ordinary_source_lost_admission_ack_remains_pending_and_completed_ack_is_read_only ... ok
+2026-11-12T21:41:06.7741657Z test cognitive_checkpoint_unix::tests::original_peer_exit_refuses_even_while_a_child_retains_the_connected_descriptor ... ok
+2026-11-12T21:41:06.7742591Z test control::tests::live_control_socket_entry_is_preserved ... ok
+2026-11-12T21:41:06.7743288Z test control::tests::non_socket_control_path_is_preserved ... ok
+2026-11-12T21:41:06.7744079Z test control::tests::stale_control_socket_entry_is_removed_before_rebinding ... ok
+2026-11-12T21:41:06.7745205Z test deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_discards_post_io_expiry_without_reusing_sequence ... ok
+2026-11-12T21:41:06.7746574Z test deployment_issuer::authbus::tests::writer_tests::deployment_writer_objective_refuses_revoked_or_changed_exact_lease_before_sequence ... ok
+2026-11-12T21:41:06.7747918Z test deployment_issuer::authbus::tests::writer_tests::issuer_followup::human_text_independent_issuer_revocation_refuses_new_canonical_signature ... ok
+2026-11-12T21:41:06.7749119Z test deployment_issuer::desktop::tests::desktop_policy_cross_session_pair_or_reused_incarnation_cannot_change_owner_state ... ok
+2026-11-12T21:41:06.7750522Z test deployment_issuer::desktop::tests::desktop_policy_pair_cas_preserves_original_owner_and_reconciles_exact_lost_ack ... ok
+2026-11-12T21:41:06.7751356Z test deployment_issuer::desktop::tests::desktop_policy_public_entry_requires_actual_root_before_any_state_change ... ok
+2026-11-12T21:41:06.7752081Z test deployment_issuer::notes::observation::tests::issued_observation_selector_rejects_unknown_and_duplicate_fields ... ok
+2026-11-12T21:41:06.7752787Z test deployment_issuer::notes::tests::deployment_notes_lookalike_registry_cannot_install_delegation ... ok
+2026-11-12T21:41:06.7753551Z test deployment_issuer::notes::tests::deployment_notes_revoked_effect_and_writer_cannot_sign_or_reset ... ok
+2026-11-12T21:41:06.7754285Z test deployment_issuer::original_grant::tests::expired_original_artifact_can_only_be_observed_without_advancing_any_state ... ok
+2026-11-12T21:41:06.7754999Z test deployment_issuer::tests::out_of_scope_and_invalid_grants_do_not_issue_and_revocation_is_durable ... ok
+2026-11-12T21:41:06.7755698Z test deployment_issuer::text::retirement::tests::retirement_frees_capacity_without_reissuing_past_intents_after_reopen ... ok
+2026-11-12T21:41:06.7756452Z test deployment_issuer::writer::tests::writer_proof_rejects_effect_lease_stale_full_lease_and_revocation ... ok
+2026-11-12T21:41:06.7757123Z test desktop_thread_catalog::tests::desktop_catalog_has_only_six_finite_tools_and_preserves_legacy_catalog ... ok
+2026-11-12T21:41:06.7757698Z test event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes ... ok
+2026-11-12T21:41:06.7758302Z test final_use_issuer::root_client::tests::root_issuer_legacy_constructor_cannot_request_signing_or_bypass_uid_zero ... ok
+2026-11-12T21:41:06.7759348Z test final_use_issuer::tests::concurrent_requests_do_not_interleave_and_complete_denial_can_be_observed ... ok
+2026-11-12T21:41:06.7760014Z test final_use_issuer::tests::malformed_or_wrong_binding_responses_fence_the_channel_without_retry ... ok
+2026-11-12T21:41:06.7760653Z test final_use_issuer::tests::original_authority_verifies_grants_without_trusting_the_provider_head ... ok
+2026-11-12T21:41:06.7761298Z test hos2_device::bootstrap_tests::g2_successor_local_identity_and_queryabi_cannot_alias_old_history ... ok
+2026-11-12T21:41:06.7761902Z test hos2_device::bootstrap_tests::legacy_v2_constructor_does_not_silently_admit_g2 ... ok
+2026-11-12T21:41:06.7762562Z test hos2_device::tests::cpu_policy_consumer::cpu_policy_consumer_preserves_one_proposal_and_fences_observed_event_loss ... ok
+2026-11-12T21:41:06.7763530Z test cell_q24_material_receipt_owner::tests::support::training_source::command::source_read::original_readonly_source_transaction_keeps_thirty_two_reads_within_same_upstream_budget ... ok
+2026-11-12T21:41:06.7764401Z test hos2_device::tests::read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry ... ok
+2026-11-12T21:41:06.7764967Z test hos2_device::tests::read_usage_rejects_foreign_or_malformed_response_headers ... ok
+2026-11-12T21:41:06.7765480Z test hos2_device::tests::read_usage_rejects_impossible_single_cpu_snapshots ... ok
+2026-11-12T21:41:06.7766046Z test hos2_device::tests::recovery_observes_original_manager_namespace_without_reinstalling_it ... ok
+2026-11-12T21:41:06.7766748Z test hos2_device::tests::cpu_policy_consumer::cpu_policy_final_use_retries_same_k_d_and_installs_once_with_a_fresh_proposal ... ok
+2026-11-12T21:41:06.7767424Z test lane_b_runtime::tests::bulk_unknown_error_retains_completed_prefix_and_failed_record ... ok
+2026-11-12T21:41:06.7767995Z test lane_b_runtime::tests::last_available_revision_accepts_terminal_observation_once ... ok
+2026-11-12T21:41:06.7768519Z test lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission ... ok
+2026-11-12T21:41:06.7769372Z test lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run ... ok
+2026-11-12T21:41:06.7770026Z test intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability ... ok
+2026-11-12T21:41:06.7770757Z test learning_iteration_checkpoint::profile::tests::learning_profile_roundtrip_retains_exact_scope_and_original_writer ... ok
+2026-11-12T21:41:06.7771530Z test learning_iteration_checkpoint::ports_tests::checkpoint_ports_reconcile_lost_commit_ack_without_repeating_write ... ok
+2026-11-12T21:41:06.7772300Z test learning_iteration_checkpoint::profile_tests::previous_or_missing_profile_bytes_are_refused_in_both_outer_schemas ... ok
+2026-11-12T21:41:06.7773101Z test learning_iteration_checkpoint::tests::maximum_legal_snapshots_roundtrip_all_decisions_inside_original_root_bound ... ok
+2026-11-12T21:41:06.7774054Z test learning_iteration_checkpoint::tests::training_no_update_tests::trainer_no_update_uses_new_codec_without_changing_old_bytes_or_allowing_downgrade ... ok
+2026-11-12T21:41:06.7775051Z test learning_iteration_evidence_client::material::command::serving::tests::ordinary_stage::ordinary_stage_recovery_keeps_original_missing_uncertain_without_claim ... ok
+2026-11-12T21:41:06.7775976Z test learning_iteration_evidence_client::material::tests::material_readback_service_failed_frame_permanently_consumes_channel ... ok
+2026-11-12T21:41:06.7776820Z test learning_iteration_evidence_client::ordinary_stage_owners::lane::tests::cancelled_lease_returns_original_identity_and_failure_fence ... ok
+2026-11-12T21:41:06.7777676Z test learning_iteration_evidence_client::material::source::tests::material_source_service_refuses_withdrawn_missing_or_busy_originals ... ok
+2026-11-12T21:41:06.7778577Z test learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry ... ok
+2026-11-12T21:41:06.7779527Z test learning_iteration_evidence_client::tests::original_receipt_fixture_retains_peer_during_owner_work_between_frames ... ok
+2026-11-12T21:41:06.7780479Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_native_artifact_after_cache ... ok
+2026-11-12T21:41:06.7781617Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners ... ok
+2026-11-12T21:41:06.7782504Z test native_g2_command_runtime::tests::pending_cancellation_keeps_the_original_drop_context ... ok
+2026-11-12T21:41:06.7783101Z test native_g2_command_runtime::tests::runtime_entry_rejection_keeps_the_original_drop_context ... ok
+2026-11-12T21:41:06.7783949Z test native_g2_socket_publication::tests::pending_replacement_inode_survives_failed_publication_cleanup ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:41:06.7785013Z test native_g2_socket_publication::tests::preexisting_same_inode_alias_is_rejected_without_removing_final ... ignored, requires Root to exercise the actual native socket owner
+2026-11-12T21:41:06.7786084Z test neuron_cell_evaluation::tests::learning::changed_original_predecessors_and_bundles_are_refused ... ok
+2026-11-12T21:41:06.7786794Z test neuron_cell_evaluation::tests::readback::changed_cell_journals_and_foreign_product_plan_never_claim_execution ... ok
+2026-11-12T21:41:06.7787490Z test neuron_cell_evaluation::tests::readback::pending_cell_execution_readback_never_reissues_work ... ok
+2026-11-12T21:41:06.7788149Z test neuron_cell_evaluation::tests::same_snapshot_but_changed_journal_cut_is_rejected_before_provider ... ok
+2026-11-12T21:41:06.7789002Z test neuron_cell_evaluation_execution_store::tests::original_execution_owner_creation_and_recovery_never_repair_partial_anchors ... ok
+2026-11-12T21:41:06.7789902Z test neuron_generation::tests::lost_response_retains_precontact_clock_floor_across_host_reopen ... ok
+2026-11-12T21:41:06.7790700Z test neuron_generation_current::test_support::drained_tests::same_model::same_model_requires_distinct_task_run_exact_epoch_and_complete_unchanged_manifest ... ok
+2026-11-12T21:41:06.7791839Z test neuron_generation_process_bootstrap::tests::actual_joint_reopens_the_same_clock_journal_prefix_and_original_result ... ok
+2026-11-12T21:41:06.7792563Z test neuron_generation_runtime::tests::absent_service_is_not_a_blocker_but_unstarted_or_closed_bootstrap_is ... ok
+2026-11-12T21:41:06.7793311Z test neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again ... ok
+2026-11-12T21:41:06.7793971Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:06.7794573Z test neuron_generation_runtime::tests::quarantine_is_a_drain_blocker_and_never_a_retirement_acknowledgement ... ok
+2026-11-12T21:41:06.7795465Z test neuron_generation_runtime::tests::update::expected_context::guarded_no_contact_deadline_commits_original_identity_without_model_dispatch ... ok
+2026-11-12T21:41:06.7796350Z test neuron_generation_runtime::tests::update::same_model::cold_same_model_task_runs_new_input_and_recovers_receipt_without_reexecution ... ok
+2026-11-12T21:41:06.7797675Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_fences_physical_mutation_after_bytes_restore ... ok
+2026-11-12T21:41:06.7799295Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::observation::q24_actual_trainer_no_update_requires_published_retained_task_and_committed_distinct_input_after_reopen ... ok
+2026-11-12T21:41:06.7800466Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::q24_training_owner_cold_readback_preserves_candidate_and_no_update ... ok
+2026-11-12T21:41:06.7801558Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature ... ok
+2026-11-12T21:41:06.7802719Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::snapshot_readback::original_training_snapshot_missing_and_pending_never_start_work ... ok
+2026-11-12T21:41:06.7803780Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training_plan::q24_plan_binds_full_baseline_row_optimizer_and_original_scope ... ok
+2026-11-12T21:41:06.7804676Z test neuron_generation_update_bootstrap::learning::tests::actual_same_model_use_cold_reopens_without_new_nonce_or_journal_work ... ok
+2026-11-12T21:41:06.7805470Z test neuron_generation_update_bootstrap::learning::tests::retained_use_rejects_failed_cancelled_rejected_and_late_work ... ok
+2026-11-12T21:41:06.7806265Z test neuron_v13_generation_bootstrap::tests::guarded::guarded_control_lock_failure_keeps_preparation_bound_to_its_original_task ... ok
+2026-11-12T21:41:06.7807265Z test notes_bootstrap::tests::notes_startup_mismatched_offer_is_rejected_before_target_composition_or_attached_ack ... ok
+2026-11-12T21:41:06.7808031Z test notes_channel::tests::closed_peer_partial_frame_still_returns_unexpected_eof ... ok
+2026-11-12T21:41:06.7808568Z test notes_channel::tests::lost_reply_permanently_disables_further_effect_entry ... ok
+2026-11-12T21:41:06.7809442Z test notes_literal_adapter::desktop_recorded::recovery::tests::already_acknowledged_selected_operation_remains_exact_and_idempotent ... ok
+2026-11-12T21:41:06.7810226Z test notes_recovery_process::tests::notes_recovery_process_rejects_unsafe_or_mismatched_executable_before_start ... ok
+2026-11-12T21:41:06.7810902Z test notes_thread_tool::status::tests::absent_original_items_cannot_be_replaced_by_model_result_text ... ok
+2026-11-12T21:41:06.7811518Z test plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame ... ok
+2026-11-12T21:41:06.7812587Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::retirement_recovery_tests::cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_owners ... ok
+2026-11-12T21:41:06.7814109Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::scoped_recovery_tests::scoped_readback_and_delivery_refuse_a_rebound_request_before_owner_work ... ok
+2026-11-12T21:41:06.7815084Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_and_generation_readiness_refuse_before_owner_work ... ok
+2026-11-12T21:41:06.7815859Z test plasticity_runtime::lifetime_tests::terminal_learning_tests::exact_owner_evidence_and_dataset_budget_are_enforced ... ok
+2026-11-12T21:41:06.7816533Z test production_composition::tests::issuer_peer_refusal_leaves_neither_host_registered ... ok
+2026-11-12T21:41:06.7817215Z test production_composition::tests::owner_custody::escaped_original_host_and_writer_retain_the_same_registered_owner_file ... ok
+2026-11-12T21:41:06.7818025Z test prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry ... ok
+2026-11-12T21:41:06.7818659Z test prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent ... ok
+2026-11-12T21:41:06.7819417Z test prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn ... ok
+2026-11-12T21:41:06.7819988Z test root_bound_socket::tests::refuses_shared_or_aliased_parent_without_creating_a_rendezvous ... ok
+2026-11-12T21:41:06.7820799Z test runtime::hos2_recovery_tests::notes_tests::composition_tests::local_handoff_tests::notes_local_handoff_before_expiry_refuses_and_consumes_current_into_dirty ... ok
+2026-11-12T21:41:06.7821782Z test runtime::hos2_recovery_tests::notes_tests::composition_tests::notes_objective_session_registration_returns_observer_for_the_same_private_target ... ok
+2026-11-12T21:41:06.7822837Z test learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature ... ok
+2026-11-12T21:41:06.7823658Z test runtime::tests::automation_owner_mismatch_remains_fail_closed ... ok
+2026-11-12T21:41:06.7824284Z test runtime::tests::circuit_task_ingress::drain_tests::closing_admission_counts_blocked_build_then_prevents_model_contact ... ok
+2026-11-12T21:41:06.7825126Z test runtime::tests::circuit_task_ingress::learning_source_tests::original_learning_source_revalidates_current_issuer_after_prior_success ... ok
+2026-11-12T21:41:06.7826109Z test runtime::hos2_recovery_tests::notes_tests::objective_tests::reconciliation_scope_tests::finite_notes_reconciler_excludes_device_grants_dispatch_and_observation ... ok
+2026-11-12T21:41:06.7827038Z test runtime::tests::circuit_task_ingress::ordinary_ingress_rejects_invalid_trust_generation_and_deadline_before_contact ... ok
+2026-11-12T21:41:06.7828422Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal has been running for over 60 seconds
+2026-11-12T21:41:06.7830565Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion has been running for over 60 seconds
+2026-11-12T21:41:06.7832394Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal ... ok
+2026-11-12T21:41:06.7834212Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim has been running for over 60 seconds
+2026-11-12T21:41:06.7836149Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_refuses_either_original_owner_after_signed_completion ... ok
+2026-11-12T21:41:06.7837855Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim ... ok
+2026-11-12T21:41:06.7839869Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source has been running for over 60 seconds
+2026-11-12T21:41:06.7841083Z ================================================================================
+2026-11-12T21:41:08.2541149Z [37,999 / 38,000] 415 / 583 tests; Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8); 328s remote, remote-cache
+2026-11-12T21:41:10.3522851Z 
+2026-11-12T21:41:10.3523878Z TIMEOUT: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (Summary)
+2026-11-12T21:41:10.3525751Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_4_of_8/test.log
+2026-11-12T21:41:10.3527771Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_2_of_8/test.log
+2026-11-12T21:41:10.3530090Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_5_of_8/test.log
+2026-11-12T21:41:10.3532271Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_6_of_8/test.log
+2026-11-12T21:41:10.3534379Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_8_of_8/test.log
+2026-11-12T21:41:10.3536547Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_1_of_8/test.log
+2026-11-12T21:41:10.3538480Z       /home/runner/.cache/codex-ci/o/execroot/_main/bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/shard_7_of_8/test.log
+2026-11-12T21:41:10.3540272Z INFO: From Testing //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8):
+2026-11-12T21:41:10.3541524Z ==================== Test output for //codex-rs/hepta-agentd:hepta-agentd-unit-tests (shard 7 of 8):
+2026-11-12T21:41:10.3542322Z 
+2026-11-12T21:41:10.3542616Z running 166 tests
+2026-11-12T21:41:10.3543449Z test app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state ... ok
+2026-11-12T21:41:10.3544862Z test android_runtime::tests::android_runtime_requires_terminal_success_complete_lossless_same_job_output ... ok
+2026-11-12T21:41:10.3546358Z test authority_host_admin::tests::observed_current_root_identity_refuses_zero_nonce_and_changed_birth ... ok
+2026-11-12T21:41:10.3548632Z test authority_host_bootstrap_seal::tests::original_writer::root_native_writer_purpose_cannot_pass_the_unchanged_original_two_rights_receiver ... ignored, requires actual Root and the explicit original descriptor-transport qualification
+2026-11-12T21:41:10.3551657Z test authority_host_bootstrap_seal::tests::original_writer::root_writer_transfer_consumes_sender_and_releases_original_lock_after_recipient_closes ... ignored, requires actual Root and the explicit original descriptor-transport qualification
+2026-11-12T21:41:10.3554042Z test authority_host_checkpoint::adoption::tests::physical_material::physical_material_never_promotes_actual_dirty_current_predecessor ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:10.3556677Z test authority_host_checkpoint::adoption::tests::physical_material::physical_recovery_requires_actual_old_exit_and_old_lease_expiry_before_installation ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:10.3558433Z test authority_host_checkpoint::adoption::tests::root_retired_adoption_never_promotes_dirty_publishing_or_fenced ... ignored, explicit root-owned data-bind qualification
+2026-11-12T21:41:10.3560376Z test authority_host_consumer_frontier::tests::root_post_cas_expiry_returns_no_ack_and_never_revives_the_uncertain_object ... ignored, requires explicit root-owned data bind; no production authority
+2026-11-12T21:41:10.3562671Z test authority_host_consumer_frontier::tests::root_storage_disappearance_and_restoration_does_not_revive_a_lane ... ignored, requires explicit root-owned data bind; no production authority
+2026-11-12T21:41:10.3564990Z test authority_host_consumer_frontier::tests::root_two_original_stores_are_isolated_and_exact_cas_survives_reopen ... ignored, requires explicit root-owned data bind; no production authority
+2026-11-12T21:41:10.3566719Z test authority_host_native_launch::tests::native_resources_and_private_draft_paths_are_required_without_loader_overrides ... ok
+2026-11-12T21:41:10.3568568Z test authority_host_service::resident::authority::tests::retention_auth::resident_root_retention_auth_keeps_training_no_update_at_five_stages ... ignored, explicit actual Root and pre-existing protected bind qualification
+2026-11-12T21:41:10.3570650Z test authority_host_service::tests::root::protected_service_client ... ignored, controlled UID60001 client entry, launched by explicit root qualification
+2026-11-12T21:41:10.3572515Z test authority_host_service::writer::fresh::tests::original_fresh_state_retains_writer_lock_and_refuses_nonempty_or_changed_registry ... ignored, explicit actual Root original Registry and SQLite qualification
+2026-11-12T21:41:10.3574020Z hepta-agentd module=automation.taskflow: optional runtime component quarantined
+2026-11-12T21:41:10.3575059Z test authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges ... ok
+2026-11-12T21:41:10.3576102Z test automation_effect_host::tests::host_preserves_ordinary_opaque_and_non_skill_json_payloads ... ok
+2026-11-12T21:41:10.3577189Z test calculator_channel::tests::calculator_lost_effect_reply_disables_only_effect_and_keeps_correlated_readback ... ok
+2026-11-12T21:41:10.3578339Z test cell_q24_dataset::tests::binding::signed_ledger_facts_cannot_substitute_another_source_profile_or_policy ... ok
+2026-11-12T21:41:10.3617285Z test automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen ... ok
+2026-11-12T21:41:10.3618511Z test cell_q24_material_receipt_owner::tests::original_material_pair_rejects_changed_custody_prefix_and_valid_freeze_resigning ... ok
+2026-11-12T21:41:10.3619789Z test cell_temporal_q24::tests::temporal_q24_late_cancelled_and_rejected_work_preserve_state ... ok
+2026-11-12T21:41:10.3620910Z test circuit_cell::tests::actual_cost_overrun_is_recorded_and_routes_to_budget_fallback ... ok
+2026-11-12T21:41:10.3621902Z test circuit_cell::tests::batch_tests::filtered_expired_member_does_not_block_live_request_after_fsync ... ok
+2026-11-12T21:41:10.3623215Z test cell_q24_material_receipt_owner::tests::support::training_source::source_bound_capture_rejects_valid_freeze_resigning_with_identical_training_bytes ... ok
+2026-11-12T21:41:10.3624590Z test circuit_cell::tests::final_dispatch_gate_rechecks_time_after_durable_cell_admission ... ok
+2026-11-12T21:41:10.3625728Z test circuit_next_use_receipt_owner::tests::original_observer_predecessors_require_bound_signed_roles_and_independent_custody ... ok
+2026-11-12T21:41:10.3626992Z test circuit_task::driver::tests::elapsed_task_deadline_never_creates_a_run_or_contacts_a_cell ... ok
+2026-11-12T21:41:10.3628150Z test cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones ... ok
+2026-11-12T21:41:10.3629659Z test cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure ... ok
+2026-11-12T21:41:10.3630821Z test cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends ... ok
+2026-11-12T21:41:10.3631918Z test config::tests::config_binds_exact_registered_agent_roots_and_workspace ... ok
+2026-11-12T21:41:10.3632513Z test cpu_policy::tests::two_native_reads_cannot_reuse_one_demand_sample ... ok
+2026-11-12T21:41:10.3633079Z test deployment_issuer::authbus::tests::deployment_authbus_fails_closed_on_counter_or_time_overflow ... ok
+2026-11-12T21:41:10.3633974Z test deployment_issuer::authbus::tests::deployment_authbus_uses_original_signature_and_registered_host_identity ... ok
+2026-11-12T21:41:10.3634786Z test deployment_issuer::authbus::tests::writer_tests::issuer_followup::text_independent_issuer_revocation_refuses_new_canonical_signature ... ok
+2026-11-12T21:41:10.3635796Z test deployment_issuer::calculator::issuer_followup::calculator_independent_issuer_revocation_refuses_new_signed_effect ... ok
+2026-11-12T21:41:10.3636549Z test deployment_issuer::desktop::tests::desktop_policy_competing_successors_publish_only_one_complete_pair ... ok
+2026-11-12T21:41:10.3637265Z test circuit_experience_intake::tests::independent_measurement_v2_preserves_original_pair_and_strict_v1 ... ok
+2026-11-12T21:41:10.3637955Z test deployment_issuer::desktop::tests::desktop_policy_wrong_calculator_predecessor_does_not_replace_notes ... ok
+2026-11-12T21:41:10.3638649Z test deployment_issuer::desktop::tests::desktop_policy_partial_pair_and_ambiguous_slot_are_never_promoted ... ok
+2026-11-12T21:41:10.3640027Z test deployment_issuer::notes::tests::deployment_notes_wrong_scope_subject_or_incarnation_creates_no_lease_or_grant ... ok
+2026-11-12T21:41:10.3641306Z test deployment_issuer::notes::tests::issuer_deadline::independent_issuer_deadline_caps_grant_and_expiry_creates_no_new_effect_lease ... ok
+2026-11-12T21:41:10.3642093Z test deployment_issuer::notes::tests::deployment_notes_repeated_binding_never_renews_expired_or_pruned_lease ... ok
+2026-11-12T21:41:10.3643366Z test deployment_issuer::root::tests::deployment_protected_final_use_uses_exact_lease_revision_binding_and_expiry ... ok
+2026-11-12T21:41:10.3644935Z test deployment_issuer::text::unsigned::tests::lost_sign_ack_returns_exact_retained_original_and_cannot_be_closed_or_replaced ... ok
+2026-11-12T21:41:10.3646350Z test deployment_issuer::writer::tests::issuer_deadline::final_issuer_observation_does_not_publish_a_writer_that_just_expired ... ok
+2026-11-12T21:41:10.3647120Z test deployment_issuer::writer::tests::writer_proof_is_retained_across_reads_reopen_and_shared_original_sequence ... ok
+2026-11-12T21:41:10.3647823Z test desktop_thread_tool::runtime::tests::a_later_application_cannot_inherit_the_first_applications_success ... ok
+2026-11-12T21:41:10.3648568Z test deployment_issuer::original_grant::tests::original_signature_nonce_and_each_signed_field_are_independently_required ... ok
+2026-11-12T21:41:10.3649756Z test hos2_device::bootstrap_tests::g2_truncated_oversized_or_other_version_records_never_reach_ioctl ... ok
+2026-11-12T21:41:10.3650838Z test lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty ... ok
+2026-11-12T21:41:10.3652004Z test learning_iteration_checkpoint::ports_tests::registered_checkpoint_ports_reopen_every_stage_and_preserve_owner_errors ... ok
+2026-11-12T21:41:10.3654088Z test learning_iteration_checkpoint::transport::tests::learning_checkpoint_cancel_after_commit_requires_original_owner_reconciliation ... ok
+2026-11-12T21:41:10.3655535Z test final_use_issuer::root_client::tests::root_issuer_lifetime_is_absolute_and_lost_ack_never_reopens ... ok
+2026-11-12T21:41:10.3656966Z test learning_iteration_checkpoint::transport::tests::scope_tests::root_checkpoint_refuses_legacy_scoped_and_changed_scope_substitution ... ok
+2026-11-12T21:41:10.3658615Z test learning_iteration_checkpoint::transport::tests::learning_checkpoint_maximum_histories_cross_real_frames_and_reopen ... ok
+2026-11-12T21:41:10.3660631Z test learning_iteration_evidence_client::tests::evaluation::product_signature_cannot_replace_the_original_iteration_attestation ... ok
+2026-11-12T21:41:10.3662294Z test learning_iteration_evidence_client::tests::exact_receipt_readback_supports_recovery_without_sending_a_signing_payload ... ok
+2026-11-12T21:41:10.3663888Z test learning_iteration_evidence_client::material::source::tests::material_source_peer_consumes_wrong_purpose_or_failed_frames ... ok
+2026-11-12T21:41:10.3665669Z test learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd ... ignored, explicit actual-Root external evidence UID 60001 qualification
+2026-11-12T21:41:10.3667321Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:10.3668856Z test learning_iteration_evidence_client::tests::generation::revocation_during_attestation_read_is_rechecked_by_original_actor ... ok
+2026-11-12T21:41:10.3670217Z test learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes ... ok
+2026-11-12T21:41:10.3671611Z test neuron_cell_evaluation::tests::changed_costs_or_unclosed_owner_cannot_reuse_a_frozen_comparison ... ok
+2026-11-12T21:41:10.3672884Z test neuron_cell_evaluation::tests::learning::direct_or_wrong_evaluator_execution_cannot_enter_learning_evaluation ... ok
+2026-11-12T21:41:10.3673597Z test neuron_cell_evaluation::tests::learning::unsigned_profile_cannot_be_added_to_a_non_learning_plan ... ok
+2026-11-12T21:41:10.3674344Z test neuron_cell_evaluation::tests::original_owner::original_evaluator_rejects_substituted_key_controller_plan_and_namespace ... ok
+2026-11-12T21:41:10.3675581Z test neuron_cell_evaluation::tests::readback::missing_cell_execution_readback_never_claims_or_releases ... ok
+2026-11-12T21:41:10.3676822Z test neuron_cell_evaluation::tests::signatures_for_another_fair_budget_cannot_publish_this_result ... ok
+2026-11-12T21:41:10.3677847Z test neuron_generation::tests::cancel_and_drain_survive_reopen_and_retain_actual_worker_cost ... ok
+2026-11-12T21:41:10.3679434Z test neuron_generation_current::test_support::expected_context_tests::expected_context_lost_witness_ack_recovers_exact_commit_without_another_append ... ok
+2026-11-12T21:41:10.3681361Z test neuron_generation_current::test_support::expected_context_tests::expected_context_reads_only_guarded_durable_admission_and_rejects_substitution ... ok
+2026-11-12T21:41:10.3682595Z test neuron_generation_current::test_support::expected_context_tests::expected_context_requires_exact_checkpoint_and_preserves_replay_and_conflict ... ok
+2026-11-12T21:41:10.3683419Z test neuron_generation_current::tests::bad_signature_and_wrong_effect_binding_never_advance_current_or_nonce ... ok
+2026-11-12T21:41:10.3684168Z test neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen ... ok
+2026-11-12T21:41:10.3685039Z test neuron_generation_runtime::tests::partial_startup_failure_preserves_the_configured_unknown_blocker ... ok
+2026-11-12T21:41:10.3686033Z test neuron_generation_runtime::tests::update::expected_context::ordinary_runtime_recovers_original_identity_after_foreign_or_uncertain_result ... ok
+2026-11-12T21:41:10.3687255Z test neuron_generation_runtime::tests::update::learning::ordinary_actor_refuses_trainer_no_update_as_committed_next_use ... ok
+2026-11-12T21:41:10.3688489Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:10.3689555Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:10.3690406Z hepta-agentd module=neuron-generation: optional runtime component quarantined
+2026-11-12T21:41:10.3691595Z test neuron_generation_runtime::tests::update::live_current_withdrawal_and_revocation_block_dispatch_and_reopen ... ok
+2026-11-12T21:41:10.3693177Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::q24_cancel_and_expired_completion_commit_no_output_and_keep_measured_cost ... ok
+2026-11-12T21:41:10.3694490Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::q24_rejects_unmapped_bundle_semantics_and_mismatched_effective_weights ... ok
+2026-11-12T21:41:10.3695413Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::q24_shared_loaded_allocation_keeps_two_cell_journals_and_ack_isolated ... ok
+2026-11-12T21:41:10.3696381Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::feature::q24_feature_real_trained_rows_execute_in_fresh_ordinary_cell_inputs ... ok
+2026-11-12T21:41:10.3697520Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::training_lane::original_training_model_lane_retains_custody_and_exact_generator_evidence ... ok
+2026-11-12T21:41:10.3698712Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::q24_training_owner_cancelled_admission_never_retrains_after_reopen ... ok
+2026-11-12T21:41:10.3700133Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::q24_training_owner_recovers_lost_admission_and_completion_witness_acks ... ok
+2026-11-12T21:41:10.3702206Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::snapshot_readback::original_training_snapshot_rechecks_both_original_current_witnesses ... ok
+2026-11-12T21:41:10.3704561Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_expired_missing_never_claims_or_attests ... ok
+2026-11-12T21:41:10.3706604Z test neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::stage::original_training_stage_request_expiry_preserves_only_original_completed_receipts ... ok
+2026-11-12T21:41:10.3707663Z test neuron_v13_generation_bootstrap::tests::guarded::guarded_preflight_rejects_identity_epoch_binding_and_actual_fd_aliases_before_writes ... ok
+2026-11-12T21:41:10.3708579Z test neuron_v13_generation_bootstrap::tests::guarded::ready_rechecks_actual_runtime_identity_queue_and_live_authority_before_charging_or_spawning ... ok
+2026-11-12T21:41:10.3710694Z test notes_bootstrap::startup::tests::notes_startup_refuses_uncleared_root_credential_mode_before_send ... ok
+2026-11-12T21:41:10.3711477Z test notes_bootstrap::startup::tests::notes_startup_sends_exact_reserved_identity_without_descriptors ... ok
+2026-11-12T21:41:10.3712681Z test notes_literal_adapter::desktop_recorded::recovery::tests::exact_selector_cannot_cross_previous_target_or_invent_operation ... ok
+2026-11-12T21:41:10.3714109Z test notes_literal_adapter::desktop_recorded::recovery::tests::latest_uses_exact_previous_target_instead_of_global_latest ... ok
+2026-11-12T21:41:10.3714923Z test notes_literal_adapter::recorded::tests::recorded_source_requires_exact_raw_tuple_signed_commitments_and_operation ... ok
+2026-11-12T21:41:10.3715677Z test notes_literal_adapter::ui_worker::tests::notes_ui_readback_failure_and_cancellation_cannot_renew_an_old_snapshot ... ok
+2026-11-12T21:41:10.3716375Z test notes_thread_execution::tests::finite_profile_rejects_enabled_builtins_agents_and_external_mcp ... ok
+2026-11-12T21:41:10.3717108Z test notes_thread_tool::status::tests::discovery_recovers_first_original_identity_without_tool_reply_or_model_context ... ok
+2026-11-12T21:41:10.3717798Z test notes_thread_tool::status::tests::incomplete_core_with_committed_older_receipt_remains_unknown ... ok
+2026-11-12T21:41:10.3718447Z test notes_thread_tool::tests::model_arguments_cannot_supply_identity_authority_or_a_new_tool_route ... ok
+2026-11-12T21:41:10.3719537Z test objective_runtime::learning_source::tests::historical_source_expiry_does_not_renew_actions_or_override_current_revocation ... ok
+2026-11-12T21:41:10.3720348Z test objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication ... ok
+2026-11-12T21:41:10.3721636Z test plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution ... ok
+2026-11-12T21:41:10.3723098Z test plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers ... ok
+2026-11-12T21:41:10.3724233Z test plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values ... ok
+2026-11-12T21:41:10.3724949Z test plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner ... ok
+2026-11-12T21:41:10.3725582Z test plasticity_process_bootstrap::tests::mutable_owner_hardlink_alias_is_rejected ... ok
+2026-11-12T21:41:10.3726206Z test plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently ... ok
+2026-11-12T21:41:10.3726975Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::coordinator_uses_native_proposal_owner_and_reconciles_lost_ack ... ok
+2026-11-12T21:41:10.3727912Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::no_update_next_use_checks_actual_selection_stage_and_controller ... ok
+2026-11-12T21:41:10.3728820Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::completed_recovery_rejects_each_invalid_retained_signature_before_work ... ok
+2026-11-12T21:41:10.3730880Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages ... ok
+2026-11-12T21:41:10.3732570Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::ordinary_delivery_absent_source_never_consumes_other_intents ... ok
+2026-11-12T21:41:10.3733651Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::scope_tests::scoped_native_runtime_stops_cross_cadence_training_before_evaluation_or_checkpoint ... ok
+2026-11-12T21:41:10.3735122Z test plasticity_runtime::lifetime_tests::learning_iteration_tests::source_membership_tests::original_source_scope_rejects_missing_unregistered_and_foreign_agent ... ok
+2026-11-12T21:41:10.3736281Z test production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target ... ok
+2026-11-12T21:41:10.3737649Z test production_composition::notes_tests::malformed_notes_descriptors_or_identity_publish_neither_host ... ok
+2026-11-12T21:41:10.3738619Z test production_composition::notes_tests::unavailable_original_notes_ack_does_not_publish_or_return_identity ... ok
+2026-11-12T21:41:10.3740100Z test production_composition::objective_sender_tests::notes_literal_control_tests::receipt_tests::notes_literal_recovery_checks_identity_and_never_erases_first_publication ... ok
+2026-11-12T21:41:10.3741432Z test production_composition::tests::android_runtime_bootstrap_preserves_original_writer_and_refuses_revoked_owner ... ok
+2026-11-12T21:41:10.3742653Z test production_launcher::desktop_deployment::tests::joint_header_requires_matching_owner_generation_and_actual_target_pair ... ok
+2026-11-12T21:41:10.3743786Z test production_launcher::inputs::tests::incomplete_learning_launch_preserves_all_inherited_descriptors ... ok
+2026-11-12T21:41:10.3744865Z test production_launcher::inputs::tests::inherited_deployment_cannot_retain_the_root_producers_writable_description ... ok
+2026-11-12T21:41:10.3745991Z test production_launcher::inputs::tests::learning_handoff_alias_refuses_before_taking_original_rights ... ok
+2026-11-12T21:41:10.3746996Z test production_launcher::inputs::tests::partial_mixed_and_alias_desktop_inputs_refuse_before_taking_rights ... ok
+2026-11-12T21:41:10.3747939Z test prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host ... ok
+2026-11-12T21:41:10.3749025Z test prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry ... ok
+2026-11-12T21:41:10.3750228Z test prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement ... ok
+2026-11-12T21:41:10.3751706Z test root_bound_socket::tests::original_root_bound_listener_child ... ignored, only the explicit Root socket test supplies these inherited descriptors
+2026-11-12T21:41:10.3753239Z test root_observation_cache::tests::fresh_unrelated_registry_updates_do_not_fence_fixed_lease ... ok
+2026-11-12T21:41:10.3754438Z test root_observation_cache::tests::rollback_same_revision_equivocation_wrong_boot_and_late_clock_permanently_fence ... ok
+2026-11-12T21:41:10.3755649Z test root_observation_stream::tests::original_fixed_stream_accepts_bounded_reads_without_reconnect ... ok
+2026-11-12T21:41:10.3756875Z test root_production_handoff::learning::tests::learning_handoff_preserves_ordered_open_objects_and_cloexec ... ok
+2026-11-12T21:41:10.3758726Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending has been running for over 60 seconds
+2026-11-12T21:41:10.3760866Z test runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown ... ok
+2026-11-12T21:41:10.3762996Z test runtime::hos2_recovery_tests::notes_tests::gui_tests::crash_owner_tests::notes_actual_app_legacy_checkpoint_original_owner_reopen_and_helper_ack_restart ... ignored, requires explicitly isolated Xvfb and pinned durable Session/App/recovery binaries
+2026-11-12T21:41:10.3765569Z test runtime::hos2_recovery_tests::notes_tests::gui_tests::notes_actual_ui_original_owner_roundtrip ... ignored, requires an explicitly isolated Xvfb and pinned companion Session/App binaries
+2026-11-12T21:41:10.3767531Z test runtime::hos2_recovery_tests::notes_tests::literal_prepare_tests::notes_literal_protected_time_preserves_milliseconds_and_rejects_overflow ... ok
+2026-11-12T21:41:10.3769159Z test runtime::hos2_recovery_tests::notes_tests::previous_tests::notes_objective_previous_receipt_host_reconciles_without_registering_dispatch_or_issuer ... ok
+2026-11-12T21:41:10.3770448Z HEPTA_DEEP_S_C_STAGE stage=fixture_start elapsed_ms=0
+2026-11-12T21:41:10.3771610Z test learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending ... ok
+2026-11-12T21:41:10.3772889Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_expired_training_signature_permanently_fences_readback ... ok
+2026-11-12T21:41:10.3774449Z HEPTA_DEEP_S_C_STAGE stage=fixture_done elapsed_ms=35113
+2026-11-12T21:41:10.3775220Z HEPTA_DEEP_S_C_STAGE stage=selection_command_start elapsed_ms=35933
+2026-11-12T21:41:10.3776031Z HEPTA_DEEP_S_C_STAGE stage=selection_command_done elapsed_ms=41150
+2026-11-12T21:41:10.3776778Z HEPTA_DEEP_S_C_STAGE stage=selection_command_join elapsed_ms=41150
+2026-11-12T21:41:10.3777552Z HEPTA_DEEP_S_C_STAGE stage=selection_command_joined elapsed_ms=41151
+2026-11-12T21:41:10.3778361Z HEPTA_DEEP_S_C_STAGE stage=ordinary_c_start elapsed_ms=42266
+2026-11-12T21:41:10.3780154Z HEPTA_DEEP_S_C_STAGE stage=ordinary_c_done elapsed_ms=48608
+2026-11-12T21:41:10.3780885Z HEPTA_DEEP_S_C_STAGE stage=c_attestation_start elapsed_ms=48962
+2026-11-12T21:41:10.3782396Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources ... FAILED
+2026-11-12T21:41:10.3785434Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut has been running for over 60 seconds
+2026-11-12T21:41:10.3789677Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs has been running for over 60 seconds
+2026-11-12T21:41:10.3793588Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::evaluated_selector_uses_actual_publication_and_recovers_original_five_cut ... ok
+2026-11-12T21:41:10.3796583Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs ... FAILED
+2026-11-12T21:41:10.3800210Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::capacity::evaluated_version_mixed_trainer_purposes_share_four_sessions_and_refuse_fifth ... ok
+2026-11-12T21:41:10.3803199Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response has been running for over 60 seconds
+2026-11-12T21:41:10.3806631Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response ... FAILED
+2026-11-12T21:41:10.3808068Z ================================================================================
+2026-11-12T21:41:10.3923410Z INFO: Found 475 targets and 583 test targets...
+2026-11-12T21:41:10.7152761Z INFO: Elapsed time: 692.632s, Critical Path: 498.51s
+2026-11-12T21:41:10.7153260Z INFO: 38000 processes: 26282 remote cache hit, 12084 internal, 148 remote.
+2026-11-12T21:41:10.7210360Z INFO: Build completed, 1 test FAILED, 38000 total actions
+2026-11-12T21:41:10.7222571Z INFO: 
+2026-11-12T21:41:10.7388042Z //bazel/rules/testing/wine:wine-test-support-unit-tests         (cached) PASSED in 22.6s
+2026-11-12T21:41:10.7389512Z //codex-rs/agent-graph-store:agent-graph-store-unit-tests       (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7396670Z   WARNING: //codex-rs/agent-graph-store:agent-graph-store-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7398150Z //codex-rs/agent-identity:agent-identity-unit-tests             (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7399876Z   WARNING: //codex-rs/agent-identity:agent-identity-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7401499Z //codex-rs/analytics:analytics-unit-tests                       (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7403124Z   WARNING: //codex-rs/analytics:analytics-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7430764Z //codex-rs/ansi-escape:ansi-escape-unit-tests                   (cached) PASSED in 0.0s
+2026-11-12T21:41:10.7461197Z   WARNING: //codex-rs/ansi-escape:ansi-escape-unit-tests: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7480212Z //codex-rs/app-server:app-server-all-test                       (cached) PASSED in 51.4s
+2026-11-12T21:41:10.7490289Z   Stats over 16 runs: max = 51.4s, min = 15.1s, avg = 24.6s, dev = 9.0s
+2026-11-12T21:41:10.7491450Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (15.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7496674Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (23.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7498764Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (33.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7502138Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (20.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7504264Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (27.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7508154Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (23.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7510529Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (23.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7512670Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (22.0s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7514820Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (15.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7516932Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (24.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7520026Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (19.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7522257Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (51.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.7524542Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (34.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7526635Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (28.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7528648Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (16.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7531455Z   WARNING: //codex-rs/app-server:app-server-all-test: Test execution time (15.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7533152Z //codex-rs/app-server:app-server-all-wine-exec-test             (cached) PASSED in 81.6s
+2026-11-12T21:41:10.7533972Z   Stats over 16 runs: max = 81.6s, min = 16.8s, avg = 39.6s, dev = 15.3s
+2026-11-12T21:41:10.7535222Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (30.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7537475Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (51.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.7540406Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (23.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7542946Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (16.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7545353Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (37.0s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7547696Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (36.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7550303Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (36.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7552682Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (39.0s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7554988Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (29.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7557263Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (54.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.7559620Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (27.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7561952Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (59.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.7564330Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (32.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7566755Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (81.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.7570310Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (43.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7572468Z   WARNING: //codex-rs/app-server:app-server-all-wine-exec-test: Test execution time (32.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7573929Z //codex-rs/app-server:app-server-unit-tests                     (cached) PASSED in 3.7s
+2026-11-12T21:41:10.7574731Z   Stats over 8 runs: max = 3.7s, min = 0.8s, avg = 1.4s, dev = 0.9s
+2026-11-12T21:41:10.7576133Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (0.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7578313Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (0.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7581194Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7583569Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (0.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7585763Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (1.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7587967Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (1.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7590277Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7607462Z   WARNING: //codex-rs/app-server:app-server-unit-tests: Test execution time (3.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7609402Z //codex-rs/app-server:codex-app-server-bin-unit-tests           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7611146Z   WARNING: //codex-rs/app-server:codex-app-server-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7612925Z //codex-rs/app-server:codex-app-server-test-notify-capture-bin-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7614903Z   WARNING: //codex-rs/app-server:codex-app-server-test-notify-capture-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7616821Z //codex-rs/app-server:exec-server-bin-unit-tests                (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7618537Z   WARNING: //codex-rs/app-server:exec-server-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7620366Z //codex-rs/app-server:test_notify_capture-bin-unit-tests        (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7621958Z   WARNING: //codex-rs/app-server:test_notify_capture-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7623644Z //codex-rs/app-server-client:app-server-client-unit-tests       (cached) PASSED in 45.3s
+2026-11-12T21:41:10.7624699Z //codex-rs/app-server-daemon:app-server-daemon-unit-tests       (cached) PASSED in 0.8s
+2026-11-12T21:41:10.7626394Z   WARNING: //codex-rs/app-server-daemon:app-server-daemon-unit-tests: Test execution time (0.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7628071Z //codex-rs/app-server-protocol:app-server-protocol-unit-tests   (cached) PASSED in 5.1s
+2026-11-12T21:41:10.7631441Z   WARNING: //codex-rs/app-server-protocol:app-server-protocol-unit-tests: Test execution time (5.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7633354Z //codex-rs/app-server-protocol-noop-macros:app-server-protocol-noop-macros-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7635509Z   WARNING: //codex-rs/app-server-protocol-noop-macros:app-server-protocol-noop-macros-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7637578Z //codex-rs/app-server-test-client:app-server-test-client-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7640615Z   WARNING: //codex-rs/app-server-test-client:app-server-test-client-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7642814Z //codex-rs/app-server-test-client:codex-app-server-test-client-bin-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7644713Z   WARNING: //codex-rs/app-server-test-client:codex-app-server-test-client-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7646707Z //codex-rs/app-server-transport:app-server-transport-unit-tests (cached) PASSED in 3.6s
+2026-11-12T21:41:10.7648599Z   WARNING: //codex-rs/app-server-transport:app-server-transport-unit-tests: Test execution time (3.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7651156Z //codex-rs/app-server/tests/common:common-unit-tests            (cached) PASSED in 0.0s
+2026-11-12T21:41:10.7652906Z   WARNING: //codex-rs/app-server/tests/common:common-unit-tests: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7654603Z //codex-rs/apply-patch:apply-patch-all-test                     (cached) PASSED in 0.7s
+2026-11-12T21:41:10.7656268Z   WARNING: //codex-rs/apply-patch:apply-patch-all-test: Test execution time (0.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7657990Z //codex-rs/apply-patch:apply-patch-unit-tests                   (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7659697Z   WARNING: //codex-rs/apply-patch:apply-patch-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7661247Z //codex-rs/apply-patch:apply_patch-bin-unit-tests               (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7662831Z   WARNING: //codex-rs/apply-patch:apply_patch-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7664413Z //codex-rs/arg0:arg0-unit-tests                                 (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7665896Z   WARNING: //codex-rs/arg0:arg0-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7667379Z //codex-rs/async-utils:async-utils-unit-tests                   (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7669423Z   WARNING: //codex-rs/async-utils:async-utils-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7671101Z //codex-rs/aws-auth:aws-auth-unit-tests                         (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7672733Z   WARNING: //codex-rs/aws-auth:aws-auth-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7674433Z //codex-rs/backend-client:backend-client-unit-tests             (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7676084Z   WARNING: //codex-rs/backend-client:backend-client-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7677662Z //codex-rs/build-info:build-info-unit-tests                     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7679617Z   WARNING: //codex-rs/build-info:build-info-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7681125Z //codex-rs/bwrap:bwrap-bin-unit-tests                           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7683035Z   WARNING: //codex-rs/bwrap:bwrap-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7684538Z //codex-rs/chatgpt:chatgpt-all-test                             (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7686029Z   WARNING: //codex-rs/chatgpt:chatgpt-all-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7687517Z //codex-rs/chatgpt:chatgpt-unit-tests                           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7706675Z   WARNING: //codex-rs/chatgpt:chatgpt-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7708774Z //codex-rs/cli:cli-app_server-test                              (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7710408Z   WARNING: //codex-rs/cli:cli-app_server-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7711871Z //codex-rs/cli:cli-debug_clear_memories-test                    (cached) PASSED in 0.8s
+2026-11-12T21:41:10.7713534Z   WARNING: //codex-rs/cli:cli-debug_clear_memories-test: Test execution time (0.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7715064Z //codex-rs/cli:cli-debug_models-test                            (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7716587Z   WARNING: //codex-rs/cli:cli-debug_models-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7718041Z //codex-rs/cli:cli-delete-test                                  (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7739568Z   WARNING: //codex-rs/cli:cli-delete-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7741159Z //codex-rs/cli:cli-doctor_enterprise_network-test               (cached) PASSED in 1.0s
+2026-11-12T21:41:10.7742861Z   WARNING: //codex-rs/cli:cli-doctor_enterprise_network-test: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7744511Z //codex-rs/cli:cli-exec_server-test                             (cached) PASSED in 0.4s
+2026-11-12T21:41:10.7746089Z   WARNING: //codex-rs/cli:cli-exec_server-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7747672Z //codex-rs/cli:cli-execpolicy-test                              (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7749414Z   WARNING: //codex-rs/cli:cli-execpolicy-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7750995Z //codex-rs/cli:cli-features-test                                (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7752500Z   WARNING: //codex-rs/cli:cli-features-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7754064Z //codex-rs/cli:cli-login-test                                   (cached) PASSED in 1.1s
+2026-11-12T21:41:10.7755648Z   WARNING: //codex-rs/cli:cli-login-test: Test execution time (1.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7757334Z //codex-rs/cli:cli-marketplace_add-test                         (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7759507Z   WARNING: //codex-rs/cli:cli-marketplace_add-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7761111Z //codex-rs/cli:cli-marketplace_remove-test                      (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7762617Z   WARNING: //codex-rs/cli:cli-marketplace_remove-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7764320Z //codex-rs/cli:cli-marketplace_upgrade-test                     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7765982Z   WARNING: //codex-rs/cli:cli-marketplace_upgrade-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7777868Z //codex-rs/cli:cli-mcp_add_remove-test                          (cached) PASSED in 0.5s
+2026-11-12T21:41:10.7779907Z   WARNING: //codex-rs/cli:cli-mcp_add_remove-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7781477Z //codex-rs/cli:cli-mcp_cloud_config-test                        (cached) PASSED in 0.9s
+2026-11-12T21:41:10.7783067Z   WARNING: //codex-rs/cli:cli-mcp_cloud_config-test: Test execution time (0.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7784578Z //codex-rs/cli:cli-mcp_list-test                                (cached) PASSED in 0.5s
+2026-11-12T21:41:10.7785989Z   WARNING: //codex-rs/cli:cli-mcp_list-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7787383Z //codex-rs/cli:cli-plugin_cli-test                              (cached) PASSED in 0.5s
+2026-11-12T21:41:10.7788856Z   WARNING: //codex-rs/cli:cli-plugin_cli-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7790498Z //codex-rs/cli:cli-queue-test                                   (cached) PASSED in 0.5s
+2026-11-12T21:41:10.7791945Z   WARNING: //codex-rs/cli:cli-queue-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7793461Z //codex-rs/cli:cli-sandbox_cloud_config-test                    (cached) PASSED in 0.4s
+2026-11-12T21:41:10.7795123Z   WARNING: //codex-rs/cli:cli-sandbox_cloud_config-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7796735Z //codex-rs/cli:cli-sandbox_network_proxy-test                   (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7798291Z   WARNING: //codex-rs/cli:cli-sandbox_network_proxy-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7818117Z //codex-rs/cli:cli-unit-tests                                   (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7819733Z   WARNING: //codex-rs/cli:cli-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7821179Z //codex-rs/cli:cli-update-test                                  (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7822637Z   WARNING: //codex-rs/cli:cli-update-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7824102Z //codex-rs/cli:codex-bin-unit-tests                             (cached) PASSED in 1.0s
+2026-11-12T21:41:10.7825874Z   WARNING: //codex-rs/cli:codex-bin-unit-tests: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7827433Z //codex-rs/cli:hepta-bin-unit-tests                             (cached) PASSED in 1.0s
+2026-11-12T21:41:10.7829147Z   WARNING: //codex-rs/cli:hepta-bin-unit-tests: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7830541Z //codex-rs/cli:logs_client-bin-unit-tests                       (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7832058Z   WARNING: //codex-rs/cli:logs_client-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7836962Z //codex-rs/cloud-config:cloud-config-unit-tests                 (cached) PASSED in 0.6s
+2026-11-12T21:41:10.7838694Z   WARNING: //codex-rs/cloud-config:cloud-config-unit-tests: Test execution time (0.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7840491Z //codex-rs/cloud-tasks:cloud-tasks-env_filter-test              (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7842087Z   WARNING: //codex-rs/cloud-tasks:cloud-tasks-env_filter-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7843686Z //codex-rs/cloud-tasks:cloud-tasks-unit-tests                   (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7845500Z   WARNING: //codex-rs/cloud-tasks:cloud-tasks-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7847117Z //codex-rs/cloud-tasks-client:cloud-tasks-client-unit-tests     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7848861Z   WARNING: //codex-rs/cloud-tasks-client:cloud-tasks-client-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7858438Z //codex-rs/cloud-tasks-mock-client:cloud-tasks-mock-client-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7860352Z   WARNING: //codex-rs/cloud-tasks-mock-client:cloud-tasks-mock-client-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7862111Z //codex-rs/code-mode:code-mode-unit-tests                       (cached) PASSED in 1.5s
+2026-11-12T21:41:10.7863637Z   WARNING: //codex-rs/code-mode:code-mode-unit-tests: Test execution time (1.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7865312Z //codex-rs/code-mode-host:code-mode-host-grpc-test              (cached) PASSED in 2.7s
+2026-11-12T21:41:10.7867020Z   WARNING: //codex-rs/code-mode-host:code-mode-host-grpc-test: Test execution time (2.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7868638Z //codex-rs/code-mode-host:code-mode-host-grpc_notifications-test (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7870529Z   WARNING: //codex-rs/code-mode-host:code-mode-host-grpc_notifications-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7872335Z //codex-rs/code-mode-host:code-mode-host-grpc_tcp-test          (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7874066Z   WARNING: //codex-rs/code-mode-host:code-mode-host-grpc_tcp-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7875958Z //codex-rs/code-mode-host:code-mode-host-stdio-test             (cached) PASSED in 7.9s
+2026-11-12T21:41:10.7877656Z   WARNING: //codex-rs/code-mode-host:code-mode-host-stdio-test: Test execution time (7.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7882640Z //codex-rs/code-mode-host:code-mode-host-unit-tests             (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7884284Z   WARNING: //codex-rs/code-mode-host:code-mode-host-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7885973Z //codex-rs/code-mode-host:code-mode-host-websocket-test         (cached) PASSED in 2.1s
+2026-11-12T21:41:10.7889939Z   WARNING: //codex-rs/code-mode-host:code-mode-host-websocket-test: Test execution time (2.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7891829Z //codex-rs/code-mode-host:codex-code-mode-host-bin-unit-tests   (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7893686Z   WARNING: //codex-rs/code-mode-host:codex-code-mode-host-bin-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7895586Z //codex-rs/code-mode-protocol:code-mode-protocol-unit-tests     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7897407Z   WARNING: //codex-rs/code-mode-protocol:code-mode-protocol-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7899452Z //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7901443Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7903411Z //codex-rs/code-mode-runtime:code-mode-runtime-jit-test         (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7905223Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-jit-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7907062Z //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests       (cached) PASSED in 2.4s
+2026-11-12T21:41:10.7908843Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests: Test execution time (2.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7911148Z //codex-rs/codex-api:codex-api-clients-test                     (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7912756Z   WARNING: //codex-rs/codex-api:codex-api-clients-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7914465Z //codex-rs/codex-api:codex-api-models_integration-test          (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7916239Z   WARNING: //codex-rs/codex-api:codex-api-models_integration-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7918048Z //codex-rs/codex-api:codex-api-realtime_websocket_e2e-test      (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7920793Z   WARNING: //codex-rs/codex-api:codex-api-realtime_websocket_e2e-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7922440Z //codex-rs/codex-api:codex-api-sse_end_to_end-test              (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7924060Z   WARNING: //codex-rs/codex-api:codex-api-sse_end_to_end-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7926003Z //codex-rs/codex-api:codex-api-unit-tests                       (cached) PASSED in 0.6s
+2026-11-12T21:41:10.7927498Z   WARNING: //codex-rs/codex-api:codex-api-unit-tests: Test execution time (0.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7929514Z //codex-rs/codex-backend-openapi-models:codex-backend-openapi-models-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7931437Z   WARNING: //codex-rs/codex-backend-openapi-models:codex-backend-openapi-models-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7933478Z //codex-rs/codex-client:codex-client-unit-tests                 (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7935158Z   WARNING: //codex-rs/codex-client:codex-client-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7937027Z //codex-rs/codex-experimental-api-macros:codex-experimental-api-macros-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7943099Z   WARNING: //codex-rs/codex-experimental-api-macros:codex-experimental-api-macros-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7945017Z //codex-rs/codex-home:codex-home-unit-tests                     (cached) PASSED in 0.2s
+2026-11-12T21:41:10.7946668Z   WARNING: //codex-rs/codex-home:codex-home-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7948276Z //codex-rs/codex-mcp:codex-mcp-unit-tests                       (cached) PASSED in 0.3s
+2026-11-12T21:41:10.7980384Z   WARNING: //codex-rs/codex-mcp:codex-mcp-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7982103Z //codex-rs/collaboration-mode-templates:collaboration-mode-templates-unit-tests (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7984165Z   WARNING: //codex-rs/collaboration-mode-templates:collaboration-mode-templates-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7986149Z //codex-rs/config:config-unit-tests                             (cached) PASSED in 4.0s
+2026-11-12T21:41:10.7987789Z   WARNING: //codex-rs/config:config-unit-tests: Test execution time (4.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7989547Z //codex-rs/connectors:connectors-unit-tests                     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7991194Z   WARNING: //codex-rs/connectors:connectors-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7992893Z //codex-rs/context-fragments:context-fragments-unit-tests       (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7994749Z   WARNING: //codex-rs/context-fragments:context-fragments-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.7996648Z //codex-rs/core:codex-write-config-schema-bin-unit-tests        (cached) PASSED in 0.1s
+2026-11-12T21:41:10.7998531Z   WARNING: //codex-rs/core:codex-write-config-schema-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8000904Z //codex-rs/core:core-all-test                                   (cached) PASSED in 38.6s
+2026-11-12T21:41:10.8001792Z   Stats over 16 runs: max = 38.6s, min = 12.2s, avg = 23.2s, dev = 8.4s
+2026-11-12T21:41:10.8003298Z   WARNING: //codex-rs/core:core-all-test: Test execution time (14.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8005465Z   WARNING: //codex-rs/core:core-all-test: Test execution time (16.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8007305Z   WARNING: //codex-rs/core:core-all-test: Test execution time (26.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8040480Z   WARNING: //codex-rs/core:core-all-test: Test execution time (13.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8042591Z   WARNING: //codex-rs/core:core-all-test: Test execution time (12.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8044649Z   WARNING: //codex-rs/core:core-all-test: Test execution time (18.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8046647Z   WARNING: //codex-rs/core:core-all-test: Test execution time (19.0s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8048665Z   WARNING: //codex-rs/core:core-all-test: Test execution time (14.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8050778Z   WARNING: //codex-rs/core:core-all-test: Test execution time (29.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8052712Z   WARNING: //codex-rs/core:core-all-test: Test execution time (37.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8054688Z   WARNING: //codex-rs/core:core-all-test: Test execution time (36.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8056739Z   WARNING: //codex-rs/core:core-all-test: Test execution time (23.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8058848Z   WARNING: //codex-rs/core:core-all-test: Test execution time (25.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8061080Z   WARNING: //codex-rs/core:core-all-test: Test execution time (25.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8063007Z   WARNING: //codex-rs/core:core-all-test: Test execution time (38.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8065000Z   WARNING: //codex-rs/core:core-all-test: Test execution time (22.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8066456Z //codex-rs/core:core-all-wine-exec-test                         (cached) PASSED in 57.6s
+2026-11-12T21:41:10.8067322Z   Stats over 16 runs: max = 57.6s, min = 15.0s, avg = 26.1s, dev = 9.8s
+2026-11-12T21:41:10.8069045Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (57.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T21:41:10.8071529Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (26.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8073595Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (15.0s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8075683Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (25.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8077819Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (25.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8080352Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (16.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8082602Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (23.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8084766Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (27.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8086944Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (18.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8089104Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (26.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8091131Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (17.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8093194Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (38.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8095357Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (22.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8097512Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (23.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8099694Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (25.6s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8101734Z   WARNING: //codex-rs/core:core-all-wine-exec-test: Test execution time (26.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8103288Z //codex-rs/core:core-responses_headers-test                     (cached) PASSED in 0.7s
+2026-11-12T21:41:10.8104961Z   WARNING: //codex-rs/core:core-responses_headers-test: Test execution time (0.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8106681Z //codex-rs/core:core-responses_headers-wine-exec-test           (cached) PASSED in 27.2s
+2026-11-12T21:41:10.8108475Z   WARNING: //codex-rs/core:core-responses_headers-wine-exec-test: Test execution time (27.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8110234Z //codex-rs/core:core-unit-tests                                 (cached) PASSED in 22.5s
+2026-11-12T21:41:10.8111316Z   Stats over 8 runs: max = 22.5s, min = 3.7s, avg = 10.8s, dev = 6.4s
+2026-11-12T21:41:10.8112728Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (14.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8114855Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (5.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8117139Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (3.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8119179Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (4.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8121357Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (5.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8123040Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (22.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8124835Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (14.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8126660Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (14.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8128038Z //codex-rs/core-api:core-api-unit-tests                         (cached) PASSED in 0.3s
+2026-11-12T21:41:10.8129784Z   WARNING: //codex-rs/core-api:core-api-unit-tests: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8131378Z //codex-rs/core-plugins:core-plugins-unit-tests                 (cached) PASSED in 4.9s
+2026-11-12T21:41:10.8133058Z   WARNING: //codex-rs/core-plugins:core-plugins-unit-tests: Test execution time (4.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8134711Z //codex-rs/core/tests/common:common-unit-tests                  (cached) PASSED in 0.5s
+2026-11-12T21:41:10.8136316Z   WARNING: //codex-rs/core/tests/common:common-unit-tests: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8137996Z //codex-rs/core/tests/remote_env_windows:smoke-test             (cached) PASSED in 9.2s
+2026-11-12T21:41:10.8139184Z //codex-rs/diagnostics:diagnostics-unit-tests                   (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8140806Z   WARNING: //codex-rs/diagnostics:diagnostics-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8142405Z //codex-rs/exec:codex-exec-bin-unit-tests                       (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8144004Z   WARNING: //codex-rs/exec:codex-exec-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8145449Z //codex-rs/exec:exec-all-test                                   (cached) PASSED in 65.5s
+2026-11-12T21:41:10.8146237Z   Stats over 8 runs: max = 65.5s, min = 14.4s, avg = 33.3s, dev = 15.8s
+2026-11-12T21:41:10.8147626Z   WARNING: //codex-rs/exec:exec-all-test: Test execution time (22.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8149952Z   WARNING: //codex-rs/exec:exec-all-test: Test execution time (24.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8151836Z   WARNING: //codex-rs/exec:exec-all-test: Test execution time (22.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8153824Z   WARNING: //codex-rs/exec:exec-all-test: Test execution time (14.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8155712Z   WARNING: //codex-rs/exec:exec-all-test: Test execution time (29.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8157656Z //codex-rs/exec:exec-event_processor_with_json_output-test      (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8159561Z   WARNING: //codex-rs/exec:exec-event_processor_with_json_output-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8161279Z //codex-rs/exec:exec-unit-tests                                 (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8162875Z   WARNING: //codex-rs/exec:exec-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8164454Z //codex-rs/exec-server:exec-server-accepted_websocket-test      (cached) PASSED in 0.4s
+2026-11-12T21:41:10.8166297Z   WARNING: //codex-rs/exec-server:exec-server-accepted_websocket-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8168185Z //codex-rs/exec-server:exec-server-authorized_read_rpc-test     (cached) PASSED in 0.3s
+2026-11-12T21:41:10.8170063Z   WARNING: //codex-rs/exec-server:exec-server-authorized_read_rpc-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8171826Z //codex-rs/exec-server:exec-server-capability_discovery-test    (cached) PASSED in 4.4s
+2026-11-12T21:41:10.8173569Z   WARNING: //codex-rs/exec-server:exec-server-capability_discovery-test: Test execution time (4.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8175351Z //codex-rs/exec-server:exec-server-chatgpt_cloudflare_affinity-test (cached) PASSED in 0.3s
+2026-11-12T21:41:10.8177226Z   WARNING: //codex-rs/exec-server:exec-server-chatgpt_cloudflare_affinity-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8179136Z //codex-rs/exec-server:exec-server-deferred_environment-test    (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8180735Z   WARNING: //codex-rs/exec-server:exec-server-deferred_environment-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8182438Z //codex-rs/exec-server:exec-server-environment-test             (cached) PASSED in 9.5s
+2026-11-12T21:41:10.8184123Z   WARNING: //codex-rs/exec-server:exec-server-environment-test: Test execution time (9.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8186621Z //codex-rs/exec-server:exec-server-environment_config-test      (cached) PASSED in 0.3s
+2026-11-12T21:41:10.8188387Z   WARNING: //codex-rs/exec-server:exec-server-environment_config-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8193279Z //codex-rs/exec-server:exec-server-exec_process-test            (cached) PASSED in 10.6s
+2026-11-12T21:41:10.8195101Z   WARNING: //codex-rs/exec-server:exec-server-exec_process-test: Test execution time (10.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8196856Z //codex-rs/exec-server:exec-server-file_stream-test             (cached) PASSED in 1.4s
+2026-11-12T21:41:10.8198676Z   WARNING: //codex-rs/exec-server:exec-server-file_stream-test: Test execution time (1.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8200349Z //codex-rs/exec-server:exec-server-file_system_unix-test        (cached) PASSED in 16.5s
+2026-11-12T21:41:10.8202022Z   WARNING: //codex-rs/exec-server:exec-server-file_system_unix-test: Test execution time (16.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8203824Z //codex-rs/exec-server:exec-server-file_system_windows-test     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8205420Z   WARNING: //codex-rs/exec-server:exec-server-file_system_windows-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8207199Z //codex-rs/exec-server:exec-server-forward-test                 (cached) PASSED in 13.9s
+2026-11-12T21:41:10.8208684Z   WARNING: //codex-rs/exec-server:exec-server-forward-test: Test execution time (13.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8210818Z //codex-rs/exec-server:exec-server-health-test                  (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8212286Z   WARNING: //codex-rs/exec-server:exec-server-health-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8213597Z //codex-rs/exec-server:exec-server-http_client-test             (cached) PASSED in 2.3s
+2026-11-12T21:41:10.8214955Z   WARNING: //codex-rs/exec-server:exec-server-http_client-test: Test execution time (2.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8216407Z //codex-rs/exec-server:exec-server-http_request-test            (cached) PASSED in 1.5s
+2026-11-12T21:41:10.8217926Z   WARNING: //codex-rs/exec-server:exec-server-http_request-test: Test execution time (1.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8221922Z //codex-rs/exec-server:exec-server-http_request_logging-test    (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8223686Z   WARNING: //codex-rs/exec-server:exec-server-http_request_logging-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8225341Z //codex-rs/exec-server:exec-server-initialize-test              (cached) PASSED in 0.0s
+2026-11-12T21:41:10.8227040Z   WARNING: //codex-rs/exec-server:exec-server-initialize-test: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8228747Z //codex-rs/exec-server:exec-server-process-test                 (cached) PASSED in 1.5s
+2026-11-12T21:41:10.8230638Z   WARNING: //codex-rs/exec-server:exec-server-process-test: Test execution time (1.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8232302Z //codex-rs/exec-server:exec-server-relay-test                   (cached) PASSED in 1.5s
+2026-11-12T21:41:10.8233929Z   WARNING: //codex-rs/exec-server:exec-server-relay-test: Test execution time (1.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8235767Z //codex-rs/exec-server:exec-server-selected_capability_roots-test (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8237515Z   WARNING: //codex-rs/exec-server:exec-server-selected_capability_roots-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8239446Z //codex-rs/exec-server:exec-server-unit-tests                   (cached) PASSED in 12.2s
+2026-11-12T21:41:10.8241055Z   WARNING: //codex-rs/exec-server:exec-server-unit-tests: Test execution time (12.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8242663Z //codex-rs/exec-server:exec-server-websocket-test               (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8244592Z   WARNING: //codex-rs/exec-server:exec-server-websocket-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8246377Z //codex-rs/exec-server-protocol:exec-server-protocol-unit-tests (cached) PASSED in 0.4s
+2026-11-12T21:41:10.8248230Z   WARNING: //codex-rs/exec-server-protocol:exec-server-protocol-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8270463Z //codex-rs/exec-server/tests/support:support-unit-tests         (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8272195Z   WARNING: //codex-rs/exec-server/tests/support:support-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8273912Z //codex-rs/execpolicy:codex-execpolicy-bin-unit-tests           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8275628Z   WARNING: //codex-rs/execpolicy:codex-execpolicy-bin-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8277261Z //codex-rs/execpolicy:execpolicy-basic-test                     (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8279086Z   WARNING: //codex-rs/execpolicy:execpolicy-basic-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8280678Z //codex-rs/execpolicy:execpolicy-unit-tests                     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8282339Z   WARNING: //codex-rs/execpolicy:execpolicy-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8283922Z //codex-rs/ext/agent:agent-agent_service-test                   (cached) PASSED in 0.4s
+2026-11-12T21:41:10.8285469Z   WARNING: //codex-rs/ext/agent:agent-agent_service-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8286942Z //codex-rs/ext/agent:agent-unit-tests                           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8288404Z   WARNING: //codex-rs/ext/agent:agent-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8335297Z //codex-rs/ext/connectors:connectors-unit-tests                 (cached) PASSED in 0.0s
+2026-11-12T21:41:10.8337062Z   WARNING: //codex-rs/ext/connectors:connectors-unit-tests: Test execution time (0.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8338852Z //codex-rs/ext/extension-api:extension-api-capabilities-test    (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8341107Z   WARNING: //codex-rs/ext/extension-api:extension-api-capabilities-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8342800Z //codex-rs/ext/extension-api:extension-api-model_provider_input-test (cached) PASSED in 0.5s
+2026-11-12T21:41:10.8344527Z   WARNING: //codex-rs/ext/extension-api:extension-api-model_provider_input-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8346242Z //codex-rs/ext/extension-api:extension-api-model_provider_policy-test (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8348210Z   WARNING: //codex-rs/ext/extension-api:extension-api-model_provider_policy-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8350198Z //codex-rs/ext/extension-api:extension-api-registry-test        (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8351911Z   WARNING: //codex-rs/ext/extension-api:extension-api-registry-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8353908Z //codex-rs/ext/extension-api:extension-api-state-test           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8355448Z   WARNING: //codex-rs/ext/extension-api:extension-api-state-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8357071Z //codex-rs/ext/extension-api:extension-api-unit-tests           (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8358784Z   WARNING: //codex-rs/ext/extension-api:extension-api-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8371137Z //codex-rs/ext/git-attribution:git-attribution-unit-tests       (cached) PASSED in 0.4s
+2026-11-12T21:41:10.8373213Z   WARNING: //codex-rs/ext/git-attribution:git-attribution-unit-tests: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8374848Z //codex-rs/ext/goal:goal-accounting-test                        (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8376394Z   WARNING: //codex-rs/ext/goal:goal-accounting-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8377947Z //codex-rs/ext/goal:goal-goal_extension_backend-test            (cached) PASSED in 2.7s
+2026-11-12T21:41:10.8379779Z   WARNING: //codex-rs/ext/goal:goal-goal_extension_backend-test: Test execution time (2.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8381409Z //codex-rs/ext/goal:goal-unit-tests                             (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8382944Z   WARNING: //codex-rs/ext/goal:goal-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8384532Z //codex-rs/ext/guardian-v2:guardian-v2-unit-tests               (cached) PASSED in 3.4s
+2026-11-12T21:41:10.8386169Z   WARNING: //codex-rs/ext/guardian-v2:guardian-v2-unit-tests: Test execution time (3.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8387876Z //codex-rs/ext/hepta-governance:hepta-governance-unit-tests     (cached) PASSED in 0.5s
+2026-11-12T21:41:10.8389785Z   WARNING: //codex-rs/ext/hepta-governance:hepta-governance-unit-tests: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8391791Z //codex-rs/ext/hepta-memory:hepta-memory-unit-tests             (cached) PASSED in 5.9s
+2026-11-12T21:41:10.8393403Z   WARNING: //codex-rs/ext/hepta-memory:hepta-memory-unit-tests: Test execution time (5.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8395068Z //codex-rs/ext/hepta-prompt:hepta-prompt-unit-tests             (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8396664Z   WARNING: //codex-rs/ext/hepta-prompt:hepta-prompt-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8398404Z //codex-rs/ext/history-notes:history-notes-history_notes_extension-test (cached) PASSED in 0.3s
+2026-11-12T21:41:10.8451650Z   WARNING: //codex-rs/ext/history-notes:history-notes-history_notes_extension-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8453856Z //codex-rs/ext/history-notes:history-notes-unit-tests           (cached) PASSED in 0.2s
+2026-11-12T21:41:10.8455867Z   WARNING: //codex-rs/ext/history-notes:history-notes-unit-tests: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8457773Z //codex-rs/ext/image-generation:image-generation-unit-tests     (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8459960Z   WARNING: //codex-rs/ext/image-generation:image-generation-unit-tests: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8461656Z //codex-rs/ext/items:items-unit-tests                           (cached) PASSED in 1.0s
+2026-11-12T21:41:10.8463308Z   WARNING: //codex-rs/ext/items:items-unit-tests: Test execution time (1.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8464992Z //codex-rs/ext/mcp:mcp-executor_plugin_mcp-test                 (cached) PASSED in 0.1s
+2026-11-12T21:41:10.8466697Z   WARNING: //codex-rs/ext/mcp:mcp-executor_plugin_mcp-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T21:41:10.8468420Z //codex-rs/ext/mcp:mcp-hosted_apps_mcp-test                     (cached) PASSED in 0.1s
+20

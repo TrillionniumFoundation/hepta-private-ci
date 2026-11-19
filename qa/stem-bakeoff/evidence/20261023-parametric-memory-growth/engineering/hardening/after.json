@@ -1,0 +1,23 @@
+{
+  "concurrent_withdrawal": {
+    "callback_after_persisted_withdrawal": false,
+    "events": [
+      "other_owner_committed_withdrawal: withdrawn inference source",
+      "outer_rejected: inference frontier or active version changed before callback"
+    ],
+    "result_escaped": false
+  },
+  "fifo": {
+    "blocked_after_500ms": false,
+    "result": {
+      "reason": "candidate must be a regular file",
+      "rejected": "ValueError"
+    }
+  },
+  "files_sha256": {
+    "parametric_owner.py": "4b45a57a42ff61dd681e13001fb465812aaf02f1f886c29ed13fec532de2abb4",
+    "tensor_contract.py": "6bbfcb19454f1ab75e979e1af41650e30ad271cc649ffa849aa1bf1338d0f483"
+  },
+  "production_accepted": false,
+  "schema": "hepta.parametric-memory.admission-hardening-reproduction.v1"
+}

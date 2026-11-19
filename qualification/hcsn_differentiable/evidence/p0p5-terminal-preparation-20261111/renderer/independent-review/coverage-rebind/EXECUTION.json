@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/coverage-rebind-v1/check.py",
+    "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1",
+    "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/coverage-rebind-v1/ROSTER-REBIND.json"
+  ],
+  "check_source": {
+    "bytes": 2484,
+    "sha256": "afa4b6f4d17cd87ac84a9bc91786540a8e62fc04436a2676f5d10c4c1aa1abad"
+  },
+  "limits": {
+    "address_space_bytes": 268435456,
+    "automatic_retry": false,
+    "whole_child_seconds": 30,
+    "workers": 1
+  },
+  "output": {
+    "bytes": 2996,
+    "sha256": "c02ce993ceb7b956551a2aa893727eb0cda5c2e74b5425a0fb646fa88113a80e"
+  },
+  "returncode": 0,
+  "schema": "renderer155-roster-only-execution-v1",
+  "scope": "One read-only source/hash child, no probe rerun; parent receipt serialization/exit excluded from this exact child cost.",
+  "timed_out": false,
+  "wait4_child_CPU_seconds": 0.055958999999999995,
+  "wait4_peak_RSS_bytes": 10092544,
+  "whole_child_wall_seconds": 0.09608313199987606
+}

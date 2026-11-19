@@ -46,6 +46,13 @@ would otherwise survive document-only validation:
   required exports and module ownership must match the current paths, while the
   manifest's historical hashes remain non-authoritative provenance.
 
+Product capability coverage is exactly 42. The five standalone operations
+entries in `kernel.operations/CAPABILITY_EVIDENCE_V2.json` form a separate source
+evidence layer with zero contribution to that count and no product qualification.
+Both layers must pass their own owner, state and source/test checks; they cannot
+compensate for each other's missing evidence. The protocol index retains eight
+ordered identities across the seven modules, including both operations owners.
+
 ## Closure boundary
 
 Repository-controlled current-contract documentation, source/test traceability

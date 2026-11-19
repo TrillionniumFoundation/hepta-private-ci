@@ -1,8 +1,11 @@
 #![forbid(unsafe_code)]
 
+mod authbus_crypto_profile;
+mod authbus_issuer_floor;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_owner_policy;
 mod authbus_recovery;
 mod authbus_store;
 mod canonical;
@@ -19,6 +22,28 @@ mod recovery_frontier;
 mod schema_validation;
 mod store;
 mod summary;
+mod verify1_checker;
+mod verify1_report;
+
+pub use verify1_checker::Verify1FixtureGoal;
+pub use verify1_checker::check_verify1_sqlite;
+pub use verify1_report::Verify1CalibrationReport;
+pub use verify1_report::Verify1ModelIdentity;
+pub use verify1_report::Verify1Record;
+pub use verify1_report::Verify1RiskPrediction;
+pub use verify1_report::Verify1Scope;
+pub use verify1_report::Verify1Verdict;
+pub use verify1_report::Verify1VerificationReceipt;
+pub use verify1_report::parse_verify1_payload;
+pub use verify1_report::verify1_receipt_payload;
+
+#[cfg(test)]
+#[path = "verify1_report_tests.rs"]
+mod verify1_report_tests;
+
+#[cfg(test)]
+#[path = "verify1_checker_tests.rs"]
+mod verify1_checker_tests;
 
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
@@ -31,6 +56,7 @@ pub use authbus_outbox_record::AuthBusDeliveryState;
 pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
+pub use authbus_outbox_record::AuthBusRetainedDelivery;
 pub use authbus_recovery::AuthBusRecoveryError;
 pub use authbus_recovery::ReplayCheckpoint;
 pub use authbus_store::AuthBusAdmissionError;

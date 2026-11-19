@@ -1,0 +1,355 @@
+{
+  "result": {
+    "CPU_prefix_seconds": 0.270046516,
+    "measurements": [
+      [
+        {
+          "CPU_ns": 12001722,
+          "error": null,
+          "mode": "original",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        },
+        {
+          "CPU_ns": 15854622,
+          "error": null,
+          "mode": "candidate",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        }
+      ],
+      [
+        {
+          "CPU_ns": 15999061,
+          "error": null,
+          "mode": "candidate",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        },
+        {
+          "CPU_ns": 20063389,
+          "error": null,
+          "mode": "original",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        }
+      ],
+      [
+        {
+          "CPU_ns": 15936398,
+          "error": null,
+          "mode": "original",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        },
+        {
+          "CPU_ns": 15999361,
+          "error": null,
+          "mode": "candidate",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        }
+      ],
+      [
+        {
+          "CPU_ns": 12001392,
+          "error": null,
+          "mode": "candidate",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        },
+        {
+          "CPU_ns": 15999351,
+          "error": null,
+          "mode": "original",
+          "work": {
+            "history_leaves_validated": 128,
+            "history_walks": 1,
+            "payload_bytes_read": 1680512,
+            "payload_read_calls": 256
+          }
+        }
+      ]
+    ],
+    "model_imported": false,
+    "post_barrier": true,
+    "pre_barrier": true,
+    "scope": "saved128 stdlib history comparator only; no model, no training, no256, no strict complete-budget certification",
+    "status": "COMPLETE",
+    "tests": [
+      {
+        "deep_equal_depth": 450,
+        "literal_pairs": 676,
+        "name": "strict_json_equivalence",
+        "nonfinite_refusals": 6,
+        "saved_negative_pairs": 256,
+        "saved_pairs": 128
+      },
+      {
+        "name": "complete128_fresh_walk",
+        "results": [
+          {
+            "CPU_ns": 16004419,
+            "error": null,
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          },
+          {
+            "CPU_ns": 15999581,
+            "error": null,
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          }
+        ]
+      },
+      {
+        "name": "wrong_job",
+        "results": [
+          {
+            "CPU_ns": 0,
+            "error": "compact actor cursor",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 0,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          },
+          {
+            "CPU_ns": 0,
+            "error": "compact actor cursor",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 0,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "bool_cursor",
+        "results": [
+          {
+            "CPU_ns": 0,
+            "error": "compact actor cursor",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 0,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          },
+          {
+            "CPU_ns": 0,
+            "error": "compact actor cursor",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 0,
+              "history_walks": 0,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "last_loss",
+        "results": [
+          {
+            "CPU_ns": 0,
+            "error": "history/state binding",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 1,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          },
+          {
+            "CPU_ns": 0,
+            "error": "history/state binding",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 1,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "tip_hash",
+        "results": [
+          {
+            "CPU_ns": 0,
+            "error": "history/state binding",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 1,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          },
+          {
+            "CPU_ns": 0,
+            "error": "history/state binding",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 1,
+              "history_walks": 1,
+              "payload_bytes_read": 0,
+              "payload_read_calls": 0
+            }
+          }
+        ]
+      },
+      {
+        "name": "boundary_0",
+        "results": [
+          {
+            "CPU_ns": 13035894,
+            "error": "boundary state mismatch",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          },
+          {
+            "CPU_ns": 14623975,
+            "error": "boundary state mismatch",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 128,
+              "history_walks": 1,
+              "payload_bytes_read": 1680512,
+              "payload_read_calls": 256
+            }
+          }
+        ]
+      },
+      {
+        "name": "boundary_64",
+        "results": [
+          {
+            "CPU_ns": 7614525,
+            "error": "boundary state mismatch",
+            "mode": "original",
+            "work": {
+              "history_leaves_validated": 64,
+              "history_walks": 1,
+              "payload_bytes_read": 840256,
+              "payload_read_calls": 128
+            }
+          },
+          {
+            "CPU_ns": 3998341,
+            "error": "boundary state mismatch",
+            "mode": "candidate",
+            "work": {
+              "history_leaves_validated": 64,
+              "history_walks": 1,
+              "payload_bytes_read": 840256,
+              "payload_read_calls": 128
+            }
+          }
+        ]
+      }
+    ],
+    "timing": {
+      "candidate_over_original": 0.935212995575372,
+      "fixed_four_blocks_CPU_ns": {
+        "candidate": 59854436,
+        "original": 64000860
+      },
+      "positive_screen": true,
+      "scope": "single fixed saved128 history workload, no significance or full-controller inference"
+    },
+    "transformed_comparisons": 2,
+    "work": {
+      "history_leaves_validated": 1668,
+      "history_walks": 18,
+      "payload_bytes_read": 21846656,
+      "payload_read_calls": 3328
+    }
+  },
+  "source_freeze": {
+    "INPUTS.json": "867464d08da0a782d818b6bc9ad721b677b39c72b6e6436d834ef52d0211e6c0",
+    "PLAN.md": "683987165bf5868b9217547941bea5ed5f7a32d5bf576b2f93bc9cddf4ab5881",
+    "equality.py": "6740e3cedbec18410092aa17846175cd4f1c74afcb2d11b8c689f5718893028d",
+    "run_once.py": "d861f2057b9c249630df5b20a009f85cb434e979af775229aa233dda10d21f91",
+    "worker.py": "016a70959d7f600b1fdef287f176c508d4bbcbd2b88537abe171e6308437391c"
+  },
+  "whole_child_receipt": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_MiB": 256,
+      "child_CPU_seconds": 4,
+      "child_wall_alarm_seconds": 45,
+      "file_MiB": 2,
+      "outer_CPU_seconds": 6,
+      "outer_wall_alarm_seconds": 60
+    },
+    "max_rss_kib": 14400,
+    "outer_CPU_prefix_seconds": 0.041751895,
+    "outer_final_tail": "unknown_nonzero",
+    "preparation_review_and_history": "additional_nonzero",
+    "raw_wait_status": 0,
+    "result_sha256": "a36315f00ee8b453afd2711c5d29adaff725074f46e09b015c62ffda710a1806",
+    "scope": "stdlib saved128 history only; NOT strict256 admission",
+    "source_freeze_sha256": "5a1a726f3db9e892b72aea9941413a8544a37244d276b5f827c3891825ceb8ab",
+    "system_CPU_seconds": 0.06514199999999999,
+    "user_CPU_seconds": 0.220105,
+    "wall_seconds": 0.28664290299639106,
+    "whole_child_CPU_seconds": 0.285247
+  }
+}

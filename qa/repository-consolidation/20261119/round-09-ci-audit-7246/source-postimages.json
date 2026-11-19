@@ -1,0 +1,54 @@
+{
+  "source_commit": "f8c5a4dd99564525a6ce139560f82139501508aa",
+  "paths": [
+    {
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+      "mode": "100644",
+      "preimage_git_blob": "0405b8e71ef79135c8853920ab8bccad0bbe8113",
+      "preimage_sha256": "324abcb626c3237bc196fb615c26119fdb5edccfd8a81c9ede857d3168804ae0",
+      "postimage_git_blob": "f0b8e6a9eb321ff5af84c6ff138c0be3239b5d9f",
+      "postimage_sha256": "e4d09ab0e2ba7128c41eac99d4fb6531a4a45418a847f9ee0f88176cbce65c61",
+      "postimage_size": 9652
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "mode": "100644",
+      "preimage_git_blob": "b8ce549a481402092188350ca435218ff7f1cc99",
+      "preimage_sha256": "b5ddb5fcaee4bd6e3eb494124848e89fb6bfefa229427d93bcf63f612065dc67",
+      "postimage_git_blob": "334f00a3c84a7040a61d9c46d50671a489c493b9",
+      "postimage_sha256": "dced38954d8041cc8028e2e670b0064d44ee7c410786fcaceb778bb7201a59ba",
+      "postimage_size": 18776
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/authority_distribution.rs",
+      "mode": "100644",
+      "preimage_git_blob": "5838d2f884064e904d784b66f1fc9056291180f5",
+      "preimage_sha256": "858440ae6a8ddfe6ef8c418721e398ba91ce49ae59bfbfdf528aa474c658bb16",
+      "postimage_git_blob": "d2be76100ff841ae73f1abd15a1d35fd5f705ad0",
+      "postimage_sha256": "609c3b63707cc2bdd1f6fe3f28be1b1b69dd5e8c3e8229c6498e77c9aaf635d7",
+      "postimage_size": 5807
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+      "mode": "100644",
+      "preimage_git_blob": "65f3a7bf65dd118d1ba069ddebdd1d4b5a4866b2",
+      "preimage_sha256": "3e964bab6c85aaaff0bc2e89472e876eed96be98e14e0384a2cae3a09e0e140a",
+      "postimage_git_blob": "2787d354f2aadc3ff13c44d4d1499c160230617e",
+      "postimage_sha256": "9d6e4b1b4a4530532811545bedf5259327302e0839b42b5d207ad19c493be63f",
+      "postimage_size": 19995
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/recovery.rs",
+      "mode": "100644",
+      "preimage_git_blob": "37ad6f558e7a25a31129b9a4200f52dd673b2547",
+      "preimage_sha256": "a96d8c6a8a8e216f0183a1e2d3612c7df498850c7ec4c37dca30672ec0524c60",
+      "postimage_git_blob": "661078794209d18f45217283a62bd6bec90d4b56",
+      "postimage_sha256": "d2ec1992fb1b1dd3d23484d0962f0b8a22359f0b2bc9320dbe0ef0c1f7b5858f",
+      "postimage_size": 15701
+    }
+  ],
+  "root_two_file_declared_base": "b33751526c9c9c6158bafd3641c603c646b7da4a",
+  "all_root_preimages_match_f8": true,
+  "no_dependency_changes": true,
+  "additional_scope": "Two #[cfg(test)] attributes on private AuthBus store observation helpers; no method body/test/production gate changes."
+}

@@ -1,0 +1,452 @@
+{
+  "schema": "hcsn-bounded-ci-capacity-observation-v1",
+  "observed_from_utc": "2026-11-05T15:25:47Z",
+  "scope": "Read-only bounded comparison: six older Matrix ubuntu-24.04 jobs, four PoN ubuntu-24.04 jobs, one ancillary ubuntu-latest job; no queue mutations.",
+  "run_metadata": {
+    "matrix": {
+      "id": 42002884680,
+      "name": "Matrix SDK compatibility",
+      "event": "pull_request",
+      "actor": "Tomasrgbsf",
+      "triggering_actor": "Tomasrgbsf",
+      "head_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+      "head_branch": "fix/hepta-ordinary-pq-effects-20261104",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T09:30:10Z",
+      "run_started_at_api": "2026-11-05T09:30:10Z",
+      "updated_at": "2026-11-05T14:36:51Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680"
+    },
+    "hcsn": {
+      "id": 42043926869,
+      "name": "Hepta HCSN research",
+      "event": "push",
+      "actor": "Tomasrgbsf",
+      "triggering_actor": "Tomasrgbsf",
+      "head_sha": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+      "head_branch": "research/hcsn-hx-20261105",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T14:19:41Z",
+      "run_started_at_api": "2026-11-05T14:19:41Z",
+      "updated_at": "2026-11-05T14:19:42Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869"
+    },
+    "pon": {
+      "id": 42002884946,
+      "name": "Hepta native PoN integrated source pair",
+      "event": "pull_request",
+      "actor": "Tomasrgbsf",
+      "triggering_actor": "Tomasrgbsf",
+      "head_sha": "97ae5b4bf5e5f0d0589c1c653f1861e1d9c1242f",
+      "head_branch": "fix/hepta-ordinary-pq-effects-20261104",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-05T09:30:10Z",
+      "run_started_at_api": "2026-11-05T09:30:10Z",
+      "updated_at": "2026-11-05T15:16:24Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884946"
+    },
+    "v8": {
+      "id": 42029075045,
+      "name": "v8-canary",
+      "event": "pull_request",
+      "actor": "Tomasrgbsf",
+      "triggering_actor": "Tomasrgbsf",
+      "head_sha": "b352e00b793f52e6691c1a9ff3676085f1d8c224",
+      "head_branch": "audit/library-two-repro-20261105-gpt6",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-05T12:39:59Z",
+      "run_started_at_api": "2026-11-05T12:39:59Z",
+      "updated_at": "2026-11-05T15:22:48Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42029075045"
+    }
+  },
+  "exact_ubuntu_24_04_jobs": [
+    {
+      "id": 127162278946,
+      "name": "Matrix exact-source regressions (source-head)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001280,
+      "runner_name": "GitHub Actions 1000001280",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T14:07:05Z",
+      "completed_at": "2026-11-05T14:19:48Z",
+      "queue_seconds_before_assignment": 16614,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-05T14:19:45Z",
+          "completed_at": "2026-11-05T14:19:45Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162278946"
+    },
+    {
+      "id": 127162279223,
+      "name": "Matrix SDK (synapse-protocol, base-merge)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001250,
+      "runner_name": "GitHub Actions 1000001250",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T13:57:11Z",
+      "completed_at": "2026-11-05T14:20:10Z",
+      "queue_seconds_before_assignment": 16020,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-05T14:20:08Z",
+          "completed_at": "2026-11-05T14:20:08Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162279223"
+    },
+    {
+      "id": 127162279425,
+      "name": "Matrix exact-source regressions (base-merge)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001330,
+      "runner_name": "GitHub Actions 1000001330",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T14:17:33Z",
+      "completed_at": "2026-11-05T14:32:07Z",
+      "queue_seconds_before_assignment": 17242,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-05T14:32:04Z",
+          "completed_at": "2026-11-05T14:32:04Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162279425"
+    },
+    {
+      "id": 127162279478,
+      "name": "Matrix SDK (synapse-protocol, source-head)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001332,
+      "runner_name": "GitHub Actions 1000001332",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T14:19:13Z",
+      "completed_at": "2026-11-05T14:28:29Z",
+      "queue_seconds_before_assignment": 17342,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-05T14:28:26Z",
+          "completed_at": "2026-11-05T14:28:26Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162279478"
+    },
+    {
+      "id": 127162279492,
+      "name": "Matrix SDK (crypto-migration, source-head)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001308,
+      "runner_name": "GitHub Actions 1000001308",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T14:12:35Z",
+      "completed_at": "2026-11-05T14:19:51Z",
+      "queue_seconds_before_assignment": 16944,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-05T14:19:48Z",
+          "completed_at": "2026-11-05T14:19:48Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162279492"
+    },
+    {
+      "id": 127162279636,
+      "name": "Matrix SDK (crypto-migration, base-merge)",
+      "run_id": 42002884680,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001364,
+      "runner_name": "GitHub Actions 1000001364",
+      "created_at": "2026-11-05T09:30:11Z",
+      "started_at": "2026-11-05T14:27:17Z",
+      "completed_at": "2026-11-05T14:36:51Z",
+      "queue_seconds_before_assignment": 17826,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-05T14:36:48Z",
+          "completed_at": "2026-11-05T14:36:48Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884680/job/127162279636"
+    },
+    {
+      "id": 127164674120,
+      "name": "effect-recovery (ubuntu-24.04, source-head)",
+      "run_id": 42002884946,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "success",
+      "runner_id": 1000001556,
+      "runner_name": "GitHub Actions 1000001556",
+      "created_at": "2026-11-05T09:35:12Z",
+      "started_at": "2026-11-05T15:02:23Z",
+      "completed_at": "2026-11-05T15:16:17Z",
+      "queue_seconds_before_assignment": 19631,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-05T15:16:14Z",
+          "completed_at": "2026-11-05T15:16:14Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884946/job/127164674120"
+    },
+    {
+      "id": 127164674505,
+      "name": "pair (ubuntu-24.04, source-head)",
+      "run_id": 42002884946,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_id": 1000001604,
+      "runner_name": "GitHub Actions 1000001604",
+      "created_at": "2026-11-05T09:35:12Z",
+      "started_at": "2026-11-05T15:10:52Z",
+      "completed_at": null,
+      "queue_seconds_before_assignment": 20140,
+      "live_steps": [
+        {
+          "name": "Require complete CI observer and recent-window regressions",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 14,
+          "started_at": "2026-11-05T15:25:16Z",
+          "completed_at": null
+        }
+      ],
+      "latest_completed_step": [
+        {
+          "name": "Require complete qualification-runtime I/O and original owner controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-05T15:25:11Z",
+          "completed_at": "2026-11-05T15:25:16Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884946/job/127164674505"
+    },
+    {
+      "id": 127164674573,
+      "name": "cell-host-scope",
+      "run_id": 42002884946,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "completed",
+      "conclusion": "cancelled",
+      "runner_id": 1000001561,
+      "runner_name": "GitHub Actions 1000001561",
+      "created_at": "2026-11-05T09:35:12Z",
+      "started_at": "2026-11-05T15:03:16Z",
+      "completed_at": "2026-11-05T15:08:20Z",
+      "queue_seconds_before_assignment": 19684,
+      "live_steps": [],
+      "latest_completed_step": [
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T15:08:17Z",
+          "completed_at": "2026-11-05T15:08:17Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884946/job/127164674573"
+    },
+    {
+      "id": 127164674935,
+      "name": "effect-recovery (ubuntu-24.04, base-merge)",
+      "run_id": 42002884946,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_id": 1000001633,
+      "runner_name": "GitHub Actions 1000001633",
+      "created_at": "2026-11-05T09:35:13Z",
+      "started_at": "2026-11-05T15:16:23Z",
+      "completed_at": null,
+      "queue_seconds_before_assignment": 20470,
+      "live_steps": [
+        {
+          "name": "Execute each actual HTTP owner and recovery control",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 8,
+          "started_at": "2026-11-05T15:23:28Z",
+          "completed_at": null
+        }
+      ],
+      "latest_completed_step": [
+        {
+          "name": "Execute every AutomationStore control",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T15:19:31Z",
+          "completed_at": "2026-11-05T15:23:28Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42002884946/job/127164674935"
+    }
+  ],
+  "ancillary_v8_job": [
+    {
+      "id": 127250570844,
+      "name": "metadata",
+      "run_id": 42029075045,
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "status": "in_progress",
+      "conclusion": null,
+      "runner_id": 1000001658,
+      "runner_name": "GitHub Actions 1000001658",
+      "created_at": "2026-11-05T12:40:00Z",
+      "started_at": "2026-11-05T15:22:47Z",
+      "completed_at": null,
+      "queue_seconds_before_assignment": 9767,
+      "live_steps": [
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 2,
+          "started_at": "2026-11-05T15:22:49Z",
+          "completed_at": null
+        }
+      ],
+      "latest_completed_step": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T15:22:48Z",
+          "completed_at": "2026-11-05T15:22:49Z"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42029075045/job/127250570844"
+    }
+  ],
+  "hcsn_queue_snapshot": {
+    "checked_at": "2026-11-05 15:24:29 UTC",
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 127301677224,
+        "run_id": 42043926869,
+        "workflow_name": "Hepta HCSN research",
+        "head_branch": "research/hcsn-hx-20261105",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAdo8VwqA",
+        "head_sha": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127301677224",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42043926869/job/127301677224",
+        "status": "queued",
+        "conclusion": null,
+        "created_at": "2026-11-05T14:19:42Z",
+        "started_at": "2026-11-05T14:19:42Z",
+        "completed_at": null,
+        "name": "kernel-and-mechanisms",
+        "steps": [],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127301677224",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 0,
+        "runner_name": "",
+        "runner_group_id": 0,
+        "runner_group_name": ""
+      }
+    ]
+  },
+  "annotations_observability": {
+    "combined_statuses": [],
+    "check_run_annotations": "Not exposed by available allowed fetch endpoint; direct check-run URL returned unsupported-endpoint INVALID_ARGUMENT/400. No inference that annotation count is zero.",
+    "hcsn_logs": "No executed steps, logs_url absent; no test-failure log exists in available response."
+  },
+  "interpretation": [
+    "Ubuntu-24.04 jobs in the same repository and with the same recorded actor have actual current runner assignments and recent step transitions.",
+    "Those comparison jobs were created well before HCSN; assigned jobs prove execution, not idle capacity or an estimated HCSN start time.",
+    "The old Matrix witness is now completed; its last job completed 14:36:51Z. It is historical, not current execution.",
+    "The HCSN event is push; sampled PoN and Matrix events are pull_request. This is an observed difference, not a demonstrated queue cause.",
+    "No billing, quota, suspension-to-queue or FIFO explanation is established by these responses.",
+    "The configured desktop CLI suspension is a separate observed authentication refusal, not diagnosed as the hosted queue cause."
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "kind": "actual-test-context-and-source-receiver-fixes",
+  "source_commit": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "prior_manifest": "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775",
+  "findings": [
+    {
+      "index": 370,
+      "id": "q24_task_original_ledger_open",
+      "actual_failure": "unexpected test-support file callers"
+    },
+    {
+      "index": 372,
+      "id": "q24_task_original_ledger_readback",
+      "actual_failure": "unresolved possible OriginalCellQ24TaskLedgerProducerV1::readback receiver in circuit_q24_task_profile.rs"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "preimage": "c301d389e2e5fa757273a0ff8d8d3dc64948c56f",
+      "original_blob": "53e3532c2cdbe43c8c75cac288608432d3338d50",
+      "postimage": "cbf672f8eba72bdfc2117bbfd6f64927655be687",
+      "bytes": 14992,
+      "sha256": "484b1b0061123c8ed39084fbb1f4a2e90ef355329dd644b5fbfdf5d031642ba0",
+      "operations": [
+        {
+          "old": "impl Fixture {",
+          "new": "#[cfg(test)]\nimpl Fixture {",
+          "expected_count": 1
+        }
+      ],
+      "reason": "The complete Fixture implementation is reachable only through runtime.rs cfg(test) -> private test module chain. Mirror that inherited test condition on this implementation; retain every body, test key, helper and assertion."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_recovery_support.rs",
+      "preimage": "bd0290e00a4d29e7e46ffc29d7e3100946349e1c",
+      "original_blob": "bd0290e00a4d29e7e46ffc29d7e3100946349e1c",
+      "postimage": "681e0e6ffa03f33e202cf03b013fc0c35d385780",
+      "bytes": 5087,
+      "sha256": "e9082b5a9d01ac12aadac222933666b31481f424fa764d174bbbe6434bd2a6eb",
+      "operations": [
+        {
+          "old": "impl Context {",
+          "new": "#[cfg(test)]\nimpl Context {",
+          "expected_count": 1
+        }
+      ],
+      "reason": "The recovery Context and every constructor call are private test helpers under the same inherited cfg(test) chain. Mirror that condition without rewriting or removing any recovery behavior."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "preimage": "85c625f7d09854819cf1acbcee8e11a986541ba8",
+      "original_blob": "85c625f7d09854819cf1acbcee8e11a986541ba8",
+      "postimage": "eccc3de46f610576ee47b072da10d0f53daf5739",
+      "bytes": 7865,
+      "sha256": "4ee9b0ff4a842f3867ba65ebee6e83eea9ad33389685efbcf6ddc84e1cf35161",
+      "operations": [
+        {
+          "old": "    let readback = Arc::new(source.readback());",
+          "new": "    let readback = Arc::new(DurableCircuitTaskSourceV1::readback(&source));",
+          "expected_count": 1
+        }
+      ],
+      "reason": "source is the exact DurableCircuitTaskSourceV1 returned by original explicit Create/Recover. Select its real readback method with UFCS on the same value; do not invoke the task Ledger producer's same-named method."
+    }
+  ],
+  "protected_marker_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "field": "required_order",
+      "old": "source.readback()",
+      "new": "DurableCircuitTaskSourceV1::readback(&source)",
+      "expected_count": 1
+    }
+  ],
+  "test_context_proof": {
+    "independently_read_immutable_parent_chain": [
+      {
+        "path": "codex-rs/hepta-agentd/src/lib.rs",
+        "blob": "7259731f13b1fa5d6c36fe622a7b6c142316e932",
+        "binding": "mod runtime;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime.rs",
+        "blob": "e8796292598fb5c12f435e15517bfd68014c9963",
+        "binding": "#[cfg(test)] #[path = \"runtime_tests.rs\"] mod tests;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+        "blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+        "binding": "#[path = \"circuit_task_ingress_tests.rs\"] mod circuit_task_ingress;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+        "blob": "7590d2b2fd92bdc841e01b485661cb5235f9c922",
+        "binding": "#[path = \"circuit_q24_task_ingress_tests.rs\"] mod q24_tests;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_q24_task_ingress_tests.rs",
+        "blob": "55c2d89c062da5e5b85ea7fe65fc87b8af3c06b9",
+        "binding": "#[cfg(target_os = \"linux\")] #[path = \"cell_q24_task_ledger_tests.rs\"] mod task_ledger;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_tests.rs",
+        "blob": "60b21e405e66f62f775ad3c5129db992af12580c",
+        "binding": "private fixture and recovery modules name exactly the two support files"
+      }
+    ],
+    "visibility": "Both support modules are private children of an inherited cfg(test) module. No Rust body, helper, key, assertion or visibility is removed or rewritten by the new per-impl test attributes.",
+    "reference_search": {
+      "owner": "root",
+      "search_id": "4ad54a0e0fa94a7fd501080eeccc349e71ee9e7b9cc378281df70311973a038f",
+      "reported_source": "198947 diagnostic checkout",
+      "reported_files": 789,
+      "reported_bytes": 7924878,
+      "reported_coverage_complete": true,
+      "reported_traversal_complete": true,
+      "reported_skipped": 0,
+      "reported_unreadable": 0,
+      "reported_hits": 5,
+      "note": "The parent supplied this original h_search observation. The six-file module chain above was separately fetched and read at the immutable commit by this reviewer."
+    }
+  },
+  "validation": {
+    "rust_or_native_execution": false,
+    "original_checker_unchanged": true,
+    "ignored_paths_unchanged": true,
+    "product_caller_sets_unchanged": true,
+    "local_original_resolver": {
+      "test_helpers": "Two actual helper fragments: before attributes both match open_original; after attributes neither matches because the real cfg(test) implementations are removed by the original masker.",
+      "profile": "With the actual original profile and its original ledger-install child (021ba7c7883dc502c8b719d1cd00abf1bf6dc3dc), old readback raises the same unresolved receiver and UFCS returns matched=false for LedgerProducer. The actual DurableSource readback remains called.",
+      "scope": "limited original-resolver probes, not full source or official verification"
+    }
+  },
+  "application": "Apply exactops to the corresponding current postimages. The test-support preimage is the already supplied explicit OpenOptions fix; do not overwrite it with the old source. Preserve all integration format or unrelated changes."
+}

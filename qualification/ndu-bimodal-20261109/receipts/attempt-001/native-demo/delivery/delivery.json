@@ -1,0 +1,151 @@
+{
+  "action": "SUBMIT",
+  "cursors": [
+    16,
+    0,
+    0,
+    128
+  ],
+  "checkpoint_sha256": "b613a7d5be3bda45a4d75bdef03f6f513b66e997aca4cbbb75a35d11444c9c61",
+  "binary_sha256": "e128d01a00dae260f4751ea628f124055c75dc4331dab36ed7e00bd66ec700be",
+  "public_sha256": "beb4b6e8ef607f40582ed9ab2e8780f71da4d277899d3af1ee1a5bc3b02e37cb",
+  "state_sha256": "ee4f9a68988b5e8793b91f6cc5cbff3c95cea36d88bc5d59fe063e50f26b2ca4",
+  "text_utf8": "ueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+  "image_sha256": "b6e6db6ba5ce660c77d0def8be18182b033f73c34e024cba3f0dba55b2b82389",
+  "state_max_abs_error": 4.440892098500626e-16,
+  "calls": [
+    {
+      "kind": "observation",
+      "command_hex": "00110000000000000000",
+      "status": "passed",
+      "request_sha256": "97fc3f0f9e37346b6aff607cd5eca58ca2e325a480f28a93816d727c97abae98",
+      "request_bytes": 5059663,
+      "owner_remaining_micros": 89935640,
+      "timeout_seconds": 3,
+      "stdout_sha256": "962766dcf03045d4a00dc424b6c627bbea2e67d9c8afcc83d1ea52d4b894466a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        67190,
+        379,
+        0,
+        0
+      ],
+      "wall_seconds": 0.07709419000093476,
+      "child_cpu_seconds": 0.07289399999999957,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "generate",
+      "command_hex": "0104",
+      "status": "passed",
+      "request_sha256": "66cb4be7883ebbc09fd4bb187d76706984aff4491938884d8cdddc618b23d772",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 89851320,
+      "timeout_seconds": 3,
+      "stdout_sha256": "33575f7a477ddf7fb9a1ae8bb7a31699ccc8e6a1cf4703ac6f20f1abeeb6c097",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        66648,
+        0,
+        395,
+        0
+      ],
+      "wall_seconds": 0.07669381800224073,
+      "child_cpu_seconds": 0.07249400000000206,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "observation",
+      "command_hex": "00110000000000000000",
+      "status": "passed",
+      "request_sha256": "f495bd1a1d9aef4d21dda1e63e20c5db1f25858720f1cc4a55ca27b23ac76f19",
+      "request_bytes": 5059663,
+      "owner_remaining_micros": 88765861,
+      "timeout_seconds": 3,
+      "stdout_sha256": "3bc97af592a0df9b4993d55b067ad673b67dd64db1e62bea8f0b01f47584f0e8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        66416,
+        399,
+        0,
+        0
+      ],
+      "wall_seconds": 0.07381720400007907,
+      "child_cpu_seconds": 0.07119800000000076,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "recompute",
+      "command_hex": "0104",
+      "status": "passed",
+      "request_sha256": "cc3cc05aa4ecd3920d7a21136836fbbfcf19fd3b488746142be4db84a0508157",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 88684417,
+      "timeout_seconds": 3,
+      "stdout_sha256": "3b749134a5e454fe8df43e534d588bc4ddf5d2b63ca25421eef297bd8ce7b25b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        68433,
+        0,
+        420,
+        0
+      ],
+      "wall_seconds": 0.07683507799811196,
+      "child_cpu_seconds": 0.07411999999999841,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "generate",
+      "command_hex": "0101",
+      "status": "passed",
+      "request_sha256": "9669d6ddc39557fca9d430fe804b71b4b87bd65ca471d48e0411af371d91a59f",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 88599568,
+      "timeout_seconds": 3,
+      "stdout_sha256": "9f4f715bb670712369fb4759de54b94a2ba9d29d41a4a987748063d1d1804ac5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        68744,
+        0,
+        442,
+        0
+      ],
+      "wall_seconds": 0.07772312299857731,
+      "child_cpu_seconds": 0.07453500000000357,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    },
+    {
+      "kind": "submit",
+      "command_hex": "0106",
+      "status": "passed",
+      "request_sha256": "4ecc502bfd28cf0889fba8422f72bdae8463d32dcc3832262dece00566ff96d9",
+      "request_bytes": 5063741,
+      "owner_remaining_micros": 88514348,
+      "timeout_seconds": 3,
+      "stdout_sha256": "f3d93158dfdb87914ced70c064c96a5e9f394b2174a2bfa32dc812e7e0c00853",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "phase_micros": [
+        66872,
+        0,
+        2443,
+        0
+      ],
+      "wall_seconds": 0.07654707700203289,
+      "child_cpu_seconds": 0.07358699999999785,
+      "cost_scope": "native invocation nested in owner ledger; do not add twice"
+    }
+  ],
+  "semantic_quality": null,
+  "production_update": "no-update",
+  "allocation": {
+    "text": 1,
+    "image": 1,
+    "both": 0
+  }
+}

@@ -1,0 +1,28 @@
+{"stage": "source-fetch", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "source-fetch", "exit_code": 0, "elapsed_seconds": 3.640027699060738, "log_sha256": "be911c27744ce0eb90ca4f66fd86553331a732adf6b20f7389b8f9ebc70f1c0f", "time_ns": 1794470559460513131}
+{"stage": "source-checkout", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "source-checkout", "exit_code": 0, "elapsed_seconds": 4.652526006102562, "log_sha256": "392c356ee9781f65c5875aaf68e53b9654aa512833c36c417c9ea26a765165e9", "time_ns": 1794470564113401773}
+{"stage": "native-acceptance", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}
+{"stage": "native-acceptance", "exit_code": 0, "elapsed_seconds": 5.5536840099375695, "log_sha256": "c3f411bcc03305052728f85b245271e121f330433e1b7a958e9c7095e778b114", "time_ns": 1794470569744617054}
+{
+  "elapsed_seconds": 5.234102261019871,
+  "errors": [],
+  "failures": [],
+  "method_ids": [
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_actual_ocr_wire_delivery_and_independent_score_bind",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_observed_wire_change_is_rejected",
+    "ndu_real_runtime.test_content_identity_native.NativeContentIdentityTests.test_wrong_model_pin_fails_before_any_action",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_native_stop_and_read_reselect_deliver_and_score",
+    "ndu_real_runtime.test_macro_native.NativeMacroTests.test_training_and_exploration_overrides_are_rejected_before_launch"
+  ],
+  "module_counts": {
+    "ndu_real_runtime.test_content_identity_native": 3,
+    "ndu_real_runtime.test_macro_native": 2
+  },
+  "policy_benefit_qualified": false,
+  "skipped": [],
+  "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+  "tests_run": 5,
+  "unique_methods": 5
+}
+{"stage": "campaign", "status": "STARTED", "source_sha": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"}

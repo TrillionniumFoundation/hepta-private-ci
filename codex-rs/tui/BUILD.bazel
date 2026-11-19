@@ -27,4 +27,5 @@ codex_rust_crate(
     test_shard_counts = {
         "tui-unit-tests": 8,
     },
+    unit_test_extra_binaries = ["//codex-rs/cli:codex"],
 )

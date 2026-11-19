@@ -1,0 +1,270 @@
+{
+  "scope": "AppContainer and LPAC independent mechanism probe: static/source validation only",
+  "native_windows": "PENDING",
+  "production_qualification": false,
+  "publication": {
+    "remote_source_writes_by_agent": false,
+    "refs_changed": false,
+    "CI_dispatched": false
+  },
+  "source_overlay": {
+    "schema": "hepta.reviewed-source-overlay.v1",
+    "scope": "AppContainer/LPAC mechanism experiment, native pending",
+    "base_workflow_blob": "ecf17089f0313e795d8700c98bdfe553b2ea8d11",
+    "remote_mutations": false,
+    "entries": [
+      {
+        "path": ".github/scripts/windows-appcontainer-probe/probe.py",
+        "mode": "100644",
+        "type": "blob",
+        "baseBlob": null,
+        "postBlob": "ccc1a6e44a07679ca21f92ec12c8020fc7a8450a",
+        "sha": "ccc1a6e44a07679ca21f92ec12c8020fc7a8450a",
+        "bytes": 20324,
+        "sha256": "c6dd142579e20651e73000bc1c7200715e729e0d6336d7d1935d3f877929959b",
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/windows-appcontainer-probe-v2/proposal/.github/scripts/windows-appcontainer-probe/probe.py"
+      },
+      {
+        "path": ".github/scripts/windows-appcontainer-probe/win32_api.py",
+        "mode": "100644",
+        "type": "blob",
+        "baseBlob": null,
+        "postBlob": "9abe5e358b082ba03a539074c0ee4f38130d56dc",
+        "sha": "9abe5e358b082ba03a539074c0ee4f38130d56dc",
+        "bytes": 18586,
+        "sha256": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f",
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/windows-appcontainer-probe-v2/proposal/.github/scripts/windows-appcontainer-probe/win32_api.py"
+      },
+      {
+        "path": ".github/workflows/ndu-windows-storage-probe.yml",
+        "mode": "100644",
+        "type": "blob",
+        "baseBlob": "ecf17089f0313e795d8700c98bdfe553b2ea8d11",
+        "postBlob": "56031606b7414b3a687ca2e95ca573911b313ca3",
+        "sha": "56031606b7414b3a687ca2e95ca573911b313ca3",
+        "bytes": 50284,
+        "sha256": "9814526d7b3fadc593b4ff2fded4b56febe592290f0c67809f271cccd804ee4d",
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/windows-appcontainer-probe-v2/proposal/.github/workflows/ndu-windows-storage-probe.yml"
+      }
+    ]
+  },
+  "completed": {
+    "cleanup_fault_injection_modes": 2,
+    "actual_source_snapshot_cases": 5,
+    "original_jobs_raw_bytes_retained": true,
+    "ruff_formatter": "PASS",
+    "ruff_check": "PASS",
+    "original_prettier_workflow": "PASS",
+    "original_prettier_README_first_attempt": "FAIL, formatting only, preserved",
+    "original_prettier_final": "PASS",
+    "original_codespell_2_4_3_changed_sources_and_README": "PASS"
+  },
+  "limitations": [
+    "Linux fault injection exercises the actual Python run_case and source_snapshot functions; no Win32 result is inferred.",
+    "The original four positive Windows tests and original deletion/NULL-DACL counterexamples remain unchanged and required.",
+    "Root+Read, production dedicated-account provenance, network routing/revocation, arbitrary command compatibility, and concurrent hostile namespace mutation remain outside this mechanism experiment."
+  ],
+  "historical_records_preserved": [
+    "v1 source and static gate output",
+    "v1 injected token-close exception prevents later cleanup",
+    "v2 catches the same exception, remains failed, retains the original error, and continues owned cleanup",
+    "first README Prettier failure and final corrected check"
+  ],
+  "files": [
+    {
+      "path": "windows-appcontainer-probe-v1/README.md",
+      "bytes": 10224,
+      "sha256": "7b23bf8db04eff4b1bff8575c887e20674d7b4b88639e800b776696a86aee685"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/proposal/.hepta-lock-253202dc76743f2c5b6d7689",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/proposal/.hepta-lock-f57b917c62034ac90b6993a3",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/proposal/probe.py",
+      "bytes": 20129,
+      "sha256": "69bb187ca46836615700d293cd9bdf3273e202c650d366964d3b7fa9452ba0b0"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/proposal/win32_api.py",
+      "bytes": 18586,
+      "sha256": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/review.json",
+      "bytes": 16882,
+      "sha256": "5338bdcb2c89c0998b8ecaf33cacdc3d5b690d3b307e52bdeb28d9760b31849e"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/ruff-check.log",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/ruff-lint.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/ruff-version.log",
+      "bytes": 13,
+      "sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/ruff-write.log",
+      "bytes": 20,
+      "sha256": "96a977f329ec3c59092d40e041a019b49dcf03ca04055e177aa0ccb8c27234df"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/static-validation.json",
+      "bytes": 5388,
+      "sha256": "8d29744692ccffa14588d81208d5828184b240362ef07339fcc8cd82cb692804"
+    },
+    {
+      "path": "windows-appcontainer-probe-v1/static-validation.py",
+      "bytes": 2217,
+      "sha256": "0df48a33919d78e6ab6b4deb1ae79e3c20c95326a176cb0749e848e53594a2cd"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/README.md",
+      "bytes": 12642,
+      "sha256": "14a2462a39f7cc6f4a298cf1339436958b7ba0f7d229d39c242ce6df33b25a52"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/cleanup-and-workflow-validation.json",
+      "bytes": 5050,
+      "sha256": "2341f05a0b6652e9b9a6ec83bf8ca23959df3472c6cf57b25ba6655670c39446"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/codespell-original-changed-source.stderr",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/codespell-original-changed-source.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/entry-manifest.json",
+      "bytes": 1972,
+      "sha256": "aef84b373a6a70f4423e60c6764608465f35fa77ebe3c3855ba58abf7f4fe23d"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/final-format-and-codespell.json",
+      "bytes": 6856,
+      "sha256": "a2eb25362c51987f941215aa50bc9fe690cfc46a773b894c374ab062a7ea1a4b"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/formatter-checks.json",
+      "bytes": 3741,
+      "sha256": "86a68930879149078016aa286a3844bcb8770fbf1a7b65579fe9575682f05469"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/job-fragment.yml",
+      "bytes": 5855,
+      "sha256": "5579ec7fdd3db1d7415a0ff1a3a0588cbf718b50f790574f0e8c598bd9e3994b"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/preimages/.github/workflows/ndu-windows-storage-probe.yml",
+      "bytes": 44301,
+      "sha256": "139f6dffb6826318ff8b4ef16fef326f2e1ad6a7da5854e1c9e2fb0cc9d57333"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/preimages/probe.py",
+      "bytes": 20129,
+      "sha256": "69bb187ca46836615700d293cd9bdf3273e202c650d366964d3b7fa9452ba0b0"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/preimages/win32_api.py",
+      "bytes": 18586,
+      "sha256": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/prettier-check.stderr",
+      "bytes": 104,
+      "sha256": "3829c5873bb11afd59201909efff837ac2f836ad799e73f5a3a742c84effc9c9"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/prettier-check.stdout",
+      "bytes": 23,
+      "sha256": "ebe82dad128d5e5d8936334ceac09492f3c60bd9e0b4a16cc7fd7075513b33de"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/prettier-final-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/prettier-final-check.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/proposal/.github/scripts/windows-appcontainer-probe/probe.py",
+      "bytes": 20324,
+      "sha256": "c6dd142579e20651e73000bc1c7200715e729e0d6336d7d1935d3f877929959b"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/proposal/.github/scripts/windows-appcontainer-probe/win32_api.py",
+      "bytes": 18586,
+      "sha256": "9a10459b06eb6393f1fd7338ade903193a2382faf07d1cc5d34aacf00e39be8f"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/proposal/.github/workflows/ndu-windows-storage-probe.yml",
+      "bytes": 50284,
+      "sha256": "9814526d7b3fadc593b4ff2fded4b56febe592290f0c67809f271cccd804ee4d"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/readme-prettier-write.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/readme-prettier-write.stdout",
+      "bytes": 19,
+      "sha256": "55fdcc01965c057ecf34dde0d89ce93b875ff2c6b0d03a14a02cfb39545b0c7b"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/reviewed-delta.patch",
+      "bytes": 7388,
+      "sha256": "ff8a46d6bef9206180ccce274612a4a0fb0bb814db5911854080c3b6c6f97ab6"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/ruff-format-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/ruff-format-check.stdout",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/validate_cleanup_and_workflow.py",
+      "bytes": 7563,
+      "sha256": "0f55e0a28be5d2ed8c6f20b3771d24331b1f770c9dc4b962d29669e0846673f1"
+    },
+    {
+      "path": "windows-appcontainer-probe-v2/workflow-inline-runner.py",
+      "bytes": 3554,
+      "sha256": "9ea3306dff09681041bd7362823156ecdc599cf963846d1c3b7d71d60eef8ec9"
+    }
+  ]
+}

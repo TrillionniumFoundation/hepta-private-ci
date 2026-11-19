@@ -1,0 +1,27 @@
+{
+  "source_sha": "c7f5d1950713e592a120807a06b700cd229c35b0",
+  "original_key": "learn-ce434-unified-c7f5d195-source423-native190-data-v1",
+  "original_typed_request_commit": "78a67c7ab29a9a7bfdf10e25fe08fd5a6a2a34b5",
+  "readback": {
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "host": "desktop",
+    "persistent_across_runtime_restart": true,
+    "reused": true,
+    "session_id": "dpty-31bafa10555af2d5b1bb2ab3613dbb81e722f0190b53ea217f84d61a2271ccf0",
+    "status": {
+      "boot": "14f92beb-43c6-4786-839e-b57307ae8048",
+      "bytes_seen": 520,
+      "bytes_stored": 520,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1794484293516,
+      "exit_code": 1,
+      "output_complete": true,
+      "owner_pid": 935374,
+      "pid": 935392,
+      "state": "exited"
+    }
+  },
+  "meaning": "Reconciliation reused the exact original durable key/session, no test replay. This records native compilation failure, not an ordinary task outcome."
+}

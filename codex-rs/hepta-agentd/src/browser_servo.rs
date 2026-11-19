@@ -314,7 +314,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -450,7 +449,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
@@ -844,7 +842,7 @@ pub enum BrowserServoError {
     Authority(#[from] FinalUseError),
 }
 
-#[cfg(test)]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use std::collections::BTreeSet;
     use std::sync::Arc;
@@ -891,7 +889,8 @@ mod tests {
     }
 
     fn harness() -> Harness {
-        let state = tempfile::tempdir().expect("authority tempdir");
+        let state =
+            tempfile::tempdir().unwrap_or_else(|error| panic!("authority tempdir: {error:?}"));
         let signing = SigningKey::from_bytes(&[7u8; 32]);
         let authority = FinalUseAuthority::open_state_dir(
             &state.path().join("authority"),
@@ -903,7 +902,7 @@ mod tests {
                 revoked_grant_ids: BTreeSet::new(),
             },
         )
-        .expect("authority");
+        .unwrap_or_else(|error| panic!("authority: {error:?}"));
         let request_digest = [0x11; 32];
         let binding = FinalUseBinding {
             subject_id: "principal.1".to_string(),
@@ -914,7 +913,7 @@ mod tests {
         };
         let now = SystemTime::now()
             .duration_since(UNIX_EPOCH)
-            .expect("clock")
+            .unwrap_or_else(|error| panic!("clock: {error:?}"))
             .as_millis() as u64;
         let grant = FinalUseGrant {
             schema_version: 1,
@@ -927,7 +926,11 @@ mod tests {
             expires_at_unix_ms: now + 60_000,
         };
         let signature = signing
-            .sign(&grant.signing_bytes().expect("signing input"))
+            .sign(
+                &grant
+                    .signing_bytes()
+                    .unwrap_or_else(|error| panic!("signing input: {error:?}")),
+            )
             .to_bytes()
             .to_vec();
         let invocation = BrowserFinalUseInvocation {
@@ -955,15 +958,20 @@ mod tests {
     }
 
     fn decode_outbound(bytes: &[u8]) -> Value {
-        let announced = u32::from_be_bytes(bytes[..4].try_into().expect("prefix")) as usize;
+        let announced = u32::from_be_bytes(
+            bytes[..4]
+                .try_into()
+                .unwrap_or_else(|error| panic!("prefix: {error:?}")),
+        ) as usize;
         assert_eq!(announced + 4, bytes.len());
-        serde_json::from_slice(&bytes[4..]).expect("outbound JSON")
+        serde_json::from_slice(&bytes[4..])
+            .unwrap_or_else(|error| panic!("outbound JSON: {error:?}"))
     }
 
     fn inbound_frame(sequence: u64, kind: &str, request_id: &str, payload: Value) -> Vec<u8> {
         let payload_digest = sha256_bytes(
             canonical_json(&payload)
-                .expect("canonical payload")
+                .unwrap_or_else(|error| panic!("canonical payload: {error:?}"))
                 .as_bytes(),
         );
         let frame = json!({
@@ -976,7 +984,7 @@ mod tests {
             "payload": payload,
         });
         let body = canonical_json(&frame)
-            .expect("canonical frame")
+            .unwrap_or_else(|error| panic!("canonical frame: {error:?}"))
             .into_bytes();
         let mut bytes = Vec::with_capacity(body.len() + 4);
         bytes.extend_from_slice(&(body.len() as u32).to_be_bytes());
@@ -1135,3 +1143,7 @@ mod tests {
         assert_eq!(result["origin"], "https://example.com");
     }
 }
+
+#[cfg(all(test, not(any(unix, windows))))]
+#[path = "browser_servo_unsupported_tests.rs"]
+mod unsupported_tests;

@@ -1,0 +1,100 @@
+{
+  "child_argv0": "/usr/bin/python3.12",
+  "child_environment": {
+    "LC_ALL": "C",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "TOKENIZERS_PARALLELISM": "false"
+  },
+  "child_flags": [
+    "-I",
+    "-B",
+    "-c"
+  ],
+  "diagnostic_only": true,
+  "interpreter": "/usr/bin/python3.12",
+  "interpreter_sha256": "a92f0f95e883390c7256b2e441484aac06b1002dbe1d924141a77c8d82f96223",
+  "limits": {
+    "RLIMIT_AS": [
+      -1,
+      -1
+    ],
+    "RLIMIT_CORE": [
+      0,
+      -1
+    ],
+    "RLIMIT_CPU": [
+      -1,
+      -1
+    ],
+    "RLIMIT_DATA": [
+      -1,
+      -1
+    ],
+    "RLIMIT_FSIZE": [
+      -1,
+      -1
+    ],
+    "RLIMIT_NOFILE": [
+      16384,
+      16384
+    ],
+    "RLIMIT_NPROC": [
+      39792,
+      39792
+    ],
+    "RLIMIT_STACK": [
+      8388608,
+      -1
+    ]
+  },
+  "observations": [
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/proc/5'",
+      "exists": false,
+      "path": "/proc/5"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/proc/5/fd'",
+      "exists": false,
+      "path": "/proc/5/fd"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/proc/5/fd/3'",
+      "exists": false,
+      "path": "/proc/5/fd/3"
+    },
+    {
+      "exists": true,
+      "mode": "0o40500",
+      "path": "/proc/self/fd"
+    },
+    {
+      "case": "source_parent_proc_fd",
+      "communication_bytes": 0,
+      "elapsed_seconds": 0.000438,
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/proc/5/fd/3'",
+      "spawned": false
+    },
+    {
+      "case": "same_interpreter_direct_control",
+      "communication_bytes": 114688,
+      "elapsed_seconds": 0.01288,
+      "returncode": 0,
+      "reverse_exact": true,
+      "spawned": true,
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stdout_bytes": 57344
+    }
+  ],
+  "pid": 5,
+  "ppid": 2,
+  "proc_self_link": "677964",
+  "repository_source_changed": false,
+  "rust_compilation_run": false
+}

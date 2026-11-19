@@ -1,0 +1,51 @@
+{
+  "schema": "hepta-framework-validation-summary-v1",
+  "source_head": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+  "source_tree": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+  "outcome": "compilation_failed",
+  "native_exit_code": 101,
+  "test_cases_executed": 0,
+  "fmt_check_exit_code": 0,
+  "source_unchanged": true,
+  "maintenance_executed": false,
+  "compile_errors": 13,
+  "compile_error_kind": "E0659 assert_eq macro ambiguity",
+  "error_files": {
+    "learning_iteration_capacity_tests.rs": 10,
+    "learning_iteration_evaluation_recovery_tests.rs": 3
+  },
+  "started_at": "2026-11-10T13:13:54.134874+00:00",
+  "finished_at": "2026-11-10T13:29:46.188842+00:00",
+  "native_phase": {
+    "argv": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "--cargo-profile",
+      "dev-small",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "-E",
+      "test(learning_iteration) | test(circuit_learning_delivery) | test(root_production_learning_inputs)",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0"
+    ],
+    "cwd": "/home/qian-qi/hepta-framework-owner-assembly-20261110-b68b/codex-rs",
+    "elapsed_seconds": 944.3486581819598,
+    "finished_at": "2026-11-10T13:29:45.973748+00:00",
+    "name": "native-tests",
+    "returncode": 101,
+    "started_at": "2026-11-10T13:14:01.621957+00:00",
+    "stderr": "native-tests.stderr.log",
+    "stderr_bytes": 76956,
+    "stderr_sha256": "c3c86d0a75194bbbadb05a27ea65c5fdb7a911fbdf95c1d5248f27df4bd982b9",
+    "stdout": "native-tests.stdout.log",
+    "stdout_bytes": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_manifest": "readback-manifest.json"
+}

@@ -1,0 +1,37 @@
+{
+  "command": "PATH=<task-local-rust-just>/bin:$PATH just --justfile ../justfile fmt",
+  "working_directory": "codex-rs",
+  "exit_code": 0,
+  "stdout": "No changed files need formatting. Use --all for a full repository check.",
+  "qualification_python_has_configured_owner": false,
+  "repository_formatter_executed": true,
+  "new_research_sources_unchanged": true,
+  "before": {
+    "qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "qualification/hcsn_dense_reproduction/run.py": "6d361487b8ea2ec857f79ecc12668573549a9bf4246fd781ae5e61d46c4d3432",
+    "qualification/hcsn_dense_reproduction/test_mechanism.py": "de5d80f360e45e56524ae8ecaff97c5443fbfd0d4fd19ca7abb022538075c20e",
+    "qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+  },
+  "after": {
+    "qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "qualification/hcsn_dense_reproduction/positive_phase.py": "771f1c310297f49d14880cd6b220699228fc78c545d7e71b3c06324fa32c384a",
+    "qualification/hcsn_dense_reproduction/run.py": "6d361487b8ea2ec857f79ecc12668573549a9bf4246fd781ae5e61d46c4d3432",
+    "qualification/hcsn_dense_reproduction/test_mechanism.py": "de5d80f360e45e56524ae8ecaff97c5443fbfd0d4fd19ca7abb022538075c20e",
+    "qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+  },
+  "model_or_mechanism_tests_repeated_after_format": false,
+  "read_only_data_verifier_will_be_executed_separately": true
+}

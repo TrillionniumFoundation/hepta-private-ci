@@ -19,7 +19,11 @@ function stableId(value, name) {
 }
 
 function digest(value, name) {
-  if (typeof value !== "string" || !DIGEST.test(value) || value === ZERO_DIGEST) {
+  if (
+    typeof value !== "string" ||
+    !DIGEST.test(value) ||
+    value === ZERO_DIGEST
+  ) {
     throw new TypeError(`${name} must be a non-zero lowercase SHA-256 digest`);
   }
   return value;
@@ -63,7 +67,10 @@ export function navigationActionFromIntent(intent) {
     kind: "navigate",
     url: intent.url,
     policyDigest: digest(intent.policyDigest, "intent.policyDigest"),
-    expectedRevision: positiveInteger(intent.expectedRevision, "intent.expectedRevision"),
+    expectedRevision: positiveInteger(
+      intent.expectedRevision,
+      "intent.expectedRevision",
+    ),
   });
 }
 
@@ -113,7 +120,11 @@ export function buildNavigationEffectRequest({
   if (page.kind !== "PageObservationV1") {
     throw new TypeError("page is not PageObservationV1");
   }
-  if (page.terminalObserved !== true || page.originAllowed !== true || page.quarantined === true) {
+  if (
+    page.terminalObserved !== true ||
+    page.originAllowed !== true ||
+    page.quarantined === true
+  ) {
     throw new TypeError("page is not an admitted actionable observation");
   }
   if (
@@ -121,9 +132,14 @@ export function buildNavigationEffectRequest({
     page.processId !== identity.processId ||
     page.profileGeneration !== identity.generation
   ) {
-    throw new TypeError("page observation does not belong to the browser session");
+    throw new TypeError(
+      "page observation does not belong to the browser session",
+    );
   }
-  const pageGeneration = positiveInteger(page.pageGeneration, "page.pageGeneration");
+  const pageGeneration = positiveInteger(
+    page.pageGeneration,
+    "page.pageGeneration",
+  );
   digest(page.documentDigest, "page.documentDigest");
   const typedAction = navigationActionFromIntent(intent);
   return Object.freeze({

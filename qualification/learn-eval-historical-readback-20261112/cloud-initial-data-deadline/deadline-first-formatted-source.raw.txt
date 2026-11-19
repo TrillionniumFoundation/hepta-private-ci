@@ -1,0 +1,53 @@
+test_duration_entry_converts_once_before_any_original_io (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_duration_entry_converts_once_before_any_original_io) ... ERROR
+test_generic_framing_keeps_original_hup_and_frame_rejection (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_generic_framing_keeps_original_hup_and_frame_rejection) ... ERROR
+test_initial_file_connect_and_worker_keep_same_absolute_end (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_initial_file_connect_and_worker_keep_same_absolute_end) ... ok
+test_new_constructors_have_exact_actual_callers (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_new_constructors_have_exact_actual_callers) ... ok
+test_peer_checks_consume_budget_without_rebasing_the_stream (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_peer_checks_consume_budget_without_rebasing_the_stream) ... ERROR
+
+======================================================================
+ERROR: test_duration_entry_converts_once_before_any_original_io (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_duration_entry_converts_once_before_any_original_io)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 57, in test_duration_entry_converts_once_before_any_original_io
+    self.reject("root_generation_publication_stream.rs", "fn from_stream(",
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 47, in reject
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 715, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 687, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+initial_deadline_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_generation_publication_stream.rs:fn from_stream(: required code order missing: ['lifetime.is_zero() || lifetime > Duration::from_secs(300)', 'Instant::now().checked_add(lifetime)', 'Self::from_stream_until(stream, root, peer, timeout, end)']
+
+======================================================================
+ERROR: test_generic_framing_keeps_original_hup_and_frame_rejection (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_generic_framing_keeps_original_hup_and_frame_rejection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 80, in test_generic_framing_keeps_original_hup_and_frame_rejection
+    self.reject(filename, "fn wait(",
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 47, in reject
+    PROOF._verify_protected_files(root, {"protected_file": rows})
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 715, in _verify_protected_files
+    _verify_function_order(row, code, relative, text)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 687, in _verify_function_order
+    _verify_required_order(
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/scripts/verify_hepta_callers.py", line 595, in _verify_required_order
+    raise VerificationFailure(
+initial_deadline_proof.VerificationFailure: codex-rs/hepta-agentd/src/root_generation_publication_stream.rs:fn from_stream(: required code order missing: ['lifetime.is_zero() || lifetime > Duration::from_secs(300)', 'Instant::now().checked_add(lifetime)', 'Self::from_stream_until(stream, root, peer, timeout, end)']
+
+======================================================================
+ERROR: test_peer_checks_consume_budget_without_rebasing_the_stream (test_initial_absolute_deadline_source_closure.InitialAbsoluteDeadlineTests.test_peer_checks_consume_budget_without_rebasing_the_stream)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 74, in test_peer_checks_consume_budget_without_rebasing_the_stream
+    self.reject(filename, function, marker)
+  File "/workspace/scratch/ff41dfc0f7bf/hepta-ordinary-cloud/qa/b4-no-bypass/test_initial_absolute_deadline_source_closure.py", line 37, in reject
+    offset = source.index(marker, offset, end + 1) + len(marker)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: substring not found
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.433s
+
+FAILED (errors=3)

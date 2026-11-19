@@ -1,0 +1,60 @@
+{
+  "agentd_local": "preparation stopped before tests: the verified V8 resolver encountered a network proxy 403",
+  "agentd_remote": "Not qualified: native linker error; exact owned systemd journal records disk exhaustion while publishing the terminal receipt. No complete successful native result.",
+  "b4_final_complete_run": {
+    "pass_claimed": false,
+    "status": "interrupted_without_terminal_receipt"
+  },
+  "b4_initial": "1317 test methods ran; four class setup errors were missing original sparse-checkout contract inputs. This was not a successful complete-source gate.",
+  "b4_restored_inputs": {
+    "failed": 0,
+    "passed": 28
+  },
+  "b4_round02": {
+    "checkout_unchanged": true,
+    "elapsed_seconds": 354.0795702934265,
+    "failed_modules": [],
+    "modules_completed": 160,
+    "modules_expected": 160,
+    "scope": "All B4 modules, each in a separate process; no native Rust qualification inferred.",
+    "skipped": 0,
+    "source": {
+      "commit": "df9abe5011a9595a0c5a3bf61b0ced77d10d8fb0",
+      "tree": "c46d97b1e6acb237035c715f904d3e591f0a553b"
+    },
+    "status": "passed",
+    "tests_run": 1345
+  },
+  "caller_closed_set": {
+    "authorityGranted": false,
+    "boundaries": 1645,
+    "privilegedInventory": 1645,
+    "protectedFiles": 819,
+    "rustFilesScanned": 7672,
+    "schema": "hepta.caller-proof-receipt.v2",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+  },
+  "clippy_product_fixes": "pass; one existing dependency advisory for manual_is_multiple_of remains, no source rewritten by just fix",
+  "main_merged": false,
+  "native_eight_packages": {
+    "failed": 0,
+    "passed": 540,
+    "preexisting_skipped": 2,
+    "result": "pass",
+    "skipped_reason": "Named-target-host measurement tests in objective_admission_tests.rs and feasibility_tests.rs retain their existing ignore attributes.",
+    "tests_run": 540
+  },
+  "ordinary_refs_deleted": 0,
+  "protected_refs_written": 0,
+  "rbe_offline_regressions": {
+    "exact_workflow_command_verified": true,
+    "failed": 0,
+    "helpers": 9,
+    "metadata": 3,
+    "tool_supply": 13
+  },
+  "required_checks_changed": false,
+  "round02_caller_verifier": "running against immutable c46d source; no new-source pass claimed",
+  "round02_source_commit": "35db0d7a7f73bf3f5c9757deb7e570bb52ee9890",
+  "scope": "Checkpoint qualification, not complete repository or all-platform acceptance"
+}

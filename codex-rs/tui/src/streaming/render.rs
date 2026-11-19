@@ -26,6 +26,8 @@ pub(super) struct StreamingRender {
     stable_source_len: usize,
     /// Rendered-line boundary corresponding to `stable_source_len`.
     stable_rendered_len: usize,
+    /// Syntax theme revision shared by the retained prefix and the mutable block.
+    theme_revision: u64,
     /// Reference-style link definitions can affect any earlier or later markdown block.
     has_reference_link_definition: bool,
     /// Inline visualization directives require source-wide rewriting once one is committed.
@@ -40,6 +42,7 @@ impl StreamingRender {
             lines: Vec::with_capacity(64),
             stable_source_len: 0,
             stable_rendered_len: 0,
+            theme_revision: syntax_theme_revision(),
             has_reference_link_definition: false,
             has_inline_visualization_directive: false,
             open_code_fence: None,
@@ -50,6 +53,7 @@ impl StreamingRender {
         self.lines.clear();
         self.stable_source_len = 0;
         self.stable_rendered_len = 0;
+        self.theme_revision = syntax_theme_revision();
         self.has_reference_link_definition = false;
         self.has_inline_visualization_directive = false;
         self.open_code_fence = None;
@@ -68,6 +72,7 @@ impl StreamingRender {
         inline_visualization_context: Option<&InlineVisualizationContext>,
     ) {
         self.open_code_fence = None;
+        self.theme_revision = syntax_theme_revision();
         self.has_inline_visualization_directive = contains_inline_visualization(source);
         self.lines = match (render_mode, inline_visualization_context) {
             (HistoryRenderMode::Rich, None) if !self.has_inline_visualization_directive => {
@@ -95,8 +100,9 @@ impl StreamingRender {
     ///
     /// The final top-level block can still change meaning when another line arrives (for example,
     /// list tightness, a setext heading, a fenced block, or a table). Earlier top-level blocks are
-    /// rendered once and retained. Reference-style link definitions and inline visualization
-    /// rewriting fall back to a full render because they can affect source-wide rendering state.
+    /// rendered once and retained while the syntax theme revision is unchanged. Reference-style link
+    /// definitions and inline visualization rewriting fall back to a full render because they can
+    /// affect source-wide rendering state.
     pub(super) fn append(
         &mut self,
         raw_source: &str,
@@ -111,6 +117,18 @@ impl StreamingRender {
                 .extend(plain_hyperlink_lines(raw_lines_from_source(
                     committed_source,
                 )));
+            return;
+        }
+
+        let theme_revision = syntax_theme_revision();
+        if self.theme_revision != theme_revision {
+            self.recompute(
+                raw_source,
+                width,
+                cwd,
+                render_mode,
+                inline_visualization_context,
+            );
             return;
         }
 
@@ -146,7 +164,6 @@ impl StreamingRender {
         }
 
         let pending_source = &raw_source[self.stable_source_len..];
-        let theme_revision = syntax_theme_revision();
         let pending =
             render_streaming_markdown_agent_with_links_and_cwd(pending_source, width, Some(cwd));
         if pending.has_reference_link_definition {

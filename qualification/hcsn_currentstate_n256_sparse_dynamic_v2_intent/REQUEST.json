@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-n256-sparse-dynamic-source-intent-v3",
+  "identity": "hcsn-n256-sparse-dynamic-admission-bridge-v3-20261115-c06d-001",
+  "base_commit": "1d03be4db492902294bca637b27968ae1de32ca4",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "scope": "cross-bind the signed_content source to the v2 provider admission and atomic execution freeze before numerical imports",
+  "numerical_execution_allowed": false,
+  "execution_key": null,
+  "provider_admission_sha256": null,
+  "execution_freeze_sha256": null,
+  "source_binding_sha256": null,
+  "reserved_idempotency_key": "hcsn-n256-sparse-dynamic-v2-numerical-20261115-c06d-001",
+  "required_external_freeze": {
+    "runtime_profile_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null,
+    "oracle_source_sha256": null,
+    "serializer_source_sha256": null,
+    "external_source_review_sha256": null
+  },
+  "forbidden_in_this_source_attempt": [
+    "NumPy or SciPy import before admission",
+    "N256 dynamic propagation",
+    "matrix exponential action",
+    "numeric oracle",
+    "numeric serializer or cold loader",
+    "Torch, backward, optimizer, training, or production adoption"
+  ],
+  "largegrid_qualification": false,
+  "all_closed": false
+}

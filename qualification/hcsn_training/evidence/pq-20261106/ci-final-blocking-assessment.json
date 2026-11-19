@@ -1,0 +1,129 @@
+{
+  "schema_version": 2,
+  "observed_at_utc": "2026-11-06 17:59:45 UTC",
+  "source_head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "hosted_blocking_ci": {
+    "run_id": 42253531351,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531351",
+    "status": "pending",
+    "conclusion": null,
+    "exposed_jobs": 0,
+    "repo_checks": "not started in this hosted run",
+    "cargo_deny": "not started in this hosted run",
+    "hosted_no_bypass_pass_claim": false,
+    "internal_scheduling_cause": "unknown",
+    "created_at": "2026-11-06T16:33:44Z",
+    "updated_at": "2026-11-06T16:33:45Z",
+    "hosted_no_bypass_executed": false
+  },
+  "static_inventory_diff": {
+    "comparison_base": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "only_changed_path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+    "exactly_four_list_additions": [
+      {
+        "path": "/types/0/nonPrivilegedMethods",
+        "added": "authentication_profile"
+      },
+      {
+        "path": "/types/0/nonPrivilegedMethods",
+        "added": "shares_owner"
+      },
+      {
+        "path": "/types/0/nonPrivilegedMethods",
+        "added": "check_unclaimed_grant"
+      },
+      {
+        "path": "/boundaries/9/allowedCallers",
+        "added": "codex-rs/hepta-contracts/src/final_use_control_pq.rs"
+      }
+    ],
+    "other_values_unchanged": true,
+    "runtime_tests_checker_and_CALLERS_toml_unchanged": true,
+    "final_inventory_sha256": "0402f9abcc8ea35f6541e1673611bae09da4bb85e5ba25c827d4efc12ee77500"
+  },
+  "retained_local_gate": {
+    "tests_run": 17,
+    "passed": 17,
+    "exit_code": 0,
+    "scope": "Recorded local run on bbe plus the one exact inventory change later committed as a20; no tests run by this report generator.",
+    "started_at_utc": "2026-11-06T16:28:47.527002+00:00",
+    "not_hosted_ci": true
+  },
+  "old_cargo_deny_failure": {
+    "run_id": 42240138319,
+    "job_id": 127995822924,
+    "failed_step": "Run cargo-deny",
+    "cause": "unknown",
+    "not_classified_as_baseline_or_infrastructure": true,
+    "no_new_log_retry": true,
+    "retained_static_assessment": {
+      "path": "cargo-deny-127995822924/static/static-assessment.json",
+      "sha256": "5c90df88ed7ba209c56f3b4d722dc92f103f1c10c14fd382263e78f380292940",
+      "published_with": "first-round controls evidence"
+    }
+  },
+  "limits": [
+    "Successful dedicated HCSN acceptance cannot substitute for these full-repository blocking gates.",
+    "A local passing targeted gate and an exact four-item source diff are not a hosted CI pass.",
+    "No cancellation, rerun, rule edit, credential workaround or dependency change was performed."
+  ],
+  "references": [
+    {
+      "path": "final-run.json",
+      "bytes": 16986,
+      "sha256": "d1689e0213ac21fe33648696aaff1f8af9ccdc4fab3fccbe6c0bd242f36c6439"
+    },
+    {
+      "path": "final-jobs.json",
+      "bytes": 27,
+      "sha256": "b3dab5870ff3a8209160335de7c1077b89e461d875d9041ac9d8b8ed7c1666f6"
+    },
+    {
+      "path": "retained-local-gate/b4-no-bypass-after-result.json",
+      "bytes": 810,
+      "sha256": "d21da28b2a0daef55006727a27d26b444519d6805282f05321b5107f0801f051"
+    },
+    {
+      "path": "retained-local-gate/b4-no-bypass-after.log",
+      "bytes": 116,
+      "sha256": "e470b6a8db35853fa72b572879bd8a523353f7b283a5adf8c75d5e03b3e606c1"
+    },
+    {
+      "path": "retained-local-gate/independent-inventory-review.json",
+      "bytes": 4329,
+      "sha256": "0f9133c741f8c07846ec5a89847a23929ca9014a4ea004d1c9836e31e4a95fbd"
+    },
+    {
+      "path": "retained-local-gate/inventory-after.json",
+      "bytes": 18390,
+      "sha256": "0402f9abcc8ea35f6541e1673611bae09da4bb85e5ba25c827d4efc12ee77500"
+    },
+    {
+      "path": "retained-local-gate/inventory-before.json",
+      "bytes": 18235,
+      "sha256": "a4d9c9e685771ec6d249573b7d09d364f38ccd7ff9c843a51b0db5c5d65cb84a"
+    },
+    {
+      "path": "retained-local-gate/inventory-repair-review.json",
+      "bytes": 2701,
+      "sha256": "095f99311a141ed4f5d94b4fe1d92aff2c5da16de856e073ddc1689a4c97b290"
+    },
+    {
+      "path": "retained-local-gate/inventory-repair.diff",
+      "bytes": 840,
+      "sha256": "11fc948d4d7ae0ac262b1bd41101bad03035afd0b0b24a87404c970932e52ec5"
+    }
+  ],
+  "scope": "Final read-only closeout of blocking workflow; monitoring stopped after this snapshot by root instruction.",
+  "conclusion": "At the final observed time the a20 blocking workflow remained pending with zero jobs. The hosted 17-test no-bypass gate and cargo-deny had not run on this head. The retained local 17/17 result matches the exact final inventory bytes; the four-item inventory-only diff is independently verified. Neither these local/static results nor separate dedicated HCSN acceptance are a full-repository hosted green result. The earlier cargo-deny failure remains unattributed.",
+  "monitoring_ended": true,
+  "actions_not_taken": [
+    "cancel workflow",
+    "rerun workflow",
+    "modify CI configuration",
+    "change dependencies or rules",
+    "authenticate through an alternate path",
+    "repeat inaccessible old cargo-deny log requests"
+  ]
+}

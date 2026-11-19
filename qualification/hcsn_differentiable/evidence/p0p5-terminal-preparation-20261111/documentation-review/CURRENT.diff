@@ -1,0 +1,95 @@
+diff --git a/qualification/hcsn_differentiable/CURRENT.md b/qualification/hcsn_differentiable/CURRENT.md
+index 31b6ada..e3c994b 100644
+--- a/qualification/hcsn_differentiable/CURRENT.md
++++ b/qualification/hcsn_differentiable/CURRENT.md
+@@ -38,8 +38,15 @@ their exact original names. At the latest
+ archived C2 observation, 2026-11-10 23:49:03 UTC, three fits remained active
+ and three had producer terminal reports. No all-six
+ independent C2 adequacy, new common-rate selection or scientific benefit is
+-inferred from those intermediate records. The subject-E exposure clarification
+-below supersedes the older progress appendix's phrase "E remains unread".
++inferred from those intermediate records. The
++[terminal verification preparation](evidence/p0p5-terminal-preparation-20261111/README.md)
++preserves later original control responses and newly validated replacement
++software. The last valid whole-job status was read at 00:25:25.440--00:25:38.584
++UTC on November 11; it has no native sample timestamp. Subsequent status and
++existing observer-result reads through 01:30 UTC returned internal errors.
++The current native state is therefore unknown. No replacement training or
++observer job was launched. The subject-E exposure clarification below
++supersedes the older progress appendix's phrase "E remains unread".
+ 
+ ## Admission status
+ 
+@@ -48,7 +55,7 @@ below supersedes the older progress appendix's phrase "E remains unread".
+ | Mathematical/API contract | Versioned definitions, drift regimes, reset and repeated-readout semantics | Defined and tested |
+ | Local numerical regression | 92 tests and four unchanged error-budget fixtures on the archived source | Passed within those fixtures |
+ | Actual training-domain accuracy | 49/60 terminal finite fixtures pass the original scaled gate; 12 tiny-gap pressure failures and six log-risk ordinary-FD holds remain | Selected fixtures pass; full training domain HOLD |
+-| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has three producer terminals and three active fits at the archived 23:49:03 UTC observation | All-six independent C2 adequacy and later resource view pending |
++| Recorded quality and resource comparison | Original42/C1 results reproduced; C2 has three producer terminals at the archived observation; later native reads fail | Current C2 state unknown; all-six independent adequacy and later resource view pending |
+ | Fair, sufficiently trained real-task benefit | Full-data development attempts and independent replay; output-interface diagnosis | HOLD |
+ | Endogenous optimal boundary | Independent finite DP/QVI fixture, three boundary groups | Finite fixture only; neural/continuum benefit HOLD |
+ | Real asynchronous multimodal benefit | Existing real localization data; new non-diffusion controls | HOLD |
+@@ -489,9 +496,16 @@ before terminal evidence and independent confirmation.
+ The [23:49:03 UTC metadata index](evidence/p0p5-recovery-20261111/training/V8-METADATA-INDEX.json)
+ binds the exactly recovered v8 observation and its preceding archive chain.
+ It observed three active fits and three producer terminals; model/probability
+-arrays were not read. The separate retained native status response ending at
+-2026-11-11 00:08:14 UTC still reports the same original C2 job running. Neither
+-dated observation establishes its subsequent state.
++arrays were not read. The later valid whole-job status was read at
++2026-11-11 00:25:25.440--00:25:38.584 UTC and reported the same original C2 job
++running, without a native sample timestamp. The
++[time-scope clarification](evidence/p0p5-terminal-preparation-20261111/status-time/CLARIFICATION.json)
++distinguishes that read span from a native observation time. The fully read
++command journal ending at 00:33:29 UTC contains three terminal records.
++Subsequent read-only status and observer-result calls through 01:30 UTC return
++internal errors, leaving the current state unknown. These later records do
++not supply new epoch scores or establish whether the other fits are still
++running, stopped or completed.
+ The following individual best scores are intermediate D-selected values,
+ not a new common-LR comparison or confirmation result.
+ 
+@@ -538,6 +552,20 @@ the uncommitted preparation gaps. Partial source recovery does not authorize
+ the old resource program. Replacement preparation needs its own complete
+ source, validation and binding under the unchanged 120-second analysis limit.
+ 
++The [new preparation and its original receipts](evidence/p0p5-terminal-preparation-20261111/README.md)
++now preserve a replacement resource core with 52 passing metadata tests,
++an independently checked complete-OS supervisor binding, nine actual process
++helper checks, and a source-bound terminal bootstrap. The bootstrap's 21 v2
++tests and four targeted v3 tests retain their separate source scopes. The
++resource core keeps failed attempts and three independently exposed native
++CPU/wall/PID inconsistencies together with the corrected positive/negative
++closure. The supervisor's single manifest-literal change received static
++review; that is not a complete functional execution of the supervisor.
++All execution templates remain disabled. No actual terminal assembly,
++independent C2 audit, later resource analysis or rendering has occurred.
++The native controller result, all-six terminal barrier and complete durable
++logs are still required before any of those prepared stages can run.
++
+ ### Development outcomes and HCSN censoring
+ 
+ The [resource analysis](evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md)
+@@ -823,6 +851,22 @@ between the previous published source and this head. An unavailable cargo
+ log leaves its underlying cause unknown. These observations do not certify
+ this later recovery/CURRENT edit or establish repository-wide success.
+ 
++The [later exact verification originals](evidence/p0p5-terminal-preparation-20261111/verification/ORIGINALS.zip)
++bind recovery head `9f16aa325b12004ddc0d9fa325fdc67531d027fc` to tree
++`92f8647353bd34a194b94fde015428641e3549e4`. A fresh filtered Git clone, without
++local object seeding or alternates, read all 87 changed regular files and
++verified complete bytes, SHA256 and Git blob identities. Separate local
++checks passed 12 manifests, 1664 evidence files, 106 direct ZIPs and 479 links;
++the committed-object proof covered 1667 regular evidence/extra files.
++Hosted science run 42933021590, attempt 1, tested merge
++`d96e66a23f4608133827df43d8ec127d98bad681` at that same tree and passed all
++declared steps, including 92 qualification fixtures. The original 127296-byte
++artifact was read in full and all 42 recorded qualification source files
++match. These are tests of that recorded source, not this later status edit.
++The separate blocking run 42933021807 was still in progress when its first
++jobs page was retained and already showed failed contract, Windows and
++cargo-deny jobs. No new failure cause or repository-wide success is inferred.
++
+ At the retained later observation, source
+ `fdbc954bb259a709275771fe151b4f0c8d245b48` had successful science run42902660902
+ and canary42902660830, architecture42902660993 in progress, and blocking

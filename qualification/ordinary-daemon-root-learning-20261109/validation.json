@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "HOLD",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "cited_source_commit": "38c95265e8e549ff60fd88e1db5d3bf31b4264e7",
+  "base_commit": "5530f84e1305c4c86b8be19c4c8765c4340e51db",
+  "code_head_commit": "b443fe0cd7642316d016d78d6d3fbaa3e9dfc341",
+  "code_head_tree": "4fc761d58f62f7aaa04e2f6571f732a9a1b2a452",
+  "native_test_source_inventory_sha256": "6d63b225d311abe5eb5dde8748376888d8c95b4d2ad97f3a3aa7c7e0caa6a360",
+  "native_final_source_inventory_sha256": "4cd123acf4cb4133c846600e6564a922c8001d62d52f926d1e05262c0a778925",
+  "native_codex_rs_projection_sha256": "75578bc87fafe42818be3c8adf49e3eaf6607fdab8304e6f1811cbf04fac33e2",
+  "native_codex_rs_objects": 10608,
+  "native_codex_rs_baseline_objects_individually_verified": 10582,
+  "rust_source_tree_sha256": "bd6c8755d1dc16493309f985edc396e7d05627c91b59d41839c1d6c4ce538c68",
+  "caller_manifest_sha256": "926ab169350b79b468ed4fd35b4af6eb85510656a01ebbd38808d8e5ecfad8a0",
+  "caller_receipt_sha256": "c38330544b1f9bd1cf5ac9190215dafbd21cd942818824f229028bac3b359879",
+  "native_tests": {
+    "library_passed": 760,
+    "library_skipped": 64,
+    "root_top_level_passed": 3,
+    "root_other_cases_skipped": 821,
+    "nested_child_counted_separately": false,
+    "actual_child_uid": 60001
+  },
+  "builds": {
+    "test_compile_v1_exit_code": 101,
+    "test_compile_v1_tests_executed": 0,
+    "v2_bins_check_exit_code": 0,
+    "scoped_fix_exit_code": 0,
+    "fmt_exit_code": 0,
+    "final_maintained_renamed_bins_check_exit_code": 0,
+    "tests_rerun_after_maintenance": false,
+    "warning_free_claimed": false
+  },
+  "source_closure": {
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "boundaries": 179,
+    "protected_rows": 164,
+    "rust_files_scanned": 6146,
+    "static_regressions_passed": 9,
+    "authority_granted": false,
+    "inputs_unchanged_during_scan": true
+  },
+  "helper": {
+    "rebuilt_this_task": false,
+    "source_files_checked": 21,
+    "binary_sha256": "d347fbab314bda1dc2e29d3f5fca7d7f70eb263dbc740a9e281dc9fd9e312c42"
+  },
+  "archives": [
+    {
+      "path": "native-evidence-v1.tar.xz",
+      "bytes": 750120,
+      "sha256": "e6637d247becd574be864da62173b1004abb73c06c6257d7d0b32b2d077ff18f"
+    },
+    {
+      "path": "source-and-review-evidence-v1.tar.xz",
+      "bytes": 478884,
+      "sha256": "70d338f42e0b02334e23695681f43284a9887e18c34afdebdad331c65f357173"
+    }
+  ],
+  "remaining_gates": [
+    "actual deployed stage owners and recovery",
+    "real bounded data and training jobs",
+    "independent evaluation and signed attestations",
+    "ordinary Circuit runtime and invocation providers",
+    "governed plasticity and protected published generation assembly",
+    "complete public registration/live writer/dedicated listener qualification",
+    "durable multi-operation scheduling and lifetime continuation"
+  ]
+}

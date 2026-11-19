@@ -1,0 +1,134 @@
+{
+  "incoming": "1657238edcc0793bc353c931f9ca445ef992315c",
+  "rows": [
+    {
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/features.npz",
+      "bytes": 1581490,
+      "sha256": "b1d65d43af0ea80cf8ec0e581b08c185bfd96fe1dbef68a07f333953963f53b7",
+      "git_oid": "b42e9f1f12c288e4fd6cf521ed306bfd0b775abe",
+      "archive_members": [
+        {
+          "path": "parent_a.npy",
+          "bytes": 147584,
+          "sha256": "b56747dbb4493d484221b10f3b76685fb9f7e3d5b59571e07a6ffc1c58528a37"
+        },
+        {
+          "path": "parent_b.npy",
+          "bytes": 147584,
+          "sha256": "947b239e6bdc58acef3ea56062db350fc84786800ed5c932188946b6468391b0"
+        },
+        {
+          "path": "parent_router_train.npy",
+          "bytes": 98432,
+          "sha256": "565f251fdc2461449604a43c86111523a5875eca0b2fbee35fbf29d37bc76291"
+        },
+        {
+          "path": "parent_head_calibration.npy",
+          "bytes": 98432,
+          "sha256": "2e9ccbfeae6bc61948ef8459ff68454b08e1743b888f1d80e6ce6407ef0ae026"
+        },
+        {
+          "path": "parent_router_calibration.npy",
+          "bytes": 98432,
+          "sha256": "8e66724ed8b376bf72d7d5af7b8ff9888124d6effa6ac79a6fe1429eb4f00800"
+        },
+        {
+          "path": "replay_a.npy",
+          "bytes": 147584,
+          "sha256": "ead6450dae0d11a01a85e5ca28c4e4f6bb237048241051ec506f903d8dddbf80"
+        },
+        {
+          "path": "replay_b.npy",
+          "bytes": 147584,
+          "sha256": "f3a277586066c598515203fc343596da2a45f0c8ff7889fc98aae2f888a3a53b"
+        },
+        {
+          "path": "router_train.npy",
+          "bytes": 98432,
+          "sha256": "ab862874cec6a29057abea3fba51771f6089f503b9add71d0b60f850c8574818"
+        },
+        {
+          "path": "head_calibration.npy",
+          "bytes": 98432,
+          "sha256": "3bce19e72be2033bde991b8cad8ee2875aa18ab2da08c9deba8274c36decbfe8"
+        },
+        {
+          "path": "router_calibration.npy",
+          "bytes": 98432,
+          "sha256": "6d50b77f3ed3912bfb416aed14bbd4b2740c3ac69f5120b8bfee65d4dc0ca62c"
+        },
+        {
+          "path": "merge_calibration.npy",
+          "bytes": 98432,
+          "sha256": "eca833b6c627c890cf468b872363724af16ffd41fe45183396551673edd5d9e4"
+        },
+        {
+          "path": "future_1.npy",
+          "bytes": 196736,
+          "sha256": "c35da1174ddfa45b2cbea9e9fa21a81f74201a64e140fd4b302778930f7331f4"
+        },
+        {
+          "path": "future_2.npy",
+          "bytes": 147584,
+          "sha256": "54a7bb4d28f9fceaabe4661a7674705da6b1b69642d3a510de3412bfbf53d4df"
+        },
+        {
+          "path": "ood.npy",
+          "bytes": 73856,
+          "sha256": "d84c40cb785090b49160992388c3528a31ff2a761395a06f90cb7d00d4f3b4d9"
+        }
+      ],
+      "inventory_file": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/inventory.json",
+      "inventory_mentions_sha": true
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/prediction_ledger.json.gz",
+      "bytes": 974144,
+      "sha256": "fa4aced018c45fd214d426bd5eec91a271f39151cf92e2083519fa0aaab933a3",
+      "git_oid": "f22b21751cc586c2c4fa56f2b49224988124fc5a",
+      "decoded_bytes": 3765520,
+      "decoded_sha256": "f92dced0699e7869a06010119e3a52ca1f803f880df0c223e38598ae30bda927",
+      "json_type": "list",
+      "json_top_level_items": 69,
+      "inventory_file": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/inventory.json",
+      "inventory_mentions_sha": true
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-router/prediction_ledger.json.gz",
+      "bytes": 689179,
+      "sha256": "df8b3d5fbeecb4511c285c17f3f56543e5e3f9cb87eaa2e9c5fea36383110cca",
+      "git_oid": "55a2e6a23b22cccc2177cbce83c89050d85f8789",
+      "decoded_bytes": 2774066,
+      "decoded_sha256": "e15ac88552037e45e86b80065599fd3404243cf2ea028f06102547edcc8321ed",
+      "json_type": "list",
+      "json_top_level_items": 45,
+      "inventory_file": "qa/stem-bakeoff/evidence/20261022-real-cell-router/inventory.json",
+      "inventory_mentions_sha": true
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261022-real-local-process-v2/prediction_ledger.json.gz",
+      "bytes": 985032,
+      "sha256": "18003059b331c7fdeb3e4ff6f5f2f380fe98d717c9a866e476e5f6b3b647847e",
+      "git_oid": "184a6c0cbfddb83f08ed0e4fb4179cd526a8bb58",
+      "decoded_bytes": 4402900,
+      "decoded_sha256": "3aa29390e1ac1eae1f8d8b886ac649209f1c6899fb47bca097591e59527385ab",
+      "json_type": "list",
+      "json_top_level_items": 90,
+      "inventory_file": "qa/stem-bakeoff/evidence/20261022-real-local-process-v2/inventory.json",
+      "inventory_mentions_sha": true
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261022-real-local-process/prediction_ledger.json.gz",
+      "bytes": 985038,
+      "sha256": "a9251c424e18e2f5667fc52c340e61d5188b4f1c795ed0676e60d56d65fcf4ad",
+      "git_oid": "8cfce7902f7a1563bb85706929747c2d3a18c4b5",
+      "decoded_bytes": 4402898,
+      "decoded_sha256": "1efc9b798d51a7424243c0d01abff160e1889d5064c9870dd79cecd0b6c5e02a",
+      "json_type": "list",
+      "json_top_level_items": 90,
+      "inventory_file": "qa/stem-bakeoff/evidence/20261022-real-local-process/inventory.json",
+      "inventory_mentions_sha": true
+    }
+  ],
+  "note": "Byte/CRC/JSON integrity only; historical prediction ledger results are not rerun or accepted as current qualification."
+}

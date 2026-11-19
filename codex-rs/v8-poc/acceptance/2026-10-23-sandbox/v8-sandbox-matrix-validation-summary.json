@@ -1,0 +1,118 @@
+{
+  "recordedAt": "2026-10-23T20:09:46.607369+00:00",
+  "commit": "ec392d3067809cbc4c1728a53bc0c48d4a7f7347",
+  "tree": "ce635193fb153d99a6b9d70d8b4e623fe06bd869",
+  "testedSourceBase": "12a4c2e3487476b54fc28e4fa3109604c498f566",
+  "testedDiffSha256": "7940c49b55f5a85c434da69aad98b1e92923b06246d2f34d6edcff9411861f4b",
+  "finalSourcePatchSha256": "7940c49b55f5a85c434da69aad98b1e92923b06246d2f34d6edcff9411861f4b",
+  "finalSourcePatchMatchesTestedDiff": true,
+  "baseline": {
+    "run": 1,
+    "passed": 0,
+    "failed": 1,
+    "reason": "POC local feature=false while Cargo dependency feature unification links sandbox=true"
+  },
+  "owningPackages": {
+    "packages": [
+      "codex-v8-poc",
+      "codex-code-mode-runtime"
+    ],
+    "run": 76,
+    "passed": 76,
+    "skipped": 0
+  },
+  "officialStagedTrue": {
+    "run": 6,
+    "passed": 6,
+    "skipped": 0
+  },
+  "officialStagedFalse": {
+    "run": 6,
+    "passed": 6,
+    "skipped": 0
+  },
+  "wrongExpectationChecks": {
+    "trueArtifactExpectedFalse": "original FFI assertion failed, exit100",
+    "falseArtifactExpectedTrue": "original FFI assertion failed, exit100"
+  },
+  "originalPythonTests": 19,
+  "productCodeModeRequiresSandboxTrueAssertionChanged": false,
+  "supplierTrueFalseMatrixPreserved": true,
+  "stagedExactExpectationVariable": "RUSTY_V8_EXPECT_SANDBOX",
+  "artifactPostflightMatchedOfficialReleaseDigests": {
+    "true": [
+      {
+        "path": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "size": 29366352,
+        "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583"
+      },
+      {
+        "path": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+        "size": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      }
+    ],
+    "false": [
+      {
+        "path": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu-nosandbox/librusty_v8_release_x86_64-unknown-linux-gnu.a.gz",
+        "size": 28834415,
+        "sha256": "70ea96d34e2e9655bd34d3ec8415ff80d047bc5d7f37f01b53d8ce49be4c5eb3"
+      },
+      {
+        "path": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu-nosandbox/src_binding_release_x86_64-unknown-linux-gnu.rs",
+        "size": 39884,
+        "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506"
+      }
+    ]
+  },
+  "checks": {
+    "v8-sandbox-unified-before": {
+      "exitCode": 100,
+      "elapsedSeconds": 687.9405676219612,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-unified-before.json"
+    },
+    "v8-sandbox-unified-owning-after": {
+      "exitCode": 0,
+      "elapsedSeconds": 19.48098210094031,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-unified-owning-after.json"
+    },
+    "v8-sandbox-staged-true-after": {
+      "exitCode": 0,
+      "elapsedSeconds": 108.25169327203184,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-staged-true-after.json"
+    },
+    "v8-sandbox-staged-false-after": {
+      "exitCode": 0,
+      "elapsedSeconds": 106.87403482897207,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-staged-false-after.json"
+    },
+    "v8-sandbox-staged-true-wrong-expectation": {
+      "exitCode": 100,
+      "elapsedSeconds": 7.017794238054194,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-staged-true-wrong-expectation.json"
+    },
+    "v8-sandbox-staged-false-wrong-expectation": {
+      "exitCode": 100,
+      "elapsedSeconds": 1.7684458319563419,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-staged-false-wrong-expectation.json"
+    },
+    "v8-sandbox-original-python-tests": {
+      "exitCode": 0,
+      "elapsedSeconds": 2.69863004994113,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-original-python-tests.json"
+    },
+    "v8-sandbox-matrix-fix": {
+      "exitCode": 0,
+      "elapsedSeconds": 56.277210143976845,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-matrix-fix.json"
+    },
+    "v8-sandbox-matrix-fmt": {
+      "exitCode": 0,
+      "elapsedSeconds": 0.43322635896038264,
+      "receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-matrix-fmt.json"
+    }
+  },
+  "noTestsAfterFixOrFmt": true,
+  "scope": "Actual x86_64 Linux host Rust1.95 original just/nextest functional tests with independently verified supplier archive/binding pairs; no supplier source rebuild or remote-platform execution. Separate semantic leaf, no summed whole-workspace qualification.",
+  "finalUnifiedFullQualified": false
+}

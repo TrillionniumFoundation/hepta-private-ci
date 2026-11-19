@@ -1,0 +1,151 @@
+{
+  "schema": "hepta.current-smithy-pin-backport.v1",
+  "crate": "aws-smithy-http",
+  "version": "0.64.1",
+  "original_registry_checksum": "639b4d8f8555f24a9be649811c3eb0b4d4616f4d61daf0c32e28873bc1ea9af1",
+  "official_archive_url": "https://static.crates.io/crates/aws-smithy-http/aws-smithy-http-0.64.1.crate",
+  "official_source_commit": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+  "upstream_fix_reference": "https://github.com/smithy-lang/smithy-rs/pull/2410",
+  "reason": "Remove the unmaintained pin-utils parent dependency while retaining the current Smithy schema compatibility line",
+  "license_sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "9226e403fa8da1bf8e25702ba275298afe7e94f2ee94c248f8c9316de8f67ff8",
+      "after_sha256": "bbc28424b12c6762175c9466ac71d019681b53ac4d206a56b871612e1803fd06"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "9cef7888df63d609c75ef91ebaf0324d6ad9fa0648f00568538b88e8a86d1e70",
+      "after_sha256": "2476cad959011ac479a3e1c2a6e0ff7ffbbca324fb6a0827bf79b0a3e8499006"
+    },
+    {
+      "path": "src/endpoint.rs",
+      "before_sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c",
+      "after_sha256": "76320036c95ee69041505ba4a0dbe29d981eef4ee0862066421f2e86f0acdab5",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/event_stream.rs",
+      "before_sha256": "ef7e0692354e0fdcf9ff4dd8b4069dae353d29fc11b123888bc507610b8ab082",
+      "after_sha256": "eac7bfcd43635602b46634ce5331278c0bc7f453ccd759ccce2cf9c115b919d8",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/event_stream/receiver.rs",
+      "before_sha256": "1774bbd559a738094cccb16fcb9b5b44f61d52f702a12d57525d274116461da5",
+      "after_sha256": "7f316b42666335687140452412a529b11fab2b0473e2837085e3b46c6efd52c7",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/event_stream/sender.rs",
+      "before_sha256": "3dd3ea53103a1d3d67cc705bafbe99ec7a1803abe2811136e0b90e08f04ae0db",
+      "after_sha256": "4460968a23a8bb04c7e65a2edc53783e20cef7bc081edf4dce26af20f2490917",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/futures_stream_adapter.rs",
+      "before_sha256": "5c9b33f01a2bd374a1f1efba37c4288a11f95450a285e31df95f972b198f4ae8",
+      "after_sha256": "11d6da411addc1076ba4c7fa78943fa100bb40fa93368f2576d6c4d383a1e425",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/header.rs",
+      "before_sha256": "0648d63263feccb8b6af221c6f98a3936097a9c519bdcabde756d958a2a0fc89",
+      "after_sha256": "e50fbc1b2c2881c118c4b2d81a17f66099799d67308ef22d439e169ff2dd0966",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/label.rs",
+      "before_sha256": "f32be7afcd25db2bc6a94cf80f91df5971ab9025009159e4ef0db6f523c89fc8",
+      "after_sha256": "72b429b6bbd3ae0c42d2d95032529b489c426cb79114640b7ce778d537d41d7c",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/query.rs",
+      "before_sha256": "ab13c5a8b2acbe218aa8e25637546520982779010c76cd0a9d98f1f379710557",
+      "after_sha256": "81178cd5b97047b94086f33804d60f5fa4c6c46cbeac85415ccbcc63f0cccda0",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/urlencode.rs",
+      "before_sha256": "ba7a72c1d32c2d2b62ee965d99cdbbbbddea52f7ee12d49614edc5a7ee31cd39",
+      "after_sha256": "5b683eda1ced4eeb1eecdba4e620b413655052d7cde26438af9afb000beefcfa",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    }
+  ],
+  "minimal_patch_sha256": "10726a1f3e59afe401fba181e3ad476808d2025f958cc563da07c6f61c691c6c",
+  "all_other_archive_files_unchanged": false,
+  "historical_vendor_lock_is_not_workspace_dependency_authority": true,
+  "formatting": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "9a67dfe11f42cafab121082f4e0d87d278418d1d"
+    ],
+    "base": "9a67dfe11f42cafab121082f4e0d87d278418d1d",
+    "formatter_only_files": [
+      "src/endpoint.rs"
+    ],
+    "followups": [
+      {
+        "base": "83e1c6fc47bfc7277100534cd0994a547028cb11",
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "83e1c6fc47bfc7277100534cd0994a547028cb11"
+        ],
+        "changes": [
+          {
+            "path": "src/endpoint.rs",
+            "before_sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c",
+            "after_sha256": "76320036c95ee69041505ba4a0dbe29d981eef4ee0862066421f2e86f0acdab5",
+            "kind": "formatting-only"
+          }
+        ],
+        "runtime_semantics_changed": false
+      }
+    ]
+  },
+  "previous_provenance_record": {
+    "commit": "c2130629037b342e6e48154867b65acc8fc82434",
+    "git_blob": "e0240e9051f8e08beaa1a39a29fbef84c4e6b637",
+    "sha256": "be880c48a7c5e17c477165598dbaf7042b8155ac16d1d7c2b4d14db01da270cc",
+    "recorded_edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "9226e403fa8da1bf8e25702ba275298afe7e94f2ee94c248f8c9316de8f67ff8",
+        "after_sha256": "bbc28424b12c6762175c9466ac71d019681b53ac4d206a56b871612e1803fd06"
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "9cef7888df63d609c75ef91ebaf0324d6ad9fa0648f00568538b88e8a86d1e70",
+        "after_sha256": "2476cad959011ac479a3e1c2a6e0ff7ffbbca324fb6a0827bf79b0a3e8499006"
+      },
+      {
+        "path": "src/endpoint.rs",
+        "before_sha256": "2823cf5ea6a0db3708e06de02ad801767354121b78331384809ec31cf98d2a0c",
+        "after_sha256": "76320036c95ee69041505ba4a0dbe29d981eef4ee0862066421f2e86f0acdab5",
+        "kind": "formatting-only"
+      }
+    ],
+    "all_other_archive_files_unchanged_at_that_record": true
+  },
+  "current_followup_scope": "Current source identities include the explicitly listed repository-formatting changes. Original minimal patches retain their original bytes and original dependency-change scope.",
+  "formatting_provenance": {
+    "path": "HEPTA-FORMATTING-PROVENANCE.json",
+    "sha256": "3c075367dcbfa2c46fc5db1893d1ee7356e1b2883de855c361b7ea1df1be79f4",
+    "base": "c2130629037b342e6e48154867b65acc8fc82434",
+    "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2"
+  }
+}

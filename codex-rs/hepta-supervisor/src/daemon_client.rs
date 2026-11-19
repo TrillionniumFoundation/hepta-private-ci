@@ -242,7 +242,8 @@ impl SupervisordClient {
         timeout(self.timeout, writer.write_all(&bytes))
             .await
             .map_err(|_| SupervisorError::Invalid("supervisord write timed out".to_string()))??;
-        writer.shutdown().await?;
+        // The newline completes this request. The server may already have
+        // replied and closed before a redundant write-half shutdown reaches it.
         let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
         let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))

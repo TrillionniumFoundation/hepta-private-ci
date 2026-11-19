@@ -1,0 +1,64 @@
+{
+  "additive_grand_total": null,
+  "billing": null,
+  "cloud_read_interruption": "publication-preparation/root-static-review/CLOUD-READ-INTERRUPTION.json",
+  "energy_joules": null,
+  "exact_cumulative_training_CPU": null,
+  "failed_control_plane_reads": "Two120s first-terminal binary RPC timeouts are retained in the original control ZIP; neither reran training.",
+  "first_terminal": {
+    "C2_complete_attempt_wrapper_wall_seconds": 1266.1814752598293,
+    "C2_dispatch_through_reaped_child_wall_seconds": 1266.1501302358229,
+    "C2_exact_child_wait4_full_cpu_seconds": 1263.453444,
+    "C2_post_child_verification_wall_seconds": 0.031345024006441236,
+    "c2_global_GNU_terminal_totals": "pending while other original candidates continue",
+    "candidate": "hcsn-s211-lr0.003",
+    "controller_CPU_attributable_to_this_wrapper": null,
+    "cumulative_parent_plus_child_reap_wall_seconds": 15643.100032640621,
+    "cumulative_parent_plus_complete_wrapper_wall_seconds": 15643.131377664628,
+    "exact_cumulative_CPU_seconds": null,
+    "original_parent_full_outer_wall_seconds": 14376.949902404798,
+    "outer_original": {
+      "bytes": 3281,
+      "path": "/workspace/scratch/c385a7439f8e/c2-first-terminal-receipts-v1/payload/outer/RESULT.json",
+      "sha256": "189da59739ac6337152cbc6c58e455087a30decaf50171c19a2c8b74e9629edc"
+    },
+    "parent_exact_exit_cpu_seconds": null,
+    "receipt": "first-terminal/COST-SCOPE-ADDENDUM.json",
+    "schema": "c2-first-terminal-cost-scope-v1",
+    "scope": "Full attempt wrapper includes terminal verification after wait4. The earlier archive stdout field whole_attempt_outer_wall_seconds relays whole_process_wall_seconds (dispatch through child reap), not the extra wrapper tail. Both views retained; wrapper tail is charged. Do not add overlapping GNU/controller/wait4 views."
+  },
+  "preparation_receipts": [
+    "terminal-auditor/preparation/SUMMARY.json",
+    "resource-plan/PREPARATION.json",
+    "resource-plan-review/RESULT.json",
+    "confirmation-E-proposal/ASSEMBLY-RECEIPT.json"
+  ],
+  "read_only_observers": [
+    {
+      "receipt": "observations/first-epochs/GNU-TIME.txt",
+      "system_seconds_rounded": 0.03,
+      "user_seconds_rounded": 0.16,
+      "whole_process_wall_seconds_rounded": 0.22
+    },
+    {
+      "receipt": "observations/at-220042/GNU-TIME.txt",
+      "system_seconds_rounded": 0.03,
+      "user_seconds_rounded": 0.32,
+      "whole_process_wall_seconds_rounded": 0.35
+    },
+    {
+      "receipt": "first-terminal/ARCHIVE-GNU-TIME.txt",
+      "system_seconds_rounded": 0.03,
+      "user_seconds_rounded": 0.23,
+      "whole_process_wall_seconds_rounded": 0.28
+    }
+  ],
+  "rule": "C2 remains active at the stated observation. Keep full attempt-wrapper tails and all failures. GNU, child, phase and script-prefix views overlap. Unknown is not zero.",
+  "schema": "c2-progress-cost-index-v1",
+  "total_C2_cost": null,
+  "verification_receipts": [
+    "prior-head-checks/worktree/EXECUTION.json",
+    "prior-head-checks/committed-blobs/EXECUTION.json",
+    "prior-head-checks/codespell-red-green.zip.json"
+  ]
+}

@@ -190,6 +190,19 @@ pub(crate) async fn apply_bespoke_event_handling(
             // All per-thread requests are bound to a turn, so abort them.
             outgoing.abort_pending_server_requests().await;
             respond_to_pending_interrupts(&thread_state, &outgoing).await;
+            // Core publishes this event before its finish owner releases the
+            // admission fence. Publish the external completion only after that
+            // same normal turn finishes; a delayed event must ignore later
+            // turns, and interrupt RPCs must remain immediately responsive.
+            if let Some(completion) =
+                conversation.pending_normal_turn_finish_completion(&turn_complete_event.turn_id)
+            {
+                tokio::select! {
+                    biased;
+                    () = conversation.wait_until_terminated() => return,
+                    () = completion => {}
+                }
+            }
             let turn_failed = thread_state.lock().await.turn_summary.last_error.is_some();
             thread_watch_manager
                 .note_turn_completed(&conversation_id.to_string(), turn_failed)
@@ -2128,7 +2141,6 @@ mod tests {
     use anyhow::Result;
     use anyhow::anyhow;
     use anyhow::bail;
-    use chrono::Utc;
     use codex_app_server_protocol::AutoReviewDecisionSource;
     use codex_app_server_protocol::GuardianApprovalReviewStatus;
     use codex_app_server_protocol::JSONRPCErrorError;
@@ -2211,7 +2223,7 @@ mod tests {
     #[test]
     fn rollback_response_rebuilds_pathless_thread_from_stored_history() -> Result<()> {
         let thread_id = ThreadId::from_string("00000000-0000-0000-0000-000000000789")?;
-        let created_at = Utc::now();
+        let created_at = codex_utils_time::Timestamp::now();
         let history_items = vec![
             RolloutItem::EventMsg(EventMsg::UserMessage(UserMessageEvent {
                 client_id: None,

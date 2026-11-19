@@ -1,0 +1,158 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-progress-and-dependency-observation-v1",
+  "observation": {
+    "progress_updated_utc": "2026-11-07T15:55:28.393131+00:00",
+    "progress_file_sha256": "5e3b0fd90154cfec6072b7e4643c6a9727b699db8031a9ef0faf85b2c2512a0e",
+    "campaign_job_id": "1a1acdd69f2-fc05-5757",
+    "campaign_process_state": "running",
+    "systemd_state": "active/running",
+    "active_stage": "full",
+    "completed_cuda_runs_reported": 34,
+    "requested_cuda_runs": 170,
+    "failed_registered_runs_reported": 0,
+    "unavailable_registered_runs_reported": 0,
+    "registered_run_indexes_observed_completed_reported": 34,
+    "global_qualification": "open",
+    "completion_scope_note": "This is the progress-file count only. The two newly implied identity records were not individually re-read in this observation; no new identity, terminal, weight hash or checkpoint hash is asserted.",
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "physical_energy_missing_is_not_zero": true
+  },
+  "frozen_pins": {
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "full_runtime_profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8",
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "source_pin_ci_verified": true,
+    "source_pin_ci_run_id": 42078258351
+  },
+  "frozen_budget": {
+    "models": 17,
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "registered_identities": 170,
+    "train_steps": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "device": "cuda:0",
+    "policy_selection": "frozen admission receipt only"
+  },
+  "dependency_jobs": {
+    "torch_download_offline_install": {
+      "job_id": "1a1aca78192-fc05-562f",
+      "state": "failed",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "automatic_retry": false,
+      "last_stage": "download_verified_ranges",
+      "artifacts": 25,
+      "verified_bytes": 3918339031,
+      "parts": 950,
+      "workers": 8,
+      "error": "wheel METADATA identity is ambiguous"
+    },
+    "mamba_wheels": {
+      "job_id": "1a1aca7f6ba-fc05-5631",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "scope": "wheel file validation only; not model computation"
+    },
+    "mamba_offline_installer_waiter": {
+      "job_id": "1a1acadd69c-fc05-5654",
+      "state": "failed",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "state_detail": "blocked_dependency_terminal",
+      "automatic_retry": false,
+      "error": "torch owned job did not succeed; no automatic retry or installation"
+    },
+    "storage_observer": {
+      "job_id": "1a1acda2df4-fc05-5745",
+      "state": "succeeded",
+      "exit_code": 0,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "observation_file_sha256": "ac61e2deba919701ee3d19d84bdb0e4cff6eb5c89e2bdaac6a7c705b19ff3dc0",
+      "observed_at_utc": "2026-11-06T05:50:58.552901+00:00",
+      "changes_to_training_or_installation_processes": false,
+      "data_free_bytes": 22438989824,
+      "control_filesystem_free_bytes": 30555836416,
+      "task_allocated_bytes": 4986236928,
+      "task_apparent_bytes": 4963536947,
+      "old_root_bytes_deleted_by_this_task": 0,
+      "automatic_install_attempts": 0,
+      "snapshot_note": "Historical storage observation; installation_ready_markers_observed was false at that observation time."
+    }
+  },
+  "readiness_receipts": {
+    "torch": {
+      "present": true,
+      "sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+      "state": "ready",
+      "finished_at_utc": "2026-11-06T07:52:35.038411+00:00",
+      "model_computation_performed": false,
+      "manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701",
+      "source_archive_sha256": "c46a6f47911adcf12298a5059bbde74ee096c49b3946d8ee10f4710719d3521c"
+    },
+    "mamba": {
+      "present": true,
+      "sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76",
+      "state": "imports_ready",
+      "finished_at_utc": "2026-11-06T07:54:47.091033+00:00",
+      "model_computation_performed": false,
+      "manifest_sha256": "86f88c5d54c74e5bacd9d99cace8f056a6ed6acc11f4bd8f633e122c951d5501",
+      "source_archive_sha256": "c46a6f47911adcf12298a5059bbde74ee096c49b3946d8ee10f4710719d3521c"
+    },
+    "consistency_note": "Ready markers are present, but the separately tracked Torch owner job failed and the Mamba waiter terminated blocked on that dependency. The markers do not override the durable job terminal receipts or prove model computation."
+  },
+  "campaign_outputs": {
+    "full_stage_status": "running",
+    "full_json_present": false,
+    "terminal_json_present": false,
+    "full_runtime_manifest_present": false,
+    "full_b_audit_present": false,
+    "full_runtime_profile_present": true,
+    "full_runtime_profile_sha256": "21a9ca457133123d674a41721c3ecb904477efc42953ab51bf03ae66eacbb3e8"
+  },
+  "ci": {
+    "exact_source_run_id": 42078258351,
+    "exact_source_job_id": 127424159520,
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "status": "completed",
+    "conclusion": "success",
+    "all_reported_steps_success": true,
+    "scope": "CPU research CI; not CUDA campaign qualification",
+    "trusted_main_gpu_probe_run_id": 39526325715,
+    "trusted_main_gpu_probe_job_id": 127299267982,
+    "trusted_main_gpu_probe_status": "completed",
+    "trusted_main_gpu_probe_conclusion": "cancelled"
+  },
+  "publication": {
+    "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+    "branch_head_before_append": "4234d9604f9b01ca2453c70c33caefbabfd3ff78",
+    "expected_sha_lease_required": true,
+    "research_source_branch_modified": false,
+    "pr_4873_lookup": "404; no PR body updated"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.late-writer-two-file-diagnostic-launch-observations.v1",
+  "classification": "ADMISSION_UNKNOWN_NO_VERIFICATION_CLAIM",
+  "source_sha": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "source_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "v1": {
+    "script_blob": "860b8d385a1c595e4ed0bceee8bbd8cf9b421fb1",
+    "request_blob": "2caa0818519cc5a7c57ff0767d327f7ef17a6907",
+    "session_id": "dpty-91468edb0454c6a1fd97d9c960b07d6083b3fcf60104e54e95e60cef25a2fccc",
+    "terminal_raw_blob": "a0b8521425219b0868617f0f4ebe6843644070d7",
+    "status": "diagnostic-incomplete",
+    "completed_boundary_count": 0,
+    "reason": "The diagnostic's extra full-index preflight compared Path-sorted input to a separately string-sorted list directly. Their list difference was rejected before any boundary check. No receiver conclusion was obtained."
+  },
+  "v2": {
+    "script_blob": "2d0c421bc54cce31ff5fb2cf6ea5918656471e27",
+    "script_sha256": "835e0d1672465bef724c5fe6abb0ded41f906d0934136437af44dab1f95cd2ec",
+    "request_blob": "fdd7cd3f6dbba4a0d96647b81230801316112b25",
+    "key": "af52-715a572-late-writer-file-diagnostic-v2",
+    "only_script_change": {
+      "old": "    if source_names != expected_names or len(set(source_names)) != len(source_names):\n        raise RuntimeError(\"physical full index differs from complete tracked Rust source roots\")\n",
+      "new": "    result[\"tracked_physical_index_comparison\"] = {\n        \"physical_count\": len(source_names), \"tracked_count\": len(expected_names),\n        \"list_order_equal\": source_names == expected_names,\n        \"missing_paths\": sorted(set(expected_names) - set(source_names)),\n        \"unexpected_paths\": sorted(set(source_names) - set(expected_names)),\n    }\n    print(json.dumps({\"source_index_comparison\": result[\"tracked_physical_index_comparison\"]}),\n          flush=True)\n    if set(source_names) != set(expected_names) or len(set(source_names)) != len(source_names):\n        raise RuntimeError(\"physical full index differs from complete tracked Rust source roots\")\n"
+    },
+    "start_observation": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    },
+    "same_exact_request_reconcile_observation": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.pty_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    },
+    "record_tail_observation": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Path not found: ssh://ai395/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-late-writer-file-diagnostic-v2/records/result.json (resolved to ssh://ai395/home/qq/af52-learning-local-decision-20261111/ordinary-715a572-late-writer-file-diagnostic-v2/records/result.json)"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "request_file_observation": {
+      "content": [
+        {
+          "type": "text",
+          "text": "multi-file read could not complete; verify configured read roots, regular single-link files, strict UTF-8 and byte budgets"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    },
+    "status": "admission unknown at these observations",
+    "meaning": "Neither a missing-file observation nor an MCP timeout establishes terminal process state. No replacement key or approximate request was issued. Parent may reconcile the retained exact request with the same key."
+  },
+  "official_full_verifier_executed": false,
+  "native_executed": false,
+  "authorityGranted": false
+}

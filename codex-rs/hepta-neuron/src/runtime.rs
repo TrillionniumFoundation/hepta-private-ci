@@ -1,9 +1,7 @@
 //! Stateful host lifecycle for canonical neuron ticks.
 
 use std::fs::File;
-use std::time::Instant;
 
-use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::JournalAnchor;
@@ -11,22 +9,30 @@ use crate::JournalError;
 use crate::JournalScope;
 use crate::NeuronDeletionRebuildPlanV1;
 use crate::NeuronDeletionRebuildReceiptV1;
+use crate::NeuronShadowConfigV1;
+use crate::NeuronShadowOutputV1;
 use crate::SparseConfig;
 use crate::SparseJournal;
-use crate::SparseTick;
 use crate::runtime_types::*;
 use crate::validate_deletion_rebuild;
+
+#[derive(Clone)]
+enum ProfileOutput {
+    Calibrated(NeuronRuntimeOutputV1),
+    Shadow(NeuronShadowOutputV1),
+}
 
 #[derive(Clone)]
 struct PendingWitness {
     input_digest: Digest32,
     expected: Option<JournalAnchor>,
     next: JournalAnchor,
-    output: NeuronRuntimeOutputV1,
+    output: ProfileOutput,
 }
 
 pub struct NeuronRuntime<W: AnchorWitnessStore> {
-    config: NeuronRuntimeConfigV1,
+    config: NeuronShadowConfigV1,
+    calibrated: Option<NeuronRuntimeConfigV1>,
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
@@ -42,19 +48,16 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
-        if file.metadata().map_err(JournalError::from)?.len() != 0 {
-            return Err(NeuronRuntimeError::BootstrapRequiresEmptyJournal);
-        }
-        if witness.current()?.is_some() {
-            return Err(NeuronRuntimeError::BootstrapWitnessPresent);
-        }
-        let journal = SparseJournal::open(file, native, scope, max_records)?;
-        Ok(Self {
-            config,
-            journal,
+        let mut runtime = Self::bootstrap_shadow(
+            file,
+            native,
+            scope,
+            max_records,
+            NeuronShadowConfigV1::from(&config),
             witness,
-            pending: None,
-        })
+        )?;
+        runtime.calibrated = Some(config);
+        Ok(runtime)
     }
 
     /// Start a fresh generation after authenticated deletion/withdrawal
@@ -97,28 +100,70 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         max_records: usize,
         config: NeuronRuntimeConfigV1,
         anchor: JournalAnchor,
+        witness: W,
+    ) -> Result<Self, NeuronRuntimeError> {
+        config.validate_native(&native)?;
+        let mut runtime = Self::recover_shadow(
+            file,
+            native,
+            scope,
+            max_records,
+            NeuronShadowConfigV1::from(&config),
+            anchor,
+            witness,
+        )?;
+        runtime.calibrated = Some(config);
+        Ok(runtime)
+    }
+
+    /// Recover a first commit whose publication was interrupted, using an
+    /// independently retained expected first checkpoint supplied by the host.
+    ///
+    /// The host must authenticate this initialization intent and bind it to the
+    /// same subject, objective, generation, config and model before calling.
+    /// It must never derive `expected_first` from the journal being recovered.
+    /// An absent/unavailable intent is not permission for unanchored recovery.
+    /// The host must independently establish that initialization is still pending;
+    /// an old first anchor cannot detect rollback of both journal and witness.
+    /// This is not a deletion, revocation, or acknowledged-history repair API.
+    /// The independent witness must positively report no published checkpoint;
+    /// any existing witness continues to use ordinary anchored recovery.
+    /// This entrypoint accepts only the first committed sequence and never
+    /// changes the persistent V1 formats or the behavior of `recover`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn recover_bootstrap_anchored(
+        file: File,
+        native: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        config: NeuronRuntimeConfigV1,
+        expected_first: JournalAnchor,
         mut witness: W,
     ) -> Result<Self, NeuronRuntimeError> {
         config.validate_native(&native)?;
-        if witness.current()? != Some(anchor) {
-            return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
+        if expected_first.sequence != 1 || expected_first.checkpoint_digest.is_zero() {
+            return Err(NeuronRuntimeError::Journal(JournalError::InvalidAnchor));
         }
-        let journal = SparseJournal::open_anchored(file, native, scope, max_records, anchor)?;
-        let recovered = journal
+        if witness.current()?.is_some() {
+            return Err(NeuronRuntimeError::BootstrapWitnessPresent);
+        }
+        // The externally supplied anchor is checked before any tail repair.
+        let journal =
+            SparseJournal::open_anchored(file, native, scope, max_records, expected_first)?;
+        let current = journal
             .current()?
             .map(|checkpoint| JournalAnchor {
                 sequence: checkpoint.sequence(),
                 checkpoint_digest: checkpoint.digest(),
             })
             .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
-        if recovered.sequence < anchor.sequence {
+        if current != expected_first {
             return Err(NeuronRuntimeError::RecoveryWitnessMismatch);
         }
-        if recovered != anchor {
-            witness.compare_and_swap(Some(anchor), recovered)?;
-        }
+        witness.compare_and_swap(None, expected_first)?;
         Ok(Self {
-            config,
+            config: NeuronShadowConfigV1::from(&config),
+            calibrated: Some(config),
             journal,
             witness,
             pending: None,
@@ -175,7 +220,8 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             ));
         }
         Ok(Self {
-            config,
+            config: NeuronShadowConfigV1::from(&config),
+            calibrated: Some(config),
             journal,
             witness,
             pending: None,
@@ -236,161 +282,6 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
-    pub fn tick(
-        &mut self,
-        model: &mut impl NeuronModelPort,
-        input: NeuronTickInputV1,
-    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
-        let model_request = self.model_request(&input)?;
-        let input_digest = model_request.input_digest;
-        if let Some(pending) = self.pending.clone() {
-            if pending.input_digest != input_digest {
-                return Err(NeuronRuntimeError::PendingReconciliation);
-            }
-            match self
-                .witness
-                .compare_and_swap(pending.expected, pending.next)
-            {
-                Ok(()) => {
-                    self.pending = None;
-                    return Ok(pending.output);
-                }
-                Err(error) => {
-                    return Err(NeuronRuntimeError::WitnessAfterCommit {
-                        anchor: pending.next,
-                        error,
-                    });
-                }
-            }
-        }
-
-        let current = self.journal.current()?;
-        let expected_checkpoint = current.map_or(Digest32::ZERO, crate::SparseCheckpoint::digest);
-        if input.checkpoint_digest != expected_checkpoint {
-            return Err(NeuronRuntimeError::CheckpointMismatch);
-        }
-        let expected_anchor = current.map(|checkpoint| JournalAnchor {
-            sequence: checkpoint.sequence(),
-            checkpoint_digest: checkpoint.digest(),
-        });
-
-        let started = Instant::now();
-        let model_output = model.execute(&model_request)?;
-        validate_model_output(&self.config, &model_output)?;
-        let model_runtime_digest = digest_model_binding(&model_output)?;
-
-        let sparse_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
-            objective_digest: input.objective_digest,
-            ndu_digest: input.ndu_snapshot_digest,
-            body_digest: body_digest(&self.config, &input),
-            input_digest,
-            sequence: input.logical_sequence,
-            monotonic_micros: input.monotonic_time_micros,
-            drive_q24: model_output.drive_q24.clone(),
-            prediction_q24: model_output.prediction_q24.clone(),
-        };
-        let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
-        let checkpoint = self
-            .journal
-            .current()?
-            .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
-        let (confidence_ppm, ood_ppm, mut abstain) = calibrate(
-            &self.config.calibration,
-            &sparse_receipt,
-            input.logical_sequence,
-        )?;
-        let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
-        let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
-        let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
-            .map_err(|_| NeuronRuntimeError::Arithmetic)?;
-        let write_amplification_ppm = {
-            let numerator = u128::from(journal_bytes_written)
-                .checked_mul(1_000_000)
-                .ok_or(NeuronRuntimeError::Arithmetic)?;
-            let denominator = u128::from(checkpoint_bytes);
-            let rounded_up = numerator
-                .checked_add(denominator.saturating_sub(1))
-                .ok_or(NeuronRuntimeError::Arithmetic)?
-                / denominator;
-            u32::try_from(rounded_up).map_err(|_| NeuronRuntimeError::Arithmetic)?
-        };
-        if execution_micros > self.config.resource_envelope.p99_latency_micros
-            || model_output.transient_allocation_bytes
-                > self.config.resource_envelope.transient_allocation_bytes
-            || checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
-            || write_amplification_ppm > self.config.resource_envelope.write_amplification_ppm
-        {
-            abstain = true;
-        }
-        let active_indices = checkpoint
-            .activation_q24()
-            .iter()
-            .enumerate()
-            .filter(|(_, value)| **value > 0)
-            .map(|(index, _)| u32::try_from(index).map_err(|_| NeuronRuntimeError::Arithmetic))
-            .collect::<Result<Vec<_>, _>>()?;
-        let activation_digest = checkpoint.activation_digest();
-        let threshold_digest = checkpoint.threshold_digest();
-        let eligibility_digest = checkpoint.eligibility_digest();
-        let resource_receipt = NeuronResourceReceiptV1 {
-            execution_micros,
-            transient_allocation_bytes: model_output.transient_allocation_bytes,
-            checkpoint_bytes,
-            journal_bytes_written,
-            write_amplification_ppm,
-            saturation_count: sparse_receipt.projection_count,
-            queue_age_micros: model_output.queue_age_micros,
-        };
-        let tick_receipt = NeuronTickReceiptV1 {
-            tick_id: input.tick_id.clone(),
-            checkpoint_before: sparse_receipt.checkpoint_before,
-            checkpoint_after: sparse_receipt.checkpoint_after,
-            activation_digest,
-            active_indices,
-            sparsity_ppm: sparse_receipt.active_fraction_ppm,
-            threshold_digest,
-            eligibility_digest,
-            prediction_error_q24: sparse_receipt.prediction_error_q24,
-            confidence_ppm,
-            ood_ppm,
-            abstain,
-            resource_receipt,
-        };
-        let signal = NeuronSignalReceiptV1 {
-            signal_set_id: input.tick_id,
-            model_runtime_digest,
-            temporal_state_digest: checkpoint.temporal_state_digest(),
-            signals_q24: sparse_receipt.activation_q24.clone(),
-            activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
-            ood_ppm,
-            abstain,
-            authority: AuthorityPosture::DENY_ALL,
-        };
-        let output = NeuronRuntimeOutputV1 {
-            tick: tick_receipt,
-            signal,
-            model_runtime: model_output.runtime_receipt,
-        };
-        let next_anchor = JournalAnchor {
-            sequence: input.logical_sequence,
-            checkpoint_digest: sparse_receipt.checkpoint_after,
-        };
-        if let Err(error) = self.witness.compare_and_swap(expected_anchor, next_anchor) {
-            self.pending = Some(PendingWitness {
-                input_digest,
-                expected: expected_anchor,
-                next: next_anchor,
-                output,
-            });
-            return Err(NeuronRuntimeError::WitnessAfterCommit {
-                anchor: next_anchor,
-                error,
-            });
-        }
-        Ok(output)
-    }
-
     pub fn canonical_checkpoint(
         &self,
         tick: &NeuronTickReceiptV1,
@@ -401,7 +292,13 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .current()
             .map_err(|_| crate::NeuronProtocolError::BindingMismatch("journal"))?
             .ok_or(crate::NeuronProtocolError::BindingMismatch("checkpoint"))?;
-        crate::canonical_checkpoint_v1(&self.config, checkpoint, tick, expires_unix_ms)
+        let config =
+            self.calibrated
+                .as_ref()
+                .ok_or(crate::NeuronProtocolError::BindingMismatch(
+                    "uncalibrated shadow profile",
+                ))?;
+        crate::canonical_checkpoint_v1(config, checkpoint, tick, expires_unix_ms)
     }
 
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, NeuronRuntimeError> {
@@ -420,6 +317,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .map(crate::EligibilityTraceSampleV1::from_checkpoint))
     }
 }
+
+#[path = "runtime_shadow.rs"]
+mod shadow;
+
+#[path = "runtime_tick.rs"]
+mod transaction;
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]

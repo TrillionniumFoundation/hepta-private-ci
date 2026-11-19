@@ -1,0 +1,25 @@
+{
+  "complete_child_CPU_seconds": 4.530842,
+  "dependency": "../explicit-semantic-transport/control.py: unchanged qualified command type; no new target/model input accepted by allocator",
+  "full_sampling_control_digest_parity": {
+    "11-full-additive": true,
+    "11-full-ndu": true,
+    "23-full-additive": true,
+    "23-full-ndu": true
+  },
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 7
+  },
+  "primary_gate": false,
+  "public_boundary": "No private paths, datasets, row IDs, model weights or per-request outputs published. Generated finite RGB only; original digit chain not recovered.",
+  "rust_checks": "Not run: no Rust changed; portable Python scope",
+  "scope": "Same final aligned objective and model/Adam; pi scales both gradients before backprop. Mean/covariance theorem is fixed-theta pre-clipping, not a measured Adam-update expectation or guaranteed accuracy improvement.",
+  "source_sha256": {
+    "PLAN.md": "3047d8524e41918e33ee94e0f60f94686a2deaa99a39df18cd19a28d12991f76",
+    "sampling.py": "4e5bf88fc51fde794dce4203e5bbe38d819e68ae9674212544a01aba141e281f",
+    "test_sampling.py": "27f46836d6969622f58c4b13bd554e6897ed57a01a4634e6bae5fc7760e72e61"
+  },
+  "status": "PASS_SEVEN_LITERAL_TESTS_AND_COMPLETE_EXECUTION_NOT_OVERALL_SCIENTIFIC_GATE"
+}

@@ -1,0 +1,83 @@
+{
+  "archive": {
+    "bytes": 2887128,
+    "chunks": 8,
+    "index_sha256": "a2fb1dc26e84eaa99bd0857dea7e2290ed069e4dba5e940430b6bb06315d5f80",
+    "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/packaging/bundles/open_text_final_20261030",
+    "sha256": "5ce3179ad1cbab559659eb2f36265dc3071af071ee6cfb27dd5f9640e38693dd"
+  },
+  "asset_provenance": {
+    "EXPORT.json": {
+      "bytes": 503,
+      "sha256": "3dfc0e4912b28ccc52e5300950fec2a84731b79dda75b752b8e212eac9501c71"
+    },
+    "RECOVERY.json": {
+      "bytes": 560,
+      "sha256": "ce5172c61109cb159faf18ae4eed27afb699891e6e160e9dbbbe529e87446a3e"
+    },
+    "historical-protocol.json": {
+      "bytes": 12120,
+      "sha256": "c4eaa44e93dba0361210fdfa9782fcade54859a4025bd399451a13fa3d3a30bb"
+    },
+    "historical-report.json": {
+      "bytes": 6989,
+      "sha256": "f88b467c8e31d079fa3e95077ac264974933b7bffa39ade2670294c3b93ca51f"
+    },
+    "joint-trained-v1.json": {
+      "bytes": 5758,
+      "sha256": "f2dbd68ab42137d7c604d9026fa60757304fdde4688ba4e17ef6f42fd927e704"
+    },
+    "recovery-source.py.txt": {
+      "bytes": 10806,
+      "sha256": "c119336703d4d05afe1e8ca229220e5e477afd384e8f2943da8f011201a5b130"
+    }
+  },
+  "checkpoint": {
+    "bytes": 3156046,
+    "historical_updates": 16,
+    "joint_tensor_sha256": "227f25ed9e17fc10cd762dda5739ef3f911a8cf3e0be833a6c8d0ce22e5013dc",
+    "new_training_updates": 0,
+    "parent_bytes_recovered": false,
+    "parent_sha256_from_training_receipt": "9032b0750ea07c9ad5f9d0fb657d0ce16fd67ccacde1a653908207cbfdb542dc",
+    "prefix_tensor_sha256": "d9ccbbcf160a597f930c6cb6ea843323085f4d90a390e0df0733bb5059452655",
+    "sha256": "33c1aa759bddb5e9b33b906e1796de7a6f89e5b5916711f99033584b3cbafb97",
+    "training_resume_qualified": false
+  },
+  "excluded": [
+    "Original parent byte recovery",
+    "Optimizer resume",
+    "Frozen LM/prefix execution",
+    "Natural multimodal quality",
+    "Adoption benefit",
+    "Complete historical training cost"
+  ],
+  "historical_receipts": {
+    "protocol.json": "c4eaa44e93dba0361210fdfa9782fcade54859a4025bd399451a13fa3d3a30bb",
+    "report.json": "f88b467c8e31d079fa3e95077ac264974933b7bffa39ade2670294c3b93ca51f"
+  },
+  "model_config": {
+    "boundary": "direct",
+    "depth": 1,
+    "mode": "dual",
+    "verify_mode": "allow",
+    "width": 32
+  },
+  "public": {
+    "bytes": 78188,
+    "generator": "mechanism_data.batch",
+    "ids": [
+      3
+    ],
+    "path": "joint-trained-public.hps",
+    "scope": "Exact historical synthetic mechanism input; no natural-task evidence.",
+    "sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00",
+    "split": "v3-native-implementation"
+  },
+  "qualification": "Historical trained descendant; not the unresolved original parent. This replay qualifies kernel/transport only.",
+  "schema": "hepta.joint-selected-trained-descendant.v1",
+  "source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+  "weights": {
+    "bytes": 4778937,
+    "sha256": "41ce6de8a9095e1ef6b8756c3117a160ed40acfad8b297390de95083664d223e"
+  }
+}

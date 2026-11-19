@@ -819,8 +819,17 @@ impl GuardianFailureFixture {
         )
         .await?;
         let thread_store = test.codex.thread_extension_data();
+        let score_progress = thread_store
+            .get::<GuardianV2ScoreProgress>()
+            .expect("Guardian v2 should track score progress per thread");
+        let seeded_tool_call = score_progress.latest_tool_call.load(Ordering::Acquire);
         tokio::time::timeout(Duration::from_secs(5), async {
-            while thread_store.get::<SecurityRiskScore>().is_none() {
+            while thread_store.get::<SecurityRiskScore>().is_none()
+                || score_progress
+                    .latest_scored_tool_call
+                    .load(Ordering::Acquire)
+                    != seeded_tool_call
+            {
                 tokio::task::yield_now().await;
             }
         })

@@ -1,0 +1,75 @@
+{
+  "schema": "mem8.evidence-v17.actual-publication.v1",
+  "observed_utc": "2026-11-11 19:09:36 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5889,
+  "branch": "codex/mem8-ci-evidence-20261111-ed353817",
+  "expected_previous_head": "3a30ff5e95a74ee870799756b384ea9ac8c03b2e",
+  "ref_update_result": {
+    "success": true
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-ci-evidence-20261111-ed353817",
+    "head": "21df04700aa885aef72b70962f270b966a112de6",
+    "pr_head": "21df04700aa885aef72b70962f270b966a112de6",
+    "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "tree": "d089c6c2fdfdd6b3dbc24db091cc102e41238f37",
+    "parent": "20cf8198178bcc3c51e63b9f14cec6fa9d3722dc",
+    "draft": true,
+    "state": "open",
+    "full_body": "## V17 MEM evidence checkpoint\n\nThis update retains the original results of each exact source and completes the evidence for the V11 source gate and clean Windows sandbox scoped lint. All ten adoption gates remain OPEN.\n\n### Completed, with source and counting boundaries\n\n- V9, V10 and V11 source-only gates passed under their original 600-second bounds, with 18 Python regressions each, complete caller/tree/lock checks and no native/model execution.\n- On d0f, MEM and Architecture completed their original Python/native scopes, Private passed 34 distinct selected cases, and the two V2 fixture cases plus independent clean core scoped lint passed.\n- On cead, real Windows helpers and the sole sandbox scoped lint passed with no source rewrite. The original d0f dirty-source lint failure remains unchanged.\n- Windows-current on d0f retained 123 PASS, 1 FAIL, 0 LEAK and 43 cases without terminals. The elevated outside-delete boundary remains failed.\n- The original d0f blocking run is completed / failure: all 37 jobs are terminal, with 24 success / 4 failure / 5 cancelled / 4 skipped. The final CI required job failed; musl was cancelled before any Bazel/operator test ran.\n\nAt 18:54:39 UTC, source draft PR #5935 was actually advanced to ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80 after all five tracked original d0f workflows had ended. The current-head ordinary CI observation at 19:02:55 UTC remains unaccepted: four tracked workflows are in progress and blocking is queued. Earlier d0f passes do not qualify the current cead head.\n\n### Complete evidence and explicit gaps\n\nThe checkpoint retains original ZIPs, full logs, fixed readers, source identities and earlier independent archive replays. After the managed execution environment became unavailable, the first 26 original blocking logs (13,669,185 bytes) were recovered into 62 exact parts. The two final original logs completed a retained set of 28 logs / 64 parts / 13,751,922 bytes. The root verified every complete original file against its byte length, SHA-256 and Git blob.\n\nThe missing original local parser/output and Mac profile ZIP are explicitly distinguished from the complete recovered job logs. A separately identified new raw review is not called a replay of the missing parser. The original GitHub Mac artifact remains separately identified. Root remote compressed-byte checks after the outage are not described as new XZ extractions or reader executions.\n\nThe H original-identity follow-up preserves V3/V4 UNKNOWN. The memory assertion diagnostic is a reviewed patch only, without a V12 source commit or test qualification. No model-benefit, original-owner, independent trust or full effect-recovery gate is closed by these engineering results.\n\n[Read checkpoint V17](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/21df04700aa885aef72b70962f270b966a112de6/qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V17.md)\n\nAll source, evidence and owner PRs remain draft. No merge, deployment, different-key replay of an UNKNOWN provider request, H mutation or new real model generation is claimed.\n"
+  },
+  "full_raw_ref_and_PR_read": true,
+  "full_PR_body_equal_to_submitted": true,
+  "full_file_readbacks": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V17.md",
+      "bytes": 48145,
+      "sha256": "f172bac7a8c2d93cfd6d7449ad2a3a48f2d7811e77c50f393a18ece6c3cc5926",
+      "git_blob": "ca827f9afdc0b9e8fdb4cf9bbf801e847b44b6c9",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/FINAL_CHECKPOINT_RELATIVE_LINK_AUDIT.json",
+      "bytes": 16566,
+      "sha256": "209a5ac3ae46b92bb2dc6eb24fef2b7ef968e032787832066c0890b54cfe2918",
+      "git_blob": "26843ffae3e440a102ed7114a92e2cd6e974db43",
+      "full_content_equal": true
+    }
+  ],
+  "checkpoint_relative_files_bound": 74,
+  "checkpoint_independent_dynamic_peer": {
+    "reviewer": "/root/mem_experiment_review",
+    "checkpoint_blob": "ca827f9afdc0b9e8fdb4cf9bbf801e847b44b6c9",
+    "result": "PASS_NO_SUBSTANTIVE_MUST_FIX",
+    "scope": "Complete checkpoint bytes; final run/jobs and two final raw logs; original 26 plus two log accounting; exact current CI observation; V12 preparation-only and all ten gates OPEN.",
+    "new_native_H_ref_or_model_actions": 0
+  },
+  "new_source_publication_receipt": {
+    "head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+    "bytes": 7453,
+    "sha256": "8a57e5872f84a8e20a49deefcd339d95c3f120ac99c84357489dc06b1b013da6",
+    "git_blob": "f68ea685a44a17879c16f79f128de54f855543c0"
+  },
+  "original_d0f_terminal": {
+    "run": 43062473474,
+    "attempt": 1,
+    "jobs": 37,
+    "counts": {
+      "success": 24,
+      "failure": 4,
+      "cancelled": 5,
+      "skipped": 4
+    },
+    "global_required": "failure",
+    "full_raw_files": 28,
+    "full_raw_parts": 64,
+    "full_raw_bytes": 13751922
+  },
+  "current_cead_required_CI_accepted": false,
+  "all_ten_adoption_gates_open": true,
+  "original_provider_and_H_UNKNOWN_unchanged": true,
+  "new_real_model_requests": 0,
+  "merged": false,
+  "deployed": false
+}

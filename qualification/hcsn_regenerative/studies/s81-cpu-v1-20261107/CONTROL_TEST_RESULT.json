@@ -1,0 +1,67 @@
+{
+  "aggregate_unified_test_count": null,
+  "formal_task_optimizer_updates": 0,
+  "formal_training_fits": 0,
+  "hepta_ndu_completion_credit": 0,
+  "original_campaign_completion_credit": 0,
+  "projection_at_utc": "2026-11-07T23:36:53.461997+00:00",
+  "regression_history": [
+    "The initial actual-budget parser smoke failed at the nested-envelope depth guard; that receipt is retained. The corrected guard has its own nine-method test identity.",
+    "The first CPU finalizer accessed a legacy Colab-only config field. The old source and 24-test receipt are retained; the fixed source has a targeted regression in the 25-method suite."
+  ],
+  "schema": "hcsn-kaggle-cpu-v1-public-control-test-result-v1",
+  "scope_limits": [
+    "These are separate suites; their counts are not a single unified qualification run.",
+    "Historical and current suite counts are not added.",
+    "Provider completion or an exit code of zero is insufficient evidence of a successful formal fit."
+  ],
+  "source_pins": {
+    "__init__.py": "7d9f1e720f7ff13bd842465540fbac09034bb1bd16d8d64f27f169bd51c841f4",
+    "capsule_contract.py": "cbbe763b8b70e7c3a753a95ace99b8e6c58268a392695e3b3de0101882f8df0c",
+    "cloud_batch.py": "2b34185065bd3f34951c492d3d3c6905b972a73e0a4cced7d0aa1dbe15c66bb0",
+    "finalize_mechanism.py": "2637f3fda061a7805adb79570c83aab2a1e1b107200ba9143cffc5cb40781b1f",
+    "kaggle_provider.py": "78d7b02981a8e0253ed0c49f04ee2eb143107eac0b4e4708bdaf53958f4650e7",
+    "native_owner.py": "cd9e30bc89b525f64722a489515ff0086352618e5b8d9517f8d47d7ce2336b68",
+    "test_kaggle_execution.py": "ac18d249385e67a499e63fec79ac4b86c732532095baafd3f99df1b07bba22df",
+    "test_kaggle_provider.py": "9012b64f7abb239c60a60cc4d745048b49d3688ddb37eadf2fecff0f4b6fe81b"
+  },
+  "status": "PASS_SEPARATE_CONTROL_SUITES",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-cpu-v1",
+  "suites": [
+    {
+      "handoff": {
+        "bytes": 4919,
+        "sha256": "660ce8cf26e102646eab2d8460e4ec5c40afab6c321ddca43dd8dbecdc65c263"
+      },
+      "methods": 9,
+      "name": "qualification_evidence_and_freezer_controls",
+      "prior_methods": 8,
+      "prior_smoke_failure_preserved": true,
+      "scope": "Local guard fixtures and actual external-budget byte/provenance smoke; no numerical or provider execution.",
+      "skipped": 0,
+      "unittest_reported_seconds": 0.028
+    },
+    {
+      "errors": 0,
+      "execution_methods": 17,
+      "failures": 0,
+      "methods": 25,
+      "name": "formal_execution_and_provider_controls",
+      "numpy_imported": false,
+      "prior_methods": 24,
+      "prior_receipt": {
+        "bytes": 1311,
+        "sha256": "15c411949a6a9b0c8652dca1a96897f9fca79c358162544f03e954fbe60598a1"
+      },
+      "provider_methods": 8,
+      "receipt": {
+        "bytes": 1453,
+        "sha256": "8a75ff1137b581f1a766d6cdbe501a6bf657da51c5c78d6c85b0241c2f14efa1"
+      },
+      "scope": "Synthetic transports/workers with actual local capsule and ledger I/O; no real task fit or optimizer execution.",
+      "skipped": 0,
+      "torch_imported": false,
+      "wall_seconds": 0.35597957500067423
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) ... 
+  test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', function='fn from_original_stream(', marker='initial_binding,') ... FAIL
+  test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', function='fn readback(', marker='return Err(Error::CommitUncertain)') ... FAIL
+  test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', function='fn from_original_stream(', marker='initial_binding,') ... FAIL
+  test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', function='fn readback(', marker='return Err(Error::CommitUncertain)') ... FAIL
+  test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs', function='fn into_command_owner_from_original_readbacks(', marker='self,') ... FAIL
+test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_evidence_dispatch_checks_original_scope_and_receipt_before_command_backend) ... ok
+test_first_actual_response_cannot_restart_sequence_or_initial_deadline (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_first_actual_response_cannot_restart_sequence_or_initial_deadline) ... ok
+test_only_actual_readonly_backends_and_consuming_hosts_are_registered (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_only_actual_readonly_backends_and_consuming_hosts_are_registered) ... ok
+test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_readonly_paths_cannot_acquire_writer_key_bootstrap_or_command_purpose) ... ok
+test_unknown_read_and_changed_complete_signature_permanently_consume_channel (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_unknown_read_and_changed_complete_signature_permanently_consume_channel) ... ok
+
+======================================================================
+FAIL: test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', function='fn from_original_stream(', marker='initial_binding,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 160, in test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order
+    self.rejects(path, row["function"][3:-1], marker)
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+    with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'original_readonly_ready_proof.VerificationFailure'>, <class 'AssertionError'>) not raised
+
+======================================================================
+FAIL: test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', function='fn readback(', marker='return Err(Error::CommitUncertain)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 160, in test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order
+    self.rejects(path, row["function"][3:-1], marker)
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+    with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'original_readonly_ready_proof.VerificationFailure'>, <class 'AssertionError'>) not raised
+
+======================================================================
+FAIL: test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', function='fn from_original_stream(', marker='initial_binding,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 160, in test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order
+    self.rejects(path, row["function"][3:-1], marker)
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+    with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'original_readonly_ready_proof.VerificationFailure'>, <class 'AssertionError'>) not raised
+
+======================================================================
+FAIL: test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', function='fn readback(', marker='return Err(Error::CommitUncertain)')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 160, in test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order
+    self.rejects(path, row["function"][3:-1], marker)
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+    with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'original_readonly_ready_proof.VerificationFailure'>, <class 'AssertionError'>) not raised
+
+======================================================================
+FAIL: test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order (test_original_readonly_ready_source_closure.OriginalReadonlyReadySourceClosureTests.test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order) (path='codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs', function='fn into_command_owner_from_original_readbacks(', marker='self,')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 160, in test_every_initial_peer_actual_read_and_final_signature_guard_remains_in_order
+    self.rejects(path, row["function"][3:-1], marker)
+  File "/workspace/scratch/ce434f960ee9/learn-readonly-ready-v4/qa/b4-no-bypass/test_original_readonly_ready_source_closure.py", line 125, in rejects
+    with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: (<class 'original_readonly_ready_proof.VerificationFailure'>, <class 'AssertionError'>) not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 9.864s
+
+FAILED (failures=5)

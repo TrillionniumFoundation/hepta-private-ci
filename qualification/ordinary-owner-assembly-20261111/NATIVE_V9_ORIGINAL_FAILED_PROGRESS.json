@@ -1,0 +1,253 @@
+{
+  "active_rust_before": [],
+  "after": {
+    "head": "5daade9e4ce374ac169702d6b59490149ccefd34",
+    "status": "M  codex-rs/hepta-agentd/src/authority_host_generation_initial_artifacts_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_initial_session.rs\nM  codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs\nM  codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs\nM  codex-rs/hepta-agentd/src/authority_host_initial_deployment_data.rs\nM  codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs\nM  codex-rs/hepta-agentd/src/authority_host_initial_deployment_tests.rs\nM  codex-rs/hepta-agentd/src/authority_host_learning_session.rs\nM  codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs\nM  codex-rs/hepta-agentd/src/authority_host_publication_deployment_data.rs\nM  codex-rs/hepta-agentd/src/authority_host_publication_deployment_files.rs\nM  codex-rs/hepta-agentd/src/authority_host_runtime.rs\nM  codex-rs/hepta-agentd/src/authority_host_session.rs\nM  codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs\nM  codex-rs/hepta-agentd/src/circuit_task_learning.rs\nM  codex-rs/hepta-agentd/src/lib.rs",
+    "tree": "3f2b83f45257cef95ad04626efe1d881203781ff"
+  },
+  "authorityGranted": false,
+  "before": {
+    "head": "5daade9e4ce374ac169702d6b59490149ccefd34",
+    "status": "",
+    "tree": "3f2b83f45257cef95ad04626efe1d881203781ff"
+  },
+  "candidate_tree": "a63a2e790bb52d05b19fb92580228112d747e20a",
+  "earlier_261d_observation": {
+    "admission": "original fixed request reconciled to retained terminal failed records; no behavior qualification",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-261d54-maintenance-v2/records/progress.json",
+    "present": true,
+    "status": "failed"
+  },
+  "failure": "RuntimeError('fix-codex-hepta-agentd failed')",
+  "invocation_transport": "durable operator PTY for fixed Initial Root CLI assembly; earlier attempts retain separate source-bound results",
+  "maintenance_delta": {
+    "bytes": 109654,
+    "changed_files": 17,
+    "parts": [
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-000.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-001.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-002.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-003.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-004.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-005.txt",
+      "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/maintenance-delta-part-006.txt"
+    ],
+    "sha256": "8b5a0b6ec799ee49698c75d620bc80fe4c73c2729007375ee055cee5f8e7dc93"
+  },
+  "native_tests_executed": false,
+  "ordinary_complete_chains": 0,
+  "ordinary_no_update_rollback_chains": 0,
+  "original_after": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "original_before": {
+    "head": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+    "status": "",
+    "tree": "6fe2c2426f22383416697016445cf444aafdd2ff"
+  },
+  "original_unchanged": true,
+  "packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-learning-artifacts",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-contracts",
+    "codex-hepta-neuron",
+    "codex-hepta-learning-ledger"
+  ],
+  "positive_adoption_chains": 0,
+  "preceding_harness_failure": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-caa34b-maintenance-pty-v6/records/progress.json",
+    "reason": "v6 retained the older v4 predecessor digest after selecting v5 progress; source checkout and Cargo had not started",
+    "sha256": "befd4602261b5a0e8c35568efaed4efed0078c4cdd8ae0d492d2922387ae8dde"
+  },
+  "predecessor_failed_attempt": {
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-89b3b4-maintenance-pty-v8/records/progress.json",
+    "sha256": "21d610f09fb0d794aad2bf1445d5adcb47397af5f38886dcbf73e06d01160c7c",
+    "status": "failed"
+  },
+  "protected_diagnostic": {
+    "entries": 335,
+    "failures": 4,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/protected-diagnostic.json"
+  },
+  "source_sha": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "source_tree": "3f2b83f45257cef95ad04626efe1d881203781ff",
+  "status": "failed",
+  "steps": [
+    {
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-control-completion-maintenance-v2/source",
+        "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/source"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 112,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/clone-isolated-source.log",
+        "sha256": "b42f843f9526d8381a82fd21765d589aa0a71099acac63b39588b0e23e6d4243"
+      },
+      "name": "clone-isolated-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "5daade9e4ce374ac169702d6b59490149ccefd34"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 142,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/fetch-fixed-source.log",
+        "sha256": "232554510082247a548105ead357647a7bbb24298374f8e611ab3648870864ee"
+      },
+      "name": "fetch-fixed-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--detach",
+        "5daade9e4ce374ac169702d6b59490149ccefd34"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 224,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/checkout-fixed-source.log",
+        "sha256": "97689fd825cde7625b0cc7fa8f6b170944e3a44d585ad37e13912d9cf9b01f57"
+      },
+      "name": "checkout-fixed-source",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "3c8dabe46598599e91b2b8b80081e09069ff9426"
+      ],
+      "diagnostic_lines": [],
+      "exit": 0,
+      "log": {
+        "bytes": 0,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/fmt-before.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "fmt-before",
+      "status": "completed"
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd",
+        "--locked",
+        "--offline"
+      ],
+      "diagnostic_lines": [
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9",
+        "   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9",
+        "   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9",
+        " --> rmcp-client/src/elicitation_client_service.rs:4:18",
+        "  --> rmcp-client/src/elicitation_client_service.rs:55:22",
+        "   --> rmcp-client/src/elicitation_client_service.rs:191:27",
+        " --> rmcp-client/src/logging_client_handler.rs:6:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:27:18",
+        "  --> rmcp-client/src/logging_client_handler.rs:32:36",
+        "  --> rmcp-client/src/logging_client_handler.rs:94:27",
+        "  --> hepta-agentd/src/authority_host_generation_initial_transport.rs:22:1",
+        "  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:24:1",
+        "  --> hepta-agentd/src/authority_host_generation_publication_transport.rs:49:5",
+        "   --> hepta-agentd/src/authority_host_q24_model_profile.rs:93:5",
+        " 93 | /     pub(super) fn new(",
+        " 94 | |         identity: &AgentdIdentity,",
+        " 95 | |         writer_proof: &str,",
+        " 96 | |         initial: &LearningIterationSnapshotV1,",
+        "   --> hepta-agentd/src/cell_q24_task_ledger.rs:97:1",
+        " 97 | /   pub enum OriginalCellQ24TaskLedgerStatusV1 {",
+        " 98 | | /     AwaitingOutcome {",
+        " 99 | | |         decision: LedgerRecord,",
+        "   --> hepta-agentd/src/circuit_feature_current.rs:95:1",
+        " 95 | /  enum Publication {",
+        " 96 | |      Initial(PublishedNeuronGenerationInitialV1),",
+        " 97 | |/     Update {",
+        " 98 | ||         original: PublishedNeuronGenerationUpdateV1,",
+        " 99 | ||         previous: PublishedCircuitFeatureCompletionV1,",
+        "   --> hepta-agentd/src/circuit_task_source_codec.rs:508:36",
+        "  --> hepta-agentd/src/circuit_task_learning.rs:30:1",
+        "   --> hepta-agentd/src/circuit_task_learning.rs:141:26",
+        "  --> hepta-agentd/src/cell_q24_evaluation_stage.rs:32:1",
+        "  --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:47:1",
+        "   --> hepta-agentd/src/cell_q24_learning_owner_inputs.rs:159:1",
+        "  --> hepta-agentd/src/neuron_generation_receipt_owner.rs:80:1",
+        "  --> hepta-agentd/src/neuron_cell_evaluation_training_source.rs:21:1",
+        "  --> hepta-agentd/src/neuron_generation_current_store.rs:20:1",
+        "error[E0282]: type annotations needed",
+        "  --> hepta-agentd/src/authority_host_generation_initial_fd_tests.rs:42:48",
+        "error: could not compile `codex-hepta-agentd` (lib test) due to 1 previous error; 3 warnings emitted",
+        "error: recipe `fix` failed on line 58 with exit code 101"
+      ],
+      "exit": 101,
+      "log": {
+        "bytes": 57405,
+        "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-full-5daade-maintenance-pty-v9/records/fix-codex-hepta-agentd.log",
+        "sha256": "294648734d3cc9bd7efc8dd8f6c4214d9ccf472da370e835213d142ca270db5a"
+      },
+      "name": "fix-codex-hepta-agentd",
+      "status": "completed"
+    }
+  ],
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "traceback": "Traceback (most recent call last):\n  File \"<string>\", line 68, in <module>\n    for package in C['packages']:run('fix-'+package,['just','fix','-p',package,'--locked','--offline'],SOURCE/'codex-rs')\n                                 ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<string>\", line 26, in run\n    if p.returncode:raise RuntimeError(name+' failed')\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: fix-codex-hepta-agentd failed\n"
+}

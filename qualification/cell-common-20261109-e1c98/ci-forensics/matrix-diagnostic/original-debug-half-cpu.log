@@ -1,0 +1,127 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling starlark v0.14.2 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+   Compiling codex-execpolicy v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/execpolicy)
+   Compiling codex-protocol v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/protocol)
+   Compiling codex-file-system v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/file-system)
+   Compiling codex-history v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/history)
+   Compiling codex-git-utils v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/git-utils)
+   Compiling codex-state v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/state)
+   Compiling codex-hepta-matrix-store v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/hepta-matrix-store)
+   Compiling codex-hepta-matrix-sdk v0.0.0 (/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/hepta-matrix-sdk)
+    Finished `test` profile [unoptimized] target(s) in 1m 10s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ruma-common@0.20.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@5.0.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ruma-events@0.35.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ruma-client-api@0.25.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#matrix-sdk-common@0.19.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#decancer@3.3.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#matrix-sdk@0.19.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 1c34204b-1d7e-4840-a9c4-36c4e401ed67 with nextest profile: local
+    Starting 1 test across 1 binary (2 tests skipped)
+       START             codex-hepta-matrix-sdk::store_version_migration encrypted_state_identity_session_and_queues_survive_restart
+
+running 1 test
+test encrypted_state_identity_session_and_queues_survive_restart ... MATRIX_STARTUP_PROBE phase=fixture.prepare state=begin
+MATRIX_STARTUP_PROBE phase=fixture.builder state=begin
+MATRIX_STARTUP_PROBE phase=fixture.builder state=end elapsed_ms=6325
+MATRIX_STARTUP_PROBE phase=fixture.restore_session state=end elapsed_ms=14
+MATRIX_STARTUP_PROBE phase=fixture.prepare state=end elapsed_ms=7995
+MATRIX_STARTUP_PROBE phase=build.total state=begin
+MATRIX_STARTUP_PROBE phase=build.paths state=begin
+MATRIX_STARTUP_PROBE phase=build.paths state=end_or_cancel elapsed_ms=0
+MATRIX_STARTUP_PROBE phase=build.sdk_builder state=begin
+MATRIX_STARTUP_PROBE phase=build.sdk_builder state=end_or_cancel elapsed_ms=6236
+MATRIX_STARTUP_PROBE phase=build.total state=end_or_cancel elapsed_ms=6236
+MATRIX_STARTUP_PROBE phase=build.outer_timeout error=Elapsed(())
+MATRIX_STARTUP_PROBE phase=fixture.reopen state=end elapsed_ms=6237 result=Err(Initialization)
+Error: Initialization
+FAILED
+
+failures:
+
+failures:
+    encrypted_state_identity_session_and_queues_survive_restart
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 14.24s
+
+        FAIL [  14.244s] codex-hepta-matrix-sdk::store_version_migration encrypted_state_identity_session_and_queues_survive_restart
+────────────
+     Summary [  14.293s] 1 test run: 0 passed, 1 failed, 2 skipped
+        FAIL [  14.244s] codex-hepta-matrix-sdk::store_version_migration encrypted_state_identity_session_and_queues_survive_restart
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

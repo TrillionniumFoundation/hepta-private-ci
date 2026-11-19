@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.act1.plain-host.source-binding.v1",
+  "base": "95617b64dfdb035780f18c20df5f344ace1fc34a",
+  "branch": "fix/act1-plain-host-20261108-s1s2",
+  "code_commit": "97f8643b958a7637c16a718ec181faa3e3e8eb07",
+  "code_tree": "879288375ebb76c27c1e7128d90a2aff16e1ea69",
+  "tested_tree": "37c8cd3e59803413dfec95ab2ae6e9c6080f46c1",
+  "production_source_unchanged_by_formatter": true,
+  "host_production_source_sha256": "643d67d2b3165dae1b7ca466519c61151cff21e86dfdd61bff21515c29872a1e",
+  "post_test_changes": "Only test formatting/trailing commas in automation_effect_host.rs; no runtime source changes. No tests rerun after fmt.",
+  "source_files": {
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs": {
+      "git_blob": "e0d369c95b4d80ce494d1c2654cb946fb2d9b5d9",
+      "sha256": "acf1e9329219b9e777b70de212d4bc1078ce8d5d692233d10acd9c88b4a661ff"
+    },
+    "codex-rs/hepta-agentd/src/automation_effect_payload.rs": {
+      "git_blob": "a005d4566f3fe1bc45cdb5cce7e90cf7f62a03b6",
+      "sha256": "ec90861cc9e9ff8bca70e58342f71eecbc19e727b520e48e52eabd522ad80d85"
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "git_blob": "793ef4a801d5e4d0984aa505e5352476e06e8b55",
+      "sha256": "600dbe15093cd4e4b72776747df65c6f50bc0ef327b8aab63e6c5bb26bdb6d88"
+    }
+  },
+  "recorded_utc": "2026-11-08T17:29:01.676445+00:00"
+}

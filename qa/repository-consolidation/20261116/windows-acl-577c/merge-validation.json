@@ -1,0 +1,30 @@
+{
+  "base": "28445e8a6a7ff0a1d7399faaf2aa4ddce0de8a71",
+  "incoming": "577c03b5524fd45814dc71c3b5d847562ba2c410",
+  "workflow_python_ast": "PASS",
+  "workflow_yaml_unique_keys": "PASS",
+  "source_pins": 35,
+  "pins_match_index": true,
+  "unchanged_original_paths": [
+    "codex-rs/windows-sandbox-rs/src/token.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated_admission_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs"
+  ],
+  "exact_incoming_files": [
+    "acl.rs",
+    "acl_tests.rs",
+    "token_access_request_tests.rs",
+    "token_descriptor_access_tests.rs",
+    "token_mic_probe_tests.rs",
+    "token_native_access_tests.rs",
+    "token_probe_support.rs",
+    "token_read_authority_tests.rs"
+  ],
+  "identical_duplicate_method_removed": true,
+  "selected_incoming_methods": 17,
+  "selected_prior_admission_methods": 3,
+  "permission_qualification": false,
+  "combined_native_execution": "pending",
+  "original_artifact_verified": true
+}

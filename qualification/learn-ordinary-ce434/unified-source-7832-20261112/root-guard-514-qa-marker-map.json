@@ -1,0 +1,47 @@
+{
+  "applied": [
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 128,
+      "old": "require_timing(streams.version.timeout, streams.version.lifetime, Duration::from_secs(30))?",
+      "new": "require_timing(\n        streams.version.timeout,\n        streams.version.lifetime,\n        Duration::from_secs(30),\n    )?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 132,
+      "old": "completion.check_peer_lifetime()",
+      "new": "completion\n        .check_peer_lifetime()"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 153,
+      "old": "self.root.as_ref().ok_or(",
+      "new": "self\n            .root\n            .as_ref()\n            .ok_or("
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 227,
+      "old": "self.readiness_initial.take()",
+      "new": "self\n                .readiness_initial\n                .take()"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 249,
+      "old": ".take().ok_or(Error::Unavailable)?",
+      "new": ".take()\n            .ok_or(Error::Unavailable)?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 256,
+      "old": "retained.as_ref().is_some_and(|prior| current.as_ref() != Some(prior))",
+      "new": "retained\n                .as_ref()\n                .is_some_and(|prior| current.as_ref() != Some(prior))"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "line": 280,
+      "old": "material.verifier.verify(",
+      "new": "material\n        .verifier\n        .verify("
+    }
+  ],
+  "ambiguous": []
+}

@@ -19,7 +19,9 @@ const TURN_ID: &str = "turn-cognitive-1";
 async fn test_runtime(directive: &str) -> (TempDir, Arc<CognitiveStore>, ExactDirectiveWitness) {
     let temp = tempfile::tempdir().expect("tempdir");
     let fleet_root = temp.path().join("fleet");
-    std::fs::create_dir_all(&fleet_root).expect("fleet root");
+    let fleet_root = std::fs::create_dir_all(&fleet_root)
+        .and_then(|()| fleet_root.canonicalize())
+        .expect("fleet root");
     let agent_id = AgentId::parse("00000000-0000-4000-8000-000000000211").expect("agent id");
     let layout = HeptaFleetRoot::parse(fleet_root)
         .expect("fleet")

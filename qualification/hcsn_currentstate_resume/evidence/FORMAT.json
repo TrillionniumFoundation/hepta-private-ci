@@ -1,0 +1,41 @@
+{
+  "command": "/workspace/scratch/c06d659c1e72/hcsn-format-tools/bin/just --justfile ../justfile fmt",
+  "cwd": "currentstate-resume-raw/codex-rs",
+  "ruff": "0.15.13 from unchanged repository scripts/uv.lock",
+  "actual": {
+    "chunk_id": "0831fe",
+    "wall_time_seconds": 0.085108027,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "sha256_before": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "qualification/hcsn_currentstate_resume/run_saved.py": "12ee526aef2b52d1ef6cf89f0ff93722c67999e16c5ec30b35e5df7b1d6ab1a7",
+    "qualification/hcsn_currentstate_resume/PLAN.json": "9a1aa75abd60e43245ed8f680cc559f6a0420e1bc1fbe65cb9f27dcd2afb378d",
+    "qualification/hcsn_currentstate_resume/SPEC.md": "65431bc9fbbd2b538b6499ea593827a75792e1edc8b9d3b3d411a4cc21d2955e",
+    "scripts/verify_hcsn_saved_continuation.py": "a7dd1111831eade8eb5be85c2d21701d320d97bb10ae22334f7067ab903b0529"
+  },
+  "sha256_after": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "qualification/hcsn_currentstate_resume/run_saved.py": "12ee526aef2b52d1ef6cf89f0ff93722c67999e16c5ec30b35e5df7b1d6ab1a7",
+    "qualification/hcsn_currentstate_resume/PLAN.json": "9a1aa75abd60e43245ed8f680cc559f6a0420e1bc1fbe65cb9f27dcd2afb378d",
+    "qualification/hcsn_currentstate_resume/SPEC.md": "65431bc9fbbd2b538b6499ea593827a75792e1edc8b9d3b3d411a4cc21d2955e",
+    "scripts/verify_hcsn_saved_continuation.py": "1afae294eff099debaba39d83efdcb3ad45fd0f39cad401fac8ccaed34437a04"
+  },
+  "frozen_source_files_unchanged": 10,
+  "numerical_calls_after_formatter": 0,
+  "scope": "New scripts verifier formatted; qualification Python outside configured formatter ownership. No Rust changed; no Rust compile."
+}

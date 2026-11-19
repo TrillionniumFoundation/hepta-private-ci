@@ -1280,6 +1280,8 @@ async fn request_permissions_grants_apply_to_later_exec_command_calls() -> Resul
 
     let mut builder = test_codex().with_config(move |config| {
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // Permission grants do not depend on the host login profile.
+        config.permissions.allow_login_shell = false;
         config
             .permissions
             .set_permission_profile(permission_profile_for_config)
@@ -1407,6 +1409,8 @@ async fn request_permissions_preapprove_explicit_exec_permissions_outside_on_req
 
     let mut builder = test_codex().with_config(move |config| {
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // Permission grants do not depend on the host login profile.
+        config.permissions.allow_login_shell = false;
         config
             .permissions
             .set_permission_profile(permission_profile_for_config)
@@ -1529,6 +1533,8 @@ async fn request_permissions_grants_apply_to_later_exec_command_calls_without_in
 
     let mut builder = test_codex().with_config(move |config| {
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // Permission grants do not depend on the host login profile.
+        config.permissions.allow_login_shell = false;
         config
             .permissions
             .set_permission_profile(permission_profile_for_config)
@@ -1644,6 +1650,8 @@ async fn partial_request_permissions_grants_do_not_preapprove_new_permissions() 
 
     let mut builder = test_codex().with_config(move |config| {
         config.permissions.approval_policy = Constrained::allow_any(approval_policy);
+        // Permission grants do not depend on the host login profile.
+        config.permissions.allow_login_shell = false;
         config
             .permissions
             .set_permission_profile(permission_profile_for_config)

@@ -1,0 +1,1691 @@
+{
+  "schema_version": 1,
+  "scope": "original integrated qualification failures; not ordinary acceptance",
+  "sources": [
+    {
+      "sha": "83af1c661b857bedeccd22cc3274eb4f68db7775",
+      "tree": "fe87c4bbb9ae07ef8045354d4d303e567b756435",
+      "input": "3a3af4848cb7478f13febb8f6923864c59478a64",
+      "job_id": "1a1cc6f47f9-2564-f1d",
+      "outer_terminal": "failed",
+      "exit_code": 1,
+      "source_checks": {
+        "executed": 195,
+        "passed": 193,
+        "failed": 2
+      },
+      "parser_tests_executed": 0,
+      "native_tests_executed": 0
+    },
+    {
+      "sha": "1bcbcb7d43273cc6166ca6865200ddabf1fd07d9",
+      "tree": "6bbbe3ff1d50ba513f520a6b99eb671c3329c19e",
+      "job_id": "1a1cc7949e6-2564-f4a",
+      "request_digest": "8be70b1718d773075a1faff2086a0f9c2a1fd9de85d4c613b6311f4651ac3da1",
+      "outer_terminal": "failed",
+      "source_checks": {
+        "executed": 195,
+        "passed": 195,
+        "failed": 0
+      },
+      "parser_checks": {
+        "executed": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "native_command_exit_code": 101,
+      "native_tests_executed": 0,
+      "native_compile_errors": [
+        {
+          "code": "E0507",
+          "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs",
+          "line": 142
+        }
+      ],
+      "junit_collection_exit_code": 1,
+      "full_caller_proof": {
+        "state": "failed",
+        "exit_code": 1,
+        "seconds": 1491.8085601557977,
+        "log_bytes": 219,
+        "log_sha256": "8158b80614ddd5894b795f715fced65c8dc4383e674a853873a4c2f40d5be47f",
+        "log_path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/caller-proof-full.log",
+        "failure": "FAIL_HEPTA_CALLER_PROOF: learning_original_evaluation_receipt_readback: codex-rs/hepta-agentd/src/circuit_model_qualification_test_support.rs: unresolved possible OriginalCellEvaluationReceiptOwnerV1::readback receiver"
+      },
+      "compile_fix_source": "a3a73c740fb0cb83b2afad0fadf958161f2394ad",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "native_wrapper_exit_code": 1,
+      "final_preparation_result": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/final-preparation-result.json",
+      "terminal_observation": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/terminal-observation.json",
+      "retained_interim_observations": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/result.json",
+          "state": "native-and-full-callers-starting",
+          "meaning": "Original intermediate preparation result retained byte-for-byte; not the final native or full-proof result."
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/outer-process-observation-during-proof.json",
+          "state": "running",
+          "meaning": "Normalized running observation retained byte-for-byte; later terminal observation is a separate file."
+        }
+      ],
+      "source_after": "1bcbcb7d43273cc6166ca6865200ddabf1fd07d9",
+      "source_status_after": ""
+    },
+    {
+      "sha": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+      "tree": "906e70bf91d330693c3a15b5354f8d6536196d4d",
+      "job_id": "1a1ccc9b900-2564-1075",
+      "request_digest": "016ae80c7c019882973183b2c689d8690647539c1a0d64ecd7950a562ba45a0c",
+      "outer_terminal": "failed",
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "format_exit_code": 0,
+      "canonical_merge_checks": {
+        "exit_code": 0,
+        "actual_merge_graphs": 8,
+        "protected_full_row_counter": true,
+        "caller_conflicts": "only the reviewed boundary product_callers fields use base-aware set rules"
+      },
+      "committed_diff_check": {
+        "exit_code": 2,
+        "diagnostic": "CALLERS.toml:8120: new blank line at EOF."
+      },
+      "source_tests_executed": 0,
+      "parser_tests_executed": 0,
+      "native_tests_executed": 0,
+      "full_caller_proof": "not reached",
+      "source_after": "14065b700e160bc3690ffbb5734b6f9af1f7ceb0",
+      "source_status_after": "",
+      "correction_source": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "correction": "Delete exactly one trailing LF from CALLERS.toml; parsed manifest and all other blobs unchanged."
+    },
+    {
+      "sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "tree": "2aa9a592262d5197cdd96e79128dc18a30332ebd",
+      "job_id": "1a1cccec57a-2564-1088",
+      "request_digest": "8c7a0a9a2acda20d7db3c5cf985e3e22d9a1293e66a681ec08929bfe7378c754",
+      "outer_terminal": true,
+      "outer_last_observed_state": "failed",
+      "source_checks": {
+        "executed": 230,
+        "passed": 230,
+        "failed": 0
+      },
+      "parser_checks": {
+        "executed": 16,
+        "passed": 16,
+        "failed": 0
+      },
+      "helper_build_exit_code": 0,
+      "helper_verification_exit_code": 0,
+      "native_command_exit_code": 100,
+      "native_tests_executed": 109,
+      "native_test_results": {
+        "passed": 89,
+        "failed": 20,
+        "skipped_selected": 0,
+        "unselected_filtered": 1132
+      },
+      "native_command_timed_out": false,
+      "junit_collection_exit_code": 1,
+      "native_elapsed_seconds": 994.2581491749734,
+      "test_execution_seconds": 659.498,
+      "failed_test_names": [
+        {
+          "package": "codex-hepta-agentd",
+          "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "neuron_cell_evaluation_execution_store::tests::original_execution_owner_physical_corruption_fences_even_after_restore"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_attests_actual_different_c_and_shares_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_early_dispatch_never_runs_c_or_resets_admission"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_lost_ack_recovers_exact_original_signature_readonly"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_pins_both_original_signatures_before_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_preserves_original_expiry_and_external_custody"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::q24_next_use_command_readback_refuses_actual_publication_withdrawal"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_evidence_readback_detects_live_withdrawal"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_keeps_original_expiry_and_external_custody"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_lost_ack_recovers_original_signature_readonly"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_recovered_missing_never_dispatches"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_rejects_wrong_context_and_valid_renewal_before_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+        },
+        {
+          "package": "codex-hepta-intelligence-eval",
+          "name": "product_runner::tests::execution_tests::holdout_current::holdout_current_completed_execution_readback_requires_physical_original"
+        }
+      ],
+      "full_caller_proof": {
+        "exit_code": 0,
+        "elapsed_seconds": 3903.4994641707744,
+        "log": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/caller-proof-full.log",
+        "log_bytes": 170993,
+        "log_sha256": "f62811f323ae51fd2d64c64a87cfba3684824903ace38255d57cb842ecea0922",
+        "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "rust_files_scanned": 6411,
+        "boundaries": 373,
+        "protected_files": 290,
+        "authority_granted": false,
+        "source_sha": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+        "not_inherited_by_later_sources": true
+      },
+      "source_after": "7a6c00b8201f685db97ff52bc0b41094b9af1ed2",
+      "source_status_after": "",
+      "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
+      "exact_request_blob": "f920d23cba04fd79d9cb991c0ea2ab8d69488ff0",
+      "retained_interim_observations": [
+        "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json"
+      ],
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "final_preparation_result": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-preparation-result.json",
+      "final_terminal_observation": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-terminal-observation.json"
+    },
+    {
+      "sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "tree": "5529e9391304dbbdaf98df3fb978b689362c85d5",
+      "job_id": "1a1ccfa36ce-2564-112c",
+      "request_digest": "7a22eb77e439153bbb288dae71dcc7b82dee04261fe424ed85ed483a48a30683",
+      "purpose": "Seven-case diagnostic of original failures; no complete source/caller/native closure or ordinary acceptance claim.",
+      "outer_terminal": {
+        "state": "failed",
+        "exit_code": 1,
+        "timed_out": false,
+        "cancelled": false,
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true
+      },
+      "source_checks_executed": 0,
+      "full_caller_proof_executed": false,
+      "helper_build_exit_code": 0,
+      "helper_verification_exit_code": 0,
+      "native_command_exit_code": 100,
+      "native_tests_executed": 7,
+      "native_test_results": {
+        "passed": 0,
+        "failed": 7,
+        "skipped_selected": 0,
+        "unselected_filtered": 1075
+      },
+      "native_command_timed_out": false,
+      "native_elapsed_seconds": 438.39003055915236,
+      "test_execution_seconds": 82.033,
+      "failed_test_names": [
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::q24_selector_command_binds_opaque_training_result_and_shared_dispatch"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_c_requires_actual_completion_and_original_selector_signature"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_current_refuses_withdrawal_after_a_successful_read"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_consumes_late_and_wrong_nonce_responses_without_effects"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_read_refuses_expired_original_window_and_same_process_bootstrap"
+        },
+        {
+          "package": "codex-hepta-agentd",
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::q24_remote_selection_reads_original_publication_before_c_and_recovers_signature"
+        }
+      ],
+      "source_after": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "source_status_after": "",
+      "exact_request_blob": "61ff789272227097207ba82c7407176b6792e147",
+      "outer_process_observation": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/terminal-observation.json"
+    },
+    {
+      "sha": "b514c3cacb73de1bb0adb46b202225e16d3b11c9",
+      "tree": "3e45a3eaac3c6a7f64a6e44467e5d04b3f7d5c0c",
+      "actual_formatted_sha": "2e2255358366772b05124dc54e751336b4c5634b",
+      "actual_formatted_tree": "48cb5423a0a8a744dd22ff77c48ffcd6410de676",
+      "actual_formatted_commit_push": false,
+      "job_id": "1a1cd1615b1-2564-117e",
+      "request_digest": "de3bb89593f84226b7e2b0ab1c3b9591d248b3f186d6c47aa39f9f7742d35507",
+      "outer_terminal": true,
+      "exit_code": 1,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false,
+      "format": {
+        "exit_code": 0,
+        "seconds": 7.133369,
+        "retained_patch": true,
+        "changed_files": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs",
+          "codex-rs/hepta-neuron/src/witness.rs"
+        ]
+      },
+      "source_checks": {
+        "tests": 234,
+        "errors": 148,
+        "exit_code": 1,
+        "seconds": 91.556476,
+        "error_messages": {
+          "codex-rs/hepta-neuron/src/witness.rs: unique top-level code marker required: if self.poisoned.load(Ordering::Acquire)": 113,
+          "required must be a list of non-empty strings": 35
+        }
+      },
+      "parser_tests_executed": 0,
+      "caller_self_test_executed": false,
+      "full_caller_proof_executed": false,
+      "native_tests_executed": 0,
+      "source_after": "2e2255358366772b05124dc54e751336b4c5634b",
+      "source_status_after": "",
+      "exact_request_blob": "f5793719e7320570516af8947fb08fde19fb7b08",
+      "correction_source": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+      "correction": "Add actual mandatory holdout required markers and unique complete witness top-level anchors; preserve both ordered poison reads and add conditional-nesting negative control. No new pass inherited.",
+      "original_preparation_steps": [
+        {
+          "name": "fetch-fixed",
+          "exit_code": 0,
+          "seconds": 2.0572061978746206,
+          "log_bytes": 144,
+          "log_sha256": "1c2b15b8de46eb59b00c8abac5cd2a103eec1be9b84e8826282c240bf63d95c1"
+        },
+        {
+          "name": "create-worktree",
+          "exit_code": 0,
+          "seconds": 1.7186115491203964,
+          "log_bytes": 1856,
+          "log_sha256": "5f18fafc292283c397d5cec951b088f1c5608e23c6d7133eb7c366b430140dda"
+        },
+        {
+          "name": "format",
+          "exit_code": 0,
+          "seconds": 7.133369151037186,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "diffcheck-working",
+          "exit_code": 0,
+          "seconds": 0.04654150106944144,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "stage-format",
+          "exit_code": 0,
+          "seconds": 0.0515110760461539,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "commit-format",
+          "exit_code": 0,
+          "seconds": 0.04307095892727375,
+          "log_bytes": 173,
+          "log_sha256": "6b229413378b28c3a9c590ce8f6ff9b05d43356f6d8d44b70b1f52cc3dbba53a"
+        },
+        {
+          "name": "diffcheck-full-committed",
+          "exit_code": 0,
+          "seconds": 0.03846840490587056,
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "source-closure",
+          "exit_code": 1,
+          "seconds": 91.5564763310831,
+          "log_bytes": 317796,
+          "log_sha256": "5c4d41b7eb945cd9f3fb5eedb099694c72d2861b1bf1afac7b0863d6a492fc9d"
+        }
+      ]
+    },
+    {
+      "sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+      "tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+      "baseline_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+      "purpose": "same seven diagnostic cases with only pinned crypto dev-profile optimization",
+      "outer_terminal": "failed",
+      "outer_terminal_observed": true,
+      "job_id": "1a1cd126931-2564-1178",
+      "control_plane_note": "Original mutation admission/reconciliation timed out; original application preparation and wrapper files establish the child precheck failure but are not controller terminal evidence.",
+      "preparation_state": "diagnostic-completed",
+      "wrapper_exit_code": 1,
+      "native_tests_executed": 0,
+      "helper_build_executed": false,
+      "failure": {
+        "stage": "original pinned dependency precheck before native output setup",
+        "type": "FileNotFoundError",
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-pinned-150-4-0-v2/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+      },
+      "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+      "source_status_after": "",
+      "protocol_deadlines_unchanged": true,
+      "rust_code_unchanged": true,
+      "lockfile_unchanged": true,
+      "performance_gain_established": false,
+      "exact_request_blob": "dd22c4fb9d63c05413d83ecf4cb1f0aa468737f4",
+      "exact_request_sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf",
+      "original_v10_reconciled_terminal": {
+        "job_id": "1a1cd126931-2564-1178",
+        "request_digest": "3ea6fa4bbbf9471a110806c4ef189e1c10d8e99a9a36f28d50eacdbacf6a05dd",
+        "reused": true,
+        "retried_launch": false,
+        "status": {
+          "at_unix_ms": 1794441921696,
+          "automatic_retry": false,
+          "cancelled": false,
+          "exit_code": 1,
+          "job_id": "1a1cd126931-2564-1178",
+          "launch_nonce": "33f6db18df09c5d42ddec30641cdbc1a",
+          "log_bytes": {
+            "stderr": {
+              "seen": 0,
+              "stored": 0
+            },
+            "stdout": {
+              "seen": 10081,
+              "stored": 10081
+            }
+          },
+          "log_errors": {
+            "stderr": null,
+            "stdout": null
+          },
+          "log_synced": {
+            "stderr": true,
+            "stdout": true
+          },
+          "log_truncated": {
+            "stderr": false,
+            "stdout": false
+          },
+          "output_complete": true,
+          "output_durable": true,
+          "state": "failed",
+          "terminal_publication_confirmed": true,
+          "terminal_publication_protocol": 1,
+          "timed_out": false
+        }
+      },
+      "v11_after_exact_restore": {
+        "job_id": "1a1cdd1805d-2564-13c7",
+        "request_digest": "d7061fb1977ea6e9fd840e4e64a4e17dcc5c3650172d9d8323f581caf389f792",
+        "terminal": "failed",
+        "exit_code": 1,
+        "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_status_after": "",
+        "native_tests_executed": 0,
+        "failure": "unexpected qualification repository",
+        "cause": "Frozen runner retained 20261111 prefix while the dedicated after-restoration worktree was 20261112; wrapper refused before native output creation.",
+        "performance_gain_established": false
+      },
+      "v12_exact_repository": {
+        "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+        "args_bytes": 18468,
+        "args_sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+        "script_sha256": "6a3ba7e88b494c9eeb14e26813ab6e5ce729a66d2d4175a3957f51fa02bd6409",
+        "native_runner_sha256": "0872c39c54be44b40c227c02c2a07e1cf5f7ef30d503aa502d66d19102870ac9",
+        "source": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+        "previous_request_job": "1a1cdd1805d-2564-13c7",
+        "previous_request_terminal": "failed",
+        "previous_actual_pre_native_failure": "unexpected qualification repository",
+        "native_runner_delta": "Replace a stale 20261111 repository prefix with the exact dedicated 20261112-v12 path; no test case, binding, timeout, Rust, lockfile or native command change",
+        "ordinary_acceptance": 0,
+        "submission_response": {
+          "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+          "isError": true
+        },
+        "native_tests_executed": 0,
+        "performance_gain_established": false,
+        "retained_prior_observation": {
+          "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+          "args_bytes": 18468,
+          "args_sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+          "script_sha256": "6a3ba7e88b494c9eeb14e26813ab6e5ce729a66d2d4175a3957f51fa02bd6409",
+          "native_runner_sha256": "0872c39c54be44b40c227c02c2a07e1cf5f7ef30d503aa502d66d19102870ac9",
+          "source": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+          "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+          "previous_request_job": "1a1cdd1805d-2564-13c7",
+          "previous_request_terminal": "failed",
+          "previous_actual_pre_native_failure": "unexpected qualification repository",
+          "native_runner_delta": "Replace a stale 20261111 repository prefix with the exact dedicated 20261112-v12 path; no test case, binding, timeout, Rust, lockfile or native command change",
+          "ordinary_acceptance": 0,
+          "submission_response": {
+            "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+            "isError": true
+          },
+          "native_tests_executed": "unknown",
+          "performance_gain_established": false
+        },
+        "reconciled_job_id": "1a1cde817c7-2564-13f4",
+        "request_digest": "2bc653702eaac387dfa865e57dfa3e992dd6f717edfa0a5e04a9d3527e5e739f",
+        "reconciliation_reused": false,
+        "terminal": "failed",
+        "exit_code": 1,
+        "output_complete": true,
+        "output_durable": true,
+        "terminal_publication_confirmed": true,
+        "timed_out": false,
+        "cancelled": false,
+        "helper_build_executed": false,
+        "failure": "Original wrapper FileNotFoundError for pinned V8 archive before helper or native setup; performance not established.",
+        "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+        "source_status_after": ""
+      }
+    },
+    {
+      "sha": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+      "tree": "4946a614e16a33aae78437a4771d0381291a54f4",
+      "host_format_qualification": {
+        "controller_terminal_observed": false,
+        "preparation_state": "failed",
+        "reported_error": "RuntimeError('formatter changed outside the fixed reviewed Rust delta')",
+        "format_exit_code": 0,
+        "source_tests_executed": 0,
+        "parser_tests_executed": 0,
+        "native_tests_executed": 0,
+        "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_status_after": "M codex-rs/hepta-agentd/src/authority_host_learning_resident.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_metadata_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_support_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_transport_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs\n M codex-rs/hepta-agentd/src/authority_host_resident_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_command_transport_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_material_receipt_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_material_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs\n M codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_command_support_tests.rs\n M codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_owner_tests.rs\n M codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs\n M codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs\n M codex-rs/hepta-agentd/src/circuit_selection_command_support_tests.rs\n M codex-rs/hepta-agentd/src/config.rs\n M codex-rs/hepta-agentd/src/deployment_issuer.rs\n M codex-rs/hepta-agentd/src/deployment_learning_resident.rs\n M codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs\n M codex-rs/hepta-agentd/src/lib.rs\n M codex-rs/hepta-agentd/src/objective_learning_source.rs\n M codex-rs/hepta-agentd/src/resident_learning_delivery.rs\n M codex-rs/hepta-agentd/src/runtime.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current.rs\n M codex-rs/hepta-neuron/src/cell_generation_physical_current_tests.rs\n M codex-rs/hepta-neuron/src/witness.rs\n M scripts/verify_hepta_callers.py",
+        "original_result": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/result.json",
+        "note": "just fmt changed 53 reviewed Rust files and the reviewed Python verifier; the qualification's Rust-only allowlist rejected before tests. No formatted child committed.",
+        "original_reconciled_terminal": {
+          "job_id": "1a1cd58b57f-2564-126d",
+          "request_digest": "d191616438139e24a06c08146a3d773c0de752f53b97cc18f7ae1bf7a5728a1c",
+          "reused": true,
+          "retried_launch": false,
+          "status": {
+            "at_unix_ms": 1794446525914,
+            "automatic_retry": false,
+            "cancelled": false,
+            "exit_code": 1,
+            "job_id": "1a1cd58b57f-2564-126d",
+            "launch_nonce": "79d264856656eacfa1fd25ae6c281953",
+            "log_bytes": {
+              "stderr": {
+                "seen": 145,
+                "stored": 145
+              },
+              "stdout": {
+                "seen": 9043,
+                "stored": 9043
+              }
+            },
+            "log_errors": {
+              "stderr": null,
+              "stdout": null
+            },
+            "log_synced": {
+              "stderr": true,
+              "stdout": true
+            },
+            "log_truncated": {
+              "stderr": false,
+              "stdout": false
+            },
+            "output_complete": true,
+            "output_durable": true,
+            "state": "failed",
+            "terminal_publication_confirmed": true,
+            "terminal_publication_protocol": 1,
+            "timed_out": false
+          }
+        },
+        "original_python_postimage": {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/verify_hepta_callers.py",
+          "bytes": 38402,
+          "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+          "ast_equal_to_f254": true,
+          "note": "The original failed allowlist admitted only Rust files; the actual Python formatter postimage is now read and semantically reviewed. Original failure is not replaced by a pass."
+        }
+      },
+      "local_source_qualification": {
+        "fixed_source": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_tree": "4946a614e16a33aae78437a4771d0381291a54f4",
+        "source_after": "f8ea08942b68c84ccc105d17371f95ddd372d355",
+        "source_status_after": "",
+        "source_inventory": 259,
+        "unittest_reported_tests": 11,
+        "errors": 47,
+        "passed": 0,
+        "cause": "TOML inline required_function_order array followed by array-of-tables for the same namespace at CALLERS.toml:11205",
+        "parser": {
+          "passed": 16,
+          "failed": 0
+        },
+        "caller_self_test_exit_code": 0,
+        "full_caller_proof_executed": false,
+        "native_tests_executed": 0,
+        "result": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/result.json",
+        "sparse_checkout_excluded_only_historical_archive_qualification_files": true,
+        "all_tracked_rust_files_present": 6573
+      },
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      },
+      "known_equivalent_toml_repair": "77bfe71c6021e8da78ff917db3347f7e7a503d65",
+      "github_ci": {
+        "workflow_run": 43132700180,
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43132700180",
+        "conclusion": "failure",
+        "native_job": 130900448342,
+        "source_tests_reported": 11,
+        "source_errors": 47,
+        "source_passes": 0,
+        "parser_job_step": "skipped",
+        "native_tests_executed": 0,
+        "caller_job": 130900448699,
+        "caller_self_test_exit_code": 0,
+        "full_caller_proof": "failed parsing original TOML before caller verification",
+        "reason": "Cannot mutate immutable namespace ('protected_file', 'required_function_order') at 11205:41",
+        "raw_log_parts": [
+          {
+            "job": "native",
+            "whole_bytes": 1741583,
+            "whole_sha256": "85edf835dc075d61433b0126f808edfdd5d5ad55315bdd45a6d7907d8a2493af",
+            "parts": [
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part001",
+                "bytes": 400002,
+                "sha256": "8695b50c25e0798244b0b7d7391b867cbb8df6c975116094d46461d003d90dae"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part002",
+                "bytes": 400000,
+                "sha256": "c5414c4e25aebda02dd9cadb7c0ece326c1bc24c099d9ddb32262dcceb2905c8"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part003",
+                "bytes": 400000,
+                "sha256": "9f3374bc6e1d13efb873b0015d8409cd0f04c547d3fdfb60e246ca6d17962de5"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part004",
+                "bytes": 400000,
+                "sha256": "72cde0d24d9dd7d63c5824e80668ed01511ab8e34591f5e0c8f0253cd923177f"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part005",
+                "bytes": 141581,
+                "sha256": "9699807ca915daaa4e63d30679817f765712d88a77f37e4436b650362a60fe41"
+              }
+            ]
+          },
+          {
+            "job": "caller-proof",
+            "whole_bytes": 1642379,
+            "whole_sha256": "710a852debea8ad9e2ce9ee8f0d9258bc260f7a003ea8847022fae71c744a24a",
+            "parts": [
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part001",
+                "bytes": 400002,
+                "sha256": "5db39235f4cfaac2d2df39f520ebebe513d14aee9c9e6cf4cbd75f4e60dfb348"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part002",
+                "bytes": 400000,
+                "sha256": "b0251432e296ccfa55c62bdf7d49e7cbeb9f3629047e4bcd40ecdeda083e8312"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part003",
+                "bytes": 400000,
+                "sha256": "941a927e55cf44f8a1359ae7e6968fa14f6bb1de9a5773ea39fe0ca38a2361dc"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part004",
+                "bytes": 400000,
+                "sha256": "73c2ef29f522802e4f73e3bf8db7dbf6097acdb32c0698f6b5583fef4ebc084f"
+              },
+              {
+                "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part005",
+                "bytes": 42377,
+                "sha256": "e400c4c6d5f0d0e7944aa2f2d6976102e5881fd0ae22893fbcb2d696eaec718d"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sha": "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7",
+      "tree": "51361a51fe1ed38f36ebe3bdd9267a8f6b0773b6",
+      "parents": [
+        "bf210cfcde3c9278eb3687a051e1757da93cbb4f",
+        "5329441a9f97ca63225fc03de2732f474b98d11a"
+      ],
+      "merge_base": "7def806cbf94dead7560ea598c435795cfd7e4d6",
+      "prior_merge": {
+        "sha": "bf210cfcde3c9278eb3687a051e1757da93cbb4f",
+        "tree": "d792e2c2c506db1ef6ea1abee1dfacb0a9d1334b",
+        "parents": [
+          "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+          "77bfe71c6021e8da78ff917db3347f7e7a503d65"
+        ],
+        "merge_base": "f8ea08942b68c84ccc105d17371f95ddd372d355"
+      },
+      "actual_local_git_graph_verified": true,
+      "api_tree_equals_actual_local_index_tree": true,
+      "all_merged_postimages_exact_api_readback": true,
+      "static_inventory": {
+        "boundaries": 446,
+        "full_protected_rows": 348,
+        "source_methods": 292,
+        "source_modules": 42,
+        "native_cases": 137,
+        "native_groups": 29,
+        "explicit_root_fixture_cases_separate": 15,
+        "physical_witness_cases_separate": 3
+      },
+      "qualification": {
+        "original_environment_loss": "Prior planned 292-case qualification was not issued; old relocation session remains unknown.",
+        "restored_executor_actual": {
+          "source_status_before": "",
+          "source_status_after": "",
+          "tracked_rust_files_present": 6601,
+          "source_tests_executed": 292,
+          "source_passes": 290,
+          "source_failures": 2,
+          "parser_tests_executed": 16,
+          "parser_passes": 16,
+          "caller_self_test_exit_code": 0,
+          "source_log_sha256": "3821484524c9a41928d542d205657a06367adcd0baa477f2a2cac79c3f447dc2",
+          "failures": [
+            "Physical witness poison-field removal was masked by the same prefix in its initializer.",
+            "NoUpdate expected caller tuple omitted the real retained-context readback caller."
+          ]
+        },
+        "full_caller_proof_executed": false,
+        "native_tests_executed": 0,
+        "fmt_executed": false,
+        "fix_executed": false
+      },
+      "not_yet_assembled_at_this_sha": [
+        "Candidate Evaluation still refuses missing original B/Evaluator host; later independent source branches must be merged and tested.",
+        "Retained publication factories are not yet the ordinary Version host/C factory dispatch; subsequent Version work is separate.",
+        "Positive Model/adoption producer is not supplied by Parameter/Topology proposal payloads or DENY_ALL Candidate material."
+      ],
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      },
+      "source_status_record": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json"
+    },
+    {
+      "sha": "a368fd4b1381e823c9fa69e7f2ed16ae223a4e60",
+      "tree": "b6cdcde8ab7d0d3bd6ec57a790d3b405c2aab180",
+      "parents": [
+        "f254a014e7f5d0b85706d61d62b0e5e29b0aa9c7"
+      ],
+      "change": "Require the exact poison field declaration including comma so an initializer cannot satisfy a removed-field negative control.",
+      "source_tests_executed": 9,
+      "source_passes": 9,
+      "source_status_after": "",
+      "full_caller_proof_executed": false,
+      "native_tests_executed": 0,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "1a5b31e619f845f84e70049094b69893234813f4",
+      "tree": "6fd8cb4b938d5c0ee1406a0ce0a64104ea5bb99d",
+      "parents": [
+        "a368fd4b1381e823c9fa69e7f2ed16ae223a4e60",
+        "96719b494a8d887f01a6eb23f0da8ffbeb1ed928"
+      ],
+      "static_boundaries": 464,
+      "static_protected_rows": 356,
+      "qualification_executed": false,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "619f3ea4ee34096c467da1c15c4a8836fc231113",
+      "tree": "d35c0ed410128d68445d8e0a111b32184acfee12",
+      "parents": [
+        "1a5b31e619f845f84e70049094b69893234813f4",
+        "6d900c56b330089f0de380b28c7f57bb8072be30"
+      ],
+      "source_checks": {
+        "run": 310,
+        "pass": 309,
+        "fail": 1,
+        "raw_sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+        "failure": "Qualification group literal double quotes mismatched AST serializer single quotes"
+      },
+      "parser_pass": 16,
+      "caller_self_test_exit": 0,
+      "native_tests_executed": 0,
+      "full_caller_proof_executed": false,
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    },
+    {
+      "sha": "514fe5f53cfdc254477667f8862d652ea756c807",
+      "tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+      "parents": [
+        "619f3ea4ee34096c467da1c15c4a8836fc231113"
+      ],
+      "format_exit": 0,
+      "format_changed_files": 118,
+      "python_ast_unchanged": true,
+      "qualification": {
+        "source_sha": "514fe5f53cfdc254477667f8862d652ea756c807",
+        "source_tree": "490dcafbd5a7f12a8fac19f5fa5b00b5c3ce4879",
+        "run_methods": 310,
+        "unittest_report": "FAILED (errors=302)",
+        "errors_include_subtests": true,
+        "top_level_ok_log_lines": 234,
+        "helper_observed_passed_tests": 8,
+        "helper_subtraction_is_not_a_method_pass_count": true,
+        "parser_pass": 16,
+        "caller_self_test_exit": 0,
+        "raw_sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+        "reason": "Exact raw markers and mutation locations no longer match rustfmt layout; verifier and negative controls are being preserved.",
+        "native_tests_executed": 0,
+        "full_caller_proof_executed": false,
+        "full_chain_acceptance": {
+          "positive": 0,
+          "no_update": 0,
+          "daemon_root_cold_restart": 0
+        }
+      },
+      "source_after": "514fe5f53cfdc254477667f8862d652ea756c807",
+      "source_status_after": "",
+      "full_chain_acceptance": {
+        "positive": 0,
+        "no_update": 0,
+        "daemon_root_cold_restart": 0
+      }
+    }
+  ],
+  "full_chain_acceptance": {
+    "ordinary_positive_adoption": 0,
+    "ordinary_no_update_or_fallback": 0,
+    "daemon_and_root_cold_restart": 0
+  },
+  "original_files": [
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/83af1c661b85-source-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v5-preparation-v1/result.json",
+      "bytes": 2432,
+      "sha256": "b7c05955a9157a2bd091b974323167d4799dd2657ed85233704135c68efb7c17",
+      "original_version": "2050:55116869:2432:1794431300272397709:1794431300272397709"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/83af1c661b85-source-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v5-preparation-v1/source-closure.log",
+      "bytes": 46142,
+      "sha256": "e18fc1d677cd3a5b496377f7440ed8aa8fbb3886afd383ac767a8d8985a27117",
+      "original_version": "2050:55116867:46142:1794431300086254000:1794431300086254000"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/83af1c661b85-source-failure/preparation/format.patch",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v5-preparation-v1/format.patch",
+      "bytes": 2550,
+      "sha256": "58d87354ecfb7b3bbadc4cdf50b4ab22b32c0ea778c3476cfa8c33ffe763dba3",
+      "original_version": "2050:55116864:2550:1794431224741996788:1794431224741996788"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/83af1c661b85-source-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v5-preparation-v1/merge-canonical.json",
+      "bytes": 1464,
+      "sha256": "72c1fde96c50910b56851744dd406fe4cdad02d910244022ea9ca9db841c35b1",
+      "original_version": "2050:55116860:1464:1794431220545675345:1794431220545675345"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/83af1c661b85-source-failure/preparation/commit-format.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v5-preparation-v1/commit-format.log",
+      "bytes": 171,
+      "sha256": "87c2167e972801987f725cfedf2709eec4ae1ded83070ebd20613a89d9a8ba7f",
+      "original_version": "2050:55116865:171:1794431224823596989:1794431224823596989"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/result.json",
+      "bytes": 2682,
+      "sha256": "0fe1a4dd30003af999a79e8837f5d8909114765c37ce7d601b54779f23cdad71",
+      "original_version": "2050:55116883:2682:1794431958993408231:1794431958993408231"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/native/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-1bcbcb7d4327-v6/result.json",
+      "bytes": 1626,
+      "sha256": "368ff473d594998747c3ec3c32aa527df75161694cc0627828b48fa3bcbbce75",
+      "original_version": "2050:55116885:1626:1794432535716294450:1794432535716294450"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/native/focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-1bcbcb7d4327-v6/focused-native.json",
+      "bytes": 16485,
+      "sha256": "7413ab11c8363820b9571b988c0a2d6d006e68a279b39743977d46beee95ffb6",
+      "original_version": "2050:55116898:16485:1794432535563099080:1794432535564299094"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/native/focused-native.json.b32bd16cf7e345ca9e0e08885db7bbcc.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-1bcbcb7d4327-v6/focused-native.json.b32bd16cf7e345ca9e0e08885db7bbcc.log",
+      "bytes": 45137,
+      "sha256": "bc2efadb40ec494b269cad5ffa8bf8f5450d2c4695a4fc38d1f1b8296d3e1dbe",
+      "original_version": "2050:55116897:45137:1794432535496301172:1794432535496301172"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/source-closure.log",
+      "bytes": 43379,
+      "sha256": "47117c00886cbff8dedd7d77ce16072b9a61e1c38f127b548da99792ec31273d",
+      "original_version": "2050:55116876:43379:1794431947584290231:1794431947584290231"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/parser-controls.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/parser-controls.log",
+      "bytes": 3123,
+      "sha256": "0dea1d65672402c498b959be1322f7a2e17a8fbeffc0268a5057aeb223924aba",
+      "original_version": "2050:55116878:3123:1794431947955278854:1794431947955278854"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/merge-canonical.json",
+      "bytes": 1893,
+      "sha256": "117ae343322ce09b9347937acb1b8e990463d34d3cd1ad786d9d2ad3d256603f",
+      "original_version": "2050:55116872:1893:1794431870346659749:1794431870346659749"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/final-preparation-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/result.json",
+      "bytes": 3037,
+      "sha256": "634b8f7a576498ab582d79f6c476b4737e86e01f4f61021e2bd510d9a4838be5",
+      "original_version": "2050:55116900:3037:1794433450869954158:1794433450869954158"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/caller-proof-full.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v6-preparation-v1/caller-proof-full.log",
+      "bytes": 219,
+      "sha256": "8158b80614ddd5894b795f715fced65c8dc4383e674a853873a4c2f40d5be47f",
+      "original_version": "2050:55116881:219:1794433450765957441:1794433450765957441"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/result.json",
+      "bytes": 2357,
+      "sha256": "069d450fae6712c09e7b69513b0289d58564164db315d6c26c4a0dbd63f0e31b",
+      "original_version": "2050:55117471:2357:1794437154026248786:1794437154026248786"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/diffcheck-full-committed.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/diffcheck-full-committed.log",
+      "bytes": 42,
+      "sha256": "01e7292ff5e5df5a75e162c8decadd30a2578744a61f9c031b809e7942e181a3",
+      "original_version": "2050:55117467:42:1794437153969907287:1794437153969907287"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v7-preparation-v1/merge-canonical.json",
+      "bytes": 20922,
+      "sha256": "8e752899d9b6d4f8fd95433350c0b194a8305cfafdae6ab8f095355fda10b55d",
+      "original_version": "2050:55117470:20922:1794437153861910580:1794437153861910580"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/source-closure.log",
+      "bytes": 51665,
+      "sha256": "c1c3339c56efb8d49652777739f4452bd262cf214192d14c1776abf099ec6263",
+      "original_version": "2050:58132162:51665:1794437578232753235:1794437578232753235"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/parser-controls.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/parser-controls.log",
+      "bytes": 3123,
+      "sha256": "db36f5aa654a3da1e42aa866715c6015df437bd835713a05597c8eae241cc0b4",
+      "original_version": "2050:58132161:3123:1794437578778736309:1794437578778736309"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/merge-canonical.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/merge-canonical.json",
+      "bytes": 20922,
+      "sha256": "99ba957eba3095900b6d131371a752ea31e2f8911355c9f6a487d5146ce11ec6",
+      "original_version": "2050:58132160:20922:1794437483814683890:1794437483814683890"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/preparation/result-during-full-proof.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/result.json",
+      "bytes": 3239,
+      "sha256": "1f6939ebf2f76f1bd12f2818186b551c43c0d1b96b87d61626ea40d9398469cc",
+      "original_version": "2050:58132167:3239:1794437589513675528:1794437589513675528"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.json",
+      "bytes": 22857,
+      "sha256": "5a09a4d98814bf65b376f57bf618fb462204c6014db6663a61862d12e6dfdf18",
+      "original_version": "2050:591436:22857:1794438856137323737:1794438856155452056"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.junit.xml",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.junit.xml",
+      "bytes": 57899,
+      "sha256": "75d563cd4e8bf55eed20cf400f090368452c13022a49939edafe1729556dfbc4",
+      "original_version": "2050:591438:57899:1794438856252107012:1794438856252107012"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/result.json",
+      "bytes": 12945,
+      "sha256": "989e8a8524396643b07f5f4173527c4214e17acc14ac1e7bbca73073cc6ddb2a",
+      "original_version": "2050:590234:12945:1794438856318038786:1794438856318038786"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/native/focused-native.json.da15b6fdd1884a32a9f4d301dc06dd29.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-7a6c00b8201f-v8/focused-native.json.da15b6fdd1884a32a9f4d301dc06dd29.log",
+      "bytes": 129513,
+      "sha256": "971795ce0588c93d53a3346bd699269214c132c3a1f9ac34bfd0c7c8855a6910",
+      "original_version": "2050:590237:129513:1794438856032455825:1794438856032455825"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v9-diagnostic-v1/result.json",
+      "bytes": 2032,
+      "sha256": "fa4e064adc84365394cc1ea59f8c4969bd2b314f8bcef0392d4d55ffe93bde27",
+      "original_version": "2050:590408:2032:1794441068674032435:1794441068674032435"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/result.json",
+      "bytes": 7698,
+      "sha256": "320f140ed933f9a5b09c0adf8e4704e7d64f326237c3b77219c0e1c3ad5e910a",
+      "original_version": "2050:2817057:7698:1794441068606965032:1794441068606965032"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.json",
+      "bytes": 3489,
+      "sha256": "1a9f3f02841dcc17d6158c27714c7a7878ed0cd9c0db72259cd2d80a07e8d891",
+      "original_version": "2050:2817055:3489:1794441068444150014:1794441068448056236"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.junit.xml",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.junit.xml",
+      "bytes": 13238,
+      "sha256": "27df81282f7fe5f5d18a376f2c1cdc984e18591a11d6f0b6743ad5a6ebe8975e",
+      "original_version": "2050:2818041:13238:1794441068545288830:1794441068545288830"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/native/focused-native.json.1901720dc3ba46938e70962551bb3ebc.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-8794aaaa5949-v9-diagnostic/focused-native.json.1901720dc3ba46938e70962551bb3ebc.log",
+      "bytes": 57487,
+      "sha256": "bfbf6ca4cd64c99670ced447e76065c377fa7825c10e3005290027782b4afd0e",
+      "original_version": "2050:2819932:57487:1794441068366058739:1794441068366058739"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/result.json",
+      "bytes": 2970,
+      "sha256": "d32da0c62397c2c0bbc8c25011d8e85de94b0e77f5c6649f0aaf755054897c00",
+      "original_version": "2050:12126140:2970:1794442247441834431:1794442247441834431"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/source-closure.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/source-closure.log",
+      "bytes": 317796,
+      "sha256": "5c4d41b7eb945cd9f3fb5eedb099694c72d2861b1bf1afac7b0863d6a492fc9d",
+      "original_version": "2050:12126138:317796:1794442247047474803:1794442247047474803"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/format.patch",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/format.patch",
+      "bytes": 2597,
+      "sha256": "a8c39ec8b16fd3dd876a206ab59e29c6c5590aa42609cb1f72ed1b6f9e35b005",
+      "original_version": "2050:12126135:2597:1794442155410888310:1794442155410888310"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/preparation/commit-format.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-current-repairs-source-v1/commit-format.log",
+      "bytes": 173,
+      "sha256": "6b229413378b28c3a9c590ce8f6ff9b05d43356f6d8d44b70b1f52cc3dbba53a",
+      "original_version": "2050:12126136:173:1794442155504248399:1794442155504248399"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-pre-native-dependency-failure/preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v10-crypto-diagnostic-v1/result.json",
+      "bytes": 2313,
+      "sha256": "55927b3e77e2d9880c0482d5ec7e2bb0d91407c00f7b219fe6e68cf8e15f5322",
+      "original_version": "2050:11862559:2313:1794441921645258238:1794441921645258238"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-pre-native-dependency-failure/preparation/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v10-crypto-diagnostic-v1/native-wrapper.log",
+      "bytes": 1026,
+      "sha256": "580100770aa7bf263f9668e92a7537726adcfda1fb987fc8020296c700387afd",
+      "original_version": "2050:11862598:1026:1794441921564323520:1794441921564323520"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-preparation-result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/result.json",
+      "bytes": 3893,
+      "sha256": "7fb93b81fe6dc2cd963072b388c623d7dcf7b3004bb30b39a25661732058666d",
+      "original_version": "2050:58065573:3893:1794441493082201855:1794441493082201855"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/caller-proof-full.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v8-preparation-v1/caller-proof-full.log",
+      "bytes": 170993,
+      "sha256": "f62811f323ae51fd2d64c64a87cfba3684824903ace38255d57cb842ecea0922",
+      "original_version": "2050:58132165:170993:1794441492985204752:1794441492985204752"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/resident-owners-source-v1/result.json",
+      "bytes": 5538,
+      "sha256": "2333bb064982313caa8507cea1208ef8bcafbe75fd8db0de52f309c72c93eac8",
+      "original_version": "2050:12385611:5538:1794446525766795618:1794446525766795618"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "d13b01c52dfb734dcad3e6beb35af7f87c48bace922d13830d865a03f3400a73",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/result.json",
+      "bytes": 9198,
+      "sha256": "a0acc312b692ad90887a8104ccab31cd53858981616d4920d6a80fc5b91005d7",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/local-source/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f8-source-v1/source-closure.log",
+      "bytes": 60150,
+      "sha256": "52c604ea613ba259c5ade09141e7ebdaf80e0dee47da96d6ce345f9de43506e2",
+      "observation": "Exact local original qualification bytes; fixed source before and after, no tracked edits."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "72691b8d348268fe350f90704cd1f1e332b302c35b613f633b9a1067ba59749f",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/result.json",
+      "bytes": 3048,
+      "sha256": "19a9de1e8ccf4b34ea5d57a1a0eb3f71cd0c3e20bbcccd3b9bd21e9b02b22479",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-f254-source-v2/source-closure.log",
+      "bytes": 68930,
+      "sha256": "3821484524c9a41928d542d205657a06367adcd0baa477f2a2cac79c3f447dc2",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f254a014e7f5-fixed-source/local-source-v2/qualify_f254_source_v2.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_f254_source_v2.py",
+      "bytes": 3892,
+      "sha256": "ebb05276cbfa22981f8f412b9fc0cd89c38dcf8279e6f4bf9bd3f8f1e29374c2",
+      "observation": "Exact original file from restored executor; fixed SHA/tree before and after. The complete 292-case source run failed 2 controls."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/driver.log",
+      "bytes": 2205,
+      "sha256": "5899e099ef56f0155f9a446fb3736491c7c0db0a61953144b9e6825115ce8e6e",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/result.json",
+      "bytes": 451,
+      "sha256": "c7e2a6358b2645f24b81ee25e60c461e4c1a87e5deb5459a26fb7643b7d68a24",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/a368fd4b1381-witness-field-guard/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-witness-a368-v1/source-closure.log",
+      "bytes": 2205,
+      "sha256": "5899e099ef56f0155f9a446fb3736491c7c0db0a61953144b9e6825115ce8e6e",
+      "observation": "Exact original targeted Python qualification on the fixed guard commit, no native or ordinary execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part001",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400002,
+      "sha256": "8695b50c25e0798244b0b7d7391b867cbb8df6c975116094d46461d003d90dae",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part002",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "c5414c4e25aebda02dd9cadb7c0ece326c1bc24c099d9ddb32262dcceb2905c8",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part003",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "9f3374bc6e1d13efb873b0015d8409cd0f04c547d3fdfb60e246ca6d17962de5",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part004",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 400000,
+      "sha256": "72cde0d24d9dd7d63c5824e80668ed01511ab8e34591f5e0c8f0253cd923177f",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/native.log.part005",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448342",
+      "bytes": 141581,
+      "sha256": "9699807ca915daaa4e63d30679817f765712d88a77f37e4436b650362a60fe41",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part001",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400002,
+      "sha256": "5db39235f4cfaac2d2df39f520ebebe513d14aee9c9e6cf4cbd75f4e60dfb348",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part002",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "b0251432e296ccfa55c62bdf7d49e7cbeb9f3629047e4bcd40ecdeda083e8312",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part003",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "941a927e55cf44f8a1359ae7e6968fa14f6bb1de9a5773ea39fe0ca38a2361dc",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part004",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 400000,
+      "sha256": "73c2ef29f522802e4f73e3bf8db7dbf6097acdb32c0698f6b5583fef4ebc084f",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/caller-proof.log.part005",
+      "original_path": "GitHub Actions workflow 43132700180 job 130900448699",
+      "bytes": 42377,
+      "sha256": "e400c4c6d5f0d0e7944aa2f2d6976102e5881fd0ae22893fbcb2d696eaec718d",
+      "observation": "Lossless ordered part of the complete original GitHub job log. Concatenate in manifest order without inserted separators."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/exact-v8-restoration-20261112/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/v8-restoration-ce434-20261112-v1/result.json",
+      "bytes": 1261,
+      "sha256": "275fdd19ce2756691f22a56f8b9e002d5e2606bbbda1b793d2d9829bed789506",
+      "observation": "Original exact V8 restore result, complete SDK and full file SHA verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/verify_hepta_callers.py",
+      "original_path": "/home/qian-qi/hepta-learn-resident-owners-ce434-20261112-source-v1/scripts/verify_hepta_callers.py",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f",
+      "observation": "Complete original formatter postimage; exact original size/hash and whole SDK payload verified. AST equals current f254 pre-format source; no semantic widening."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v11-crypto-diagnostic-after-restore-v1/result.json",
+      "bytes": 2329,
+      "sha256": "75242639d11163a57df4a29e68fa5320a9be8ef67d24d8a717aa9746837adc34",
+      "observation": "Original v11 preparation result; no native tests executed."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v11-crypto-diagnostic-after-restore-v1/native-wrapper.log",
+      "bytes": 36,
+      "sha256": "9d1fbdc56dd103742d822041ee6d803226590dc41eac52fa5d1222fc3ddc835f",
+      "observation": "Complete original wrapper error: stale repository-prefix guard rejected before native setup or tests."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "300bc8363930ea0b19fa82777b39732837127d2df21ae4a88e00533ec0fae885",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/result.json",
+      "bytes": 3048,
+      "sha256": "80efa928e3a8aada5e166256805fe91313d9d59b9f8fd5219d6b504d3278425a",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/source-closure.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/source-closure.log",
+      "bytes": 98824,
+      "sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/qualify_619f_source_v1.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_619f_source_v1.py",
+      "bytes": 4011,
+      "sha256": "76b7acd178abb9e5313e48b86f682e928bec07748ae165381a09d18fa3558792",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/caller-self-test.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/caller-self-test.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/observer-parser.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/observer-parser.log",
+      "bytes": 3123,
+      "sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/result.json",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/result.json",
+      "bytes": 3050,
+      "sha256": "a9b98a260d0f892898514834e0e5b168b60dbaaa04c536b0d82eaa460b07addc",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-001",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 350000,
+      "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-002",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 342914,
+      "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/qualify_514f_source_v1.py",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualify_514f_source_v1.py",
+      "bytes": 4011,
+      "sha256": "d36b93ecb22a6c46dc6ae2aa92fa4dc5e3678c8767ff2e7bd6ac82d26241e7d6",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/caller-self-test.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/caller-self-test.driver.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/observer-parser.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/observer-parser.driver.log",
+      "bytes": 3123,
+      "sha256": "300bc8363930ea0b19fa82777b39732837127d2df21ae4a88e00533ec0fae885",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/619f3ea4ee34-fixed-source/local-source-v1/source-closure.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-619f-source-v1/source-closure.driver.log",
+      "bytes": 98824,
+      "sha256": "4dae0861692ffbd2a095e661c72a1e443ee0ecaec4eae4abd3cc67624bc5c869",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/caller-self-test.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/caller-self-test.driver.log",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/observer-parser.driver.log",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/observer-parser.driver.log",
+      "bytes": 3123,
+      "sha256": "ce2a974eb8bae7c0d836585e02ecc6f4d2450f1d22acdfb4fe72ce7c6d97168d",
+      "observation": "Complete original fixed-source qualification file; full size and SHA256 verified."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-001",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 350000,
+      "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-002",
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 342914,
+      "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71",
+      "observation": "Exact contiguous original log part; concatenate all parts in order with no separator."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/original-format/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-owners-619f-format-v1/result.json",
+      "bytes": 45801,
+      "sha256": "0d9a59c5a701af33bf839da8f1d517d021a014c79af87fffda508bcd94730da8",
+      "observation": "Original formatter result; no source or native tests in this request."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/result.json",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v12-crypto-diagnostic-after-restore-v1/result.json",
+      "bytes": 2330,
+      "sha256": "40476f18532d64af5fe4e05e20bc099201fc66de6285d0fa258abbef6eb2356a",
+      "observation": "Original terminal file; pinned V8 archive missing before helper/native execution."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/native-wrapper.log",
+      "original_path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/integrated-owners-v12-crypto-diagnostic-after-restore-v1/native-wrapper.log",
+      "bytes": 1054,
+      "sha256": "fbed48bcc51f0db3ec5f6aae521119858826b6b1c87b06dc68ce1a3949f973ad",
+      "observation": "Original terminal file; pinned V8 archive missing before helper/native execution."
+    }
+  ],
+  "normalized_observations": [
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/1bcbcb7d4327-compile-failure/terminal-observation.json",
+      "bytes": 1210,
+      "sha256": "f2700a041541df95cf90bdaa32a57e56de107ca47205d54ee79152e10b371080",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1cc7949e6-2564-f4a",
+      "representation": "normalized_process_status_observation",
+      "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/14065b700e16-diffcheck-failure/terminal-observation.json",
+      "bytes": 1216,
+      "sha256": "1fc65c0d9fc8fb3e99842cdaeeb6d279ffca68947075956adb6557b2c16ee762",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1ccc9b900-2564-1075",
+      "representation": "normalized_process_status_observation",
+      "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/outer-process-observation-during-proof.json",
+      "bytes": 472,
+      "sha256": "c66304b934b4e7d34c98b3fe512f4260e575526268cb6a22d36e8586af70aedc",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1cccec57a-2564-1088",
+      "representation": "normalized_running_process_status_observation",
+      "normalization": "Parsed h_process_status JSON and serialized it with two-space indentation. This is a running observation during complete caller proof, not terminal evidence or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/8794aaaa5949-seven-case-diagnostic-failure/terminal-observation.json",
+      "bytes": 729,
+      "sha256": "58efe7f8f77d675781859e67f82a6152fa40493153be2668f961001238bf71ff",
+      "source_tool": "h_process_status",
+      "host": "desktop",
+      "job_id": "1a1ccfa36ce-2564-112c",
+      "representation": "normalized_terminal_process_status_observation",
+      "normalization": "Parsed h_process_status JSON serialized with two-space indentation. This is not a raw host file or the original MCP response envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/b514c3cacb73-source-gate-failure/terminal-observation.json",
+      "bytes": 894,
+      "sha256": "cc7ed49405bf578af2cca78502c387caa6d91893ffdceee82f6259894c6614fc",
+      "source_tool": "h_process_start identical-key reconciliation",
+      "host": "desktop",
+      "job_id": "1a1cd1615b1-2564-117e",
+      "representation": "normalized_terminal_process_status_observation",
+      "normalization": "Parsed original durable status from reused same-key process_start response, then serialized with two-space indentation. Exact request identity is retained separately; this is not a raw host file or original MCP envelope."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/7a6c00b8201f-native-failure/final-terminal-observation.json",
+      "note": "Authoritative original SDK process_status decoded from the hash-verified immutable result; normalized JSON serialization, not a raw host file."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/restore-attempt-observation.json",
+      "note": "Normalized connector transport error, not proof that the remote restoration did or did not run."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/execution-unavailable-20261112/f254-fixed-source-status.json",
+      "note": "Source graph and static inventory audit. No same-source test or ordinary acceptance pass is inferred."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/github-ci/log-parts.json",
+      "note": "Chunk map for complete original CI logs, not a substitute for their bytes."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/exact-v8-restoration-20261112/reconciled-terminal.json",
+      "note": "Normalized selected original durable job fields after same-key reconciliation; no restart or replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/f8ea08942b68-source-integration-failure/host-format-preparation/reconciled-terminal.json",
+      "note": "Normalized original terminal observation after exact same-key reconciliation."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v10-reconciled-terminal.json",
+      "note": "Normalized original v10 terminal observation after same-key reconciliation; actual old dependency failure remains retained."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v11-after-restore/terminal.json",
+      "note": "Original process-status fields, kept separately from preparation/application outcome."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/dcf71113bf19-crypto-diagnostic/v12-exact-repository/terminal.json",
+      "note": "Authoritative durable terminal state after same-key reconciliation; initial timeout observation retained."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/unified-source-merges/evaluator-1a5b31e6.json",
+      "note": "Actual Git tree, real parents/common ancestors, explicitly distinguished virtual content base, complete protected-row merge and exact postimages."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/unified-source-merges/version-619f3ea4.json",
+      "note": "Actual Git tree with true f254 base, two reviewed caller unions, complete protected rows, actual inventories and exact postimages."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/qualification-interpretation.json",
+      "note": "Derived interpretation, separate from original logs; helper raw values preserved but invalid pass subtraction explained."
+    }
+  ],
+  "retained_typed_requests": [
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/b514-source-only.json",
+      "bytes": 8856,
+      "sha256": "becf76bf63726e628b97663384191f6f77ae4a3680299d6097c1aa71b64c5d98",
+      "note": "Exact frozen typed process_start arguments, not proof of admission/completion."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/f8-resident-source-only.json",
+      "bytes": 7674,
+      "sha256": "7ceabcd85b84212abcf6dd60e188bff7fc41a7be524d6aa755deb78203ce4892",
+      "note": "Exact frozen typed process_start arguments, not proof of admission/completion."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/dcf7-crypto-only.json",
+      "bytes": 18025,
+      "sha256": "a97c4775969b583c2b107d4bb1baf3ac35f90e5628c20021ca72e25ca0258aaf",
+      "note": "Exact frozen request bytes reconstructed from typed arguments and verified against the previously recorded immutable SHA-256; no completion claim."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/restore-exact-v8-pair.json",
+      "bytes": 5214,
+      "sha256": "ed1be5e9a1f8d752e9156459383ae7ddefa6dc4492c3dae37252fa2734252a66",
+      "note": "Exact create-only restoration request. Transport closed without a job id or request digest; execution/effect remains unknown. Reconcile only this same frozen key and arguments."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/v11-crypto-after-exact-restore.json",
+      "bytes": 18449,
+      "sha256": "8acaa7b6b191b0ce739c81e38e58477bf5d2018b3b7262f1203205d3fd18bf81",
+      "idempotency_key": "learn-ce434-fixed-dcf7-v11-seven-crypto-after-exact-restore-v1",
+      "observation": "Exact frozen typed request, Git blob readback verified before original submission; unknown response never authorizes a new-key replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/v12-crypto-exact-repository.json",
+      "bytes": 18468,
+      "sha256": "c0e0a032bed318379ccbaf86da07971d7da639a1f12f0f9418477cbebbef554f",
+      "idempotency_key": "learn-ce434-fixed-dcf7-v12-seven-crypto-exact-repository-v1",
+      "observation": "Exact frozen typed request, Git blob readback verified before original submission; unknown response never authorizes a new-key replay."
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/integrated-failures/typed-requests/unified-619f-format-only.json",
+      "bytes": 6385,
+      "sha256": "f655541fab1127f5db5ce197fc3721724f61c12bb61c410c1d03fbf5d0c4c3f4",
+      "idempotency_key": "learn-ce434-fixed-619f-unified-format-only-v1",
+      "observation": "Exact original frozen formatter request, no native or source tests."
+    }
+  ],
+  "original_file_reassembly": [
+    {
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.log",
+      "bytes": 692914,
+      "sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-001",
+          "bytes": 350000,
+          "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.log.part-002",
+          "bytes": 342914,
+          "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71"
+        }
+      ],
+      "join": "byte-concatenate in order, no separator"
+    },
+    {
+      "original_path": "/workspace/scratch/ce434f960ee9/qualification-local-514f-source-v1/source-closure.driver.log",
+      "bytes": 692914,
+      "sha256": "d78a894d7706ea0bff5df8c8e16a15a7a79a5dee97853239505e0cd6495e6f03",
+      "parts": [
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-001",
+          "bytes": 350000,
+          "sha256": "8d5aef87f6f658bd173437a6e7445e1e94af74eff64b4480cbd4a901aa64efe4"
+        },
+        {
+          "path": "qualification/learn-ordinary-ce434/integrated-failures/514fe5f53cfd-fixed-source/local-source-v1/source-closure.driver.log.part-002",
+          "bytes": 342914,
+          "sha256": "605990ece3eefd7137d26c66b921e1d01f5dd74b79c9b0480ea8ffb3379b9a71"
+        }
+      ],
+      "join": "byte-concatenate in order, no separator"
+    }
+  ]
+}

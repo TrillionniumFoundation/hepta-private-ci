@@ -1,0 +1,7 @@
+# hepta-private-ci — ChatGPT Library standalone source recovery, 2026-11-03
+
+This is **historical source and test preservation**, not deployment, a production-qualified memory cell, a CI pass or a request to enable an experiment. It retains standalone Python sources, tests, GitHub workflow files and shell scripts from ChatGPT Library, under a separate path and branch with no edits to current source owners. These are not proven independent or equivalent to the current multi-repository release combination. Some file names may represent older iterations, and exact blobs can already exist under other branches.
+
+**Reproduce the byte identities:** run `python3 verify_snapshot.py` from this directory to check each original file's SHA-256, Git Blob SHA and size against `MANIFEST.json`. `python3 -m compileall -q files` provides a Python syntax-only check, not a runtime experiment. File-specific behavioral tests require the pinned original source tree, data owner, toolchain, seeds, and execution environment, which this isolated recovery folder cannot supply automatically. In particular, do not promote claims about real datasets, memory improvements, model authority or full end-to-end product outcomes without those inputs.
+
+This snapshot intentionally excludes raw logs, model weights, checkpoint binaries, raw datasets and legacy `.patch` diff bundles; the latter require separate source lineage review. Secret-marker screening and Python syntax checks were applied locally before publishing, but this is not a claim of exhaustive security certification.

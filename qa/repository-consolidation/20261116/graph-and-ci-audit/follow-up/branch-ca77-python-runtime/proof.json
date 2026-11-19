@@ -1,0 +1,1089 @@
+{
+  "schema": "hepta.ca77.generation-python-runtime-proof.v1",
+  "created_utc": "2026-11-16T20:42:45.680537+00:00",
+  "incoming_commit": "ca77c88d01b5dc800bdba7cfdc673c7d8d89101a",
+  "source_commit": "eb2e8028664b6db79ee1885f0d5b6ec115376021",
+  "source_tree": "aa2129d37dfa97a7bfa21858f5e9ad335b008a9f",
+  "source_parent": "ae319812a4eacd63089d6fb20a1aaac08b044ee5",
+  "source_plan": {
+    "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/source-publication-plan.json",
+    "bytes": 9415,
+    "sha256": "34c2f91f0ae74dcfe10780d1ae7da0e0ec208af4be2a0577fe4f102ee8b40277"
+  },
+  "source_entries": [
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/conditioned.py",
+      "mode": "100644",
+      "postBlob": "98e0448cec61ae2792fd7babd265a05c241daf98",
+      "bytes": 6426,
+      "sha256": "ccb5f9a78e58d6f1d1511a95f50de3602e1f39e7254fce5566e97a994d5b4cba",
+      "incomingBlob": "98e0448cec61ae2792fd7babd265a05c241daf98",
+      "incoming_bytes_identical": true,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/conditioned_tests.py",
+      "mode": "100644",
+      "postBlob": "31020c74ab1ff01e6d11cfdac474d920cda53492",
+      "bytes": 9556,
+      "sha256": "3fa977f2862e65f7229b8bc93be553c42b1040580bb3aa715bae3fc9bae87173",
+      "incomingBlob": "31020c74ab1ff01e6d11cfdac474d920cda53492",
+      "incoming_bytes_identical": true,
+      "role": "original regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/data.py",
+      "mode": "100644",
+      "postBlob": "6ea525722249b1a998dad18a367bfdd2c25f090d",
+      "bytes": 11933,
+      "sha256": "de749eedcbffb7525b97c40a3721e3888a157e020333f43c55aa55db0784ef29",
+      "incomingBlob": "6ea525722249b1a998dad18a367bfdd2c25f090d",
+      "incoming_bytes_identical": true,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/data_tests.py",
+      "mode": "100644",
+      "postBlob": "7ba72ed302ae5a89887c74e6b162dc3c1b566536",
+      "bytes": 2178,
+      "sha256": "ed5202accd4ddb7bef292ce91d2c283c863582b62ab6c938ae0dba12518a5c77",
+      "incomingBlob": "7ba72ed302ae5a89887c74e6b162dc3c1b566536",
+      "incoming_bytes_identical": true,
+      "role": "original regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/neural.py",
+      "mode": "100644",
+      "postBlob": "840918e1b211608507f928a2dd794afa986e9963",
+      "bytes": 19994,
+      "sha256": "6447edf81da45695ab87a033c544ff7c554a15431e614474be7ad3b7c329e742",
+      "incomingBlob": "840918e1b211608507f928a2dd794afa986e9963",
+      "incoming_bytes_identical": true,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/neural_tests.py",
+      "mode": "100644",
+      "postBlob": "b2b74aea25d8a59ce8f5b48d085e2b479167f7f6",
+      "bytes": 3355,
+      "sha256": "51975872c8377a3e551d1b6c90a097bff11eed85a774584f78ba7f760e38633c",
+      "incomingBlob": "b2b74aea25d8a59ce8f5b48d085e2b479167f7f6",
+      "incoming_bytes_identical": true,
+      "role": "original regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/observer.py",
+      "mode": "100644",
+      "postBlob": "9ab280a340de0062261a088811cb1a0203d05164",
+      "bytes": 7652,
+      "sha256": "5e9c6444e43ae3ccd44b1683a94f6d6487d8956534e4bfc6c2fcfa069bbf716e",
+      "incomingBlob": "9ab280a340de0062261a088811cb1a0203d05164",
+      "incoming_bytes_identical": true,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/owner_worker.py",
+      "mode": "100644",
+      "postBlob": "9b185cf60838d3f7f0724bf1b51e731572a7ef3f",
+      "bytes": 12718,
+      "sha256": "03e62107d4202e2247420ecd8ee9b7e5bbae9b20603936b190bf910b3d0cba31",
+      "incomingBlob": "2ae2305525645f1862e3319a7177d7d958806b4b",
+      "incoming_bytes_identical": false,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/owner_worker_import_tests.py",
+      "mode": "100644",
+      "postBlob": "f10011f467eba0e598f69a50114a1c76b42f161f",
+      "bytes": 5809,
+      "sha256": "c9180b79eaaaaea9eaf1bfb00b836d8c62361bcfcd3af11c753a47fe292194c7",
+      "incomingBlob": null,
+      "incoming_bytes_identical": false,
+      "role": "namespace regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/owner_worker_tests.py",
+      "mode": "100644",
+      "postBlob": "0aa1bd2485a5519ac2053f314bbadacc1896a64b",
+      "bytes": 9437,
+      "sha256": "1e09bcf0c4554bfb0726c64e88d360aa6653f228690b9e462280a0a8f666d962",
+      "incomingBlob": "0aa1bd2485a5519ac2053f314bbadacc1896a64b",
+      "incoming_bytes_identical": true,
+      "role": "original regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/plan_training.py",
+      "mode": "100644",
+      "postBlob": "06fb8f13ef2169428e27657987f09892beee729b",
+      "bytes": 18967,
+      "sha256": "b43ff714960139d4b58d02dec86b69d27ac51d5abfd75509936ee2c5c355997b",
+      "incomingBlob": "06fb8f13ef2169428e27657987f09892beee729b",
+      "incoming_bytes_identical": true,
+      "role": "runtime"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/plan_training_tests.py",
+      "mode": "100644",
+      "postBlob": "634c3d47e27df0ea16a4b2e6fa4566fb62dc4bf2",
+      "bytes": 6420,
+      "sha256": "26357d91d8f0b829c71fee667819fd7a761a5d2202688f9c93afe9cf26f118c4",
+      "incomingBlob": "634c3d47e27df0ea16a4b2e6fa4566fb62dc4bf2",
+      "incoming_bytes_identical": true,
+      "role": "original regression"
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v6/requirements.txt",
+      "mode": "100644",
+      "postBlob": "af75fdc2d544c3e2b093febc50159d2de11eea7d",
+      "bytes": 167,
+      "sha256": "c48e90c94760d040d15ce4c7ac7ab261f4bf68746966f4d77736a1d5f9ca660a",
+      "incomingBlob": "af75fdc2d544c3e2b093febc50159d2de11eea7d",
+      "incoming_bytes_identical": true,
+      "role": "requirements"
+    }
+  ],
+  "coverage_added_by_python_source": 0,
+  "original_runtime_source_digest": "9bf09b8f4358f7067548f813ba34100605bc0e0e481d066777befa21093f103a",
+  "source_guard": {
+    "regular_or_symbolic_initializer_entries_rejected": [
+      "experiments/__init__.py",
+      "experiments/multimodal_output_portfolio/__init__.py",
+      "experiments/multimodal_output_portfolio/v6/__init__.py"
+    ],
+    "checks": "Before the first repository import and on both sides of the six-source digest read; integrity is checked again after execution.",
+    "threat_scope": "Local immutable source custody; not remote attestation or protection against a malicious concurrent host.",
+    "original_mutation": "The original six-source worker executed a harmless unpinned parent initializer despite unchanged source pins. Original receipt and marker are preserved.",
+    "original_test_files_retained": 5,
+    "original_tests_retained": 24,
+    "new_namespace_regressions": 3
+  },
+  "tests": {
+    "original_owner_worker": {
+      "passed": 5,
+      "skipped": 0
+    },
+    "original_boundary_modules": {
+      "passed": 19,
+      "skipped": 0
+    },
+    "original_subprocess_profiles": {
+      "profiles": ["legacy", "conditioned", "controlled"],
+      "passed": 3,
+      "scope": "Original isolated Python subprocess output compared with the actual direct model; every non-timing field equal. Timing fields excluded from equality."
+    },
+    "guard_v2": {
+      "passed": 27,
+      "skipped": 0,
+      "command": [
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "experiments.multimodal_output_portfolio.v6.owner_worker_tests",
+        "experiments.multimodal_output_portfolio.v6.owner_worker_import_tests",
+        "experiments.multimodal_output_portfolio.v6.conditioned_tests",
+        "experiments.multimodal_output_portfolio.v6.neural_tests",
+        "experiments.multimodal_output_portfolio.v6.plan_training_tests",
+        "experiments.multimodal_output_portfolio.v6.data_tests"
+      ],
+      "process_seconds": 53.309232234954834
+    },
+    "native_owner_five": {
+      "passed": 5,
+      "skipped": 0,
+      "original_ignored_tests_explicitly_selected": true,
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--test",
+        "generation_owner_execution",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "fail"
+      ],
+      "original_timeout_semantics": "Three successful profile cases and invalid configuration retain 30s; indeterminate case retains1ms. Original nextest and resource controls unchanged.",
+      "input_immutability": {
+        "rustInputs": 13545,
+        "rustInputsUnchanged": true,
+        "externalInputs": 22,
+        "externalInputsUnchanged": true
+      },
+      "generated_output_files": 10,
+      "result_sources": {
+        "results.json": {
+          "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/results.json",
+          "bytes": 454,
+          "sha256": "d2acc72c6741b2b04126053167cf095f0e9172afe96ec9addbdb5f2e9afa223c"
+        },
+        "invocation.json": {
+          "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/invocation.json",
+          "bytes": 1215,
+          "sha256": "fbb7f5b0409a9f66c63cd2df1b242051440dcde97c477e1922f052fd69f04e7c"
+        },
+        "original-owner-five.log": {
+          "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/original-owner-five.log",
+          "bytes": 47370,
+          "sha256": "9dbe9fe1dc3b6dfe44d702a09723e09af980a253e356cc5255a7fa42b8f23178"
+        },
+        "external-inputs.json": {
+          "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/external-inputs.json",
+          "bytes": 7304,
+          "sha256": "b91baf0f07add149e398c947ffe19c54cf341cafa166bdbb12674d661c24b65a"
+        },
+        "generated-owner-evidence.json": {
+          "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/generated-owner-evidence.json",
+          "bytes": 3421,
+          "sha256": "c6379db97d9aaef3a6caa1e90c9ad9c7ba4bef7ffcc8a765dbf8ddad0cded116"
+        }
+      }
+    },
+    "no_repeated_execution_for_packaging": true
+  },
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.14.1+cpu",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "platform": "Linux",
+    "incoming_workflow_python": "3.12.14",
+    "hosted_python_version_qualified": false
+  },
+  "fixture_scope": {
+    "source": "Original seed-7301 hidden-16 model fixture generator, with fresh source pins after the guard change.",
+    "random_model_fixtures": true,
+    "historical_trained_full_002": false,
+    "old_and_new_fixture_json_retained": true,
+    "model_files": [
+      {
+        "path": "owner-fixture/base.pt",
+        "bytes": 1866286,
+        "sha256": "292012222f022a9c967f0f52cd02dd5a14e557a32f3cc21d58a8ef58d17025f0"
+      },
+      {
+        "path": "owner-fixture/conditioned/base.pt",
+        "bytes": 1872729,
+        "sha256": "b1c6afbef2660f21b07fe2c17648e21466bcb6dd902c812bd5823ab941c63cab"
+      },
+      {
+        "path": "owner-fixture/controlled/base.pt",
+        "bytes": 1877005,
+        "sha256": "06207322126eebe34e818c7ce61834525e4ab1ecb2c8ed7b07f39386b2547259"
+      },
+      {
+        "path": "namespace-guard-v2/owner-fixture/base.pt",
+        "bytes": 1866286,
+        "sha256": "292012222f022a9c967f0f52cd02dd5a14e557a32f3cc21d58a8ef58d17025f0"
+      },
+      {
+        "path": "namespace-guard-v2/owner-fixture/conditioned/base.pt",
+        "bytes": 1872729,
+        "sha256": "b1c6afbef2660f21b07fe2c17648e21466bcb6dd902c812bd5823ab941c63cab"
+      },
+      {
+        "path": "namespace-guard-v2/owner-fixture/controlled/base.pt",
+        "bytes": 1877005,
+        "sha256": "06207322126eebe34e818c7ce61834525e4ab1ecb2c8ed7b07f39386b2547259"
+      }
+    ],
+    "unique_checkpoint_count": 3,
+    "original_boundary_test_training": "Original tests include small synthetic fitting regressions (two base steps and three plan steps per profile); no scientific dataset download or full experiment was run."
+  },
+  "historical_calibration": {
+    "owner_source_digest_must_remain": "9bf09b8f4358f7067548f813ba34100605bc0e0e481d066777befa21093f103a",
+    "fixed_original_commit": "b98961ceb71414490e1c6ae397cf635bca3093f4",
+    "historical_records_changed": false,
+    "current_qualification_claimed": false,
+    "offline_verifier": "The unchanged original neuron_calibration and verify_neuron_calibration modules can verify original recorded states, outputs, source pins and negative metrics without running the current worker.",
+    "execution": "A historical source-pinned model run requires a separately restored exact original source tree. The current source and random fixtures do not replace historical calibration."
+  },
+  "gates": {
+    "source_codespell": {
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/codespell.json",
+      "bytes": 5850,
+      "sha256": "7ef35e6b419fa03012317c7dcac177ad9b8181bb02b8379ee77e1adf16722ee4"
+    },
+    "source_blob_size": {
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/blob-size.json",
+      "bytes": 853,
+      "sha256": "1945e70cb14041dac3fb0f236ac78a486a30915d89420e2d0fe1b2aa2410e4de"
+    },
+    "original_size_cap_bytes": 512000,
+    "new_allowlist_entries": 0,
+    "new_global_spelling_ignores": 0,
+    "formatter_scope": "experiments Python lies outside the original Python formatter selector; no full formatter pass is claimed."
+  },
+  "packaging_recovery": {
+    "original_idempotency_key": "branch-ca77-python-complete-evidence-package-v1",
+    "original_session": "dpty-a15d46458bac8b135af9a9adf21ba58f87b16489a13d13fabe2289a5fb1fa841",
+    "original_outcome": "unknown during desktop ENOSPC",
+    "readonly_reconciliation_session": "dpty-1685a5d7893341bfcd9037415a24bb4e4933648e74f43ddd0083ed49b35f7b5c",
+    "readonly_reconciliation_exit_code": 0,
+    "observed_publication_directory_exists": false,
+    "observed_original_archive_children": ["launch.lock"],
+    "recovery": "This is a new create-only native-five evidence publication, including results produced after the original failed launch. It uses a distinct output directory. The original unknown task is not replayed and no tests are repeated.",
+    "same_key_recovery_result": "Rejected: terminal key is already bound to a different request. The original arguments were not retained in the assistant context. The original binding is left untouched."
+  },
+  "archives": [
+    {
+      "path": "records/evidence-000.tar.gz",
+      "git_sha": "edd5825c1b9b2bcad9ec015a11067662d595c118",
+      "bytes": 307619,
+      "sha256": "3bec337de363256a71a3036bfced981362fff22832fb391a3124bbb2f91603fb",
+      "uncompressed_tar": {
+        "bytes": 1884160,
+        "sha256": "1a007d5a8c7eb0e3ce55b4f659ab5de26083e86b9f4a39e3c4fd0d2d7c1cbddf"
+      },
+      "member_names": [
+        "python/environment-install-0.stderr",
+        "python/environment-install-0.stdout",
+        "python/environment-install-1.stderr",
+        "python/environment-install-1.stdout",
+        "python/environment-install.json",
+        "python/environment-metadata.stderr",
+        "python/environment-metadata.stdout",
+        "python/original-boundary-tests.json",
+        "python/original-boundary-tests.stderr",
+        "python/original-boundary-tests.stdout",
+        "python/original-fixture-validation.json",
+        "python/original-owner-fixture-prepare.stderr",
+        "python/original-owner-fixture-prepare.stdout",
+        "python/original-owner-worker-tests.stderr",
+        "python/original-owner-worker-tests.stdout",
+        "python/package-initialization-and-workflow-pins.json",
+        "python/six-source-and-fixture-import-index.json",
+        "python/source-tree-comparison.json",
+        "python/namespace-guard-v2/tests.json",
+        "python/namespace-guard-v2/tests.stdout",
+        "python/namespace-guard-v2/tests.stderr",
+        "python/namespace-guard-v2/fixture-prepare.json",
+        "python/namespace-guard-v2/fixture-prepare.stdout",
+        "python/namespace-guard-v2/fixture-prepare.stderr",
+        "python/namespace-guard-v2/source-publication-plan.json",
+        "python/namespace-guard-v2/semantic-proof.json",
+        "python/namespace-guard-v2/owner-worker-guard.patch",
+        "python/namespace-guard-v2/incoming-runtime-path-history.tsv",
+        "python/namespace-guard-v2/codespell.json",
+        "python/namespace-guard-v2/codespell.stdout",
+        "python/namespace-guard-v2/codespell.stderr",
+        "python/namespace-guard-v2/blob-size.json",
+        "python/namespace-guard-v2/blob-size.stdout",
+        "python/namespace-guard-v2/blob-size.stderr",
+        "python/isolated-worker-validation/conditioned.direct.json",
+        "python/isolated-worker-validation/conditioned.stderr",
+        "python/isolated-worker-validation/conditioned.stdin.json",
+        "python/isolated-worker-validation/conditioned.stdout.json",
+        "python/isolated-worker-validation/controlled.direct.json",
+        "python/isolated-worker-validation/controlled.stderr",
+        "python/isolated-worker-validation/controlled.stdin.json",
+        "python/isolated-worker-validation/controlled.stdout.json",
+        "python/isolated-worker-validation/legacy.direct.json",
+        "python/isolated-worker-validation/legacy.stderr",
+        "python/isolated-worker-validation/legacy.stdin.json",
+        "python/isolated-worker-validation/legacy.stdout.json",
+        "python/isolated-worker-validation/receipt.json",
+        "python/namespace-initializer-mutation/receipt.json",
+        "python/namespace-initializer-mutation/stdout.json",
+        "python/namespace-initializer-mutation/stderr",
+        "python/namespace-initializer-mutation/executed-marker.txt",
+        "python/namespace-initializer-mutation/repository/experiments/__init__.py",
+        "python/owner-fixture/conditioned/fixture.json",
+        "python/owner-fixture/controlled/fixture.json",
+        "python/owner-fixture/fixture.json",
+        "python/namespace-guard-v2/owner-fixture/conditioned/fixture.json",
+        "python/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/execution.json",
+        "python/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/inference.journal",
+        "python/namespace-guard-v2/owner-fixture/controlled/fixture.json",
+        "python/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/execution.json",
+        "python/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/inference.journal",
+        "python/namespace-guard-v2/owner-fixture/fixture.json",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/execution.json",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/inference.journal",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/execution.json",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/inference.journal",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/execution.json",
+        "python/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/inference.journal",
+        "native-five/results.json",
+        "native-five/invocation.json",
+        "native-five/external-inputs.json",
+        "native-five/generated-owner-evidence.json",
+        "native-five/runtime-versions.stdout",
+        "native-five/runtime-versions.stderr",
+        "native-five/original-owner-five.log"
+      ]
+    }
+  ],
+  "archive_members": [
+    {
+      "name": "python/environment-install-0.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-install-0.stderr",
+      "bytes": 332,
+      "sha256": "b57691402cea90deb1844f22987c5f986131dcf24b2f339e4228e515dfd0b045"
+    },
+    {
+      "name": "python/environment-install-0.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-install-0.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/environment-install-1.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-install-1.stderr",
+      "bytes": 606,
+      "sha256": "381b3df7dc3affad84f58e4d6ca6ad8e41c25feaefdecc5a8714e3f0552276bd"
+    },
+    {
+      "name": "python/environment-install-1.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-install-1.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/environment-install.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-install.json",
+      "bytes": 935,
+      "sha256": "67aed9123cd5d4c6473b0a095ea777a20edfa96ec4e56a31a34b89319cb11a21"
+    },
+    {
+      "name": "python/environment-metadata.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/environment-metadata.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/environment-metadata.stdout",
+      "bytes": 500,
+      "sha256": "099794974bd9bbcc5fe15d48eae349ae6756bcbe07b54a57192166b8984d2939"
+    },
+    {
+      "name": "python/original-boundary-tests.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-boundary-tests.json",
+      "bytes": 4876,
+      "sha256": "ed0ee24bfcbaf02195dc6f947cd772262d5cc5b3e53acb1ce36742ad738e0617"
+    },
+    {
+      "name": "python/original-boundary-tests.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-boundary-tests.stderr",
+      "bytes": 4134,
+      "sha256": "84b54cf5a88d382f5c5b95fe8e74d22cf751c192baefe4e31a3f2040d4728f80"
+    },
+    {
+      "name": "python/original-boundary-tests.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-boundary-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/original-fixture-validation.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-fixture-validation.json",
+      "bytes": 5179,
+      "sha256": "26b34a777d825912a0a1795f845077b0dd9b75f4f60597ab2d353e67b149f1ed"
+    },
+    {
+      "name": "python/original-owner-fixture-prepare.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-owner-fixture-prepare.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/original-owner-fixture-prepare.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-owner-fixture-prepare.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/original-owner-worker-tests.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-owner-worker-tests.stderr",
+      "bytes": 1155,
+      "sha256": "95d532ebfad1f4125348fcfd2a3a7715af465494ad032c036dac76aa50a7e87d"
+    },
+    {
+      "name": "python/original-owner-worker-tests.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/original-owner-worker-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/package-initialization-and-workflow-pins.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/package-initialization-and-workflow-pins.json",
+      "bytes": 4575,
+      "sha256": "1941e7d9c2c7e4b2be7afa874c68251c1df0d0957cf17d8be235790f58ced9f2"
+    },
+    {
+      "name": "python/six-source-and-fixture-import-index.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/six-source-and-fixture-import-index.json",
+      "bytes": 26667,
+      "sha256": "549b915a0eaa91231688a3912f5ab1cdeb4d4aacdb8142f6f44146c294de68e9"
+    },
+    {
+      "name": "python/source-tree-comparison.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/source-tree-comparison.json",
+      "bytes": 1188084,
+      "sha256": "5096f880c868ba996003593aa07fe061b2bb3594a925110a32823057d6a2c3b6"
+    },
+    {
+      "name": "python/namespace-guard-v2/tests.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/tests.json",
+      "bytes": 661,
+      "sha256": "c1048a4a209de065a5d6df066c43270f18ee3efa1098617ae2da4c4b71dacc29"
+    },
+    {
+      "name": "python/namespace-guard-v2/tests.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/namespace-guard-v2/tests.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/tests.stderr",
+      "bytes": 5824,
+      "sha256": "364f285f3edd2b7c0dc2d1ac92712c515ca6704bb9fbca0f62ceb0f7c019a882"
+    },
+    {
+      "name": "python/namespace-guard-v2/fixture-prepare.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/fixture-prepare.json",
+      "bytes": 475,
+      "sha256": "e76c5da0c0dc9548f5295682a315a373d5c3ae925372cab5f413047295116ec2"
+    },
+    {
+      "name": "python/namespace-guard-v2/fixture-prepare.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/fixture-prepare.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/namespace-guard-v2/fixture-prepare.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/fixture-prepare.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/namespace-guard-v2/source-publication-plan.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/source-publication-plan.json",
+      "bytes": 9415,
+      "sha256": "34c2f91f0ae74dcfe10780d1ae7da0e0ec208af4be2a0577fe4f102ee8b40277"
+    },
+    {
+      "name": "python/namespace-guard-v2/semantic-proof.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/semantic-proof.json",
+      "bytes": 419,
+      "sha256": "efb07917dd3fd3b0a1b30509624f9ecff054020c95a359dd535990ad6de88692"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-worker-guard.patch",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-worker-guard.patch",
+      "bytes": 7210,
+      "sha256": "e2295d694b0c5d57f83139ac976fd309c18b15f96b4f1e0151197122841911ea"
+    },
+    {
+      "name": "python/namespace-guard-v2/incoming-runtime-path-history.tsv",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/incoming-runtime-path-history.tsv",
+      "bytes": 627,
+      "sha256": "2bda83df072b638af2b8c2ff62800b7783ad138ade68fb6596daa5563509d1c4"
+    },
+    {
+      "name": "python/namespace-guard-v2/codespell.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/codespell.json",
+      "bytes": 5850,
+      "sha256": "7ef35e6b419fa03012317c7dcac177ad9b8181bb02b8379ee77e1adf16722ee4"
+    },
+    {
+      "name": "python/namespace-guard-v2/codespell.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/namespace-guard-v2/codespell.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/codespell.stderr",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "name": "python/namespace-guard-v2/blob-size.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/blob-size.json",
+      "bytes": 853,
+      "sha256": "1945e70cb14041dac3fb0f236ac78a486a30915d89420e2d0fe1b2aa2410e4de"
+    },
+    {
+      "name": "python/namespace-guard-v2/blob-size.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/blob-size.stdout",
+      "bytes": 1377,
+      "sha256": "c2594dd6f872de4f4f3c8b1f5fa1c7f2d1ac959578f344c43d04e003b21aeda7"
+    },
+    {
+      "name": "python/namespace-guard-v2/blob-size.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/blob-size.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/isolated-worker-validation/conditioned.direct.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/conditioned.direct.json",
+      "bytes": 8264,
+      "sha256": "740c3bd50e3d99031d2ea76d2e3e30b8606d1e87faeee63ff859c53d49878647"
+    },
+    {
+      "name": "python/isolated-worker-validation/conditioned.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/conditioned.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/isolated-worker-validation/conditioned.stdin.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/conditioned.stdin.json",
+      "bytes": 35828,
+      "sha256": "81f177518059b95a03b01f736fdfae6e42299202292dd9946ef6a1c89456a9fa"
+    },
+    {
+      "name": "python/isolated-worker-validation/conditioned.stdout.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/conditioned.stdout.json",
+      "bytes": 8266,
+      "sha256": "96254a9cbf51ce22d499a898481aea3ab8f4a62973440d24945d339392faa07c"
+    },
+    {
+      "name": "python/isolated-worker-validation/controlled.direct.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/controlled.direct.json",
+      "bytes": 8328,
+      "sha256": "ab83c03300a0bec5f741a8090d33f973a7fe3361635d6c01c3f075eb0764fcf9"
+    },
+    {
+      "name": "python/isolated-worker-validation/controlled.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/controlled.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/isolated-worker-validation/controlled.stdin.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/controlled.stdin.json",
+      "bytes": 35827,
+      "sha256": "7949a566d898f653b78051c3c3efe2ad6f37a8a87965c8c6d6dd3ea37c486628"
+    },
+    {
+      "name": "python/isolated-worker-validation/controlled.stdout.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/controlled.stdout.json",
+      "bytes": 8330,
+      "sha256": "8e7a5e51a8f95173950d855bf5b877f724c9258802494644792c6138c083fc3b"
+    },
+    {
+      "name": "python/isolated-worker-validation/legacy.direct.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/legacy.direct.json",
+      "bytes": 7432,
+      "sha256": "8e0d62207ec638bbd6af4e3aa211c25511408dabb7b1b70e86a8acbc5569d4fb"
+    },
+    {
+      "name": "python/isolated-worker-validation/legacy.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/legacy.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/isolated-worker-validation/legacy.stdin.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/legacy.stdin.json",
+      "bytes": 35816,
+      "sha256": "a97018cbdaae71d7242ce254b7d7e664cc90e2712e01774836e73a0d6b351b89"
+    },
+    {
+      "name": "python/isolated-worker-validation/legacy.stdout.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/legacy.stdout.json",
+      "bytes": 7432,
+      "sha256": "8ebc7a3d726b48f23a3a8bb58682ad7f658ba1a59462a306026b2b8ac1d5b175"
+    },
+    {
+      "name": "python/isolated-worker-validation/receipt.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/isolated-worker-validation/receipt.json",
+      "bytes": 6640,
+      "sha256": "f08ef1c82a02582e68af7ad9cb4b93ca1c4757f0883ff7b85fd706e216a55f82"
+    },
+    {
+      "name": "python/namespace-initializer-mutation/receipt.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-initializer-mutation/receipt.json",
+      "bytes": 1548,
+      "sha256": "52b68529910acbc32c0e50a4a98334ddaa626b079550d5c83571f8780d800e64"
+    },
+    {
+      "name": "python/namespace-initializer-mutation/stdout.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-initializer-mutation/stdout.json",
+      "bytes": 7432,
+      "sha256": "3457903758fc3de989a23fc5eefafb7c04b4787719bfdc9e5cb961a5514b1dd8"
+    },
+    {
+      "name": "python/namespace-initializer-mutation/stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-initializer-mutation/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "python/namespace-initializer-mutation/executed-marker.txt",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-initializer-mutation/executed-marker.txt",
+      "bytes": 32,
+      "sha256": "06dff1ed5e3a7a7badf5cdba367c499c3cc60acb571bfb4fb7ab934e77c58f3a"
+    },
+    {
+      "name": "python/namespace-initializer-mutation/repository/experiments/__init__.py",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-initializer-mutation/repository/experiments/__init__.py",
+      "bytes": 246,
+      "sha256": "5a30f2bc3919d253f8085ddebb845a599d41d2dd0e0631f613e123b38a3bd92e"
+    },
+    {
+      "name": "python/owner-fixture/conditioned/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/owner-fixture/conditioned/fixture.json",
+      "bytes": 36743,
+      "sha256": "135d9231a9f8a13ed243fd26bb9722b9f8b135fe5644f84100d6d0e2db9a31c3"
+    },
+    {
+      "name": "python/owner-fixture/controlled/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/owner-fixture/controlled/fixture.json",
+      "bytes": 36742,
+      "sha256": "92878dcbac52613154eca9055cc15b5cd1cdc970df2bf0934eaab82e63c7a95e"
+    },
+    {
+      "name": "python/owner-fixture/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/owner-fixture/fixture.json",
+      "bytes": 36731,
+      "sha256": "ba1a745efc4f2db51a761b515b96d15fb975562b42cd2a607405e2f08b083edf"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/conditioned/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/conditioned/fixture.json",
+      "bytes": 36782,
+      "sha256": "1d9bf8ec9afc683fd88daae4b094f446162b9fb18f4aa23f03a7e25fed63d9b1"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/execution.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/execution.json",
+      "bytes": 34543,
+      "sha256": "0d138240da0a3dae031973a43e416e861fd9fdc939c86e55c1afdc12736009c6"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/inference.journal",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/conditioned/owner-evidence-zd3a8U/inference.journal",
+      "bytes": 815,
+      "sha256": "bdffc25405227f3cc74d127cdbc96bec5efbd7a977f11806c1b26a5bce2b66bf"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/controlled/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/controlled/fixture.json",
+      "bytes": 36781,
+      "sha256": "0ca2f253ccce94be44be3efd2222b45f2f757cf98915d6a0f74b42f71a1f06d4"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/execution.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/execution.json",
+      "bytes": 34811,
+      "sha256": "f21004ed5f4a27a04eaabb886281e26a6e3382a60f193303898b799b12cdc4a0"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/inference.journal",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/controlled/owner-evidence-ycuAco/inference.journal",
+      "bytes": 815,
+      "sha256": "be35f8ca324f2fcfcc8e1368b65f567266e20adf886fd1b5008e864af638b7b3"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/fixture.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/fixture.json",
+      "bytes": 36770,
+      "sha256": "dc5d3d54b5fd2ab32dddc1842ff28fa556ff5e1285ad1493997de361b49b5d93"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/execution.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/execution.json",
+      "bytes": 2141,
+      "sha256": "8f55dd700f7c36caaccc6cb8de2978facb091276987d8a41bfa8a01e39de6ba2"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/inference.journal",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-Bz2r2k/inference.journal",
+      "bytes": 752,
+      "sha256": "6566fab07a2e899790f987eef0b83a6d7b23c30f6958ed165466d60ffa86559e"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/execution.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/execution.json",
+      "bytes": 31227,
+      "sha256": "bc91ff670c52fe0862da85d63e02423255011e208b3187edf1ff7ac0ef77bbfb"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/inference.journal",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-Mqm9bi/inference.journal",
+      "bytes": 815,
+      "sha256": "40c3e333719272cf0d2a0160eaa8cd1ba419e1845ad2009fd962f786ff396f7a"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/execution.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/execution.json",
+      "bytes": 996,
+      "sha256": "bbad8bbbd1c94bc914042f32dad84eef3bba0183d6e1273934295a1473d9e61d"
+    },
+    {
+      "name": "python/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/inference.journal",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/namespace-guard-v2/owner-fixture/owner-evidence-rMNkrg/inference.journal",
+      "bytes": 746,
+      "sha256": "2abe98422bcdebcfff85578cb34e703be876ee72b31464409adb9f9b31f27343"
+    },
+    {
+      "name": "native-five/results.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/results.json",
+      "bytes": 454,
+      "sha256": "d2acc72c6741b2b04126053167cf095f0e9172afe96ec9addbdb5f2e9afa223c"
+    },
+    {
+      "name": "native-five/invocation.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/invocation.json",
+      "bytes": 1215,
+      "sha256": "fbb7f5b0409a9f66c63cd2df1b242051440dcde97c477e1922f052fd69f04e7c"
+    },
+    {
+      "name": "native-five/external-inputs.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/external-inputs.json",
+      "bytes": 7304,
+      "sha256": "b91baf0f07add149e398c947ffe19c54cf341cafa166bdbb12674d661c24b65a"
+    },
+    {
+      "name": "native-five/generated-owner-evidence.json",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/generated-owner-evidence.json",
+      "bytes": 3421,
+      "sha256": "c6379db97d9aaef3a6caa1e90c9ad9c7ba4bef7ffcc8a765dbf8ddad0cded116"
+    },
+    {
+      "name": "native-five/runtime-versions.stdout",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/runtime-versions.stdout",
+      "bytes": 44,
+      "sha256": "24ecfce51751b128dfb373d0ac2fc8db127cd7ba8df14ac84a43e0745f4e58bf"
+    },
+    {
+      "name": "native-five/runtime-versions.stderr",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/runtime-versions.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "native-five/original-owner-five.log",
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/original-owner-five.log",
+      "bytes": 47370,
+      "sha256": "9dbe9fe1dc3b6dfe44d702a09723e09af980a253e356cc5255a7fa42b8f23178"
+    }
+  ],
+  "models": [
+    {
+      "sha256": "06207322126eebe34e818c7ce61834525e4ab1ecb2c8ed7b07f39386b2547259",
+      "bytes": 1877005,
+      "source_paths": [
+        "owner-fixture/controlled/base.pt",
+        "namespace-guard-v2/owner-fixture/controlled/base.pt"
+      ],
+      "parts": [
+        {
+          "path": "models/06207322126eebe3-000.part.gz",
+          "git_sha": "b343208e7d3753b2c1720dc040107934f37a381d",
+          "bytes": 361079,
+          "sha256": "4cfc8eaa805bde5f88e0b0647f7edbe5d6f89411489ea2b7288015ef7be08ea6",
+          "offset": 0,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "e45dfea1aefe9df04347185f6bc0e2ba77d628ada300bf9ac2f6630d3e777080"
+          }
+        },
+        {
+          "path": "models/06207322126eebe3-001.part.gz",
+          "git_sha": "2e49d0023bdcfdc72918ddaa3b5ee70b99d62a71",
+          "bytes": 365016,
+          "sha256": "cb2bff71337802315e5454b1cd8acb049bcfe3f69dd7f29db4d6244f7aac3e63",
+          "offset": 400000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "6da8cf833c8ccd9a8647dd407f2cea117a06f88792bb1e8ffb5e9880cdc7759d"
+          }
+        },
+        {
+          "path": "models/06207322126eebe3-002.part.gz",
+          "git_sha": "db046632397ff9ce6be4a5b63d0ef8f97eb2cbf7",
+          "bytes": 365045,
+          "sha256": "e4bd090f350a70fa50e78b01f2ac2efdb25898ac634d65f2294e36701806566d",
+          "offset": 800000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "f1375ed62c24edbf79da938adf944ba5ca06c82bc9ec4603ca601a79f85cea20"
+          }
+        },
+        {
+          "path": "models/06207322126eebe3-003.part.gz",
+          "git_sha": "95d3b64e19e7efb39889d75e9e304b2e928bf7a4",
+          "bytes": 365038,
+          "sha256": "8d039c3e92c4e34a6b34bc58ed8b4bbf313d9018582b9d5ca15200e5ef793988",
+          "offset": 1200000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "960abb253986a527be0d531c87ce6295c2371dbe1049f4629cfaa726be99663c"
+          }
+        },
+        {
+          "path": "models/06207322126eebe3-004.part.gz",
+          "git_sha": "1247acdaa0d74f85109b6012e0d91efc07ebd152",
+          "bytes": 249279,
+          "sha256": "537515d2ae873dc9bdfdf1a073a230b395eb26b41878d06848b74ea63228ebc7",
+          "offset": 1600000,
+          "uncompressed": {
+            "bytes": 277005,
+            "sha256": "e07e4b399d8990ccb884b369b549507e1f4be50aa71264371665482e9238c6ab"
+          }
+        }
+      ]
+    },
+    {
+      "sha256": "292012222f022a9c967f0f52cd02dd5a14e557a32f3cc21d58a8ef58d17025f0",
+      "bytes": 1866286,
+      "source_paths": [
+        "owner-fixture/base.pt",
+        "namespace-guard-v2/owner-fixture/base.pt"
+      ],
+      "parts": [
+        {
+          "path": "models/292012222f022a9c-000.part.gz",
+          "git_sha": "3c0132149ec40ffa6caf5b1cee5b3ea6083b7deb",
+          "bytes": 362541,
+          "sha256": "97ab52000b7e852927d9bd1a80a6f3836df3cc1f0cb711343cfbf2233bbd3d1c",
+          "offset": 0,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "2f59190144e36824a66770b1def7e9e3bb4811dd83c36cc5a23a9cd17ca1e9ee"
+          }
+        },
+        {
+          "path": "models/292012222f022a9c-001.part.gz",
+          "git_sha": "8c6aa14e4159911bc0d6b587174acb1bf93028d3",
+          "bytes": 365027,
+          "sha256": "0a097cd979a81434a7d39a9539582719b1aa1dd30e82cb87e16a7ccaea3991a4",
+          "offset": 400000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "be752677eeed27821e61ea01d219696519a4fd62b5e3328c9fd737549f46c958"
+          }
+        },
+        {
+          "path": "models/292012222f022a9c-002.part.gz",
+          "git_sha": "407db4f27a0e5098ba7dc1ba419a0e6ade32ee2e",
+          "bytes": 365046,
+          "sha256": "7ca0834285a653d73305b86b8766d4b9f685f23090595d9df4728a9157cd88b6",
+          "offset": 800000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "4297add0789f0c24a355aceb50d51c19b47935c1ba71a68d6a2173e73ebd2fa3"
+          }
+        },
+        {
+          "path": "models/292012222f022a9c-003.part.gz",
+          "git_sha": "202d4dcfcfa52ac01b8f9806209e97afee14f2c7",
+          "bytes": 364987,
+          "sha256": "8fd7e791ff2ae4a65160eaf82c428056eda9c6e3d23fea29c705ebd5ba896113",
+          "offset": 1200000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "065a46e5e158be57abcf3126cd43809ccdc639393082c32d1c3e6316676d65ae"
+          }
+        },
+        {
+          "path": "models/292012222f022a9c-004.part.gz",
+          "git_sha": "00ca179a7a26d92ff263bf3b0e54661b93aca064",
+          "bytes": 240136,
+          "sha256": "ee2dc566be01a7e5f6c6a3c1b1733f9cf1057621b52af75d246b7654fedbc7d9",
+          "offset": 1600000,
+          "uncompressed": {
+            "bytes": 266286,
+            "sha256": "56be0a4cf076dddbbfb39796019c0d454b0d99821ac4da589632e16d9d2ae83f"
+          }
+        }
+      ]
+    },
+    {
+      "sha256": "b1c6afbef2660f21b07fe2c17648e21466bcb6dd902c812bd5823ab941c63cab",
+      "bytes": 1872729,
+      "source_paths": [
+        "owner-fixture/conditioned/base.pt",
+        "namespace-guard-v2/owner-fixture/conditioned/base.pt"
+      ],
+      "parts": [
+        {
+          "path": "models/b1c6afbef2660f21-000.part.gz",
+          "git_sha": "e362d693a24c6846fe594789867d659eabcbbd5a",
+          "bytes": 361379,
+          "sha256": "fb769a92e6f8c1abb18921b0b49872c07429e9da1bfefefd61bbac0ed4333708",
+          "offset": 0,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "6fd46d1ac1633d177f59bb3b47dd4157c6ea958a480a3f6f912d142ee8a59d23"
+          }
+        },
+        {
+          "path": "models/b1c6afbef2660f21-001.part.gz",
+          "git_sha": "63d3d61cc22529d292706a04da7602e5465670d1",
+          "bytes": 365042,
+          "sha256": "6ceedecd8c02eeba138bc38a3ae207c7e4c673f1d7d4d5b91d258202800c154a",
+          "offset": 400000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "4986a9f07038baea366dbbd61bf053dd96429049104878979f1cc151a85c8c91"
+          }
+        },
+        {
+          "path": "models/b1c6afbef2660f21-002.part.gz",
+          "git_sha": "b0f18b67e0d1684ed021f4dc6608abea3bcafdc4",
+          "bytes": 365045,
+          "sha256": "183d7b5fe2c4639bab522bc435636f071584f2618d73fc6e34c6edbe0a144dd0",
+          "offset": 800000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "2beae3cbfc7bbad8d245de1b15fb325625bc6c153b96bd07b5b79fd061f8e30f"
+          }
+        },
+        {
+          "path": "models/b1c6afbef2660f21-003.part.gz",
+          "git_sha": "8976c507b5c7d1f4b5b406c62d565d9a101ce47b",
+          "bytes": 365000,
+          "sha256": "0a30b2d48365b5a533eb71eabdf97c82ce5cf5c665cf47523be96afb8a3a1e6b",
+          "offset": 1200000,
+          "uncompressed": {
+            "bytes": 400000,
+            "sha256": "c6e48926296a3f392c06917602496b2780b56281e56a96f7be20f063942e13b8"
+          }
+        },
+        {
+          "path": "models/b1c6afbef2660f21-004.part.gz",
+          "git_sha": "9327c02962525c47d8d0e9add44a489c8bf2d77a",
+          "bytes": 245463,
+          "sha256": "a0a45a79079961ce29c021f9cfd2bb6b2298c389bc539fc2f9d000c6bdd7e430",
+          "offset": 1600000,
+          "uncompressed": {
+            "bytes": 272729,
+            "sha256": "cea29634256433d66781fe174aff9b7ba15748884aeb09cfcf70cf7576c5105b"
+          }
+        }
+      ]
+    }
+  ],
+  "additional_native_manifest_references": [
+    {
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/runner.py",
+      "bytes": 6106,
+      "sha256": "394935ff47ab4d04b46b10d0c9bff18847a4ae944a540584a85e7ae246522ee2"
+    },
+    {
+      "source_path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/rust-input-manifest.json.gz",
+      "bytes": 708577,
+      "sha256": "2b941011896469cb1d881a78a04d28af9766730bace2b140e984daa8344705ab"
+    }
+  ],
+  "restoration": "Verify each file Git object SHA, length and SHA256. For each model decompress the complete gzip parts in listed offset order; verify every raw part and final model length and SHA256. For record archives verify gzip and tar identities, then read only the listed regular relative members; each member has its original hash and length. Restore only into a new isolated directory with create-only writes; never overwrite the repository or preserved source evidence.",
+  "remote_ref_writes": 0
+}

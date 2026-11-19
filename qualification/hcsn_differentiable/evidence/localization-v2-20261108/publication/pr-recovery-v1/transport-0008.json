@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/gh",
+    "api",
+    "repos/TrillionniumFoundation/hepta-private-ci/git/blobs/597f90dee11745df732e39de121291181cd81eef"
+  ],
+  "attempt": 1,
+  "classification": "network_failure_on_replay_safe_read_or_git_object",
+  "input_body_sha256": null,
+  "maximum_attempts": 4,
+  "pull_request_creation_replayed": false,
+  "same_command_and_body_on_retry": true,
+  "stderr": "Get \"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/597f90dee11745df732e39de121291181cd81eef\": dial tcp 140.82.114.6:443: i/o timeout\n",
+  "transmission_outcome": "not inferred; correctness uses read idempotence or content-addressed/unique-ref semantics"
+}

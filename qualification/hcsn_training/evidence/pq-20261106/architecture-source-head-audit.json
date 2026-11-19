@@ -1,0 +1,149 @@
+{
+  "all_record_and_log_bytes_read_back": true,
+  "artifact": {
+    "complete_local_zip": "/workspace/scratch/7b4b0c316c52/hcsn-ci-review/architecture-source-head-bbe995c.zip",
+    "created_at": "2026-11-06T16:13:05Z",
+    "id": 13520550437,
+    "name": "hepta-architecture-42240137866-1-source-head",
+    "retained_zip": "architecture-source-head-raw.zip",
+    "sha256": "c51e448103e61cb429e6d90a8904f286ff59cd1bae55d41b570df383cdffe9cc",
+    "size": 95298,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13520550437"
+  },
+  "job_id": 127967937316,
+  "new_tests_or_builds_executed_during_audit": false,
+  "platform": "ubuntu-24.04-arm",
+  "records": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-hepta-contracts",
+        "--test",
+        "final_use_linearization"
+      ],
+      "exit_code": 0,
+      "failed": 0,
+      "log": "architecture-source-head/final-use.json.f4ac40dd18d74bc18014b4dd763a4ac1.log",
+      "log_bytes": 2193,
+      "log_sha256": "0e6dde6b4d8114625bb54eedfb577c757dd5b8ac0943cddbd6b2ec858e6f0c05",
+      "passed": 1,
+      "record": "architecture-source-head/final-use.json",
+      "record_sha256": "ae4331e3ee450c08247ccd2cfc455bd65d8c5108d48d9bf8a21a61f42ce83ea8",
+      "selected_log_lines": [
+        "test unix::callback_reentrant_revocation_is_ordered_after_final_entry_without_deadlock ... ok"
+      ]
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-hepta-agentd",
+        "browser_servo"
+      ],
+      "exit_code": 0,
+      "failed": 0,
+      "log": "architecture-source-head/browser.json.54138351d066427a81a00ea0dfc100fd.log",
+      "log_bytes": 46872,
+      "log_sha256": "c1317adc1c22b6d37d713a2516a36a4739479e9285f342beb7843f1528de50aa",
+      "passed": 3,
+      "record": "architecture-source-head/browser.json",
+      "record_sha256": "6ad8a7271fb0eacfa95afcc6939984c404727fe434addafb0bc1c62aa712ed9c",
+      "selected_log_lines": [
+        "   Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)",
+        "test browser_servo::tests::non_effect_calls_never_enter_final_use_authority ... ok",
+        "test browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding ... ok",
+        "test browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary ... ok"
+      ]
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-hepta-agentd",
+        "new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+      ],
+      "exit_code": 0,
+      "failed": 0,
+      "log": "architecture-source-head/selected-ranker.json.b5e71834ab584f849091d692bee798a1.log",
+      "log_bytes": 12598,
+      "log_sha256": "cac46762b2d34cce733d2da44386e5d5bc816f84ca7aba1a1c207dad3753e291",
+      "passed": 1,
+      "record": "architecture-source-head/selected-ranker.json",
+      "record_sha256": "85f5d60ee1a1624e62ded986f1658cb4ec01df506a8f04fc1368ec2bcf3ce9b3",
+      "selected_log_lines": [
+        "test cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it ... ok"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(runtime_tasks::tests)"
+      ],
+      "exit_code": 0,
+      "failed": 0,
+      "log": "architecture-source-head/runtime-tasks.json.9ebc8678c8384a28bd0e836e67be603b.log",
+      "log_bytes": 65910,
+      "log_sha256": "8d91a221354f050612f81a2ef10a1d47e408912b47f36561c6a8025bdce3ac6c",
+      "passed": 11,
+      "record": "architecture-source-head/runtime-tasks.json",
+      "record_sha256": "e61943e305c2644bd45c8fa7b180b2b9933be892a0040957ecec69157d3d85ac",
+      "selected_log_lines": [
+        "   Compiling codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)",
+        "     Summary [   0.064s] 11 tests run: 11 passed, 181 skipped"
+      ]
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "optional_module_restart",
+        "forty_first_service",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "failed": 0,
+      "log": "architecture-source-head/optional-process-restart.json.7baf2d289e24405bbee469942e2c2549.log",
+      "log_bytes": 8510,
+      "log_sha256": "1cd6360417e8272d88ec162ae5cca3f49767bed9f4e600a2cfb34e82768b65c4",
+      "passed": 1,
+      "record": "architecture-source-head/optional-process-restart.json",
+      "record_sha256": "a2b77f4d16019f8f7d7a2de90cb9cdb83095bc696c7b93e881755848fb3328ef",
+      "selected_log_lines": [
+        "test forty_first_service_survives_faults_replacement_retirement_and_real_process_restart ... ok"
+      ]
+    }
+  ],
+  "run_attempt": 1,
+  "run_id": 42240137866,
+  "schema_version": 1,
+  "scope": "Actual source-head commands and terminal test summaries; not HCSN/PQ acceptance or the identical-tree base-merge no-op lane",
+  "source_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "status": "passed"
+}

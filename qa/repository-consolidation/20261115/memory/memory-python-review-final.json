@@ -1,0 +1,1025 @@
+{
+  "attempts": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "module_nonzero": 0,
+      "name": "local_original",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "skipped": 0,
+      "source_files": 482,
+      "source_unchanged": true,
+      "summary": {
+        "bytes": 8715,
+        "path": "stdlib-tests/summary.json",
+        "sha256": "347687faf0270c6c68c21338187a47c0ad11c5a57c877726756b15659d0fcbec"
+      },
+      "tests": 184,
+      "versions": {
+        "cryptography": "50.0.0",
+        "numpy": "2.3.5",
+        "peft": null,
+        "safetensors": null,
+        "tokenizers": null,
+        "torch": null,
+        "transformers": null
+      }
+    },
+    {
+      "errors": 2,
+      "failures": 0,
+      "module_nonzero": 2,
+      "name": "rog_original",
+      "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+      "skipped": 0,
+      "source_files": 397,
+      "source_unchanged": true,
+      "summary": {
+        "bytes": 8271,
+        "path": "rog-offline-test-receipts/memory-python-rog-v1/summary.json",
+        "sha256": "33dc37e4a69f1fed7c7db10e5e9d19346dae73180f912e60422ef082cb629fa5"
+      },
+      "tests": 187,
+      "versions": {
+        "cryptography": null,
+        "numpy": "2.3.5",
+        "peft": null,
+        "safetensors": "0.7.0",
+        "tokenizers": "0.22.1",
+        "torch": "2.10.0+cpu",
+        "transformers": "4.57.1"
+      }
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "module_nonzero": 0,
+      "name": "rog_final_model",
+      "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+      "skipped": 0,
+      "source_files": 400,
+      "source_unchanged": true,
+      "summary": {
+        "bytes": 832,
+        "path": "rog-offline-test-receipts/memory-python-model-v2/summary.json",
+        "sha256": "bffc3983080762f18f59857c8f7d69d22330abb7ad1f249136b2d8e8acde909d"
+      },
+      "tests": 7,
+      "versions": {
+        "cryptography": null,
+        "numpy": "2.3.5",
+        "peft": null,
+        "safetensors": "0.7.0",
+        "tokenizers": "0.22.1",
+        "torch": "2.10.0+cpu",
+        "transformers": "4.57.1"
+      }
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "module_nonzero": 0,
+      "name": "rog_missing_dependencies",
+      "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+      "skipped": 0,
+      "source_files": 400,
+      "source_unchanged": true,
+      "summary": {
+        "bytes": 1091,
+        "path": "rog-offline-test-receipts/memory-python-missing-deps-v2/summary.json",
+        "sha256": "2680c720538ea4a3bbcbe4582c7712492994252161bdcb662165ab8024e50910"
+      },
+      "tests": 14,
+      "versions": {
+        "cryptography": null,
+        "numpy": "2.3.5",
+        "peft": "0.17.1",
+        "safetensors": "0.7.0",
+        "tokenizers": "0.22.1",
+        "torch": "2.10.0+cpu",
+        "transformers": "4.57.1"
+      }
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "module_nonzero": 0,
+      "name": "local_fixture_inputs",
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "skipped": 0,
+      "source_files": 21,
+      "source_unchanged": true,
+      "summary": {
+        "bytes": 821,
+        "path": "fixture-inputs-tests/summary.json",
+        "sha256": "d6e86764ef8305623bde8c38fa89f07a32fd03999ee7fc3fef03eb3696a20f0f"
+      },
+      "tests": 5,
+      "versions": {
+        "cryptography": "50.0.0",
+        "numpy": "2.3.5",
+        "peft": null,
+        "safetensors": null,
+        "tokenizers": null,
+        "torch": null,
+        "transformers": null
+      }
+    }
+  ],
+  "changed_python_scope": {
+    "added_lines": 67642,
+    "files": 341,
+    "source_classified": 252,
+    "test_classified": 89
+  },
+  "checkpoint_scope": "Includes 13 manual workflow guards and the final model-process repair; fixture-input credential patch is a separate reviewed followup.",
+  "created_utc": "2026-11-15T17:22:21.751400+00:00",
+  "environment": {
+    "dependencies": {
+      "existing_venv_modified": false,
+      "requirements": [
+        "pillow==11.3.0",
+        "peft==0.17.1",
+        "accelerate==1.10.1",
+        "psutil==7.0.0"
+      ],
+      "wheels": [
+        {
+          "name": "accelerate-1.10.1-py3-none-any.whl",
+          "sha256": "3621cff60b9a27ce798857ece05e2b9f56fcc71631cfb31ccf71f0359c311f11",
+          "size": 374909
+        },
+        {
+          "name": "peft-0.17.1-py3-none-any.whl",
+          "sha256": "3d129d64def3d74779c32a080d2567e5f7b674e77d546e3585138216d903f99e",
+          "size": 504896
+        },
+        {
+          "name": "pillow-11.3.0-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+          "sha256": "93efb0b4de7e340d99057415c749175e24c8864302369e05914682ba642e5d77",
+          "size": 6642699
+        },
+        {
+          "name": "psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+          "sha256": "4b1388a4f6875d7e2aff5c4ca1cc16c545ed41dd8bb596cefea80111db353a34",
+          "size": 277986
+        }
+      ]
+    },
+    "existing_rog_venv_modified": false,
+    "formatter": {
+      "binary": "/home/qian-qi/hepta-rust-audit-078e4036190f-memory-python/formatter/bin/ruff",
+      "binary_sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+      "existing_venv_modified": false,
+      "version": "ruff 0.15.13",
+      "wheel": "/home/qian-qi/hepta-rust-audit-078e4036190f-memory-python/ruff-0.15.13-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "wheel_bytes": 11434486,
+      "wheel_sha256": "cc411dfebe5eebe55ce041c6ae080eb7668955e866daa2fbb16692a784f1c4ca"
+    },
+    "network_controls": "HF/Transformers offline and Python audit hook rejecting external connect/bind/getaddrinfo, permitting loopback and Unix fixtures. This is not an OS-level network sandbox; child fixture programs were individually reviewed.",
+    "research_training_or_checkpoint_acquisition_executed": false
+  },
+  "final_module_results": [
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_evidence_gate.py",
+      "skipped": 0,
+      "test_file_sha256": "f90e5874e4ece7530bb11f8c73ca8e98da0a40f5a029bae2158d5952804159d8",
+      "tests": 10,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_feature_bundle.py",
+      "skipped": 0,
+      "test_file_sha256": "fc0950696e7e4432357754241b75f1b21a723b1896475893f240b7370d4e0938",
+      "tests": 11,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_feature_shard.py",
+      "skipped": 0,
+      "test_file_sha256": "133f26faf99ea9068da21a4d16f63aac2546b6088b3e0c6478680f3a06d498be",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_memory_retrieval_probe.py",
+      "skipped": 0,
+      "test_file_sha256": "afe33257f25e257a1af5c107eb172cec1d61bfafb88d26a139067e63987c2bd1",
+      "tests": 10,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_multimodal_bridge.py",
+      "skipped": 0,
+      "test_file_sha256": "c8f18657154b8d34d06a5a52b37b4e65130ccd3eb01f326fd98d7ccff3e43bbd",
+      "tests": 37,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_native_latent.py",
+      "skipped": 0,
+      "test_file_sha256": "5674fa1cab423c8ac84286a6f4c5ea7c2bc2da3146b72b4190bfc57254f9abd2",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_procedure_native_export.py",
+      "skipped": 0,
+      "test_file_sha256": "7f6b5aa3227f023ca3519fe20b5c3e571047c9b600f2cf8cc1675b57f0b9ab43",
+      "tests": 10,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_real_data.py",
+      "skipped": 0,
+      "test_file_sha256": "1850fe6be3abd16873bb8dbf53948de67aa51a6cea543e25546aaa88b27e9a12",
+      "tests": 12,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_real_encoder.py",
+      "skipped": 0,
+      "test_file_sha256": "63939ef53e043dd33511172f28b2ccc4da59b1fbaa713be99a164fa2bd5a873a",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_missing_dependencies",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_real_media_probe.py",
+      "skipped": 0,
+      "test_file_sha256": "72ff979926b668c550f1c2fbc46dc0b300762b6dc98a7a411f7e3751942db1e2",
+      "tests": 8,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_scale_probe.py",
+      "skipped": 0,
+      "test_file_sha256": "7132d2e32aa12a8c7ece49d6327f0ebafc8248f63104b8b6c4c804cfbd4d65ca",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_stem_bakeoff.py",
+      "skipped": 0,
+      "test_file_sha256": "6e0434d2069b47ef99b52adc620f7452d7aa82c3a6322c2d44c9a2f366923602",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_teacher_feature_export.py",
+      "skipped": 0,
+      "test_file_sha256": "beef951926be2f4dda5fad33a631c6531558068b7271b1c4fab6b5c7c6228b07",
+      "tests": 1,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_teacher_forward.py",
+      "skipped": 0,
+      "test_file_sha256": "65594c1147c90e6a9e685738f882c75a1ca876ab7f6807153c1f89720fdc0574",
+      "tests": 11,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_teacher_media_seal.py",
+      "skipped": 0,
+      "test_file_sha256": "83c31a8f3afa600339182a7aaebdd2feb4a6eb8ef7faa6e7a0d6dd1de8cbcc6b",
+      "tests": 12,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "qa/stem-bakeoff/test_teacher_snapshot.py",
+      "skipped": 0,
+      "test_file_sha256": "f9a9bdd1880a35c9b198a570fed2a83f5f7ff43f3aabaa9c098ca3c813a19878",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell/test_parametric_owner.py",
+      "skipped": 0,
+      "test_file_sha256": "ed98463dd703ea143ec98b46a1bfe5e184a8aca821328e31d749f22ebaae4369",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_budget_ledger.py",
+      "skipped": 0,
+      "test_file_sha256": "68a066ad30229235c3d54412cf3443c78b964d32e42483c3286c16b1f9a6f117",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_budget_process.py",
+      "skipped": 0,
+      "test_file_sha256": "e6fa89bb097a19be011cdb77fc91b67d3017b489e7356b4e67adc64c4054486b",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_cohort_contract.py",
+      "skipped": 0,
+      "test_file_sha256": "778a90ac7aaeb490b54d4b4c70adfdb15994171ce5b1d43dbee3099297d9f844",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_model_budget.py",
+      "skipped": 0,
+      "test_file_sha256": "1d6a48c8ef068544c65a60a6e7fd58d8635359438c28256aea3649f9ffc2360d",
+      "tests": 2,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_model_routes.py",
+      "skipped": 0,
+      "test_file_sha256": "b450290e2203bff0479e12adbd99a14f0f71d96bd8a4d27a1f4cd8168b36491c",
+      "tests": 2,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_outer_failure.py",
+      "skipped": 0,
+      "test_file_sha256": "8df07427593b066c952537d018f403fd508e192835ea7857f4d5910f3ea1b773",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_retrieval_inventory.py",
+      "skipped": 0,
+      "test_file_sha256": "6b46ded25aae7efbd2626670889a29e4bce12ddf0543d015a6fab7dca21ad344",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_task_execution.py",
+      "skipped": 0,
+      "test_file_sha256": "f645da317e3dcc3afe20f0a117b18cabb65abab680e5e905e2b4085b8489f0c9",
+      "tests": 2,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget/test_workflow_records.py",
+      "skipped": 0,
+      "test_file_sha256": "350e02de6bdcc76a2aeaa6c01d6c7db9b4a67e2a305c80f88d01fc0364452751",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget_v2/test_arm_controller.py",
+      "skipped": 0,
+      "test_file_sha256": "b2d0b0919417255524233f4bad18712495955c10cb8370b5c2c4f04b313f9cd8",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget_v2/test_receipt_bridge.py",
+      "skipped": 0,
+      "test_file_sha256": "2e673d20e0e87f6191efb4e2df7ae5e13d1023e83be9a2fe91e807570b73418a",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_budget_v2/test_tensor_capacity.py",
+      "skipped": 0,
+      "test_file_sha256": "dd6c23a77a1f1051b772e90a23a9b0651b05482d8bd32c168e06b5652b9d6cf6",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_catalog/test_metadata_catalog.py",
+      "skipped": 0,
+      "test_file_sha256": "d01f3a1116699eec2158218daa686cb413c577becf14269f6cbfd4b9f293dcf2",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_codec/test_checkpoint_codec.py",
+      "skipped": 0,
+      "test_file_sha256": "2909d0679b16ef44e0b51c2dc5526a1b98632cd6679b73224fa59a0522b05c54",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_cost_v2/test_receipt_reader.py",
+      "skipped": 0,
+      "test_file_sha256": "549121523c58f3617d51beb3a001c76be609265fa3565253ddbe5397c4bd3f78",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_cost_v2/test_storage_ledger.py",
+      "skipped": 0,
+      "test_file_sha256": "18918b9edc361a51f2337b504faf50e8f4a82746f93d041854b5632903625c5e",
+      "tests": 5,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_distributed/test_authority_quorum.py",
+      "skipped": 0,
+      "test_file_sha256": "7c3a3bd95155018e06bee582c3a9fd8c0913d13342fae8ea5d0a2d00b78a595a",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_distributed/test_process_recovery.py",
+      "skipped": 0,
+      "test_file_sha256": "5178b5bf692e089a1a822a175c8664446c4e29e9d2c2f17127e1d991c626551a",
+      "tests": 1,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_distributed/test_relay_contract.py",
+      "skipped": 0,
+      "test_file_sha256": "b944ef720c16e7ee45d0a68da2c3e3ce47aa98b06cf25ee67795ab856c4c2032",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_distributed/test_tls_scope.py",
+      "skipped": 0,
+      "test_file_sha256": "51bcb7af73d9c103208221fb10f0ff0e339e51867c378a3bff8f382905c8d194",
+      "tests": 2,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_domain/test_domain_data.py",
+      "skipped": 0,
+      "test_file_sha256": "92d8817a80a7cee8a3dc7299c9fd39e83a1baa5b754b3259adde97f0d77900d5",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_evolution/test_edge_boundaries.py",
+      "skipped": 0,
+      "test_file_sha256": "848561cb4a81262d934417566885df7ff1aac43a59ad97d9476f74a437bdc401",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_evolution/test_edges.py",
+      "skipped": 0,
+      "test_file_sha256": "fd0b0db3be03a34715ef8e4a826eca24da9a636eb10911d9ce7440de52b412d0",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_evolution/test_topology.py",
+      "skipped": 0,
+      "test_file_sha256": "e0a1517573c43e0cc67d3f3d9e4faf9d8bd4ad6fa3d318717cb5c6ee54eee4e6",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_fitting_diagnostic/test_fitting.py",
+      "skipped": 0,
+      "test_file_sha256": "11ee66f0d536788f954cd9c15fbbd20065e62a5a01b0cb5472fdcf164babe23a",
+      "tests": 11,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_hardening/test_owner_admission.py",
+      "skipped": 0,
+      "test_file_sha256": "06a093d9f4e6e24197fcb913233e8f78299f31ce094facb8850738d1106f2695",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_native/native_ci_tests.py",
+      "skipped": 0,
+      "test_file_sha256": "79130afb465bfd0929a8c85349c2359e88c09ad06326b486c8ed9c77d4648d33",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_native/native_tick_contract_tests.py",
+      "skipped": 0,
+      "test_file_sha256": "1f1a4b32278219b898c2c4d0e7069cb2415c9df69d74efb6a735c97da56f5d79",
+      "tests": 4,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_final_model",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_network/test_model_process.py",
+      "skipped": 0,
+      "test_file_sha256": "5f8205734afc47e33ff2048d05fa00b8657ce9e22fc190cc7ad4b8dc5b975ca6",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_population/test_population_audit.py",
+      "skipped": 0,
+      "test_file_sha256": "e99b9b056d2191fca849351b8d1c33a6b2975a612ab7fbaa020e7ecbd81d5ec9",
+      "tests": 9,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_population/test_population_fixtures.py",
+      "skipped": 0,
+      "test_file_sha256": "c75adc4a4e8cf227127e8e22407f24d982b42b409c802deff2a863d12ff5c082",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_population/test_population_gate_regressions.py",
+      "skipped": 0,
+      "test_file_sha256": "6958796c06b81d95d89f2c3e0f0eb545af43b1f4ecbd5bbad1eef6b983d5b24b",
+      "tests": 5,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_population/test_population_reporting.py",
+      "skipped": 0,
+      "test_file_sha256": "52cdd84e32472abf17440a38c5757f022a41d475cfa4b076abb28cae378957fa",
+      "tests": 12,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_missing_dependencies",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_population/test_population_selection.py",
+      "skipped": 0,
+      "test_file_sha256": "6e347dd014b9443c82f365482260a5377e552009a9f5fe9ee163ecc031b572bc",
+      "tests": 6,
+      "timed_out": false
+    },
+    {
+      "attempt": "rog_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_service/test_durability.py",
+      "skipped": 0,
+      "test_file_sha256": "70990194e0ca94d27d061356d567e3ab4d4c94fa872ed10a815ae13e10ada756",
+      "tests": 3,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_service/test_source_store.py",
+      "skipped": 0,
+      "test_file_sha256": "5f05d66955320e4b4485e4cd84c5b8ca9f2243c483dd1e8019aed93d94ba2ec1",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_service/test_training_queue.py",
+      "skipped": 0,
+      "test_file_sha256": "72f36db08c398144416fc0f34ae86be766765a61c192bace5fd95af2bb18ba26",
+      "tests": 5,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_fixture_inputs",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_solver/test_fixture_inputs.py",
+      "skipped": 0,
+      "test_file_sha256": "cdaa252e53ee93bc47db10f289f52b7183f1d5e3d4c64382ff9bfc4e3609f8be",
+      "tests": 5,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_solver/test_solver_admission.py",
+      "skipped": 0,
+      "test_file_sha256": "ab3b802fd6ea4058a92692659bc69dc5773ad196b5316b66b356e727de651fbb",
+      "tests": 7,
+      "timed_out": false
+    },
+    {
+      "attempt": "local_original",
+      "errors": 0,
+      "exit_code": 0,
+      "failures": 0,
+      "path": "scripts/memory_cell_solver/test_solver_protocol.py",
+      "skipped": 0,
+      "test_file_sha256": "ed9cde30c4cb73be57c2549f20d1b067d08d83fe3318cd3352f8d4b0fea898ce",
+      "tests": 6,
+      "timed_out": false
+    }
+  ],
+  "final_unique_result": {
+    "errors": 0,
+    "failures": 0,
+    "modules": 57,
+    "reruns_double_counted": false,
+    "skipped": 0,
+    "tests": 383
+  },
+  "findings": [
+    {
+      "id": "manual_research_and_terms",
+      "independent_apply_receipt": {
+        "bytes": 3485,
+        "path": "applied-workflow-guards.json",
+        "sha256": "f83a34ead52a966363dd9bfd53dc556bc04316648688047f2c67ab4bedbb0198"
+      },
+      "receipt": {
+        "bytes": 6657,
+        "path": "manual-research-workflows.json",
+        "sha256": "28aabd83e34d9283f9081f4c5b886bc90369891e260cd374a34bde0f18b490f5"
+      },
+      "repair": "13 new workflows require explicit default-false workflow_dispatch booleans; all jobs are guarded, terms are a separate explicit input, and lock regeneration is read-only with downloadable artifacts.",
+      "risk": "New research workflows ran automatically, one acquired four real checkpoints/news with prefilled terms acceptance, and lock regeneration pushed changes with write permissions."
+    },
+    {
+      "id": "model_process_boundary",
+      "limits": "Process groups are not OS containment. Intentionally detached descendants are outside the group. Windows descendant cleanup is not claimed. Existing output retention remains uncapped; this change does not establish a new output resource-budget policy.",
+      "receipt": {
+        "bytes": 428,
+        "path": "model-process-boundaries-final.json",
+        "sha256": "b229538acd9e81305c96c173bad11351c5c051030022105f7df5e991c73b34f4"
+      },
+      "regressions_added": 4,
+      "repair": "Closed runtime environment allowlist, forced offline controls, POSIX owned process-group cleanup, private regular-file standard streams, and 0600 retained receipts/output.",
+      "risk": "Synthetic parent credentials reached the child; timeout handling could hang on inherited standard-stream pipes held by descendants."
+    },
+    {
+      "actual_exfiltration_observed": false,
+      "id": "authenticated_fixture_restore",
+      "receipt": {
+        "bytes": 1877,
+        "path": "fixture-inputs-credential-boundary.json",
+        "sha256": "6b6dd681ff7f2d78f83c095f16802b9bcf0e8e59c5def2fb380261ea3a9ce446"
+      },
+      "regressions_added": 5,
+      "repair": "No redirects, existing 2 MiB response budget plus overflow sentinel, strict wrapped-base64 and declared integer size, Git blob hash verification, and retained outer SHA256 source pins.",
+      "risk": "Default urllib redirects could forward the synthetic GitHub Authorization header to another origin; fetched contents needed binding to declared blob metadata."
+    }
+  ],
+  "incoming_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+  "integration_checkpoint": "ffd6741ff1ceb05888ca0a8f6826e57451140d5f",
+  "not_established": [
+    "Rust compilation, native Memory execution, full repository CI, Windows behavior, CALLERS, and all-branch integration completion are separate gates.",
+    "No workflow was dispatched and no operator terms were accepted by this audit.",
+    "No HIA branch or remote reference was changed by this review agent."
+  ],
+  "prior_failures": [
+    "Initial staging-only model test attempt omitted the unchanged model_child.py fixture; the complete fixture retry passed. Logs are retained.",
+    "ROG v1 ended exit 1: two media tests needed Pillow and the population-selection module could not import PEFT. Task-only pinned dependencies were added and the complete affected modules passed; the failed attempt is retained."
+  ],
+  "raw_rog_receipts": {
+    "bytes": 77330,
+    "path": "rog-offline-test-receipts.tar.gz",
+    "sha256": "1f64188a2a7b82fa8297716948484d6ec8da8576c4d9f29e8e498b35bdd56aa0"
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "review_harness": [
+    {
+      "bytes": 5967,
+      "path": "run_offline_tests.py",
+      "sha256": "0cd0dde4abad6e801d3b697ac1072ac6de8bcb8bcaa6d52faac8dc741157afc7"
+    },
+    {
+      "bytes": 6230,
+      "path": "run_offline_tests_v2.py",
+      "sha256": "5856408a6a0dabcf62ae988f24137b79e36f4e409a2da851a3a7d629a4a93aa6"
+    },
+    {
+      "bytes": 15093,
+      "path": "stdlib-selected.json",
+      "sha256": "dc758ec9a7d52e2530a0669a9a25f6cd98d9d27ac25acd9ed35ae71ff81601b6"
+    },
+    {
+      "bytes": 14460,
+      "path": "rog-selected.json",
+      "sha256": "257b8c81a29b3c9f9d8139d017e182261375e3c85e683a2f7687cf29fe1912c4"
+    },
+    {
+      "bytes": 2056,
+      "path": "rog-followup-selected.json",
+      "sha256": "b83d7e7583ba16698b8eb2fb9714efe04e2026cd3bd94192169d944a52a6959c"
+    },
+    {
+      "bytes": 153,
+      "path": "fixture-inputs-selected.json",
+      "sha256": "7c5215d54f1e4923e1e0de4ab14cc091cc789fbf51178b18934915360989695a"
+    }
+  ],
+  "review_scope": [
+    "AST syntax and effect/import inventory across all changed Python, followed by targeted source review of process launch, credential inheritance, acquisition, source/provenance validation, and resource-budget controls.",
+    "57 explicitly selected offline fixture modules; original local and ROG sources are separately hash-bound. This is not full line-by-line review of every changed line or full production/ML execution.",
+    "Five existing workflows and Rust/core changes are owned and validated separately by the integration owners."
+  ],
+  "rog_jobs": [
+    {
+      "created_unix_ms": 1794762389210,
+      "cwd": "/home/qian-qi/hepta-rust-audit-078e4036190f-memory-python",
+      "host": "rog",
+      "idempotency_key": "078e4036190f-memory-python-24fixture-v1-20261115",
+      "job_id": "1a1e02cb6da-392-29c4",
+      "key": "memory-python-tests-v1-receipt",
+      "request_digest": "374d8128540fa04cf917f17597c4d08d5c973f10c63c705d0b5080c288ee37c8"
+    },
+    {
+      "created_unix_ms": 1794762780092,
+      "cwd": "/home/qian-qi/hepta-rust-audit-078e4036190f-memory-python",
+      "host": "rog",
+      "idempotency_key": "078e4036190f-memory-python-followup-v2-20261115",
+      "job_id": "1a1e032adbc-392-29d6",
+      "key": "memory-python-followup-v2-receipt",
+      "request_digest": "b37f664e597f3a19faa8af5e08ea6308dbf3182b52baa5b873f6e8d9c227677a"
+    },
+    {
+      "created_unix_ms": 1794763062096,
+      "cwd": "/home/qian-qi/hepta-rust-audit-078e4036190f-memory-python",
+      "host": "rog",
+      "idempotency_key": "078e4036190f-memory-python-collect-receipts-20261115",
+      "job_id": "1a1e036fb50-392-29e4",
+      "key": "memory-python-collect-receipt",
+      "request_digest": "7aedf7b343a36932eaaef325064ed04c20b310458769d8efd2c8486a34703aa0"
+    }
+  ],
+  "rog_terminal_statuses": [
+    {
+      "at_unix_ms": 1794762420819,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1e02cb6da-392-29c4",
+      "launch_nonce": "f7cd34c97a8fde1d0c54aa0d304f27ce",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4454,
+          "stored": 4454
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    {
+      "at_unix_ms": 1794762810224,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1e032adbc-392-29d6",
+      "launch_nonce": "f6d60cfbd00756640b57e20c76dbc7cd",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 3921,
+          "stored": 3921
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  ],
+  "schema_version": 1,
+  "source_manifest": {
+    "bytes": 140534,
+    "path": "offline-source-manifest.json",
+    "sha256": "b4917bd26cd5649a9eb7473018ca59974f0705ab7e5ce68028dc39a432a325d6"
+  }
+}

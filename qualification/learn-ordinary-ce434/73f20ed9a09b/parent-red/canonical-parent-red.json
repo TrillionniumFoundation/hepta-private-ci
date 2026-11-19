@@ -1,0 +1,30 @@
+{
+  "name": "canonical-parent-red",
+  "command": [
+    "python3",
+    "scripts/hepta_ci_v8.py",
+    "--run",
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(/^circuit_task::driver::tests::/) | test(/^circuit_task::source::tests::/) | test(/^circuit_cell::tests::causal_tests::/) | test(=circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append) | test(/^learning_iteration_research_external_material::tests::/)",
+    "--test-threads",
+    "2",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "cwd": "/home/qian-qi/hepta-learn-base-ce434-20261111",
+  "exit_code": 100,
+  "wall_seconds": 2144.934789657593,
+  "log_bytes": 98976,
+  "log_sha256": "fe59ecd0620829a87919fc55c32151ea877f93435dcca3dc3011a7a26ba2f20f"
+}

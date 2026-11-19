@@ -1,0 +1,220 @@
+{
+  "schema": "hepta.inherited-python-format-review.v1",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+    "merge": "31deda5085818cb0b59ddcd2909445fb9ab3d2c2",
+    "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+  },
+  "files": [
+    {
+      "path": "scripts/hepta_cell_joint_config.py",
+      "before": {
+        "bytes": 15041,
+        "sha256": "48f016c10bbf4301f0dc6357f40eca0628bdbad711c36c109cdd0d43c65b3e12",
+        "git_blob": "7e939e1055d97b036209727b78daed582dce3c94"
+      },
+      "after": {
+        "bytes": 15201,
+        "sha256": "3abac6ed6d2b373e50f09e6212cd86040cea50b46833ca5e3f4f4a18b5c9cc47",
+        "git_blob": "da9b7b1b0c1c88bcdb5bbe83b54ce458991a551c"
+      },
+      "before_ast_sha256": "6846bcd0e40cd912b778415325bce58f512d49a85768fb4611a6e89cd0106494",
+      "after_ast_sha256": "6846bcd0e40cd912b778415325bce58f512d49a85768fb4611a6e89cd0106494",
+      "ast_equal": true,
+      "comment_tokens_equal": true,
+      "local_ast_equal": true,
+      "local_comment_tokens_equal": true,
+      "local_ast_sha256": "0915298a4df9b475a002fc5f9dc246f6f66657d84e6e6c8f17d2bb5271b506c6",
+      "added_lines": 24,
+      "removed_lines": 12
+    },
+    {
+      "path": "scripts/hepta_ci_chef.py",
+      "before": {
+        "bytes": 4057,
+        "sha256": "82e2dced3f853f0b9c205bac9ee8f61c02d02df5015e33baaf7ace6e96f5048e",
+        "git_blob": "ad0ab1846d782edf4bc2c8c11b666d53675565dc"
+      },
+      "after": {
+        "bytes": 4979,
+        "sha256": "31a1e1bf5b7ab15fc020279c9f01707372258cc416d08c71cd7c7011e1abc513",
+        "git_blob": "e6e74f4d19f829b7f126aa7348801afaacc770ed"
+      },
+      "before_ast_sha256": "e07d9012372bc3db5f398071645896828347bae73028ecb4df1941459d9c2888",
+      "after_ast_sha256": "e07d9012372bc3db5f398071645896828347bae73028ecb4df1941459d9c2888",
+      "ast_equal": true,
+      "comment_tokens_equal": true,
+      "local_ast_equal": true,
+      "local_comment_tokens_equal": true,
+      "local_ast_sha256": "8f73109f9b716f0b9fdd2f25188cf8109a17de190cb6e398a89c86989e7c18ab",
+      "added_lines": 63,
+      "removed_lines": 14
+    },
+    {
+      "path": "scripts/test_hepta_cell_joint_config.py",
+      "before": {
+        "bytes": 12081,
+        "sha256": "cf2efcf3487fbe5b99790dfef3068369af557d99aaba5baf045b40b30a2134b5",
+        "git_blob": "399175074802eba0139720b7cab58e024bfde817"
+      },
+      "after": {
+        "bytes": 12330,
+        "sha256": "39dced58d8ff3bdd7ec768a1998e8533703c1d690f4799f1e14a1748839327f4",
+        "git_blob": "41dd9f5b0958c8105d17c0a27f2f1997ffc28fa7"
+      },
+      "before_ast_sha256": "446c830327beb6008fe8015497fa88bf8b524c10dc5a0d95150ed9734874e5e7",
+      "after_ast_sha256": "446c830327beb6008fe8015497fa88bf8b524c10dc5a0d95150ed9734874e5e7",
+      "ast_equal": true,
+      "comment_tokens_equal": true,
+      "local_ast_equal": true,
+      "local_comment_tokens_equal": true,
+      "local_ast_sha256": "9f07fb044bb1dd5b188a0c2942575146b3db19af8e0508fc49dcdff965d43cdb",
+      "added_lines": 37,
+      "removed_lines": 22
+    },
+    {
+      "path": "scripts/test_hepta_ci_chef.py",
+      "before": {
+        "bytes": 4775,
+        "sha256": "77734693dc31e308b0195e6297fc9b0a39c6a52a3c929969efe02c807474aecf",
+        "git_blob": "15e4ead6703089e44eefe51c5417de7525a83885"
+      },
+      "after": {
+        "bytes": 5114,
+        "sha256": "9fe162aba9d253789b1ac463f0307f2ed75e62ce05a92c0eee236185f5e9b02d",
+        "git_blob": "70dc258fec9371bd230f6c148bc8852b47278d5e"
+      },
+      "before_ast_sha256": "c4a21e05cc4dc7fc9cc7f0c4034d6f719c48008b97075772fcfe1f7badd75ca8",
+      "after_ast_sha256": "c4a21e05cc4dc7fc9cc7f0c4034d6f719c48008b97075772fcfe1f7badd75ca8",
+      "ast_equal": true,
+      "comment_tokens_equal": true,
+      "local_ast_equal": true,
+      "local_comment_tokens_equal": true,
+      "local_ast_sha256": "3ba22ffac44f62b4b64fc729a8010fb11e649f6c2862e513320ec9dbadfa948e",
+      "added_lines": 49,
+      "removed_lines": 22
+    },
+    {
+      "path": "scripts/test_hepta_module_status_facts.py",
+      "before": {
+        "bytes": 2892,
+        "sha256": "121c3d0f61d1a33e722d4526e7a6b5ba356afe499451b24b9e4ed366464f81c7",
+        "git_blob": "ee93d78f4c754090fb08a30ed338ea039286d72b"
+      },
+      "after": {
+        "bytes": 2938,
+        "sha256": "8a57ebd7d2a6a89da95936e099b10e0d9ce1d7dc3db753a096cec87d3ad1e68c",
+        "git_blob": "b1b542beb8d26973727a635a5505570ad16cb4a6"
+      },
+      "before_ast_sha256": "06f0be95a62c2b502352b7df81b0fb62f350f4510b371d33b78b0405357f9f08",
+      "after_ast_sha256": "06f0be95a62c2b502352b7df81b0fb62f350f4510b371d33b78b0405357f9f08",
+      "ast_equal": true,
+      "comment_tokens_equal": true,
+      "local_ast_equal": true,
+      "local_comment_tokens_equal": true,
+      "local_ast_sha256": "bece019069f7e6a13f68c454eb02232a4fa64eef5ed8a06a1ed3ee30376e436d",
+      "added_lines": 3,
+      "removed_lines": 1
+    }
+  ],
+  "ruff_version": "ruff 0.15.13",
+  "ruff_binary": {
+    "path": "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+    "bytes": 27849024,
+    "sha256": "e7fe044c1215edf671c497dc77312d329237f827e50ecfcb7266a662a110dc97",
+    "git_blob": "1db0f023847da272a86443be57d3e518a31bb54a"
+  },
+  "native_job": "1a1bae441fb-12894-1e18",
+  "native_exit_code": 0,
+  "native_checks": [
+    {
+      "name": "ruff-version",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "--version"
+      ],
+      "cwd": "/tmp/hepta-inherited-python-format-304d-b86/work",
+      "returncode": 0,
+      "stdout": "ruff 0.15.13\n",
+      "stderr": "",
+      "wall_seconds": 0.002787654986605048
+    },
+    {
+      "name": "format-check-before",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "--check",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/hepta_ci_chef.py",
+        "scripts/test_hepta_cell_joint_config.py",
+        "scripts/test_hepta_ci_chef.py",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "cwd": "/tmp/hepta-inherited-python-format-304d-b86/work",
+      "returncode": 1,
+      "stdout": "Would reformat: scripts/hepta_cell_joint_config.py\nWould reformat: scripts/hepta_ci_chef.py\nWould reformat: scripts/test_hepta_cell_joint_config.py\nWould reformat: scripts/test_hepta_ci_chef.py\nWould reformat: scripts/test_hepta_module_status_facts.py\n5 files would be reformatted\n",
+      "stderr": "",
+      "wall_seconds": 0.007919325958937407
+    },
+    {
+      "name": "format",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/hepta_ci_chef.py",
+        "scripts/test_hepta_cell_joint_config.py",
+        "scripts/test_hepta_ci_chef.py",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "cwd": "/tmp/hepta-inherited-python-format-304d-b86/work",
+      "returncode": 0,
+      "stdout": "5 files reformatted\n",
+      "stderr": "",
+      "wall_seconds": 0.0051085070008412
+    },
+    {
+      "name": "format-check-after",
+      "command": [
+        "/tmp/ndu-python-format-986c-4f32/tool/ruff-0.15.13.data/scripts/ruff",
+        "format",
+        "--no-cache",
+        "--config",
+        "scripts/pyproject.toml",
+        "--check",
+        "scripts/hepta_cell_joint_config.py",
+        "scripts/hepta_ci_chef.py",
+        "scripts/test_hepta_cell_joint_config.py",
+        "scripts/test_hepta_ci_chef.py",
+        "scripts/test_hepta_module_status_facts.py"
+      ],
+      "cwd": "/tmp/hepta-inherited-python-format-304d-b86/work",
+      "returncode": 0,
+      "stdout": "5 files already formatted\n",
+      "stderr": "",
+      "wall_seconds": 0.005749616946559399
+    }
+  ],
+  "local_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "patch": {
+    "bytes": 18489,
+    "sha256": "7bea692ceb32ef43cbee444fb208aba58453bf14d7ac831904c69da335119c31",
+    "git_blob": "114189938282f3587c547700000526a1b69b294c"
+  },
+  "patch_apply_check": {
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "behavioral_tests_rerun": false,
+  "candidate_modified": false,
+  "published": false
+}

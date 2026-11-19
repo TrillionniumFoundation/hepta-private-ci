@@ -1,0 +1,621 @@
+{
+  "schema": "hepta.ndu-cloud-assignment-diagnosis.v1",
+  "created_at": "2026-10-23T05:01:16Z",
+  "final_target_jobs_observed_at": "2026-10-23T04:58:02Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Read-only diagnosis of v2 run assignment. Separate authorized recovery files are prepared but have not been committed, pushed or executed by the diagnosing agent.",
+  "original_v2_status_modified": false,
+  "target_run": {
+    "id": 39899251197,
+    "name": "NDU controlled generation v2",
+    "head_sha": "55aab1459c9079e397683acdeb382cd1b53d03c8",
+    "head_branch": "research/ndu-controlled-generation-v2",
+    "status": "queued",
+    "conclusion": null,
+    "created_at": "2026-10-23T04:14:18Z",
+    "updated_at": "2026-10-23T04:14:18Z",
+    "run_started_at": "2026-10-23T04:14:18Z",
+    "run_attempt": 1,
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197",
+    "path": ".github/workflows/ndu-controlled-generation-v2.yml",
+    "workflow_id": 393633841,
+    "check_suite_id": 108142366344
+  },
+  "target_jobs_source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197/jobs?per_page=10",
+  "target_jobs": [
+    {
+      "id": 120236739119,
+      "run_id": 39899251197,
+      "name": "hosted-verification",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T04:14:19Z",
+      "started_at": "2026-10-23T04:14:19Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197/job/120236739119",
+      "steps_count": 0
+    },
+    {
+      "id": 120236739358,
+      "run_id": 39899251197,
+      "name": "dedicated-full",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-10-23T04:14:19Z",
+      "started_at": "2026-10-23T04:14:19Z",
+      "completed_at": null,
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": "",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ],
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39899251197/job/120236739358",
+      "steps_count": 0
+    }
+  ],
+  "target_workflow": {
+    "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/contents/.github/workflows/ndu-controlled-generation-v2.yml?ref=55aab1459c9079e397683acdeb382cd1b53d03c8",
+    "hosted_selector": "ubuntu-24.04",
+    "dedicated_selector": {
+      "group": "trillionnium-android-gpu",
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ]
+    },
+    "dedicated_post_assignment_assertion": "RUNNER_NAME == desktop",
+    "independent_jobs": true,
+    "explanation": "Runner-name assertion and launcher/source/dependency/test steps run only after assignment. Both target jobs have runner_id 0 and zero steps; those later checks have no observed execution."
+  },
+  "sampling": {
+    "completed_source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?status=completed&per_page=5",
+    "completed_sample_size": 5,
+    "success_source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs?status=success&per_page=5",
+    "success_sample_size": 5,
+    "reason_for_success_followup": "Completed includes skipped and cancelled runs that never received a runner. Success-filtered sample provides actual execution evidence.",
+    "limits": "Finite recent samples are not a runner inventory or proof of current capacity."
+  },
+  "recent_runs_and_jobs": [
+    {
+      "run": {
+        "id": 39902351756,
+        "name": "App-server schema refresh",
+        "head_sha": "0adaca4375fdfefe0fbae7f1cb7f25c437360c6e",
+        "head_branch": "agents/20261023/notes-recovery",
+        "status": "completed",
+        "conclusion": "skipped",
+        "created_at": "2026-10-23T04:49:11Z",
+        "updated_at": "2026-10-23T04:49:12Z",
+        "run_started_at": "2026-10-23T04:49:11Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351756",
+        "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+        "workflow_id": 390146866,
+        "check_suite_id": 108150757993
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351756/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120246538885,
+          "run_id": 39902351756,
+          "name": "Generate schemas and run complete protocol tests",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-10-23T04:49:12Z",
+          "started_at": "2026-10-23T04:49:12Z",
+          "completed_at": "2026-10-23T04:49:11Z",
+          "runner_id": null,
+          "runner_name": null,
+          "runner_group_id": null,
+          "runner_group_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351756/job/120246538885",
+          "steps_count": 0,
+          "completed_non_skipped_steps": 0,
+          "execution_observed": false
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39902351806,
+        "name": "Production HOS2 owner proposal",
+        "head_sha": "0adaca4375fdfefe0fbae7f1cb7f25c437360c6e",
+        "head_branch": "agents/20261023/notes-recovery",
+        "status": "completed",
+        "conclusion": "skipped",
+        "created_at": "2026-10-23T04:49:11Z",
+        "updated_at": "2026-10-23T04:49:17Z",
+        "run_started_at": "2026-10-23T04:49:11Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351806",
+        "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+        "workflow_id": 391152960,
+        "check_suite_id": 108150758101
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351806/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120246538092,
+          "run_id": 39902351806,
+          "name": "owner-candidate",
+          "status": "completed",
+          "conclusion": "skipped",
+          "created_at": "2026-10-23T04:49:12Z",
+          "started_at": "2026-10-23T04:49:12Z",
+          "completed_at": "2026-10-23T04:49:11Z",
+          "runner_id": null,
+          "runner_name": null,
+          "runner_group_id": null,
+          "runner_group_name": null,
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39902351806/job/120246538092",
+          "steps_count": 0,
+          "completed_non_skipped_steps": 0,
+          "execution_observed": false
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39901705244,
+        "name": "Hepta Windows DELETE focused diagnostics",
+        "head_sha": "1ddcff8d35947eb593756d34aff19626063d2448",
+        "head_branch": "codex/p40-windows-delete-matrix-complete-20261023",
+        "status": "completed",
+        "conclusion": "failure",
+        "created_at": "2026-10-23T04:41:58Z",
+        "updated_at": "2026-10-23T04:47:43Z",
+        "run_started_at": "2026-10-23T04:41:58Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39901705244",
+        "path": ".github/workflows/hepta-windows-delete-diagnostics.yml",
+        "workflow_id": 392998068,
+        "check_suite_id": 108149033591
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39901705244/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120244533430,
+          "run_id": 39901705244,
+          "name": "native-delete-routes",
+          "status": "completed",
+          "conclusion": "failure",
+          "created_at": "2026-10-23T04:41:59Z",
+          "started_at": "2026-10-23T04:42:17Z",
+          "completed_at": "2026-10-23T04:47:43Z",
+          "runner_id": 1000208523,
+          "runner_name": "GitHub Actions 1000208523",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "windows-2025"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39901705244/job/120244533430",
+          "steps_count": 10,
+          "completed_non_skipped_steps": 10,
+          "execution_observed": true
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39901502562,
+        "name": "Hepta NDU grounded generation",
+        "head_sha": "af5b9f440ad3164efafa9f4b475239a599645787",
+        "head_branch": "fix/ndu-v2-frozen-receipt-preflight-20261023",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "created_at": "2026-10-23T04:39:44Z",
+        "updated_at": "2026-10-23T04:39:48Z",
+        "run_started_at": "2026-10-23T04:39:44Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39901502562",
+        "path": ".github/workflows/hepta-ndu-grounded.yml",
+        "workflow_id": 392894263,
+        "check_suite_id": 108148474025
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39901502562/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120243900881,
+          "run_id": 39901502562,
+          "name": "scoped-tests",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "created_at": "2026-10-23T04:39:44Z",
+          "started_at": "2026-10-23T04:39:44Z",
+          "completed_at": "2026-10-23T04:39:47Z",
+          "runner_id": 0,
+          "runner_name": "",
+          "runner_group_id": 0,
+          "runner_group_name": "",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39901502562/job/120243900881",
+          "steps_count": 0,
+          "completed_non_skipped_steps": 0,
+          "execution_observed": false
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39900902676,
+        "name": "blocking-ci",
+        "head_sha": "48a197d36fe3a53c7d287af09930bc85406c8f9c",
+        "head_branch": "fix/ndu-v2-descriptor-pinned-image-ancestors-20261023",
+        "status": "completed",
+        "conclusion": "cancelled",
+        "created_at": "2026-10-23T04:32:55Z",
+        "updated_at": "2026-10-23T04:35:09Z",
+        "run_started_at": "2026-10-23T04:32:55Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900902676",
+        "path": ".github/workflows/blocking-ci.yml",
+        "workflow_id": 336746106,
+        "check_suite_id": 108146869576
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39900902676/jobs?per_page=10",
+      "jobs_total_count": 0,
+      "jobs": []
+    },
+    {
+      "run": {
+        "id": 39900476630,
+        "name": "Hepta Cell Codex execution boundary",
+        "head_sha": "5202a7cb7024bb2ba1dd37176cbf8285863b2978",
+        "head_branch": "dot/p0-p3-native-cell-safety-convergence-20261023",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-23T04:28:08Z",
+        "updated_at": "2026-10-23T04:28:57Z",
+        "run_started_at": "2026-10-23T04:28:08Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476630",
+        "path": ".github/workflows/hepta-cell-codex-boundary.yml",
+        "workflow_id": 392767872,
+        "check_suite_id": 108145690513
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476630/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120240701081,
+          "run_id": 39900476630,
+          "name": "Cell/Codex direct-dependency isolation (non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-23T04:28:16Z",
+          "started_at": "2026-10-23T04:28:28Z",
+          "completed_at": "2026-10-23T04:28:56Z",
+          "runner_id": 1000208313,
+          "runner_name": "GitHub Actions 1000208313",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "ubuntu-slim"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476630/job/120240701081",
+          "steps_count": 8,
+          "completed_non_skipped_steps": 8,
+          "execution_observed": true
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39900476560,
+        "name": "Hepta P6 Codex Native fallback shadow gate",
+        "head_sha": "5202a7cb7024bb2ba1dd37176cbf8285863b2978",
+        "head_branch": "dot/p0-p3-native-cell-safety-convergence-20261023",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-23T04:28:08Z",
+        "updated_at": "2026-10-23T04:28:57Z",
+        "run_started_at": "2026-10-23T04:28:08Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476560",
+        "path": ".github/workflows/hepta-p6-codex-native-parity.yml",
+        "workflow_id": 393110851,
+        "check_suite_id": 108145690313
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476560/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120240665780,
+          "run_id": 39900476560,
+          "name": "P6 signed fallback and parity contract (non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-23T04:28:09Z",
+          "started_at": "2026-10-23T04:28:17Z",
+          "completed_at": "2026-10-23T04:28:56Z",
+          "runner_id": 1000208308,
+          "runner_name": "GitHub Actions 1000208308",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "ubuntu-slim"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900476560/job/120240665780",
+          "steps_count": 9,
+          "completed_non_skipped_steps": 9,
+          "execution_observed": true
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39900258082,
+        "name": "Hepta P6 Codex Native fallback shadow gate",
+        "head_sha": "9e277fc1e60aed64e4ff0c096b64cb7272e799d9",
+        "head_branch": "dot/p0-p3-native-cell-safety-convergence-20261023",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-23T04:25:39Z",
+        "updated_at": "2026-10-23T04:27:19Z",
+        "run_started_at": "2026-10-23T04:25:39Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900258082",
+        "path": ".github/workflows/hepta-p6-codex-native-parity.yml",
+        "workflow_id": 393110851,
+        "check_suite_id": 108145100733
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39900258082/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120239965557,
+          "run_id": 39900258082,
+          "name": "P6 signed fallback and parity contract (non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-23T04:25:40Z",
+          "started_at": "2026-10-23T04:26:40Z",
+          "completed_at": "2026-10-23T04:27:18Z",
+          "runner_id": 1000208289,
+          "runner_name": "GitHub Actions 1000208289",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "ubuntu-slim"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39900258082/job/120239965557",
+          "steps_count": 9,
+          "completed_non_skipped_steps": 9,
+          "execution_observed": true
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39898488798,
+        "name": "Hepta P6 Codex Native fallback shadow gate",
+        "head_sha": "c1eace1cd6833c15df6cbc0c80f8e9f9b04eeef7",
+        "head_branch": "dot/p0-p3-native-outbox-source-convergence-20261022",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-23T04:05:57Z",
+        "updated_at": "2026-10-23T04:09:54Z",
+        "run_started_at": "2026-10-23T04:05:57Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39898488798",
+        "path": ".github/workflows/hepta-p6-codex-native-parity.yml",
+        "workflow_id": 393110851,
+        "check_suite_id": 108140318496
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39898488798/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120234335588,
+          "run_id": 39898488798,
+          "name": "P6 signed fallback and parity contract (non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-23T04:05:57Z",
+          "started_at": "2026-10-23T04:08:51Z",
+          "completed_at": "2026-10-23T04:09:53Z",
+          "runner_id": 1000208097,
+          "runner_name": "GitHub Actions 1000208097",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "ubuntu-slim"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39898488798/job/120234335588",
+          "steps_count": 9,
+          "completed_non_skipped_steps": 9,
+          "execution_observed": true
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 39898056639,
+        "name": "Hepta P6 Codex Native fallback shadow gate",
+        "head_sha": "9269243990257be9faacd42d1e4977d8314ac602",
+        "head_branch": "dot/p0-p3-native-outbox-source-convergence-20261022",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-10-23T04:01:04Z",
+        "updated_at": "2026-10-23T04:02:03Z",
+        "run_started_at": "2026-10-23T04:01:04Z",
+        "run_attempt": 1,
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39898056639",
+        "path": ".github/workflows/hepta-p6-codex-native-parity.yml",
+        "workflow_id": 393110851,
+        "check_suite_id": 108139116895
+      },
+      "source_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/39898056639/jobs?per_page=10",
+      "jobs_total_count": 1,
+      "jobs": [
+        {
+          "id": 120232961450,
+          "run_id": 39898056639,
+          "name": "P6 signed fallback and parity contract (non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "created_at": "2026-10-23T04:01:04Z",
+          "started_at": "2026-10-23T04:01:13Z",
+          "completed_at": "2026-10-23T04:02:03Z",
+          "runner_id": 1000208013,
+          "runner_name": "GitHub Actions 1000208013",
+          "runner_group_id": 0,
+          "runner_group_name": "GitHub Actions",
+          "labels": [
+            "ubuntu-slim"
+          ],
+          "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39898056639/job/120232961450",
+          "steps_count": 9,
+          "completed_non_skipped_steps": 9,
+          "execution_observed": true
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "status": "observed",
+      "finding": "Both v2 jobs remain queued without assigned runner id/name/group and with zero steps.",
+      "source": "target_jobs"
+    },
+    {
+      "status": "observed",
+      "finding": "Five sampled ubuntu-slim jobs actually completed successfully; a sampled windows-2025 job executed and failed.",
+      "source": "recent_runs_and_jobs"
+    },
+    {
+      "status": "supported_inference",
+      "finding": "Repository-wide inability to execute any Actions job is inconsistent with the sampled successful and failed executed jobs. Pool-specific assignment causes remain unknown."
+    },
+    {
+      "status": "observed",
+      "finding": "The v2 dedicated group and labels match selectors declared in existing repository availability/pilot workflows.",
+      "source_paths": [
+        ".github/workflows/self-hosted-desktop-availability.yml",
+        ".github/workflows/ndu-output-portfolio-pilot.yml",
+        ".github/workflows/hepta-browser-servo-deployment-qualification.yml"
+      ]
+    },
+    {
+      "status": "not_established",
+      "finding": "Actual registered desktop labels, online/busy state, group membership, repository/workflow group access, runner service health, billing and per-pool concurrency were not observable."
+    },
+    {
+      "status": "not_established",
+      "finding": "No evidence identifies offline runner, billing, group permission denial, or label mismatch as the actual reason for the v2 queues."
+    }
+  ],
+  "connector_limits": {
+    "directly_rejected_read_only_urls": [
+      "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/self-hosted-desktop-availability.yml/runs?status=completed&per_page=5",
+      "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/self-hosted-fleet-availability.yml/runs?status=completed&per_page=5",
+      "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/workflows/ndu-output-portfolio-pilot.yml/runs?status=completed&per_page=5"
+    ],
+    "directly_observed_error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+    "parent_reported_prior_rejections": [
+      "repository actions/runners inventory",
+      "organization runner-group management"
+    ],
+    "no_runner_management_retries": true,
+    "no_ssh_tool_available": true,
+    "interpretation": "Connector capability restriction, not evidence of GitHub runner failure. No alternate credentials, permission changes or external messages attempted."
+  },
+  "actionable_recovery": {
+    "hosted": {
+      "status": "prepared_separately_not_executed",
+      "workflow": ".github/workflows/ndu-v2-hosted-recovery.yml",
+      "request": "experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json",
+      "adapter": "experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh",
+      "selector": "ubuntu-slim",
+      "source_commit": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+      "protocol_sha256": "2a5a206024c3837223e1db83a4515a4d2ba0a0416d48c482989cc5130bdf97cf",
+      "scope": "Same frozen v2 public run.py entry point, hosted-cpu --smoke and both unit suites; a new workflow attempt, not a state rewrite of the old run.",
+      "adapter_reason": "Frozen v2 run_cloud.sh only accepts the v2 branch. Recovery preserves the genuine v3 GITHUB_REF and does not claim the old launcher executed.",
+      "limitations": "Actual assignment, download throughput, memory use and successful smoke remain to be observed. Does not satisfy dedicated-cloud desktop attestation or v3 full reproduction."
+    },
+    "dedicated": {
+      "status": "external_gap_unresolved",
+      "can_resolve_with_current_callable_access": false,
+      "needed_evidence": [
+        "Authorized runner inventory for desktop with id, labels, online/busy status and group membership",
+        "Group repository/workflow access settings for this exact repository and workflow",
+        "Runner application/service diagnostics or actual assigned job data"
+      ],
+      "action_rule": "Choose a repair only after evidence identifies a mismatch or service/access problem; do not guess selectors or weaken the dedicated requirement."
+    }
+  },
+  "slim_capacity_check": {
+    "official_cpu": 1,
+    "official_ram_gb": 5,
+    "official_disk_gb": 14,
+    "official_job_timeout_minutes": 15,
+    "execution_step_timeout_minutes": 10,
+    "python_strategy": "Use image's Python 3.12 and python3-venv; assert runtime version, create isolated venv, no sudo/apt/privileged container operations.",
+    "official_numpy_cp312_linux_wheel_mb": 18,
+    "observed_local_installed_directories_mib": {
+      "torch": 695,
+      "numpy": 39
+    },
+    "torch_wheel_exact_bytes_verified": false,
+    "download_time_verified": false,
+    "note": "Installed directory measurements are from the current local pinned environment, not cloud peak memory or download volume. Time budget is a constraint, not a measured cloud guarantee."
+  },
+  "official_sources": [
+    {
+      "url": "https://docs.github.com/en/actions/reference/runners/self-hosted-runners",
+      "claim": "Self-hosted routing matches labels and groups, uses online idle runners, requeues pickup timeout and fails jobs queued longer than 24 hours."
+    },
+    {
+      "url": "https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job",
+      "claim": "ubuntu-24.04 and ubuntu-slim are valid hosted labels; requested self-hosted labels and group must all match."
+    },
+    {
+      "url": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+      "claim": "ubuntu-slim uses an unprivileged container, one CPU, 5 GB RAM, 14 GB disk and a 15 minute maximum job duration."
+    },
+    {
+      "url": "https://github.com/actions/runner-images/blob/main/images/ubuntu-slim/ubuntu-slim-Readme.md",
+      "claim": "Image Version 20261021.31.1 lists Python 3.12.3."
+    },
+    {
+      "url": "https://api.github.com/repos/actions/runner-images/contents/images/ubuntu-slim/scripts/build/install-python.sh?ref=main",
+      "claim": "Official image build script installs python3-venv."
+    },
+    {
+      "url": "https://pypi.org/project/numpy/1.26.4/#files",
+      "claim": "NumPy 1.26.4 cp312 manylinux2014 x86_64 wheel is 18.0 MB."
+    }
+  ],
+  "actions_not_taken": [
+    "No workflow dispatch, rerun, push or commit",
+    "No edits to v2 source, workflow, request, protocol or recorded status",
+    "No runner permissions, labels, group settings, credentials or service changes",
+    "No notifications to other people",
+    "No dedicated execution or external runner attestation claim"
+  ]
+}

@@ -1,0 +1,81 @@
+# One-source HCSN and HPCA research checks
+
+The stopping-accounting successor adds full recorded plateau and strict-best
+selection checks to the C2 controller. Its final one-source execution contains
+95 tests (19 spatial/phase, 46 C2 terminal, and 15 HPCA in each Python mode)
+plus both probes. Its 22-file manifest supersedes the original 20-file manifest
+for this successor only. The original 82-test receipts below remain historical
+and are not transferred to the changed source. See STOPPING-ACCOUNTING.md in
+the C2 successor directory and evidence/stopping-20261112 for complete logs.
+
+This source assembly takes #6107 as its first parent, adds the disjoint phase
+transport files from #6108, selects the complete C2-successor subtree from
+#6106, and the complete HPCA-neuroscience subtree from #6109. Its extra Git
+parents retain the input histories. Existing HCSN operator/contract blobs
+were compared between the input branches and are identical. No mathematical
+operator is silently replaced by an older parent during this assembly.
+
+MANIFEST pins the 20 source files required by these particular checks. Every
+listed local Git blob was compared with the exact upstream tree before
+publication. The runner launches the checks again on this assembly; earlier
+per-branch PASS reports are not accepted as inputs. It requires the declared
+19 spatial/phase, 33 C2 terminal, 15 normal HPCA and 15 optimized-Python HPCA
+test executions, without skipped tests. The spatial and phase probes also
+execute, with before/after source guards and complete output streams.
+
+The local final attempt completed all 82 test executions and both probes.
+These are repeated structural/mechanism checks, not 82 independent tasks,
+model evaluations, or scientific replications. C2 tests compile the actual
+controller function from its AST using synthetic fixtures; checkpoints in
+these fixtures remain opaque. HPCA reparses already-retained outputs and
+executes zero model forwards. The spatial and phase primitives are still
+separate mathematical models, even though their tests run on one source.
+
+The first invocation and the stricter counter-checking successor invocation
+are retained separately under evidence/joint-source-20261112. Tests preceded
+formatting; normalized AST equivalence is recorded. New hosted CI checks the
+actual published source and remains a separate receipt.
+Large spatial arrays are stored as deterministic `.json.gz` archives;
+ARRAY_ARCHIVES.json pins both compressed and original byte identities.
+
+This closes only the ambiguity of combining test claims from distinct source
+trees. It does not qualify the complete HCSN model, original 14,336-position
+continuation gate, independent full C2 training replay, external HPCA evaluator,
+calibration, retention, baseline superiority, full costs or production.
+Those fields remain false in every generated report. No deployment or model
+adoption is authorized by this research check. Status: HOLD_NO_GO.
+
+```bash
+python -B qualification/hcsn_hpca_joint_gate/run.py --output /path/to/new-directory
+```
+
+## Current source revision, 2026-11-16
+
+The preceding assembly description and 82-test receipt refer to the original
+2026-11-12 sources. `MANIFEST.json` and all records under
+`evidence/joint-source-20261112` remain unchanged.
+
+The default runner now uses `CURRENT_MANIFEST.json`. It pins the same 20 paths
+at the reviewed current source and records the two HPCA revisions explicitly.
+The original result, preexecution and journal anchors added in commit
+`4d3470a2747f9f691c00123760c202f3c805ff11` remain active. All original checks
+and three later HPCA regressions are retained: frozen receipt identity,
+self-consistent perfect-output forgery, and cost substitution. The HPCA
+denominator is consequently 18 normal and 18 optimized executions, alongside
+the unchanged 19 spatial/phase and 33 C2 tests, for 88 executions plus two probes.
+
+The runner checks the immutable historical manifest before execution and
+requires it, the current manifest, the runner and all 20 current source files
+to remain unchanged afterward. Every invocation creates fresh output streams;
+the original 82-test result is never reused as proof for these sources.
+The current JSON report has schema `hcsn-hpca-joint-check-result-v2` and records
+both manifest identities. This update does not change the historical model
+outputs, their original source pins, or any qualification and authority fields.
+
+## Current source revision, 2026-11-19
+
+The reviewed ordinary Windows merge expands the terminal suite to 51 cases. The current manifest advances the ordinary Windows source `1bba6e39258a86945c83109e869152b23007d3b7` to the original-producer fixture successor `2a7ebd5bd02f8626dca6774bc35e93a285dc6898` and binds all current C2 Python files, including the added stopping arithmetic and its tests. Previous current-source metadata is retained as `CURRENT.pre-windows-20261119.json`.
+
+The incoming stopping revision already has a different historical `MANIFEST.json`; its exact bytes remain at that path. The original assembly manifest (Git blob `f963f53492fbbfbdc6e24d6305a85e753c77b5ea`) is separately retained as `MANIFEST.original-20261112.json`. The runner reads the explicit historical filename in the current manifest and verifies its original hash. Neither historical manifest is rewritten or treated as a receipt for the current assembly. New executions are stored separately.
+
+The original 18 HPCA assertions are retained. Two added rejection controls bring each normal and optimized HPCA run to 20 cases. The current manifest binds the exact test and six original-source fixtures plus their provenance receipt; the historical producer and result hashes remain unchanged.

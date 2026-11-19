@@ -1,0 +1,144 @@
+{
+  "schema": "hepta.cell-common.exposed-S-four-arm.v1",
+  "status": "DEVELOPMENT_TERMINAL_COMPARISON_COMPLETED_SCIENCE_HOLD",
+  "driver_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+  "driver_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+  "task_source_commit": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+  "task_source_tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+  "parent_state_sha256": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+  "candidate_state_sha256": "aa4704cf7342f30bd3e83d9ed923ae4932229ce265cc445a98f375057a6d9a4f",
+  "arms": {
+    "no_update": {
+      "terminal": "proved",
+      "result": {
+        "path": "no_update/execution/result.json",
+        "sha256": "c934dd4ab30228b35fed6c017c7ef3fd89517c71dd809b6fb3192dd51ce31513",
+        "selected_document": "native-clippy-borrow",
+        "state_before_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "state_after_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "training_updates_consumed": 0
+      },
+      "error": null,
+      "costs": {
+        "wall_seconds": 40.60246179299429,
+        "process_cpu_seconds": 0.09187799999999999,
+        "reaped_child_cpu_seconds": 72.122925,
+        "peak_memory_bytes": null,
+        "energy_joules": null,
+        "financial_cost": null
+      }
+    },
+    "bm25": {
+      "terminal": "proved",
+      "result": {
+        "path": "bm25/execution/result.json",
+        "sha256": "bcd2d3191ef088116773b208949e01f4ad5eac7e5b70e4ca6ad422fee1d50e72",
+        "selected_document": "native-clippy-borrow",
+        "state_before_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "state_after_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "training_updates_consumed": 0
+      },
+      "error": null,
+      "costs": {
+        "wall_seconds": 4.049970875028521,
+        "process_cpu_seconds": 0.03922499999999998,
+        "reaped_child_cpu_seconds": 5.331023000000002,
+        "peak_memory_bytes": null,
+        "energy_joules": null,
+        "financial_cost": null
+      }
+    },
+    "fixed_expert": {
+      "terminal": "proved",
+      "result": {
+        "path": "fixed_expert/execution/result.json",
+        "sha256": "fb773024e8877157fcc5b5382adbb91b86731fd1d8112fc4142c523fc0227d5f",
+        "selected_document": "native-clippy-borrow",
+        "state_before_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "state_after_digest": "3c682946b3844ec0f1959ef7a9357f2565d40c84b8c99ba4664549b2e43bf571",
+        "training_updates_consumed": 0
+      },
+      "error": null,
+      "costs": {
+        "wall_seconds": 3.7638164800591767,
+        "process_cpu_seconds": 0.03886399999999998,
+        "reaped_child_cpu_seconds": 5.143033000000003,
+        "peak_memory_bytes": null,
+        "energy_joules": null,
+        "financial_cost": null
+      }
+    },
+    "candidate": {
+      "terminal": "proved",
+      "result": {
+        "path": "candidate/execution/result.json",
+        "sha256": "a6d25e701ca1a4488b39ddb38a6084a774089fbd35a5337d4d257071ea406323",
+        "selected_document": "native-clippy-borrow",
+        "state_before_digest": "aa4704cf7342f30bd3e83d9ed923ae4932229ce265cc445a98f375057a6d9a4f",
+        "state_after_digest": "aa4704cf7342f30bd3e83d9ed923ae4932229ce265cc445a98f375057a6d9a4f",
+        "training_updates_consumed": 0
+      },
+      "error": null,
+      "costs": {
+        "wall_seconds": 4.14436262997333,
+        "process_cpu_seconds": 0.039323,
+        "reaped_child_cpu_seconds": 5.401354999999995,
+        "peak_memory_bytes": null,
+        "energy_joules": null,
+        "financial_cost": null
+      }
+    }
+  },
+  "source_unchanged_verified": true,
+  "driver_sources_unchanged": true,
+  "independent_confirmation_tasks": 0,
+  "task_families": 1,
+  "historical_source_task_repetitions": 4,
+  "native_assertions_per_arm": 33,
+  "new_training_updates": 0,
+  "scientific_status": "HOLD",
+  "production_status": "not_adopted",
+  "learning_gain_established": false,
+  "complete_end_to_end_cost_established": false,
+  "costs": {
+    "wall_seconds": 52.62789135589264,
+    "process_cpu_seconds": 0.214799,
+    "reaped_child_cpu_seconds": 88.07797399999998,
+    "peak_memory_bytes": null,
+    "energy_joules": null,
+    "financial_cost": null
+  },
+  "outer_wall_seconds": 52.65457290306222,
+  "arm_order": [
+    "no_update",
+    "bm25",
+    "fixed_expert",
+    "candidate"
+  ],
+  "not_a_latency_comparison": true,
+  "cache_profile": "new target directory at campaign start; shared sequentially across arms; existing Cargo and pinned font caches",
+  "fixed_expert_tuning_verified": false,
+  "resource_envelope_requested": {
+    "cpu_quota_percent": 200,
+    "memory_max_bytes": 8589934592,
+    "timeout_seconds": 4200
+  },
+  "native_process_job": "1a1c000e937-5e21-85c",
+  "native_process_state": "succeeded",
+  "native_process_exit": 0,
+  "raw_archive": {
+    "path": "S-four-arm-001.tar.gz",
+    "bytes": 107032,
+    "sha256": "ff8b0801840be062031c8a3f587a6cff3bddb927ecfa85d0477ea5c4bb20a50e",
+    "manifest_members_verified": 180
+  },
+  "boundaries": [
+    "exact committed Python driver subset only; historical S native UI source is different from driver/common candidate",
+    "development exposure is retained; no new independent source or seed",
+    "all arms choose the same document and complete the same recipe",
+    "caller receipts remain unsigned development evidence",
+    "unknown memory, energy and monetary cost",
+    "no native daemon production learning/adoption/recovery claim"
+  ],
+  "completed_at_utc": "2026-11-09T11:11:42.180998+00:00"
+}

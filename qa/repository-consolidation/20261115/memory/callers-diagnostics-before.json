@@ -1,0 +1,34 @@
+{
+  "passed_boundaries": 1619,
+  "total_boundaries": 1624,
+  "protected_file_count": 809,
+  "rust_file_count": 7475,
+  "failures": [
+    {
+      "kind": "boundary",
+      "id": "agentd_production_writer_host",
+      "error": "agentd_production_writer_host: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs']"
+    },
+    {
+      "kind": "boundary",
+      "id": "final_use_open_state",
+      "error": "final_use_open_state: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/native_memory_current_test_support.rs', 'codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs']"
+    },
+    {
+      "kind": "boundary",
+      "id": "final_use_claim_raw",
+      "error": "final_use_claim_raw: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-ndu/src/owner_current.rs']"
+    },
+    {
+      "kind": "boundary",
+      "id": "final_use_delivery_raw",
+      "error": "final_use_delivery_raw: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-ndu/src/owner_current.rs']"
+    },
+    {
+      "kind": "boundary",
+      "id": "final_use_revocation_feed_trust",
+      "error": "final_use_revocation_feed_trust: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/native_memory_current_test_support.rs', 'codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs']"
+    }
+  ],
+  "seconds": 910.815
+}

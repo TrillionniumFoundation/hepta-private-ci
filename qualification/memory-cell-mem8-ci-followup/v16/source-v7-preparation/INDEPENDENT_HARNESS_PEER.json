@@ -1,0 +1,61 @@
+{
+  "schema": "mem-ci-v7-harness-static-peer-v1",
+  "reviewed_at": "2026-11-11T14:48:18.795326+00:00",
+  "reviewer": "/root/mem_ci_integration",
+  "verdict": "NO_STATIC_MUST_FIX",
+  "head": "63a4c2492848e9560750c32bebaacce2762bf2a2",
+  "tree": "7592d3546c460ba1a2f543167be27eeba973c2b7",
+  "driver": {
+    "bytes": 33587,
+    "sha256": "719517842d609b194f74097e5c55a5bef98802f94f36b14a46bcddc180f9b428",
+    "git_blob": "91137ce8dad5da7b214821067c3080c691bf981a"
+  },
+  "workflow": {
+    "bytes": 9720,
+    "sha256": "97400b7044ecfdfce64dd6677e4eb96c16855797952e09c9aba397652df6de33",
+    "git_blob": "aa41e2407392179dbb88c32806e149aa701fd8b8"
+  },
+  "input": {
+    "bytes": 373068,
+    "sha256": "81bdc4cf1e93df3c8b9322f8a10f9a075eb1ad289c04bd2945fb523e54da099d",
+    "git_blob": "1648e124e20ee7d0faedbe8b2e4c9a5be477144d"
+  },
+  "golden": {
+    "bytes": 75046,
+    "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+    "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+  },
+  "independent_checks": {
+    "driver_exact_enumerated_identity_count_namespace_delta": "PASS",
+    "workflow_exact_enumerated_identity_count_namespace_depth_delta": "PASS",
+    "python_ast": "PASS",
+    "yaml": "PASS",
+    "all_bash_n": "PASS",
+    "all114_overlay_payloads": "PASS",
+    "complete14053_tree_merkle": "PASS",
+    "rust_source_roots_count6204_and_exact_roster": "PASS",
+    "golden_original_full_bytes": "PASS"
+  },
+  "preserved": [
+    "600-second gate and 20-minute job",
+    "same 18 Python cases and exact output/ID checks",
+    "same complete JSON golden comparison with rustFilesScanned as sole derived delta",
+    "source/harness isolation and same tool hashes/actions",
+    "full-tree/two-lock/no-unknown-source-write guards and failure capture",
+    "original thirteen rename inventory; inherited driver review_required signal is not final acceptance, and full offline verifier must enforce zero actual hits"
+  ],
+  "depth8_chain": [
+    "63a4c2492848e9560750c32bebaacce2762bf2a2",
+    "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+    "421d15080b3cb942be8ac51bbe443e268d124a9e",
+    "9bd2f589debdba4a93baa363817c3669cb103721",
+    "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+    "6ce78781977d1ca77d004845b933ec9a99f54a83",
+    "189711e3563ea13a5328d52e99a286f082045b98",
+    "2ae5215beaf8d7b7df111a090b82134beae2683d"
+  ],
+  "boundaries": [
+    "No source gate, native, model or remote host execution; no ref admission.",
+    "Runtime verifier identity still must be bound to the eventual actual harness/run/job/attempt; these are not invented here."
+  ]
+}

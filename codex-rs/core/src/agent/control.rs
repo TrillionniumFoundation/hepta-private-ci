@@ -66,6 +66,7 @@ use uuid::Uuid;
 
 pub(crate) use self::execution::AgentExecutionGuard;
 use self::execution::AgentExecutionLimiter;
+pub(crate) use self::execution::TurnStartCapacity;
 use self::residency::V2Residency;
 
 mod execution;

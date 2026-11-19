@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.fixed-source-format-transport-restoration.v1",
+  "status": "PROPOSED_NOT_DISPATCHED",
+  "source_sha": "ebe67237b8645415fd4942ac167753c19ce8f5c4",
+  "source_tree": "b5f2e580046dd68c96ca26106c9084d952f4d5a7",
+  "previous_attempt": {
+    "job": "1a1d01383ed-2564-1b22",
+    "driver_exit": 2,
+    "error_type": "TimeoutExpired",
+    "fetch_limit_seconds": 600,
+    "fetch_log": "fatal: early EOF\n",
+    "stages": [],
+    "registry_observation": "MCP timeout; not asserted confirmed registry terminal"
+  },
+  "concrete_change": {
+    "clone_source": "/home/qq/neuro-owner-6213-1026bd0-qa-v2-862531d11598",
+    "network_origin_source": "/home/qq/ctrl-macro-20261112-736c",
+    "reason": "Reuse exact1026 and its ancestors already validated locally; separately resolve original authorized repository remote. Avoid local-origin rejection without weakening allowed URL/credential checks."
+  },
+  "script_delta": [
+    {
+      "old": 37,
+      "new": 37,
+      "del": [
+        "  origin=subprocess.check_output([\"git\",\"-C\",cfg[\"object_source\"],\"remote\",\"get-url\",\"origin\"],stderr=subprocess.PIPE).decode().strip()"
+      ],
+      "add": [
+        "  origin=subprocess.check_output([\"git\",\"-C\",cfg[\"origin_source\"],\"remote\",\"get-url\",\"origin\"],stderr=subprocess.PIPE).decode().strip()"
+      ]
+    }
+  ],
+  "runner_bytes": 9235,
+  "runner_sha256": "7d3e41989ba790facd18609c58bd1e29ad06a0a928469461d49fdc44c9a31ae5",
+  "unchanged": [
+    "candidate source and tree",
+    "all exact source/tool pins",
+    "600-second original Git command budget",
+    "just fmt original --base and --check",
+    "source/parser/self-test commands",
+    "2CPU/8GiB/ordinaryUID",
+    "no full caller/native/helper/Root/research effect"
+  ],
+  "new_paths_and_key": true
+}

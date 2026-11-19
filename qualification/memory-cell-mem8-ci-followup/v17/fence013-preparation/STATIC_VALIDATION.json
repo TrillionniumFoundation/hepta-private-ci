@@ -1,0 +1,57 @@
+{
+  "candidate": {
+    "bytes": 17930,
+    "git_blob": "3e302bd517fcf58eafd314c65afdb864a7d82b06",
+    "sha256": "7174a2c51e265731df14838bc52ddde4986bbbcf8a1290fa769ba1eb6a68b91c"
+  },
+  "checks": {
+    "all_six_original_step_objects_preserved_except_pin_and_observation_ids": true,
+    "bash_n_scripts": [
+      0,
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "branch_limited_push_only": true,
+    "embedded_python_ast": true,
+    "no_continue_on_error_or_new_secrets": true,
+    "one_job": true,
+    "original_fence_inputs_exact_audit_only": true,
+    "original_job_timeout_platform_permissions": true,
+    "original_range_tests_allowlist_threshold_clean_and_post_unmodified": true,
+    "yaml_parse": true
+  },
+  "diff": {
+    "bytes": 17864,
+    "git_blob": "ea8fe42a327777bb9eaed58dc31e2388d939a6bd",
+    "sha256": "d6071ac3a9ee7d70ecbcbcf430b316e91deda518df34f68a6c58381689a6403e"
+  },
+  "embedded_capture": {
+    "bytes": 11520,
+    "git_blob": "9a976f1d3bc1ff22fec4c2475f4425e08ee89d62",
+    "sha256": "dcfeedbd7c96bab509c0cb38e43824c57fae8651cf84fafd020b10c5fde21f13"
+  },
+  "execution_contract": "The new branch must be anchored at source and then CAS advanced to its one-path child. First create-at-child events with zero before are rejected.",
+  "not_executed": [
+    "GitHub Actions",
+    "Fence",
+    "native tests",
+    "models",
+    "provider",
+    "host commands"
+  ],
+  "original_workflow": {
+    "bytes": 1809,
+    "git_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+    "sha256": "8740d3752737705d7257c3711d5e4b3df3cd2eadacf050f8dabb1c9e6f17cb0c"
+  },
+  "refs_changed": false,
+  "schema": "mem-fence013-qualification-static-v1",
+  "single_source_path": ".github/workflows/hepta-mem-fence013-qualification.yml",
+  "source_anchor": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "status": "STATIC_ONLY_UNADMITTED",
+  "terminal_requirement": "Artifact is collected before action post hooks. Final acceptance requires original complete job metadata and full raw log with the unmodified Fence post result."
+}

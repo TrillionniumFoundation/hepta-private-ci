@@ -1,0 +1,29 @@
+[
+  {
+    "local_parent": "390941a5e0bb7b5232271b021bd1efd77bcd05fe",
+    "local_commit": "ca5cf68df67bc31250cefbc2a420ae3e4ab442a2",
+    "tree": "107c5338e0e9a73bbf716958ddeda607de7c927f",
+    "message": "evidence(hcsn): freeze bounded C2 launch and actual first optimizer witnesses",
+    "mechanical_archive_files": 146,
+    "manifest_sha256": "093b993e5794f36318303f325f29eadf038853725d6eaeafdaaef941ccb1e09d"
+  },
+  {
+    "local_parent": "ca5cf68df67bc31250cefbc2a420ae3e4ab442a2",
+    "local_commit": "21b82b4d1705ac685e1d6b14929e4d0538c3c093",
+    "tree": "cfcfa9f8f83f2dfed5fb66132b92a4ec2654893c",
+    "message": "evidence(hcsn): retain exact hosted CI and C2 launch verification scopes",
+    "mechanical_archive_files": 58,
+    "manifest_sha256": "df2876868137056e6e50456c249fc30762a394ad245c3fec0215b46c41fc3827"
+  },
+  {
+    "local_parent": "21b82b4d1705ac685e1d6b14929e4d0538c3c093",
+    "local_commit": "a143bfda5036a54ed87afe21d184b5a9749fa0ee",
+    "tree": "772cbf882db520525d6fa5c805c296aa2e8b97eb",
+    "message": "docs(hcsn): bind real C2 launch while preserving numerical and CI holds",
+    "files": [
+      "qualification/hcsn_differentiable/CURRENT.md",
+      ".github/workflows/hcsn-differentiable.yml",
+      ".github/workflows/codespell.yml"
+    ]
+  }
+]

@@ -5,6 +5,8 @@
 //!   2. User-defined entries inside `~/.codex/config.toml` under the `model_providers`
 //!      key. These override or extend the defaults at runtime.
 
+pub mod test_support;
+
 use codex_api::Provider as ApiProvider;
 use codex_api::RetryConfig as ApiRetryConfig;
 use codex_protocol::auth::AuthMode;
@@ -166,6 +168,12 @@ pub struct ModelProviderInfo {
     /// Whether this provider supports the standalone web-search endpoint.
     #[serde(default)]
     pub supports_standalone_web_search: bool,
+    /// Instance-only permission for explicitly constructed local test fixtures.
+    /// Never accepted from configuration or included in its schema.
+    #[doc(hidden)]
+    #[serde(skip)]
+    #[schemars(skip)]
+    pub mock_internal_chat_metadata: Option<test_support::MockInternalChatMetadata>,
 }
 
 /// AWS SigV4 auth configuration for a model provider.
@@ -208,6 +216,21 @@ fn default_aws_auth_refresh_timeout_ms() -> NonZeroU64 {
 }
 
 impl ModelProviderInfo {
+    /// Apply the production endpoint rule, or an explicitly bound in-process fixture permit.
+    pub fn accepts_internal_chat_message_metadata_for_request(
+        &self,
+        resolved_base_url: &str,
+    ) -> bool {
+        provider_accepts_internal_chat_message_metadata(resolved_base_url)
+            || (self.query_params.is_none()
+                && self
+                    .mock_internal_chat_metadata
+                    .as_ref()
+                    .is_some_and(|permit| {
+                        permit.permits(self.base_url.as_deref(), resolved_base_url)
+                    }))
+    }
+
     pub fn validate(&self) -> std::result::Result<(), String> {
         if self.aws.is_some() {
             if self.supports_websockets {
@@ -435,6 +458,7 @@ impl ModelProviderInfo {
             requires_openai_auth: true,
             supports_websockets: true,
             supports_standalone_web_search: true,
+            mock_internal_chat_metadata: None,
         }
     }
 
@@ -470,6 +494,7 @@ impl ModelProviderInfo {
             requires_openai_auth: false,
             supports_websockets: false,
             supports_standalone_web_search: false,
+            mock_internal_chat_metadata: None,
         }
     }
 
@@ -637,9 +662,14 @@ pub fn create_oss_provider_with_base_url(base_url: &str, wire_api: WireApi) -> M
         requires_openai_auth: false,
         supports_websockets: false,
         supports_standalone_web_search: false,
+        mock_internal_chat_metadata: None,
     }
 }
 
 #[cfg(test)]
 #[path = "model_provider_info_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "mock_metadata_tests.rs"]
+mod mock_metadata_tests;

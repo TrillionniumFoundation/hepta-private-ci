@@ -1,0 +1,249 @@
+{
+  "base_head": "7880ad3fc16e0bc9724aa24bcbfdddb4e8eff576",
+  "incoming_head": "36e3f893812fdeecc9dfcd4c030362d14d6bc83f",
+  "incoming_branch": "research/neuron-public-iid-q24-physical-training-20261016",
+  "merge_method": "ordinary git merge --no-commit --no-ff, explicit module/export union; no ours/theirs merge strategy",
+  "added_ancestry_names": [
+    {
+      "name": "experiment/neuron-five-arm-matched-budget-20261014",
+      "sha": "47afb6f0dd0194431eed31c8936f23e9f814e61e"
+    },
+    {
+      "name": "experiment/neuron-gated-sparse-v3-a0-a4-20261011",
+      "sha": "5c020daf9a973f3874cdecd8c9a855b85ba5e0b9"
+    },
+    {
+      "name": "fix/neuron-native-ci-quality-gates-20261015",
+      "sha": "3cf50a59c683adb31332bea7bc6c120bf9f85091"
+    },
+    {
+      "name": "fix/neuron-native-rustfmt-20261015",
+      "sha": "3621977ee2487af53400c9c1bd07ff06928b77cd"
+    },
+    {
+      "name": "integration/neuron-q24-release-frontier-20261015",
+      "sha": "cdd5c8fb5efc8f3a33242b0e834642036b034a76"
+    },
+    {
+      "name": "research/neuron-archived-resource-frontier-20261015",
+      "sha": "f67895b87464fcc52900bfd2c03ea10db2ab6667"
+    },
+    {
+      "name": "research/neuron-distinct-future-eval-gate-20261014",
+      "sha": "bfd537a2495a11d15e81921c1bc2016c9838ced4"
+    },
+    {
+      "name": "research/neuron-five-arm-real-train-precommit-20261014",
+      "sha": "a9fc5178b9dbab1a9dab71573d347e328232950e"
+    },
+    {
+      "name": "research/neuron-five-arm-realized-budget-gate-20261014",
+      "sha": "c4553ef66cae6d305800a2d5bbf3f5039ae58918"
+    },
+    {
+      "name": "research/neuron-fixed-width-capacity-proof-20261015",
+      "sha": "431c33fca29bd484535d18a35c176ccb115c6044"
+    },
+    {
+      "name": "research/neuron-native-q24-hosted-independent-audit-20261015",
+      "sha": "dff785be2563d80641ab1e71c9eb84dd711bb387"
+    },
+    {
+      "name": "research/neuron-near-matched-capacity-20261015",
+      "sha": "3969b7b1b6a315e5c085e7aa9659b709979d251f"
+    },
+    {
+      "name": "research/neuron-physical-byte-parity-20261016",
+      "sha": "f732f87cfca771004db10246770f1c08a873575c"
+    },
+    {
+      "name": "research/neuron-physical-forecast-reuse-20261014",
+      "sha": "cd2b39e30eaeda3ce418c68523a96d34ad02feb0"
+    },
+    {
+      "name": "research/neuron-public-evidence-q24-bridge-20261016",
+      "sha": "cc497f3ea01aff43bde75aa8b50a8aec9f01cd88"
+    },
+    {
+      "name": "research/neuron-public-iid-q24-physical-training-20261016",
+      "sha": "36e3f893812fdeecc9dfcd4c030362d14d6bc83f"
+    },
+    {
+      "name": "research/neuron-q24-head-margin-abstain-20261014",
+      "sha": "22960a410115335b3cb9f86f6c7504b2cf22de42"
+    },
+    {
+      "name": "research/neuron-real-feature-snapshot-gate-20261016",
+      "sha": "7340faf8e89f1881d8212ab4ad70acb2a405660a"
+    },
+    {
+      "name": "research/neuron-real-modernbert-q24-producer-20261016",
+      "sha": "29680c069b67d1bbf49a0beb1425fca38503fad6"
+    },
+    {
+      "name": "research/neuron-real-public-iid-q24-input-20261016",
+      "sha": "c37739da2460eeaebc3b12ab4ee3eafa545c864c"
+    },
+    {
+      "name": "research/neuron-release-parity-20261015",
+      "sha": "f0dd6a3046b45672bf0af7e55220cd2242acb541"
+    },
+    {
+      "name": "research/neuron-trained-adapter-native-q24-20261015",
+      "sha": "c8bd54d6e38a14232ef02eedf7b273660994b0f0"
+    }
+  ],
+  "added_ancestry_name_count": 22,
+  "hia_exclusion_snapshot": "2026-11-16T00:57:02.160Z",
+  "hia_tip_count": 43,
+  "excluded_hia_tips_reachable": 0,
+  "resolved_paths": {
+    "codex-rs/hepta-neuron/src/lib.rs": "Union all current feature_control, multimodal_stem, perception and temporal credit modules/exports with incoming gated V3, diagonal SSM and low-rank minGRU APIs; incoming modules remain private and only their reviewed APIs are reexported."
+  },
+  "review_repairs": {
+    "codex-rs/hepta-neuron/src/population_v2.rs": "Remove the duplicate input validation call introduced in the incoming override; preserve validation before every original/forwarded state calculation, generation/scope/sequence/clock checks and full V2 parity tests.",
+    "codex-rs/hepta-neuron/src/bin/shadow_support/bounded_file.rs": "Bound reads to maximum plus one overflow byte on one opened regular file; bind before/after metadata to that handle; preserve symlink/empty/type/hash rejection. New mechanism trace cap16MiB; existing learned model8MiB and trace4MiB caps unchanged. This is a byte bound, not a complete hostile-filesystem authorization primitive.",
+    ".github/workflows/hepta-neuron-*.yml": "Select repository-pinned Rust1.96.0 explicitly using the original pinned action. Use normal just test with all original targets and zero retries. Two all-target suites prepare the original cross-crate joint-generation helper on a clean exact-source checkout, verify its manifest before and after testing, and preserve raw helper evidence. Install just/nextest through the existing pinned installer action. Read-only GitHub permissions, head-SHA checkout, strict Clippy and physical/negative gates remain unchanged.",
+    "qualification/neuron-gated-sparse-v3/HOSTED_Q24_INDEPENDENT_EVIDENCE_20261015.md": "Remove two Markdown trailing-space sequences; original bytes retained in incoming parent history.",
+    "codex-rs/hepta-neuron/src/cell_inference.rs": "Native compile exposed four pre-existing base calls that passed calibrated runtime config to the shared validator after it changed to a shadow binding. Explicitly project each full runtime config through the existing NeuronShadowConfigV1::from conversion, preserving all model/digest/width/output checks and separate upstream calibration validation; apply at dispatch, clocked dispatch and readback.",
+    "codex-rs/hepta-neuron/src/cell_batch.rs": "Apply the same existing runtime-to-shadow binding projection before shared output validation in independent microbatch results. Existing wrong-manifest, forged-receipt, recovery and scope tests validate the affected boundary."
+  },
+  "review_boundaries": [
+    "V1/V2 checkpoint formats, generation identity, scope/sequence/clock validation, final-use and model admission unchanged.",
+    "Three new comparator mechanisms always deny authority and require calibration; the new V3 journal requires external anchor for nonempty recovery and preserves independent anchor rollback rejection.",
+    "Incoming safetensors parsing rejects duplicate fields/names, dimension overflow, invalid finite ranges, overlapping/missing data, extra tensors and private parameter cap violations.",
+    "All64 Python modules parsed; source tests run without enabling historical training/download operations. Three incoming workflows are PR/manual read-only, no schedule or repository writer.",
+    "No Cargo dependencies change. Shared binary support has no compile-time external data."
+  ],
+  "validation": {
+    "python_command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "qualification/neuron-gated-sparse-v3",
+      "-p",
+      "test_*.py",
+      "-v"
+    ],
+    "python_exit_code": 0,
+    "python_tests": 341,
+    "python_passed": 266,
+    "python_skipped": 75,
+    "python_skip_reason": "Original optional physical Torch/safetensors opt-in cases; unavailable in local environment. No skip added or changed.",
+    "python_raw_log_sha256": "8064a4a6ec406bb7d41efb8dfd95d3826491b64399ba7933db7aa83275975896",
+    "python_raw_log_bytes": 60618,
+    "python_ast_files": 64,
+    "native_status": "IN_PROGRESS_HELPER_PREPARATION",
+    "native_remaining": [
+      "Complete original exact-source helper preparation and before/after verification",
+      "just test --locked --offline -p codex-hepta-neuron --lib --bins --retries 0 with verified helper metadata",
+      "just fix -p codex-hepta-neuron --locked --offline",
+      "combined protected CI required and Architecture required"
+    ],
+    "initial_native_findings": [
+      {
+        "status": "compile failed E0308",
+        "cause": "Four pre-existing runtime config versus shadow config caller mismatches",
+        "fix": "Preserve shared output validator and use existing runtime-to-shadow binding conversion at each affected cell caller"
+      },
+      {
+        "status": "373 tests:365 passed,8 failed,0 skipped",
+        "cause": "Original cell joint generation tests require compiler-reported hepta-joint-propose helper; helper environment not prepared in first diagnostic",
+        "followup": "Prepare exact helper through original scripts/hepta_cell_test_helpers.py on clean native source, verify before and after scoped tests; do not skip or weaken any test"
+      }
+    ],
+    "native_source_commit": "c05c5e04ef0b1412050ef85a77b15fa5916759f7",
+    "native_source_files": [
+      {
+        "path": "codex-rs/hepta-neuron/src/bin/neuron_near_matched_q24_shadow.rs",
+        "sha256": "09c093acffb31938a50188a8f65860d54fb8b95594ee3032398a1281dff03ac5"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/bin/neuron_shadow_mechanism_probe.rs",
+        "sha256": "3ffea34a98b5a3d8649cd17f5ef19ce1229361d281f858eb069af5173640efe4"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs",
+        "sha256": "3328fdd9c57db3069f9f20f2bbf1c56af9131f69884e84d8d12f04e187cedc35"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/bin/shadow_support/bounded_file.rs",
+        "sha256": "373e0d382f110b029c4e8094a2f16d986d1ff4bfe6600144f4305e4d896218e0"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/bin/shadow_support/bounded_file_tests.rs",
+        "sha256": "c09ac3f2a0a26616fc968201f55409d20ec54086c1ca68082a09ea27cf4dc497"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/diagonal_ssm_shadow.rs",
+        "sha256": "c03d817d8a40e69d6b08b87dee4b4c871d8af2d4baa2c2c55009b4f76f5cfec3"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/diagonal_ssm_shadow_tests.rs",
+        "sha256": "33070f85c444a9fec344ff2dda445196396d7ac49d5606f7cc3546ec03900062"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/gated_journal_v3.rs",
+        "sha256": "47c5cae88243a7012f9f115dec14d35d2b7fdfb713a9640eca95462c6c2aadba"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/gated_journal_v3_tests.rs",
+        "sha256": "420dafe02bc74329910a7829efe881e4f4139f150a58d45a574976e673285e69"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/gated_sparse_v3.rs",
+        "sha256": "3fe4484b633ef1c135a91d42bff14f43f4058e14ea1b4a18150052974a22b181"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/gated_sparse_v3_tests.rs",
+        "sha256": "c79bf2e5c67bec7c6d9ad6ecffeee7dbde90a2379d74a6ed557125f686ce598a"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/lib.rs",
+        "sha256": "3462e598d2bbb398b24de3c2ad2ec7136b84e9bb6b05064ddc4bab90d3957f99"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/low_rank_min_gru_shadow.rs",
+        "sha256": "fb626547b3ec08ea58776643e84b3194f964d5d1fdf66a6103a1939a2da27438"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/low_rank_min_gru_shadow_tests.rs",
+        "sha256": "507fae44ec186796e102c06c6a1decdc8d5e9a69baf38d4ec009fd9120cac8da"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/population_v2.rs",
+        "sha256": "c61ac175f3bd5066357993ef55c795a5262d37535a0abf8af18348f02eb98177"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/population_v2_tests.rs",
+        "sha256": "5e2eee0bd88338fbb262ebcf3e4fb77a82479032556f37b9b95da92cc898e10c"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_batch.rs",
+        "sha256": "f07a431ec627a79b64b24a8f5e8bd9b05f3a38bf6ed3e9074afbf3f4b1bdf97e"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+        "sha256": "44cc5c032701d137c88ca32dc2bdac9df8e016665119c99791f4def46fa3dbdb"
+      }
+    ],
+    "native_dependency_files": [
+      {
+        "path": "codex-rs/Cargo.lock",
+        "sha256": "6629440b8121f2971abe2aa8e0e4cfcabb6ecac96907dd5c37b2796c11f221ff",
+        "bytes": 422790,
+        "git_blob": "eacc921a1815bc60f1c15059fe953fca33c892fc"
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "sha256": "7922e48467ad33dbcf4584cd63bffd60947f63555d92c403d6d3062fb7149951",
+        "bytes": 1792290,
+        "git_blob": "416f9ed219037e8f103598acbaf01e659740c4f3"
+      }
+    ],
+    "native_fmt_exit_code": 0,
+    "workflow_yaml_parsed": 3
+  }
+}

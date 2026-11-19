@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.cell-common.candidate-inputs.v1",
+  "purpose": "One fixed engineering composition before independent learning qualification",
+  "source_inputs": {
+    "m6": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "stem_routes": "4cc753af511bf7c406608caa9da0795d7691bd23",
+    "representation_and_ordinary_consumer": "5530f84e1305c4c86b8be19c4c8765c4340e51db",
+    "maintained_scoped_learning": "342fb02346fb1a2f97d684fb1a3ef9042737401b",
+    "root_bootstrap": "b443fe0cd7642316d016d78d6d3fbaa3e9dfc341"
+  },
+  "scope": {
+    "graph": "fixed",
+    "trainable_object": "one private Cell object per declared learning request",
+    "shared_base_update": false,
+    "organization_search": false,
+    "improver_inheritance": false
+  },
+  "state_contracts": {
+    "ordinary_result": "ObjectiveStart, original Circuit result and durable bounded outbox",
+    "learning": "FrozenLearningScopeV2 with authenticated retained observations",
+    "checkpoint": "Original registered writer and compare-and-swap; explicit V1/V2 profile separation",
+    "delivery": "Completed authenticated NextUse before ACK, including retained NoUpdate",
+    "uncertain_claim": "Readback only; missing or partial checkpoint is not proof of non-execution",
+    "root_bootstrap": "Original profile/writer/lane identity and retained state; concrete stage owners required"
+  },
+  "development_comparison": {
+    "task_family": "repository diagnosis, repair and terminal verification",
+    "data": "Previously exposed M6 R/S development material; original content pins retained with execution",
+    "model": "Frozen lexical retrieval and one private association state; no language-model quality claim",
+    "arms": ["no_update", "bm25", "fixed_expert", "candidate"],
+    "isolated_workspace_per_arm": true,
+    "learning_during_comparison": false,
+    "independent_confirmation": false,
+    "complete_cost_established": false
+  },
+  "production_materials": {
+    "model_and_selected_current": null,
+    "authorized_source_frontier": null,
+    "original_root_writer_and_capability": null,
+    "generator_evaluator_selector_observer_owners": null,
+    "reason": "No production material is supplied or authorized by these engineering source inputs; test keys and research receipts cannot substitute."
+  },
+  "stage_dependencies": {
+    "P0": "Actual ordinary task result, learning or NoUpdate, different ordinary next use and cold recovery on this exact source",
+    "P1": "Independent task groups, preregistered utility/error/retention/cost limits and strong complete terminal controls",
+    "P2": "Separate matched-resource attribution of Cell differentiation, NDU and HCSN",
+    "P3": "Established first-order gain plus full organization search, migration, drain, retraining and rollback costs",
+    "P4": "Qualified multi-generation comparisons, including frozen and history-matched non-inheriting improvers"
+  },
+  "qualification": {
+    "production": "HOLD",
+    "learning_benefit": "HOLD",
+    "confirmation_admitted": false,
+    "organization_evolution_admitted": false,
+    "improver_evolution_admitted": false
+  }
+}

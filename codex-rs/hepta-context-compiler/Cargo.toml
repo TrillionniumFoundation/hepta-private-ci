@@ -7,7 +7,7 @@ publish = false
 
 [lib]
 name = "codex_hepta_context_compiler"
-path = "src/lib.rs"
+path = "src/root.rs"
 doctest = false
 
 [lints]
@@ -19,3 +19,6 @@ codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-wire = { path = "../hepta-wire" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }

@@ -1,0 +1,402 @@
+{
+  "schema": "hepta.ci-forensics.evidence-manifest.v1",
+  "scope": "original M6 CI, one Architecture retry, source-bound Matrix diagnostic; not final common-source qualification",
+  "raw_log_storage": "gzip mtime=0, exact original tool-returned UTF-8 bytes including BOM/CRLF; concatenate ordered_parts before decompressing. Oversized gzip streams are split into <=400 KiB parts to preserve the existing blob-size gate.",
+  "compressed_logs": [
+    {
+      "original_name": "architecture-source-128991823205.log",
+      "uncompressed_bytes": 104999,
+      "uncompressed_sha256": "ae8b81831eb1a9076f88150cd6cfd6ecb9b7b8a507851584c9de73e65e8627a6",
+      "gzip_bytes": 20931,
+      "gzip_sha256": "c522e0aa606336da3a7c4199746429cd87633cc6da1f3fd39e4b90506217b1c3",
+      "ordered_parts": [
+        "raw-logs/architecture-source-128991823205.log.gz"
+      ]
+    },
+    {
+      "original_name": "cell-agentd-attempt2-129013941011.log",
+      "uncompressed_bytes": 4745522,
+      "uncompressed_sha256": "2bbcceabc578266613c9635aa98202bf33782c762afbf6df5fb62e284be256b3",
+      "gzip_bytes": 848814,
+      "gzip_sha256": "235633036ac8c3fbc3f6e4dae976383373c5c5e5fee69e7ab55ef8d6043bc557",
+      "ordered_parts": [
+        "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part000",
+        "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part001",
+        "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part002"
+      ]
+    },
+    {
+      "original_name": "job-129000593005.log",
+      "uncompressed_bytes": 44692,
+      "uncompressed_sha256": "42c735c53fa23ee486a41d9e3ba2ea2596d163c44da0ccaa2ef14bdb52599088",
+      "gzip_bytes": 8066,
+      "gzip_sha256": "3e768c3d6891e7beda9eafb0d4879d303e35a806c6ae499b67885c93970a9834",
+      "ordered_parts": [
+        "raw-logs/job-129000593005.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593067.log",
+      "uncompressed_bytes": 1812102,
+      "uncompressed_sha256": "ec0cbb543061dcc6721bdf38918fa17ef5846f9bfec692b64e5fd124793c8ae1",
+      "gzip_bytes": 364491,
+      "gzip_sha256": "7cb10e1620b1360dc3b7fde4d4fb34828886cca10e0db850e800e8451f773eff",
+      "ordered_parts": [
+        "raw-logs/job-129000593067.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593074.log",
+      "uncompressed_bytes": 2490461,
+      "uncompressed_sha256": "a9cdde2b9dbd2bcf23845366873d43a0bab1d3c59aeb4bed8f22d25b847b5647",
+      "gzip_bytes": 382407,
+      "gzip_sha256": "0d5b73cc1848df8964e5c7d209df850ca73446f3c4ac3bc91bcbf289f1f034ff",
+      "ordered_parts": [
+        "raw-logs/job-129000593074.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593091.log",
+      "uncompressed_bytes": 96176,
+      "uncompressed_sha256": "ade7de3ed4be0f85f01b6d3980d7aed14af1e767a9460ca59e28696afd44d1ea",
+      "gzip_bytes": 17895,
+      "gzip_sha256": "4bfda23e9459dedad6f3c59f0402f3b6f42d67b15d7c0ca1c8cfcbc8ff454af6",
+      "ordered_parts": [
+        "raw-logs/job-129000593091.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593112.log",
+      "uncompressed_bytes": 1096144,
+      "uncompressed_sha256": "7b1c07a3579fbba5ef01bf8fa2135bfaae364aa61c7af7a7fa23219bf1415796",
+      "gzip_bytes": 122774,
+      "gzip_sha256": "4d6dff8663f21bf2a0eeb5de996f74dfc82ca9b242921250430ff5bf186868c6",
+      "ordered_parts": [
+        "raw-logs/job-129000593112.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593114.log",
+      "uncompressed_bytes": 166054,
+      "uncompressed_sha256": "9af035eb4d9946c77302ee3c7cb2ecff7ae191082e3d99521a9ef4d73d348579",
+      "gzip_bytes": 21057,
+      "gzip_sha256": "cec8f182d3248822213842ecab9102e2bcc419cdab0cbda7f0cf11d5322e8f86",
+      "ordered_parts": [
+        "raw-logs/job-129000593114.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593125.log",
+      "uncompressed_bytes": 839946,
+      "uncompressed_sha256": "cc20142b9758837eb0431e9617f1ff68bdfef9206b95211c3fc098f92d72a3b4",
+      "gzip_bytes": 139429,
+      "gzip_sha256": "8a17c4f234f46abfc4436758e4c2c664441a60ccee59f13588e09485315b0fe9",
+      "ordered_parts": [
+        "raw-logs/job-129000593125.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593201.log",
+      "uncompressed_bytes": 750402,
+      "uncompressed_sha256": "abebed6d28e02a9075598dd7e4fbeffd785d83cff1961e7bc763de3800e38ccf",
+      "gzip_bytes": 105856,
+      "gzip_sha256": "ac311e837b5c51701a215481fc13c8586aa0f69557f04cf2de2406a966d0ef1b",
+      "ordered_parts": [
+        "raw-logs/job-129000593201.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000593255.log",
+      "uncompressed_bytes": 2271163,
+      "uncompressed_sha256": "8416fd7fed946b4395e30fea4cffb2d38b3a0ddb6cbda199c4e0544e40425ba2",
+      "gzip_bytes": 370019,
+      "gzip_sha256": "07ee210e103bb1b412821c314fdb709c817a88ca65a6c20c6f57e56747c02546",
+      "ordered_parts": [
+        "raw-logs/job-129000593255.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129000592665.log",
+      "uncompressed_bytes": 52727,
+      "uncompressed_sha256": "abed14af6a0b70ba2171dd959f706bb641833b49c7805ec92af2182c4dc864e8",
+      "gzip_bytes": 9848,
+      "gzip_sha256": "bed8d66184766a9c38b6758241e268cb04994b90b826452dd3f717f9d824787c",
+      "ordered_parts": [
+        "raw-logs/job-129000592665.log.gz"
+      ]
+    },
+    {
+      "original_name": "job-129023003466.log",
+      "uncompressed_bytes": 18696,
+      "uncompressed_sha256": "d4c4d5b14d555b1f24126eaf787a35db7d749850be1cddd013afe5fb243bc367",
+      "gzip_bytes": 4364,
+      "gzip_sha256": "38525ffbe0299f05cdc600b835b0e86b12543a1e8c6b7edcddbbaaa84f47f8c4",
+      "ordered_parts": [
+        "raw-logs/job-129023003466.log.gz"
+      ]
+    },
+    {
+      "original_name": "architecture-source-attempt2-129124162512.log",
+      "uncompressed_bytes": 583540,
+      "uncompressed_sha256": "9fc3aba1dc132b85e6ff157baee17d2144d5ccf6ed54359cae914e07d8d4b07e",
+      "gzip_bytes": 119365,
+      "gzip_sha256": "424a5573b2d44f810fcc4f28184a9000aaca2480f265bc54e2783718319ab870",
+      "ordered_parts": [
+        "raw-logs/architecture-source-attempt2-129124162512.log.gz"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "ARCHITECTURE_RETRY_LOG_MANIFEST.json",
+      "bytes": 232,
+      "sha256": "f815a58fb2c4772ef95697c83ebb253efb8563d9baa131b3d3dc4c9281747912"
+    },
+    {
+      "path": "RAW_LOG_MANIFEST.json",
+      "bytes": 2793,
+      "sha256": "c2f5a3b43c19cb4ed6eda26e801acae638e5bb10a506fa6d2d5d35a25b921022"
+    },
+    {
+      "path": "README.md",
+      "bytes": 14945,
+      "sha256": "19d4b4a7855e9b29ff1a46099c0c13206681d6eb020d8ae93d8e68b7c19c13e3"
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 4143,
+      "sha256": "5267f05611f37c4112c8c61fcf5a1fc171580cb971fc607a00a7c54bfa02a639"
+    },
+    {
+      "path": "architecture-attempt2-final-run.json",
+      "bytes": 16561,
+      "sha256": "56179a18fde29b0d237c4aa99a83464ce6252d4e39545ade1b5e19a3e020a1fe"
+    },
+    {
+      "path": "architecture-single-job-rerun-response.json",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e"
+    },
+    {
+      "path": "matrix-diagnostic/diagnostic.patch.gz",
+      "bytes": 1969,
+      "sha256": "242e1bed0f3ee48b43723656b8ad48db8597956a3b464c213b97d1f88218962c"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-build.json",
+      "bytes": 2718,
+      "sha256": "0b8c5b40e15781b6fafd46d623f02c72dc542c3b551a99f89245dad48f89e065"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-build.log",
+      "bytes": 460,
+      "sha256": "6b7cfd9cfa90d04962158a3136d7b8cf9abf0c578e1caa200ae77557af5e5a7e"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-half-cpu.json",
+      "bytes": 2982,
+      "sha256": "9fbd44aac69ecf41ec101972f969ae94687ba89bcd6e1c5d018da0e727d99fd8"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-half-cpu.junit.xml",
+      "bytes": 574,
+      "sha256": "5742def351e81e6c65659a3079d00768c6888e3d891928d21f0ef740c3dea94a"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-half-cpu.log",
+      "bytes": 15163,
+      "sha256": "243f92b84a8af8d8c8c74597c1eed072c579e36367dbbc3a755a2b547f257e85"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3-overlay.json",
+      "bytes": 396,
+      "sha256": "663b3d7341f11822669d125f99c1bdf97c9abaf3b513a90c19f757256ab7c01b"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3.json",
+      "bytes": 2925,
+      "sha256": "8c9756bef6ccaf443ae80b5c6dafdba7fd76f1fca1d06f201d2e3817b7a5ef46"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3.junit.xml",
+      "bytes": 574,
+      "sha256": "5e1763ba0b34088bffc876bcc3b4baec529997179539c9ea4dc9690bb922dd41"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3.log",
+      "bytes": 14444,
+      "sha256": "74454a660277213ee5c644d0771c02a09dc4da947db4c9e952a886b9b8bab525"
+    },
+    {
+      "path": "matrix-diagnostic/encryption-opt3.patch.gz",
+      "bytes": 2163,
+      "sha256": "d5f8d5f45f118d0fce92d669f24e2eb55c3f17780e21433caa1efa37085ea9a3"
+    },
+    {
+      "path": "matrix-diagnostic/manifest.json",
+      "bytes": 1200,
+      "sha256": "0952de18651d25a767f8a9cb535055f9b91795043b37ab68fd80e6a6cdfdc837"
+    },
+    {
+      "path": "matrix-diagnostic/original-debug-half-cpu.json",
+      "bytes": 2924,
+      "sha256": "60e581c9ed7e3d2b12977253e7b889edebf8f95198b4d037a253717e7cbfdfdd"
+    },
+    {
+      "path": "matrix-diagnostic/original-debug-half-cpu.junit.xml",
+      "bytes": 756,
+      "sha256": "c36b0ba71ed640e27f779318d06ff9763c1c06307a0d6925d5e0d2b848707af5"
+    },
+    {
+      "path": "matrix-diagnostic/original-debug-half-cpu.log",
+      "bytes": 15322,
+      "sha256": "89d07867f38aa5553e9b458a002c1c32dc16d9b35308084d9abc981ade550a2f"
+    },
+    {
+      "path": "matrix-diagnostic/original-debug.json",
+      "bytes": 2655,
+      "sha256": "71e440c936504972977923d73ce51c5ecc506b233655d4c6b67cdaaaa0628518"
+    },
+    {
+      "path": "matrix-diagnostic/original-debug.log",
+      "bytes": 26192,
+      "sha256": "9981dfffbb30136baab9917c2c9692826845bffd17544fd2b119285f96140276"
+    },
+    {
+      "path": "matrix-diagnostic/prepare_matrix_startup_diagnostic.py.gz",
+      "bytes": 2309,
+      "sha256": "445d8a8e52a947f5eb193db10ab5fe2cb79f1c7307dd902a7d407a68a9b3db23"
+    },
+    {
+      "path": "matrix-diagnostic/run_matrix_startup_diagnostic.py.gz",
+      "bytes": 2033,
+      "sha256": "628aef6d8a6d07aeac1790c3c4567c910958673f595117d27acebc48529f611b"
+    },
+    {
+      "path": "pr5433.json",
+      "bytes": 10056,
+      "sha256": "5e93856ec26889ab06de6e7f70cf93fd2e2b855024b0573810a630b425f9c7a8"
+    },
+    {
+      "path": "raw-logs/architecture-source-128991823205.log.gz",
+      "bytes": 20931,
+      "sha256": "c522e0aa606336da3a7c4199746429cd87633cc6da1f3fd39e4b90506217b1c3"
+    },
+    {
+      "path": "raw-logs/architecture-source-attempt2-129124162512.log.gz",
+      "bytes": 119365,
+      "sha256": "424a5573b2d44f810fcc4f28184a9000aaca2480f265bc54e2783718319ab870"
+    },
+    {
+      "path": "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part000",
+      "bytes": 409600,
+      "sha256": "07b96c05110ce08b937966f4e2583a5259f8c06e98037845b0dcca83495e52eb"
+    },
+    {
+      "path": "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part001",
+      "bytes": 409600,
+      "sha256": "8e7b41bb1c2ff88b995c9a68a1dc487552c432259c1378c0d59acde0efc3ce83"
+    },
+    {
+      "path": "raw-logs/cell-agentd-attempt2-129013941011.log.gz.part002",
+      "bytes": 29614,
+      "sha256": "d4df987796fe35e007370874b26c739ab6f169b9be24de09bc023e4bf40df0df"
+    },
+    {
+      "path": "raw-logs/job-129000592665.log.gz",
+      "bytes": 9848,
+      "sha256": "bed8d66184766a9c38b6758241e268cb04994b90b826452dd3f717f9d824787c"
+    },
+    {
+      "path": "raw-logs/job-129000593005.log.gz",
+      "bytes": 8066,
+      "sha256": "3e768c3d6891e7beda9eafb0d4879d303e35a806c6ae499b67885c93970a9834"
+    },
+    {
+      "path": "raw-logs/job-129000593067.log.gz",
+      "bytes": 364491,
+      "sha256": "7cb10e1620b1360dc3b7fde4d4fb34828886cca10e0db850e800e8451f773eff"
+    },
+    {
+      "path": "raw-logs/job-129000593074.log.gz",
+      "bytes": 382407,
+      "sha256": "0d5b73cc1848df8964e5c7d209df850ca73446f3c4ac3bc91bcbf289f1f034ff"
+    },
+    {
+      "path": "raw-logs/job-129000593091.log.gz",
+      "bytes": 17895,
+      "sha256": "4bfda23e9459dedad6f3c59f0402f3b6f42d67b15d7c0ca1c8cfcbc8ff454af6"
+    },
+    {
+      "path": "raw-logs/job-129000593112.log.gz",
+      "bytes": 122774,
+      "sha256": "4d6dff8663f21bf2a0eeb5de996f74dfc82ca9b242921250430ff5bf186868c6"
+    },
+    {
+      "path": "raw-logs/job-129000593114.log.gz",
+      "bytes": 21057,
+      "sha256": "cec8f182d3248822213842ecab9102e2bcc419cdab0cbda7f0cf11d5322e8f86"
+    },
+    {
+      "path": "raw-logs/job-129000593125.log.gz",
+      "bytes": 139429,
+      "sha256": "8a17c4f234f46abfc4436758e4c2c664441a60ccee59f13588e09485315b0fe9"
+    },
+    {
+      "path": "raw-logs/job-129000593201.log.gz",
+      "bytes": 105856,
+      "sha256": "ac311e837b5c51701a215481fc13c8586aa0f69557f04cf2de2406a966d0ef1b"
+    },
+    {
+      "path": "raw-logs/job-129000593255.log.gz",
+      "bytes": 370019,
+      "sha256": "07ee210e103bb1b412821c314fdb709c817a88ca65a6c20c6f57e56747c02546"
+    },
+    {
+      "path": "raw-logs/job-129023003466.log.gz",
+      "bytes": 4364,
+      "sha256": "38525ffbe0299f05cdc600b835b0e86b12543a1e8c6b7edcddbbaaa84f47f8c4"
+    },
+    {
+      "path": "run-42565757710-jobs.json",
+      "bytes": 12792,
+      "sha256": "a38c04fbb2c4685ade30a8a218ed3a8f8d06927a8a87357d6cad6c54d78ebe8b"
+    },
+    {
+      "path": "run-42565769715-jobs.json",
+      "bytes": 12613,
+      "sha256": "f0b24721a2ce5ac94943b2e09b5b69d671b046a55c45f2600ef61ce5145f5a32"
+    },
+    {
+      "path": "run-42565769736-full-jobs.json",
+      "bytes": 134103,
+      "sha256": "9613c13669df2ca8cd23a07d31737df6c5242b09e2a4ecb5e4a890a8f2ba9529"
+    }
+  ],
+  "compressed_diagnostic_artifacts": [
+    {
+      "original_name": "matrix-diagnostic/diagnostic.patch",
+      "stored_path": "matrix-diagnostic/diagnostic.patch.gz",
+      "uncompressed_bytes": 7323,
+      "uncompressed_sha256": "7f0511d2e71ba114c33c9bad8b1e80890e0f6af592570914e8bc932eace65d2e"
+    },
+    {
+      "original_name": "matrix-diagnostic/encryption-opt3.patch",
+      "stored_path": "matrix-diagnostic/encryption-opt3.patch.gz",
+      "uncompressed_bytes": 7732,
+      "uncompressed_sha256": "40d2267db410cedda58992433c732eced17c12285d8184335463a9063c78456c"
+    },
+    {
+      "original_name": "matrix-diagnostic/prepare_matrix_startup_diagnostic.py",
+      "stored_path": "matrix-diagnostic/prepare_matrix_startup_diagnostic.py.gz",
+      "uncompressed_bytes": 7975,
+      "uncompressed_sha256": "6f2cae7aac8726171d3d3c712905d71ff3334a2f7b285b90d6dca741243ec09f"
+    },
+    {
+      "original_name": "matrix-diagnostic/run_matrix_startup_diagnostic.py",
+      "stored_path": "matrix-diagnostic/run_matrix_startup_diagnostic.py.gz",
+      "uncompressed_bytes": 5262,
+      "uncompressed_sha256": "ac42181f476267e4d9b8d7b086732c5071a59acf34cd82de71a346095da8f75e"
+    }
+  ]
+}

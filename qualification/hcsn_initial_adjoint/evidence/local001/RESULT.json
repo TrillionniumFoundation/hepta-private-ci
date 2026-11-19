@@ -1,0 +1,805 @@
+{
+  "arrays_sha256": "7cdd61c7e959e6add5045c7a7a5aff116930f1f62cf1dec22228007163099057",
+  "baseline_archive_sha256": "85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e",
+  "baseline_arrays_sha256": "2dcfe03f2911cb0b6c55b2c24f095d7688d150eb84177d1bb7e4970daa8fa305",
+  "calls": {
+    "adjoint_calls": 18,
+    "forward_basis_calls": 0,
+    "forward_dde_calls": 0,
+    "independent_matrix_exponentials": 196,
+    "optimizer_updates": 0,
+    "static_perpetual_solves": 2,
+    "torch_calls": 0,
+    "zero_horizon_adjoint_calls": 2
+  },
+  "cases": [
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_baseline",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "8a90ff25dec687524652b8a3cea238f1996df1ec3336c129e8b3b816647b1477",
+      "statistics": {
+        "cpu_seconds": 0.14898586299999994,
+        "internal_steps": 423,
+        "maximum_current_jacobian_nonzeros": 87,
+        "method_segments": 9,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 4.440892098500626e-16,
+        "quadrature_evaluations": 917,
+        "rhs_evaluations": 872,
+        "stored_scalars": 74032,
+        "wall_seconds": 0.14904593199935334
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 27,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.2818290873184424e-10,
+      "maximum_mixed_gate_ratio": 1.057886801999147e-05,
+      "name": "uniform_old_basis_vjp",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.1251694020941727e-12,
+      "maximum_mixed_gate_ratio": 5.577355067193101e-07,
+      "name": "uniform_old_0_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.2137513216714524e-13,
+      "maximum_mixed_gate_ratio": 6.016447009419894e-08,
+      "name": "uniform_old_0_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.4989703922552167e-11,
+      "maximum_mixed_gate_ratio": 7.435631955124496e-06,
+      "name": "uniform_old_1_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.3901949036387862e-11,
+      "maximum_mixed_gate_ratio": 6.8960519184666036e-06,
+      "name": "uniform_old_1_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 5.270062164441924e-12,
+      "maximum_mixed_gate_ratio": 5.592690991678583e-07,
+      "name": "uniform_old_2_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 8.127221118314765e-12,
+      "maximum_mixed_gate_ratio": 8.624762842871809e-07,
+      "name": "uniform_old_2_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 4.979655576775599e-12,
+      "maximum_mixed_gate_ratio": 2.084553931107728e-06,
+      "name": "uniform_old_3_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 2.466221671326707e-13,
+      "maximum_mixed_gate_ratio": 1.0323951126514924e-07,
+      "name": "uniform_old_3_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 9.802381129020432e-12,
+      "maximum_mixed_gate_ratio": 8.516034835303938e-07,
+      "name": "uniform_old_4_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 6.582845379909941e-12,
+      "maximum_mixed_gate_ratio": 5.718992133906263e-07,
+      "name": "uniform_old_4_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_tight",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "8a90ff25dec687524652b8a3cea238f1996df1ec3336c129e8b3b816647b1477",
+      "statistics": {
+        "cpu_seconds": 0.255993593,
+        "internal_steps": 555,
+        "maximum_current_jacobian_nonzeros": 87,
+        "method_segments": 9,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 8.881784197001252e-16,
+        "quadrature_evaluations": 1155,
+        "rhs_evaluations": 1136,
+        "stored_scalars": 100786,
+        "wall_seconds": 0.2560384050011635
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-07,
+      "coordinates": 27,
+      "gate_failures": 0,
+      "maximum_absolute_error": 4.5134229686993876e-11,
+      "maximum_mixed_gate_ratio": 2.0569134673568446e-05,
+      "name": "uniform_time_tightening",
+      "relative_gate": 1e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_mass",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "dcfec05a7a66a528af5f36199339baac144a4f1639b108f1d3c5183d1808c398",
+      "statistics": {
+        "cpu_seconds": 0.027946872999999983,
+        "internal_steps": 103,
+        "maximum_current_jacobian_nonzeros": 29,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 231,
+        "rhs_evaluations": 115,
+        "stored_scalars": 2762,
+        "wall_seconds": 0.02794694200019876
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 9,
+      "gate_failures": 0,
+      "maximum_absolute_error": 0.0,
+      "maximum_mixed_gate_ratio": 0.0,
+      "name": "uniform_mass_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_bellman",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "dcfec05a7a66a528af5f36199339baac144a4f1639b108f1d3c5183d1808c398",
+      "statistics": {
+        "cpu_seconds": 0.04309243100000004,
+        "internal_steps": 141,
+        "maximum_current_jacobian_nonzeros": 29,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 6.561880636552679e-17,
+        "quadrature_evaluations": 350,
+        "rhs_evaluations": 294,
+        "stored_scalars": 6802,
+        "wall_seconds": 0.047218350000548526
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 9,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.4418246031009403e-10,
+      "maximum_mixed_gate_ratio": 3.661420942123328e-05,
+      "name": "uniform_bellman_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_atom_zero",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "335c3f62cdd22ba1a9405c1b667eca52c613de3d881580eff43056fc1a30c265",
+      "statistics": {
+        "cpu_seconds": 0.00033681200000001965,
+        "internal_steps": 0,
+        "maximum_current_jacobian_nonzeros": 0,
+        "method_segments": 0,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 0,
+        "rhs_evaluations": 0,
+        "stored_scalars": 24,
+        "wall_seconds": 0.0003377389984962065
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-12,
+      "coordinates": 16,
+      "gate_failures": 0,
+      "maximum_absolute_error": 4.163336342344337e-17,
+      "maximum_mixed_gate_ratio": 3.8707198630856555e-05,
+      "name": "uniform_atom_zero_sides",
+      "relative_gate": 1e-12
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_atom_front",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "39cd8b2f241bce8a1329323c5736fba16d58d64e572e7466e5f41eb4feb51a26",
+      "statistics": {
+        "cpu_seconds": 0.03378925200000005,
+        "internal_steps": 148,
+        "maximum_current_jacobian_nonzeros": 58,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 0,
+        "rhs_evaluations": 304,
+        "stored_scalars": 19276,
+        "wall_seconds": 0.03378573400004825
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.148720173484776e-11,
+      "maximum_mixed_gate_ratio": 9.406772155886696e-06,
+      "name": "uniform_atom_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_uniform_front",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "6818e0f762e6d4a37d561bad231423a335b6c718558e6715f00fb98e1a4a2911",
+      "statistics": {
+        "cpu_seconds": 0.03014438900000005,
+        "internal_steps": 99,
+        "maximum_current_jacobian_nonzeros": 58,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 3.3306690738754696e-16,
+        "quadrature_evaluations": 420,
+        "rhs_evaluations": 204,
+        "stored_scalars": 11860,
+        "wall_seconds": 0.03014246800012188
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-11,
+      "coordinates": 36,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_mixed_gate_ratio": 1.5087369674856898e-06,
+      "name": "uniform_reference_quadrature",
+      "relative_gate": 1e-10
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "gate_failures": 0,
+      "maximum_absolute_error": 5.289532700736288e-12,
+      "maximum_mixed_gate_ratio": 2.8210197934193413e-06,
+      "name": "uniform_uniform_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "uniform_upper",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "dcfec05a7a66a528af5f36199339baac144a4f1639b108f1d3c5183d1808c398",
+      "statistics": {
+        "cpu_seconds": 0.07448742300000011,
+        "internal_steps": 225,
+        "maximum_current_jacobian_nonzeros": 29,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 2.220446049250313e-16,
+        "quadrature_evaluations": 518,
+        "rhs_evaluations": 462,
+        "stored_scalars": 13424,
+        "wall_seconds": 0.07495233200097573
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.4106049661677389e-11,
+      "maximum_mixed_gate_ratio": 0.0023144406285283054,
+      "name": "uniform_upper_occupation",
+      "relative_gate": 1e-08
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_baseline",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "4446ddbb2f32afd4e08dfeaf08cec4f0209c99b209378748b8e302f7c6b96136",
+      "statistics": {
+        "cpu_seconds": 0.590058406,
+        "internal_steps": 2169,
+        "maximum_current_jacobian_nonzeros": 147,
+        "method_segments": 9,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 1.2434497875801753e-14,
+        "quadrature_evaluations": 3192,
+        "rhs_evaluations": 4371,
+        "stored_scalars": 654909,
+        "wall_seconds": 0.5911014930006786
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 42,
+      "gate_failures": 0,
+      "maximum_absolute_error": 4.865925440356023e-09,
+      "maximum_mixed_gate_ratio": 0.00037106092075360453,
+      "name": "graded_old_basis_vjp",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 4.470240844156592e-11,
+      "maximum_mixed_gate_ratio": 1.1183485508631287e-05,
+      "name": "graded_old_0_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 6.396574936395893e-11,
+      "maximum_mixed_gate_ratio": 1.6002717886322155e-05,
+      "name": "graded_old_0_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.420897176642512e-10,
+      "maximum_mixed_gate_ratio": 0.00010783042339606218,
+      "name": "graded_old_1_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.401238735101231e-10,
+      "maximum_mixed_gate_ratio": 0.00010721076780260223,
+      "name": "graded_old_1_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.8477774865743868e-11,
+      "maximum_mixed_gate_ratio": 2.3901590775604746e-06,
+      "name": "graded_old_2_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 8.305134358010946e-12,
+      "maximum_mixed_gate_ratio": 1.074295602141903e-06,
+      "name": "graded_old_2_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 2.457917203102511e-11,
+      "maximum_mixed_gate_ratio": 3.493702895976916e-06,
+      "name": "graded_old_3_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.570499451654996e-11,
+      "maximum_mixed_gate_ratio": 5.075136078212857e-06,
+      "name": "graded_old_3_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.177154650479963e-10,
+      "maximum_mixed_gate_ratio": 0.00017455019508988835,
+      "name": "graded_old_4_coarse_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.1317065607439076e-10,
+      "maximum_mixed_gate_ratio": 0.00017205331538779683,
+      "name": "graded_old_4_fine_projected_fd",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_tight",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "4446ddbb2f32afd4e08dfeaf08cec4f0209c99b209378748b8e302f7c6b96136",
+      "statistics": {
+        "cpu_seconds": 0.7964834100000002,
+        "internal_steps": 3056,
+        "maximum_current_jacobian_nonzeros": 147,
+        "method_segments": 9,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 5.773159728050814e-15,
+        "quadrature_evaluations": 4312,
+        "rhs_evaluations": 6142,
+        "stored_scalars": 934247,
+        "wall_seconds": 0.8015428310009156
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-07,
+      "coordinates": 42,
+      "gate_failures": 0,
+      "maximum_absolute_error": 9.663603250942288e-11,
+      "maximum_mixed_gate_ratio": 3.474500048311282e-05,
+      "name": "graded_time_tightening",
+      "relative_gate": 1e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_mass",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "d9b13460651c3fea7c3352f4045d7cbd34e80089de254ba7867f27f1b0934528",
+      "statistics": {
+        "cpu_seconds": 0.01650109899999963,
+        "internal_steps": 55,
+        "maximum_current_jacobian_nonzeros": 49,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 63,
+        "rhs_evaluations": 121,
+        "stored_scalars": 2099,
+        "wall_seconds": 0.016500476998771774
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 14,
+      "gate_failures": 0,
+      "maximum_absolute_error": 0.0,
+      "maximum_mixed_gate_ratio": 0.0,
+      "name": "graded_mass_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_bellman",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "d9b13460651c3fea7c3352f4045d7cbd34e80089de254ba7867f27f1b0934528",
+      "statistics": {
+        "cpu_seconds": 0.04306616200000013,
+        "internal_steps": 141,
+        "maximum_current_jacobian_nonzeros": 49,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 2.480982425508233e-17,
+        "quadrature_evaluations": 350,
+        "rhs_evaluations": 294,
+        "stored_scalars": 9337,
+        "wall_seconds": 0.04306370800077275
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 2e-07,
+      "coordinates": 14,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.2147084993994213e-10,
+      "maximum_mixed_gate_ratio": 3.40712704622658e-05,
+      "name": "graded_bellman_identity",
+      "relative_gate": 2e-06
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_atom_zero",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "844ddd8663a73c69edea9e6cc57e50dbc6d56b1300ffd6e7b82b191680674ce7",
+      "statistics": {
+        "cpu_seconds": 0.0003435920000001147,
+        "internal_steps": 0,
+        "maximum_current_jacobian_nonzeros": 0,
+        "method_segments": 0,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 0,
+        "rhs_evaluations": 0,
+        "stored_scalars": 34,
+        "wall_seconds": 0.0003431770001043333
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-12,
+      "coordinates": 26,
+      "gate_failures": 0,
+      "maximum_absolute_error": 2.220446049250313e-16,
+      "maximum_mixed_gate_ratio": 0.00013381836378427984,
+      "name": "graded_atom_zero_sides",
+      "relative_gate": 1e-12
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_atom_front",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "9790158c2ac41cedb796670e58f382591fad860a7ef3b64e6ede38dae478e063",
+      "statistics": {
+        "cpu_seconds": 0.13810202800000004,
+        "internal_steps": 861,
+        "maximum_current_jacobian_nonzeros": 98,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 0,
+        "rhs_evaluations": 1728,
+        "stored_scalars": 179388,
+        "wall_seconds": 0.1382042500008538
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "gate_failures": 0,
+      "maximum_absolute_error": 2.44582132324922e-12,
+      "maximum_mixed_gate_ratio": 1.8235072726217915e-07,
+      "name": "graded_atom_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_uniform_front",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "6fba155764546d0025f4e12307d8a58256c2a751102a03d51b2f9032b3519d86",
+      "statistics": {
+        "cpu_seconds": 0.13145360700000008,
+        "internal_steps": 737,
+        "maximum_current_jacobian_nonzeros": 98,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 3.3306690738754696e-16,
+        "quadrature_evaluations": 3045,
+        "rhs_evaluations": 1482,
+        "stored_scalars": 153032,
+        "wall_seconds": 0.1314531160005572
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-11,
+      "coordinates": 51,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "maximum_mixed_gate_ratio": 5.195319803390637e-06,
+      "name": "graded_reference_quadrature",
+      "relative_gate": 1e-10
+    },
+    {
+      "absolute_gate": 3e-07,
+      "coordinates": 2,
+      "gate_failures": 0,
+      "maximum_absolute_error": 3.3850700020821023e-13,
+      "maximum_mixed_gate_ratio": 4.180761330861812e-08,
+      "name": "graded_uniform_front_pairing",
+      "relative_gate": 2e-05
+    },
+    {
+      "continuous_finite_dde_vjp": true,
+      "discrete_bdf_program_reverse": false,
+      "forward_basis_calls": 0,
+      "large_mesh_qualified": false,
+      "name": "graded_upper",
+      "new_adjoint_calls": 1,
+      "optimizer_updates": 0,
+      "problem_identity": "d9b13460651c3fea7c3352f4045d7cbd34e80089de254ba7867f27f1b0934528",
+      "statistics": {
+        "cpu_seconds": 0.18141735100000034,
+        "internal_steps": 695,
+        "maximum_current_jacobian_nonzeros": 49,
+        "method_segments": 6,
+        "negative_history_zero": true,
+        "phase_polynomial_integration_disagreement": 0.0,
+        "quadrature_evaluations": 637,
+        "rhs_evaluations": 1402,
+        "stored_scalars": 70872,
+        "wall_seconds": 0.1855652750000445
+      },
+      "torch_autograd_qualified": false
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 8.209877222498108e-12,
+      "maximum_mixed_gate_ratio": 0.0013470300938043943,
+      "name": "graded_upper_occupation",
+      "relative_gate": 1e-08
+    },
+    {
+      "name": "scalar_delay",
+      "statistics": {
+        "internal_steps": 47,
+        "maximum_current_jacobian_nonzeros": 0,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "rhs_evaluations": 66,
+        "stored_scalars": 191
+      }
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.3322676295501878e-15,
+      "maximum_mixed_gate_ratio": 6.436075505073371e-07,
+      "name": "scalar_delay",
+      "relative_gate": 1e-09
+    },
+    {
+      "name": "scalar_clock",
+      "statistics": {
+        "internal_steps": 81,
+        "maximum_current_jacobian_nonzeros": 2,
+        "method_segments": 2,
+        "negative_history_zero": true,
+        "rhs_evaluations": 168,
+        "stored_scalars": 1236
+      }
+    },
+    {
+      "absolute_gate": 1e-09,
+      "coordinates": 1,
+      "gate_failures": 0,
+      "maximum_absolute_error": 1.6345397257921945e-11,
+      "maximum_mixed_gate_ratio": 0.006782278599976954,
+      "name": "scalar_clock",
+      "relative_gate": 1e-08
+    }
+  ],
+  "continuous_finite_dde_only": true,
+  "cpu_seconds": 2.6486159,
+  "discrete_bdf_reverse": false,
+  "error": null,
+  "expected_inventory_sha256": "319039bf9add069c7558a7a56958a1ff9cc15c70cefecc10d979ba9a22e72d1b",
+  "full_network_qualified": false,
+  "maximum_rss_kib": 72760,
+  "n512_qualified": false,
+  "native_torch_qualified": false,
+  "physical_parameter_gradients_qualified": false,
+  "precommitted_source_required": true,
+  "rare_tail_relative_qualified": false,
+  "source_after": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/REQUEST.json": "4705a8e10aa9e2273688be3117b634c91e21a9df901d0d888ad982b274d6572b",
+    "qualification/hcsn_initial_adjoint/SPEC.md": "241371414e7dd3289f79bc42a35270fb0b8d8ac55229f25aa57fb9498bdfe3fc",
+    "qualification/hcsn_initial_adjoint/solver.py": "e9db57243a6a374862bc1a10b722f079c3b7304cb2d21f5a4e11ebd9ccee992e",
+    "qualification/hcsn_initial_adjoint/validate.py": "225e64dfb85e9c3b0e032335a2cf7af351e6cbd1af775eaea4ee40422ade9b4e",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_before": {
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/REQUEST.json": "4705a8e10aa9e2273688be3117b634c91e21a9df901d0d888ad982b274d6572b",
+    "qualification/hcsn_initial_adjoint/SPEC.md": "241371414e7dd3289f79bc42a35270fb0b8d8ac55229f25aa57fb9498bdfe3fc",
+    "qualification/hcsn_initial_adjoint/solver.py": "e9db57243a6a374862bc1a10b722f079c3b7304cb2d21f5a4e11ebd9ccee992e",
+    "qualification/hcsn_initial_adjoint/validate.py": "225e64dfb85e9c3b0e032335a2cf7af351e6cbd1af775eaea4ee40422ade9b4e",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_migration_gradients_qualified": false,
+  "source_unchanged": true,
+  "status": "PASS",
+  "wall_seconds": 2.664148922000095
+}

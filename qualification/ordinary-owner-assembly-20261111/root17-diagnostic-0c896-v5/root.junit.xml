@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="17" failures="2" errors="0" uuid="21d329a0-2216-43a7-898a-c9abc33a4e34" timestamp="2026-11-12T09:40:16.416+08:00" time="28.320">
+    <testsuite name="codex-hepta-agentd" tests="15" disabled="0" errors="0" failures="2">
+        <testcase name="authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:16.421+08:00" time="0.180">
+        </testcase>
+        <testcase name="authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:16.602+08:00" time="0.376">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:16.978+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:16.990+08:00" time="0.015">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.005+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.016+08:00" time="0.016">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.032+08:00" time="0.011">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.043+08:00" time="0.010">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.053+08:00" time="0.028">
+        </testcase>
+        <testcase name="neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:17.081+08:00" time="12.439">
+            <failure message="Error: initial parent Recover: original Root serving" type="test failure with exit code 101">Error: initial parent Recover: original Root serving
+
+Caused by:
+    Unavailable</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 12.43s
+
+</system-out>
+            <system-err>ROOT_COMPONENT_CHILD_CLEANUP pid=2280948 status=Ok(ExitStatus(unix_wait_status(9)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=116
+
+running 1 test
+test neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child ... 
+ROOT_COMPONENT_CHILD_STDERR bytes=958
+ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs
+ROOT_INITIAL_CHILD phase=Publish stage=original_five_lane_inputs_open
+ROOT_INITIAL_CHILD phase=Publish stage=original_inputs_ready_sent
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_INITIAL_CHILD phase=ReserveExisting stage=awaiting_original_handoffs
+ROOT_INITIAL_CHILD phase=ReserveExisting stage=original_five_lane_inputs_open
+ROOT_INITIAL_CHILD phase=ReserveExisting stage=original_inputs_ready_sent
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_INITIAL_CHILD phase=Recover stage=awaiting_original_handoffs
+ROOT_INITIAL_CHILD phase=Recover stage=original_five_lane_inputs_open
+ROOT_INITIAL_CHILD phase=Recover stage=original_inputs_ready_sent
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_INITIAL_CHILD phase=RetiredSession stage=awaiting_original_handoffs
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: initial parent Recover: original Root serving
+
+Caused by:
+    Unavailable
+</system-err>
+        </testcase>
+        <testcase name="neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:29.524+08:00" time="14.939">
+            <failure message="Error: publication Revoked: connect original five-lane inputs" type="test failure with exit code 101">Error: publication Revoked: connect original five-lane inputs
+
+Caused by:
+    agentd protocol error: original Root production inputs: InvalidTrust
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Revoked phase
+
+Caused by:
+    0: publication Revoked: control worker failed; service=Ok(())
+    1: publication component control awaiting LEARNING_AND_ORIGINAL_INPUTS_READY
+    2: Resource temporarily unavailable (os error 11)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 14.93s
+
+</system-out>
+            <system-err>ROOT_PUBLICATION_COMPONENT phase=Publish service=Err(Custom { kind: Other, error: Unavailable })
+ROOT_PUBLICATION_COMPONENT phase=Recover service=Err(Custom { kind: Other, error: Unavailable })
+ROOT_PUBLICATION_COMPONENT phase=RetiredSession service=Err(Custom { kind: Other, error: Unavailable })
+ROOT_PUBLICATION_COMPONENT phase=Revoked service=Ok(())
+ROOT_COMPONENT_CHILD_CLEANUP pid=2281902 status=Ok(ExitStatus(unix_wait_status(25856)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=359
+
+running 1 test
+test neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 4.30s
+
+
+ROOT_COMPONENT_CHILD_STDERR bytes=1488
+ROOT_PUBLICATION_CHILD phase=Publish step=receive-original-offers
+ROOT_PUBLICATION_CHILD phase=Publish step=original-inputs-connected
+ROOT_PUBLICATION_CHILD phase=Publish step=learning-ready
+ROOT_PUBLICATION_CHILD phase=Publish step=current-connected
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_PUBLICATION_CHILD phase=Recover step=receive-original-offers
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_PUBLICATION_CHILD phase=Recover step=original-inputs-connected
+ROOT_PUBLICATION_CHILD phase=Recover step=learning-ready
+ROOT_PUBLICATION_CHILD phase=Recover step=current-connected
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_PUBLICATION_CHILD phase=RetiredSession step=receive-original-offers
+ROOT_PUBLICATION_CHILD phase=RetiredSession step=original-inputs-connected
+ROOT_PUBLICATION_CHILD phase=RetiredSession step=learning-ready
+ROOT_PUBLICATION_CHILD phase=RetiredSession step=current-connected
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+ROOT_OBSERVATION_CACHE phase=current reason=already-fenced-or-updating now=1473395573000345
+ROOT_SESSION_DIAGNOSTIC phase=current-cache error=Unavailable
+ROOT_PUBLICATION_CHILD phase=Revoked step=receive-original-offers
+ROOT_SESSION_DIAGNOSTIC phase=session-drop
+ROOT_SESSION_DIAGNOSTIC phase=worker-drop
+Error: publication Revoked: connect original five-lane inputs
+
+Caused by:
+    agentd protocol error: original Root production inputs: InvalidTrust
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Revoked phase
+
+Caused by:
+    0: publication Revoked: control worker failed; service=Ok(())
+    1: publication component control awaiting LEARNING_AND_ORIGINAL_INPUTS_READY
+    2: Resource temporarily unavailable (os error 11)
+</system-err>
+        </testcase>
+        <testcase name="root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:44.463+08:00" time="0.041">
+        </testcase>
+        <testcase name="root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:44.504+08:00" time="0.019">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:44.524+08:00" time="0.009">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T09:40:44.533+08:00" time="0.008">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-contracts" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files" classname="codex-hepta-contracts" timestamp="2026-11-12T09:40:44.541+08:00" time="0.112">
+        </testcase>
+        <testcase name="final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming" classname="codex-hepta-contracts" timestamp="2026-11-12T09:40:44.653+08:00" time="0.083">
+        </testcase>
+    </testsuite>
+</testsuites>

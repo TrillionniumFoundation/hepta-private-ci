@@ -1,0 +1,72 @@
+{
+  "state": "diagnostic-completed",
+  "purpose": "same seven original failures with only version-specific crypto build optimization; not full-owner or ordinary acceptance",
+  "fixed_input_sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+  "fixed_input_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+  "expected_native_cases": 7,
+  "steps": [
+    {
+      "name": "fetch-fixed",
+      "exit_code": 0,
+      "seconds": 0.02312514395453036,
+      "log_bytes": 144,
+      "log_sha256": "efea5f8aa90ce4dc852c05d4399158c51e9958150fc336a68846b74fdea2c8bd"
+    },
+    {
+      "name": "create-worktree",
+      "exit_code": 0,
+      "seconds": 2.110315265832469,
+      "log_bytes": 2632,
+      "log_sha256": "66bda448710378b09fa138b068b0244639af69bd597f5e59c09e92ebfa2db56b"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.5945500459056348,
+      "log_bytes": 73,
+      "log_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "name": "diffcheck",
+      "exit_code": 0,
+      "seconds": 0.40209933719597757,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "push-fixed",
+      "exit_code": 0,
+      "seconds": 7.055748149054125,
+      "log_bytes": 726,
+      "log_sha256": "7f36af669a8afc28de4a1d682d77a00ffd5e1877da0ec653fbbb965a1f047fd1"
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "build_profile_comparison": {
+    "baseline_sha": "8794aaaa5949ab1b92897337ffb40f87c6587c18",
+    "only_changed_file": "codex-rs/Cargo.toml",
+    "dependency_overrides": {
+      "curve25519-dalek:4.1.3": 3,
+      "ed25519-dalek:2.2.0": 3
+    },
+    "same_rust_code": true,
+    "same_lockfile": true,
+    "same_protocol_deadlines": true,
+    "same_native_case_selection": true,
+    "not_a_longitudinal_learning_result": true
+  },
+  "source_sha": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+  "source_tree": "b71ec80dbb7964e358bb1f1b7c9414313a471515",
+  "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-focus-dcf71113bf19-v13-crypto-isolated-exact-inputs",
+  "native_result_bytes": 5911,
+  "native_result_sha256": "b0d724351cc4704735795cc884399203feed25426cc550d13616cc0a641fe8e9",
+  "native_tests_executed": 7,
+  "native_command_exit_code": 100,
+  "native_exit_code": 1,
+  "source_after": "dcf71113bf196b7001583d4ad8497c90a70a2241",
+  "source_status_after": ""
+}

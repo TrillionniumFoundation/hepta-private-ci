@@ -1,0 +1,117 @@
+{
+  "schema": "hepta.cell-ci.test-action-routing.v1",
+  "observed_head": "a7305cd5d7f38eecbe5e1e2ca6dcba4dbb3492c5",
+  "observed_head_tree": "d1c3ba561dcfb3508c8721598aeb5221cc84c122",
+  "observed_ci_merge": "27e4704285a53f3fd83837ba66a3eee4caa22521",
+  "blocking_workflow_run": 42505398258,
+  "original_logs": [
+    {
+      "job_id": 128806964102,
+      "ok": true,
+      "bytes": 1512341,
+      "sha256": "9c24839a44c0301602fcbf3c6da626d57c200901224bab904200f67f7b97acc1",
+      "lines": 8394
+    },
+    {
+      "job_id": 128807056881,
+      "ok": true,
+      "bytes": 779394,
+      "sha256": "19a63d171ece2107c04931c752f2980455616a4a7c5101c832e498a5c7c54809",
+      "lines": 8076
+    },
+    {
+      "job_id": 128807056842,
+      "ok": true,
+      "bytes": 748468,
+      "sha256": "899f186114a8b003376361e9fcb3fdb25880f2cfb4024747da3207c9e9a34fd9",
+      "lines": 7790
+    },
+    {
+      "job_id": 128807056823,
+      "ok": true,
+      "bytes": 950185,
+      "sha256": "18841b18a7d2c5714361ad58f92a44c7223c3bdca672e5381b352ac928d81af5",
+      "lines": 8895
+    },
+    {
+      "job_id": 128807056825,
+      "ok": true,
+      "bytes": 942023,
+      "sha256": "366bdc56e8d41f6f1eac21fddbdc486d88f65ad8e68458d5bb90c8ff7708be55",
+      "lines": 8778
+    }
+  ],
+  "linux_gnu": {
+    "job_id": 128807056823,
+    "passed_test_targets": 414,
+    "skipped_test_targets": 164,
+    "fresh_test_targets": 1,
+    "cached_passed_test_targets": 413,
+    "operator_seconds": 2.1
+  },
+  "linux_musl": {
+    "job_id": 128807056825,
+    "passed_test_targets": 414,
+    "skipped_test_targets": 164,
+    "fresh_test_targets": 1,
+    "cached_passed_test_targets": 413,
+    "operator_seconds": 2.7
+  },
+  "observed_failures": {
+    "macos_clippy": 128807056881,
+    "macos_release": 128807056842,
+    "blob_size_policy": 128806964102
+  },
+  "cause": "The rule-wide no-remote-exec tag moved Rustc and Clippy actions onto macOS while their execution-platform process_wrapper remained a Linux binary (exit 126).",
+  "repair": "Only the operator TestRunner invocation uses linux-sandbox. Linux bulk excludes its exact target, and a required non-cancelled native step explicitly executes it with caching disabled. Rustc/Clippy retain remote execution; macOS and Windows test target rosters are unchanged.",
+  "default_step_failure_propagation": true,
+  "rust_source_changed": false,
+  "production_assertions_changed": false,
+  "format": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "a7305cd5d7f38eecbe5e1e2ca6dcba4dbb3492c5"
+    ],
+    "exit_code": 0,
+    "source_sha256_before": {
+      ".bazelrc": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4",
+      ".github/workflows/bazel.yml": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89",
+      "codex-rs/hepta-operator-acceptance/BUILD.bazel": "272fb13715d9c46f73c294f5da21cc8c1ce306fde6714d212a0ff71d6f4399e6"
+    },
+    "source_sha256_after": {
+      ".bazelrc": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4",
+      ".github/workflows/bazel.yml": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89",
+      "codex-rs/hepta-operator-acceptance/BUILD.bazel": "272fb13715d9c46f73c294f5da21cc8c1ce306fde6714d212a0ff71d6f4399e6"
+    },
+    "unchanged": true
+  },
+  "bash_syntax": {
+    "parsed_run_blocks": 10,
+    "block_sha256": [
+      "51227fc93b059c38e04375b809e30a2be87716f015e037a14fb6d5d0ada49c9e",
+      "aecf7d93529ef28986c987f4fb22ede58ece5e39d39440e1bbb6c6e55dd6b005",
+      "68b3efde19124cacb028d096fe43412bdbe70397233089785b581309e891723d",
+      "ee29c3b49a0b14e1effac01cf09d5374fb6802acfef9be3547b44b35f20464a1",
+      "303e1ff3f7d934ba3c757ce458708e8044a33c730e63796f6a946e451321f370",
+      "aa9f12d9eefa48f74d6ef7c0b2ecb843527aecd47fee30cec6a1f35317ef0c35",
+      "71f712cba7c87cc928782b0a9512b9f4aa13f8538939f81ae853ea89011a2784",
+      "c04b6fb96034e4e13c38322782afc20bf2bc546b919fab86d219eb4289c34530",
+      "adfa6d3c9cc715f8b3fa72ad285149b3afadd4cd25f3d44e06dfe700c042a550",
+      "3f694e2e8019183cfe0e95b6787fdfcf6f05edb7e61eb28e81dc4de0371d7da4"
+    ],
+    "all_exit_zero": true
+  },
+  "new_ci_execution": "pending at publication; earlier Linux success does not qualify the replacement routing",
+  "archive": {
+    "path": "raw-ci-logs.tar.gz",
+    "bytes": 499654,
+    "sha256": "7e66f8749ae11590a9f7827cbf564fe384c16f75c04a73cfc38ad6c839eceaac",
+    "members": 10
+  },
+  "research_advancement": false,
+  "production_qualification": false,
+  "all_stages": "HOLD",
+  "recorded_utc": "2026-11-08T17:48:09.667162+00:00"
+}

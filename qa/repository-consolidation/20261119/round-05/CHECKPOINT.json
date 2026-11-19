@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.rust-consolidation-continuation.v5",
+  "date_utc": "2026-11-19",
+  "source_commit": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d",
+  "source_tree": "b09a54e0ff1576121c375a375a0a049d7b26bb87",
+  "main_read_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "census": {
+    "type": "GitHub REST branch list, non-atomic full page walk",
+    "page_size": 100,
+    "pages_read": 78,
+    "page_77_count": 47,
+    "page_78_count": 0,
+    "entries": 7647,
+    "distinct_names": 7647,
+    "duplicates": 0,
+    "previous_round_04_entries": 7646,
+    "added": [
+      {
+        "name": "codex/hia-native36-exact-source-admission-20261119-gpt6",
+        "sha": "6ef1889a41d117ba61c148846f3c913245dd6147",
+        "classification": "PROTECTED_HIA_ROOT_ANCESTRY"
+      }
+    ],
+    "changed": [
+      {
+        "name": "integration/hepta-single-main-20261113-ab5b",
+        "before": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+        "after": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d"
+      }
+    ],
+    "missing": [],
+    "shards": [
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-001-010.json",
+        "blob_sha": "4a3d5390678b227f4687bd174e76a3b3112f7de4"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-011-020.json",
+        "blob_sha": "8baffae4289bb904130dfd7c7ea5a41aba9ac907"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-021-030.json",
+        "blob_sha": "63b00292448b988f472702517fd45a86754585ad"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-031-040.json",
+        "blob_sha": "88e6c6c6c6875040e986eb2614f887c100acfd2c"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-041-050.json",
+        "blob_sha": "65987523447de8305cfecc30d9e78a8351f61d46"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-051-060.json",
+        "blob_sha": "43a08d7d55dbbec05ef63afda7869a592e289007"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-061-070.json",
+        "blob_sha": "a0034a42b10ac1926c9a42a3b170a8b436eef803"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-05/live-refs-pages-071-077.json",
+        "blob_sha": "5faa35f7672e069461a6f8081286c09f4590e8f7"
+      }
+    ]
+  },
+  "hia_protection": {
+    "previously_registered_named_count": 395,
+    "minimum_registered_after_new_proof": 396,
+    "new_branch": "codex/hia-native36-exact-source-admission-20261119-gpt6",
+    "new_branch_exact_sha": "6ef1889a41d117ba61c148846f3c913245dd6147",
+    "ancestral_roots": [
+      {
+        "sha": "ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+        "ahead": 376,
+        "behind": 0
+      },
+      {
+        "sha": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+        "ahead": 382,
+        "behind": 0
+      }
+    ],
+    "chrono_joint_sha_unchanged": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+    "previously_named_heads_modified_except_own_integration": 0,
+    "historical_pins_status": "NO NEW FULL GRAPH RECLASSIFICATION. Resolve unknown roots/pins before any ordinary merge or branch retirement.",
+    "unresolved_head_comparisons": [
+      {
+        "branch": "fix/hcsn-smallnorm-exponential-20261119-2f215",
+        "root_compare": "GitHub HTTP 422 diff-not-available for both roots; unresolved"
+      },
+      {
+        "branch": "research/hcsn-campaign-report-20261119-2f215",
+        "root_compare": "diverged from both original roots, historical protection pins still unchecked"
+      },
+      {
+        "branch": "research/hcsn-c2-original-runtime-recovery-20261119-2f215",
+        "root_compare": "diverged from both original roots, historical protection pins still unchecked"
+      }
+    ],
+    "writes": "NONE to HIA refs; new HIA and original chrono/OTEL remain protected"
+  },
+  "coverage": {
+    "latest_full_census_coverage": "NOT_RECOMPUTED",
+    "prior_classified_snapshot": {
+      "refs": 7615,
+      "ordinary": 7225,
+      "protected_hia": 389,
+      "ordinary_covered": 2083,
+      "ordinary_pending": 5142
+    },
+    "this_round_new_ordinary_heads_merged": 0,
+    "this_round_main_merges": 0,
+    "this_round_ref_deletions": 0
+  },
+  "ci_source_exact": {
+    "head": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d",
+    "required_architecture": {
+      "status": "success",
+      "job_id": 135662030930
+    },
+    "required_ci": {
+      "status": "failure",
+      "job_id": 135648583943,
+      "source": "bazel abandoned/invalid; repo-checks and cargo-deny failed"
+    },
+    "native_jobs": {
+      "windows_bazel_shard1": "success",
+      "windows_bazel_shard2": {
+        "status": "failure",
+        "job_id": 135632103371,
+        "root": "sandbox FILE_DELETE_CHILD fail-closed; elevated tests fail"
+      },
+      "windows_bazel_shard3": "success",
+      "windows_bazel_shard4": {
+        "status": "failure",
+        "job_id": 135632103218,
+        "root": "sandbox FILE_DELETE_CHILD fail-closed, network proxy and core integration"
+      },
+      "linux_musl": {
+        "status": "failure",
+        "job_id": 135632103498,
+        "failures": [
+          "Agentd original_next_use_evidence_timing_diagnostic OwnerUnavailable",
+          "Core CodeMode event-budget deadline",
+          "app-server realtime WebRTC notification"
+        ]
+      },
+      "cargo_deny": {
+        "status": "failure",
+        "job_id": 135632102680,
+        "advisory": "RUSTSEC-2026-0543"
+      },
+      "repo_checks": {
+        "status": "failure",
+        "job_id": 135632102755
+      }
+    },
+    "draft_windows_acl_pr_6396": "open draft; CI required failed at sha 577c03b5524fd45814dc71c3b5d847562ba2c410; not accepted"
+  },
+  "validation": {
+    "native_tests_run_by_this_audit": false,
+    "source_changes_by_this_audit": false,
+    "checkpoint_only": true,
+    "promotion_authorized": false
+  },
+  "safety": {
+    "force_push": false,
+    "intent": "update only existing Rust integration branch with expected SHA lease",
+    "ordinary_deletion_blocker": "current plugin exposes no delete-ref endpoint; delete none",
+    "no_security_bypass": true
+  }
+}

@@ -1,0 +1,903 @@
+diff --git a/codex-rs/hepta-neuron/Cargo.toml b/codex-rs/hepta-neuron/Cargo.toml
+--- a/codex-rs/hepta-neuron/Cargo.toml
++++ b/codex-rs/hepta-neuron/Cargo.toml
+@@ -13,6 +13,10 @@
+ [lints]
+ workspace = true
+ 
++[features]
++default = []
++qualification-file-observation = []
++
+ [dependencies]
+ codex-hepta-infer-core = { path = "../hepta-infer-core" }
+ codex-hepta-types = { path = "../hepta-types" }
+diff --git a/codex-rs/hepta-neuron/src/lib.rs b/codex-rs/hepta-neuron/src/lib.rs
+--- a/codex-rs/hepta-neuron/src/lib.rs
++++ b/codex-rs/hepta-neuron/src/lib.rs
+@@ -71,6 +71,8 @@
+ mod population_v2;
+ mod protocol;
+ mod qualification;
++#[cfg(feature = "qualification-file-observation")]
++mod qualification_file;
+ mod runtime;
+ mod runtime_types;
+ mod sparse;
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_journal.rs b/codex-rs/hepta-neuron/src/cell_generation_journal.rs
+--- a/codex-rs/hepta-neuron/src/cell_generation_journal.rs
++++ b/codex-rs/hepta-neuron/src/cell_generation_journal.rs
+@@ -35,6 +35,10 @@
+ #[path = "cell_generation_physical_current.rs"]
+ mod physical_current;
+ 
++#[cfg(feature = "qualification-file-observation")]
++#[path = "cell_generation_qualification.rs"]
++mod qualification;
++
+ const MAGIC: &[u8; 8] = b"HPTACG02";
+ const HEADER_BYTES: usize = 40;
+ const MAX_FRAME: usize = 2 * 1024 * 1024;
+diff --git a/codex-rs/hepta-neuron/src/runtime_types.rs b/codex-rs/hepta-neuron/src/runtime_types.rs
+--- a/codex-rs/hepta-neuron/src/runtime_types.rs
++++ b/codex-rs/hepta-neuron/src/runtime_types.rs
+@@ -335,6 +335,16 @@
+ pub trait AnchorWitnessStore {
+     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError>;
+ 
++    /// Read the complete original locked witness for bounded qualification.
++    /// Backends without this capability remain unavailable; no cached substitute.
++    #[cfg(feature = "qualification-file-observation")]
++    fn qualification_file_bytes(
++        &mut self,
++        _maximum_bytes: u64,
++    ) -> Result<Vec<u8>, WitnessStoreError> {
++        Err(WitnessStoreError::Unavailable)
++    }
++
+     fn compare_and_swap(
+         &mut self,
+         expected: Option<JournalAnchor>,
+diff --git a/codex-rs/hepta-neuron/src/witness.rs b/codex-rs/hepta-neuron/src/witness.rs
+--- a/codex-rs/hepta-neuron/src/witness.rs
++++ b/codex-rs/hepta-neuron/src/witness.rs
+@@ -26,6 +26,10 @@
+ use crate::JournalScope;
+ use crate::WitnessStoreError;
+ 
++#[cfg(feature = "qualification-file-observation")]
++#[path = "witness_qualification.rs"]
++mod qualification;
++
+ const MAGIC: &[u8; 8] = b"HPTNWA01";
+ const HEADER: usize = 112;
+ const RECORD: usize = 112;
+@@ -144,6 +148,14 @@
+ }
+ 
+ impl AnchorWitnessStore for FileAnchorWitnessStore {
++    #[cfg(feature = "qualification-file-observation")]
++    fn qualification_file_bytes(
++        &mut self,
++        maximum_bytes: u64,
++    ) -> Result<Vec<u8>, WitnessStoreError> {
++        qualification::file_bytes(self, maximum_bytes)
++    }
++
+     fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+         if self.poisoned.load(Ordering::Acquire) {
+             return Err(WitnessStoreError::Poisoned);
+diff --git a/codex-rs/hepta-neuron/src/qualification_file.rs b/codex-rs/hepta-neuron/src/qualification_file.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-neuron/src/qualification_file.rs
+@@ -0,0 +1,55 @@
++//! Bounded inspection through a mutable borrow of the original owned file.
++//! No reopen, duplicated descriptor, lock transition, or durable mutation.
++
++use std::fs::File;
++use std::io;
++use std::io::Read;
++use std::io::Seek;
++use std::io::SeekFrom;
++
++pub(crate) const MAXIMUM_BYTES: u64 = 8 * 1024 * 1024;
++
++#[derive(Debug)]
++pub(crate) enum FileBytesError {
++    Capacity,
++    Io(io::Error),
++}
++
++impl From<io::Error> for FileBytesError {
++    fn from(error: io::Error) -> Self {
++        Self::Io(error)
++    }
++}
++
++pub(crate) fn file_bytes(
++    file: &mut File,
++    maximum_bytes: u64,
++) -> Result<Vec<u8>, FileBytesError> {
++    if maximum_bytes == 0 || maximum_bytes > MAXIMUM_BYTES {
++        return Err(FileBytesError::Capacity);
++    }
++    if file.metadata()?.len() > maximum_bytes {
++        return Err(FileBytesError::Capacity);
++    }
++    let cursor = file.stream_position()?;
++    let observed = (|| {
++        file.seek(SeekFrom::Start(0))?;
++        let mut bytes = Vec::new();
++        (&mut *file)
++            .take(maximum_bytes + 1)
++            .read_to_end(&mut bytes)?;
++        if bytes.len() as u64 > maximum_bytes {
++            return Err(FileBytesError::Capacity);
++        }
++        if file.metadata()?.len() != bytes.len() as u64 {
++            return Err(io::Error::other("qualification file changed during inspection").into());
++        }
++        Ok(bytes)
++    })();
++    // Restore even when the read failed, and never acknowledge a failed restore.
++    match file.seek(SeekFrom::Start(cursor)) {
++        Ok(position) if position == cursor => observed,
++        Ok(_) => Err(io::Error::other("qualification file cursor was not restored").into()),
++        Err(error) => Err(error.into()),
++    }
++}
+diff --git a/codex-rs/hepta-neuron/src/witness_qualification.rs b/codex-rs/hepta-neuron/src/witness_qualification.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-neuron/src/witness_qualification.rs
+@@ -0,0 +1,31 @@
++//! Opt-in byte observation without changing the witness lock or write rights.
++
++use std::sync::atomic::Ordering;
++
++use super::FileAnchorWitnessStore;
++use crate::WitnessStoreError;
++use crate::qualification_file::FileBytesError;
++use crate::qualification_file::file_bytes as read_file_bytes;
++
++pub(super) fn file_bytes(
++    witness: &mut FileAnchorWitnessStore,
++    maximum_bytes: u64,
++) -> Result<Vec<u8>, WitnessStoreError> {
++    if witness.poisoned.load(Ordering::Acquire) {
++        return Err(WitnessStoreError::Poisoned);
++    }
++    let result = match witness.file.get_mut() {
++        Ok(file) => read_file_bytes(file, maximum_bytes).map_err(|error| match error {
++            FileBytesError::Capacity => WitnessStoreError::Capacity,
++            FileBytesError::Io(error) => WitnessStoreError::Io(error.kind()),
++        }),
++        Err(_) => Err(WitnessStoreError::Indeterminate),
++    };
++    if result
++        .as_ref()
++        .is_err_and(|error| !matches!(error, WitnessStoreError::Capacity))
++    {
++        witness.poisoned.store(true, Ordering::Release);
++    }
++    result
++}
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_qualification.rs b/codex-rs/hepta-neuron/src/cell_generation_qualification.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-neuron/src/cell_generation_qualification.rs
+@@ -0,0 +1,39 @@
++//! Opt-in physical bytes from the sole journal and its original witness.
++
++use super::CellGenerationJournalV2;
++use crate::AnchorWitnessStore;
++use crate::CellGenerationErrorV2;
++use crate::WitnessStoreError;
++use crate::qualification_file::FileBytesError;
++use crate::qualification_file::file_bytes;
++
++impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
++    /// Return complete journal and witness bytes while retaining both locks.
++    /// The bound applies to each file; unsupported witnesses remain unavailable.
++    pub fn qualification_file_bytes(
++        &mut self,
++        maximum_bytes: u64,
++    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
++        self.require_healthy()?;
++        let result = (|| {
++            let journal = file_bytes(&mut self.file, maximum_bytes).map_err(|error| match error {
++                FileBytesError::Capacity => CellGenerationErrorV2::Capacity,
++                FileBytesError::Io(_) => CellGenerationErrorV2::CommitUncertain,
++            })?;
++            let witness = self
++                .witness
++                .qualification_file_bytes(maximum_bytes)
++                .map_err(|error| match error {
++                    WitnessStoreError::Capacity => CellGenerationErrorV2::Capacity,
++                    WitnessStoreError::Unavailable => CellGenerationErrorV2::Unavailable,
++                    _ => CellGenerationErrorV2::CommitUncertain,
++                })?;
++            self.require_healthy()?;
++            Ok([journal, witness])
++        })();
++        if matches!(result, Err(CellGenerationErrorV2::CommitUncertain)) {
++            self.healthy = false;
++        }
++        result
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_runtime.rs b/codex-rs/hepta-agentd/src/neuron_generation_runtime.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_runtime.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_runtime.rs
+@@ -84,6 +84,8 @@
+         response: Response<()>,
+     },
+     Snapshot(Response<CellRuntimeSnapshotV2>),
++    #[cfg(test)]
++    QualificationFileBytes(Response<[Vec<u8>; 2]>),
+     ObserveGeneration(Response<CellGenerationObservationV1>),
+     #[cfg(unix)]
+     LearningRead {
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_service.rs b/codex-rs/hepta-agentd/src/neuron_generation_service.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_service.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_service.rs
+@@ -139,6 +139,14 @@
+                 });
+                 respond(state, response, result)
+             }
++            #[cfg(test)]
++            GenerationCommand::QualificationFileBytes(response) => {
++                let result = self
++                    .owner
++                    .journal_mut()
++                    .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024);
++                respond(state, response, result)
++            }
+             GenerationCommand::Snapshot(response) => {
+                 respond(state, response, self.owner.journal().snapshot().cloned())
+             }
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs b/codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs
+@@ -32,6 +32,8 @@
+ use crate::AgentdIdentity;
+ use crate::AgentdState;
+ use crate::RuntimeTasks;
++use crate::neuron_generation_runtime::GenerationCommand;
++use crate::neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
+ 
+ pub(super) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
+     match result {
+@@ -40,6 +42,42 @@
+     }
+ }
+ 
++// Retain no owner lifetime: the original service must still own its sender.
++pub(super) struct GenerationFiles {
++    sender: tokio::sync::mpsc::WeakSender<GenerationCommand>,
++}
++
++impl GenerationFiles {
++    pub(super) fn new(handle: &NeuronGenerationRuntimeHandleV2) -> Self {
++        Self {
++            sender: handle.sender.downgrade(),
++        }
++    }
++
++    pub(super) async fn read(&self) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
++        let (response, receive) = tokio::sync::oneshot::channel();
++        {
++            let sender = self
++                .sender
++                .upgrade()
++                .ok_or(CellGenerationErrorV2::Unavailable)?;
++            sender
++                .try_send(GenerationCommand::QualificationFileBytes(response))
++                .map_err(|error| match error {
++                    tokio::sync::mpsc::error::TrySendError::Full(_) => {
++                        CellGenerationErrorV2::Capacity
++                    }
++                    tokio::sync::mpsc::error::TrySendError::Closed(_) => {
++                        CellGenerationErrorV2::Unavailable
++                    }
++                })?;
++        }
++        receive
++            .await
++            .map_err(|_| CellGenerationErrorV2::CommitUncertain)?
++    }
++}
++
+ pub(super) fn poll_pending<F: Future>(future: Pin<&mut F>) {
+     let mut context = Context::from_waker(Waker::noop());
+     assert!(future.poll(&mut context).is_pending());
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs
+@@ -17,6 +17,7 @@
+ use tokio_util::sync::CancellationToken;
+ 
+ use super::support::Fixture;
++use super::support::GenerationFiles;
+ use super::support::host;
+ use crate::AgentdClient;
+ use crate::RuntimeTasks;
+@@ -28,6 +29,7 @@
+ 
+ struct Serving {
+     client: AgentdClient,
++    files: GenerationFiles,
+     tasks: RuntimeTasks,
+     cancellation: CancellationToken,
+     server: tokio::task::JoinHandle<Result<(), crate::AgentdError>>,
+@@ -43,6 +45,7 @@
+             /*capacity*/ 4,
+         )?;
+         let bootstrap = bootstrap.with_control_endpoint()?;
++        let files = GenerationFiles::new(&handle);
+         drop(handle); // The process caller need not retain a second owner handle.
+         let (mut tasks, lifetime) = host();
+         spawn_neuron_generation_service(
+@@ -67,6 +70,7 @@
+         )?;
+         Ok(Self {
+             client,
++            files,
+             tasks,
+             cancellation,
+             server,
+@@ -175,13 +179,12 @@
+         serving.client.generation(acknowledgement.clone()).await?,
+         Response::Acknowledged {}
+     );
+-    let journal_path = fixture.directory.path().join("generation-journal");
+-    let durable = fs::read(&journal_path)?;
++    let durable = serving.files.read().await?;
+     assert_eq!(
+         serving.client.generation(acknowledgement.clone()).await?,
+         Response::Acknowledged {}
+     );
+-    assert_eq!(fs::read(&journal_path)?, durable);
++    assert_eq!(serving.files.read().await?, durable);
+     assert!(status(&serving.client).await?.drained);
+ 
+     fixture.ticks.store(20_000, Ordering::SeqCst);
+@@ -195,7 +198,7 @@
+         reopened.client.generation(acknowledgement).await?,
+         Response::Acknowledged {}
+     );
+-    assert_eq!(fs::read(&journal_path)?, durable);
++    assert_eq!(reopened.files.read().await?, durable);
+     let Response::Cost(cost) = reopened.client.generation(Request::Cost {}).await? else {
+         return Err(std::io::Error::other("expected task cost").into());
+     };
+@@ -216,15 +219,14 @@
+     let fixture = Fixture::new().await;
+     let serving = Serving::start(&fixture).await?;
+     let initial = status(&serving.client).await?;
+-    let journal_path = fixture.directory.path().join("generation-journal");
+-    let pristine = fs::read(&journal_path)?;
++    let pristine = serving.files.read().await?;
+     let mut oversized = step(&fixture, &initial, "oversized");
+     let Request::Step { request } = &mut oversized else {
+         unreachable!()
+     };
+     request.input = vec![1; MAX_GENERATION_CONTROL_INPUT_BYTES + 1];
+     assert!(serving.client.generation(oversized).await.is_err());
+-    assert_eq!(fs::read(&journal_path)?, pristine);
++    assert_eq!(serving.files.read().await?, pristine);
+     let stale_client = AgentdClient::new(
+         fixture.directory.path().join("generation.ctl"),
+         fixture.identity.agent_id.clone(),
+@@ -236,10 +238,10 @@
+             .await
+             .is_err()
+     );
+-    assert_eq!(fs::read(&journal_path)?, pristine);
++    assert_eq!(serving.files.read().await?, pristine);
+     let original = step(&fixture, &initial, "same-client-key");
+     serving.client.generation(original.clone()).await?;
+-    let committed = fs::read(&journal_path)?;
++    let committed = serving.files.read().await?;
+     let mut changed = original;
+     let Request::Step { request } = &mut changed else {
+         unreachable!()
+@@ -260,7 +262,7 @@
+     ] {
+         assert!(serving.client.generation(request).await.is_err());
+     }
+-    assert_eq!(fs::read(&journal_path)?, committed);
++    assert_eq!(serving.files.read().await?, committed);
+     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+     serving.finish().await
+ }
+@@ -429,12 +431,13 @@
+             .await
+             .is_err()
+     );
++    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
++    serving.finish().await?;
+     assert_eq!(
+         fs::read(fixture.directory.path().join("generation-journal"))?,
+         before
+     );
+-    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+-    serving.finish().await
++    Ok(())
+ }
+ 
+ #[tokio::test]
+@@ -493,7 +496,10 @@
+         .readable
+         .store(true, Ordering::SeqCst);
+     let journal_path = fixture.directory.path().join("generation-journal");
+-    let before = fs::read(&journal_path)?;
++    let before = [
++        fs::read(&journal_path)?,
++        fs::read(fixture.directory.path().join("generation-witness"))?,
++    ];
+     let serving = Serving::start(&fixture).await?;
+     assert_eq!(
+         status(&serving.client).await?.pending,
+@@ -508,7 +514,7 @@
+             .await
+             .is_err()
+     );
+-    assert_eq!(fs::read(&journal_path)?, before);
++    assert_eq!(serving.files.read().await?, before);
+     assert_eq!(
+         status(&serving.client).await?.pending,
+         Some(pending.clone())
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_tests.rs
+@@ -306,24 +306,46 @@
+     );
+     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
+     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
++    let journal_bytes = checked(
++        owner
++            .journal_mut()
++            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
++    );
+     assert_eq!(
+         checked(owner.step(req.clone(), || panic!(
+             "exact replay must not sample a clock"
+         ))),
+         receipt
+     );
+-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
++    assert_eq!(
++        checked(
++            owner
++                .journal_mut()
++                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
++        ),
++        journal_bytes
++    );
+     assert!(checked(owner.drain()));
+     drop(owner);
+     let mut owner = fixture.owner(model.clone());
+-    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
++    let journal_bytes = checked(
++        owner
++            .journal_mut()
++            .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024),
++    );
+     assert_eq!(
+         checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
+         receipt
+     );
+     assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
++    assert_eq!(
++        checked(
++            owner
++                .journal_mut()
++                .qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)
++        ),
++        journal_bytes
++    );
+     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+ }
+ 
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_tests.rs b/codex-rs/hepta-neuron/src/cell_generation_tests.rs
+--- a/codex-rs/hepta-neuron/src/cell_generation_tests.rs
++++ b/codex-rs/hepta-neuron/src/cell_generation_tests.rs
+@@ -18,6 +18,9 @@
+ mod observation;
+ #[path = "cell_generation_physical_current_tests.rs"]
+ mod physical_current;
++#[cfg(feature = "qualification-file-observation")]
++#[path = "cell_generation_qualification_tests.rs"]
++mod qualification;
+ #[path = "cell_generation_test_support.rs"]
+ mod support;
+ use support::*;
+diff --git a/codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs b/codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/codex-rs/hepta-neuron/src/cell_generation_qualification_tests.rs
+@@ -0,0 +1,129 @@
++use std::fs;
++use std::fs::OpenOptions;
++use std::io::Seek;
++use std::io::SeekFrom;
++use std::io::Write;
++
++use pretty_assertions::assert_eq;
++
++use super::support::*;
++use crate::AnchorWitnessStore;
++use crate::CellGenerationErrorV2;
++use crate::CellGenerationJournalV2;
++use crate::FileAnchorWitnessStore;
++use crate::JournalAnchor;
++use crate::JournalError;
++use crate::WitnessStoreError;
++use crate::cell_test_support::checked;
++use crate::journal_lock::LockedFile;
++use crate::qualification_file::FileBytesError;
++use crate::qualification_file::MAXIMUM_BYTES;
++use crate::qualification_file::file_bytes;
++
++#[test]
++fn qualification_bytes_match_both_original_files_without_releasing_either_lock() {
++    let fixture = Fixture::new();
++    let mut owner = fixture.open();
++    let req = request(&owner, "qualification-bytes");
++    checked(owner.admit(req.clone(), /*now_micros*/ 11));
++    checked(owner.commit(proposal(&req), /*now_micros*/ 20));
++    checked(owner.file.seek(SeekFrom::Start(7)));
++    let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));
++    assert_eq!(checked(owner.file.stream_position()), 7);
++    assert_eq!(owner.qualification_file_bytes(MAXIMUM_BYTES), Ok(bytes.clone()));
++    assert!(matches!(
++        LockedFile::acquire(fixture.file("journal")),
++        Err(JournalError::Busy)
++    ));
++    assert!(matches!(
++        LockedFile::acquire(fixture.file("witness")),
++        Err(JournalError::Busy)
++    ));
++    drop(owner);
++    assert_eq!(
++        ["journal", "witness"].map(|name| checked(fs::read(fixture.0.join(name)))),
++        bytes
++    );
++}
++
++#[test]
++fn qualification_byte_bounds_leave_the_same_owner_and_cursor_usable() {
++    let fixture = Fixture::new();
++    let mut owner = fixture.open();
++    checked(owner.file.seek(SeekFrom::Start(5)));
++    let bytes = checked(owner.qualification_file_bytes(MAXIMUM_BYTES));
++    for maximum_bytes in [0, 1, MAXIMUM_BYTES + 1] {
++        assert_eq!(
++            owner.qualification_file_bytes(maximum_bytes),
++            Err(CellGenerationErrorV2::Capacity)
++        );
++        assert_eq!(checked(owner.file.stream_position()), 5);
++    }
++    assert_eq!(owner.qualification_file_bytes(MAXIMUM_BYTES), Ok(bytes));
++    assert_eq!(owner.pending_request(), Ok(None));
++}
++
++struct UnavailableObservation(FileAnchorWitnessStore);
++
++impl AnchorWitnessStore for UnavailableObservation {
++    fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
++        self.0.current()
++    }
++
++    fn compare_and_swap(
++        &mut self,
++        expected: Option<JournalAnchor>,
++        next: JournalAnchor,
++    ) -> Result<(), WitnessStoreError> {
++        self.0.compare_and_swap(expected, next)
++    }
++}
++
++#[test]
++fn unsupported_witness_observation_returns_unavailable_without_cached_bytes() {
++    let fixture = Fixture::new();
++    let mut owner = checked(CellGenerationJournalV2::open(
++        fixture.file("journal"),
++        UnavailableObservation(fixture.witness()),
++        config(),
++        /*max_records*/ 128,
++    ));
++    checked(owner.file.seek(SeekFrom::Start(3)));
++    let journal = owner.locked_bytes_for_test();
++    let witness = checked(owner.witness.0.qualification_file_bytes(MAXIMUM_BYTES));
++    assert_eq!(
++        owner.qualification_file_bytes(MAXIMUM_BYTES),
++        Err(CellGenerationErrorV2::Unavailable)
++    );
++    assert_eq!(checked(owner.file.stream_position()), 3);
++    assert_eq!(owner.locked_bytes_for_test(), journal);
++    assert_eq!(
++        owner.witness.0.qualification_file_bytes(MAXIMUM_BYTES),
++        Ok(witness)
++    );
++}
++
++#[test]
++fn failed_read_restores_the_original_cursor_and_keeps_contenders_excluded() {
++    let fixture = Fixture::new();
++    let mut created = fixture.file("read-error");
++    checked(created.write_all(b"original locked file"));
++    drop(created);
++    let file = checked(OpenOptions::new().write(true).open(fixture.0.join("read-error")));
++    let mut locked = checked(LockedFile::acquire(file));
++    checked(locked.seek(SeekFrom::Start(4)));
++    assert!(matches!(
++        file_bytes(&mut locked, MAXIMUM_BYTES),
++        Err(FileBytesError::Io(_))
++    ));
++    assert_eq!(checked(locked.stream_position()), 4);
++    assert!(matches!(
++        LockedFile::acquire(fixture.file("read-error")),
++        Err(JournalError::Busy)
++    ));
++    drop(locked);
++    assert_eq!(
++        checked(fs::read(fixture.0.join("read-error"))),
++        b"original locked file"
++    );
++}
+diff --git a/codex-rs/hepta-agentd/Cargo.toml b/codex-rs/hepta-agentd/Cargo.toml
+--- a/codex-rs/hepta-agentd/Cargo.toml
++++ b/codex-rs/hepta-agentd/Cargo.toml
+@@ -121,6 +121,7 @@
+ libc = { workspace = true }
+ 
+ [dev-dependencies]
++codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-file-observation"] }
+ codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-file-observation"] }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+ codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+diff --git a/codex-rs/hepta-intelligence/Cargo.toml b/codex-rs/hepta-intelligence/Cargo.toml
+--- a/codex-rs/hepta-intelligence/Cargo.toml
++++ b/codex-rs/hepta-intelligence/Cargo.toml
+@@ -31,7 +31,7 @@
+ 
+ [dev-dependencies]
+ codex-hepta-contracts = { path = "../hepta-contracts" }
+-codex-hepta-neuron = { path = "../hepta-neuron" }
++codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-file-observation"] }
+ codex-hepta-plasticity = { path = "../hepta-plasticity" }
+ codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
+ ed25519-dalek = { workspace = true }
+diff --git a/codex-rs/hepta-neuron/BUILD.bazel b/codex-rs/hepta-neuron/BUILD.bazel
+--- a/codex-rs/hepta-neuron/BUILD.bazel
++++ b/codex-rs/hepta-neuron/BUILD.bazel
+@@ -8,6 +8,7 @@
+         "tests/support/joint_synthetic.rs",
+     ],
+     crate_name = "codex_hepta_neuron",
++    unit_test_features = ["qualification-file-observation"],
+     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+ )
+ 
+diff --git a/codex-rs/hepta-intelligence/BUILD.bazel b/codex-rs/hepta-intelligence/BUILD.bazel
+--- a/codex-rs/hepta-intelligence/BUILD.bazel
++++ b/codex-rs/hepta-intelligence/BUILD.bazel
+@@ -6,6 +6,7 @@
+     unit_test_dependency_replacements = {
+         "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+         "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
++        "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+         "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+     },
+ )
+diff --git a/codex-rs/hepta-agentd/BUILD.bazel b/codex-rs/hepta-agentd/BUILD.bazel
+--- a/codex-rs/hepta-agentd/BUILD.bazel
++++ b/codex-rs/hepta-agentd/BUILD.bazel
+@@ -1,4 +1,3 @@
+-load("@crates//:defs.bzl", "all_crate_deps")
+ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+ load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+@@ -9,6 +8,7 @@
+     "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+     "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+     "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
++    "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+ }
+ 
+@@ -144,7 +144,7 @@
+     tags = ["manual"],
+     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+     visibility = ["//visibility:private"],
+-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
++    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
+ )
+ 
+ rust_test(
+@@ -165,8 +165,8 @@
+     tags = ["manual"],
+     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+     visibility = ["//visibility:private"],
+-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
+-        normal = True,
++    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
++        _UNIT_TEST_DEPENDENCIES,
+         normal_dev = True,
+     ),
+ )
+diff --git a/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs b/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
+--- a/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
++++ b/codex-rs/hepta-agentd/src/neuron_generation_no_contact_tests.rs
+@@ -2,6 +2,7 @@
+ //! deliberately returns an unknown result; no model execution is qualified.
+ 
+ use std::fs;
++use std::fs::OpenOptions;
+ use std::sync::Arc;
+ use std::sync::atomic::AtomicBool;
+ use std::sync::atomic::AtomicUsize;
+@@ -18,6 +19,7 @@
+ use tokio::time::timeout;
+ 
+ use super::support::Fixture;
++use super::support::GenerationFiles;
+ use super::support::checked;
+ use super::support::host;
+ use super::support::request;
+@@ -176,14 +178,21 @@
+     original
+ }
+ 
+-fn durable_bytes(fixture: &Fixture) -> [Vec<u8>; 3] {
+-    ["generation-journal", "generation-witness", CONTROL_FILE]
+-        .map(|name| checked(fs::read(fixture.directory.path().join(name))))
+-}
+-
+ #[tokio::test]
+ async fn fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost() {
+     let mut fixture = Fixture::new().await;
++    // Prepare the same empty input before its first exclusive Control owner.
++    // create_new refuses replacement; the baseline is an actual closed-file read.
++    let control_path = fixture.directory.path().join(CONTROL_FILE);
++    let mut options = OpenOptions::new();
++    options.create_new(true).append(true).read(true);
++    #[cfg(unix)]
++    {
++        use std::os::unix::fs::OpenOptionsExt;
++        options.mode(0o600);
++    }
++    drop(checked(options.open(&control_path)));
++    let control_before = checked(fs::read(&control_path));
+     let clock = clock();
+     let changing_clock = boundary_clock(&fixture, Arc::clone(&clock), PrecontactBoundary::Drain);
+     let worker = Arc::new(UnknownWorker::default());
+@@ -195,7 +204,6 @@
+         Arc::clone(&contacts),
+     )
+     .await;
+-    let control_before = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+     let original = original(&fixture, &clock);
+     let receipt = checked(handle.step(original.clone()).await);
+     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
+@@ -225,9 +233,9 @@
+     let mut expected = fixture.config.initial.clone();
+     expected.revision = 1;
+     assert_eq!(checked(handle.snapshot().await), expected);
+-    let bytes = durable_bytes(&fixture);
++    let bytes = checked(GenerationFiles::new(&handle).read().await);
+     assert_eq!(checked(handle.step(original.clone()).await), receipt);
+-    assert_eq!(durable_bytes(&fixture), bytes);
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
+     assert!(checked(handle.drain().await));
+     assert_eq!(
+         checked(fixture.state().neuron_generation_drain_blockers()),
+@@ -240,9 +248,10 @@
+         )
+         .await,
+     ));
+-    let drained_bytes = durable_bytes(&fixture);
++    let drained_bytes = checked(GenerationFiles::new(&handle).read().await);
+     tasks.shutdown().await;
+     drop(handle);
++    assert_eq!(checked(fs::read(&control_path)), control_before);
+ 
+     fixture.reopen_state().await;
+     let (handle, mut tasks) = start(
+@@ -256,14 +265,12 @@
+     assert_eq!(checked(handle.task_cost().await), receipt.cost);
+     assert_eq!(checked(handle.snapshot().await), expected);
+     assert!(checked(handle.drain().await));
+-    assert_eq!(durable_bytes(&fixture), drained_bytes);
+-    assert_eq!(
+-        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
+-        control_before
+-    );
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), drained_bytes);
+     assert_eq!(contacts.load(Ordering::SeqCst), 0);
+     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
+     tasks.shutdown().await;
++    drop(handle);
++    assert_eq!(checked(fs::read(&control_path)), control_before);
+ }
+ 
+ #[tokio::test]
+@@ -298,6 +305,9 @@
+         assert!(!checked(control.generation_has_unresolved()));
+     }
+ 
++    // The original Control owner is closed here. Compare its complete file
++    // across the entire cold service lifetime, including the narrower replay.
++    let control_bytes = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+     fixture.reopen_state().await;
+     let (handle, mut tasks) = start(
+         &fixture,
+@@ -306,7 +316,7 @@
+         Arc::clone(&contacts),
+     )
+     .await;
+-    let bytes = durable_bytes(&fixture);
++    let bytes = checked(GenerationFiles::new(&handle).read().await);
+     assert_eq!(
+         handle.reconcile(checked(original.digest())).await,
+         Err(CellGenerationErrorV2::Pending)
+@@ -315,7 +325,7 @@
+         handle.step(original.clone()).await,
+         Err(CellGenerationErrorV2::Pending)
+     );
+-    assert_eq!(durable_bytes(&fixture), bytes);
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
+     assert_eq!(
+         handle.cancel(checked(original.digest())).await,
+         Err(CellGenerationErrorV2::Conflict)
+@@ -328,6 +338,11 @@
+     assert_eq!(contacts.load(Ordering::SeqCst), 0);
+     assert_eq!(worker.calls.load(Ordering::SeqCst), 0);
+     tasks.shutdown().await;
++    drop(handle);
++    assert_eq!(
++        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
++        control_bytes
++    );
+ }
+ 
+ #[tokio::test]
+@@ -377,10 +392,13 @@
+         assert!(checked(control.generation_has_unresolved()));
+     }
+ 
++    // The original Control owner is closed here. Compare its complete file
++    // across the entire cold service lifetime, including the narrower replay.
++    let control_bytes = checked(fs::read(fixture.directory.path().join(CONTROL_FILE)));
+     fixture.reopen_state().await;
+     let (handle, mut tasks) =
+         start(&fixture, clock, Arc::clone(&worker), Arc::clone(&contacts)).await;
+-    let bytes = durable_bytes(&fixture);
++    let bytes = checked(GenerationFiles::new(&handle).read().await);
+     assert_eq!(
+         handle.reconcile(digest).await,
+         Err(CellGenerationErrorV2::Pending)
+@@ -391,7 +409,7 @@
+     );
+     assert_eq!(checked(handle.pending_request().await), Some(original));
+     assert!(!checked(handle.drain().await));
+-    assert_eq!(durable_bytes(&fixture), bytes);
++    assert_eq!(checked(GenerationFiles::new(&handle).read().await), bytes);
+     assert_eq!(contacts.load(Ordering::SeqCst), 1);
+     assert_eq!(worker.calls.load(Ordering::SeqCst), 1);
+     assert!(checked(handle.pending_output().await).is_none());
+@@ -400,4 +418,9 @@
+         None
+     );
+     tasks.shutdown().await;
++    drop(handle);
++    assert_eq!(
++        checked(fs::read(fixture.directory.path().join(CONTROL_FILE))),
++        control_bytes
++    );
+ }

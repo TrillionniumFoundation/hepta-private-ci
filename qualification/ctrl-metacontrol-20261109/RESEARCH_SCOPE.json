@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.ctrl.research_scope.v1",
+  "sources": [
+    {
+      "title": "Understanding human metacontrol and its pathologies using deep neural networks",
+      "journal": "PNAS",
+      "publication_date": "2026-02-24",
+      "doi": "10.1073/pnas.2510334123",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12956855/",
+      "verified_scope": "Observe-or-bet bandit tasks with stochastic reversal of intended bet actions; a second task includes an efficacy-increasing action with opportunity cost. The auxiliary output predicts intended/realized action mismatch. In tested LSTM/REINFORCE networks it improved adaptation relative to standard and parameter-matched variants receiving comparable information.",
+      "boundaries": "This establishes a result for the tested tasks and model comparisons, not a theorem that an explicit head is universally necessary or that Hepta will benefit. Prediction of reward or correctness is distinct from prediction that the intended action was realized.",
+      "implementation_inference": "Log intended and realized actions separately, train the auxiliary head from observed match/mismatch, and compare matched-capacity/data controls. Audit terminal content identity before using such labels."
+    },
+    {
+      "title": "Thalamic regulation of reinforcement learning strategies across prefrontal-striatal networks",
+      "journal": "Nature Communications",
+      "publication_date": "2025-10-16",
+      "doi": "10.1038/s41467-025-63995-x",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12531340/",
+      "verified_scope": "Human tactile probabilistic reversal learning, fMRI, and CogLinks circuit modelling relate mediodorsal-thalamic context inference to flexible switching. The model explains some slower updates as failures to form alternative context representations; imaging analyses test related predictions.",
+      "boundaries": "The article cautions that blocks classified as model-free/model-based need not be pure strategy types. It does not evaluate a Hepta controller or establish the net benefit of purchasing computation.",
+      "implementation_inference": "Treat context-dependent escalation to additional planning as a hypothesis. Compare paid STOP-versus-continuation outcomes with a strong light policy under matched costs and evidence."
+    }
+  ],
+  "label_contract_inference": {
+    "selected_used": "Whether the intended selected object is the object actually delivered/used, independently of terminal correctness.",
+    "declared_effect": "Whether a separately specified observable local-effect predicate occurred; keep nullable if not observed.",
+    "continuation_value": "Expected terminal utility change relative to STOP minus all incremental execution and control costs.",
+    "read_boundary": "An information-only READ followed by immediate STOP need not change terminal content. Any READ-and-answer/rerank suffix must be explicitly declared and fully costed.",
+    "attribution": "These are proposed engineering contracts inferred from the scoped evidence, not results claimed by the cited papers."
+  }
+}

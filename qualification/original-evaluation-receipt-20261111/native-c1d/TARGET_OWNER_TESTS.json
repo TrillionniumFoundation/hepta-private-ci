@@ -1,0 +1,351 @@
+{
+  "schema_version": 1,
+  "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "distinct_target_tests": 18,
+  "group_counts": {
+    "Model": 7,
+    "Evaluation": 5,
+    "OriginalTraining": 6
+  },
+  "two_suite_executions_do_not_make_36_distinct_tests": true,
+  "basis": "Explicit nextest PASS lines in both complete source-bound GitHub job logs; independent JUnit verification is recorded separately.",
+  "jobs": [
+    {
+      "lane": "daemon",
+      "run_id": 42946454461,
+      "job_id": 130280341039,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42946454461/job/130280341039",
+      "job_status": "completed",
+      "job_conclusion": "success",
+      "exact_source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+      "exact_source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+      "distinct_target_owner_cases": 18,
+      "owner_groups": [
+        {
+          "group": "Model proposal",
+          "distinct_cases": 7,
+          "cases": [
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+              "status": "PASS",
+              "first_pass_log_line_number": 11938,
+              "first_pass_log_line": "2026-11-11T03:23:55.4358662Z         PASS [   1.456s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+              "status": "PASS",
+              "first_pass_log_line_number": 11940,
+              "first_pass_log_line": "2026-11-11T03:23:58.2337292Z         PASS [   1.391s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+              "status": "PASS",
+              "first_pass_log_line_number": 11937,
+              "first_pass_log_line": "2026-11-11T03:23:54.2123001Z         PASS [   2.738s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+              "status": "PASS",
+              "first_pass_log_line_number": 11946,
+              "first_pass_log_line": "2026-11-11T03:23:59.8191962Z         PASS [   5.607s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+              "status": "PASS",
+              "first_pass_log_line_number": 11941,
+              "first_pass_log_line": "2026-11-11T03:23:58.3356050Z         PASS [   0.102s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+              "status": "PASS",
+              "first_pass_log_line_number": 11939,
+              "first_pass_log_line": "2026-11-11T03:23:56.8427176Z         PASS [   1.407s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence",
+              "status": "PASS",
+              "first_pass_log_line_number": 11936,
+              "first_pass_log_line": "2026-11-11T03:23:53.9793412Z         PASS [   1.464s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence",
+              "duplicate_pass_prints_not_counted_again": 1
+            }
+          ]
+        },
+        {
+          "group": "Original Evaluation receipt",
+          "distinct_cases": 5,
+          "cases": [
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+              "status": "PASS",
+              "first_pass_log_line_number": 11810,
+              "first_pass_log_line": "2026-11-11T03:23:10.7594909Z         PASS [   2.402s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+              "status": "PASS",
+              "first_pass_log_line_number": 11808,
+              "first_pass_log_line": "2026-11-11T03:23:08.5181350Z         PASS [   0.664s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+              "status": "PASS",
+              "first_pass_log_line_number": 11805,
+              "first_pass_log_line": "2026-11-11T03:23:06.5533370Z         PASS [   3.028s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+              "status": "PASS",
+              "first_pass_log_line_number": 11806,
+              "first_pass_log_line": "2026-11-11T03:23:07.8539128Z         PASS [   1.301s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed",
+              "status": "PASS",
+              "first_pass_log_line_number": 11807,
+              "first_pass_log_line": "2026-11-11T03:23:08.3570856Z         PASS [   4.883s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed",
+              "duplicate_pass_prints_not_counted_again": 1
+            }
+          ]
+        },
+        {
+          "group": "Original Training receipt",
+          "distinct_cases": 6,
+          "cases": [
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+              "status": "PASS",
+              "first_pass_log_line_number": 11960,
+              "first_pass_log_line": "2026-11-11T03:24:03.1631857Z         PASS [   2.280s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+              "status": "PASS",
+              "first_pass_log_line_number": 11952,
+              "first_pass_log_line": "2026-11-11T03:24:00.8829480Z         PASS [   0.098s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+              "status": "PASS",
+              "first_pass_log_line_number": 11951,
+              "first_pass_log_line": "2026-11-11T03:24:00.7846928Z         PASS [   0.096s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+              "status": "PASS",
+              "first_pass_log_line_number": 11949,
+              "first_pass_log_line": "2026-11-11T03:24:00.5935246Z         PASS [   0.428s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+              "status": "PASS",
+              "first_pass_log_line_number": 11953,
+              "first_pass_log_line": "2026-11-11T03:24:02.0340046Z         PASS [   2.116s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+              "duplicate_pass_prints_not_counted_again": 1
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked",
+              "status": "PASS",
+              "first_pass_log_line_number": 11950,
+              "first_pass_log_line": "2026-11-11T03:24:00.6883418Z         PASS [   0.095s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked",
+              "duplicate_pass_prints_not_counted_again": 1
+            }
+          ]
+        }
+      ],
+      "complete_job_log": {
+        "stored_path": "native-c1d/job-logs/daemon-130280341039.log.gz",
+        "encoding": "gzip",
+        "original_bytes": 3160817,
+        "original_sha256": "7b3788f8502467bcd0f87ec544843517b1a1a0c6d1e455be4e91cd9b47775a76",
+        "stored_bytes": 399987,
+        "stored_sha256": "67228f5b2431e3376aceb61ef55770ba56cb83052a4ef347f02ae34270ed397d",
+        "lane": "daemon",
+        "job_id": 130280341039,
+        "representation": "Complete GitHub tool-returned job text retained as UTF-8 with LF line endings."
+      }
+    },
+    {
+      "lane": "shared",
+      "run_id": 42946454356,
+      "job_id": 130280341079,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42946454356/job/130280341079",
+      "job_status": "completed",
+      "job_conclusion": "success",
+      "exact_source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+      "exact_source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+      "distinct_target_owner_cases": 18,
+      "owner_groups": [
+        {
+          "group": "Model proposal",
+          "distinct_cases": 7,
+          "cases": [
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+              "status": "PASS",
+              "first_pass_log_line_number": 1836,
+              "first_pass_log_line": "2026-11-11T03:27:12.9452606Z         PASS [   2.506s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_original_training_commit_and_cold_readback",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+              "status": "PASS",
+              "first_pass_log_line_number": 1838,
+              "first_pass_log_line": "2026-11-11T03:27:17.7977446Z         PASS [   2.405s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rejects_tampered_training_before_claim_and_on_readback",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+              "status": "PASS",
+              "first_pass_log_line_number": 1835,
+              "first_pass_log_line": "2026-11-11T03:27:11.5909375Z         PASS [   4.854s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_evaluation_no_update_never_creates_a_proposal",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+              "status": "PASS",
+              "first_pass_log_line_number": 1846,
+              "first_pass_log_line": "2026-11-11T03:27:21.2843840Z         PASS [   9.693s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_pending_and_lost_ack_recover_without_new_commit",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+              "status": "PASS",
+              "first_pass_log_line_number": 1839,
+              "first_pass_log_line": "2026-11-11T03:27:17.9467953Z         PASS [   0.149s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_trainer_no_update_refuses_before_file_initialization",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+              "status": "PASS",
+              "first_pass_log_line_number": 1837,
+              "first_pass_log_line": "2026-11-11T03:27:15.3923464Z         PASS [   2.447s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_rechecks_original_witness_after_final_receipt_decode",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence",
+              "status": "PASS",
+              "first_pass_log_line_number": 1834,
+              "first_pass_log_line": "2026-11-11T03:27:10.4392804Z         PASS [   2.465s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::model_proposal::q24_model_proposal_host_clock_rejects_request_backdating_and_expired_evidence",
+              "duplicate_pass_prints_not_counted_again": 0
+            }
+          ]
+        },
+        {
+          "group": "Original Evaluation receipt",
+          "distinct_cases": 5,
+          "cases": [
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+              "status": "PASS",
+              "first_pass_log_line_number": 1708,
+              "first_pass_log_line": "2026-11-11T03:25:59.4061412Z         PASS [   4.455s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_signs_actual_qualification_and_recovers_original_bytes",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+              "status": "PASS",
+              "first_pass_log_line_number": 1706,
+              "first_pass_log_line": "2026-11-11T03:25:56.1366609Z         PASS [   1.304s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rejects_changed_custody_namespace_and_unsigned_no_update",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+              "status": "PASS",
+              "first_pass_log_line_number": 1705,
+              "first_pass_log_line": "2026-11-11T03:25:54.9513832Z         PASS [   6.084s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_pending_never_resigns_and_complete_ack_replays",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+              "status": "PASS",
+              "first_pass_log_line_number": 1704,
+              "first_pass_log_line": "2026-11-11T03:25:54.8325624Z         PASS [   2.858s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_rechecks_source_before_signing_and_after_commit",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed",
+              "status": "PASS",
+              "first_pass_log_line_number": 1703,
+              "first_pass_log_line": "2026-11-11T03:25:51.9745065Z         PASS [   5.631s] codex-hepta-agentd learning_iteration_evidence_client::tests::evaluation::original_evaluation_receipt_expired_signature_is_not_renewed",
+              "duplicate_pass_prints_not_counted_again": 0
+            }
+          ]
+        },
+        {
+          "group": "Original Training receipt",
+          "distinct_cases": 6,
+          "cases": [
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+              "status": "PASS",
+              "first_pass_log_line_number": 1857,
+              "first_pass_log_line": "2026-11-11T03:27:24.8625339Z         PASS [   2.447s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_signs_actual_candidate_and_no_update_then_reopens_exactly",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+              "status": "PASS",
+              "first_pass_log_line_number": 1850,
+              "first_pass_log_line": "2026-11-11T03:27:22.4154926Z         PASS [   0.155s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_refuses_wrong_key_trust_scope_and_changed_dataset_prefix",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+              "status": "PASS",
+              "first_pass_log_line_number": 1849,
+              "first_pass_log_line": "2026-11-11T03:27:22.2608226Z         PASS [   0.150s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_pending_native_job_never_claims_or_signs",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+              "status": "PASS",
+              "first_pass_log_line_number": 1847,
+              "first_pass_log_line": "2026-11-11T03:27:21.9618291Z         PASS [   0.677s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_ack_reopens_pending_or_exact_completed_signature",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+              "status": "PASS",
+              "first_pass_log_line_number": 1851,
+              "first_pass_log_line": "2026-11-11T03:27:23.1582110Z         PASS [   2.183s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_expired_signature_never_renews_or_retrains",
+              "duplicate_pass_prints_not_counted_again": 0
+            },
+            {
+              "name": "neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked",
+              "status": "PASS",
+              "first_pass_log_line_number": 1848,
+              "first_pass_log_line": "2026-11-11T03:27:22.1103943Z         PASS [   0.148s] codex-hepta-agentd neuron_generation_update_bootstrap::adopted_learning::composed_tests::training::owner::receipts::original_training_receipt_lost_genesis_witness_ack_stays_blocked",
+              "duplicate_pass_prints_not_counted_again": 0
+            }
+          ]
+        }
+      ],
+      "complete_job_log": {
+        "stored_path": "native-c1d/job-logs/shared-130280341079.log.gz",
+        "encoding": "gzip",
+        "original_bytes": 347577,
+        "original_sha256": "9bf79d5e7dc51bb50d566de13f4524a16c7418610f0c32b8b8a1c89e609a8db5",
+        "stored_bytes": 66700,
+        "stored_sha256": "cebaeb0153f2e7422b5b4dfd35b25322a0bc2c925275ed31cf151b41add7db92",
+        "lane": "shared",
+        "job_id": 130280341079,
+        "representation": "Complete GitHub tool-returned job text retained as UTF-8 with LF line endings."
+      }
+    }
+  ]
+}

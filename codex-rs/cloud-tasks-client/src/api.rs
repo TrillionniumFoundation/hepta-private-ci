@@ -1,5 +1,4 @@
-use chrono::DateTime;
-use chrono::Utc;
+use codex_utils_time::Timestamp;
 use serde::Deserialize;
 use serde::Serialize;
 use std::future::Future;
@@ -38,7 +37,7 @@ pub struct TaskSummary {
     pub id: TaskId,
     pub title: String,
     pub status: TaskStatus,
-    pub updated_at: DateTime<Utc>,
+    pub updated_at: Timestamp,
     /// Backend environment identifier (when available)
     pub environment_id: Option<String>,
     /// Human-friendly environment label (when available)
@@ -67,7 +66,7 @@ pub enum AttemptStatus {
 pub struct TurnAttempt {
     pub turn_id: String,
     pub attempt_placement: Option<i64>,
-    pub created_at: Option<DateTime<Utc>>,
+    pub created_at: Option<Timestamp>,
     pub status: AttemptStatus,
     pub diff: Option<String>,
     pub messages: Vec<String>,

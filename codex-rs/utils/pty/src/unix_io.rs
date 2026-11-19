@@ -35,8 +35,12 @@ impl PtyIo {
         // Async tasks can be aborted even when a detached child keeps the PTY open
         // or the output channel is full; blocking read/send tasks cannot.
         // AsyncFd panics if the current runtime has no I/O driver.
-        let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
-            .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
+        let fd = std::panic::catch_unwind(move || {
+            // SAFETY: this owned duplicate remains valid and is never replaced
+            // or closed while the AsyncFd (including its Arc users) owns it.
+            unsafe { AsyncFd::register(File::from(fd)) }
+        })
+        .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
         Ok(Self { fd: Arc::new(fd) })
     }
 
@@ -58,6 +62,11 @@ impl PtyIo {
                     Ok(0) => break,
                     Ok(count) => {
                         // Output caps may close the receiver before the child exits.
+                        // Keep draining without allocating a message or polling a send
+                        // that can no longer succeed once the channel is closed.
+                        if stdout_tx.is_closed() {
+                            continue;
+                        }
                         let _ = stdout_tx.send(buf[..count].to_vec()).await;
                     }
                     Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,

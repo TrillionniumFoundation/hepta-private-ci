@@ -1,0 +1,177 @@
+{
+  "archive": {
+    "CRC_and_original_members_verified": true,
+    "bytes": 34050599,
+    "original_files_unchanged": true,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1.zip",
+    "sha256": "e96030a4c1a29031e56c406d7cc72cee9d141a0edb4701e3a83d60b5d5e32c52"
+  },
+  "archived_summary_finality": "PROVISIONAL_UNTIL_EXTERNAL_COLLECTION_RECEIPT_COMPLETED_AND_ARCHIVE_SHA256_MATCHES",
+  "collection_CPU_sample_seconds": 11.140371099,
+  "collection_peak_RSS_sample_bytes": 27951104,
+  "collection_wall_sample_seconds": 11.16766932187602,
+  "collector_sources_before": {
+    "collect_terminal.py": "d86e43126a2445db5467e2b0de2d8ec5f3e7481a646561d1a0c8173bde5953ad",
+    "metadata_summary.py": "3fd9d3c3b55840a343eace682d31e74e2b95bd66dbc34853176e6105da86409b",
+    "test_metadata_guards.py": "abd77ecb88b51471242e79df63c421cb700e46d20e1269940c916e6450174700",
+    "validate_and_freeze.py": "ecccfc1e1383be00e4ef4bf9493f630ac04a25000ef6f9e397f5b6b45f968d3b"
+  },
+  "expected_finite_fixtures": 60,
+  "expected_stages": 96,
+  "external_final_receipt_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-terminal-postmortem-v1/COLLECTION-RECEIPT.json",
+  "finished_utc": "2026-11-10T22:23:08.044338+00:00",
+  "finite_qualified_named_fixture_count": 49,
+  "metadata_collection_status": "completed",
+  "metadata_only_stricter_outer_check": "Named finite pass additionally requires observed outer wall <= granted wall and all recorded RSS peaks <= fixed2GiB; raw original results remain unchanged.",
+  "no_model_or_oracle_execution": true,
+  "numeric_retry_count": 0,
+  "observed_stage_cost": {
+    "count_with_outer_cost": 85,
+    "missing_or_invalid_cost_rows": [
+      {
+        "name": "hcsn-s101-lr0.003",
+        "stage": "finite-best-8"
+      }
+    ],
+    "scope": "Existing original per-stage outer timers, nested inside the controller/launcher. Do not add these to whole-attempt or bootstrap cost. Missing active-child CPU after a process-group kill cannot be inferred from these rows.",
+    "stage_outer_wall_seconds": 10237.81142629357,
+    "waited_stage_CPU_seconds": 10229.718831999999
+  },
+  "original_bootstrap_receipt": {
+    "audit_argv": [
+      "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "-B",
+      "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/launch_native.py",
+      "--base",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+      "--output",
+      "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1",
+      "--launch-dir",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/numerics-final-audit-launch-v1",
+      "--terminal-snapshot",
+      "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/terminal-snapshot.json",
+      "--terminal-snapshot-sha256",
+      "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+    ],
+    "audit_started_utc": "2026-11-10T19:21:57.453216+00:00",
+    "bootstrap_source_sha256": "da15ff9b0dcf6ba8e2b08af1800763845ad0b7551671d7a33f74190aebc9fd47",
+    "complete_bootstrap_wall_seconds": 10808.759284527972,
+    "complete_waited_children_CPU_seconds": 10299.398115,
+    "concurrency": "One audit controller and one serial stage, each numerical stage CPU single thread; original fresh42 training has terminated. May overlap an independent read-only full-D quality replay; no dedicated-idle-host claim.",
+    "download_phase_waited_children_CPU_seconds": 0.179256,
+    "download_phase_wall_seconds": 2.2853977729100734,
+    "energy_joules": null,
+    "finished_utc": "2026-11-10T22:21:57.587859+00:00",
+    "native_audit_started": true,
+    "native_validation": {
+      "actual_trained_model_read": false,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "expected_tests": 23,
+      "fixture_scope": "Synthetic metadata and tiny synthetic states; no scientific training credit.",
+      "observed_tests": 23,
+      "optimizer_steps_executed": 0,
+      "passed": true,
+      "pid": 1969477,
+      "program_after": {
+        "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+        "verified_members": 25
+      },
+      "returncode": 0,
+      "stderr_sha256": "b4fc26e84deb154f6833f16969b11e913a3806f3cd5b35ac76f9d40c8096a221",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "unittest_seconds": 3.373,
+      "waited_child_CPU_seconds": 5.630780999999999,
+      "wall_ceiling_seconds": 90,
+      "whole_child_wall_seconds": 6.334076476050541
+    },
+    "per_stage_RSS_limit_bytes": 2147483648,
+    "per_stage_address_space_limit_bytes": 8589934592,
+    "per_stage_wall_ceiling_seconds": 900,
+    "program_after": {
+      "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+      "verified_members": 25
+    },
+    "program_before": {
+      "manifest_sha256": "154826bbabda6cd44b552e1215f4b5ea5d471ff7b6c2fd7e5abd927ee753f75e",
+      "verified_members": 25
+    },
+    "program_blob": "08ebea8b88fb8f6bb0cfc7a385f7c8b0c5334810",
+    "program_bytes": 51013,
+    "program_sha256": "51c7c54ed96f40f39c8ebb5b0d04ee0c42f6f462012faf356efe6c3a9446419f",
+    "returncode": 1,
+    "schema": "terminal-HCSN-numerics-bootstrap-v1",
+    "scientific_admission": "HOLD",
+    "stable_key": "hcsn-terminal-numerics-audit-c385-v1",
+    "started_utc": "2026-11-10T19:21:48.828920+00:00",
+    "status": "failed_or_numerical_stage_incomplete",
+    "timing_scope": "Bootstrap exit wall/children CPU includes Git fetch, native validation, hard audit launcher and all audit stages; nested values must not be added.",
+    "whole_audit_wall_ceiling_seconds": 10800,
+    "whole_training_domain_admission": "HOLD"
+  },
+  "original_controller_aggregate_present": false,
+  "original_controller_archive_receipt_present": false,
+  "original_identity_closure_passed": true,
+  "original_launcher_receipt": {
+    "argv": [
+      "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "-B",
+      "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/run_audit.py",
+      "--base",
+      "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+      "--output",
+      "/home/qian-qi/hepta-hcsn-final-numerics-20261110-c385-v1",
+      "--terminal-snapshot",
+      "/home/qian-qi/hepta-hcsn-final-numerics-program-20261110-c385-v1/terminal-snapshot.json",
+      "--terminal-snapshot-sha256",
+      "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+    ],
+    "child_peak_rss_bytes": 945053696,
+    "energy_joules": null,
+    "finished_utc": "2026-11-10T22:21:57.551046+00:00",
+    "hard_whole_wall_seconds": 10800,
+    "pid": 1969758,
+    "process_started": true,
+    "returncode": -9,
+    "schema": "terminal-HCSN-hard-deadline-launch-v1",
+    "scope": "Complete controller process and its inherited stage process group; child timers are nested, not additional.",
+    "started_utc": "2026-11-10T19:21:57.544788+00:00",
+    "status": "whole_budget_exhausted",
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 6643,
+      "sha256": "a9659f5a22a532bf8b282c3dc11df7e692f89ffd0b7de6ae42192825120956e7"
+    },
+    "stop_cause": "predeclared_hard10800_whole_process_group_limit",
+    "waited_controller_and_descendant_CPU_seconds": 10278.141465,
+    "whole_process_wall_seconds": 10800.006360915024
+  },
+  "possible_unreaped_killed_stage_CPU_not_measured": true,
+  "post_terminal_process_observations": {
+    "absence_established": true,
+    "processes": [],
+    "scan_errors": []
+  },
+  "schema": "terminal-numerics-read-only-postmortem-v1",
+  "scientific_admission": "HOLD",
+  "started_utc": "2026-11-10T22:22:56.877477+00:00",
+  "status": "collected_original_terminal_artifacts",
+  "timing_scope": "This separate metadata/hash/archive collection is after the original audit. Original bootstrap, launcher, controller and stage timers overlap; do not sum them.",
+  "training_adequacy_established": false,
+  "whole_attempt_CPU_completeness": "incomplete_waited_processes_only_lower_bound",
+  "whole_training_domain_admission": "HOLD"
+}

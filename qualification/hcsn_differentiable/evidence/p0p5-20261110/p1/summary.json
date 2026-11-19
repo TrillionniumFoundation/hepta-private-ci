@@ -1,0 +1,441 @@
+{
+  "schema": "hcsn-p1-evidence-summary-v1",
+  "date_utc": "2026-11-10",
+  "overall_scientific_admission": "HOLD",
+  "whole_constructor_domain_admission": "HOLD",
+  "sufficient_training_established": false,
+  "hardware_energy_joules": null,
+  "scope": "Development numerical fixtures from three retained A training episodes, with two short optimizer updates. No benchmark benefit or complete training-domain admission.",
+  "error_scale": "abs(candidate-reference)/max(1,abs(reference)); quantities below one are constrained in absolute error, not relative tail error.",
+  "reference": {
+    "precision_digits": 80,
+    "finite_quadrature": "orders 8/16 or 16/32",
+    "quadrature_delta_is_certified_error_bound": false,
+    "future_observations_applied_in_finite_checks": false
+  },
+  "frozen_candidate": {
+    "grid": {
+      "active_cells": 256,
+      "endpoint": 4.8,
+      "phase_cells": 16,
+      "refractory": 0.2,
+      "quadrature_order": 32,
+      "tail_rate": 1.0,
+      "initial_log_std": 0.08
+    },
+    "physics": {
+      "mu": -0.11999999999999998,
+      "sigma": 0.35,
+      "log_boundary": 0.0,
+      "absolute_reset": 1.3771277643359572,
+      "discount": 0.15
+    },
+    "model": {
+      "input_dim": 25,
+      "content_dim": 4,
+      "output_dim": 11,
+      "layer_count": 1,
+      "seed": 20261110,
+      "optimizer_updates": 2,
+      "events_per_update": 32
+    },
+    "model_sha256": "4bc4a16fcf546178fbe106b0224bd1ffa5c596abdf343719d7001ded1256d3d9",
+    "recorded_posterior_audit": {
+      "artifact": "numerics-real-posterior-v2/perpetual-audit.json",
+      "status": "passed_recorded_states",
+      "records": 256,
+      "maximum_scaled_value_error": 0.0023023198356916298,
+      "maximum_basis_gradient_absolute_error": 1.4210854715202004e-14,
+      "source_matches_trace": true,
+      "complete_retained_coverage": true
+    },
+    "finite_fixtures": [
+      {
+        "artifact": "numerics-real-posterior-v2/finite-31-32.json",
+        "artifact_sha256": "b5b3fa328038714e8df23916a6c7d15c35109dbc5dc163459f683231607ca576",
+        "status": "passed_fixture",
+        "horizon": 1.0000868,
+        "intervals": 32,
+        "projected": [
+          0.7685064697148034,
+          0.27696966645902427,
+          0.25558589927014363,
+          0.9355075298944726
+        ],
+        "reference": [
+          0.765904896427571,
+          0.2738473506399656,
+          0.2526874325603075,
+          0.9360589188975007
+        ],
+        "scaled_errors": [
+          0.002601573287232428,
+          0.003122315819058641,
+          0.0028984667098361228,
+          0.000551389003028091
+        ],
+        "mass_residual": 1.3322676295501878e-15,
+        "reference_refinement_delta": 1.1102230246251565e-16
+      },
+      {
+        "artifact": "numerics-real-posterior-v2/finite-127-32.json",
+        "artifact_sha256": "64a74f07f680c758abaf73f45b60f30d4ea81e6cc8d25fe9be9a7ef06965b3e4",
+        "status": "passed_fixture",
+        "horizon": 1.0000878,
+        "intervals": 32,
+        "projected": [
+          0.7242633213646084,
+          0.22264826453040468,
+          0.20551979094942416,
+          0.9478481945512103
+        ],
+        "reference": [
+          0.7221440790464783,
+          0.2200917664653079,
+          0.20315335197293866,
+          0.9483300740212707
+        ],
+        "scaled_errors": [
+          0.002119242318130099,
+          0.0025564980650967795,
+          0.002366438976485502,
+          0.0004818794700603979
+        ],
+        "mass_residual": 1.3322676295501878e-15,
+        "reference_refinement_delta": 1.1102230246251565e-16
+      },
+      {
+        "artifact": "numerics-real-posterior-v2-resume/finite-A01-0-223-32.json",
+        "artifact_sha256": "4a2f4d365d9e06e71131447e8775bcd42ad2bb7f706789904133390dbe00e7c7",
+        "status": "passed_fixture",
+        "horizon": 0.9730584,
+        "intervals": 32,
+        "projected": [
+          0.6780675551470468,
+          0.1764253516924262,
+          0.16308856670246322,
+          0.9566216073470267
+        ],
+        "reference": [
+          0.6762735643207212,
+          0.1742600524624611,
+          0.16108144576167807,
+          0.9570588885536215
+        ],
+        "scaled_errors": [
+          0.0017939908263255866,
+          0.002165299229965112,
+          0.0020071209407851454,
+          0.0004372812065948084
+        ],
+        "mass_residual": 1.3322676295501878e-15,
+        "reference_refinement_delta": 1.1102230246251565e-16
+      },
+      {
+        "artifact": "numerics-real-posterior-v2-resume/finite-A04-3072-47-8.json",
+        "artifact_sha256": "a05423dcb8c827f59b6278b4c1589f519d280b76360bf0dfb3b9486536b3ce83",
+        "status": "passed_fixture",
+        "horizon": 0.1892062,
+        "intervals": 8,
+        "projected": [
+          0.30724054739583084,
+          0.05411228430764193,
+          0.053343195524698545,
+          0.943474396835168
+        ],
+        "reference": [
+          0.3067873471213375,
+          0.05351337136537585,
+          0.05275299717396789,
+          0.9440663996065531
+        ],
+        "scaled_errors": [
+          0.0004532002744933594,
+          0.0005989129422660777,
+          0.000590198350730653,
+          0.0005920027713851583
+        ],
+        "mass_residual": 6.661338147750939e-16,
+        "reference_refinement_delta": 1.1102230246251565e-16
+      },
+      {
+        "artifact": "numerics-real-posterior-v2-resume/finite-A04-3072-47-32.json",
+        "artifact_sha256": "7569dfea1d92856f2200b17a98231326b301c474cf8a810e616689a19243957b",
+        "status": "passed_fixture",
+        "horizon": 0.9460297,
+        "intervals": 32,
+        "projected": [
+          0.7582427974627024,
+          0.28295343113260363,
+          0.2634767721251282,
+          0.9378281295911777
+        ],
+        "reference": [
+          0.7559523280035647,
+          0.2802288661974652,
+          0.26092203204821535,
+          0.9382858299950781
+        ],
+        "scaled_errors": [
+          0.0022904694591376895,
+          0.0027245649351384515,
+          0.0025547400769128648,
+          0.00045770040390047395
+        ],
+        "mass_residual": 1.9984014443252818e-15,
+        "reference_refinement_delta": 1.1102230246251565e-16
+      },
+      {
+        "artifact": "numerics-longsequence-v1/report.json",
+        "artifact_sha256": "8430239e64c6f43e15111d107a75ee03a61ee6e6cd95810bcbb6d2898bf9c7b8",
+        "status": "passed_fixture",
+        "horizon": 4.2436074999999995,
+        "intervals": 128,
+        "projected": [
+          2.3182100517245763,
+          1.4424666543398985,
+          1.0471029544044683,
+          0.9266144620842416
+        ],
+        "reference": [
+          2.3114732988614852,
+          1.433055049740221,
+          1.0397960873894103,
+          0.9268260070765663
+        ],
+        "scaled_errors": [
+          0.0029144843967737976,
+          0.006567510858276933,
+          0.007027211492402487,
+          0.00021154499232467483
+        ],
+        "mass_residual": 6.5503158452884236e-15,
+        "reference_refinement_delta": 2.1354629779624682e-16
+      }
+    ],
+    "full_training_or_width16_transfer_claimed": false
+  },
+  "retained_failures": {
+    "endpoint2_pressure": {
+      "artifact": "numerics-refinement-reproduction-v1/report.json",
+      "rows": 135,
+      "passed_rows": 0,
+      "source_unchanged": true,
+      "maximum_difference_from_original": 1.2114753644709708e-12,
+      "interpretation": "Infinite repetition of each sampled gap on every reconstructed basis law; not the actual finite sequence."
+    },
+    "active128_endpoint4_8_finite32": {
+      "artifact": "numerics-real-posterior-v1/report.json",
+      "failed_rows": [
+        {
+          "schema": "hcsn-recorded-law-finite-continuation-v1",
+          "quantities": [
+            "value",
+            "event_count",
+            "discounted_event_count",
+            "active_probability"
+          ],
+          "projected": [
+            0.8952596238399692,
+            0.42794429930536015,
+            0.39768592275640247,
+            0.9163983462616851
+          ],
+          "reference": [
+            0.8828292590823523,
+            0.41326164689795897,
+            0.3839237741441658,
+            0.9184152524764372
+          ],
+          "scaled_errors": [
+            0.01243036475761683,
+            0.014682652407401187,
+            0.01376214861223668,
+            0.0020169062147520345
+          ],
+          "horizon": 1.0000868,
+          "intervals": 32,
+          "minimum_dt": 0.027029,
+          "maximum_dt": 0.0540589,
+          "mass_residual": 5.551115123125783e-16,
+          "reference_digits": 80,
+          "reference_orders": [
+            16,
+            32
+          ],
+          "reference_refinement_delta": 1.1102230246251565e-16,
+          "reference_omission_bound": 5.874484623674539e-16,
+          "scaled_error_limit": 0.01,
+          "status": "HOLD",
+          "scope": "Fixed recorded starting law; actual gap schedule; future observations disabled; no whole-training admission.",
+          "position": 31,
+          "episode": "A01-0",
+          "posterior_sha256": "3523455d5eb6a38ee2b04ea299cd95dcf770eac8eae759e22e00a0c211b05fff",
+          "wall_seconds": 48.43302445199993
+        },
+        {
+          "schema": "hcsn-recorded-law-finite-continuation-v1",
+          "quantities": [
+            "value",
+            "event_count",
+            "discounted_event_count",
+            "active_probability"
+          ],
+          "projected": [
+            0.8896638822887397,
+            0.4200137887019027,
+            0.39086098363702665,
+            0.9213993464385963
+          ],
+          "reference": [
+            0.8781120974627983,
+            0.4064188535268475,
+            0.3781015279769607,
+            0.9230896306309944
+          ],
+          "scaled_errors": [
+            0.011551784825941436,
+            0.013594935175055223,
+            0.012759455660065921,
+            0.0016902841923980283
+          ],
+          "horizon": 1.0000878,
+          "intervals": 32,
+          "minimum_dt": 0.027029,
+          "maximum_dt": 0.0540589,
+          "mass_residual": 4.440892098500626e-16,
+          "reference_digits": 80,
+          "reference_orders": [
+            16,
+            32
+          ],
+          "reference_refinement_delta": 0.0,
+          "reference_omission_bound": 0.0,
+          "scaled_error_limit": 0.01,
+          "status": "HOLD",
+          "scope": "Fixed recorded starting law; actual gap schedule; future observations disabled; no whole-training admission.",
+          "position": 127,
+          "episode": "A01-0",
+          "posterior_sha256": "4d848db9ae73040ae9d26fa912ce1b47a39886cfebf3247f1c95ee27d5c99512",
+          "wall_seconds": 76.58666045400014
+        },
+        {
+          "schema": "hcsn-recorded-law-finite-continuation-v1",
+          "quantities": [
+            "value",
+            "event_count",
+            "discounted_event_count",
+            "active_probability"
+          ],
+          "projected": [
+            0.950588768884383,
+            0.5041396667651477,
+            0.4701279222019109,
+            0.9042189442196643
+          ],
+          "reference": [
+            0.9365643027438476,
+            0.48773530171712254,
+            0.454662662499768,
+            0.9060878161076531
+          ],
+          "scaled_errors": [
+            0.01402446614053543,
+            0.016404365048025116,
+            0.015465259702142908,
+            0.0018688718879887878
+          ],
+          "horizon": 0.9730584,
+          "intervals": 32,
+          "minimum_dt": 0.027029,
+          "maximum_dt": 0.0540588,
+          "mass_residual": 4.440892098500626e-16,
+          "reference_digits": 80,
+          "reference_orders": [
+            16,
+            32
+          ],
+          "reference_refinement_delta": 5.551115123125783e-17,
+          "reference_omission_bound": 0.0,
+          "scaled_error_limit": 0.01,
+          "status": "HOLD",
+          "scope": "Fixed recorded starting law; actual gap schedule; future observations disabled; no whole-training admission.",
+          "position": 223,
+          "episode": "A01-0",
+          "posterior_sha256": "3de6215e9183b30496dfaf92cb500d14dd671d3625ff507df6be7db0c8e678c5",
+          "wall_seconds": 72.77073830200015
+        }
+      ],
+      "perpetual_audit_status": "passed_recorded_states",
+      "interpretation": "Passing the perpetual posterior or eight-gap check does not qualify thirty-two-gap continuation."
+    },
+    "interrupted_active256_job": {
+      "artifact": "numerics-real-posterior-v2/interruption.json",
+      "exit_code": 137,
+      "completed": false,
+      "stop_cause": "unknown; observed shell message Killed",
+      "separate_resume": "numerics-real-posterior-v2-resume/report.json",
+      "resume_status": "completed_retained_checks",
+      "resume_source_unchanged": true
+    }
+  },
+  "learnable_physics": {
+    "artifact": "numerics-learnable-physics-v1/report.json",
+    "trace_records": 48,
+    "actual_optimizer_updates": 2,
+    "all_four_raw_parameters_changed_each_update": true,
+    "physical_states": [
+      {
+        "updates_completed": 0,
+        "parameters": {
+          "log_boundary": 0.0,
+          "mu": -0.11999999999999998,
+          "sigma": 0.35,
+          "absolute_reset": 1.3771277643359572,
+          "discount": 0.15
+        }
+      },
+      {
+        "updates_completed": 1,
+        "parameters": {
+          "log_boundary": -0.0001199998948751851,
+          "mu": -0.11921788322132523,
+          "sigma": 0.35016058589801635,
+          "absolute_reset": 1.3772334513523998,
+          "discount": 0.15
+        }
+      },
+      {
+        "updates_completed": 2,
+        "parameters": {
+          "log_boundary": -0.00024000513064961515,
+          "mu": -0.1184357468694147,
+          "sigma": 0.3502838230876234,
+          "absolute_reset": 1.3773390041845668,
+          "discount": 0.15
+        }
+      }
+    ],
+    "complete_forward_AD_FD_maximum_absolute_error": 7.633235710180486e-11,
+    "continuum_basis_AD_80digit_FD_maximum_absolute_error": 2.1316282072803006e-14,
+    "all_visited_gradient_checks_passed": true,
+    "coarse_grid_value_status": "HOLD",
+    "coarse_grid_maximum_scaled_value_error": 0.03273362018893946,
+    "source_unchanged": true,
+    "gradient_scope": "Complete discrete forward loss versus central differences at each post-update state; independent continuum-basis derivatives hold recorded coefficients fixed."
+  },
+  "remaining_limits": [
+    "Trainable constructor range and positive/zero drift are not admitted by these negative-drift visits.",
+    "No relative rare-event tail error, complete long-training domain, true continuum filter, FP32, Hessian or scientific benefit claim.",
+    "Exact source snapshots predate integration formatting; final integration CI receipt is separate.",
+    "The original interrupted job remains incomplete; restored checks have a separate result and cost.",
+    "The historical 135-grid report lacked complete source capture; the separate frozen-source reproduction supplies the binding for the current pressure conclusion."
+  ],
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "runtime": {
+    "python": "3.12.14",
+    "torch": "2.8.0+cpu",
+    "numpy": "2.5.4",
+    "mpmath": "1.3.0"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "behavior_changed": false,
+  "caller_manifest_modified": false,
+  "checker_modified": false,
+  "files": [
+    {
+      "after_sha256": "e69d384980418fcd9f00a0ab521f90f37a224ee0d211ec06a151bbd8cff31c9d",
+      "before_sha256": "d9380b1651436e04c7d615b52fa9f2eb1d7d5a05a1e266941b4e67d8e7a6e594",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs"
+    },
+    {
+      "after_sha256": "20ac1039b1309dfbd49047563372bf56ed3f707a64d0d75853b201c5dc8f77da",
+      "before_sha256": "c40435fa84d7a018ad06c38c15e6583d77ef3ccd92f179d395d2c1c147cdc713",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs"
+    },
+    {
+      "after_sha256": "2074133ebd9fb9d0e26ba5c5a63e48e98f958dc669ffb0ede97a89016270ae00",
+      "before_sha256": "aca1f05877c294eb4f6e7f75c55a7c9c4cc062cd78587fa74ac9a82c913f3949",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 3,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs"
+    }
+  ],
+  "new_stripped_sha256": "c44d366eb31ed86605ef1ce4b55206bde8352242aac929e56d7be5cb27b06bc7",
+  "prior_head": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "qualification_receipt": "validation/run-receipt.json",
+  "reason": "Delivery contract successor validation is not HostAuthorityWriterRegistration validation; disambiguate the private method name while preserving the closed root-writer call set.",
+  "rust_job_ids": [
+    "1a1b9cb9626-12894-16ee",
+    "1a1b9ce34b2-12894-16fc"
+  ],
+  "schema": "hepta.delivery-successor-name-collision-fix.v1",
+  "source_manifest_sha256": "f544261664be3ffe4759bba12e76ae88b0ff45f45afd51f2dde5aa93d3bec789",
+  "stripped_byte_identical_to_cloud_v4": false
+}

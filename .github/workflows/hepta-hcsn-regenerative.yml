@@ -1,0 +1,53 @@
+name: HCSN regenerative and causal references
+
+on:
+  push:
+    branches: [codex/hcsn-regeneration-causal-20261106]
+    paths:
+      - qualification/hcsn_regenerative/**
+      - qualification/hcsn_causal/**
+      - .github/workflows/hepta-hcsn-regenerative.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-regenerative-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  references:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install reference dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hcsn-reference-venv"
+          echo "$RUNNER_TEMP/hcsn-reference-venv/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/hcsn-reference-venv/bin/python" -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Run reference and causal controls without training
+        run: python -m qualification.hcsn_causal.checks --output "$RUNNER_TEMP/hcsn-regenerative-tests.json"
+      - name: Run independent numerical audit without training
+        run: python -m qualification.hcsn_regenerative.run_audit --output "$RUNNER_TEMP/hcsn-regenerative-numerics.json"
+      - name: Keep receipts on every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-regenerative-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hcsn-regenerative-tests.json
+            ${{ runner.temp }}/hcsn-regenerative-numerics.json
+          if-no-files-found: error
+      - name: Verify tracked source is unchanged
+        if: always()
+        run: git diff --exit-code

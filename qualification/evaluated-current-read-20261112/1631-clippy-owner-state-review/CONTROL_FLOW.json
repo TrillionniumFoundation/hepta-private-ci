@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "kind": "static-review-not-test-execution",
+  "base_commit": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "code_tree": "72b02cdf6c3a4ca577e0a11935c7d5d8ecd1f0d1",
+  "control_flow": [
+    {
+      "name": "cell_q24_no_update_stage_execute.rs",
+      "same_original_call_order": true,
+      "awaits": [
+        27,
+        27
+      ],
+      "failed_true": [
+        0,
+        0
+      ],
+      "failed_false": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "cell_q24_candidate_stage_readback.rs",
+      "same_original_call_order": true,
+      "awaits": [
+        5,
+        5
+      ],
+      "failed_true": [
+        1,
+        1
+      ],
+      "failed_false": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "cell_q24_candidate_stage_evaluation.rs",
+      "same_original_call_order": true,
+      "awaits": [
+        11,
+        11
+      ],
+      "failed_true": [
+        1,
+        1
+      ],
+      "failed_false": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "cell_q24_candidate_stage_model.rs",
+      "same_original_call_order": true,
+      "awaits": [
+        11,
+        11
+      ],
+      "failed_true": [
+        1,
+        1
+      ],
+      "failed_false": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "cell_q24_no_update_stage_owners.rs",
+      "same_original_call_order": true,
+      "awaits": [
+        6,
+        6
+      ],
+      "failed_true": [
+        0,
+        0
+      ],
+      "failed_false": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "neuron_cell_evaluation_execution_store_tests.rs",
+      "test_names_equal": true,
+      "asserts_before": 90,
+      "asserts_after": 90
+    }
+  ],
+  "qa_scan": {
+    "scanned": 56,
+    "stale": []
+  },
+  "qa_markers": [
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "rejects_before": 19,
+      "rejects_after": 19
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "rejects_before": 17,
+      "rejects_after": 17
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "rejects_before": 25,
+      "rejects_after": 25
+    }
+  ],
+  "protected_row_changes": [
+    {
+      "name": "cell_q24_no_update_stage_owners.rs",
+      "pairs": [
+        [
+          "continuation: Mutex<Continuation>",
+          "continuation: ResidentLane<Continuation>"
+        ],
+        [
+          ".continuation.try_lock()",
+          "let mut state_lease = self.continuation.try_take()?;\n                let state = state_lease.state_mut()?"
+        ],
+        [
+          "auth::verify_prefix(&self.material, snapshot, &state, fresh)",
+          "auth::verify_prefix(&self.material, snapshot, state, fresh)"
+        ]
+      ],
+      "extra": false
+    },
+    {
+      "name": "cell_q24_no_update_stage_execute.rs",
+      "pairs": [
+        [
+          "self.continuation.try_lock()",
+          "let mut state_lease = self.continuation.try_take()?;\n        let state = state_lease.state_mut()?"
+        ],
+        [
+          "self.prepare_retained_version(snapshot, &mut state).await?",
+          "self.prepare_retained_version(snapshot, state).await?"
+        ],
+        [
+          "self.await_completed_c(snapshot, &mut state).await?",
+          "self.await_completed_c(snapshot, state).await?"
+        ],
+        [
+          "auth::verify_prefix(&self.material, snapshot, &state, fresh)?",
+          "auth::verify_prefix(&self.material, snapshot, state, fresh)?"
+        ]
+      ],
+      "extra": false
+    },
+    {
+      "name": "cell_q24_candidate_stage_readback.rs",
+      "pairs": [
+        [
+          "let mut state = self\n            .common\n            .continuation\n            .try_lock()",
+          "let mut state_lease = self.common.continuation.try_take()?;\n        let state = state_lease.state_mut()?"
+        ],
+        [
+          "let mut lane = self.candidate.try_lock()",
+          "let mut lane_lease = self.candidate.try_take()?;\n        let lane = lane_lease.state_mut()?"
+        ],
+        [
+          "auth::verify_prefix(&self.common.material, snapshot, &state, fresh)?",
+          "auth::verify_prefix(&self.common.material, snapshot, state, fresh)?"
+        ]
+      ],
+      "extra": false
+    },
+    {
+      "name": "cell_q24_candidate_stage_evaluation.rs",
+      "pairs": [
+        [
+          "self.evaluation.try_lock()",
+          "let mut lane_lease = self.evaluation.try_take()?;\n        let lane = lane_lease.state_mut()?"
+        ],
+        [
+          "self\n                .common\n                .continuation\n                .try_lock()",
+          "let mut common_lease = self.common.continuation.try_take()?;\n            let common = common_lease.state_mut()?"
+        ],
+        [
+          "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?",
+          "auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?"
+        ]
+      ],
+      "extra": false
+    },
+    {
+      "name": "cell_q24_candidate_stage_model.rs",
+      "pairs": [
+        [
+          "let common = self\n            .common\n            .continuation\n            .try_lock()",
+          "let mut common_lease = self.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?"
+        ],
+        [
+          "let mut common = self\n            .common\n            .continuation\n            .try_lock()",
+          "let mut common_lease = self.common.continuation.try_take()?;\n        let common = common_lease.state_mut()?"
+        ],
+        [
+          "auth::verify_prefix(&self.common.material, &training_cut, &common, fresh)?",
+          "auth::verify_prefix(&self.common.material, &training_cut, common, fresh)?"
+        ]
+      ],
+      "extra": false
+    },
+    {
+      "name": "cell_q24_candidate_stage_owners.rs",
+      "pairs": [
+        [
+          "candidate: Mutex<CandidateLane>",
+          "candidate: ResidentLane<CandidateLane>"
+        ],
+        [
+          "evaluation: Mutex<EvaluationLane>",
+          "evaluation: ResidentLane<EvaluationLane>"
+        ],
+        [
+          "model: Mutex<ModelLane>",
+          "model: ResidentLane<ModelLane>"
+        ]
+      ],
+      "extra": true
+    },
+    {
+      "name": "cell_q24_candidate_stage_inputs.rs",
+      "add_required": [
+        "candidate: ResidentLane::new(CandidateLane::new(candidate))",
+        "evaluation: ResidentLane::new(EvaluationLane::new(evaluator))",
+        "model: ResidentLane::new(ModelLane::new(model))"
+      ]
+    },
+    {
+      "name": "cell_q24_no_update_stage_inputs.rs",
+      "add_required": [
+        "continuation: ResidentLane::new(Continuation::new("
+      ]
+    }
+  ],
+  "helper_protected": true,
+  "boundary_ids": 541,
+  "boundary_ids_and_callers_unchanged": true,
+  "protected_rows_before": 389,
+  "protected_rows_after": 390,
+  "runtime_expiry_review": {
+    "base_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+    "post_blob": "467bba30b2cd77a322b714b9c0655a5823336214",
+    "bytes": 39110,
+    "sha256": "ef5bba1fae1fbd47ba7c897600ba121b7cf902f414bee62c91287d1eb522f148",
+    "exact_two_edits": true,
+    "timeout_import": [
+      "use tokio::time::timeout;"
+    ],
+    "original_rejection_assertions": true,
+    "gate_status": "NOT_RUN"
+  },
+  "execution": "NOT_RUN",
+  "helper_storage": {
+    "slot": "Option<Box<T>>",
+    "lease": "Option<Box<T>>",
+    "construction": "one Box allocation in ResidentLane::new",
+    "access": "as_deref_mut",
+    "reason": "the async future retains the original allocation without embedding or copying its large resident state",
+    "same_original_identity": true
+  },
+  "candidate_expiry_review": {
+    "kind": "candidate_expiry",
+    "base_blob": "14c46a6e0518f511c0e8cf59c67f7486d274d8cf",
+    "post_blob": "a40ba47f4f6fea4975cb68a0585b1cf42c1c73d6",
+    "bytes": 22543,
+    "sha256": "4ebd16d971c3cfed39eb529338d65315fba171241133dc1b01192004f648749c",
+    "additions": 16,
+    "deletions": 2,
+    "exact_source_head_verified": true,
+    "execution": "NOT_RUN"
+  },
+  "model_disposition_review": {
+    "kind": "model_disposition",
+    "base_blob": "6f607bebab6a930d9d0007ef7a438e51dd7ee5fb",
+    "post_blob": "6d5a4cb47e52784d34576be53868281b5104be90",
+    "bytes": 19414,
+    "sha256": "351b6a4f01298e3e0f6667baccc79a6f1e45318a49aee298b4fe175ef7cfad31",
+    "additions": 22,
+    "deletions": 4,
+    "exact_source_head_verified": true,
+    "execution": "NOT_RUN"
+  }
+}

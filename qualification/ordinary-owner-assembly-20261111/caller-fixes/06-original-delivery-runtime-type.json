@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.original-boundary-383-explicit-runtime-receiver-fix.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_source_sha": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "base_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "diagnostic_source_sha": "19894714403a97fcd58ca8c592e75761de95687c",
+  "boundary": "q24_task_explicit_delivery_sources",
+  "original_error": "caller set mismatch; missing=['codex-rs/hepta-agentd/src/runtime.rs'], unexpected=[]",
+  "source_changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "preimage_git_blob": "e8796292598fb5c12f435e15517bfd68014c9963",
+      "preimage_sha256": "3e3e0632194386cffd8d4041b3fd3ba63a0a6aab677210a960134d416888374b",
+      "old": "    if let Some(delivery) = &circuit_learning_delivery {\n        delivery.attach_sources(&state)?;\n    }",
+      "replacement": "    if let Some(delivery) = &circuit_learning_delivery {\n        let delivery: &crate::learning_iteration::CircuitLearningDeliveryRuntimeV1 = delivery;\n        delivery.attach_sources(&state)?;\n    }",
+      "postimage_git_blob": "4050e4aba877c88cbc9c0aeeaaec23425436cd48",
+      "sha256": "90ef4ed86913dfea27cc1d8d0d7d80b44e5c4ceae97af5f44a6ce9a67be3448c",
+      "bytes": 31648
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "preimage_git_blob": "aef3938e673088fb600bca94c0ddb0864ee6b7f3",
+      "preimage_sha256": "24269abed467bfed370edebf6a2453a1f1fe603c72027a153f71e28f94e3b514",
+      "old": "pub(crate) use delivery::CircuitLearningSourceV1;\n",
+      "replacement": "pub(crate) use delivery::CircuitLearningDeliveryRuntimeV1;\npub(crate) use delivery::CircuitLearningSourceV1;\n",
+      "postimage_git_blob": "5279378df21dc04d3241918912a16444cef4cb4d",
+      "sha256": "b8e061bc3694a5489274d7153259ef3f0af55cd4acade7a3e3bda42ed30b0e8b",
+      "bytes": 24032
+    }
+  ],
+  "metadata_changes": [],
+  "reason": "The actual runtime already calls attach_sources on the original value returned by take_circuit_delivery. Its inferred type did not name the authority typename, so the unchanged typed resolver prefilter missed it. Reexport only the existing crate-private opaque typename from its private child module, then explicitly borrow that exact original runtime value. No field, constructor, source, registration, scope, gate, method, task order or authority changes.",
+  "verification": {
+    "original_checker_git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_resolver_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "scope": "local three-original-file diagnostic only; not the complete index or official verifier",
+    "source_files": [
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs"
+    ],
+    "original_result": {
+      "matched": false,
+      "error": null
+    },
+    "postimage_result": {
+      "matched": true,
+      "error": null
+    },
+    "original_actual_definition_blob": "b3abfaaa715e40ff4bcfc67c6f1db2f8a294730f",
+    "pre_and_post_git_blob_and_sha256_independently_recomputed": true,
+    "native_executed": false
+  },
+  "preserved": {
+    "definition_method_and_original_delivery_value": true,
+    "exact_external_callers": [
+      "codex-rs/hepta-agentd/src/runtime.rs"
+    ],
+    "all_existing_caller_markers_and_protected_rows": true,
+    "checkers_unchanged": true,
+    "ignored_paths_unchanged": true,
+    "source_roots_unchanged": true,
+    "authorityGranted": false,
+    "ordinary_acceptance": false
+  }
+}

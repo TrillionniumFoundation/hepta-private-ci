@@ -1,0 +1,76 @@
+{
+  "source_ref": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "bindings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "source_blob": "3c799bf03fd99dea05f4905845e45c8bf9107627",
+      "bytes": 4400,
+      "sha256": "26156213658cf0b9bf2e0366308dc82b736348da802b5eeeebe55a7e57c62e0d",
+      "role": "Original C evidence callback and unchanged request/signature authentication"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "source_blob": "23e8989ebd2644947b15c80ab9c641a70767de99",
+      "bytes": 24081,
+      "sha256": "aa0ba3925f51d51217cfd37a50ae6b4f2bba88a9d5fdb5b1c91cf3975d11d70e",
+      "role": "Actual C current/readback predecessor bracketing"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "source_blob": "82dcc4191411c653b8a4f9c09ce879d918fc3601",
+      "bytes": 29826,
+      "sha256": "a4222aff8b59e550fb83543f3af1637a1c78a6715b706d77b4ec0da845d96eea",
+      "role": "Actual nested S evidence and original Trainer/current reads"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "source_blob": "7659699dbf3517e232bdab92449d4c86846fbece",
+      "bytes": 9926,
+      "sha256": "b9f6c508db0fd9be679132b6311091a49e238701306f4d660e83015d7897ccd2",
+      "role": "Original 500ms/300s, nonce correlation and one-channel retained read identity"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs",
+      "source_blob": "bec9a048b3a583811ea824dc8f02bafbed3b35da",
+      "bytes": 4648,
+      "sha256": "2610cc9136f5f7631f8452a9693ca707b1ad05ad037cd14a104e241b7e518920",
+      "role": "Original legacy/evaluated context and scope dispatch"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "source_blob": "f4c8b85909503ca1ca19c1b8345b6e753499d7a6",
+      "bytes": 14578,
+      "sha256": "2556b9e513f9cf4f9d07027e2f2636a53722d4b20d41e0f335651a6e42534002",
+      "role": "Original read request/response codec and context binding"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "source_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "bytes": 8089,
+      "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9",
+      "role": "Native committed Cell lookup and CURRENT checks"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "source_blob": "aaa5cdec33f71d30ba82313c5c46d1cdd137390a",
+      "bytes": 2565,
+      "sha256": "dafc0ad870c3402605c42bd79ac5da4983b04be7603ff80bda073e94e60d7333",
+      "role": "Same actual Source input/current/withdrawal reads"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "source_blob": "0efe1917606802d2d47ed5ceda10e581a7c803c5",
+      "bytes": 6682,
+      "sha256": "ed0569bbc5c818dd256b6a00283329c32a737822c4d2280cb00bb3f72b1bb852",
+      "role": "Immutable completed publication bytes; physical current witness and withdrawal"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "source_blob": "0169864d8a5743a1ce00eacf293392a118026d8d",
+      "bytes": 20803,
+      "sha256": "ec21b2dbf8322e171be194a96799334aa17a774d124dd6cfaae5272ef03d254a",
+      "role": "Previously failing original C command method kept unchanged"
+    }
+  ],
+  "scope": "Only fixed exact-source static inspection; no claim that the candidate has executed."
+}

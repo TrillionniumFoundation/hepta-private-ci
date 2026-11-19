@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn-colab-cleanup-diagnostic-v1",
+  "observed_error": "RELEASE_REQUIRES_FIXED_JOBS_STATE_DIRECTORY",
+  "launcher": {
+    "path": "/home/qian-qi/.local/share/hepta-colab/releases/20261107-d2d977949417/account_launcher.py",
+    "sha256": "13107f593c3e658aebc8e91e01aa8726f6aa8a2cc8c50c5f32afa308703e5d71"
+  },
+  "manager": {
+    "path": "/home/qian-qi/.local/share/hepta-colab/releases/20261107-d2d977949417/manage_colab.py",
+    "sha256": "32ce56fd3b193e204fd691326e28290e0ccff98d6b0e2a5f0c17996de4914598"
+  },
+  "facts": [
+    "Account launcher automatically supplies the configured jobs-state-dir for release.",
+    "The same launcher forbids caller overrides of jobs-state-dir and account identity.",
+    "Manager release requires jobs_state_dir already stored in the task's management record.",
+    "The create record lacks jobs_state_dir and bind failed with FIXED_RUNTIME_NOT_FOUND.",
+    "The release guard runs before assignment lookup, job inventory and provider unassign."
+  ],
+  "actions_not_taken": [
+    "No direct-manager invocation to override account routing",
+    "No fabricated management record",
+    "No further allocation",
+    "No cloud code submitted"
+  ],
+  "supported_release_help": "manage_colab.py release --key KEY --jobs-state-dir JOBS_STATE_DIR"
+}

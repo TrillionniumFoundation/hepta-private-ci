@@ -9,7 +9,13 @@ retries = 1
 path = "junit.xml"
 
 [profile.local]
-inherits = "default"
+# Nextest 0.9.103 inherits custom profiles from default implicitly.
+# The optional inherits key requires Nextest 0.9.115 or newer.
+
+[profile.local.junit]
+# Declare the output on the profile selected by `just test` explicitly, also
+# for CI's pinned Nextest 0.9.103. Missing reports must fail the collection gate.
+path = "junit.xml"
 
 [test-groups.app_server_protocol_codegen]
 max-threads = 1
@@ -21,6 +27,9 @@ max-threads = 1
 # on common developer machines.
 [test-groups.app_server_integration_local]
 max-threads = 4
+
+[test-groups.app_server_login_port]
+max-threads = 1
 
 [test-groups.core_apply_patch_cli_integration]
 max-threads = 1
@@ -49,6 +58,13 @@ test-group = 'app_server_protocol_codegen'
 # Keep the library unit tests parallel.
 filter = 'package(codex-app-server) & kind(test)'
 test-group = 'app_server_integration'
+
+[[profile.local.overrides]]
+# Nextest launches each case in its own process, so serial_test's process-local
+# login_port lock cannot protect the fixed callback port. Keep these six cases
+# mutually exclusive; other local app-server integration tests remain parallel.
+filter = 'package(codex-app-server) & kind(test) & (test(=suite::v2::account::login_account_chatgpt_start_can_be_cancelled) | test(=suite::v2::account::login_account_chatgpt_uses_debug_oauth_overrides) | test(=suite::v2::account::login_account_chatgpt_redirects_to_hosted_success_page) | test(=suite::v2::account::set_auth_token_cancels_active_chatgpt_login) | test(=suite::v2::account::login_account_chatgpt_includes_forced_workspace_query_param) | test(=suite::v2::account::login_account_chatgpt_includes_forced_workspace_allowlist_query_param))'
+test-group = 'app_server_login_port'
 
 [[profile.local.overrides]]
 # Use up to four app-server subprocesses locally. The global nextest pool still
@@ -93,6 +109,35 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 max-threads = 1
 
 [[profile.default.overrides]]
+# One new opt-in whole-cold case retains the original pidfds while the actual
+# 60s/300s writer leases retire, then bounds a new read-only phase to <=120s.
+# This eight-minute harness does not renew product deadlines or old signatures.
+filter = 'package(codex-hepta-agentd) & test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_completed_c_after_actual_daemon_and_root_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 16 }
+retries = 0
+
+[[profile.default.overrides]]
+# A separate evaluated-NoUpdate cold case completes real B evaluation,
+# retained-model CURRENT and C before the original lease retirement/read-only path.
+# This exact eight-minute harness changes no product deadline or signed window.
+filter = 'package(codex-hepta-agentd) & test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 16 }
+retries = 0
+
+[[profile.default.overrides]]
+# This opt-in qualification starts real companion windows and performs several
+# original SQLite writer close/reopen and acknowledged receipt transactions.
+# Keep every operation deadline and assertion; bound the complete durable run
+# separately from the ordinary 60-second unit-test watchdog. Never retry a
+# killed lifecycle automatically, because it owns real child processes.
+filter = 'package(codex-hepta-agentd) & test(notes_actual_app_crash_original_owner_reopen_and_helper_ack_restart)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 8 }
+retries = 0
+
+[[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 6 }
@@ -110,4 +155,26 @@ retries = 0
 filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_identity_and_domain_count_after_restart)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+# These scenarios install and verify real release binaries, then run multiple
+# separately bounded lifecycle phases. Serialize the complete scenarios and
+# bound their total workload independently of each original operation deadline.
+# A killed lifecycle owns child processes and must never retry automatically.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & (test(=five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash) | test(=two_real_pairs_restart_one_without_peer_pid_churn))'
+test-group = "hepta_durable_capacity"
+slow-timeout = { period = "30s", terminate-after = 12 }
+retries = 0
+
+# These two opt-in ordinary-main qualifications first wait for A's original
+# 60-second writer lease to retire, then execute the separately bounded post-A
+# learning and C lifecycles. The complete harness needs more than the default
+# 60-second watchdog; original product deadlines, evidence windows and request
+# limits remain unchanged. Serialize actual children and never retry a killed
+# lifecycle. This budget declares workload, not a qualification result.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & (test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_adopts_after_independent_b_and_executes_original_c) | test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c))'
+test-group = "hepta_durable_capacity"
+slow-timeout = { period = "30s", terminate-after = 12 }
 retries = 0

@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.evolve1.baseline-provenance.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+  "source_tree": "20f0836afc9c790fee23ddd150817a6d11550598",
+  "read_utc": "2026-11-08T10:13:51.587575+00:00",
+  "source_kind": "local copies verified against this-turn complete GitHub tree",
+  "destination": "/workspace/scratch/74b5227e66fe/evolve1-source",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "source_path": "/workspace/scratch/a975a8a1ce4f/source/AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "bytes": 22519,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/pyproject.toml",
+      "git_blob": "4340b6b78e83971e0032a7c90852f02791d3acbf",
+      "sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+      "bytes": 177,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/__init__.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/__init__.py",
+      "git_blob": "f17ea999869e5f16ed7b0c274a6da9a2651e8f6e",
+      "sha256": "cb8063131308ce06b535be86ae276281fa6c0cc0f21a1752f29d0c59018ef8a4",
+      "bytes": 77,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_improver.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/causal_improver.py",
+      "git_blob": "4a40adb5ee53d6e8614579de4bdd7acab11f5ac7",
+      "sha256": "d07e75fcfec61393427e138ed39ecfd0ec284ec6600364b889abd404d6b29ea0",
+      "bytes": 23492,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/_causal_checks.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/_causal_checks.py",
+      "git_blob": "40fd99815b6d5fa6bb0693e91e1cd45b4ab8f995",
+      "sha256": "c17c073a94cf29ba442926b2def9e52008b226c13658480f9110e29bc9aa410d",
+      "bytes": 1644,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_ace.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/causal_ace.py",
+      "git_blob": "d9ed004cc968170f6f12ee583411866aa0ff08a0",
+      "sha256": "09150a7722e76d116a5761927f9687ba53e7ec1fe7718bb364fd5a39dbad2c65",
+      "bytes": 8400,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/causal_composition.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/causal_composition.py",
+      "git_blob": "365d92b50332aab9d56a0cad0cd3b589dc6009de",
+      "sha256": "7735155426f12ff31fe31b453a7a29da9ca8e18b1e8593884dd0a0379895d90a",
+      "bytes": 15465,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ndu_real_runtime/test_causal_ace.py",
+      "source_path": "/workspace/scratch/cf0b0141e32e/candidate/scripts/ndu_real_runtime/test_causal_ace.py",
+      "git_blob": "b42ece02acb4c90109253d5a234b78e3757c2910",
+      "sha256": "bceb09f315d3abc17bad953a8eb030565952231538381699b544c10bbdaf18aa",
+      "bytes": 35520,
+      "mode": "100644"
+    }
+  ],
+  "no_changes_to": [
+    "evolve1.py",
+    "test_evolve1.py"
+  ],
+  "configuration": "scripts/pyproject.toml; no applicable nested AGENTS or ruff.toml in exact tree"
+}

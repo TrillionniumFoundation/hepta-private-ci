@@ -1,0 +1,29 @@
+{
+  "actual_inputs": {
+    "next-task": {
+      "mode": "conditional_binary",
+      "prompt": "Answer with only yes or no. Is 8517 greater than 8516?",
+      "request_id": "learning-common-e1c98-model-no-update-002-next-task"
+    },
+    "source-task": {
+      "mode": "conditional_binary",
+      "prompt": "Answer with only yes or no. Is 135 greater than 134?",
+      "request_id": "learning-common-e1c98-model-no-update-002-source-task"
+    }
+  },
+  "checkpoint_magic": "HEPLCP02",
+  "checkpoint_sha256": "2947cce5746080ab276959001e4170399b6f5351d61729196edfd5c4293a7733",
+  "evaluation_correct_recomputed": {
+    "candidate": 1,
+    "parent": 3
+  },
+  "evaluation_forward_calls_recomputed": 8,
+  "independent_confirmation_tasks": 0,
+  "inputs_equal_predeclared_plan_and_frozen": true,
+  "ordinary_daemon_task_loop": false,
+  "prior_tasks_and_outcomes_exposed": true,
+  "prompt_content_distinct": true,
+  "scientific_status": "HOLD",
+  "selected_adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+  "selected_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2"
+}

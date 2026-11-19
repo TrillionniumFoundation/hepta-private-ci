@@ -1,0 +1,37 @@
+{
+  "authority": "DENY_ALL",
+  "committed_optimizer_steps": 0,
+  "complete_local_report_bytes": 2070891,
+  "complete_local_report_sha256": "5e2e0526ef1b21614febe05f37e50bc9ecc3a8115a896a4e79bec2137bf16291",
+  "counts": {
+    "accepted_original": 24,
+    "accepted_trajectory_exact_replays": 24,
+    "certified": 24,
+    "not_executed_tangent_infeasible": 174,
+    "not_executed_unresolved": 19,
+    "original_exact_replays": 551,
+    "original_strict_safe": 24,
+    "original_strict_unsafe": 527,
+    "registered": 744,
+    "rejected": 527,
+    "v4_false_feasible": 149,
+    "v4_false_feasible_rejected": 149
+  },
+  "cpu_ns": 24231432466,
+  "false_certificates": 0,
+  "production_authority": false,
+  "protocol_sha256": "30880ddaae978f622cf6a99cf3888771daa954777e6f9ce2a75c25f01f166280",
+  "schema": "hepta.cell-field-v5-safety-development-census",
+  "scope": "all original V4 development pressure slots; no held-out retention or global feasibility claim",
+  "sealed_inputs_verified": 1420,
+  "source_sha256": {
+    "cell_field_safety_census_v5.py": "009691257276542490c6811779cd0636475c119b999ef97c94c01e20473c36a1",
+    "cell_field_safety_v5.py": "10391b4889f864f7c37a55033b64dd08e4386c7cbd62b3a36180e081f7238846"
+  },
+  "status": "passed",
+  "v4_seal_sha256": "9a3fdbd2e7f4d15cbffa2bcb7c95e80c2ec53e0ad79cbdc331fec5cf7b3bef9e",
+  "verification_cpu_ns": 21903480373,
+  "verified_optimizer_steps": 20504,
+  "wall_ns": 24236770077,
+  "withheld_label_hook_installed": true
+}

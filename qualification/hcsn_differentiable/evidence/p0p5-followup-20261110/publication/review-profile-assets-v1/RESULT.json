@@ -1,0 +1,535 @@
+{
+  "anonymous_release_after": {
+    "client_authorization_sent": false,
+    "http_status": "404",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "anonymous_release_before": {
+    "client_authorization_sent": false,
+    "http_status": "404",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+  },
+  "assets": [
+    {
+      "anonymous_asset_api": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732424083"
+      },
+      "anonymous_asset_browser": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip"
+      },
+      "asset_id": 732424083,
+      "authenticated_readback_sha256": "d882d080345c606ca8bff395db192a51da2f8b821db3d71eb6d7a529f3afda13",
+      "bytes": 16391589,
+      "disposition": "uploaded_once",
+      "name": "hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip",
+      "purpose": "first independent subset review; overall failed evidence retained",
+      "readback_verified": true,
+      "sha256": "d882d080345c606ca8bff395db192a51da2f8b821db3d71eb6d7a529f3afda13"
+    },
+    {
+      "anonymous_asset_api": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732425496"
+      },
+      "anonymous_asset_browser": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip"
+      },
+      "asset_id": 732425496,
+      "authenticated_readback_sha256": "ef4d8bbb5b72945410e39155728d2b0920d24c46c998b9f0192ab23cf322156d",
+      "bytes": 19356087,
+      "disposition": "uploaded_once",
+      "name": "hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip",
+      "purpose": "independent completed baseline36 plus seven C1 chains; not full42",
+      "readback_verified": true,
+      "sha256": "ef4d8bbb5b72945410e39155728d2b0920d24c46c998b9f0192ab23cf322156d"
+    },
+    {
+      "anonymous_asset_api": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732427307"
+      },
+      "anonymous_asset_browser": {
+        "client_authorization_sent": false,
+        "http_status": "404",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-native-attention-path-20261110-v1.zip"
+      },
+      "asset_id": 732427307,
+      "authenticated_readback_sha256": "22b564c4332cad619e9e4c7e26b11c479d49fd0b1287d2849d465d696c98216a",
+      "bytes": 763589,
+      "disposition": "uploaded_once",
+      "name": "hcsn-native-attention-path-20261110-v1.zip",
+      "purpose": "native trained attention checkpoint CPU FP64 forward/backward path; zero optimizer steps",
+      "readback_verified": true,
+      "sha256": "22b564c4332cad619e9e4c7e26b11c479d49fd0b1287d2849d465d696c98216a"
+    }
+  ],
+  "automatic_retry": false,
+  "children_cpu_seconds": 4.602256000000001,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci",
+        "--jq",
+        "{full_name: .full_name, private: .private}"
+      ],
+      "children_cpu_seconds": 0.163845,
+      "label": "repo-check",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "47b359ba396e2ac11e861c3fcaaa71d72565455f678e884bb71d7b96c576c761",
+      "wall_seconds": 1.9961644660215825
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.18791900000000003,
+      "label": "draft-initial",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "78fdb0cddb2ffc9bbc30f7b68390ad998148114cacf41e923fb32712449858d5",
+      "wall_seconds": 1.7111682898830622
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.10043499999999995,
+      "label": "anonymous-release-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 1.6284448611550033
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.174796,
+      "label": "asset-00-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "78fdb0cddb2ffc9bbc30f7b68390ad998148114cacf41e923fb32712449858d5",
+      "wall_seconds": 1.7256639800034463
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "upload",
+        "hcsn-research-20261110-c385",
+        "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci"
+      ],
+      "children_cpu_seconds": 0.31271099999999996,
+      "label": "asset-00-upload",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 11.027838709997013
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.18636500000000011,
+      "label": "asset-00-after",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0fea7c5b979ca0683f86b11f7cd1e3c27c1d2ed5ab8762bc1b1a8affa9ef8469",
+      "wall_seconds": 1.4666513409465551
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "download",
+        "hcsn-research-20261110-c385",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci",
+        "--pattern",
+        "hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip",
+        "--dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/review-profile-evidence-upload-v1/authenticated-readback"
+      ],
+      "children_cpu_seconds": 0.5490170000000002,
+      "label": "asset-00-download",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 8.32809739280492
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732424083"
+      ],
+      "children_cpu_seconds": 0.091773,
+      "label": "asset-00-anonymous-api",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 1.6366761249955744
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hepta-hcsn-independent-baseline36-c1-20261110-c385-v1.zip"
+      ],
+      "children_cpu_seconds": 0.08637300000000003,
+      "label": "asset-00-anonymous-browser",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 2.4200357939116657
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.18665999999999994,
+      "label": "asset-01-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "0fea7c5b979ca0683f86b11f7cd1e3c27c1d2ed5ab8762bc1b1a8affa9ef8469",
+      "wall_seconds": 1.7230385548900813
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "upload",
+        "hcsn-research-20261110-c385",
+        "/home/qian-qi/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci"
+      ],
+      "children_cpu_seconds": 0.3061950000000001,
+      "label": "asset-01-upload",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 9.591953441035002
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.17990399999999984,
+      "label": "asset-01-after",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a913a0a0d427efd86da3917a147a0c7e4229e9e408d1b496658fde9b1ff95857",
+      "wall_seconds": 1.7148803409654647
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "download",
+        "hcsn-research-20261110-c385",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci",
+        "--pattern",
+        "hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip",
+        "--dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/review-profile-evidence-upload-v1/authenticated-readback"
+      ],
+      "children_cpu_seconds": 0.579937,
+      "label": "asset-01-download",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 8.55008669802919
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732425496"
+      ],
+      "children_cpu_seconds": 0.07095500000000021,
+      "label": "asset-01-anonymous-api",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 1.3776152869686484
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hepta-hcsn-independent-baseline36-c1-20261110-c385-v2.zip"
+      ],
+      "children_cpu_seconds": 0.09833800000000004,
+      "label": "asset-01-anonymous-browser",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 2.9269684061873704
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.16014600000000012,
+      "label": "asset-02-before",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a913a0a0d427efd86da3917a147a0c7e4229e9e408d1b496658fde9b1ff95857",
+      "wall_seconds": 1.7327815708704293
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "upload",
+        "hcsn-research-20261110-c385",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/review-profile-evidence-upload-v1/hcsn-native-attention-path-20261110-v1.zip",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci"
+      ],
+      "children_cpu_seconds": 0.25428399999999973,
+      "label": "asset-02-upload",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 10.945505566895008
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.1719299999999997,
+      "label": "asset-02-after",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "90fb525ec622267173c6c8385f6e1c72542fa251ed8c71eae7183ae8b73c8716",
+      "wall_seconds": 1.4840137239079922
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "release",
+        "download",
+        "hcsn-research-20261110-c385",
+        "--repo",
+        "TrillionniumFoundation/hepta-private-ci",
+        "--pattern",
+        "hcsn-native-attention-path-20261110-v1.zip",
+        "--dir",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/review-profile-evidence-upload-v1/authenticated-readback"
+      ],
+      "children_cpu_seconds": 0.2653810000000003,
+      "label": "asset-02-download",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 7.09796582814306
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/assets/732427307"
+      ],
+      "children_cpu_seconds": 0.09277499999999961,
+      "label": "asset-02-anonymous-api",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 1.6487339618615806
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/releases/download/untagged-0807e6b5e132bde20abf/hcsn-native-attention-path-20261110-v1.zip"
+      ],
+      "children_cpu_seconds": 0.0976309999999998,
+      "label": "asset-02-anonymous-browser",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 2.4738797950558364
+    },
+    {
+      "argv": [
+        "/usr/bin/gh",
+        "api",
+        "repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.1850080000000005,
+      "label": "draft-final",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "90fb525ec622267173c6c8385f6e1c72542fa251ed8c71eae7183ae8b73c8716",
+      "wall_seconds": 1.9897735980339348
+    },
+    {
+      "argv": [
+        "/usr/bin/curl",
+        "--disable",
+        "--silent",
+        "--show-error",
+        "--location",
+        "--max-time",
+        "60",
+        "--output",
+        "/dev/null",
+        "--write-out",
+        "%{http_code}",
+        "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/releases/440410488"
+      ],
+      "children_cpu_seconds": 0.0998780000000008,
+      "label": "anonymous-release-after",
+      "returncode": 0,
+      "status": "completed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "6b3c238ebcf1f3c07cf0e556faa82c6b8fe96840ff4b6b7e9962a2d855843a0b",
+      "wall_seconds": 1.6313824618700892
+    }
+  ],
+  "cost_scope": "controller wall includes profile packaging, validation and network waits; own/child CPU separate; command wall and package wall are overlapping subsets",
+  "driver_sha256": "abe42cdd0233b55d0836180ce5aabd8e27eeb46117b7167a8856778370f9b1fc",
+  "finished_utc": "2026-11-10T18:06:57.000281+00:00",
+  "overwrite_existing_assets": false,
+  "own_cpu_seconds": 0.7581342310000001,
+  "profile_archive": {
+    "all_member_sha_and_crc_verified": true,
+    "bytes": 763589,
+    "members": 55,
+    "name": "hcsn-native-attention-path-20261110-v1.zip",
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/review-profile-evidence-upload-v1/hcsn-native-attention-path-20261110-v1.zip",
+    "scope": "operator path evidence; no speed/energy superiority credit",
+    "sha256": "22b564c4332cad619e9e4c7e26b11c479d49fd0b1287d2849d465d696c98216a",
+    "source_unchanged": true,
+    "wall_seconds": 0.19332305598072708
+  },
+  "publish_requested": false,
+  "release_id": 440410488,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_readback": {
+    "full_name": "TrillionniumFoundation/hepta-private-ci",
+    "private": false
+  },
+  "schema": "hcsn-review-profile-draft-assets-v1",
+  "scientific_admission": "HOLD",
+  "started_utc": "2026-11-10T18:05:29.440257+00:00",
+  "status": "three_assets_uploaded_full_byte_verified_draft_unchanged",
+  "whole_controller_wall_seconds": 87.56026838184334
+}

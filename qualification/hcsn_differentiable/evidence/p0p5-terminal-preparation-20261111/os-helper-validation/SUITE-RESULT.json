@@ -1,0 +1,126 @@
+{
+  "cases": [
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_01_normal_exit",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_01_normal_exit/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.09000587800073845
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_02_nonzero_exit",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_02_nonzero_exit/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.07841165900026681
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_03_timeout_kill_reap",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_03_timeout_kill_reap/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.17288018399995053
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_04_RSS_kill_reap",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_04_RSS_kill_reap/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.11139089500011323
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_05_detached_grandchild",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_05_detached_grandchild/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.19443699000021297
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_06_immediate_orphan_adoption",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_06_immediate_orphan_adoption/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.1256776069994885
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_07_final_observation_unreadable",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_07_final_observation_unreadable/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.11495415500030504
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [
+          17
+        ],
+        "remaining_original_identities": [],
+        "wait4": [
+          {
+            "CPU_seconds": 0.019853,
+            "peak_RSS_bytes": 8519680,
+            "pid": 17,
+            "returncode": -9
+          }
+        ]
+      },
+      "name": "test_08_residual_child_refused",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_08_residual_child_refused/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.3477743850007755
+    },
+    {
+      "external_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "name": "test_09_expired_start_deadline",
+      "original_observe_file": "/workspace/scratch/c385a7439f8e/os-helper-validation-v3/attempt-01/output/worker/test_09_expired_start_deadline/OBSERVE-ORIGINAL.json",
+      "whole_case_wall_seconds": 0.005049055999734264
+    }
+  ],
+  "confirmation_E_access": false,
+  "errors": 0,
+  "failures": 0,
+  "model_imports": 0,
+  "native_operator_calls": 0,
+  "old_lost_test_credit_inherited": false,
+  "passed": true,
+  "production_supervisor_invoked": false,
+  "schema": "new-os-helper-lifecycle-validation-v3",
+  "source_sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6",
+  "source_unchanged": true,
+  "tests_run": 9,
+  "training_steps": 0,
+  "whole_worker_body_wall_seconds": 1.2621847250002247
+}

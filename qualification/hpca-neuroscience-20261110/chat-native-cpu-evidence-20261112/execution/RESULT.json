@@ -1,0 +1,535 @@
+{
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "cost": {
+    "cpu_seconds": 30.159778851,
+    "model_download_wall_seconds": 0.11751531600020826,
+    "peak_rss_kib": 1212268,
+    "wall_seconds": 8.346809688024223
+  },
+  "cost_excluded": [
+    "CI setup and queue",
+    "power",
+    "Owner lifecycle"
+  ],
+  "finished_utc": "2026-11-12T04:45:11.610159+00:00",
+  "head": "4669280bd92804e6b5357ec0d8a27197858a5b6a",
+  "journal_sha256": "9c4dc311c45b22a179d000edbb7f994b58bd9e3e9c1246a60f26303861a19ef7",
+  "preexecution_sha256": "10a68d75e5608b494977eb8d2d923fe908fa74c18e2e0ebd40cb93f39c839d3e",
+  "rows": [
+    {
+      "correct": false,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-01",
+      "inference_wall_seconds": 0.284990297164768,
+      "parsed": null,
+      "text": "12 is greater than 9.",
+      "tokens": [
+        33,
+        34,
+        314,
+        2852,
+        670,
+        216,
+        41,
+        30
+      ],
+      "truth": "yes",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-02",
+      "inference_wall_seconds": 0.28439353010617197,
+      "parsed": null,
+      "text": "To determine if 3 times 4",
+      "tokens": [
+        2068,
+        3346,
+        585,
+        216,
+        35,
+        1711,
+        216,
+        36
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-03",
+      "inference_wall_seconds": 0.2837234251201153,
+      "parsed": null,
+      "text": "100 is not divisible by ",
+      "tokens": [
+        33,
+        32,
+        32,
+        314,
+        441,
+        46522,
+        411,
+        216
+      ],
+      "truth": "yes",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-04",
+      "inference_wall_seconds": 0.2874756830278784,
+      "parsed": null,
+      "text": "21 is not an even integer.",
+      "tokens": [
+        34,
+        33,
+        314,
+        441,
+        354,
+        908,
+        15328,
+        30
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": true,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-05",
+      "inference_wall_seconds": 0.2812512300442904,
+      "parsed": "yes",
+      "text": "Yes, 2 plus 2 equals",
+      "tokens": [
+        10539,
+        28,
+        216,
+        34,
+        8055,
+        216,
+        34,
+        16473
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "arithmetic",
+      "first_eos": false,
+      "id": "arithmetic-06",
+      "inference_wall_seconds": 0.2811272859107703,
+      "parsed": null,
+      "text": "8 is not a prime number. A",
+      "tokens": [
+        40,
+        314,
+        441,
+        253,
+        9552,
+        1230,
+        30,
+        330
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-01",
+      "inference_wall_seconds": 0.27729900111444294,
+      "parsed": null,
+      "text": "A tulip is a type of flower",
+      "tokens": [
+        49,
+        31083,
+        508,
+        314,
+        253,
+        1502,
+        282,
+        8525
+      ],
+      "truth": "yes",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-02",
+      "inference_wall_seconds": 0.27632696903310716,
+      "parsed": null,
+      "text": "A sofa is a type of outdoor",
+      "tokens": [
+        49,
+        588,
+        12155,
+        314,
+        253,
+        1502,
+        282,
+        9849
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-03",
+      "inference_wall_seconds": 0.2761689550243318,
+      "parsed": "no",
+      "text": "No, a triangle does not have three",
+      "tokens": [
+        5230,
+        28,
+        253,
+        14973,
+        1072,
+        441,
+        457,
+        1296
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-04",
+      "inference_wall_seconds": 0.27585752704180777,
+      "parsed": null,
+      "text": "Penguins are indeed classified as birds,",
+      "tokens": [
+        64,
+        24860,
+        359,
+        6392,
+        9827,
+        347,
+        4255,
+        28
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-05",
+      "inference_wall_seconds": 0.27313549094833434,
+      "parsed": null,
+      "text": "Copper is indeed a metal. It",
+      "tokens": [
+        36879,
+        456,
+        314,
+        6392,
+        253,
+        4718,
+        30,
+        657
+      ],
+      "truth": "yes",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "taxonomy",
+      "first_eos": false,
+      "id": "taxonomy-06",
+      "inference_wall_seconds": 0.28124518087133765,
+      "parsed": null,
+      "text": "Granite is a solid, crystalline",
+      "tokens": [
+        55,
+        3347,
+        663,
+        314,
+        253,
+        4367,
+        28,
+        28638
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": true,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-01",
+      "inference_wall_seconds": 0.2793706839438528,
+      "parsed": "no",
+      "text": "No, it is not false that every",
+      "tokens": [
+        5230,
+        28,
+        357,
+        314,
+        441,
+        7065,
+        338,
+        897
+      ],
+      "truth": "no",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-02",
+      "inference_wall_seconds": 0.2780719541478902,
+      "parsed": null,
+      "text": "11 is not a composite number.",
+      "tokens": [
+        33,
+        33,
+        314,
+        441,
+        253,
+        15674,
+        1230,
+        30
+      ],
+      "truth": "yes",
+      "valid": false
+    },
+    {
+      "correct": true,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-03",
+      "inference_wall_seconds": 0.28598371194675565,
+      "parsed": "no",
+      "text": "No, it is not false that ",
+      "tokens": [
+        5230,
+        28,
+        357,
+        314,
+        441,
+        7065,
+        338,
+        216
+      ],
+      "truth": "no",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-04",
+      "inference_wall_seconds": 0.2792331001255661,
+      "parsed": "no",
+      "text": "No, it is not false that ",
+      "tokens": [
+        5230,
+        28,
+        357,
+        314,
+        441,
+        7065,
+        338,
+        216
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": true,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-05",
+      "inference_wall_seconds": 0.28286298201419413,
+      "parsed": "no",
+      "text": "No, it is not false. A",
+      "tokens": [
+        5230,
+        28,
+        357,
+        314,
+        441,
+        7065,
+        30,
+        330
+      ],
+      "truth": "no",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "negation",
+      "first_eos": false,
+      "id": "negation-06",
+      "inference_wall_seconds": 0.28363524307496846,
+      "parsed": "no",
+      "text": "No, it is not false. A",
+      "tokens": [
+        5230,
+        28,
+        357,
+        314,
+        441,
+        7065,
+        30,
+        330
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": true,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-01",
+      "inference_wall_seconds": 0.28646836383268237,
+      "parsed": "no",
+      "text": "No, a blip cannot be red",
+      "tokens": [
+        5230,
+        28,
+        253,
+        754,
+        508,
+        2526,
+        325,
+        2382
+      ],
+      "truth": "no",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-02",
+      "inference_wall_seconds": 0.2830825028941035,
+      "parsed": "no",
+      "text": "No, turning the switch on and then",
+      "tokens": [
+        5230,
+        28,
+        6939,
+        260,
+        6261,
+        335,
+        284,
+        965
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": true,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-03",
+      "inference_wall_seconds": 0.2868207909632474,
+      "parsed": "no",
+      "text": "No, 1 is not greater than",
+      "tokens": [
+        5230,
+        28,
+        216,
+        33,
+        314,
+        441,
+        2852,
+        670
+      ],
+      "truth": "no",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-04",
+      "inference_wall_seconds": 0.2838705228641629,
+      "parsed": "no",
+      "text": "No, the box does not hold ",
+      "tokens": [
+        5230,
+        28,
+        260,
+        3985,
+        1072,
+        441,
+        2205,
+        216
+      ],
+      "truth": "yes",
+      "valid": true
+    },
+    {
+      "correct": false,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-05",
+      "inference_wall_seconds": 0.29140628688037395,
+      "parsed": null,
+      "text": "To determine if the minute value is still",
+      "tokens": [
+        2068,
+        3346,
+        585,
+        260,
+        8427,
+        1685,
+        314,
+        1361
+      ],
+      "truth": "no",
+      "valid": false
+    },
+    {
+      "correct": false,
+      "family": "conditional",
+      "first_eos": false,
+      "id": "conditional-06",
+      "inference_wall_seconds": 0.2852323530241847,
+      "parsed": "no",
+      "text": "No, the sets do not contain four",
+      "tokens": [
+        5230,
+        28,
+        260,
+        5208,
+        536,
+        441,
+        2127,
+        1876
+      ],
+      "truth": "yes",
+      "valid": true
+    }
+  ],
+  "schema": "HPCA-CHAT-WRAPPER-PUBLIC-RESULT-1",
+  "scope": "ONE public-task output-format diagnostic, NOT HPCA gain, future B, or production",
+  "started_utc": "2026-11-12T04:45:03.263312+00:00",
+  "summary": {
+    "correct": 6,
+    "first_eos": 0,
+    "independent_future": 0,
+    "n": 24,
+    "valid": 12
+  },
+  "tree": "d78b935a2f5abe1273dced958460c7a3e23ddea6"
+}

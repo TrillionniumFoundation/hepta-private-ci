@@ -1,0 +1,592 @@
+{
+  "schema": "hepta.ci-checkpoint.v1",
+  "generated_utc": "2026-10-21T01:31:15.005731+00:00",
+  "directory": "/workspace/scratch/337c309bc660/hepta-audit/checkpoint-stage/ci",
+  "max_file_bytes_exclusive": 400000,
+  "payload_files": 68,
+  "payload_bytes": 692838,
+  "files": [
+    {
+      "path": "RAW_OMISSIONS.json",
+      "bytes": 36672,
+      "sha256": "2c6eb85206e4cf35d41400fe06586098bca0205ef0a277e92facb756943614fa",
+      "sources": [],
+      "transformation": "File inventory with exact checksums; omissions are explicit, not truncated evidence."
+    },
+    {
+      "path": "README.md",
+      "bytes": 1995,
+      "sha256": "1770219fa6248b7df5fc23be0f7533ef6453854780731739af72db978ec1a000",
+      "sources": [],
+      "transformation": "Handoff scope and navigation authored from included evidence."
+    },
+    {
+      "path": "base-identity/base-identity-2968.json",
+      "bytes": 2030,
+      "sha256": "4da58d4041c8946104378d614b933220b5a7cb83171c209f9caeb0d072b2c705",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/base-identity-2968.json",
+      "source_sha256": "4da58d4041c8946104378d614b933220b5a7cb83171c209f9caeb0d072b2c705",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "base-identity/job-118980327865.log",
+      "bytes": 22054,
+      "sha256": "0d1fe1d83be91707b981c6009a9a684cf70029f4b5345105938ce16c5dfd1449",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/job-118980327865.log",
+      "source_sha256": "0d1fe1d83be91707b981c6009a9a684cf70029f4b5345105938ce16c5dfd1449",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/cargo-deny-2968-offline.log",
+      "bytes": 1033,
+      "sha256": "dc72f7b2dba122cef1f1961ddee068633b302e9aea706e7d6818d904398c6626",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-2968-offline.log",
+      "source_sha256": "dc72f7b2dba122cef1f1961ddee068633b302e9aea706e7d6818d904398c6626",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/cargo-deny-2968-online.log",
+      "bytes": 75401,
+      "sha256": "a34f7aade1bb9e2d68f881b24e5e4a275c9247a45f2a3c9133d861afc78360ef",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-2968-online.log",
+      "source_sha256": "a34f7aade1bb9e2d68f881b24e5e4a275c9247a45f2a3c9133d861afc78360ef",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/cargo-deny-2968-paths.json",
+      "bytes": 15925,
+      "sha256": "661049ca541ce6a8c3b8dc1f227fef0620d0071a40513c50d268ad87f13fa1e1",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-2968-paths.json",
+      "source_sha256": "661049ca541ce6a8c3b8dc1f227fef0620d0071a40513c50d268ad87f13fa1e1",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/cargo-deny-2968-source.json",
+      "bytes": 414,
+      "sha256": "4dd6de7a90c2e5e73aa803da93860ede369fe4722dd7479f9f994790225f9f01",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-2968-source.json",
+      "source_sha256": "4dd6de7a90c2e5e73aa803da93860ede369fe4722dd7479f9f994790225f9f01",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/cargo-deny-cache-cleanup.json",
+      "bytes": 586,
+      "sha256": "c8f96b4a628c1aa11b093e7431eb2cb8b2e94dea68f5363869d029cfdae0a4d6",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/cargo-deny-cache-cleanup.json",
+      "source_sha256": "c8f96b4a628c1aa11b093e7431eb2cb8b2e94dea68f5363869d029cfdae0a4d6",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0370.md",
+      "bytes": 655,
+      "sha256": "55991b6a4484c3541c8091cb16cf7446c8610de09ac642ab3ff88c332e394bf0",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0370.md",
+      "source_sha256": "55991b6a4484c3541c8091cb16cf7446c8610de09ac642ab3ff88c332e394bf0",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0371.md",
+      "bytes": 563,
+      "sha256": "3e618914dab3ef0d6d2434f42ac8aa1947cb1738fd156b4f0092d6c7ad53b394",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0371.md",
+      "source_sha256": "3e618914dab3ef0d6d2434f42ac8aa1947cb1738fd156b4f0092d6c7ad53b394",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0372.md",
+      "bytes": 566,
+      "sha256": "e03677b3351db11984e2fd3bd839b6368cfc3a93aca08c4401980264b228635d",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0372.md",
+      "source_sha256": "e03677b3351db11984e2fd3bd839b6368cfc3a93aca08c4401980264b228635d",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0374.md",
+      "bytes": 450,
+      "sha256": "4817464e71fb0162eed7b2f931c4bcb813b8772c25c97bc2f63b4e0bd65d7766",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0374.md",
+      "source_sha256": "4817464e71fb0162eed7b2f931c4bcb813b8772c25c97bc2f63b4e0bd65d7766",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0381.md",
+      "bytes": 835,
+      "sha256": "71e69321b86b520406ff2bb529bc3abfaed7493a12712b0eb38dc2c360878d81",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0381.md",
+      "source_sha256": "71e69321b86b520406ff2bb529bc3abfaed7493a12712b0eb38dc2c360878d81",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0382.md",
+      "bytes": 829,
+      "sha256": "525ad607d24f67fd22a20e70b28b3962a9039962340e3ad1f351c9611772e671",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0382.md",
+      "source_sha256": "525ad607d24f67fd22a20e70b28b3962a9039962340e3ad1f351c9611772e671",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/RUSTSEC-2026-0383.md",
+      "bytes": 840,
+      "sha256": "af2d2e9bf768767b647eb192c50099f9d78e4a8330d5e7d6c7c3cd8e894f3682",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/RUSTSEC-2026-0383.md",
+      "source_sha256": "af2d2e9bf768767b647eb192c50099f9d78e4a8330d5e7d6c7c3cd8e894f3682",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/rustsec-inputs/database-commit.txt",
+      "bytes": 207,
+      "sha256": "62885d9a73c2dee7492d5d2a03eef4f5fda5a44b2225a6395fcc4f8d5a6770ad",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rustsec-inputs/database-commit.txt",
+      "source_sha256": "62885d9a73c2dee7492d5d2a03eef4f5fda5a44b2225a6395fcc4f8d5a6770ad",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "cargo-deny/tls-cargo-deny-after.log",
+      "bytes": 71651,
+      "sha256": "5fe4a7d2d997fcbf4062e488b2353897e08b05f5a0de95b693ff1dc50f4fefca",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-cargo-deny-after.log",
+      "source_sha256": "5fe4a7d2d997fcbf4062e488b2353897e08b05f5a0de95b693ff1dc50f4fefca",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/CI_AUDIT.md",
+      "bytes": 10068,
+      "sha256": "00ccb10d21af0499d5e943f648c683c82cc0e898ba3de087c69355ec8527a644",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/CI_AUDIT.md",
+      "source_sha256": "00ccb10d21af0499d5e943f648c683c82cc0e898ba3de087c69355ec8527a644",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/EVIDENCE_MANIFEST.json",
+      "bytes": 8471,
+      "sha256": "47f45229c813785e3de3c4556cf0bed5c2cf99debf4713674d47465520cb2876",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/EVIDENCE_MANIFEST.json",
+      "source_sha256": "47f45229c813785e3de3c4556cf0bed5c2cf99debf4713674d47465520cb2876",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/actions_runners_per_page_100_page_1.json",
+      "bytes": 538,
+      "sha256": "aa0c669e7e2776852ca6b5297fe43c7654dba6fe64c997fe6ff58b38fa2b8a11",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/actions_runners_per_page_100_page_1.json",
+      "source_sha256": "aa0c669e7e2776852ca6b5297fe43c7654dba6fe64c997fe6ff58b38fa2b8a11",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/backlog-compact.json",
+      "bytes": 167976,
+      "sha256": "0064ed025d824556b2432d7017a4b3b118860c6e5c33520abdbcea9de67dfbef",
+      "sources": [
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/live-backlog-snapshot.json",
+          "sha256": "1af8c1ea726d80cb42bd021fe8c4ea9bc246d61863e0069b6c9b7c7f6338b19d"
+        }
+      ],
+      "transformation": "All8 responses/pagination counts and all deduplicated run identity/status/timestamp/URL fields retained; repeated actors/repositories/checksuite metadata omitted."
+    },
+    {
+      "path": "initial/branches_main.json",
+      "bytes": 5206,
+      "sha256": "d6a9d124d59081d40f3617716e3a9ccc3d0751c3bc5645e8b5c3ef0afcd03011",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/branches_main.json",
+      "source_sha256": "d6a9d124d59081d40f3617716e3a9ccc3d0751c3bc5645e8b5c3ef0afcd03011",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/branches_main_protection.json",
+      "bytes": 924,
+      "sha256": "cb1cb3776d82c07d1b64b79817ce678cf056e928f01598d9832aed27483ea58f",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/branches_main_protection.json",
+      "source_sha256": "cb1cb3776d82c07d1b64b79817ce678cf056e928f01598d9832aed27483ea58f",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/failure-excerpts.json",
+      "bytes": 121202,
+      "sha256": "6ca923e9069d7864ff77b32eabca1f375dd53ec9fc0fb0460efa30d6ccea2ac7",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/failure-excerpts.json",
+      "source_sha256": "6ca923e9069d7864ff77b32eabca1f375dd53ec9fc0fb0460efa30d6ccea2ac7",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/pr-identities.json",
+      "bytes": 9022,
+      "sha256": "2c1fda116c73f965b9089f21afe09d45a5f7a7db4055c0237bdf2c3e7cf2012d",
+      "sources": [
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2917.json",
+          "sha256": "8463a5cf9a643c8e72d37d56827ed2a216c02a7acda4d0faf419398bb3a85e55"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2918.json",
+          "sha256": "3e58d7a49edbf2a7397e132259f1225d0b31fbb89846fac60b481406a6bdcf4d"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2919.json",
+          "sha256": "ee16cd077ffbe802e5943dd4a53eb88fa0990492a697baf6b66e3ab0f91a6da4"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2943.json",
+          "sha256": "53d6de80fd12deded8c83105121bfd9a59a9b846571f01307eacc3bacddd47f2"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2944.json",
+          "sha256": "1a48aada3b16617b2109eb47899c200df65d97b54f193d8f2fef1cfd77e29fed"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2945.json",
+          "sha256": "0cb6ae198aa236c3edd8fa5ff7841c3e93dfcc38a42d9d9590773723653ef6ab"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2964.json",
+          "sha256": "21be927f5f54e35dc0071beec5608cbeb5b86f43137c2783c5802526b3af9c8b"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2965.json",
+          "sha256": "04ff0294886f98a78e40ca84c035867be1ab516935a04c7f5287502a5ed73878"
+        },
+        {
+          "path": "/workspace/scratch/337c309bc660/hepta-audit/ci/pulls_2967.json",
+          "sha256": "9d69877d43884e0b9e12fdb376b7baf7d5b436d3e5ebc8ca05b40537024a683d"
+        }
+      ],
+      "transformation": "Selected immutable identity/mergeability fields; PR bodies and repeated user/repository objects omitted."
+    },
+    {
+      "path": "initial/rulesets_per_page_100.json",
+      "bytes": 102,
+      "sha256": "46ebd35b2c7c10c6222f7bdb0adcf451d855f8ab21c65cc2edeefceb8bae28e2",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/rulesets_per_page_100.json",
+      "source_sha256": "46ebd35b2c7c10c6222f7bdb0adcf451d855f8ab21c65cc2edeefceb8bae28e2",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "initial/selected-job-counts.json",
+      "bytes": 1481,
+      "sha256": "857a753c6a80154ef8acd1aeff6630dfc71cb9ae65094c4f0c721b4c0b2ce7f0",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/selected-job-counts.json",
+      "source_sha256": "857a753c6a80154ef8acd1aeff6630dfc71cb9ae65094c4f0c721b4c0b2ce7f0",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin-boundaries.json",
+      "bytes": 2383,
+      "sha256": "a5bfe50851a6cebeeb4a7eaf807ccfaab18baa102140a50c86801b08336f8ee7",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/bazel-cargo-bin-boundaries.json",
+      "source_sha256": "a5bfe50851a6cebeeb4a7eaf807ccfaab18baa102140a50c86801b08336f8ee7",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin-clippy.log",
+      "bytes": 731,
+      "sha256": "f676028a4d127ae938a2f187db98ace591df6ccf9c6cb6d7183b8d74741072c2",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/bazel-cargo-bin-clippy.log",
+      "source_sha256": "f676028a4d127ae938a2f187db98ace591df6ccf9c6cb6d7183b8d74741072c2",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/bazel-cargo-bin-fmt.log",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin-green.log",
+      "bytes": 1592,
+      "sha256": "8f61c210b750c6a57a128a293d704d7968bdbb4e91a2eb2158d2b75730633a6f",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/bazel-cargo-bin-green.log",
+      "source_sha256": "8f61c210b750c6a57a128a293d704d7968bdbb4e91a2eb2158d2b75730633a6f",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin-red.log",
+      "bytes": 5139,
+      "sha256": "0bf111e9703abf6f3dd7ea6203a7fbebab999e5caef42aaa8a280ada5b592a4c",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/bazel-cargo-bin-red.log",
+      "source_sha256": "0bf111e9703abf6f3dd7ea6203a7fbebab999e5caef42aaa8a280ada5b592a4c",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/bazel-cargo-bin.patch",
+      "bytes": 3139,
+      "sha256": "d23089ec6928044766f7936731190fe71421529d51a74be06af70bd4c4d08cdd",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/bazel-cargo-bin.patch",
+      "source_sha256": "d23089ec6928044766f7936731190fe71421529d51a74be06af70bd4c4d08cdd",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/cargo-bin-validation.json",
+      "bytes": 1650,
+      "sha256": "beda57ac348597ee1b9ffe6524fdd5f5f3ed790ccad0b2eb6698cbfdc982f14a",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/validation.json",
+      "source_sha256": "beda57ac348597ee1b9ffe6524fdd5f5f3ed790ccad0b2eb6698cbfdc982f14a",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/index-trust-independent-review.json",
+      "bytes": 702,
+      "sha256": "5c6f59de2ba4fe00942a21b2acc4d39f60b2f9a3f2e10bc668c199a8f5dd3a59",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/index-trust-independent-review.json",
+      "source_sha256": "5c6f59de2ba4fe00942a21b2acc4d39f60b2f9a3f2e10bc668c199a8f5dd3a59",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/index-trust-independent-review.log",
+      "bytes": 973,
+      "sha256": "a65eedf4f24ca151bfd85be60be97e93cd230bef3475e7a746e02ddebbd90cb6",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/index-trust-independent-review.log",
+      "source_sha256": "a65eedf4f24ca151bfd85be60be97e93cd230bef3475e7a746e02ddebbd90cb6",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/index-trust-validation.json",
+      "bytes": 3131,
+      "sha256": "38fa35a0d412b91a8702be7aeb1ae0820b82b55f178f0e5e97ee21f282f4fd36",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/index-trust-wave/validation.json",
+      "source_sha256": "38fa35a0d412b91a8702be7aeb1ae0820b82b55f178f0e5e97ee21f282f4fd36",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/index-trust.patch",
+      "bytes": 7684,
+      "sha256": "e492b567d28e11621a1201003daff8a716d4448969d9bc20590605f89e69608c",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/index-trust-wave/index-trust.patch",
+      "source_sha256": "e492b567d28e11621a1201003daff8a716d4448969d9bc20590605f89e69608c",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/replace-ref-identity.patch",
+      "bytes": 5894,
+      "sha256": "a768d104f2080b25e5bd329b7332b7d97d090cd85b6fa4aa07c1d8c23593488c",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/replace-ref-identity.patch",
+      "source_sha256": "a768d104f2080b25e5bd329b7332b7d97d090cd85b6fa4aa07c1d8c23593488c",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/replace-ref-negative-control.json",
+      "bytes": 1654,
+      "sha256": "2a415fdff96ad3ed06dbec8cf3750691e643754188371d22bf30b690c24cb591",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/replace-ref-negative-control.json",
+      "source_sha256": "2a415fdff96ad3ed06dbec8cf3750691e643754188371d22bf30b690c24cb591",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/replace-ref-validation.json",
+      "bytes": 820,
+      "sha256": "4063e09ce6df2dcb304a7e3bc65c79a23f570e6014c54098d64ded021e71e8c6",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/validation.json",
+      "source_sha256": "4063e09ce6df2dcb304a7e3bc65c79a23f570e6014c54098d64ded021e71e8c6",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/replace-regressions-green.log",
+      "bytes": 4444,
+      "sha256": "874b3c82194171686a80e4e23bbbd38639f04902c3ca6963c0ff60fe307f100e",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/replace-regressions-green.log",
+      "source_sha256": "874b3c82194171686a80e4e23bbbd38639f04902c3ca6963c0ff60fe307f100e",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "p0-fixes/replace-regressions-red.log",
+      "bytes": 8625,
+      "sha256": "08c4b3d4df997b8059fe21e9d78b3340d8019dc56b021496fe42feb7aaad7f31",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/replace-regressions-red.log",
+      "source_sha256": "08c4b3d4df997b8059fe21e9d78b3340d8019dc56b021496fe42feb7aaad7f31",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/TLS_REMEDIATION.md",
+      "bytes": 10970,
+      "sha256": "103e7effee287b5dd56ab8ee79a8261a0333e38aee12c9284eede9ac623dc253",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/TLS_REMEDIATION.md",
+      "source_sha256": "103e7effee287b5dd56ab8ee79a8261a0333e38aee12c9284eede9ac623dc253",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/bazel-fetch-v8.json",
+      "bytes": 565,
+      "sha256": "72fd66001db027196efd2d26a2a13e9e257621e8969bb807c0d4c7fe3c8e440e",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-fetch-v8.json",
+      "source_sha256": "72fd66001db027196efd2d26a2a13e9e257621e8969bb807c0d4c7fe3c8e440e",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/bazel-lock-delta.json",
+      "bytes": 6117,
+      "sha256": "4ef6e87f7d4cf6c13aa918f12cb57ed7460dfd95e1dc03c29c388baa6e28a343",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-lock-delta.json",
+      "source_sha256": "4ef6e87f7d4cf6c13aa918f12cb57ed7460dfd95e1dc03c29c388baa6e28a343",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/bazel-lock-final-verification.json",
+      "bytes": 985,
+      "sha256": "b314210b933435c8163915393986601546a39d4d602987b8975ef956fdf73609",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-lock-final-verification.json",
+      "source_sha256": "b314210b933435c8163915393986601546a39d4d602987b8975ef956fdf73609",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/bazel-lock-update-after-fetch.json",
+      "bytes": 359,
+      "sha256": "f179866812a2bb9897a978a0d8a08d0c53c2e91b117c203551a5652ce3605df4",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-lock-update-after-fetch.json",
+      "source_sha256": "f179866812a2bb9897a978a0d8a08d0c53c2e91b117c203551a5652ce3605df4",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/cargo-lock-delta.json",
+      "bytes": 9466,
+      "sha256": "ddb8f83babd8eed9beac481ca2417d793caee3a11d201e8dbfe4d86b879a055c",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/cargo-lock-delta.json",
+      "source_sha256": "ddb8f83babd8eed9beac481ca2417d793caee3a11d201e8dbfe4d86b879a055c",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/cargo-updates.json",
+      "bytes": 980,
+      "sha256": "a30e366793472d31e579737d9b2869e2f1127411dbd802492bdaed8bc1c561a9",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/cargo-updates.json",
+      "source_sha256": "a30e366793472d31e579737d9b2869e2f1127411dbd802492bdaed8bc1c561a9",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/disk-cleanup.json",
+      "bytes": 1074,
+      "sha256": "fd976569b6376721b7abc7cd492c28422eb8012fd6ef233fa91559720404e97d",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/disk-cleanup.json",
+      "source_sha256": "fd976569b6376721b7abc7cd492c28422eb8012fd6ef233fa91559720404e97d",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-fetch-v8.log",
+      "bytes": 1382,
+      "sha256": "beb08f3584a216c925fd180062a420fe09293ee871b2865a123707f31002e422",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-fetch-v8.log",
+      "source_sha256": "beb08f3584a216c925fd180062a420fe09293ee871b2865a123707f31002e422",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-check-final.log",
+      "bytes": 1010,
+      "sha256": "04ade2713d6c5b54aebb43ef08db032d2d1f70eb37ec2a3761d5f456257d1645",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-check-final.log",
+      "source_sha256": "04ade2713d6c5b54aebb43ef08db032d2d1f70eb37ec2a3761d5f456257d1645",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-update-after-fetch.log",
+      "bytes": 114,
+      "sha256": "6e5228a0295e403226e130a57978262174b009b2124bf684bc7ff4f5c56bcfc2",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-after-fetch.log",
+      "source_sha256": "6e5228a0295e403226e130a57978262174b009b2124bf684bc7ff4f5c56bcfc2",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-update-final.log",
+      "bytes": 114,
+      "sha256": "cfa74084670676ed1d98ad23413ecc9d8a7608a13d407cc295e5fa0338a284a9",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-final.log",
+      "source_sha256": "cfa74084670676ed1d98ad23413ecc9d8a7608a13d407cc295e5fa0338a284a9",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-update-startup-rejected.log",
+      "bytes": 308,
+      "sha256": "a69ecfbef0fe4bd5f20a8f250f0a1e8bb96953a976384970979331554571fa18",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-startup-rejected.log",
+      "source_sha256": "a69ecfbef0fe4bd5f20a8f250f0a1e8bb96953a976384970979331554571fa18",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-update-truststore-failure.log",
+      "bytes": 1960,
+      "sha256": "bced1c86d953810c256cdedd20821c45a898cad70d3259178bf05ea278d3c6b5",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update-truststore-failure.log",
+      "source_sha256": "bced1c86d953810c256cdedd20821c45a898cad70d3259178bf05ea278d3c6b5",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-bazel-lock-update.log",
+      "bytes": 5763,
+      "sha256": "c95b3ab6b377df945ac3ecd6fc7fd4602c45696dfa2bca4e43fe91f8ad1ea009",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-lock-update.log",
+      "source_sha256": "c95b3ab6b377df945ac3ecd6fc7fd4602c45696dfa2bca4e43fe91f8ad1ea009",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-git-source-init.log",
+      "bytes": 140,
+      "sha256": "b713fbc5fdfd2e3af22fc70a4f403c417a8f6ab47f49ae44aff919bb7c91a89b",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-git-source-init.log",
+      "source_sha256": "b713fbc5fdfd2e3af22fc70a4f403c417a8f6ab47f49ae44aff919bb7c91a89b",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-update-rustls-webpki.log",
+      "bytes": 150,
+      "sha256": "280fb2e11aeefd72d99e562307a12b6adfdde888dd81afd8bb3d679dd9c565c9",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-update-rustls-webpki.log",
+      "source_sha256": "280fb2e11aeefd72d99e562307a12b6adfdde888dd81afd8bb3d679dd9c565c9",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-update-webpki-root-certs.log",
+      "bytes": 149,
+      "sha256": "e08e3272530571607fc016e64319eab0459acf50e33e1bda4074cd00f2568e2d",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-update-webpki-root-certs.log",
+      "source_sha256": "e08e3272530571607fc016e64319eab0459acf50e33e1bda4074cd00f2568e2d",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/logs/tls-update-webpki-roots.log",
+      "bytes": 144,
+      "sha256": "cc02cfc787ff40d911c71f9eb1e68613b485c39b83520bd01468d23b1e0bbe5e",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-update-webpki-roots.log",
+      "source_sha256": "cc02cfc787ff40d911c71f9eb1e68613b485c39b83520bd01468d23b1e0bbe5e",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/source-conservation.json",
+      "bytes": 1214,
+      "sha256": "b65ab4168fdb7922a9ce6f284282aef9aab4d0871fa7beb56f2bc92b51a8bec0",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/source-conservation.json",
+      "source_sha256": "b65ab4168fdb7922a9ce6f284282aef9aab4d0871fa7beb56f2bc92b51a8bec0",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/source.json",
+      "bytes": 708,
+      "sha256": "daea7747501227942b095a1bbbdf33bd0a21b1a4a9bcbd48b93d1cce3eea79bf",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/source.json",
+      "source_sha256": "daea7747501227942b095a1bbbdf33bd0a21b1a4a9bcbd48b93d1cce3eea79bf",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/tls-patch-upgrades.patch",
+      "bytes": 25797,
+      "sha256": "6c4e6840a74eeb86369c4338d9fafbf2882eccacb9bbc1eba80d0a80280d190f",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/tls-patch-upgrades.patch",
+      "source_sha256": "6c4e6840a74eeb86369c4338d9fafbf2882eccacb9bbc1eba80d0a80280d190f",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/validation.json",
+      "bytes": 10099,
+      "sha256": "1baebe7f372e1d4fa3168433345f57e850a8d58a3cca12a14a16d81553bb66f3",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/validation.json",
+      "source_sha256": "1baebe7f372e1d4fa3168433345f57e850a8d58a3cca12a14a16d81553bb66f3",
+      "transformation": "byte-exact copy"
+    },
+    {
+      "path": "tls/windows-edge-review.json",
+      "bytes": 7013,
+      "sha256": "a4c6af62c5d8e6a41bdd4c49e9b0d17ca1ea44694fa1e7a98c4b6db28a191ec3",
+      "source_path": "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/windows-edge-review.json",
+      "source_sha256": "a4c6af62c5d8e6a41bdd4c49e9b0d17ca1ea44694fa1e7a98c4b6db28a191ec3",
+      "transformation": "byte-exact copy"
+    }
+  ]
+}

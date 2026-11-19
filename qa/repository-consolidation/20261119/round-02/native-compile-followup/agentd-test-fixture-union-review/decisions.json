@@ -1,0 +1,41 @@
+{
+  "base": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+  "native_base": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs",
+      "before_sha256": "9d13154eb7cc5e44398f3a1fc7527b093ef638cb191bf03401192a8b58f765c4",
+      "decisions": [
+        "Complete incoming LedgerFixture::bytes migration to mutable original locked ledger/witness full physical bytes; remove obsolete uninitialized observer field. All callers already borrow mutable fixtures."
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_signed_tests.rs",
+      "before_sha256": "9634b734b02a84cdcdf0fd5d083467c6799272ea4ec199322e5f53530a35c03e",
+      "decisions": [
+        "Restore exact e344 canonical_directory binding before existing fleet root parse; preserve private temp root ownership and assertions."
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+      "before_sha256": "2fb518cb63a3d442ee6f35cf54f92a2ebccdff821d2cf3fd1bbc01cd2067da7a",
+      "decisions": [
+        "Restore exact e344 canonical_directory binding before existing fleet root parse; preserve private temp root ownership and assertions."
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "before_sha256": "fdc8c1d74696418b884c07a06bd26ecfb56bcf875988e55dccdb0b0a218c773f",
+      "decisions": [
+        "Complete incoming original-owner source_bytes migration: first four reads use live owner, last two use recovered owner; read helper holds mutex, reads same physical journal through bounded qualification_file_bytes, restores cursor. All complete byte equalities retained."
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner_tests.rs",
+      "before_sha256": "efe83a34e641955b9ac9279030f1d1c8d6d7f99fe5e7ec303f0206641c9fc56b",
+      "decisions": [
+        "Complete incoming evaluator original locked journal read migration: first three reads from current signer, last two from recovered signer; all actual byte comparisons and execution/no-repeat assertions preserved."
+      ]
+    }
+  ]
+}

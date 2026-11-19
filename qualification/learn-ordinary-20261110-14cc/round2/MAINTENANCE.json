@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.learn.post-test-maintenance.v2",
+  "status": "PASS_NATIVE_FIX_FORMAT_COMPILE_AND_STATIC_MARKER_READBACK",
+  "behavior_source": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+  "behavior_tree": "e11487778d16d8eb30900e2c5dcc62e39372cf41",
+  "native_rust_postimage_commit": "13880c9fca1a3ce89df0a2720f385137c7abe867",
+  "native_rust_postimage_tree": "dee2363807d5bcf175fbdcf7e906eca7114fce9a",
+  "source_and_guard_delivery_commit": "fde7c2ae0e7874b101563fea6bad394bbf899f03",
+  "source_and_guard_delivery_tree": "b09caa90a3d4b76bbe8e98d368708ea88d186a6b",
+  "format_base": "abf75d8e2097785b2ad01897c15a7531eebe6e44",
+  "packages": [
+    "codex-hepta-agentd",
+    "codex-hepta-intelligence-eval",
+    "codex-hepta-learning-ledger",
+    "codex-hepta-neuron"
+  ],
+  "initial_attempt": {
+    "record": "evidence/maintenance-bbab-v1/maintenance-status.json",
+    "fix_exit_code": 0,
+    "fmt_exit_code": 2,
+    "compile_only_exit_code": 0,
+    "failure_retained": true,
+    "reason": "The isolated Git object store lacked original format-baseline tree objects; the scoped formatter failed before formatting."
+  },
+  "format_retry": {
+    "record": "evidence/maintenance-bbab-format-retry-v1/maintenance-status.json",
+    "format_baseline_tree_objects_hydrated": 19,
+    "object_pack_sha256": "800f772466d565332247263adf21be62ffd95d3a9d2868ece4117c6bbe4f11a8",
+    "fmt_exit_code": 0,
+    "compile_only_exit_code": 0,
+    "fix_repeated": false,
+    "compiler_changed_source_bytes": false
+  },
+  "postimages": {
+    "rust_files": 44,
+    "all_local_file_lengths_sha256_and_git_blobs_match_native_manifest": true,
+    "patch_bytes": 352036,
+    "patch_sha256": "6a6e69840eb74f31fd31d1c15be9523413453d0145f08a9ba7427f650ecf1530",
+    "manifest_sha256": "c0019b4b3ab1367353c201c9545e41dbc2735b95b1f4e1e129e4d85f005a14bf",
+    "record": "evidence/maintenance-bbab-format-retry-v1/postimages.json",
+    "only_non_format_change": "Delete an unnecessary final-use observer.clone() in circuit_task_source_tests.rs; the same read and assertions remain.",
+    "production_behavior_change_identified_by_independent_review": false,
+    "cfg_and_path_attribute_bindings_unchanged": true
+  },
+  "format_marker_alignment": {
+    "manifest_literal_changes": 81,
+    "qa_literal_changes": 15,
+    "boundaries": 211,
+    "protected_rows": 215,
+    "unique_protected_files": 171,
+    "definition_and_caller_literal_occurrences": 1165,
+    "authority_caller_sets_forbidden_guards_and_required_order_unchanged": true,
+    "qa_ast_unchanged_apart_from_formatting_of_string_literals": true,
+    "callers_sha256": "1f1646b73d7663312a878cd74a720365d5e507c8628495c65b2c30c9aab3aed1",
+    "record": "format-marker-maintenance/static-marker-readback-bbab.json"
+  },
+  "commands": {
+    "fix": "just fix --locked --offline -p codex-hepta-agentd -p codex-hepta-intelligence-eval -p codex-hepta-learning-ledger -p codex-hepta-neuron",
+    "fmt": "just fmt --base abf75d8e2097785b2ad01897c15a7531eebe6e44",
+    "compile_only": "cargo check --locked --offline -p codex-hepta-agentd -p codex-hepta-intelligence-eval -p codex-hepta-learning-ledger -p codex-hepta-neuron --tests --bins"
+  },
+  "behavior_tests_after_maintenance": false,
+  "source_mutation_tests_after_maintenance": false,
+  "full_caller_scan_after_maintenance": false,
+  "native_evidence_archive": "maintenance-bbab-complete-v1.tar.xz",
+  "marker_alignment_and_review_archive": "marker-format-maintenance.tar.gz",
+  "previous_round_preservation_record": "PRIOR_EVIDENCE_PRESERVED.json",
+  "qualification_limit": "Behavior results bind bbab. Later commits preserve the reviewed native postimages and formatting-only source markers; they are not a rerun of the behavior gate."
+}

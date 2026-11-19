@@ -445,7 +445,7 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
             .cloud_config_bundle(cloud_config_bundle.clone())
             .build()
     };
-    let config = build_exec_config(
+    let mut config = build_exec_config(
         overrides,
         dangerously_bypass_approvals_and_sandbox,
         build_config,
@@ -526,7 +526,7 @@ pub async fn run_main(cli: Cli, arg0_paths: Arg0DispatchPaths) -> anyhow::Result
         arg0_paths.codex_self_exe.clone(),
         arg0_paths.codex_linux_sandbox_exe.clone(),
     )?;
-    let state_db = codex_core::init_state_db(&config).await;
+    let state_db = codex_core::init_state_db(&mut config).await;
     let environment_manager = if run_loader_overrides.ignore_user_config {
         EnvironmentManager::from_env(Some(local_runtime_paths), config.http_client_factory())
             .await?

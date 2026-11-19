@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.initial-fd-component-explicit-syscall-type.v1",
+  "source_base": "5daade9e4ce374ac169702d6b59490149ccefd34",
+  "status": "narrow static fix for parent-observed native E0282; no native execution by this patch",
+  "reason": "The equality expression's `as _` has no uniquely inferred cast target. The RHS now uses libc::ssize_t, the signed sendmsg result type, while keeping the exact complete-frame equality and original error.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fd_tests.rs",
+      "preimage_git_blob": "31dfca232ee79b56364e1670ff175c998c0c0370",
+      "preimage_sha256": "9ec0b69695fe5070ac8d1a919358f94dfc95d378ac46faeae5ca75f5f1e96c81",
+      "git_blob": "5bd60681a52ba7cef7c421aa0daa560d2631ef6f",
+      "sha256": "65567a2155ab623f01a7cc5eb52ed20925f2045d7e95ff92641234fbcbd7d936",
+      "bytes": 3597,
+      "additions": 1,
+      "deletions": 1,
+      "operations": [
+        {
+          "old": "anyhow::ensure!(sent == FRAME.len() as _, \"{}\", io::Error::last_os_error());",
+          "new": "anyhow::ensure!(sent == FRAME.len() as libc::ssize_t, \"{}\", io::Error::last_os_error());",
+          "expected_occurrences": 1
+        }
+      ]
+    }
+  ],
+  "unchanged": [
+    "Exact transferred frame and two original target descriptors",
+    "Actual sendmsg call, original error and complete-frame equality assertion",
+    "All receive-side ancillary validation and ownership drops",
+    "All production source, signatures, authority, callers, checkers and test roster"
+  ],
+  "validation": {
+    "source_exact_replay": true,
+    "actual_error_report": "Parent reported fixed 5daade native v9: E0282 at authority_host_generation_initial_fd_tests.rs:42:48; production lib compiled.",
+    "cargo_executed": false,
+    "measured_source_modified": false
+  }
+}

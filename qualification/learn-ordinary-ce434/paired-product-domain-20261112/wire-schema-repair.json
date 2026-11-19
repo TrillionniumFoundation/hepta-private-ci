@@ -1,0 +1,365 @@
+{
+  "schema": "hepta.original-model-wire-source-guard-schema-repair.v1",
+  "base_commit": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "base_manifest_blob": "7df13b4c965af0a6e1c93989075b173fd1ff8db5",
+  "source_blob": "7db3fc3e452f0cf7bcd991f796b488d595ad49e9",
+  "cause": "Original verifier _verify_required_order rejects inner marker sequence length 1; the record was already an array of arrays, not a flat array.",
+  "replacement": {
+    "before": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+      "required": [
+        "const PURPOSE: &str = \"runtime.learning.original-q24-model.command.v1\"",
+        "pub(in super::super) enum Action {\n    Execute,\n    Readback,\n    BeginOriginalRead,\n    BeginOriginalExecute,\n    ReadOriginalPage { transfer: u64, index: u32 },\n    FinishOriginalRead { transfer: u64 },\n}",
+        "#[serde(deny_unknown_fields)]",
+        "pub(in super::super) struct Request {",
+        "pub(in super::super) enum Outcome {",
+        "Completed { record: String }",
+        "b\"HQ24PROP\"",
+        "return Err(Error::Binding(\"exact original Model journal result\"))",
+        "b\"hepta.cell.q24.model-proposal-receipt.v1\\0\", &bytes",
+        "coordinator\n        .candidate()\n        .ok_or(Error::Binding(\"actual original Candidate\"))?",
+        "pub(in super::super) const MATERIAL_MAX_BYTES: usize = 131_072;",
+        "pub(in super::super) const MATERIAL_PAGE_BYTES: usize = 8192;"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "LearningEvidenceRoleV1::Proposal",
+        "TrainingNoUpdateV2",
+        "pub dataset:",
+        "pub model:",
+        "pub payload:",
+        "pub batch:",
+        "File::open",
+        "File::create",
+        "UnixStream::connect"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn require_initial(",
+          "sequence": [
+            "fn require_initial(",
+            "self\n            .context\n            .parse()",
+            "self.schema != 1\n            || self.purpose != PURPOSE\n            || self.nonce != nonce\n            || !(1..=128).contains(&nonce)",
+            "context.is_zero()\n            || context.to_string() != self.context",
+            "self.initial_head != material.initial.head_digest.to_string()",
+            "self.operation_id != material.initial.request.operation_id.as_str()",
+            "self.actor_id != material.initial.owners.proposal.as_str()",
+            "self.scope != material.scope.binding().to_string()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "let context",
+            "if self.schema",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn require_context(",
+          "sequence": [
+            "fn require_context(",
+            "self.require_initial(&context.material, nonce)?",
+            "self.context != context.binding()?.to_string()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "self.require_initial(",
+            "if self.context",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn record_bytes(",
+          "sequence": [
+            "fn record_bytes(",
+            "material.is_zero()\n        || at < context.evaluation.receipt().observed_unix_seconds",
+            "at\n            >= context\n                .material\n                .initial\n                .request\n                .envelope\n                .expiry_unix_seconds",
+            "b          ",
+            "context.evaluation.snapshot().head_digest.as_array()",
+            "material.as_array()",
+            "&at.to_le_bytes()",
+            "Ok(bytes)"
+          ],
+          "top_level": [
+            "if material.is_zero()",
+            "let mut bytes",
+            "Ok(bytes)"
+          ]
+        },
+        {
+          "function": "fn encode_completed(",
+          "sequence": [
+            "fn encode_completed(",
+            "actual: &crate::CellQ24ModelProposalReceiptV1",
+            "record_bytes(\n        context,\n        material,\n        actual.learning_receipt().observed_unix_seconds,\n    )?",
+            "decode_completed(context, &record, current)?",
+            "checked.receipt() != actual.learning_receipt()",
+            "return Err(Error::Binding(                                     ))",
+            "Ok(Outcome::Completed { record })"
+          ],
+          "top_level": [
+            "let bytes",
+            "let record",
+            "let checked",
+            "if checked.receipt()",
+            "Ok(Outcome::Completed"
+          ]
+        },
+        {
+          "function": "fn decode_completed(",
+          "sequence": [
+            "fn decode_completed(",
+            "let fresh = context.authenticate(current)?",
+            "context.require_qualified()?",
+            "record.len() != 107",
+            "STANDARD_NO_PAD\n        .decode(record)",
+            "bytes.len() != 80 || STANDARD_NO_PAD.encode(&bytes) != record",
+            "bytes[40..72]",
+            "bytes[72..80]",
+            "record_bytes(context, material, at)? != bytes || at > fresh",
+            "b                                            , &bytes",
+            "LearningIterationCoordinatorV1::from_snapshot(context.evaluation.snapshot().clone())?",
+            "coordinator\n        .candidate()\n        .ok_or(Error::Binding(                           ))?",
+            "operation_id: context.material.initial.request.operation_id.clone()",
+            "predecessor: context.evaluation.snapshot().head_digest",
+            "actor_id: context.material.initial.owners.proposal.clone(),\n        evidence_digest: composition",
+            "observed_unix_seconds: at",
+            "observation: LearningIterationObservationV1::Proposal",
+            "candidate_bundle: candidate,\n            proposal_id: context.material.initial.request.operation_id.clone()",
+            "composition_digest: composition,\n            disposition: LearningProposalDispositionV1::UpdateCandidates",
+            "coordinator.record(receipt, at)?",
+            "context\n        .material\n        .scope\n        .validate_snapshot(coordinator.snapshot())?",
+            "coordinator.snapshot().receipts.len() != 5",
+            "Ok(OriginalCellQ24ModelCommandReceiptV1",
+            "snapshot: coordinator.snapshot().clone(),\n        material",
+            "record: bytes\n            .try_into()",
+            "context: context.binding()?",
+            "context.dataset.attestations()[0].clone()",
+            "context.dataset.attestations()[1].clone()",
+            "context.training.attestation().clone()",
+            "context.evaluation.attestation().clone()"
+          ],
+          "top_level": [
+            "let fresh",
+            "context.require_qualified()",
+            "if record.len()",
+            "let bytes",
+            "if bytes.len()",
+            "let material",
+            "let at",
+            "if record_bytes(",
+            "let composition",
+            "let mut coordinator",
+            "let candidate",
+            "let receipt",
+            "coordinator.record(",
+            "context\n        .material\n        .scope\n        .validate_snapshot(",
+            "if coordinator.snapshot()",
+            "Ok(OriginalCellQ24ModelCommandReceiptV1"
+          ]
+        }
+      ],
+      "required_order": [
+        [
+          "pub(in super::super) enum Action {\n    Execute,\n    Readback,\n    BeginOriginalRead,\n    BeginOriginalExecute,\n    ReadOriginalPage { transfer: u64, index: u32 },\n    FinishOriginalRead { transfer: u64 },\n}"
+        ],
+        [
+          "enum Outcome {",
+          "Completed { record: String }",
+          "OriginalReadStarted { transfer: u64, record: String, total: usize, digest: String }",
+          "OriginalReadPage { transfer: u64, index: u32, offset: usize, total: usize, digest: String, bytes: String }",
+          "OriginalReadFinished { transfer: u64, record: String, total: usize, digest: String }"
+        ]
+      ]
+    },
+    "after": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+      "required": [
+        "const PURPOSE: &str = \"runtime.learning.original-q24-model.command.v1\"",
+        "pub(in super::super) enum Action {\n    Execute,\n    Readback,\n    BeginOriginalRead,\n    BeginOriginalExecute,\n    ReadOriginalPage { transfer: u64, index: u32 },\n    FinishOriginalRead { transfer: u64 },\n}",
+        "#[serde(deny_unknown_fields)]",
+        "pub(in super::super) struct Request {",
+        "pub(in super::super) enum Outcome {",
+        "Completed { record: String }",
+        "b\"HQ24PROP\"",
+        "return Err(Error::Binding(\"exact original Model journal result\"))",
+        "b\"hepta.cell.q24.model-proposal-receipt.v1\\0\", &bytes",
+        "coordinator\n        .candidate()\n        .ok_or(Error::Binding(\"actual original Candidate\"))?",
+        "pub(in super::super) const MATERIAL_MAX_BYTES: usize = 131_072;",
+        "pub(in super::super) const MATERIAL_PAGE_BYTES: usize = 8192;"
+      ],
+      "forbidden": [
+        "SigningKey",
+        "LearningEvidenceRoleV1::Proposal",
+        "TrainingNoUpdateV2",
+        "pub dataset:",
+        "pub model:",
+        "pub payload:",
+        "pub batch:",
+        "File::open",
+        "File::create",
+        "UnixStream::connect"
+      ],
+      "required_function_order": [
+        {
+          "function": "fn require_initial(",
+          "sequence": [
+            "fn require_initial(",
+            "self\n            .context\n            .parse()",
+            "self.schema != 1\n            || self.purpose != PURPOSE\n            || self.nonce != nonce\n            || !(1..=128).contains(&nonce)",
+            "context.is_zero()\n            || context.to_string() != self.context",
+            "self.initial_head != material.initial.head_digest.to_string()",
+            "self.operation_id != material.initial.request.operation_id.as_str()",
+            "self.actor_id != material.initial.owners.proposal.as_str()",
+            "self.scope != material.scope.binding().to_string()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "let context",
+            "if self.schema",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn require_context(",
+          "sequence": [
+            "fn require_context(",
+            "self.require_initial(&context.material, nonce)?",
+            "self.context != context.binding()?.to_string()",
+            "return Err(Error::Binding(",
+            "Ok(())"
+          ],
+          "top_level": [
+            "self.require_initial(",
+            "if self.context",
+            "Ok(())"
+          ]
+        },
+        {
+          "function": "fn record_bytes(",
+          "sequence": [
+            "fn record_bytes(",
+            "material.is_zero()\n        || at < context.evaluation.receipt().observed_unix_seconds",
+            "at\n            >= context\n                .material\n                .initial\n                .request\n                .envelope\n                .expiry_unix_seconds",
+            "b          ",
+            "context.evaluation.snapshot().head_digest.as_array()",
+            "material.as_array()",
+            "&at.to_le_bytes()",
+            "Ok(bytes)"
+          ],
+          "top_level": [
+            "if material.is_zero()",
+            "let mut bytes",
+            "Ok(bytes)"
+          ]
+        },
+        {
+          "function": "fn encode_completed(",
+          "sequence": [
+            "fn encode_completed(",
+            "actual: &crate::CellQ24ModelProposalReceiptV1",
+            "record_bytes(\n        context,\n        material,\n        actual.learning_receipt().observed_unix_seconds,\n    )?",
+            "decode_completed(context, &record, current)?",
+            "checked.receipt() != actual.learning_receipt()",
+            "return Err(Error::Binding(                                     ))",
+            "Ok(Outcome::Completed { record })"
+          ],
+          "top_level": [
+            "let bytes",
+            "let record",
+            "let checked",
+            "if checked.receipt()",
+            "Ok(Outcome::Completed"
+          ]
+        },
+        {
+          "function": "fn decode_completed(",
+          "sequence": [
+            "fn decode_completed(",
+            "let fresh = context.authenticate(current)?",
+            "context.require_qualified()?",
+            "record.len() != 107",
+            "STANDARD_NO_PAD\n        .decode(record)",
+            "bytes.len() != 80 || STANDARD_NO_PAD.encode(&bytes) != record",
+            "bytes[40..72]",
+            "bytes[72..80]",
+            "record_bytes(context, material, at)? != bytes || at > fresh",
+            "b                                            , &bytes",
+            "LearningIterationCoordinatorV1::from_snapshot(context.evaluation.snapshot().clone())?",
+            "coordinator\n        .candidate()\n        .ok_or(Error::Binding(                           ))?",
+            "operation_id: context.material.initial.request.operation_id.clone()",
+            "predecessor: context.evaluation.snapshot().head_digest",
+            "actor_id: context.material.initial.owners.proposal.clone(),\n        evidence_digest: composition",
+            "observed_unix_seconds: at",
+            "observation: LearningIterationObservationV1::Proposal",
+            "candidate_bundle: candidate,\n            proposal_id: context.material.initial.request.operation_id.clone()",
+            "composition_digest: composition,\n            disposition: LearningProposalDispositionV1::UpdateCandidates",
+            "coordinator.record(receipt, at)?",
+            "context\n        .material\n        .scope\n        .validate_snapshot(coordinator.snapshot())?",
+            "coordinator.snapshot().receipts.len() != 5",
+            "Ok(OriginalCellQ24ModelCommandReceiptV1",
+            "snapshot: coordinator.snapshot().clone(),\n        material",
+            "record: bytes\n            .try_into()",
+            "context: context.binding()?",
+            "context.dataset.attestations()[0].clone()",
+            "context.dataset.attestations()[1].clone()",
+            "context.training.attestation().clone()",
+            "context.evaluation.attestation().clone()"
+          ],
+          "top_level": [
+            "let fresh",
+            "context.require_qualified()",
+            "if record.len()",
+            "let bytes",
+            "if bytes.len()",
+            "let material",
+            "let at",
+            "if record_bytes(",
+            "let composition",
+            "let mut coordinator",
+            "let candidate",
+            "let receipt",
+            "coordinator.record(",
+            "context\n        .material\n        .scope\n        .validate_snapshot(",
+            "if coordinator.snapshot()",
+            "Ok(OriginalCellQ24ModelCommandReceiptV1"
+          ]
+        }
+      ],
+      "required_order": [
+        [
+          "pub(in super::super) enum Action {",
+          "    Execute,\n    Readback,\n    BeginOriginalRead,\n    BeginOriginalExecute,\n    ReadOriginalPage { transfer: u64, index: u32 },\n    FinishOriginalRead { transfer: u64 },\n}"
+        ],
+        [
+          "enum Outcome {",
+          "Completed { record: String }",
+          "OriginalReadStarted { transfer: u64, record: String, total: usize, digest: String }",
+          "OriginalReadPage { transfer: u64, index: u32, offset: usize, total: usize, digest: String, bytes: String }",
+          "OriginalReadFinished { transfer: u64, record: String, total: usize, digest: String }"
+        ]
+      ]
+    }
+  },
+  "preservation": "The complete exact Action enum remains unchanged in required. The singleton full-enum order marker is split at its first newline into two ordered strings whose newline join equals the old complete string exactly. All other full record fields are byte-for-byte JSON-equivalent.",
+  "validation": {
+    "original_python_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "method": "V8 exact fixed masking/ordered marker/top-level uniqueness projection plus actual Python schema inspection; not Python execution",
+    "errors": [],
+    "counts": {
+      "required": 12,
+      "order": 7,
+      "functions": 5,
+      "sequence": 60,
+      "top": 30
+    },
+    "all_global_sequence_lengths": [
+      2,
+      5
+    ],
+    "whole_enum_unchanged": true,
+    "no_production_source_change": true
+  }
+}

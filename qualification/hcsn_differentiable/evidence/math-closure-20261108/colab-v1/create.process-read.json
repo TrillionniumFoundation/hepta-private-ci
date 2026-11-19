@@ -1,0 +1,27 @@
+{
+  "evidence_kind": "explicitly_redacted_publication_derivative",
+  "file": "colab-v1/create.process-read.json",
+  "original_bytes": 2390,
+  "original_sha256": "76fee41000f4f4b70bcb6e2142a14016d187dce3dc8e164c44e9bd078c44eacb",
+  "reason": "public-repository copy removes account contact email and reversible bytes_hex; original native receipt retained",
+  "value": {
+    "audit_recorded": true,
+    "job_id": "1a1bab344cf-12894-1ca8",
+    "stderr": {
+      "bytes_hex": null,
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "bytes_hex": null,
+      "eof": true,
+      "next_offset": 665,
+      "offset": 0,
+      "size": 665,
+      "text": "{\"account_email\":\"[account email redacted]\",\"actual_spec\":{\"accelerator\":\"NONE\",\"shape\":\"STANDARD\",\"variant\":\"DEFAULT\"},\"client_session_id\":\"97f30a17-af0e-4264-ae6c-92a0e87a63be\",\"created_at\":\"2026-11-08T10:28:14.506940+00:00\",\"endpoint\":\"m-s-usc1a2-1phanox787epo\",\"kernel_submit_attempts\":0,\"key\":\"hcsn-math-closure-cpu-20261108-v1\",\"notebook_hash\":\"319ab1a6-4990-4248-b454-b7cb65de055e\",\"owned_kernel\":false,\"owned_runtime\":true,\"phase\":\"runtime_ready\",\"requested_spec\":{\"accelerator\":\"NONE\",\"shape\":\"STANDARD\",\"variant\":\"DEFAULT\"},\"runtime_submit_attempts\":1,\"session_name\":\"hepta-4439884a3e8a41fa8435de9c571d84f3\",\"updated_at\":\"2026-11-08T10:28:19.276481+00:00\"}\n"
+    }
+  }
+}

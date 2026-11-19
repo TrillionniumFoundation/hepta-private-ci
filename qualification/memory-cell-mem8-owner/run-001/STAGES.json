@@ -1,0 +1,653 @@
+{
+  "schema": "hepta.mem8.episodic-bridge-review-stages.v2",
+  "parent": "cb0c45d8c526e96e477664ad8446f39776576cb2",
+  "parent_pr": 5887,
+  "original_common": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "unchanged_stage_a_manifest_blob": "80971a290f785e1de30c504031cbc8740cdbcde7",
+  "native_validation": "pending; no native stage pass or production custody inference",
+  "interface": "Original host supplies EpisodicSnapshotVerifier -> EpisodicSnapshotAdmission with per-record EpisodicRecordAdmission { SourceDraft, MemoryVerification }. No client-selectable verifier or verification.",
+  "stages": [
+    {
+      "id": "A",
+      "behavior": "Admit a complete source-bound Python snapshot with typed original observations and retained revalidation; no write authority",
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+          "sha": "4589b4d5607d118f822a1d384f1cdd5a599721fc",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+          "sha": "cff688f8d8507c91a364376a58a2b3f4b7237b39",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+          "sha": "a7e503dbefe093750812b0f16471fa519f467906",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+          "sha": "d94e1b72c5d04998680147100390fc70e2820e2a",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lib.rs",
+          "sha": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d",
+          "preimage": "81ca7e1fb9c41563e51f3415dbb5fd42f8b4d3d9"
+        }
+      ],
+      "tests": 4,
+      "command": "just test --locked -p codex-hepta-memory --lib episodic_source",
+      "case_ids": [
+        "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations",
+        "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission",
+        "episodic_source::tests::final_source_check_detects_changed_observation_metadata",
+        "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission"
+      ],
+      "expected_cumulative_memory_episodic_tests": 4,
+      "published_commit": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585"
+    },
+    {
+      "id": "B",
+      "behavior": "Atomic canonical import and durable source/revision bindings; original-writer shared import lock, explicit commit/rollback acknowledgement, native pool fence on uncertainty, and lost-ACK recovery",
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "sha": "c5b8ea01b6104fb692f456db82788a269c1adf7e",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+          "sha": "b58ad7c7960f38512c41934ff0896bf7a505b18b",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "sha": "27010b7e3895c8c433410c1cdf632911030a15a1",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+          "sha": "0c000f4c77daefe93c86e2dcb1e9fd0514642adb",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc",
+          "preimage": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+          "sha": "e90793d00281200b638b2363d79db6610b33313c",
+          "preimage": "9114a6184e7793e907cc316fa4327348e107d143"
+        }
+      ],
+      "tests_added": 1,
+      "expected_cumulative_memory_episodic_tests": 5,
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "case_ids": [
+        "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+      ]
+    },
+    {
+      "id": "C",
+      "behavior": "Six additional original-owner regressions: update/dependency withdrawal, final source and writer revocation rollback, external head changes, Unicode, source metadata identity, Provisional retrieval exclusion",
+      "files": [
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+          "sha": "86d87e691dd046797b2aacd909ffcd5427c2750b",
+          "preimage": "c5b8ea01b6104fb692f456db82788a269c1adf7e"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+          "sha": "36eba835dda85078a8788738b36be061c687a889",
+          "preimage": "27010b7e3895c8c433410c1cdf632911030a15a1"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+          "sha": "35061a80421612bfbe92d38a20171935db59990d",
+          "preimage": "a7e503dbefe093750812b0f16471fa519f467906"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+          "sha": "6d6103a0f052703913d59fb4522545b8bb3d6349",
+          "preimage": null
+        }
+      ],
+      "tests_added": 6,
+      "expected_cumulative_memory_episodic_tests": 11,
+      "commands": [
+        "just test --locked -p codex-hepta-memory --lib episodic"
+      ],
+      "case_ids": [
+        "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+        "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+        "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+        "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+        "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+        "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay"
+      ]
+    },
+    {
+      "id": "D1",
+      "behavior": "Typed protocol/client and retained-host wrapper; ordinary control remains unavailable until the embedding configures the source owner. Real UDS refusal verifies no canonical or target effects.",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+          "sha": "3a1d3c8d3bbf26693a3cf6e73a2243173fc27a63",
+          "preimage": "b1b72029b494073da34a762fef7e8a698b6699c7"
+        },
+        {
+          "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+          "sha": "efcce3892dac9751927696654f5d6a19d12b1d68",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "sha": "b25075a018bc4ee57b77c828eb074cd70c2de85a",
+          "preimage": "32faabe06eaceadd0332018cce837b0b29118d4a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "sha": "991a7fd49d67963ccacf3ad5ce6e60e716b4f72b",
+          "preimage": "b5ecac14a4118c69c07d2e7e7afbdbb52755f7b0"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "sha": "252925d23060a98e2d139819bce46d1ff9db071d",
+          "preimage": "39d127250b8e825292c25f8c34ec360d5d94ff60"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "sha": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4",
+          "preimage": "7b9ca2d17d05822cc27fc651cacd9a173bd36acf"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+          "sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657",
+          "preimage": "517d4f7cffb109d401a9002e3ef08d4abf8c7495"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "sha": "ad8ea874c9979e5fe933d6e6ed6f9e88e4beaf2b",
+          "preimage": null
+        }
+      ],
+      "tests_added": 1,
+      "expected_cumulative_agentd_episodic_tests": 1,
+      "commands": [
+        "just test --locked -p codex-hepta-agent-protocol --lib",
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ]
+    },
+    {
+      "id": "D2",
+      "behavior": "Ordinary configured source/writer ingress with fixed private scope/namespace; bounded retained imports, unresolved Drop accounting, source callback refusal and ordinary readiness/reads fenced even after the response future is gone",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "sha": "f9f69632f1859aedb23743635a3aad315cd52d65",
+          "preimage": "ad42091cd893c1108eb21a766104eee994cf02e5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+          "sha": "d6d13a226a7fd9778904893368767c4a38c23e01",
+          "preimage": "585796c337eda12b490fc72a69337d8c4ca40db4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+          "sha": "956827e09d07552776a9f527ace2c4f488f6ea72",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+          "sha": "80ed3530b669804e2aa432b337fb3ed1f1f9fb46",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state.rs",
+          "sha": "4ea175a93cd03ffd6d2363b9e02339bf6d447291",
+          "preimage": "c9b08d1bab388b135325f519220220e3efa2c549"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+          "sha": "ef0cae44967e9f7b5e0a46f1e3f6643c9285ae25",
+          "preimage": null
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "sha": "8e2bebfa394a33aac6d2c459b79fcdfd0c187115",
+          "preimage": "3ca6f19c84d99d4a37fe508f751c6e3d2cb427d4"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/lib.rs",
+          "sha": "87c1aedd6266bd7f4f08d6a1f5704b9c4effe22d",
+          "preimage": "b25075a018bc4ee57b77c828eb074cd70c2de85a"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "sha": "7cbee75937bbec1e9d7d1a2c5dfadb73c8c62555",
+          "preimage": "13f164a6199f75505368fa9829e26983f098e432"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "sha": "c89abdb7d2f5a0603bf6ca0b499221cd9235f1f5",
+          "preimage": "ad8ea874c9979e5fe933d6e6ed6f9e88e4beaf2b"
+        }
+      ],
+      "tests_added": 2,
+      "expected_cumulative_agentd_episodic_tests": 3,
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "case_ids": [
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+      ]
+    },
+    {
+      "id": "D3",
+      "behavior": "Real App Server/AutomationStore drain and original SQLite owner. Commit and source-revoke cases retain admitted work through cancellation. Running panic case cancels two reply futures, proves queued import did not commit, original pool fences, and real UDS Health/ordinary reads refuse before drain.",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+          "sha": "19d86566960fc23d689339738765346ee32efa33",
+          "preimage": "c89abdb7d2f5a0603bf6ca0b499221cd9235f1f5"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+          "sha": "ee99ab336d67c6dc19fac94c701434d89d679e37",
+          "preimage": null
+        }
+      ],
+      "tests_added": 1,
+      "expected_cumulative_agentd_episodic_tests": 4,
+      "commands": [
+        "just test --locked -p codex-hepta-agentd --lib episodic"
+      ],
+      "case_ids": [
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+      ],
+      "child_cases": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "child_case_marker": "episodic-drain-case-complete:<case>"
+    }
+  ],
+  "final_source": [
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+      "sha": "4589b4d5607d118f822a1d384f1cdd5a599721fc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+      "sha": "cff688f8d8507c91a364376a58a2b3f4b7237b39"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+      "sha": "35061a80421612bfbe92d38a20171935db59990d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+      "sha": "d94e1b72c5d04998680147100390fc70e2820e2a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "sha": "0cc27055eb23d1cd78c1b3e18cfde3a372b6351d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+      "sha": "86d87e691dd046797b2aacd909ffcd5427c2750b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+      "sha": "b58ad7c7960f38512c41934ff0896bf7a505b18b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+      "sha": "36eba835dda85078a8788738b36be061c687a889"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+      "sha": "0c000f4c77daefe93c86e2dcb1e9fd0514642adb"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "sha": "15487c549abfe1cf1251f6a65a4be699b6b381fc"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "sha": "e90793d00281200b638b2363d79db6610b33313c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+      "sha": "6d6103a0f052703913d59fb4522545b8bb3d6349"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "sha": "3a1d3c8d3bbf26693a3cf6e73a2243173fc27a63"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+      "sha": "efcce3892dac9751927696654f5d6a19d12b1d68"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "sha": "87c1aedd6266bd7f4f08d6a1f5704b9c4effe22d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "sha": "991a7fd49d67963ccacf3ad5ce6e60e716b4f72b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "sha": "252925d23060a98e2d139819bce46d1ff9db071d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "sha": "8e2bebfa394a33aac6d2c459b79fcdfd0c187115"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+      "sha": "ca6de6de35cdb606b17fc58efbdd5d4da9bc2657"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+      "sha": "19d86566960fc23d689339738765346ee32efa33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "sha": "f9f69632f1859aedb23743635a3aad315cd52d65"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+      "sha": "d6d13a226a7fd9778904893368767c4a38c23e01"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+      "sha": "956827e09d07552776a9f527ace2c4f488f6ea72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+      "sha": "80ed3530b669804e2aa432b337fb3ed1f1f9fb46"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "sha": "4ea175a93cd03ffd6d2363b9e02339bf6d447291"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+      "sha": "ef0cae44967e9f7b5e0a46f1e3f6643c9285ae25"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "sha": "7cbee75937bbec1e9d7d1a2c5dfadb73c8c62555"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+      "sha": "ee99ab336d67c6dc19fac94c701434d89d679e37"
+    }
+  ],
+  "python_interop": {
+    "python_source_sha256": "1afcc4a3b3f2b5dbbb0150a97d7513daad4e7226982576f600ae639bef787440",
+    "snapshot_bytes": 695,
+    "snapshot_sha256": "9d50f225851672cc43337e6b0d958b2a7ae6dfd465143f20350cda3e5dfb7ac5",
+    "body_sha256": "fb4e834f9e8d6cec04fcbbfa7c20b11f7f42aac1e9385754d336e2825581032e"
+  },
+  "integration_notes": [
+    "Stage A uses the five exact Rust 1.96 CI-formatted postimages already published at 1b86d19810c9d422a8f8ea3b76a0a2e8c9956585; do not apply it again. B starts from that commit. C preserves the entire formatted SourceWitness implementation byte-for-byte and adds exactly six immutable snapshot fixture constants.",
+    "Stage D1 intentionally does not advertise episodic import capability or add AgentdState/config ingress fields. It handles the new exhaustive request variant with the existing unavailable error and tests the real UDS refusal.",
+    "Stage D2 installs actual source/writer ingress and includes retained task/counter/unresolved fence before enabling control; D3 adds only the real App Server concurrency regression.",
+    "Run just fmt and preserve/apply its exact diff before just test. Actual line counts must be measured after formatting; no line-limit pass is asserted.",
+    "ProductionCognitiveMutationError adds TransactionSettlementUnknown; indexed exhaustive caller in memory-extension tools is included in B. Complete checkout rg is still needed to exclude unindexed newer exhaustive callers.",
+    "Snapshots, original authority and source observations in tests are explicit fixtures. Real source custody/provider successor benefit are still separately unverified.",
+    "V1 permanently retires an imported (source_id,key) slot. Even an explicitly written valid newer Python version is refused. This is narrower than MEM6 Python revoke-then-write semantics; it needs a separately authorized namespace or a future qualified native reconstruction path. Rejection does not prove full rebuild semantics.",
+    "Original writer clones/capabilities share one Arc<tokio::sync::Mutex<()>> for episodic imports. A queued import rechecks the existing native authority/gate after acquiring this lock and before BEGIN.",
+    "Existing CognitiveCommitGate::transition_attempt changes no active commit permission when created. After BEGIN its guard is moved to a later binding than the Transaction: panic fences before transaction Drop queues rollback, then the shared import lock releases. Successful commit/rollback is explicitly awaited before acknowledge.",
+    "Commit/rollback uncertainty may already have released SQLite's physical lock before it is observed. The retained import mutex nevertheless remains held until the native gate fence is installed, so a subsequent episodic import cannot BEGIN past that fence. Other ordinary native-owner writes before uncertainty is observed remain subject to the pre-existing native transaction contract; no stronger global serialization is claimed.",
+    "The existing begin helper can fail after acquiring BEGIN IMMEDIATE. A guard held across begin fences before the shared episodic import mutex releases; the error is conservatively unresolved and does not establish that a memory mutation occurred.",
+    "refresh_generation propagates the retained unresolved flag through existing mark_fenced. A dropped reply future is not required to observe JoinError for Health to become ready=false/fenced=true or ordinary CognitiveContext to refuse.",
+    "ImportSource forwards the original typed source admission unchanged and checks the shared unresolved flag before and after each source read; it can only refuse, never confer source authority.",
+    "Recovery anchor observation after fence uses the existing cognitive_store_recovery.rs observation transaction with explicit rollback. It is distinct from ordinary ready-gated CognitiveContext and no bypass interface is added.",
+    "A preimages/postimages are already reviewed CI formatting. B/C/D sources are not yet formatted or natively validated; refresh downstream preimages only from reviewed formatter postimages, never by silently overwriting divergent source.",
+    "Replay avoids another canonical memory revision/receipt mutation; protected owner Dirty coordination may still occur. It does not promise zero physical owner/checkpoint work."
+  ],
+  "diff_counts": {
+    "method": "Exact line-LCS minimum insertion/deletion counts on immutable blobs; A uses real Rust 1.96 CI formatting, remaining stages are unformatted",
+    "stages": [
+      {
+        "id": "A",
+        "additions": 532,
+        "deletions": 0,
+        "files": [
+          {
+            "path": "codex-rs/hepta-memory/src/episodic_source.rs",
+            "additions": 173,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_snapshot.rs",
+            "additions": 147,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+            "additions": 81,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/episodic_source_tests.rs",
+            "additions": 122,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/lib.rs",
+            "additions": 9,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "id": "B",
+        "additions": 415,
+        "deletions": 1,
+        "files": [
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+            "additions": 215,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_write.rs",
+            "additions": 83,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+            "additions": 54,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_tests.rs",
+            "additions": 47,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_writer.rs",
+            "additions": 14,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+            "additions": 2,
+            "deletions": 1
+          }
+        ]
+      },
+      {
+        "id": "C",
+        "additions": 201,
+        "deletions": 1,
+        "files": [
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic.rs",
+            "additions": 4,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_test_support.rs",
+            "additions": 2,
+            "deletions": 1
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/episodic_test_support.rs",
+            "additions": 6,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_episodic_regression_tests.rs",
+            "additions": 189,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "id": "D1",
+        "additions": 123,
+        "deletions": 0,
+        "files": [
+          {
+            "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+            "additions": 8,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agent-protocol/src/episodic.rs",
+            "additions": 22,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/lib.rs",
+            "additions": 1,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/client.rs",
+            "additions": 20,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "additions": 15,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state_control.rs",
+            "additions": 3,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_composition_tests.rs",
+            "additions": 3,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+            "additions": 51,
+            "deletions": 0
+          }
+        ]
+      },
+      {
+        "id": "D2",
+        "additions": 430,
+        "deletions": 4,
+        "files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/config.rs",
+            "additions": 6,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+            "additions": 1,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/config_episodic.rs",
+            "additions": 47,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/episodic_import.rs",
+            "additions": 87,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state.rs",
+            "additions": 17,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state_episodic.rs",
+            "additions": 121,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state_control.rs",
+            "additions": 12,
+            "deletions": 3
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/lib.rs",
+            "additions": 1,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime.rs",
+            "additions": 13,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+            "additions": 125,
+            "deletions": 1
+          }
+        ]
+      },
+      {
+        "id": "D3",
+        "additions": 234,
+        "deletions": 0,
+        "files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+            "additions": 3,
+            "deletions": 0
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_episodic_drain_tests.rs",
+            "additions": 231,
+            "deletions": 0
+          }
+        ]
+      }
+    ]
+  },
+  "published_stage_a": {
+    "commit": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585",
+    "tree": "ee63508413afd29a95c03172724fce6fa9dc5a8a",
+    "rustfmt": "Rust 1.96 exact CI postimages",
+    "native_tests": "pending",
+    "apply_again": false
+  },
+  "next_stage_parent": "1b86d19810c9d422a8f8ea3b76a0a2e8c9956585"
+}

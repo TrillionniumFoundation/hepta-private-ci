@@ -1,0 +1,22 @@
+{
+  "child_cpu_seconds": 10.004305,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.runtime_eval",
+    "bench",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/runtime001/active_mean_collapse_free_dual_b4_t128",
+    "--model",
+    "active_mean_collapse_free_dual",
+    "--batch",
+    "4",
+    "--length",
+    "128",
+    "--registration",
+    "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+  ],
+  "exit_code": 0,
+  "maxrss_kib": 408832,
+  "wall_seconds": 25.33237229999986
+}

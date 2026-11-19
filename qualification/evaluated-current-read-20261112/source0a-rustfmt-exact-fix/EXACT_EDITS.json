@@ -1,0 +1,131 @@
+{
+  "base_commit": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "base_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "source_hunks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs:41:",
+      "before": "    let upstream = fixture.upstream_files()?;\n    let original = fixture.original_files()?;\n    let host = Arc::clone(\n        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!(\"original host\"))?,\n    );\n    tokio::task::spawn_blocking(move || host.fixture_member_readback_proof_lifecycle()).await??;\n    assert_eq!(fixture.original_files()?, original);",
+      "after": "    let upstream = fixture.upstream_files()?;\n    let original = fixture.original_files()?;\n    let host = Arc::clone(\n        fixture\n            .host\n            .as_ref()\n            .ok_or_else(|| anyhow::anyhow!(\"original host\"))?,\n    );\n    tokio::task::spawn_blocking(move || host.fixture_member_readback_proof_lifecycle()).await??;\n    assert_eq!(fixture.original_files()?, original);"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs:59:",
+      "before": "    let upstream = fixture.upstream_files()?;\n    let original = fixture.original_files()?;\n    let host = Arc::clone(\n        fixture.host.as_ref().ok_or_else(|| anyhow::anyhow!(\"original host\"))?,\n    );\n    let (entered, reached) = tokio::sync::oneshot::channel();\n    let (resume, proceed) = std::sync::mpsc::channel();",
+      "after": "    let upstream = fixture.upstream_files()?;\n    let original = fixture.original_files()?;\n    let host = Arc::clone(\n        fixture\n            .host\n            .as_ref()\n            .ok_or_else(|| anyhow::anyhow!(\"original host\"))?,\n    );\n    let (entered, reached) = tokio::sync::oneshot::channel();\n    let (resume, proceed) = std::sync::mpsc::channel();"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:12:",
+      "before": "            .owners\n            .try_lock()\n            .map_err(|_| anyhow::anyhow!(\"original B lane\"))?;\n        self.runtime.block_on(Box::pin(check_lifecycle(&mut owners)))\n    }\n\n    pub(crate) fn fixture_member_readback_source_withdrawal(",
+      "after": "            .owners\n            .try_lock()\n            .map_err(|_| anyhow::anyhow!(\"original B lane\"))?;\n        self.runtime\n            .block_on(Box::pin(check_lifecycle(&mut owners)))\n    }\n\n    pub(crate) fn fixture_member_readback_source_withdrawal("
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:40:",
+      "before": "    let call = readonly_call(owners)?;\n    let mut proof = call.begin()?;\n    Box::pin(owners.read_panel_with_training(&mut proof)).await?;\n    entered.send(()).map_err(|_| anyhow::anyhow!(\"original B read barrier\"))?;\n    resume.recv()?;\n    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());\n    assert!(matches!(\n        proof.finish(&call, owners.current_time()?),\n        Err(QualificationError::CommitUncertain)",
+      "after": "    let call = readonly_call(owners)?;\n    let mut proof = call.begin()?;\n    Box::pin(owners.read_panel_with_training(&mut proof)).await?;\n    entered\n        .send(())\n        .map_err(|_| anyhow::anyhow!(\"original B read barrier\"))?;\n    resume.recv()?;\n    assert!(\n        Box::pin(owners.read_panel_with_training(&mut proof))\n            .await\n            .is_err()\n    );\n    assert!(matches!(\n        proof.finish(&call, owners.current_time()?),\n        Err(QualificationError::CommitUncertain)"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:60:",
+      "before": "}\n\nasync fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {\n    assert!(matches!(&owners.training_source, OriginalPanelTrainingSourceV1::Individual));\n    assert!(!Arc::ptr_eq(&owners.panel.primary.trainer, &owners.panel.retention[0].trainer));\n    assert_eq!(\n        owners.panel.primary.qualification.config.training_evidence,\n        owners.panel.retention[0].qualification.config.training_evidence\n    );\n    let call = readonly_call(owners)?;\n    let proof = call.begin()?;",
+      "after": "}\n\nasync fn check_lifecycle(owners: &mut Owners) -> anyhow::Result<()> {\n    assert!(matches!(\n        &owners.training_source,\n        OriginalPanelTrainingSourceV1::Individual\n    ));\n    assert!(!Arc::ptr_eq(\n        &owners.panel.primary.trainer,\n        &owners.panel.retention[0].trainer\n    ));\n    assert_eq!(\n        owners.panel.primary.qualification.config.training_evidence,\n        owners.panel.retention[0]\n            .qualification\n            .config\n            .training_evidence\n    );\n    let call = readonly_call(owners)?;\n    let proof = call.begin()?;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:133:",
+      "before": "        };\n        assert!(matches!(\n            proof.read(&sources, &wrong).await,\n            Err(QualificationError::Binding(\"same original readonly panel member\"))\n        ));\n    }\n    assert!(matches!(",
+      "after": "        };\n        assert!(matches!(\n            proof.read(&sources, &wrong).await,\n            Err(QualificationError::Binding(\n                \"same original readonly panel member\"\n            ))\n        ));\n    }\n    assert!(matches!("
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:143:",
+      "before": "\n    let call = readonly_call(owners)?;\n    let mut proof = call.begin()?;\n    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);\n    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);\n    let new_call = call.fixture_same_call_new_source();\n    assert!(matches!(\n        proof.finish(&new_call, owners.current_time()?),",
+      "after": "\n    let call = readonly_call(owners)?;\n    let mut proof = call.begin()?;\n    assert_eq!(\n        Box::pin(owners.read_panel_with_training(&mut proof)).await?,\n        before\n    );\n    assert_eq!(\n        Box::pin(owners.read_panel_with_training(&mut proof)).await?,\n        before\n    );\n    let new_call = call.fixture_same_call_new_source();\n    assert!(matches!(\n        proof.finish(&new_call, owners.current_time()?),"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:151:",
+      "before": "        Err(QualificationError::Binding(\"same completed panel Training call and Source\"))\n    ));\n\n    let call = readonly_call(owners)?;",
+      "after": "        Err(QualificationError::Binding(\n            \"same completed panel Training call and Source\"\n        ))\n    ));\n\n    let call = readonly_call(owners)?;"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs:155:",
+      "before": "    let mut proof = call.begin()?;\n    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);\n    assert_eq!(Box::pin(owners.read_panel_with_training(&mut proof)).await?, before);\n    assert!(Box::pin(owners.read_panel_with_training(&mut proof)).await.is_err());\n    assert!(matches!(\n        proof.finish(&call, owners.current_time()?),\n        Err(QualificationError::CommitUncertain)",
+      "after": "    let mut proof = call.begin()?;\n    assert_eq!(\n        Box::pin(owners.read_panel_with_training(&mut proof)).await?,\n        before\n    );\n    assert_eq!(\n        Box::pin(owners.read_panel_with_training(&mut proof)).await?,\n        before\n    );\n    assert!(\n        Box::pin(owners.read_panel_with_training(&mut proof))\n            .await\n            .is_err()\n    );\n    assert!(matches!(\n        proof.finish(&call, owners.current_time()?),\n        Err(QualificationError::CommitUncertain)"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:141:",
+      "before": "                Ok(OriginalPanelTrainingReadV1::Individual)\n            }\n            OriginalPanelTrainingSourceV1::Bound(_)\n            | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Ok(OriginalPanelTrainingReadV1::Panel(\n                OriginalPanelTrainingProofV1 {\n                    call: self,\n                    cursor: Cursor::Next(0),\n                },\n            )),\n        }\n    }\n}",
+      "after": "                Ok(OriginalPanelTrainingReadV1::Individual)\n            }\n            OriginalPanelTrainingSourceV1::Bound(_)\n            | OriginalPanelTrainingSourceV1::ReadbackMembers(_) => Ok(\n                OriginalPanelTrainingReadV1::Panel(OriginalPanelTrainingProofV1 {\n                    call: self,\n                    cursor: Cursor::Next(0),\n                }),\n            ),\n        }\n    }\n}"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "header": "Diff in /home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs:240:",
+      "before": "                }\n                match &proof.call.source {\n                    OriginalPanelTrainingSourceV1::Individual => Err(Error::CommitUncertain),\n                    OriginalPanelTrainingSourceV1::Bound(original) => original.authenticate(current),\n                    OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {\n                        for original in members.iter() {\n                            original.authenticate(current)?;",
+      "after": "                }\n                match &proof.call.source {\n                    OriginalPanelTrainingSourceV1::Individual => Err(Error::CommitUncertain),\n                    OriginalPanelTrainingSourceV1::Bound(original) => {\n                        original.authenticate(current)\n                    }\n                    OriginalPanelTrainingSourceV1::ReadbackMembers(members) => {\n                        for original in members.iter() {\n                            original.authenticate(current)?;"
+    }
+  ],
+  "guard_edit": {
+    "before": "\"OriginalPanelTrainingSourceV1::Bound(original) => original.authenticate(current)\"",
+    "after": "\"OriginalPanelTrainingSourceV1::Bound(original) => {\\n                        original.authenticate(current)\\n                    }\"",
+    "source_before": "OriginalPanelTrainingSourceV1::Bound(original) => original.authenticate(current)",
+    "source_after": "OriginalPanelTrainingSourceV1::Bound(original) => {\n                        original.authenticate(current)\n                    }",
+    "pin_before": "sha256:1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a CALLERS.toml",
+    "pin_after": "sha256:10c176e1a4b12a08e58c7019b1805abf39cd6b81a84aca52b274605367573703 CALLERS.toml"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "exact_replacements": 2,
+      "base_blob": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+      "post_blob": "838618b3aca1d7ecf4cfa3bde43eb78fe649de68",
+      "forward_equal": true,
+      "inverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "exact_replacements": 7,
+      "base_blob": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+      "post_blob": "3aba24ba741737488e7143d69847689bcc49820b",
+      "forward_equal": true,
+      "inverse_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "exact_replacements": 2,
+      "base_blob": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+      "post_blob": "85932452bf8cfdf9a67622b0add7f7af11d1a4ee",
+      "forward_equal": true,
+      "inverse_equal": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "exact_replacements": 1,
+      "base_blob": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+      "post_blob": "896af04e8934f124d124d21b4bea8f69cb0136af",
+      "forward_equal": true,
+      "inverse_equal": true
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "exact_replacements": 1,
+      "base_blob": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+      "post_blob": "72dbd585cd4283c1d8339799fa7262f63ab0bb00",
+      "forward_equal": true,
+      "inverse_equal": true
+    }
+  ],
+  "proof_normalization": {
+    "non_whitespace_equal": false,
+    "all_string_literals_equal": true,
+    "precise_changes": [
+      "begin: line wrapping plus optional trailing commas in nested Ok/Panel constructors",
+      "finish: Bound arm becomes one expression block returning original.authenticate(current), with no new statement or semicolon"
+    ],
+    "entire_file_equal_after_exact_bound_arm_reverse_and_optional_trailing_comma_and_whitespace_normalization": true
+  }
+}

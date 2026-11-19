@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.codeql-source-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "analyzed_commit": "285e971b3af3a93a79169b56a42263069e473057",
+  "candidate_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+  "check_run_id": 133210231982,
+  "analysis_id": 2176372976,
+  "scope": "Four source findings reviewed by root. This record does not dismiss an alert, change an analysis policy, or claim the remaining findings are resolved.",
+  "findings": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "line": 177,
+      "rule": "rust/hard-coded-cryptographic-value",
+      "reported_severity": "critical",
+      "classification": "noncryptographic_frame_counter",
+      "status": "SOURCE_REVIEW_COMPLETE_NO_CRYPTO_NONCE_CONSTANT_FOUND",
+      "evidence": [
+        "artifact_original_head_wire.rs describes a monotonic frame number and represents it as a u64 bounded to 1..128.",
+        "The value is encoded in a request header, checked for exact equality on decode/response, and is not supplied as an encryption IV or cryptographic primitive nonce.",
+        "OriginalArtifactHeadConnectionV1 consumes self for sign/readback/exchange, binds the actual peer PID/UID/boot/start/pidfd and signer context, and checks channel lifetime before the exchange."
+      ],
+      "limits": "This finding is about the reported constant as a cryptographic nonce; it is not a new whole-protocol security qualification."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "line": 789,
+      "rule": "rust/hard-coded-cryptographic-value",
+      "reported_severity": "critical",
+      "classification": "fully_overwritten_decode_buffer",
+      "status": "SOURCE_REVIEW_COMPLETE_REPORTED_CONSTANT_DOES_NOT_REACH_SUCCESS_RETURN",
+      "evidence": [
+        "decode_hex_array checks input length equals 2*N.",
+        "chunks_exact(2).enumerate() visits every one of the N output bytes; each is replaced with decoded high and low nibbles.",
+        "Any invalid nibble returns an error before the array is returned. The initial zero array is storage initialization, not a fixed successful output."
+      ],
+      "limits": "Caller-provided zero input remains caller-provided input; this proof does not establish nonce uniqueness for every caller."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "line": 168,
+      "rule": "rust/hard-coded-cryptographic-value",
+      "reported_severity": "critical",
+      "classification": "fully_overwritten_system_random_buffer",
+      "status": "SOURCE_REVIEW_COMPLETE_REPORTED_CONSTANT_DOES_NOT_REACH_SUCCESS_RETURN",
+      "evidence": [
+        "random_bytes opens /dev/urandom and read_exact fills the entire 32-byte buffer.",
+        "Both open and read_exact errors propagate with ?, so a short read or failure does not return the zero-initialized buffer."
+      ],
+      "limits": "This is a source-level proof of overwrite and failure propagation, not a new entropy-source experiment."
+    },
+    {
+      "path": "codex-rs/cli/src/login.rs",
+      "line": 467,
+      "rule": "rust/cleartext-logging",
+      "reported_severity": "high",
+      "classification": "intentional_partial_key_output_with_short_key_exposure",
+      "status": "REMEDIATION_REVIEW_PENDING",
+      "evidence": [
+        "safe_format_key returns *** for lengths<=13, non-ASCII input, or any ASCII control byte.",
+        "For any longer printable ASCII input it emits the first 8 and last 5 bytes. It therefore does not print the complete key, but a 14-byte input hides only one byte.",
+        "The existing long-key test explicitly expects visible prefix/suffix; the other three tests cover short, non-ASCII and control input."
+      ],
+      "reasoning_example": {
+        "synthetic_input": "ABCDEFGHIJKLMN",
+        "current_output": "ABCDEFGH***JKLMN",
+        "visible_original_bytes": 13,
+        "total_original_bytes": 14,
+        "native_test_claimed": false
+      },
+      "next_step": "Review existing non-HIA redaction histories and choose a source fix that preserves login-status success/failure behavior while avoiding recoverable credential fragments. Do not alter authentication or suppress the alert."
+    }
+  ],
+  "source_paths": [
+    "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+    "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+    "codex-rs/cli/src/login.rs"
+  ],
+  "changes_to_source_or_remote_alerts": 0,
+  "observed_utc": "2026-11-16T13:07:22.548316+00:00",
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "analyzed_blob": "4cb15642a4973761d0da0a3d62b19fef09be6fff",
+      "candidate_blob": "4cb15642a4973761d0da0a3d62b19fef09be6fff",
+      "bytes": 7326,
+      "sha256": "8be5d16b95e372198836658af92134d237cd25d5808c7bcfae901a34ea7ae7e2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_wire.rs",
+      "analyzed_blob": "1e6cad7a4dbc6f559169471b56d0634a64acb77e",
+      "candidate_blob": "1e6cad7a4dbc6f559169471b56d0634a64acb77e",
+      "bytes": 4456,
+      "sha256": "150895a8ded1bbeb8fd87174f8cba63a82a1d5020ec2d7b524ca83c70d82d939"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "analyzed_blob": "042dea1728fc7cb2d8db4b27680285d7db8b02cb",
+      "candidate_blob": "042dea1728fc7cb2d8db4b27680285d7db8b02cb",
+      "bytes": 64210,
+      "sha256": "98ae3d4ebe0271abf171d98514e24459f60fa10f8bf5bebdc2453589868400b7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "analyzed_blob": "72f0677f42cc83c69a9a7bd242ffa5317062f297",
+      "candidate_blob": "72f0677f42cc83c69a9a7bd242ffa5317062f297",
+      "bytes": 20745,
+      "sha256": "38d26c2744a9c2ce0ebb323253223e503022ad0aea2aaad48d97722f57a7c87b"
+    },
+    {
+      "path": "codex-rs/cli/src/login.rs",
+      "analyzed_blob": "a2612f3db6084784a6c4d10db73d2bf4cec39700",
+      "candidate_blob": "a2612f3db6084784a6c4d10db73d2bf4cec39700",
+      "bytes": 22227,
+      "sha256": "a18109e15b321dbeeae421ae8c5e5b03f23b6145f66226599a67c8977220b6b5"
+    }
+  ]
+}

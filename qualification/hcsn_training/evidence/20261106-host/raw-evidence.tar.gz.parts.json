@@ -1,0 +1,31 @@
+{
+  "collection_manifest": "qa/repository-consolidation/20261116/retained-evidence-parts/MANIFEST.json",
+  "original": {
+    "bytes": 986509,
+    "mode": "100644",
+    "oid": "fd246d9c80553e908f1b8a209948602becc71ebd",
+    "original_incoming_commits": [
+      "dddb627b62ae910f27c4601bfe61987d126b0fb1"
+    ],
+    "parts": [
+      {
+        "bytes": 500000,
+        "offset": 0,
+        "oid": "092a82fb31f4fcb4f2a25d5822daa5179917d671",
+        "path": "qualification/hcsn_training/evidence/20261106-host/raw-evidence.tar.gz.part-001",
+        "sha256": "723ca21085829d75d4f2a3a24b2b0d5e63f36f86b99587e24f919e2a8842f0ec"
+      },
+      {
+        "bytes": 486509,
+        "offset": 500000,
+        "oid": "e721a273fa3823d072418b2c172ca40db80a935e",
+        "path": "qualification/hcsn_training/evidence/20261106-host/raw-evidence.tar.gz.part-002",
+        "sha256": "4772d34bf07d878e4f780cd59f28af3271020c2523efb7faf548d26d9d8f101a"
+      }
+    ],
+    "path": "qualification/hcsn_training/evidence/20261106-host/raw-evidence.tar.gz",
+    "sha256": "5414d5320c37ff9348e71ddebca1543c21f4fa0c056ae1537eb6a03207a1db2d"
+  },
+  "restore_command": "python3 qa/repository-consolidation/20261116/retained-evidence-parts/verify.py --restore-to /tmp/hepta-retained-evidence-originals",
+  "schema": "hepta.retained-evidence-parts.v1"
+}

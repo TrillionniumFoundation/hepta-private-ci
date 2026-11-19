@@ -1,0 +1,596 @@
+--- /dev/null
++++ b/experiments/verification_cell_verify1/model_decisions.py
+@@ -0,0 +1,157 @@
++"""Recompute declared decisions and budget transitions without executing a model.
++
++This checks consistency with the retained plan, not its authenticity or the
++quality of its risk forecasts. The v1 plan declares intervention step 2 and
++budget 1 in an exact, versioned scope string. Those legacy semantics are not
++inferred from observed decisions. A different schedule needs a new contract.
++"""
++
++import math
++
++from .model_protocol import ARMS, VERSION, digest
++from .model_readbacks import readback_bindings
++
++
++def _number(value, maximum=None):
++    if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
++        raise ValueError("invalid nonnegative decision quantity")
++    if maximum is not None and value > maximum:
++        raise ValueError("decision probability exceeds one")
++    return value
++
++
++def _key(record, tick=False):
++    case, arm = record["case_id"], record["arm"]
++    if any(type(value) is not str or not value for value in (case, arm)):
++        raise ValueError("invalid decision identity")
++    if not tick:
++        return case, arm
++    step = record["tick"]
++    if type(step) is not int or step not in (1, 2, 3):
++        raise ValueError("invalid decision frontier")
++    return case, arm, step
++
++
++def decision_bindings(plan, assessments, operations, trajectories, decisions):
++    """Fail closed on a missing, altered or unplanned decision/check/budget.
++
++The complete trajectory roster comes from the plan; reached decision frontiers
++come from completed trajectories cross-checked against actual effect receipts.
++Inference identity and acceptance are separate gates in ``model_summary``.
++"""
++    try:
++        if plan["version"] != VERSION or plan["intervention_scope"] != (
++            "one confirmation source group, actual step2 policy override, "
++            "budget1; model/evidence unchanged"
++        ):
++            return False
++        if plan["optional_steps"] != [2, 3] or tuple(plan["arms"]) != ARMS:
++            return False
++        cost = _number(plan["optional_cost"])
++        budget = _number(plan["optional_budget"])
++        loss = _number(plan["error_loss"])
++        settings = {}
++        for setting in plan["interventions"]:
++            if type(setting) is not dict or set(setting) != {"name", "risk", "cost"}:
++                return False
++            name = setting["name"]
++            if type(name) is not str or not name or "intervention/" + name in settings:
++                return False
++            _number(setting["risk"], 1)
++            _number(setting["cost"])
++            settings["intervention/" + name] = setting
++        cases = {case["goal"]["task_id"]: case for case in plan["cases"]["confirmation"]}
++        if len(cases) != len(plan["cases"]["confirmation"]):
++            return False
++        planned = {_key(row) for row in plan["planned_trajectories"]}
++        rows = {_key(row): row for row in trajectories}
++        if not planned or len(planned) != len(plan["planned_trajectories"]):
++            return False
++        if len(rows) != len(trajectories) or set(rows) != planned:
++            return False
++        if any(case not in cases or arm not in (*ARMS, *settings) for case, arm in planned):
++            return False
++        expected, effects = set(), set()
++        for (case, arm), row in rows.items():
++            reached = row["reached_step"]
++            if row["status"] != "completed" or row["split"] != "confirmation":
++                return False
++            if type(reached) is not int or reached not in (2, 3):
++                return False
++            if type(row["interrupted"]) is not bool or (not row["interrupted"] and reached != 3):
++                return False
++            if row["source_group"] != cases[case]["source_group"]:
++                return False
++            steps = [2] if arm in settings else plan["optional_steps"]
++            expected.update((case, arm, step) for step in steps if step <= reached)
++            effects.update((case, arm, step) for step in range(1, reached + 1))
++        indexed = {_key(row, tick=True): row for row in decisions}
++        if len(indexed) != len(decisions) or set(indexed) != expected:
++            return False
++        by_id = {row["assessment_id"]: row for row in assessments}
++        if len(by_id) != len(assessments):
++            return False
++        actual_effects, actual_checks, operation_ids = set(), set(), set()
++        for operation in operations:
++            if operation["operation_id"] in operation_ids:
++                return False
++            operation_ids.add(operation["operation_id"])
++            context = operation["context"]
++            kind = operation["kind"]
++            if kind == "optional_host_check" or (
++                kind == "host_effect" and context.get("split") == "confirmation"
++            ):
++                if operation["status"] != "completed" or context["split"] != "confirmation":
++                    return False
++                key = _key(context, tick=True)
++                target = actual_checks if kind == "optional_host_check" else actual_effects
++                if key in target:
++                    return False
++                target.add(key)
++        if actual_effects != effects:
++            return False
++        selected_checks = set()
++        for case, arm in sorted(planned):
++            setting = settings.get(arm)
++            remaining = 1.0 if setting is not None else budget
++            for step in ([2] if setting is not None else plan["optional_steps"]):
++                key = case, arm, step
++                if key not in expected:
++                    continue
++                decision = indexed[key]
++                assessment = by_id[decision["assessment_id"]]
++                context = assessment["context"]
++                if _key(context, tick=True) != key or context["split"] != "confirmation":
++                    return False
++                if decision["split"] != "confirmation":
++                    return False
++                if assessment["arm"] != ("single" if setting is not None else arm):
++                    return False
++                score = _number(assessment["score"], 1)
++                if _number(decision["raw_model_score"], 1) != score:
++                    return False
++                if assessment["evidence_sha256"] != digest(assessment["view"]):
++                    return False
++                if decision["evidence_sha256"] != assessment["evidence_sha256"]:
++                    return False
++                risk, price = (setting["risk"], setting["cost"]) if setting is not None else (score, cost)
++                if _number(decision["policy_risk_input"], 1) != risk:
++                    return False
++                if _number(decision["declared_check_cost"]) != price:
++                    return False
++                if _number(decision["budget_before"]) != remaining:
++                    return False
++                # Canonical comparison also rejects bool-for-number substitution.
++                if digest(decision["intervention"]) != digest(setting):
++                    return False
++                selected = price <= remaining and risk * loss >= price
++                if arm == "fixed_check":
++                    selected = step == 3 and price <= remaining
++                if decision["selection"] != ("check" if selected else "defer"):
++                    return False
++                if selected:
++                    selected_checks.add(key)
++                    remaining = round(remaining - price, 10)
++        return selected_checks == actual_checks and readback_bindings(cases, settings, operations, rows, indexed, by_id)
++    except (KeyError, TypeError, ValueError, IndexError, OverflowError):
++        return False
+--- /dev/null
++++ b/experiments/verification_cell_verify1/model_readbacks.py
+@@ -0,0 +1,123 @@
++"""Bind recorded fixture checks and reconstruct the completed host control flow.
++
++These are consistency checks on retained records, not signatures or independent
++attestation of the SQLite state. Actual acceptance authority stays with the host.
++"""
++
++import re
++
++from .model_protocol import digest, public_view
++
++
++_REASONS = {
++    "proved": {"finite_fixture_goal_and_owner_readback"},
++    "refuted": {"goal_values_mismatch"},
++    "unknown": {"state_frontier_mismatch", "incomplete_owner_intents",
++                "missing_ack_requires_readback", "host_authorization_denied"},
++}
++_ASSUMPTIONS = ["controller_goal_is_trusted", "sqlite_transaction_is_exclusive", "fixture_owner_is_trusted"]
++
++
++def _report(report, goal, tick, mandatory):
++    required = {"subject_sha256", "state_version", "property", "assumptions", "checker_id", "checker_version",
++                "evidence_sha256", "checked_step", "verdict", "reason", "residual_obligations", "accepted", "production_authority"}
++    if type(report) is not dict or set(report) != required:
++        raise ValueError("incomplete checker report")
++    if report["subject_sha256"] != digest(goal) or report["property"] != "fixture_goal_and_owner_readback_at_snapshot":
++        raise ValueError("checker subject or property mismatch")
++    if (report["assumptions"] != _ASSUMPTIONS or report["checker_id"] != "verify1.sqlite.goal"
++            or report["checker_version"] != "1" or report["production_authority"] != "NONE"):
++        raise ValueError("unknown checker contract")
++    if type(report["checked_step"]) is not int or report["checked_step"] != tick:
++        raise ValueError("checker frontier mismatch")
++    if type(report["state_version"]) is not int or report["state_version"] != min(tick, 3):
++        raise ValueError("checker state version mismatch")
++    evidence = report["evidence_sha256"]
++    if type(evidence) is not str or re.fullmatch("[0-9a-f]{64}", evidence) is None:
++        raise ValueError("invalid checker evidence digest")
++    verdict, reason = report["verdict"], report["reason"]
++    if verdict not in _REASONS or reason not in _REASONS[verdict]:
++        raise ValueError("invalid checker verdict and reason")
++    if report["residual_obligations"] != ([] if verdict == "proved" else [reason]):
++        raise ValueError("checker residual obligation mismatch")
++    if type(report["accepted"]) is not bool or report["accepted"] != (mandatory and verdict == "proved"):
++        raise ValueError("checker acceptance mismatch")
++    return report
++
++
++def readback_bindings(cases, settings, operations, rows, decisions, assessments):
++    """Rebuild effects, optional checks, reconciliation and terminal acceptance.
++
++The loop never uses a row's claimed reached/detected/interrupted state to decide
++which events to require. Unknown missing-ACK optional checks reconcile once and
++continue; the reserved terminal check can read back once more after reconciliation.
++"""
++    kinds = {"host_effect", "optional_host_check", "mandatory_host_check",
++             "host_reconcile_without_replay", "independent_outcome_label"}
++    grouped = {key: [] for key in rows}
++    for operation in operations:
++        context = operation["context"]
++        if operation["kind"] not in kinds or context.get("split") != "confirmation":
++            continue
++        key = context["case_id"], context["arm"]
++        if key not in grouped or operation["status"] != "completed":
++            return False
++        grouped[key].append(operation)
++    for key, row in rows.items():
++        case, arm = key
++        goal, events, cursor = cases[case]["goal"], grouped[key], 0
++
++        def take(kind, tick=None):
++            nonlocal cursor
++            operation = events[cursor]
++            cursor += 1
++            context = {"case_id": case, "arm": arm, "split": "confirmation"}
++            if tick is not None:
++                context["tick"] = tick
++            if operation["kind"] != kind or digest(operation["context"]) != digest(context):
++                raise ValueError("host control-flow event mismatch")
++            return operation["result"]
++
++        def check(tick, mandatory):
++            nonlocal detected
++            report = _report(take("mandatory_host_check" if mandatory else "optional_host_check", tick), goal, tick, mandatory)
++            if report["verdict"] != "proved" and detected is None:
++                detected = tick
++            if report["reason"] == "missing_ack_requires_readback":
++                recovery = take("host_reconcile_without_replay", tick)
++                if digest(recovery) != digest({"resolved": True, "effects_replayed": 0, "reason": "actual_snapshot_readback"}):
++                    raise ValueError("missing ACK recovery must reconcile without replay")
++                if mandatory:
++                    report = _report(take("mandatory_host_check", tick), goal, tick, True)
++            return report
++
++        detected, interrupted, accepted, acks = None, False, False, []
++        for tick in (1, 2, 3):
++            effect = take("host_effect", tick)
++            if (type(effect) is not dict or set(effect) != {"operation_id", "ack", "replayed"}
++                    or effect["operation_id"] != f"{case}/step/{tick}"
++                    or effect["replayed"] is not False or type(effect["ack"]) is not bool):
++                return False
++            acks.append(effect["ack"])
++            if tick not in ((2,) if arm in settings else (2, 3)):
++                continue
++            decision = decisions[case, arm, tick]
++            if assessments[decision["assessment_id"]]["view"] != public_view(acks):
++                return False
++            if decision["selection"] == "check":
++                report = check(tick, False)
++                if report["verdict"] != "proved" and report["reason"] != "missing_ack_requires_readback":
++                    interrupted = True
++                    break
++        if not interrupted:
++            accepted = check(4, True)["accepted"]
++        label = take("independent_outcome_label")
++        if cursor != len(events) or type(label) is not bool or row["outcome_error"] is not label:
++            return False
++        if type(row["accepted"]) is not bool or row["accepted"] != accepted or row["interrupted"] != interrupted:
++            return False
++        if row["reached_step"] != tick or row["detected_step"] != detected:
++            return False
++        if row["detected_step"] is not None and type(row["detected_step"]) is not int:
++            return False
++    return True
+--- a/experiments/verification_cell_verify1/model_summary.py
++++ b/experiments/verification_cell_verify1/model_summary.py
+@@ -8,6 +8,7 @@
+ from .model_protocol import ARMS, digest, file_sha
+ from .model_heads import parameter_digest
+ from .model_audit import inference_bindings, panel_bindings
++from .model_decisions import decision_bindings
+ 
+ 
+ def records(directory, name):
+@@ -143,6 +144,7 @@
+     gates = {"all_planned_trajectories_completed": len(rows) == len(planned) and all(row["status"] == "completed" for row in rows),
+              "all_uninterrupted_panels_completed": panel_bindings(panels, operations, plan),
+              "live_inference_and_selected_check_provenance": inference_bindings(records(directory, "assessments.jsonl"), operations, rows, decisions),
++             "plan_bound_decisions_and_budgets": decision_bindings(plan, records(directory, "assessments.jsonl"), operations, rows, decisions),
+              "source_unchanged": source_now == plan["source_sha256"],
+              "three_actual_distinct_readout_parameters": len(heads) == 3 and len({parameter_digest(head) for head in heads}) == 3,
+              "both_bases_executed": all(any(op["kind"] == "model_score" and op.get("model") == model and op["status"] == "completed" for op in operations) for model in ("qwen", "smol")),
+--- /dev/null
++++ b/experiments/verification_cell_verify1/test_model_decisions.py
+@@ -0,0 +1,289 @@
++"""Exercise the gate on SQLite fixtures or a read-only retained model run."""
++
++import argparse
++import copy
++import hashlib
++import json
++from pathlib import Path
++import sys
++import tempfile
++import unittest
++
++from .model_audit import inference_bindings
++from .model_decisions import decision_bindings
++from .model_policy import Pilot
++from .model_protocol import Journal, cases, frozen_plan
++from .model_summary import summarize
++from .test_model_policy import UnitOnlyScore, dependencies
++
++
++INPUTS = ("plan.json", "assessments.jsonl", "operations.jsonl", "trajectory_rows.jsonl", "decisions.jsonl")
++
++
++def read_inputs(directory):
++    data, hashes = [], {}
++    for name in INPUTS:
++        raw = (directory / name).read_bytes()
++        hashes[name] = hashlib.sha256(raw).hexdigest()
++        data.append([json.loads(line) for line in raw.splitlines()] if name.endswith("jsonl") else json.loads(raw))
++    return data, hashes
++
++
++class DecisionBindingsTests(unittest.TestCase):
++    run_directory = None
++
++    @classmethod
++    def setUpClass(cls):
++        if cls.run_directory is None:
++            temporary = tempfile.TemporaryDirectory()
++            cls.addClassCleanup(temporary.cleanup)
++            cls.directory = Path(temporary.name) / "fixture"
++            plan = frozen_plan()
++            selected = [next(c for c in cases("confirmation") if c["fault"] == fault)
++                        for fault in ("clean", "missing_receipt", "semantic_error", "stale_read")]
++            arms = ["single", "fixed_check"] + ["intervention/" + s["name"] for s in plan["interventions"]]
++            plan["planned_trajectories"] = [{"case_id": case["goal"]["task_id"], "arm": arm} for case in selected for arm in arms]
++            journal = Journal(cls.directory, plan)
++            pilot = Pilot(journal, dependencies(), UnitOnlyScore(0.3), plan)
++            pilot.prior = 0.3
++            for case in selected:
++                for arm in ("single", "fixed_check"):
++                    pilot.trajectory(case, arm)
++                for setting in plan["interventions"]:
++                    pilot.trajectory(case, "single", setting)
++        else:
++            cls.directory = cls.run_directory
++        cls.original, cls.input_sha256 = read_inputs(cls.directory)
++
++    def data(self):
++        return copy.deepcopy(self.original)
++
++    def primary(self, data, step=2):
++        full = {(r["case_id"], r["arm"]) for r in data[3] if r["reached_step"] == 3}
++        return next(d for d in data[4] if d["arm"] == "single" and d["tick"] == step and d["selection"] == "check" and (d["case_id"], d["arm"]) in full)
++
++    def test_original_and_smaller_declared_roster(self):
++        self.assertTrue(decision_bindings(*self.original))
++        data = self.data()
++        chosen = self.primary(data)
++        pair = chosen["case_id"], chosen["arm"]
++        data[0]["planned_trajectories"] = [{"case_id": pair[0], "arm": pair[1]}]
++        data[3] = [r for r in data[3] if (r["case_id"], r["arm"]) == pair]
++        data[4] = [d for d in data[4] if (d["case_id"], d["arm"]) == pair]
++        data[2] = [o for o in data[2] if o["context"].get("split") != "confirmation" or (o["context"].get("case_id"), o["context"].get("arm")) == pair]
++        self.assertTrue(decision_bindings(*data))
++
++    def test_risk_cost_and_budget_tampering(self):
++        changes = [("policy_risk_input", 0.0), ("declared_check_cost", -100), ("budget_before", -1),
++                   ("declared_check_cost", 0.1), ("budget_before", 0.5), ("policy_risk_input", True),
++                   ("declared_check_cost", float("nan")), ("budget_before", float("inf"))]
++        for field, value in changes:
++            with self.subTest(field=field, value=value):
++                data = self.data()
++                self.primary(data)[field] = value
++                self.assertFalse(decision_bindings(*data))
++
++    def test_budget_is_carried_after_a_check(self):
++        data = self.data()
++        first = self.primary(data)
++        second = next(d for d in data[4] if d["case_id"] == first["case_id"] and d["arm"] == first["arm"] and d["tick"] == 3)
++        second["budget_before"] = first["budget_before"]
++        self.assertFalse(decision_bindings(*data))
++        for field, value in (("optional_budget", 0.5), ("optional_cost", 0.3), ("error_loss", 0.0)):
++            with self.subTest(plan_field=field):
++                data = self.data()
++                data[0][field] = value
++                self.assertFalse(decision_bindings(*data))
++
++    def test_matching_removed_check_cannot_hide_wrong_selection(self):
++        data = self.data()
++        decision = self.primary(data)
++        decision["selection"] = "defer"
++        data[2] = [o for o in data[2] if not (o["kind"] == "optional_host_check" and all(o["context"].get(k) == decision[k] for k in ("case_id", "arm", "tick")))]
++        self.assertFalse(decision_bindings(*data))
++
++    def test_fixed_check_cannot_move_to_an_earlier_frontier(self):
++        data = self.data()
++        decision = next(d for d in data[4] if d["arm"] == "fixed_check" and d["tick"] == 2)
++        decision["selection"] = "check"
++        operation = copy.deepcopy(next(o for o in data[2] if o["kind"] == "optional_host_check"))
++        operation.update(operation_id="unit/forged-early-check", context={k: decision[k] for k in ("split", "case_id", "arm", "tick")})
++        data[2].append(operation)
++        self.assertFalse(decision_bindings(*data))
++
++    def test_intervention_is_bound_to_its_frozen_setting(self):
++        for change in ("setting", "input", "budget", "model_arm"):
++            with self.subTest(change=change):
++                data = self.data()
++                d = next(d for d in data[4] if d["arm"] == "intervention/risk_high")
++                if change == "setting":
++                    d["intervention"]["risk"] = 0.8
++                    d["policy_risk_input"] = 0.8
++                elif change == "input":
++                    d["policy_risk_input"] = d["raw_model_score"]
++                elif change == "budget":
++                    d["budget_before"] = data[0]["optional_budget"]
++                else:
++                    next(a for a in data[1] if a["assessment_id"] == d["assessment_id"])["arm"] = "roles_two"
++                self.assertFalse(decision_bindings(*data))
++
++    def test_missing_duplicate_and_extra_decisions(self):
++        for change in ("missing", "duplicate", "extra"):
++            with self.subTest(change=change):
++                data = self.data()
++                if change == "missing":
++                    data[4].pop()
++                else:
++                    extra = copy.deepcopy(self.primary(data))
++                    if change == "extra":
++                        extra["tick"] = 1
++                    data[4].append(extra)
++                self.assertFalse(decision_bindings(*data))
++
++    def test_declared_frontier_cannot_hide_actual_later_effect(self):
++        data = self.data()
++        chosen = self.primary(data)
++        row = next(r for r in data[3] if r["case_id"] == chosen["case_id"] and r["arm"] == chosen["arm"])
++        row.update(reached_step=2, interrupted=True)
++        data[4] = [d for d in data[4] if not (d["case_id"] == row["case_id"] and d["arm"] == row["arm"] and d["tick"] == 3)]
++        self.assertFalse(decision_bindings(*data))
++
++    def test_check_execution_must_match_the_selection(self):
++        for change in ("missing", "duplicate", "failed", "unplanned"):
++            with self.subTest(change=change):
++                data = self.data()
++                operation = next(o for o in data[2] if o["kind"] == "optional_host_check")
++                if change == "missing":
++                    data[2].remove(operation)
++                elif change == "duplicate":
++                    extra = copy.deepcopy(operation)
++                    extra["operation_id"] = "unit/duplicate-check"
++                    data[2].append(extra)
++                elif change == "failed":
++                    operation["status"] = "failed"
++                else:
++                    operation["context"]["case_id"] = "unplanned"
++                self.assertFalse(decision_bindings(*data))
++
++    def test_checker_report_identity_and_contract(self):
++        changes = [("subject_sha256", "0" * 64), ("checked_step", 99), ("state_version", 0),
++                   ("property", "unrelated"), ("assumptions", []), ("checker_id", "untrusted"),
++                   ("checker_version", "999"), ("evidence_sha256", "bad"), ("verdict", "invalid"),
++                   ("reason", "invented"), ("residual_obligations", ["invented"]),
++                   ("accepted", True), ("production_authority", "GRANTED")]
++        for field, value in changes:
++            with self.subTest(field=field):
++                data = self.data()
++                next(o for o in data[2] if o["kind"] == "optional_host_check")["result"][field] = value
++                self.assertFalse(decision_bindings(*data))
++        for kind in ("optional_host_check", "mandatory_host_check"):
++            data = self.data()
++            next(o for o in data[2] if o["kind"] == kind)["result"] = {}
++            self.assertFalse(decision_bindings(*data))
++        data = self.data()
++        first = next(o for o in data[2] if o["kind"] == "optional_host_check")
++        other = next(o for o in data[2] if o["kind"] == "optional_host_check" and o["context"]["case_id"] != first["context"]["case_id"])
++        first["result"] = copy.deepcopy(other["result"])
++        self.assertFalse(decision_bindings(*data))
++
++    def test_deleted_suffix_cannot_fabricate_an_early_interrupt(self):
++        for detected in (None, 2, 3):
++            with self.subTest(detected=detected):
++                data = self.data()
++                row = next(r for r in data[3] if r["arm"] == "fixed_check" and r["detected_step"] == 3)
++                row.update(reached_step=2, interrupted=True, detected_step=detected)
++                def removed(record):
++                    return all(record.get(k) == row[k] for k in ("case_id", "arm")) and record.get("tick") == 3
++                data[4] = [d for d in data[4] if not removed(d)]
++                data[2] = [o for o in data[2] if not (o["kind"] in ("host_effect", "optional_host_check") and removed(o["context"]))]
++                self.assertFalse(decision_bindings(*data))
++
++    def test_reconciliation_and_terminal_retry_are_required(self):
++        for field, value in (("effects_replayed", 1), ("resolved", False)):
++            data = self.data()
++            next(o for o in data[2] if o["kind"] == "host_reconcile_without_replay")["result"][field] = value
++            self.assertFalse(decision_bindings(*data))
++        data = self.data()
++        recovery = next(o for o in data[2] if o["kind"] == "host_reconcile_without_replay" and o["context"]["tick"] == 4)
++        index = data[2].index(recovery)
++        del data[2][index + 1]
++        self.assertFalse(decision_bindings(*data))
++
++    def test_detected_step_and_host_event_order_are_rebuilt(self):
++        data = self.data()
++        next(r for r in data[3] if r["detected_step"] is not None)["detected_step"] = 99
++        self.assertFalse(decision_bindings(*data))
++        data = self.data()
++        check_index = next(i for i, o in enumerate(data[2]) if o["kind"] == "optional_host_check")
++        check = data[2][check_index]
++        effect_index = next(i for i, o in enumerate(data[2]) if o["kind"] == "host_effect" and o["context"] == check["context"])
++        data[2][check_index], data[2][effect_index] = data[2][effect_index], data[2][check_index]
++        self.assertFalse(decision_bindings(*data))
++
++    def test_malformed_and_incomplete_records_fail_closed(self):
++        mutations = [lambda d: d[0].update(version="unknown"), lambda d: d[0].update(intervention_scope="budget2"),
++                     lambda d: d[0].update(optional_budget=True), lambda d: d[0]["interventions"].append(d[0]["interventions"][0]),
++                     lambda d: d[3].pop(), lambda d: d[3].append(d[3][0]),
++                     lambda d: d[3][0].update(status="failed"), lambda d: d[4][0].update(tick=True),
++                     lambda d: d[4][0].pop("budget_before"), lambda d: d[4][0].update(split="calibration"),
++                     lambda d: d[4][0].update(assessment_id="absent")]
++        for index, mutate in enumerate(mutations):
++            with self.subTest(index=index):
++                data = self.data()
++                mutate(data)
++                self.assertFalse(decision_bindings(*data))
++
++    def test_summary_uses_the_gate_without_relabeling_historical_source(self):
++        report = summarize(self.directory, None, 0, 0)
++        self.assertTrue(report["engineering_gates"]["plan_bound_decisions_and_budgets"])
++        with tempfile.TemporaryDirectory() as temporary:
++            target = Path(temporary)
++            for path in self.directory.glob("*.json*"):
++                (target / path.name).write_bytes(path.read_bytes())
++            data = self.data()
++            self.primary(data)["declared_check_cost"] = -100
++            (target / "decisions.jsonl").write_text("".join(json.dumps(d) + "\n" for d in data[4]))
++            self.assertFalse(summarize(target, None, 0, 0)["engineering_gates"]["plan_bound_decisions_and_budgets"])
++        if self.run_directory is not None:
++            self.assertFalse(report["engineering_gates"]["source_unchanged"])
++        self.assertEqual(read_inputs(self.directory)[1], self.input_sha256)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--run-dir", type=Path)
++    parser.add_argument("--receipt", type=Path, required=True)
++    args = parser.parse_args()
++    if args.receipt.exists():
++        parser.error("receipt is create-only")
++    DecisionBindingsTests.run_directory = args.run_dir
++    suite = unittest.defaultTestLoader.loadTestsFromTestCase(DecisionBindingsTests)
++    result = unittest.TextTestRunner(verbosity=2).run(suite)
++    data = DecisionBindingsTests.original
++    historical = []
++    if args.run_dir is not None:
++        for field, value in (("policy_risk_input", 0.0), ("declared_check_cost", -100), ("budget_before", -1)):
++            modified = copy.deepcopy(data)
++            next(d for d in modified[4] if d["arm"] == "single" and d["selection"] == "check")[field] = value
++            historical.append({"field": field, "mutated_value": value,
++                               "original_inference_gate": inference_bindings(modified[1], modified[2], modified[3], modified[4]),
++                               "new_decision_gate": decision_bindings(*modified)})
++    after = read_inputs(args.run_dir)[1] if args.run_dir is not None else None
++    receipt = {"schema": "hepta.verify1.decision-bindings-replay.v1", "mode": "retained_read_only" if args.run_dir else "unit_fixture",
++               "optimization": sys.flags.optimize, "tests": result.testsRun, "successful": result.wasSuccessful(),
++               "failures": len(result.failures), "errors": len(result.errors), "source_commit": None,
++               "trajectories": len(data[3]), "decisions": len(data[4]), "operations": len(data[2]),
++               "input_sha256": DecisionBindingsTests.input_sha256, "input_sha256_after": after,
++               "originals_unchanged": after == DecisionBindingsTests.input_sha256 if after is not None else None,
++               "original_gate_mutation_observations": historical, "new_model_calls": 0,
++               "scope": "decision integrity only; no model, training, host-effect or scientific-benefit rerun",
++               "source_sha256": {name: hashlib.sha256((Path(__file__).parent / name).read_bytes()).hexdigest()
++                                 for name in ("model_decisions.py", "model_readbacks.py", "model_summary.py", "test_model_decisions.py")}}
++    with args.receipt.open("x") as stream:
++        stream.write(json.dumps(receipt, indent=2, allow_nan=False) + "\n")
++    print(json.dumps(receipt, allow_nan=False))
++    return 0 if result.wasSuccessful() and receipt["originals_unchanged"] is not False else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

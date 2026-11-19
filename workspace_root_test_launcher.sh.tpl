@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Bazel's test-setup.sh prepends "." to launch top-level test executables.
+# This launcher resolves the test through runfiles, so restore the incoming PATH.
+# Remove only that one injected prefix, preserving all caller-provided entries.
+if [[ "${BAZEL_TEST:-}" == "1" && "${PATH:-}" == ".:"* ]]; then
+  export PATH="${PATH#.:}"
+fi
+
 resolve_runfile() {
   local logical_path="$1"
   local workspace_logical_path="${logical_path}"

@@ -1,0 +1,318 @@
+{
+  "schema": "trillionnium.library-source-custody.v1",
+  "observed_utc": "2026-11-07T02:54:49Z",
+  "disposition": "ARCHIVE_ONLY_DRAFT_HOLD",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "branch": "main",
+    "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "tree": "75dc1c1f65375c97da259d947c465a04f030461d"
+  },
+  "counts": {
+    "library_path_occurrences": 13,
+    "unique_source_identities": 12,
+    "unique_bytes": 98272,
+    "path_occurrence_bytes": 107035,
+    "python_path_occurrences": 11,
+    "python_unique_identities": 10,
+    "rust_snippets": 2,
+    "duplicate_groups": 1
+  },
+  "source_files": [
+    {
+      "original_library_paths": [
+        "/dual_lock_resolution_gate.py"
+      ],
+      "original_library_file_ids": [
+        "file_0000000019008206b46e6ede0967d618"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/dual_lock_resolution_gate.py",
+      "bytes": 8684,
+      "sha256": "2c39b5c92f51a5002fd64c8bb5a6eb224e2f9f8d4e471ecba7d0f462b3c04ed6",
+      "git_blob_sha1": "1135a5eaff18ccecf7e4994144c8d8840ee77147",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "1135a5eaff18ccecf7e4994144c8d8840ee77147",
+        "utf8_byte_length": 8684,
+        "match": true
+      },
+      "owner_basis": "hepta.matrix-isolated-dual-lock-verification.v1; dual-lock Cargo/metadata preflight for codex-hepta-matrix-sdk and codex-hepta-matrixd",
+      "target_path_hint": null,
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/test_dual_lock_resolution_gate.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000ddb48206860e1ef444de234f"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/test_dual_lock_resolution_gate.py",
+      "bytes": 6850,
+      "sha256": "a08fc144aaac2e151289d883638c19cd2153f1697e102182a09eb366c6c70fad",
+      "git_blob_sha1": "617aca02b890d5059706b6b36dbb68ebe7afbf07",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "617aca02b890d5059706b6b36dbb68ebe7afbf07",
+        "utf8_byte_length": 6850,
+        "match": true
+      },
+      "owner_basis": "paired unittest module for dual_lock_resolution_gate.py",
+      "target_path_hint": null,
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_neuron_fail_closed_tests.rs"
+      ],
+      "original_library_file_ids": [
+        "file_000000006f9c81fa8bbb09d25369be5c"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_neuron_fail_closed_tests.rs",
+      "bytes": 2160,
+      "sha256": "422897868c5b0bd2fc80d4922a3171fe654e6a48fd30f40ba80b00c187142572",
+      "git_blob_sha1": "6fd11f5cea0573f95ef0a31466bec4ddc8a74930",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "6fd11f5cea0573f95ef0a31466bec4ddc8a74930",
+        "utf8_byte_length": 2160,
+        "match": true
+      },
+      "owner_basis": "source comment explicitly targets codex-rs/hepta-neuron/src/runtime_tests.rs and pins baseline 78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+      "target_path_hint": "codex-rs/hepta-neuron/src/runtime_tests.rs (append-only snippet; not applied)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_selected_cas_integration.rs"
+      ],
+      "original_library_file_ids": [
+        "file_00000000f4888206b6a1eac4e8b97541"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_selected_cas_integration.rs",
+      "bytes": 10410,
+      "sha256": "f38decb3162da92c2373a3c125c61ea870f2cdfc3f14f7a65728dc9c60f55724",
+      "git_blob_sha1": "b83e36555fcf4176ac06d4eac50f454ce7d37de8",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "b83e36555fcf4176ac06d4eac50f454ce7d37de8",
+        "utf8_byte_length": 10410,
+        "match": true
+      },
+      "owner_basis": "imports codex_hepta_learning_artifacts and codex_hepta_types; codex-rs crate context",
+      "target_path_hint": null,
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/matrix_security_preflight.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000dd4881fa9eab4b2f07c9dc86"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/matrix_security_preflight.py",
+      "bytes": 6991,
+      "sha256": "785bd5472644a824af3e8ef6282b53610637f91b0f3b13255cb8348d2bb80bf3",
+      "git_blob_sha1": "6ffc9d42b32c2b7a6f4bc528f4cc76c2b5835f8b",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "6ffc9d42b32c2b7a6f4bc528f4cc76c2b5835f8b",
+        "utf8_byte_length": 6991,
+        "match": true
+      },
+      "owner_basis": "hepta.matrix-sdk-p0-lock-preflight.v1; explicit codex-hepta-matrix-sdk and codex-hepta-matrixd roots",
+      "target_path_hint": null,
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/test_matrix_security_preflight.py"
+      ],
+      "original_library_file_ids": [
+        "file_0000000080cc81fa8da31a4fb718da78"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/test_matrix_security_preflight.py",
+      "bytes": 4826,
+      "sha256": "93ee955e1c9facb41be2740c024f96d0500160683e6f6850b48840c8cb8da40e",
+      "git_blob_sha1": "581bafc38ddd38b5e3073ab771e4ca44816d1835",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "581bafc38ddd38b5e3073ab771e4ca44816d1835",
+        "utf8_byte_length": 4826,
+        "match": true
+      },
+      "owner_basis": "paired unittest module for matrix_security_preflight.py",
+      "target_path_hint": null,
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_physical_token_reviewer_v1.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000c31881f5a1d67f2809b584d9"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_physical_token_reviewer_v1.py",
+      "bytes": 21755,
+      "sha256": "193fd2f4b148f838c554c53a1327197564a47a78616435d484488e2118d98b9f",
+      "git_blob_sha1": "434b7b71150d4aa36870d05e0d9276ae48430975",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "434b7b71150d4aa36870d05e0d9276ae48430975",
+        "utf8_byte_length": 21755,
+        "match": true
+      },
+      "owner_basis": "imports neuron_shared_encoder sibling modules and physical pooled replay/token reader components",
+      "target_path_hint": "neuron_shared_encoder/physical_token_reviewer_v1.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_test_physical_token_reviewer_v1.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000993c820e8fd4731047eccae5"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_test_physical_token_reviewer_v1.py",
+      "bytes": 5382,
+      "sha256": "b3daadcf4ee1d1d20aea9fb59c647a1baa17a8bcfcb0d129eecd0dcb4f979a24",
+      "git_blob_sha1": "bb9948825af0985df8e55efaa2e92b3783038fdf",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "bb9948825af0985df8e55efaa2e92b3783038fdf",
+        "utf8_byte_length": 5382,
+        "match": true
+      },
+      "owner_basis": "imports neuron_shared_encoder.physical_token_pair_v1 and physical_token_reviewer_v1 test package",
+      "target_path_hint": "tests/test_physical_token_reviewer_v1.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_e4_prequential_receipts_v7.py",
+        "/hepta_e4_prequential_shadow_module.py"
+      ],
+      "original_library_file_ids": [
+        "file_0000000071cc81f68029fc0b303472d4",
+        "file_00000000af4c81fd9265615dab0e9f20"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_e4_prequential_receipts_v7.py",
+      "bytes": 8763,
+      "sha256": "37512e2bc26a02e22d6466a1f995d3fc8ce10c0d6a0e246b29cec5953973a568",
+      "git_blob_sha1": "f9ba2bf232e276adacc1869ac098025e8b837392",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "f9ba2bf232e276adacc1869ac098025e8b837392",
+        "utf8_byte_length": 8763,
+        "match": true
+      },
+      "owner_basis": "E4 test imports neuron_shared_encoder.prequential_receipts; second Library filename is byte-identical alias",
+      "target_path_hint": "neuron_shared_encoder/prequential_receipts.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_e4_prequential_tests_v7.py"
+      ],
+      "original_library_file_ids": [
+        "file_000000009fec81f9955a3b5fbd5efe5e"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_e4_prequential_tests_v7.py",
+      "bytes": 7852,
+      "sha256": "2b6956b800d552e9d1a56aabc8cf557cbb5162bcd311eaf9a245aac04394bd4b",
+      "git_blob_sha1": "d8b0d98579403d34cfe1ae7b980698282b18f16f",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "d8b0d98579403d34cfe1ae7b980698282b18f16f",
+        "utf8_byte_length": 7852,
+        "match": true
+      },
+      "owner_basis": "imports neuron_shared_encoder.prequential_receipts",
+      "target_path_hint": "tests/test_prequential_receipts.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_strict_e2.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000bfc081f883c90255057c7371"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_strict_e2.py",
+      "bytes": 9790,
+      "sha256": "01e6db0b0fe5ca5d7d7a8fc1a0f3787d8fc7e4184e56964d0ce4bd4be32529ef",
+      "git_blob_sha1": "8a94887771c72995e1fdccdc53028d012cf7009d",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "8a94887771c72995e1fdccdc53028d012cf7009d",
+        "utf8_byte_length": 9790,
+        "match": true
+      },
+      "owner_basis": "imports sibling validation_v3 module and torch-based Cell-head experiment",
+      "target_path_hint": "neuron_shared_encoder/strict_e2.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    },
+    {
+      "original_library_paths": [
+        "/hepta_test_strict_e2.py"
+      ],
+      "original_library_file_ids": [
+        "file_00000000cd0c81fb9b0cf1c398117461"
+      ],
+      "canonical_repository_path": "library-recovery/20261107/unresolved-direct-code/hepta_test_strict_e2.py",
+      "bytes": 4809,
+      "sha256": "c380c551629a1f055af0e3b4b022f92538691a0aa98e1e1d74449c8bfa2ef8c7",
+      "git_blob_sha1": "6d38cd92966ba206316b88f2fcaedac2c3358ad1",
+      "remote_object_readback": {
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "blob_sha1": "6d38cd92966ba206316b88f2fcaedac2c3358ad1",
+        "utf8_byte_length": 4809,
+        "match": true
+      },
+      "owner_basis": "imports neuron_shared_encoder.strict_e2",
+      "target_path_hint": "tests/test_strict_e2.py (module hint only; original path not asserted)",
+      "product_path_modified": false,
+      "status": "EXACT_BYTES_PRESERVED_ARCHIVE_ONLY"
+    }
+  ],
+  "validation": {
+    "python_ast_parse": "11/11 PASS",
+    "python_py_compile": "11/11 PASS",
+    "standalone_unittest": "23/23 PASS (dual-lock and Matrix preflight pairs only)",
+    "unexecuted": "E4, physical-token, strict-E2 suites require package context and imported sibling modules not included in this source-only batch",
+    "rust": "2 snippets not compiled; one has an explicit old-baseline append target and one has no verified insertion path",
+    "privacy_regex": {
+      "gmail": 0,
+      "email": 0,
+      "pem_private_key": 0,
+      "github_token": 0,
+      "aws_access_key": 0,
+      "bearer_token": 0,
+      "home_path": 0,
+      "scope": "narrow static scan; not a comprehensive privacy attestation"
+    }
+  },
+  "safeguards": {
+    "no_archive_or_binary_uploaded": true,
+    "no_weights_or_logs_uploaded": true,
+    "no_main_merge": true,
+    "no_deployment": true,
+    "no_security_gate_relaxation": true,
+    "authority": "DENY_ALL",
+    "product_acceptance": false,
+    "library_deletions": 0,
+    "dot_original_worktree_audited": false,
+    "library_clearance": false
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "schema": "mem-code-mode-grpc-readonly-review-v1",
+  "source_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "status": "READ_ONLY_SOURCE_CHAIN_CONFIRMED_ROOT_CAUSE_NOT_ESTABLISHED",
+  "scope": {
+    "host_calls": 0,
+    "native_runs": 0,
+    "model_calls": 0,
+    "repo_source_changes": 0,
+    "refs_changed": 0
+  },
+  "raw_evidence": {
+    "path": "mem-integrated-ci-watch-2ae/mac-intel-terminal/job-130374692350-decoded.log",
+    "bytes": 5143912,
+    "sha256": "c5948abb8d63b9bb9e66323476b3443d44c5e5305eca87053b0c82e8fc838084",
+    "representative_section_lines": [
+      14393,
+      14445
+    ],
+    "target": "//codex-rs/code-mode-host:code-mode-host-grpc_tcp-test",
+    "section_result": {
+      "passed": 0,
+      "failed": 4,
+      "ignored": 0,
+      "elapsed_seconds": 10.02
+    },
+    "failure_names": [
+      "tcp_listener_serves_http2_healthz",
+      "tcp_listener_serves_http1_healthz",
+      "tcp_listener_opens_a_grpc_session",
+      "tcp_listener_rejects_http1_grpc_requests"
+    ],
+    "observed_failure": "All four fail while awaiting the first stdout endpoint line. Three use HostHarness wording; one standalone case uses the gRPC endpoint wording. This block contains no syscall unwrap failure.",
+    "distinct_from": "This is one representative emitted test block, not a new count of all repeated Bazel attempts or all code-mode targets."
+  },
+  "call_chain": [
+    {
+      "file": "codex-rs/code-mode-host/tests/grpc_tcp.rs",
+      "git_blob": "b15699b9447a733989567daf593230cf0ad4c007",
+      "finding": "Three cases call HostHarness::start(\"grpc://127.0.0.1:0\"). tcp_listener_opens_a_grpc_session independently spawns the same binary and args, then waits 10 seconds for read_line."
+    },
+    {
+      "file": "codex-rs/code-mode-host/tests/support/host.rs",
+      "git_blob": "ed2a8cfdd082c4a2564e3ac4d8824a81cccf0ab4",
+      "finding": "cargo_bin(\"codex-code-mode-host\") → argv [--listen, grpc://127.0.0.1:0]; stdin null, stdout/stderr piped, kill_on_drop true. The sole startup readiness observation is a 10-second stdout line wait, then scheme/prefix validation."
+    },
+    {
+      "file": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "git_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f",
+      "finding": "Explicit CARGO_BIN_EXE metadata precedes NEXTEST_BIN_EXE; Bazel resolves through runfiles. Missing metadata/path is an error; there is no current_exe or PATH binary fallback."
+    },
+    {
+      "file": "codex-rs/code-mode-host/src/main.rs",
+      "git_blob": "c7da2080c3ed35fab644d2ae59596afc46d37b66",
+      "finding": "Current-thread Tokio runtime; tracing writes stderr; Clap parses listen; invokes run_main."
+    },
+    {
+      "file": "codex-rs/code-mode-host/src/lib.rs",
+      "git_blob": "34e13af94c6ecb5c3570cbe593c16a5b5e43582a",
+      "finding": "run_main directly delegates to transport::run_transport."
+    },
+    {
+      "file": "codex-rs/code-mode-host/src/transport.rs",
+      "git_blob": "3817f3b60585b6f1d7c5b6f76b918b572843aaf3",
+      "finding": "grpc:// parses a SocketAddr and directly invokes grpc_transport::run_tcp_listener. No UDS is used in this route."
+    },
+    {
+      "file": "codex-rs/code-mode-host/src/grpc_transport.rs",
+      "git_blob": "4cb59985fa0ffa0daa6ea60cfd1b45d13d929271",
+      "finding": "TcpListener::bind, local_addr, one INFO log, println!(http://...), and explicit stdout.flush occur before constructing gRPC routes or accepting client requests."
+    },
+    {
+      "file": "codex-rs/code-mode-host/BUILD.bazel",
+      "git_blob": "c1245e21a8326c0da5932f1769c8687704470d49",
+      "finding": "Uses standard codex_rust_crate(name=code-mode-host). Actual Bazel metadata/concurrency is assigned to the CI agent; this review does not infer runtime binary bytes from source declaration."
+    }
+  ],
+  "conclusions": [
+    "The observed failures precede any HTTP/gRPC request or session-open assertion.",
+    "UDS pathname length is outside this representative TCP route.",
+    "The Rust path before endpoint publication does not initialize a CodeMode session or issue a provider request. This does not characterize dynamic-loader or pre-main activity.",
+    "A missing binary or ordinary exec-format failure should fail at cargo_bin/spawn with a different source error; the observed timeout does not support selecting either as the established cause.",
+    "The original child stderr is piped but never consumed or included in timeout errors. The original child status is not reported at the timeout boundary. The raw log cannot distinguish a live blocked child, delayed launch, pre-main activity, or another pre-readiness failure.",
+    "Do not infer that raising the 10-second limit, serializing all tests, or changing the listener is a justified fix from this evidence."
+  ],
+  "minimum_diagnostic_proposal": {
+    "scope": "Test-only startup helper plus the equivalent standalone case; no product listener change.",
+    "preserve": [
+      "Existing 10-second readiness deadline",
+      "Existing endpoint scheme validation and all protocol assertions",
+      "Same exact child binary and argv",
+      "kill_on_drop for the retained owned child",
+      "No retries, fallback, or test skipping"
+    ],
+    "add": [
+      "Record resolved child program and fixed argv before launch.",
+      "Continuously drain child stderr into a bounded diagnostic buffer while readiness is awaited; continue draining/discarding beyond the retained bound to avoid introducing pipe backpressure.",
+      "On the existing timeout/EOF/error path, report the original stdout partial state, bounded stderr already observed, and nonblocking try_wait result for this child before it is dropped.",
+      "Do not add an unbounded stderr await or a new post-timeout grace period. Any cleanup waits must use remaining time from the same deadline or retain an explicit unknown status."
+    ],
+    "limit": "A diagnostic candidate is not implemented or executed here. It can identify the actual failure without changing the success gate."
+  },
+  "exact_sources": [
+    {
+      "path": "codex-rs/code-mode-host/tests/grpc_tcp.rs",
+      "bytes": 5605,
+      "sha256": "047e949e04e4b5497432713a6c0ca69c1352f9cb8912019dbfd121050c2d7f43",
+      "git_blob": "b15699b9447a733989567daf593230cf0ad4c007"
+    },
+    {
+      "path": "codex-rs/code-mode-host/src/main.rs",
+      "bytes": 596,
+      "sha256": "4e42ed027e94d00d84f18ce00873879afd13e5d23bb240db061518911ed1d185",
+      "git_blob": "c7da2080c3ed35fab644d2ae59596afc46d37b66"
+    },
+    {
+      "path": "codex-rs/code-mode-host/tests/support/host.rs",
+      "bytes": 1651,
+      "sha256": "d6b8c4f852f0078f46b06d0623a450bdc331ffc0f4ca1733be763cccce3d0eef",
+      "git_blob": "ed2a8cfdd082c4a2564e3ac4d8824a81cccf0ab4"
+    },
+    {
+      "path": "codex-rs/code-mode-host/src/lib.rs",
+      "bytes": 26420,
+      "sha256": "010b20c2b5bf5f0eade43e799826c7990bacc598201a33e8ec9b8b20e632ab21",
+      "git_blob": "34e13af94c6ecb5c3570cbe593c16a5b5e43582a"
+    },
+    {
+      "path": "codex-rs/code-mode-host/BUILD.bazel",
+      "bytes": 131,
+      "sha256": "d9f4ea80f36db7c69d44eb0c6ebd93f9c7a02a8ee224f141ac849c4db4cb10f4",
+      "git_blob": "c1245e21a8326c0da5932f1769c8687704470d49"
+    },
+    {
+      "path": "codex-rs/code-mode-host/src/transport.rs",
+      "bytes": 11693,
+      "sha256": "b34521d23a94fa13c33cda2700b85eeb6ac54568444499e6ae8c65e728be3f7a",
+      "git_blob": "3817f3b60585b6f1d7c5b6f76b918b572843aaf3"
+    },
+    {
+      "path": "codex-rs/code-mode-host/src/grpc_transport.rs",
+      "bytes": 2268,
+      "sha256": "22f25d289727415ec018ecf80d45e6530b53fc6b239b274d136462860de1ed34",
+      "git_blob": "4cb59985fa0ffa0daa6ea60cfd1b45d13d929271"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "bytes": 7819,
+      "sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+      "git_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f"
+    }
+  ]
+}

@@ -4,7 +4,6 @@ import importlib.util
 import json
 import re
 import sys
-import tomllib
 import unittest
 from pathlib import Path
 
@@ -159,7 +158,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             )
 
     def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:
-        data = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
+        data = CALLER_PROOF._load_manifest(MANIFEST)
         declared_rows = data.get("boundary")
         self.assertIsInstance(declared_rows, list)
         assert isinstance(declared_rows, list)

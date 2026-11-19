@@ -1,0 +1,269 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "d01883413fbdae31b5e4bc3c19a01057a5df5b06",
+  "merge_tree": "4dd3edd26c7f732c9ab010c86a36180628f3ea02",
+  "genuine_merge_tree_exit": 0,
+  "files": 46,
+  "all_mode_100644": true,
+  "uncompressed_blob_bytes": 666300,
+  "max_blob": {
+    "path": "results/integration/2026-10-23-objective-sender/memory-all-01.junit.xml",
+    "mode": "100644",
+    "sha": "b324f39b9f221e40aa44a2f0b184d0be1317a560",
+    "size": 67702
+  },
+  "deterministic_tar_bytes": 706560,
+  "deterministic_tar_gzip_bytes": 120267,
+  "embedded_archives": [],
+  "parsed": {
+    "json": [
+      "candidate-test-binary-space.json",
+      "clippy-metadata-cleanup.json",
+      "crash-diagnostic-01.json",
+      "execution-summary.json",
+      "format-baseline-identity.json",
+      "memory-all-01.json",
+      "memory-all-final.json",
+      "memory-clippy-fix-01.json",
+      "memory-clippy-fix-02.json",
+      "memory-final-fmt-check.json",
+      "memory-final-fmt.json",
+      "memory-sender-schema-recovery-01.json",
+      "memory-sender-schema-recovery-02.json",
+      "memory-sender-schema-recovery-03-recovered-receipt.json",
+      "memory-sender-schema-recovery-04.json",
+      "overlay-identity.json",
+      "schema-oracle.json"
+    ],
+    "xml": [
+      {
+        "file": "memory-all-01.junit.xml",
+        "root_attributes": {
+          "name": "nextest-run",
+          "tests": "317",
+          "skipped": "0",
+          "failures": "1",
+          "errors": "0",
+          "uuid": "c221d268-e19a-4ef0-b108-a03e1fbe2c77",
+          "timestamp": "2026-10-23T16:32:18.445+09:00",
+          "time": "116.597"
+        },
+        "testcases": 317
+      },
+      {
+        "file": "memory-all-final.junit.xml",
+        "root_attributes": {
+          "name": "nextest-run",
+          "tests": "317",
+          "skipped": "0",
+          "failures": "0",
+          "errors": "0",
+          "uuid": "e52a901a-f272-4cb0-a9b5-0f282da1fd86",
+          "timestamp": "2026-10-23T16:43:08.428+09:00",
+          "time": "115.831"
+        },
+        "testcases": 317
+      },
+      {
+        "file": "memory-sender-schema-recovery-03.junit.xml",
+        "root_attributes": {
+          "name": "nextest-run",
+          "tests": "42",
+          "skipped": "0",
+          "failures": "3",
+          "errors": "0",
+          "uuid": "5903c114-d9dc-45f0-97ca-8764903c7a5c",
+          "timestamp": "2026-10-23T16:24:37.741+09:00",
+          "time": "16.705"
+        },
+        "testcases": 42
+      },
+      {
+        "file": "memory-sender-schema-recovery-04.junit.xml",
+        "root_attributes": {
+          "name": "nextest-run",
+          "tests": "42",
+          "skipped": "0",
+          "failures": "0",
+          "errors": "0",
+          "uuid": "96a82c40-eb20-4203-b051-4e0e9da77bac",
+          "timestamp": "2026-10-23T16:29:41.333+09:00",
+          "time": "19.783"
+        },
+        "testcases": 42
+      }
+    ],
+    "python": [
+      "owner_overlay.py",
+      "prepare_publication.py",
+      "run_owner_candidate.py",
+      "run_owner_quality.py"
+    ],
+    "utf8": [
+      "README.md",
+      "candidate-test-binary-space.json",
+      "clippy-metadata-cleanup.json",
+      "crash-diagnostic-01.json",
+      "execution-summary.json",
+      "format-baseline-identity.json",
+      "memory-all-01.json",
+      "memory-all-01.junit.xml",
+      "memory-all-01.stderr",
+      "memory-all-01.stdout",
+      "memory-all-final.json",
+      "memory-all-final.junit.xml",
+      "memory-all-final.stderr",
+      "memory-all-final.stdout",
+      "memory-clippy-fix-01.json",
+      "memory-clippy-fix-01.stderr",
+      "memory-clippy-fix-01.stdout",
+      "memory-clippy-fix-02.json",
+      "memory-clippy-fix-02.stderr",
+      "memory-clippy-fix-02.stdout",
+      "memory-final-fmt-check.json",
+      "memory-final-fmt-check.stderr",
+      "memory-final-fmt-check.stdout",
+      "memory-final-fmt.json",
+      "memory-final-fmt.stderr",
+      "memory-final-fmt.stdout",
+      "memory-sender-schema-recovery-01.json",
+      "memory-sender-schema-recovery-01.stderr",
+      "memory-sender-schema-recovery-01.stdout",
+      "memory-sender-schema-recovery-02.json",
+      "memory-sender-schema-recovery-02.stderr",
+      "memory-sender-schema-recovery-02.stdout",
+      "memory-sender-schema-recovery-03-recovered-receipt.json",
+      "memory-sender-schema-recovery-03.junit.xml",
+      "memory-sender-schema-recovery-03.stderr",
+      "memory-sender-schema-recovery-03.stdout",
+      "memory-sender-schema-recovery-04.json",
+      "memory-sender-schema-recovery-04.junit.xml",
+      "memory-sender-schema-recovery-04.stderr",
+      "memory-sender-schema-recovery-04.stdout",
+      "overlay-identity.json",
+      "owner_overlay.py",
+      "prepare_publication.py",
+      "run_owner_candidate.py",
+      "run_owner_quality.py",
+      "schema-oracle.json"
+    ],
+    "receipt_hashes": [
+      {
+        "receipt": "memory-all-01.json",
+        "file": "memory-all-01.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-all-01.json",
+        "file": "memory-all-01.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-all-final.json",
+        "file": "memory-all-final.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-all-final.json",
+        "file": "memory-all-final.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-clippy-fix-01.json",
+        "file": "memory-clippy-fix-01.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-clippy-fix-01.json",
+        "file": "memory-clippy-fix-01.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-clippy-fix-02.json",
+        "file": "memory-clippy-fix-02.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-clippy-fix-02.json",
+        "file": "memory-clippy-fix-02.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-final-fmt-check.json",
+        "file": "memory-final-fmt-check.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-final-fmt-check.json",
+        "file": "memory-final-fmt-check.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-final-fmt.json",
+        "file": "memory-final-fmt.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-final-fmt.json",
+        "file": "memory-final-fmt.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-01.json",
+        "file": "memory-sender-schema-recovery-01.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-01.json",
+        "file": "memory-sender-schema-recovery-01.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-02.json",
+        "file": "memory-sender-schema-recovery-02.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-02.json",
+        "file": "memory-sender-schema-recovery-02.stderr",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-04.json",
+        "file": "memory-sender-schema-recovery-04.stdout",
+        "match": true
+      },
+      {
+        "receipt": "memory-sender-schema-recovery-04.json",
+        "file": "memory-sender-schema-recovery-04.stderr",
+        "match": true
+      }
+    ],
+    "archive_signatures": []
+  },
+  "reference_scan": {
+    "exit": 1,
+    "stderr": "",
+    "external_matches": []
+  },
+  "historical_test_receipt": {
+    "summary_executed": 317,
+    "summary_passed": 317,
+    "summary_failed": 0,
+    "junit_attributes": {
+      "name": "nextest-run",
+      "tests": "317",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "uuid": "e52a901a-f272-4cb0-a9b5-0f282da1fd86",
+      "timestamp": "2026-10-23T16:43:08.428+09:00",
+      "time": "115.831"
+    },
+    "testcase_names_match_summary": true
+  },
+  "review": "All four archived scripts statically read without execution. They target historical /dev/shm overlays and publication artifacts; they are retained as evidence, not wired into active workflows. Historical test receipt is not current candidate validation.",
+  "archive_sizing_method": "PAX tar of the 46 sorted file paths, uid/gid/mtime=0, mode=0644; gzip mtime=0. No archive is added to the candidate.",
+  "deterministic_tar_sha256": "1f40eacb6f2736d0d86d9174a611a5d51f763341d166a2cf3dd82a9defffce7e",
+  "deterministic_tar_gzip_sha256": "1add75207bda0a205e3e25c76bdaf96ef540920310e4bee1241ed7d6f24d83e2"
+}

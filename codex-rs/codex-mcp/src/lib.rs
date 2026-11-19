@@ -1,5 +1,6 @@
 pub use binding::McpBinding;
 pub use binding::PreparedMcpCall;
+pub use binding::RetainedMcpCalls;
 pub use binding::SelectedPluginIdentity;
 pub use binding::SelectedPluginSnapshot;
 pub use client_capabilities::client_mcp_extensions;

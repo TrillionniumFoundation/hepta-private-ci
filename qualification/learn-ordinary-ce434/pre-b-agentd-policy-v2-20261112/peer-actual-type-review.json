@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.learn.original-panel-policy-static-peer.ufcs-addendum.v1",
+  "previous_peer_blob": "b96d6c57c7f4530b10046434148ec5cc811f22b7",
+  "producer_exact_delta_blob": "9eb4eb5d14beb8e13a2fc4fee362a55bc942859c",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_binding.rs",
+      "before": "66b49b4218291ea0e47876cc5fe522578dc6470d",
+      "after": "cef5a2ad271a5eabac5409e81a6f814e32d96142",
+      "edits": 4,
+      "exact_forward": true,
+      "exact_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy.rs",
+      "before": "e1b5ae581d897c3a077d720030fdb877b78b9426",
+      "after": "aaaa0a0d70c8b9f3126eef0be3066f369f541b65",
+      "edits": 5,
+      "exact_forward": true,
+      "exact_reverse": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs",
+      "before": "70cee4b87c3e662eec59c5d5cce6df2a72a12c5b",
+      "after": "d4a62890aef097ed2465a023ab85bf860a5fdc03",
+      "edits": 1,
+      "exact_forward": true,
+      "exact_reverse": true
+    }
+  ],
+  "actual_type_sources": [
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+      "sha": "70b0194f3863ab88445476e7c3a33bec1f47efea"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/cell_bundle.rs",
+      "ref": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+      "sha": "64c7018f44b1365d7e2fb51926209758cef00468"
+    }
+  ],
+  "review": {
+    "result": "No confirmed behavioral change in these ten explicit receiver changes; prior narrow policy-admission conclusions continue for these three postimages.",
+    "full_api_readback_and_independent_git_sha1": true,
+    "exact_forward_and_reverse_reconstruction": true,
+    "whole_file_outside_the_ten_edits_byte_identical": true,
+    "concrete_receivers": "Own policy canonical encoding, the existing CellCompatibilityBundleV1 digest on the same borrowed candidate/baseline values, and the same local OnPolicyPairingContractV1 digest. No new Product-policy caller is claimed for these unrelated same-named methods.",
+    "rust_type_check": "Read the actual original candidate() return signature and CellCompatibilityBundleV1::digest(&self) definition; no compiler was run.",
+    "original_typed_projection": "The producer reports 43-source/17-boundary V8 projection only. This reviewer did not run the original Python scanner or promote that result to full-caller pass.",
+    "scope": "Only exact fixed blobs; no new authority, writes, I/O, signature payload, comparison, control-flow order or ordinary acceptance."
+  },
+  "not_run": [
+    "H",
+    "Python",
+    "Rust",
+    "source QA",
+    "full-caller",
+    "native"
+  ],
+  "ordinary_acceptance_credit": 0
+}

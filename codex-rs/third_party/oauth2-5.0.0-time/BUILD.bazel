@@ -1,0 +1,6 @@
+# rules_rs generates this excluded path patch with its resolved dependencies.
+alias(
+    name = "oauth2",
+    actual = "@crates//:oauth2-5.0.0",
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,8478 @@
+{
+  "actual_native": {
+    "0.001": {
+      "bellman_value_head": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.33501832781249996,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.954
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.1735,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.704,
+        "native_child_cpu_seconds": 0.6806939999999999,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 4.6795992449999995,
+        "streams": 16
+      },
+      "ordinary_action_head": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.318686254375,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.954
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.1735,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.704,
+        "native_child_cpu_seconds": 0.698684,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 4.40029607,
+        "streams": 16
+      },
+      "tabular_bellman": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.29032352687499985,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 39,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.039
+          },
+          {
+            "actual_reads": 44,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": 0.956
+          },
+          {
+            "actual_reads": 35,
+            "correct": 2,
+            "later_correct": 2,
+            "stream": 2,
+            "utility": 1.965
+          },
+          {
+            "actual_reads": 35,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 3,
+            "utility": 1.965
+          },
+          {
+            "actual_reads": 38,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 4,
+            "utility": 0.962
+          },
+          {
+            "actual_reads": 36,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.964
+          },
+          {
+            "actual_reads": 42,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 6,
+            "utility": 0.958
+          },
+          {
+            "actual_reads": 40,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 7,
+            "utility": 0.96
+          },
+          {
+            "actual_reads": 44,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.956
+          },
+          {
+            "actual_reads": 36,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.964
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 1.966
+          },
+          {
+            "actual_reads": 40,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 0.96
+          },
+          {
+            "actual_reads": 35,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.965
+          },
+          {
+            "actual_reads": 36,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 13,
+            "utility": 0.964
+          },
+          {
+            "actual_reads": 36,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 14,
+            "utility": 1.964
+          },
+          {
+            "actual_reads": 43,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.957
+          }
+        ],
+        "mean_actual_later_correct": 0.8125,
+        "mean_actual_later_net_reward": 0.7883749999999999,
+        "mean_correct": 1.1875,
+        "mean_reads": 38.3125,
+        "mean_utility": 1.1491875,
+        "native_child_cpu_seconds": 0.7603249999999999,
+        "native_kernel_calls": 613,
+        "native_ndu_calls": 613,
+        "owner_ticks": 613,
+        "parent_cpu_seconds": 3.8848514299999977,
+        "streams": 16
+      },
+      "validation_risk": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.3028517723750001,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.954
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.1735,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.704,
+        "native_child_cpu_seconds": 0.653465,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 4.192163358000002,
+        "streams": 16
+      },
+      "validation_schedule": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.3300405705624999,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.046
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.954
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.954
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.1735,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.704,
+        "native_child_cpu_seconds": 0.7442329999999999,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 4.536416128999999,
+        "streams": 16
+      }
+    },
+    "0.005": {
+      "bellman_value_head": {
+        "actual_owner_processes": 34,
+        "complete_execution_cpu_per_stream": 0.3378727518125,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 34,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 44,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.78
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 44,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.22
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.77
+          }
+        ],
+        "mean_actual_later_correct": 0.25,
+        "mean_actual_later_net_reward": 0.18124999999999997,
+        "mean_correct": 0.8125,
+        "mean_reads": 45.75,
+        "mean_utility": 0.58375,
+        "native_child_cpu_seconds": 0.718429,
+        "native_kernel_calls": 732,
+        "native_ndu_calls": 732,
+        "owner_ticks": 732,
+        "parent_cpu_seconds": 4.687535028999999,
+        "streams": 16
+      },
+      "ordinary_action_head": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.2733725305000001,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.77
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.11749999999999997,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.52,
+        "native_child_cpu_seconds": 0.5651269999999999,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 3.808833488000001,
+        "streams": 16
+      },
+      "tabular_bellman": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.23550983856250018,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 44,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.22
+          },
+          {
+            "actual_reads": 32,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.16
+          },
+          {
+            "actual_reads": 31,
+            "correct": 2,
+            "later_correct": 2,
+            "stream": 2,
+            "utility": 1.845
+          },
+          {
+            "actual_reads": 35,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 3,
+            "utility": 1.825
+          },
+          {
+            "actual_reads": 37,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 4,
+            "utility": 0.815
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.83
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 6,
+            "utility": 1.83
+          },
+          {
+            "actual_reads": 36,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 7,
+            "utility": 0.8200000000000001
+          },
+          {
+            "actual_reads": 32,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 8,
+            "utility": 0.84
+          },
+          {
+            "actual_reads": 33,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.835
+          },
+          {
+            "actual_reads": 30,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.85
+          },
+          {
+            "actual_reads": 31,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 0.845
+          },
+          {
+            "actual_reads": 33,
+            "correct": 2,
+            "later_correct": 2,
+            "stream": 12,
+            "utility": 1.835
+          },
+          {
+            "actual_reads": 36,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 13,
+            "utility": 0.8200000000000001
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 14,
+            "utility": 1.83
+          },
+          {
+            "actual_reads": 32,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 0.84
+          }
+        ],
+        "mean_actual_later_correct": 1.0,
+        "mean_actual_later_net_reward": 0.85625,
+        "mean_correct": 1.1875,
+        "mean_reads": 34.0,
+        "mean_utility": 1.0175,
+        "native_child_cpu_seconds": 0.6483749999999999,
+        "native_kernel_calls": 544,
+        "native_ndu_calls": 544,
+        "owner_ticks": 544,
+        "parent_cpu_seconds": 3.1197824170000032,
+        "streams": 16
+      },
+      "validation_risk": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.2665749761875001,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.77
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.11749999999999997,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.52,
+        "native_child_cpu_seconds": 0.5816629999999999,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 3.6835366190000016,
+        "streams": 16
+      },
+      "validation_schedule": {
+        "actual_owner_processes": 32,
+        "complete_execution_cpu_per_stream": 0.33917619631249996,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 32,
+        "ledger": [
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 5,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 9,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 11,
+            "utility": 1.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 12,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.23
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.77
+          },
+          {
+            "actual_reads": 46,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 15,
+            "utility": 0.77
+          }
+        ],
+        "mean_actual_later_correct": 0.1875,
+        "mean_actual_later_net_reward": 0.11749999999999997,
+        "mean_correct": 0.75,
+        "mean_reads": 46.0,
+        "mean_utility": 0.52,
+        "native_child_cpu_seconds": 0.7257279999999999,
+        "native_kernel_calls": 736,
+        "native_ndu_calls": 736,
+        "owner_ticks": 736,
+        "parent_cpu_seconds": 4.701091140999999,
+        "streams": 16
+      }
+    },
+    "0.02": {
+      "bellman_value_head": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.19978863812500017,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.3199999999999998
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 11,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 1.3199999999999998
+          }
+        ],
+        "mean_actual_later_correct": 0.375,
+        "mean_actual_later_net_reward": 0.33499999999999996,
+        "mean_correct": 0.9375,
+        "mean_reads": 34.0,
+        "mean_utility": 0.2574999999999999,
+        "native_child_cpu_seconds": 0.5446989999999999,
+        "native_kernel_calls": 544,
+        "native_ndu_calls": 544,
+        "owner_ticks": 544,
+        "parent_cpu_seconds": 2.6519192100000026,
+        "streams": 16
+      },
+      "ordinary_action_head": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.20424229718750023,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 1.3199999999999998
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 11,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.68
+          },
+          {
+            "actual_reads": 34,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.31999999999999995
+          },
+          {
+            "actual_reads": 34,
+            "correct": 2,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 1.3199999999999998
+          }
+        ],
+        "mean_actual_later_correct": 0.375,
+        "mean_actual_later_net_reward": 0.33499999999999996,
+        "mean_correct": 0.9375,
+        "mean_reads": 34.0,
+        "mean_utility": 0.2574999999999999,
+        "native_child_cpu_seconds": 0.532117,
+        "native_kernel_calls": 544,
+        "native_ndu_calls": 544,
+        "owner_ticks": 544,
+        "parent_cpu_seconds": 2.7357597550000037,
+        "streams": 16
+      },
+      "tabular_bellman": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.0409855158125003,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 11,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 0.94
+          }
+        ],
+        "mean_actual_later_correct": 0.375,
+        "mean_actual_later_net_reward": 0.33499999999999996,
+        "mean_correct": 0.5625,
+        "mean_reads": 3.0,
+        "mean_utility": 0.5025,
+        "native_child_cpu_seconds": 0.27899,
+        "native_kernel_calls": 48,
+        "native_ndu_calls": 48,
+        "owner_ticks": 48,
+        "parent_cpu_seconds": 0.3767782530000048,
+        "streams": 16
+      },
+      "validation_risk": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.03765516087499994,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 11,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 0.94
+          }
+        ],
+        "mean_actual_later_correct": 0.375,
+        "mean_actual_later_net_reward": 0.33499999999999996,
+        "mean_correct": 0.5625,
+        "mean_reads": 3.0,
+        "mean_utility": 0.5025,
+        "native_child_cpu_seconds": 0.233871,
+        "native_kernel_calls": 48,
+        "native_ndu_calls": 48,
+        "owner_ticks": 48,
+        "parent_cpu_seconds": 0.3686115739999991,
+        "streams": 16
+      },
+      "validation_schedule": {
+        "actual_owner_processes": 48,
+        "complete_execution_cpu_per_stream": 0.03828912325000014,
+        "failed_native_processes": 0,
+        "float_q24_disagreements": 0,
+        "intentional_post_stop_rejections": 48,
+        "ledger": [
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 0,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 1,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 2,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 3,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 4,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 5,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 6,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 7,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 8,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 9,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 10,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 11,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 12,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 0,
+            "later_correct": 0,
+            "stream": 13,
+            "utility": -0.06
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 0,
+            "stream": 14,
+            "utility": 0.94
+          },
+          {
+            "actual_reads": 3,
+            "correct": 1,
+            "later_correct": 1,
+            "stream": 15,
+            "utility": 0.94
+          }
+        ],
+        "mean_actual_later_correct": 0.375,
+        "mean_actual_later_net_reward": 0.33499999999999996,
+        "mean_correct": 0.5625,
+        "mean_reads": 3.0,
+        "mean_utility": 0.5025,
+        "native_child_cpu_seconds": 0.23360899999999998,
+        "native_kernel_calls": 48,
+        "native_ndu_calls": 48,
+        "owner_ticks": 48,
+        "parent_cpu_seconds": 0.3790169720000023,
+        "streams": 16
+      }
+    }
+  },
+  "best_ordinary_selected_on_validation": "validation_schedule",
+  "cache_native_parity": {
+    "cases": 240,
+    "mismatches": 0,
+    "records": [
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.001,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          5,
+          31,
+          3
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          5,
+          31,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          31,
+          12,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          31,
+          12,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          1
+        ],
+        "actual_reads": [
+          4,
+          28,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          1
+        ],
+        "cached_reads": [
+          4,
+          28,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          1
+        ],
+        "actual_reads": [
+          4,
+          3,
+          28
+        ],
+        "cached_correct": [
+          1,
+          0,
+          1
+        ],
+        "cached_reads": [
+          4,
+          3,
+          28
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          3,
+          4,
+          31
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          3,
+          4,
+          31
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          30,
+          3,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          30,
+          3,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          9,
+          30,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          9,
+          30,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          5,
+          4,
+          31
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          5,
+          4,
+          31
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          28,
+          1,
+          15
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          28,
+          1,
+          15
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          31,
+          2,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          31,
+          2,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          30,
+          2,
+          2
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          30,
+          2,
+          2
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          9,
+          28,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          9,
+          28,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          28,
+          3,
+          4
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          28,
+          3,
+          4
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          3,
+          3,
+          30
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          3,
+          3,
+          30
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          3,
+          30,
+          3
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          3,
+          30,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          4,
+          9,
+          30
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          4,
+          9,
+          30
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.001,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.001,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.001,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          11
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          11
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          11
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          11
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.005,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          28,
+          15,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          28,
+          15,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          28,
+          3
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          28,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          1
+        ],
+        "actual_reads": [
+          2,
+          28,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          1
+        ],
+        "cached_reads": [
+          2,
+          28,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          1
+        ],
+        "actual_reads": [
+          4,
+          3,
+          28
+        ],
+        "cached_correct": [
+          1,
+          0,
+          1
+        ],
+        "cached_reads": [
+          4,
+          3,
+          28
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          2,
+          4,
+          31
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          2,
+          4,
+          31
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          30,
+          1,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          30,
+          1,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          30,
+          3
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          30,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          1,
+          4,
+          31
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          1,
+          4,
+          31
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          30,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          30,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          29,
+          3
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          29,
+          3
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          28,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          28,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          2,
+          28,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          2,
+          28,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          1
+        ],
+        "actual_reads": [
+          2,
+          3,
+          28
+        ],
+        "cached_correct": [
+          0,
+          1,
+          1
+        ],
+        "cached_reads": [
+          2,
+          3,
+          28
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          3,
+          3,
+          30
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          3,
+          3,
+          30
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          3,
+          30,
+          1
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          3,
+          30,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          2,
+          29,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          2,
+          29,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.005,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.005,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          14,
+          0
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          14,
+          0
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.005,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          1
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          1
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "bellman_value_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          1
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          1
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          1,
+          1,
+          0
+        ],
+        "actual_reads": [
+          32,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          1,
+          0
+        ],
+        "cached_reads": [
+          32,
+          1,
+          1
+        ],
+        "family": "ordinary_action_head",
+        "matched": true,
+        "price": 0.02,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "tabular_bellman",
+        "matched": true,
+        "price": 0.02,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_schedule",
+        "matched": true,
+        "price": 0.02,
+        "stream": 15
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 0
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 1
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          1
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          1
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 2
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 3
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 4
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 5
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 6
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 7
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 8
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 9
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 10
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 11
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 12
+      },
+      {
+        "actual_correct": [
+          0,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 13
+      },
+      {
+        "actual_correct": [
+          1,
+          0,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          1,
+          0,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 14
+      },
+      {
+        "actual_correct": [
+          0,
+          1,
+          0
+        ],
+        "actual_reads": [
+          1,
+          1,
+          1
+        ],
+        "cached_correct": [
+          0,
+          1,
+          0
+        ],
+        "cached_reads": [
+          1,
+          1,
+          1
+        ],
+        "family": "validation_risk",
+        "matched": true,
+        "price": 0.02,
+        "stream": 15
+      }
+    ]
+  },
+  "counterfactual": {
+    "0.001": {
+      "bellman_value_head": {
+        "counterfactual_parent_cpu_seconds": 0.03342727699999948,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.10318750000000002,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.22244311626683555,
+        "mean_reads": 46.0,
+        "mean_utility": 0.61025,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      },
+      "ordinary_action_head": {
+        "counterfactual_parent_cpu_seconds": 0.029669968000000324,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.10318750000000002,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.22244311626683555,
+        "mean_reads": 46.0,
+        "mean_utility": 0.61025,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      },
+      "tabular_bellman": {
+        "counterfactual_parent_cpu_seconds": 0.02168321000000084,
+        "mean_actual_later_correct": 0.5234375,
+        "mean_actual_later_net_reward": 0.4972109375,
+        "mean_correct": 0.8046875,
+        "mean_first_fire_predicted_future": 0.5865204476128509,
+        "mean_reads": 38.4375,
+        "mean_utility": 0.76625,
+        "sd_utility": 0.6532686681266029,
+        "streams": 128
+      },
+      "validation_risk": {
+        "counterfactual_parent_cpu_seconds": 0.02192094300000136,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.10318750000000002,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.22244311626683555,
+        "mean_reads": 46.0,
+        "mean_utility": 0.61025,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      },
+      "validation_schedule": {
+        "counterfactual_parent_cpu_seconds": 0.019997732999996742,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.10318750000000002,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.22244311626683555,
+        "mean_reads": 46.0,
+        "mean_utility": 0.61025,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      }
+    },
+    "0.005": {
+      "bellman_value_head": {
+        "counterfactual_parent_cpu_seconds": 0.018760112999999023,
+        "mean_actual_later_correct": 0.1328125,
+        "mean_actual_later_net_reward": 0.06539062499999998,
+        "mean_correct": 0.671875,
+        "mean_first_fire_predicted_future": 0.20308992115702204,
+        "mean_reads": 45.484375,
+        "mean_utility": 0.4444531249999999,
+        "sd_utility": 0.6033878221568326,
+        "streams": 128
+      },
+      "ordinary_action_head": {
+        "counterfactual_parent_cpu_seconds": 0.021613196000000556,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.047187499999999986,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.20308992115702204,
+        "mean_reads": 46.0,
+        "mean_utility": 0.42624999999999985,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      },
+      "tabular_bellman": {
+        "counterfactual_parent_cpu_seconds": 0.016550866999999414,
+        "mean_actual_later_correct": 0.5859375,
+        "mean_actual_later_net_reward": 0.4601953125,
+        "mean_correct": 0.7890625,
+        "mean_first_fire_predicted_future": 0.5174740368898239,
+        "mean_reads": 33.71875,
+        "mean_utility": 0.62046875,
+        "sd_utility": 0.6736659133393017,
+        "streams": 128
+      },
+      "validation_risk": {
+        "counterfactual_parent_cpu_seconds": 0.017857009000003643,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.047187499999999986,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.20308992115702204,
+        "mean_reads": 46.0,
+        "mean_utility": 0.42624999999999985,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      },
+      "validation_schedule": {
+        "counterfactual_parent_cpu_seconds": 0.020484676999998896,
+        "mean_actual_later_correct": 0.1171875,
+        "mean_actual_later_net_reward": 0.047187499999999986,
+        "mean_correct": 0.65625,
+        "mean_first_fire_predicted_future": 0.20308992115702204,
+        "mean_reads": 46.0,
+        "mean_utility": 0.42624999999999985,
+        "sd_utility": 0.5673185998191734,
+        "streams": 128
+      }
+    },
+    "0.02": {
+      "bellman_value_head": {
+        "counterfactual_parent_cpu_seconds": 0.01769970400000176,
+        "mean_actual_later_correct": 0.203125,
+        "mean_actual_later_net_reward": 0.16312499999999996,
+        "mean_correct": 0.7421875,
+        "mean_first_fire_predicted_future": 0.16507738072688777,
+        "mean_reads": 34.0,
+        "mean_utility": 0.06218749999999991,
+        "sd_utility": 0.6786519030488392,
+        "streams": 128
+      },
+      "ordinary_action_head": {
+        "counterfactual_parent_cpu_seconds": 0.02455844499999671,
+        "mean_actual_later_correct": 0.203125,
+        "mean_actual_later_net_reward": 0.16312499999999996,
+        "mean_correct": 0.7421875,
+        "mean_first_fire_predicted_future": 0.16507738072688777,
+        "mean_reads": 34.0,
+        "mean_utility": 0.06218749999999991,
+        "sd_utility": 0.6786519030488392,
+        "streams": 128
+      },
+      "tabular_bellman": {
+        "counterfactual_parent_cpu_seconds": 0.0019998349999994502,
+        "mean_actual_later_correct": 0.203125,
+        "mean_actual_later_net_reward": 0.16312499999999996,
+        "mean_correct": 0.3125,
+        "mean_first_fire_predicted_future": 0.16507738072688777,
+        "mean_reads": 3.0,
+        "mean_utility": 0.25249999999999995,
+        "sd_utility": 0.5433926670016638,
+        "streams": 128
+      },
+      "validation_risk": {
+        "counterfactual_parent_cpu_seconds": 0.003668615999998792,
+        "mean_actual_later_correct": 0.203125,
+        "mean_actual_later_net_reward": 0.16312499999999996,
+        "mean_correct": 0.3125,
+        "mean_first_fire_predicted_future": 0.16507738072688777,
+        "mean_reads": 3.0,
+        "mean_utility": 0.25249999999999995,
+        "sd_utility": 0.5433926670016638,
+        "streams": 128
+      },
+      "validation_schedule": {
+        "counterfactual_parent_cpu_seconds": 0.003491201999999305,
+        "mean_actual_later_correct": 0.203125,
+        "mean_actual_later_net_reward": 0.16312499999999996,
+        "mean_correct": 0.3125,
+        "mean_first_fire_predicted_future": 0.16507738072688777,
+        "mean_reads": 3.0,
+        "mean_utility": 0.25249999999999995,
+        "sd_utility": 0.5433926670016638,
+        "streams": 128
+      }
+    }
+  },
+  "counterfactual_macro_paired_comparisons": {
+    "bellman_value_head": {
+      "hypothesis_test_or_multiple_comparison_gate": false,
+      "mean_paired_difference": -0.057369791666666656,
+      "nominal_descriptive_bootstrap_interval": [
+        -0.09156510416666663,
+        -0.021041666666666646
+      ],
+      "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+    },
+    "ordinary_action_head": {
+      "hypothesis_test_or_multiple_comparison_gate": false,
+      "mean_paired_difference": -0.0634375,
+      "nominal_descriptive_bootstrap_interval": [
+        -0.09468749999999998,
+        -0.03479166666666664
+      ],
+      "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+    },
+    "tabular_bellman": {
+      "hypothesis_test_or_multiple_comparison_gate": false,
+      "mean_paired_difference": 0.11673958333333335,
+      "nominal_descriptive_bootstrap_interval": [
+        0.041498567708333337,
+        0.19193372395833333
+      ],
+      "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+    },
+    "validation_risk": {
+      "hypothesis_test_or_multiple_comparison_gate": false,
+      "mean_paired_difference": 0.0,
+      "nominal_descriptive_bootstrap_interval": [
+        0.0,
+        0.0
+      ],
+      "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+    },
+    "validation_schedule": {
+      "hypothesis_test_or_multiple_comparison_gate": false,
+      "mean_paired_difference": 0.0,
+      "nominal_descriptive_bootstrap_interval": [
+        0.0,
+        0.0
+      ],
+      "resampling_unit": "3-task stream, averaged over all 3 public prices before resampling"
+    }
+  },
+  "exact_binary_oracle": false,
+  "fresh_trace_generation": {
+    "all_prefix_model_steps": 12288,
+    "cpu_seconds": 1.0636276229999995,
+    "images": 384,
+    "scope": "Full causal prefix cache; actual complete inference cost, never counted as avoided computation",
+    "source_sha256": "50edbf9b0cd1298393f8543834b9c5fa82f3d0149b955c91d58eef279df1aa89",
+    "trace_sha256": "cde92c9da2b6ba3d4f88ccb3367c3b2a6efb0d1531d4cd4c9d81eefbe6d31cec"
+  },
+  "identity": {
+    "backbone_sha256": "069ecacf9fa21cb8e4360893a2d6aa68621a1860d4baa6b9ae1c7343df289cfd",
+    "dataset_sha256": "50edbf9b0cd1298393f8543834b9c5fa82f3d0149b955c91d58eef279df1aa89",
+    "metadata_sha256": "10dde947adc4124325e190007a7ad320eba97943948598b2b4caa873e9035c22",
+    "protocol_sha256": "6b1e2f7dccfb2ef756092e2cfb39e2aacc6835642ab9e535b4846fce030f28db",
+    "registration_sha256": "74199eb3757a989a9dc1c5fecb988c3a496fb3e8730e7bfc4aa8d92f30914f66",
+    "selection_lock_sha256": "a885d0d2eb93b1933bcdd801143cfadf9205b5f377cdd12ec42fd3c8e370dbaa"
+  },
+  "mnist_coarsened_markov_approximation": true,
+  "native_and_counterfactual_results_are_separate": true,
+  "statistical_unit": "stream, not task or repeated price condition",
+  "status": "completed"
+}

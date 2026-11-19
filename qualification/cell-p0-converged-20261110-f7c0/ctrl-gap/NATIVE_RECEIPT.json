@@ -1,0 +1,113 @@
+{
+  "adoption_action": "NoUpdate",
+  "diagnostic_source_commit": "13de10b55b0f16cf1548dab193fbb8ac11d3b4cd",
+  "evidence_parent_commit": "602cd5695092a82f876fd122243b971b5b88eee8",
+  "exit_code": 0,
+  "files": {
+    "DIAGNOSTIC_STDERR.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "DIAGNOSTIC_STDOUT.txt": {
+      "bytes": 224,
+      "sha256": "923b82e6410f40237f23616fdca0691bce423f63b8787ae918f7147c67f8369b"
+    },
+    "result/BASELINE_AFTER/RESULT.json": {
+      "bytes": 29590,
+      "sha256": "a650c86315f2db680d66c55d58ffc18974eec3944fd5954c54dcb70be2a17e3a"
+    },
+    "result/BASELINE_BEFORE/RESULT.json": {
+      "bytes": 29589,
+      "sha256": "1e4706f9f1997a22415356235c448580b7089f77d7049fd6cec1c6010f3d849a"
+    },
+    "result/RESULT.json": {
+      "bytes": 7920,
+      "sha256": "bb6a773d3f6403e68662a3f26c0b86e7571a578334aa3de6c91862a471409309"
+    }
+  },
+  "full_physical_cost_observed": false,
+  "future_labels_opened": false,
+  "inputs_after": {
+    "collection": {
+      "bytes": 39942,
+      "sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+      "version": "66306:46048195:39942:1794211128026025745:1794211128026025745"
+    },
+    "records": {
+      "bytes": 9496351,
+      "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85",
+      "version": "66306:49321864:9496351:1794058028070480694:1794058028070480694"
+    },
+    "request": {
+      "bytes": 7550,
+      "sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
+      "version": "66306:95452169:7550:1794296380225821793:1794296380225821793"
+    }
+  },
+  "inputs_before": {
+    "collection": {
+      "bytes": 39942,
+      "sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+      "version": "66306:46048195:39942:1794211128026025745:1794211128026025745"
+    },
+    "records": {
+      "bytes": 9496351,
+      "sha256": "43f1c63fe378a783cc57d475ad1841c4235b7d1eaa335c2e0fdd2126f73d1a85",
+      "version": "66306:49321864:9496351:1794058028070480694:1794058028070480694"
+    },
+    "request": {
+      "bytes": 7550,
+      "sha256": "3ea9d00f6dc1be41427272a1f79169d3b2bd4b56d8b1b97ec7693be9c9b4824e",
+      "version": "66306:95452169:7550:1794296380225821793:1794296380225821793"
+    }
+  },
+  "model_inference_calls": 0,
+  "new_independent_tasks": 0,
+  "ocr_calls": 0,
+  "operation_key": "ctrl-fit40-gap-20261111-f7c0ded86bcc-v1",
+  "production_admission": false,
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "schema": "ctrl.fit40.frozen-gap-run-receipt.v1",
+  "source_after": {
+    "candidate_coverage.py": {
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b",
+      "version": "66306:48138755:14398:1794355707586991036:1794355707586991036"
+    },
+    "candidate_coverage_legacy.py": {
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799",
+      "version": "66306:48138756:16027:1794355707588361949:1794355707588361949"
+    },
+    "candidate_gap_diagnostic.py": {
+      "bytes": 16971,
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e",
+      "version": "66306:48138757:16971:1794355707589006857:1794355707589006857"
+    }
+  },
+  "source_before": {
+    "candidate_coverage.py": {
+      "bytes": 14398,
+      "sha256": "3d44b74354a3a56b69467e1c019606de7f360666d7fa09a8cee4fe2f71c5872b",
+      "version": "66306:48138755:14398:1794355707586991036:1794355707586991036"
+    },
+    "candidate_coverage_legacy.py": {
+      "bytes": 16027,
+      "sha256": "daba119e74d2f306731c063c30da9a6fb1a8717636ab4061d20e71e138632799",
+      "version": "66306:48138756:16027:1794355707588361949:1794355707588361949"
+    },
+    "candidate_gap_diagnostic.py": {
+      "bytes": 16971,
+      "sha256": "1da02aea4aabb7e21486110fc0ec545fe9d683e5e0383311df568e33f649753e",
+      "version": "66306:48138757:16971:1794355707589006857:1794355707589006857"
+    }
+  },
+  "status": "completed",
+  "training_steps": 0,
+  "unchanged_inputs_and_sources": true,
+  "unix_finished": 1794355708.5100996,
+  "unix_start": 1794355707.5803285,
+  "wrapper_cpu_scope": "parent_only_excludes_child",
+  "wrapper_cpu_seconds": 0.013945428999999999,
+  "wrapper_wall_seconds": 0.9297721888870001
+}

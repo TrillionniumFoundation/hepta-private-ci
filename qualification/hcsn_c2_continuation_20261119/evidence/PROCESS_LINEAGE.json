@@ -1,0 +1,52 @@
+{
+  "processes": [
+    {
+      "Cpus_allowed_list": "0-47",
+      "Name": "python3",
+      "PPid": "2356",
+      "State": "S (sleeping)",
+      "Threads": "3",
+      "VmRSS": "19764 kB",
+      "children": [
+        1036661
+      ],
+      "pid": 1036652
+    },
+    {
+      "Cpus_allowed_list": "0-47",
+      "Name": "sh",
+      "PPid": "1036652",
+      "State": "S (sleeping)",
+      "Threads": "1",
+      "VmRSS": "1912 kB",
+      "children": [
+        1036662
+      ],
+      "pid": 1036661
+    },
+    {
+      "Cpus_allowed_list": "0-1",
+      "Name": "python",
+      "PPid": "1036661",
+      "State": "S (sleeping)",
+      "Threads": "2",
+      "VmRSS": "18936 kB",
+      "children": [
+        1036680
+      ],
+      "pid": 1036662
+    },
+    {
+      "Cpus_allowed_list": "0",
+      "Name": "python",
+      "PPid": "1036662",
+      "State": "R (running)",
+      "Threads": "1",
+      "VmRSS": "3364800 kB",
+      "children": [],
+      "pid": 1036680
+    }
+  ],
+  "scope": "Status fields only for descendants of this native job supervisor; no argument or environment reads",
+  "unix_time": 1795075000.105108
+}

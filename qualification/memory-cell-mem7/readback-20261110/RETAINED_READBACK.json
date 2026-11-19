@@ -1,0 +1,43 @@
+{
+  "adoption_action": "NoUpdate",
+  "common_p0_candidate_qualified": false,
+  "complete_physical_cost_measured": false,
+  "execution_source_sha": "9385535e683b97058fedeee490c6ff921652f793",
+  "full_owner_cold_recovery": false,
+  "historical_campaign_scenarios": 14,
+  "historical_reader_process_ids": 14,
+  "historical_tests": [
+    {
+      "log_sha256": "5fb62f2aaa59afda4dee48d66938e07ebc147e961bc14043c19618bac7311952",
+      "passed": 23,
+      "source_sha": "32a19ec3b1894c3afc41eb978edaefb213d9eeed"
+    },
+    {
+      "log_sha256": "0de7b8dac81bc3fcd86f51a6bfae55ef572af8d796aeeebf75ac292d27eca81a",
+      "passed": 24,
+      "source_sha": "9385535e683b97058fedeee490c6ff921652f793"
+    }
+  ],
+  "historical_writer_process_ids": 3,
+  "narrow_revocation_attribution_gap": "CLOSED_FOR_RETAINED_SAME_AUTHORITY_SYNTHETIC_CAMPAIGN",
+  "new_actor_episodes": 0,
+  "new_independent_real_tasks": 0,
+  "new_model_calls": 0,
+  "observed_at_utc": "2026-11-10T16:36:23.040122+00:00",
+  "ordinary_product_entry_qualified": false,
+  "original_index_entries": 154,
+  "schema": "hepta.mem7.retained-readback.v1",
+  "scientific_acceptance": "HOLD",
+  "snapshot_index_sha256": "2a7cd941724b5b595d0f5f08082d7f6b81caa6933794ad6fd20ecce0af3f725e",
+  "source_files_verified_against_git": {
+    "scripts/ndu_real_runtime/episodic_memory.py": "444d62981292d346161b9f77d143920b6625473c07098414530e59043281d92c",
+    "scripts/ndu_real_runtime/episodic_receipt.py": "bd53f969cfb3f8443e339a7fa78db325f5ea4138f0b660f7e638402a8d8829ab",
+    "scripts/ndu_real_runtime/episodic_retrieval.py": "1be831937b9598b3045bd8f9e464e1c0e2fa576408c819e1544ab01554c79002",
+    "scripts/ndu_real_runtime/run_episodic_qualification.py": "498d68fb4e5f7b9938b2d4024f2a1c6c474b95ed2b27e458c3800f850af324c0",
+    "scripts/ndu_real_runtime/run_revocation_qualification.py": "b1c7b6f7668404b6044b820147d31b2edf8836d4fb79e5a0f332d9ca15c9503f"
+  },
+  "status": "PASS_RETAINED_EVIDENCE_CONSISTENCY",
+  "trusted_execution_authenticated": false,
+  "verified_bytes": 316435,
+  "verified_files": 156
+}

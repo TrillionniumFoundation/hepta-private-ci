@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python",
+    "scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "started_utc": "2026-11-19T16:42:30.216907+00:00",
+  "seconds": 1623.9317717449958,
+  "exit_code": 0,
+  "stdout_sha256": "67e98b1c3935612f319c83c645138583a35f476ea7d27a5bd0b1454cfaf049e1",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_tail": "",
+  "source_commit": "fd13bcf3613e87905535e43c7253d572cc57eb82",
+  "latest_equivalent_source_commit": "094132189b7f94b941ac61cb3c812cb9a51cdc2b",
+  "rust_and_caller_paths_unchanged_between_commits": true,
+  "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "boundaries": 1652,
+  "protected_files": 826,
+  "rust_files_scanned": 9119,
+  "compressed_stdout_bytes": 59903,
+  "compressed_stdout_sha256": "1501bc83bc1472f7ff15a31f4cedcfc8ea855bbdfe3180f32bc2683294760d50",
+  "required_CI_qualification": false
+}

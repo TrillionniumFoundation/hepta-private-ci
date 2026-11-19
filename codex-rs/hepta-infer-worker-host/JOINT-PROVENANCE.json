@@ -1,0 +1,97 @@
+{
+  "source_sha": "18dac3ccd30317893ad922792c12400390522f00",
+  "source_root": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation",
+  "numeric_profile": "fp64-linux-libm-v1",
+  "imported_files": [
+    {
+      "path": "codec.rs",
+      "upstream_git_blob": "425c3add48b52266a154e258eb2cfb42d6ecc1e2",
+      "upstream_sha256": "1bc5fa5b02d3bb246fbd99ab2116e63c14c0771290c9ef1cc921f542ea111858"
+    },
+    {
+      "path": "math.rs",
+      "upstream_git_blob": "a6a4b74065b3973c9457ce270d229281aadba32d",
+      "upstream_sha256": "8dfa8a8fa2a978198caa499bb58fe72a5ea2521bb40f5fdf943fb088a9efebce"
+    },
+    {
+      "path": "model.rs",
+      "upstream_git_blob": "3c4cceb612cbdd50ca2b9d7e86c25b4fee7cd44a",
+      "upstream_sha256": "2b8134d7dd55f430c9bccd494d764000723162a8e48ab299b81154cbf1d08088"
+    },
+    {
+      "path": "state.rs",
+      "upstream_git_blob": "cb62c2732161526fe32ec6458806445107579783",
+      "upstream_sha256": "32b8e5a890ce23d6941a2bebfa8ccb1b3056486bb9f11cddd7c4978d93967a6e"
+    }
+  ],
+  "adaptations": [
+    "Remove file read/publication and completed media export paths from codec.",
+    "Replace four invariant unwrap calls with checked errors or fixed-array assembly.",
+    "Add FFI safety explanations.",
+    "Pure proposal entry and decoder framing are new and require independent qualification.",
+    "Extract pure sampling/chunk arithmetic; preserve first-maximum text and actor tie selection.",
+    "Add bounded request/response and media framing with exact original-operation digest and response checksum.",
+    "Require canonical asset packets and exact state inventory reconstructed against parsed original prefix bytes.",
+    "Keep metadata accepted by original weight/public validators; freeze the new bridge state schema."
+  ],
+  "qualification_transfer": false,
+  "decoder_reference": {
+    "path": "stream.rs",
+    "upstream_git_blob": "47e3f19c3fcf4b1fcdb964dda26355f71fae4757",
+    "upstream_sha256": "7677b2a2920c449a352dcee78df645009766f56fa9b021885c65b7aaf6fa1898",
+    "extracted_functions": [
+      "sample_bytes",
+      "committed_chunk"
+    ],
+    "excluded_owner_paths": [
+      "Lock",
+      "create",
+      "load",
+      "mutate",
+      "publish",
+      "export"
+    ]
+  },
+  "selection": {
+    "width": 32,
+    "depth": 1,
+    "mode": "dual",
+    "boundary": "direct",
+    "initial_stop_and_verify_flags": "read from actual validated weights; no guessed frozen booleans"
+  },
+  "bridge_abi": {
+    "request_magic": "HJREQV01",
+    "response_magic": "HJRESV01",
+    "output_frame_magic": "HGC1",
+    "state_kind": "joint-generation-proposal-state-v1",
+    "weights_max_bytes": 8388608,
+    "public_max_bytes": 1048576,
+    "state_max_bytes": 65536,
+    "prefix_max_bytes": 262144,
+    "delta_max_bytes": 65536,
+    "asset_transport": "bounded stdin bytes from the admitting host, no asset paths",
+    "stop_semantics": "one proposal flushes every remaining modality before terminal state"
+  },
+  "measurement_contract": {
+    "unit": "wall microseconds",
+    "disjoint_phases": [
+      "codec",
+      "encoder",
+      "inference",
+      "planning"
+    ],
+    "planning": "inspect includes original actor, continuation critic, delivery critic and its output heads; no duplicate Critic accounting",
+    "excluded_from_phase_sum": "stdio wait, envelope checksum/write and unallocated control/launch work; host observes whole-process wall",
+    "unmeasured": [
+      "cpu",
+      "energy"
+    ],
+    "zero_phase": "known not executed, or measured interval rounded down below one microsecond"
+  },
+  "validation_boundary": {
+    "authored_tests": "synthetic legal model tensors exercise real kernel/protocol paths only",
+    "selected_trained_weights_executed": false,
+    "bazel_executed": false,
+    "numeric_or_product_qualification_transferred": false
+  }
+}

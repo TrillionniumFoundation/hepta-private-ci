@@ -1,0 +1,82 @@
+{
+  "base_commit": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "path": "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
+  "original_blob": "f8556a1660ab1f5e83428725d1e66e01a9e8733f",
+  "proposed_blob": "f5617b8a391f83692b670114d90a2c8c7b7854ba",
+  "original_sha256": "17c6f2909f78941721840aedc4186f446401d96c70e1c5218398127bb2ac7ae8",
+  "proposed_sha256": "ec02763f2702640254d827b3db0671e5faf1f2ad988bad13b4a68d0c43a98cf8",
+  "patch_sha256": "6d8749b612f244d8f7b3d71f3d17a112eb6012e8426bb3ea7f5b86318c4fd00f",
+  "changed_paths": [
+    "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+  ],
+  "cause": "The existing HNMF verifier requires concrete decode_wire_v1::<Protocol> tokens; the harness moved those calls into a generic round-trip helper, while keeping all protocol decoders reachable.",
+  "change": "Decode each concrete protocol exactly once at its fuzz_target call site, then pass Result<T, CognitiveWireError> to the unchanged conditional canonical re-encode and byte equality assertion.",
+  "coverage": {
+    "hnmf_protocols": 12,
+    "additional_memory_write_receipt": 1,
+    "registered_envelope_inspection": true
+  },
+  "validation": [
+    {
+      "command": "python3 scripts/hepta-hnmf.py verify",
+      "version": "base 6ffe9e1",
+      "exit_code": 1,
+      "result": "FAIL_HEPTA_HNMF: ModalitySpanRefV1 fuzz decoder coverage"
+    },
+    {
+      "command": "python3 scripts/hepta-hnmf.py verify",
+      "version": "proposed",
+      "exit_code": 0,
+      "result": "PASS_HEPTA_HNMF_REFERENCE_CLOSED_WORLD"
+    },
+    {
+      "command": "python3 scripts/hepta-hnmf.py self-test",
+      "version": "proposed",
+      "exit_code": 0,
+      "result": "PASS_HEPTA_HNMF_SELF_TEST"
+    },
+    {
+      "command": "python3 scripts/hepta-docs.py verify --profile development",
+      "version": "proposed",
+      "exit_code": 0,
+      "result": "PASS_HEPTA_DEVELOPMENT_DOCS_V8"
+    },
+    {
+      "command": "git diff --check",
+      "version": "proposed",
+      "exit_code": 0
+    }
+  ],
+  "unchanged_gate_blobs": {
+    "scripts/hepta-hnmf.py": "705dd54756cb18bb45a7cee39ee6a8d28106cb24",
+    "scripts/hepta-docs.py": "483726841b99fbceb9ceb8f2d4fd46d2789d7eb0",
+    ".github/workflows/hepta-contract-gate.yml": "0eb3d84801cc456b34fa1e33957400c1a00dcb68"
+  },
+  "native_rust_validation": {
+    "rust": "1.96.0",
+    "format": {
+      "command": "just fmt",
+      "exit_code": 0,
+      "blob_unchanged": true
+    },
+    "fuzz_check": {
+      "command": [
+        "cargo",
+        "check",
+        "--manifest-path",
+        "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+        "--all-targets",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "ephemeral_lock_sha256_before": "83d91e60b98ed675f6529ab2f1a1eea2b2f03ec4ea1d5629f431c20c690ef968",
+      "ephemeral_lock_sha256_after": "83d91e60b98ed675f6529ab2f1a1eea2b2f03ec4ea1d5629f431c20c690ef968",
+      "lock_unchanged": true,
+      "tracked_changes": [
+        "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+      ]
+    },
+    "lock_context": "The base standalone fuzz workspace has no tracked Cargo.lock. Initial --locked correctly refused lock creation; generated an ephemeral ignored fuzz lock offline in the isolated checkout, then --locked compilation passed without changing it. No tracked lockfile changed."
+  },
+  "shared_repo_and_remote_writes": false
+}

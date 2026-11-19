@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "source": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "run_id": 43313237694,
+  "snapshot": "2026-11-12 21:58:49 UTC",
+  "pure_archive_tree": "f16f8be57c0ffdd745034635a16e9b34f9532202",
+  "manifest": "0085cef40fa9415fffa52989400ada399b530161",
+  "root_full_raw_bytes_reassembled": true,
+  "failures": {
+    "131515141142": {
+      "original_job_metadata": {
+        "id": 131515141142,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:45:53Z",
+        "completed_at": "2026-11-12T21:57:47Z",
+        "runner_id": 1000135589,
+        "runner_name": "GitHub Actions 1000135589",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "full_original": {
+        "bytes": 1240416,
+        "sha256": "a4884e4ca297ed8ec4469e8e2571ea3d6595bbb0b4f868583ab270ebb6785af7",
+        "git_blob": "609752bc2e9bb888ba36c6584f5cc0b8d4fb9165"
+      },
+      "original_contiguous_parts": 7,
+      "original_metadata_independently_matched": true,
+      "blocks": [
+        {
+          "shard": 6,
+          "original_span": [
+            8483,
+            8676
+          ],
+          "announced": 153,
+          "terminal_methods": 153,
+          "status_counts": {
+            "ok": 135,
+            "FAILED": 4,
+            "ignored": 14
+          },
+          "root_normalized_sha256": "fb3d578f5e4249611b47524476e18576a6d5bf422a2e90e97af787a9ae6f0ed5",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending"
+          ]
+        },
+        {
+          "shard": 8,
+          "original_span": [
+            8683,
+            8834
+          ],
+          "announced": 159,
+          "terminal_methods": 145,
+          "status_counts": {
+            "ok": 132,
+            "FAILED": 2,
+            "ignored": 11
+          },
+          "root_normalized_sha256": "5766ba3c7cdaf41a69fa3769d12c320e62790bdd39e481bdd60f4e1687dc9057",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut"
+          ]
+        },
+        {
+          "shard": 2,
+          "original_span": [
+            8836,
+            8982
+          ],
+          "announced": 159,
+          "terminal_methods": 134,
+          "status_counts": {
+            "ok": 125,
+            "FAILED": 0,
+            "ignored": 9
+          },
+          "root_normalized_sha256": "3d53d273cf60d7394f52a15d6c2b4b3dcd1431b9e06834ee6eaf1fe7bc43f769",
+          "failed_methods": []
+        },
+        {
+          "shard": 1,
+          "original_span": [
+            8985,
+            9123
+          ],
+          "announced": 160,
+          "terminal_methods": 131,
+          "status_counts": {
+            "ok": 116,
+            "FAILED": 5,
+            "ignored": 10
+          },
+          "root_normalized_sha256": "bdba72b26f9b5eb244fc57442c3f44699112ed90b22e76d734622046aa6af6ab",
+          "failed_methods": [
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_native_artifact_after_cache",
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim"
+          ]
+        },
+        {
+          "shard": 5,
+          "original_span": [
+            9125,
+            9286
+          ],
+          "announced": 152,
+          "terminal_methods": 126,
+          "status_counts": {
+            "ok": 115,
+            "FAILED": 1,
+            "ignored": 10
+          },
+          "root_normalized_sha256": "87abc02614c1ae807f5537de789dedbe44c05fc994d82decb84603213ea8a12a",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming"
+          ]
+        },
+        {
+          "shard": 7,
+          "original_span": [
+            9288,
+            9478
+          ],
+          "announced": 166,
+          "terminal_methods": 150,
+          "status_counts": {
+            "ok": 132,
+            "FAILED": 3,
+            "ignored": 15
+          },
+          "root_normalized_sha256": "12de139de024f0d6172bf03a357e349ffb7b185702ab55d4b74408d3fd5c1db2",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness"
+          ]
+        },
+        {
+          "shard": 4,
+          "original_span": [
+            9490,
+            9639
+          ],
+          "announced": 156,
+          "terminal_methods": 146,
+          "status_counts": {
+            "ok": 133,
+            "FAILED": 1,
+            "ignored": 12
+          },
+          "root_normalized_sha256": "e1e09ef3fdd4f195ce33d07daa9d5f3e9ccb7c637f41d671286556fc3063e3af",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication"
+          ]
+        }
+      ],
+      "announced_methods_in_printed_blocks": 1105,
+      "observed_unique_terminal_methods": 985,
+      "status_counts": {
+        "ok": 888,
+        "FAILED": 16,
+        "ignored": 81
+      },
+      "missing_terminal": 120
+    },
+    "131515141372": {
+      "original_job_metadata": {
+        "id": 131515141372,
+        "run_id": 43313237694,
+        "run_attempt": 1,
+        "head_sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-12T21:45:54Z",
+        "completed_at": "2026-11-12T21:57:50Z",
+        "runner_id": 1000135591,
+        "runner_name": "GitHub Actions 1000135591",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "full_original": {
+        "bytes": 1246071,
+        "sha256": "0d9d2849971de2b03c6fa54dd5411458830f2384923989d900dce36e9f753fe8",
+        "git_blob": "41852d82cde62f15cefcf28c57d24110e887566d"
+      },
+      "original_contiguous_parts": 7,
+      "original_metadata_independently_matched": true,
+      "blocks": [
+        {
+          "shard": 6,
+          "original_span": [
+            8604,
+            8797
+          ],
+          "announced": 153,
+          "terminal_methods": 153,
+          "status_counts": {
+            "ok": 135,
+            "FAILED": 4,
+            "ignored": 14
+          },
+          "root_normalized_sha256": "fb3d578f5e4249611b47524476e18576a6d5bf422a2e90e97af787a9ae6f0ed5",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::completion::evaluated_readiness_withdrawal_is_fatal_and_consumes_original_connection",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+            "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_withdrawal_is_fatal_and_never_becomes_pending"
+          ]
+        },
+        {
+          "shard": 8,
+          "original_span": [
+            8805,
+            8956
+          ],
+          "announced": 159,
+          "terminal_methods": 145,
+          "status_counts": {
+            "ok": 132,
+            "FAILED": 2,
+            "ignored": 11
+          },
+          "root_normalized_sha256": "5766ba3c7cdaf41a69fa3769d12c320e62790bdd39e481bdd60f4e1687dc9057",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut"
+          ]
+        },
+        {
+          "shard": 2,
+          "original_span": [
+            8958,
+            9104
+          ],
+          "announced": 159,
+          "terminal_methods": 134,
+          "status_counts": {
+            "ok": 125,
+            "FAILED": 0,
+            "ignored": 9
+          },
+          "root_normalized_sha256": "3d53d273cf60d7394f52a15d6c2b4b3dcd1431b9e06834ee6eaf1fe7bc43f769",
+          "failed_methods": []
+        },
+        {
+          "shard": 5,
+          "original_span": [
+            9106,
+            9267
+          ],
+          "announced": 152,
+          "terminal_methods": 126,
+          "status_counts": {
+            "ok": 115,
+            "FAILED": 1,
+            "ignored": 10
+          },
+          "root_normalized_sha256": "87abc02614c1ae807f5537de789dedbe44c05fc994d82decb84603213ea8a12a",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming"
+          ]
+        },
+        {
+          "shard": 7,
+          "original_span": [
+            9270,
+            9460
+          ],
+          "announced": 166,
+          "terminal_methods": 150,
+          "status_counts": {
+            "ok": 132,
+            "FAILED": 3,
+            "ignored": 15
+          },
+          "root_normalized_sha256": "12de139de024f0d6172bf03a357e349ffb7b185702ab55d4b74408d3fd5c1db2",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness"
+          ]
+        },
+        {
+          "shard": 1,
+          "original_span": [
+            9462,
+            9600
+          ],
+          "announced": 160,
+          "terminal_methods": 131,
+          "status_counts": {
+            "ok": 116,
+            "FAILED": 5,
+            "ignored": 10
+          },
+          "root_normalized_sha256": "bdba72b26f9b5eb244fc57442c3f44699112ed90b22e76d734622046aa6af6ab",
+          "failed_methods": [
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::current::original_candidate_current_rechecks_actual_native_artifact_after_cache",
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+            "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+            "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim"
+          ]
+        },
+        {
+          "shard": 4,
+          "original_span": [
+            9612,
+            9761
+          ],
+          "announced": 156,
+          "terminal_methods": 146,
+          "status_counts": {
+            "ok": 133,
+            "FAILED": 1,
+            "ignored": 12
+          },
+          "root_normalized_sha256": "e1e09ef3fdd4f195ce33d07daa9d5f3e9ccb7c637f41d671286556fc3063e3af",
+          "failed_methods": [
+            "runtime::tests::circuit_task_ingress::q24_tests::next_use_observer::observer_support::selection_owner::published_read::command_owner::next_use_command::readiness::q24_readiness_completed_identity_cannot_revert_or_change_publication"
+          ]
+        }
+      ],
+      "announced_methods_in_printed_blocks": 1105,
+      "observed_unique_terminal_methods": 985,
+      "status_counts": {
+        "ok": 888,
+        "FAILED": 16,
+        "ignored": 81
+      },
+      "missing_terminal": 120
+    }
+  },
+  "original_shard6_error_lines_exactly_matched": true,
+  "seven_platform_stdout_blocks_identical": true,
+  "normalization": "Remove only initial BOM, outer ISO timestamp, ANSI and trailing CR per line; join span with LF without extra terminal LF.",
+  "independent_replications": 1,
+  "complete_method_denominator": null,
+  "missing_terminal_is_failure": false,
+  "whole_ordinary_or_root_pass": false,
+  "prior_own_GNU_successes_reference": "ROOT_DFF5_GNU_SUCCESSES_REASSEMBLY.json",
+  "owner_decision": null,
+  "all_blockers_closed": false
+}

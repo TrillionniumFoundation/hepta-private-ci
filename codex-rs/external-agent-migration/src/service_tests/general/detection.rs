@@ -158,7 +158,11 @@ async fn detect_cursor_repo_lists_skills_from_skills() {
 async fn detect_home_lists_recent_sessions() {
     let (root, external_agent_home, codex_home) = fixture_paths();
     let project_root = root.path().join("repo");
-    let recent_timestamp = chrono::Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true);
+    let recent_timestamp = time::OffsetDateTime::now_utc()
+        .replace_nanosecond(/*nanosecond*/ 0)
+        .expect("zero nanoseconds is valid")
+        .format(&time::format_description::well_known::Rfc3339)
+        .expect("current fixture time is representable as RFC 3339");
     let session_path = external_agent_home
         .join("projects")
         .join("repo")

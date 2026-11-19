@@ -1,0 +1,397 @@
+{
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "executed_merge": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+  "tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "classification": "Actual completed Bazel target failures; incomplete method roster for timed-out Agentd target. This is not an ordinary-native or Root-suite result.",
+  "gnu": {
+    "announced": 1190,
+    "block_line_range": [
+      8593,
+      9634
+    ],
+    "terminal_method_count": 1017,
+    "counts": {
+      "ok": 915,
+      "ignored": 87,
+      "FAILED": 15
+    },
+    "unknown_terminal_count": 173,
+    "inflight": [],
+    "failed_methods": [
+      {
+        "method": "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8764
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9132
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9135
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9136
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9137
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9138
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9139
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9140
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9141
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9142
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9165
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9166
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9209
+      },
+      {
+        "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9619
+      },
+      {
+        "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9620
+      }
+    ],
+    "terminal_summary_present": false
+  },
+  "musl": {
+    "announced": 1190,
+    "block_line_range": [
+      8420,
+      9461
+    ],
+    "terminal_method_count": 1017,
+    "counts": {
+      "ok": 915,
+      "ignored": 87,
+      "FAILED": 15
+    },
+    "unknown_terminal_count": 173,
+    "inflight": [],
+    "failed_methods": [
+      {
+        "method": "cell_q24_material_receipt_owner::tests::support::training_source::command::original_training_command_executes_and_produces_actual_evidence_readback",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8591
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8959
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8962
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8963
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8964
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8965
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8966
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8967
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8968
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8969
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8992
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 8993
+      },
+      {
+        "method": "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9036
+      },
+      {
+        "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9446
+      },
+      {
+        "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "status": "FAILED",
+        "detail": null,
+        "original_line": 9447
+      }
+    ],
+    "terminal_summary_present": false
+  },
+  "normalized_linux_terminal_rows_identical": true,
+  "windows_shard4": {
+    "distinct_failed_method_count": 20,
+    "failed_method_occurrences": {
+      "file_system_operations_can_reject_junctions_in_any_path_component::test_case_1_local": [
+        2992,
+        4837
+      ],
+      "file_system_operations_can_reject_junctions_in_any_path_component::test_case_2_remote": [
+        2993,
+        4838
+      ],
+      "file_system_remote_fs_helper_respects_windows_sandbox_write_policy": [
+        2994,
+        4839
+      ],
+      "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_1_local": [
+        2995,
+        4840
+      ],
+      "file_system_sandboxed_canonicalize_resolves_directory_junction::test_case_2_remote": [
+        2996,
+        4841
+      ],
+      "shared::file_system_create_directory_creates_nested_directories::test_case_5_local_sandboxed_no_follow": [
+        3009,
+        4854
+      ],
+      "shared::file_system_create_directory_creates_nested_directories::test_case_6_remote_sandboxed_no_follow": [
+        3010,
+        4855
+      ],
+      "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_1_local": [
+        3017,
+        4862
+      ],
+      "shared::file_system_read_file_stream_returns_bounded_chunks::test_case_2_remote": [
+        3018,
+        4863
+      ],
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_3_local_sandboxed": [
+        3023,
+        4868
+      ],
+      "shared::file_system_remove_no_follow_removes_file_and_empty_directory::test_case_4_remote_sandboxed": [
+        3024,
+        4869
+      ],
+      "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_1_local": [
+        3027,
+        4872
+      ],
+      "shared::file_system_sandboxed_metadata_and_read_allow_readable_root::test_case_2_remote": [
+        3028,
+        4873
+      ],
+      "shared::file_system_walk_honors_read_sandbox::test_case_1_local": [
+        3033,
+        4878
+      ],
+      "shared::file_system_walk_honors_read_sandbox::test_case_2_remote": [
+        3034,
+        4879
+      ],
+      "shared::file_system_write_file_writes_bytes::test_case_5_local_sandboxed_no_follow": [
+        3043,
+        4888
+      ],
+      "shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow": [
+        3044,
+        4889
+      ],
+      "suite::workspace_roots::workspace_roots_allow_file_and_command_writes": [
+        3341,
+        3441,
+        3541,
+        4814
+      ],
+      "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace": [
+        3573,
+        3662,
+        3749
+      ],
+      "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root": [
+        3911,
+        4122,
+        4329
+      ]
+    },
+    "interpretation": "Repeated lines include original flaky retries and print-failed-test-log tail duplication; occurrences are not independent tests.",
+    "failed_target_summaries": [
+      {
+        "original_line": 4688,
+        "text": "//codex-rs/exec-server:exec-server-file_system_windows-test              FAILED in 11.3s"
+      },
+      {
+        "original_line": 4690,
+        "text": "//codex-rs/core:core-all-test                                            FAILED in 12 out of 24 in 93.2s"
+      }
+    ],
+    "fixture_result_lines": [
+      {
+        "original_line": 3163,
+        "text": "test result: FAILED. 40 passed; 17 failed; 2 ignored; 0 measured; 0 filtered out; finished in 11.09s"
+      },
+      {
+        "original_line": 3352,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 1.81s"
+      },
+      {
+        "original_line": 3452,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 1.90s"
+      },
+      {
+        "original_line": 3552,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 2.15s"
+      },
+      {
+        "original_line": 3649,
+        "text": "test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 31.74s"
+      },
+      {
+        "original_line": 3737,
+        "text": "test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 30.99s"
+      },
+      {
+        "original_line": 3825,
+        "text": "test result: FAILED. 67 passed; 1 failed; 1 ignored; 0 measured; 1057 filtered out; finished in 22.18s"
+      },
+      {
+        "original_line": 4056,
+        "text": "test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 88.06s"
+      },
+      {
+        "original_line": 4264,
+        "text": "test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 83.96s"
+      },
+      {
+        "original_line": 4471,
+        "text": "test result: FAILED. 60 passed; 1 failed; 2 ignored; 0 measured; 1063 filtered out; finished in 28.31s"
+      },
+      {
+        "original_line": 4825,
+        "text": "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1125 filtered out; finished in 2.15s"
+      },
+      {
+        "original_line": 5008,
+        "text": "test result: FAILED. 40 passed; 17 failed; 2 ignored; 0 measured; 0 filtered out; finished in 11.09s"
+      }
+    ]
+  },
+  "cautions": [
+    "Linux target result is TIMEOUT in 300.1s. No final libtest summary or per-failing-method panic diagnostics were emitted before target termination.",
+    "The 173 unknown terminal methods are arithmetic remaining cases, not a recovered roster of names. They are not assumed skipped, failed, or passed.",
+    "GNU and musl logs expose identical normalized method rows. They must not be presented as independent scientific samples or two complete test executions.",
+    "Windows failed-method occurrences include actual retry attempts and repeated printed log tails. Distinct failed method count is 20 (17 exec-server and 3 core); the 12-of-24 Bazel core summary is retained verbatim without reinterpreting it as 12 distinct methods.",
+    "Windows sandbox safety refusals are preserved; this record proposes no change to isolation boundaries."
+  ],
+  "windows_error_categories": [
+    {
+      "methods": "17 exec-server filesystem cases",
+      "reported": "legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+    },
+    {
+      "method": "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace",
+      "reported": "Hard-link-specific assertion received the same general Windows sandbox-isolation refusal."
+    },
+    {
+      "methods": [
+        "suite::workspace_roots::workspace_roots_allow_file_and_command_writes",
+        "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root"
+      ],
+      "reported": "The system cannot find the file specified. (os error 2). No common root cause is inferred from the result alone."
+    }
+  ]
+}

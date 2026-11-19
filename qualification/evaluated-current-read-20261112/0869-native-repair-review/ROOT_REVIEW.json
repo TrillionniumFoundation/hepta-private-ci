@@ -1,0 +1,494 @@
+{
+  "schema": "hepta.original-native-repair-root-review.v1",
+  "observed_at_utc": "2026-11-12 15:51:16 UTC",
+  "parent_source": "1631e01fd086f79bef8bf19bd6fe5859565b7976",
+  "source": "0869be2655922d9d71ba83bafdaccd85f99f6a77",
+  "tree": "040bc4af554e4ffb659bf49eb062b94c3f1898f6",
+  "source_paths": 27,
+  "source_additions": 565,
+  "source_deletions": 156,
+  "git_ref_readback": true,
+  "root_postimage_hash_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "base_blob": "c94d6018c54c88fbdec83f12c219a8ef06ee5724",
+      "blob": "830c044c079478e1f61751446dd63be0f851586c",
+      "bytes": 11661,
+      "sha256": "5d0db0f7c23a95ff27790ec7138ef5c55ba32944be387fd8d8053589c3aa8fd4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "base_blob": "5940a804ed01c3e8ee3e0cd857a8a060397d9446",
+      "blob": "bbe2ccdd2e42b4fe362720205121dab5650c6797",
+      "bytes": 8712,
+      "sha256": "0715274b508bd73c46e43b6049cb4d6ddefdb2049bb3097661e3c1403f3041d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "base_blob": "089a57d500eda46aa92bfe110722b9a4183732d3",
+      "blob": "9a39a6f1f131b2d2a6ceeaf2d24303bf29bb4e4d",
+      "bytes": 14139,
+      "sha256": "eae31620444bf1ae694e1616d498254ab5f45a9a8698514e7aa27c615e7c7952"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "base_blob": "a4b9f14a366d72f47e0086f8d41fb2573bba2b0a",
+      "blob": "4b1144c449ab7d681c01877f8ee19095c062618d",
+      "bytes": 11066,
+      "sha256": "0c6e50ce78a17efd5c04cdfc3a3550202328b8988888c3c93b9eda815410e0b4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "base_blob": "c2618413b04cc2196ac365b7f721dc062fc715e1",
+      "blob": "00fb66e36c64b52ddb40b1250a5375e7437629ec",
+      "bytes": 7603,
+      "sha256": "aae736a096ec950657f0aa89126ac5ceef00013c755d901ffd22a10569f3a13d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "base_blob": "9759e7a8af9abf9b02812958ad10d4cbf0303aaf",
+      "blob": "bc03999e1646d4cb6e396e57bcdc11ff4c10f353",
+      "bytes": 18270,
+      "sha256": "f3dc5b9e92c7bd582c851c37950650f8e0b44e0554cd0e48f7f39c12ca9b8c53"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "base_blob": "a64c659ff63cf38d6704050e633fa65a30848d62",
+      "blob": "9a24ed51500177fb8f86e6c73616e444bae0fb7e",
+      "bytes": 11419,
+      "sha256": "5cec34e08b0dd40a37435f18fc9297a5b2de251dba60e334efed65ba6c910d6e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "base_blob": "ad931c4e8245dd2526a15407d20a319d8119ddb6",
+      "blob": "bfa6e5b3ba66694380db7882bf7d5ca76b0eb644",
+      "bytes": 6554,
+      "sha256": "1b4005e7a9440da2fe586d4e7eda9fa89d0d4f7acb445fb44dee9bce214888a1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "base_blob": "6a81d66c79e5c38ac0177a6949070dcde5769434",
+      "blob": "af53a40c1b0cc3d0b5671a0a1fbbfa65b368d64c",
+      "bytes": 8485,
+      "sha256": "6cd399ecde0c61fe7e31add811c772dbd6a80aadbe559de9ec916c647e65f69b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "base_blob": "f46ca31538e114546c64aa283ac5b9c430020a15",
+      "blob": "04547bcd2fa758239b71298a87a10a5acf96e30a",
+      "bytes": 2911,
+      "sha256": "51837536b6177313ef9350df909ec9eb34e1d834ce2d2165d5d1ce3f03475aa3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane.rs",
+      "base_blob": null,
+      "blob": "e1d4a1b8249a3107389447ed8dcac33117b679f2",
+      "bytes": 2558,
+      "sha256": "f607a2a1acee77d5b7adc25ff3f4071b3bcffa3b18fa5286927da3c02882081c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane_tests.rs",
+      "base_blob": null,
+      "blob": "743543bfd006063e385de0c0aaf478617bf73700",
+      "bytes": 3518,
+      "sha256": "019d85c240cbfc7d00d4def186120a3cdb76d0b8a70f40c7888bfd7090ca4a89"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "base_blob": "bcbb410d42d44a4468549c5d3f9cac8a042f9621",
+      "blob": "2c8ffbe74759b94c37b946434ebe2f17a33bfee5",
+      "bytes": 13996,
+      "sha256": "37fdd13b4c4d61163834f891aa91b060c51de738bd9c36a8129152f84a5e1050"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "base_blob": "6da010360537b297cb9e351fa27cb25a93780e26",
+      "blob": "d6c093a72c22dd46ce03c06631547fbe970c2ceb",
+      "bytes": 25740,
+      "sha256": "08d986508f7f2258557dfde187d8c9071e1c8f46b9dc3b846ad3ef5d6f229d52"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "base_blob": "c18327a1b6ed3a437bdbbee8e6c110f8212d535b",
+      "blob": "ae43c0ff5efaeff62c03eade72d78cf836abac59",
+      "bytes": 21956,
+      "sha256": "81965a3f67de6f252be4b00156e5d32e3507e98e5f63e18d63dd5d09b34549ff"
+    },
+    {
+      "path": "CALLERS.toml",
+      "base_blob": "9304bc0d4e5f5d13f0d0c251a47a9cf7de2e1de5",
+      "blob": "4b3bc5bf7ed524c9adba8abd7f148bfeae820b0b",
+      "bytes": 1129142,
+      "sha256": "dfdc54c21a209e88521f9409c92b26e27611b2594d4ca1ab5203d08d59b2dbfc"
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base_blob": "6d356c37701af3a8b1553e62ff2150626d330723",
+      "blob": "414f0f6e49906facf38de32b404f725736d19da9",
+      "bytes": 11699,
+      "sha256": "e6117933d276969fe4a89646e566c76ac6fa332ebfd8d456e03e5fa346338354"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "base_blob": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+      "blob": "467bba30b2cd77a322b714b9c0655a5823336214",
+      "bytes": 39110,
+      "sha256": "ef5bba1fae1fbd47ba7c897600ba121b7cf902f414bee62c91287d1eb522f148"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "base_blob": "14c46a6e0518f511c0e8cf59c67f7486d274d8cf",
+      "blob": "a40ba47f4f6fea4975cb68a0585b1cf42c1c73d6",
+      "bytes": 22543,
+      "sha256": "4ebd16d971c3cfed39eb529338d65315fba171241133dc1b01192004f648749c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "base_blob": "6f607bebab6a930d9d0007ef7a438e51dd7ee5fb",
+      "blob": "6d5a4cb47e52784d34576be53868281b5104be90",
+      "bytes": 19414,
+      "sha256": "351b6a4f01298e3e0f6667baccc79a6f1e45318a49aee298b4fe175ef7cfad31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "base_blob": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+      "blob": "02a46c7735336689df347040f34dd2aeeb30d345",
+      "bytes": 9720,
+      "sha256": "0a7b94ff4cad4f9816ebfffcf156c3944ccb3714e152167e3861f289d87eace0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "base_blob": "2bdf58f807f79da78a0d1e8ee66ebf735fb7cb7b",
+      "blob": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "bytes": 11754,
+      "sha256": "19699b454033bbaf21748f7b8fc0b87f9e78d268e00c1d5e16848c8b14600adc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "base_blob": "d15d23cbab985ef52d9490c1c00349c8892d44e2",
+      "blob": "b251f72da8c5a6640c0cb4b00502de155d27e4ff",
+      "bytes": 6884,
+      "sha256": "ee1c7e50cf2a36be22adb23582dcec66cb0f9c6444fe73d70ee63885d846a643"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "base_blob": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+      "blob": "1158844757e5eaac308922eba2476db88442a207",
+      "bytes": 12750,
+      "sha256": "e7f6a493ea703a6026895360338a1c2222583bf63f0477f66fd188a3702ac96e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "blob": "968a47ad243f98a6b1a516153009ed325550ff23",
+      "sha256": "5b89a782b4b228430156fd6247cb010d6e41528c07ebb01cabd8ad6a23a52114",
+      "bytes": 29208,
+      "lines": 752
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "blob": "261f400a6a1dadbd79dffb58005851553ab5b294",
+      "sha256": "5fe8a0151b8e11b40eb232ec1e77f964c596718c97f42d82b69ad4a8ef778b30",
+      "bytes": 5093,
+      "lines": 131
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "blob": "6bf99819add8f14b1cbfe50d7f1e87c0bef8fb63",
+      "sha256": "adb3b35ffec34e0193bd7f0346058015a1eda9fbec972e06d99f7ce1c25f97fe",
+      "bytes": 5323,
+      "lines": 132
+    }
+  ],
+  "preserved_test_names": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store_tests.rs",
+      "baseTests": 7,
+      "postTests": 7,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_support_tests.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_resident_lane_tests.rs",
+      "baseTests": 0,
+      "postTests": 3,
+      "new": [
+        "cancelled_lease_returns_original_identity_and_failure_fence",
+        "conflicting_return_fences_without_replacing_the_existing_value",
+        "poisoned_return_drops_original_and_never_reopens_admission"
+      ],
+      "lost": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "CALLERS.toml",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "baseTests": 20,
+      "postTests": 20,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "baseTests": 3,
+      "postTests": 3,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "baseTests": 7,
+      "postTests": 7,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "baseTests": 3,
+      "postTests": 3,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence_tests.rs",
+      "baseTests": 8,
+      "postTests": 8,
+      "new": [],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_insufficient_tests.rs",
+      "baseTests": 0,
+      "postTests": 2,
+      "new": [
+        "insufficient_evidence_never_reads_original_stage_attestations",
+        "insufficient_evidence_never_claims_or_recovers_an_evaluation_receipt"
+      ],
+      "lost": []
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_task_support_tests.rs",
+      "baseTests": 0,
+      "postTests": 0,
+      "new": [],
+      "lost": []
+    }
+  ],
+  "expected_ordinary_denominator_not_measured": 1738,
+  "caller_static_checks": {
+    "boundary_count": 541,
+    "all_boundary_rows_byte_identical": true,
+    "protected_rows_before": 389,
+    "protected_rows_after": 390,
+    "changed_existing": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+        "exactAllowedTransform": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "exactAllowedTransform": true
+      }
+    ],
+    "additional_helper": 1,
+    "active_pins": 61,
+    "sole_exact_caller_pin": "dfdc54c21a209e88521f9409c92b26e27611b2594d4ca1ab5203d08d59b2dbfc",
+    "status": "STATIC_NOT_RUNTIME"
+  },
+  "root_findings": [
+    "Private boxed lease retains the original non-Clone owner allocation; mutex covers only synchronous Option/fence transfer.",
+    "Cancellation returns the original failed state; conflict or poisoning does not reopen admission or replace an existing value.",
+    "All 541 boundary records are byte-identical; eight protected changes exactly match registered lease/borrow substitutions and one private helper is newly guarded.",
+    "Signed evidence keeps the existing inclusive last second. Only the test boundary expectation changes, and original renewal-substitution refusals remain.",
+    "Complete Ineligible retains its exact NoUpdate refusal; InsufficientEvidence uses the existing distinct error and never creates an Evaluation/NoUpdate receipt.",
+    "Unsorted candidate fixtures permute complete original routes bijectively; production positional admission remains strict.",
+    "Panel/member/Host fixture boxes preserve original objects, call order, signatures and assertions; stack-overflow repair is still a hypothesis until actual execution.",
+    "Original real-clock expiry fixture observes the actual expiry before testing the same expired rejection; no clock fabrication."
+  ],
+  "original_native_failure": {
+    "run": 43243479903,
+    "job": 131269839345,
+    "total": 1733,
+    "passed": 1697,
+    "failed": 36,
+    "stack_overflow_sigabrt": 31,
+    "ordinary_fail": 5,
+    "retries": 0,
+    "full_log_bytes": 3729153,
+    "full_log_sha256": "8a4a6593e70fb2f2104e37ec44d91e70bcfa419f30e3c99d3fe5ab97a37a48bb",
+    "git_parts_reassembled_equal_original": true,
+    "root_stages_reached": false
+  },
+  "current_ci": {
+    "native_run": 43251473816,
+    "native_job": 131298114560,
+    "caller_job": 131298114217,
+    "blocking_run": 43251474257,
+    "native": "IN_PROGRESS",
+    "caller": "IN_PROGRESS",
+    "format": {
+      "job": 131298536550,
+      "result": "FAILURE",
+      "cause": "Five exact formatter hunks in two test files; precise follow-up staged, not pushed."
+    },
+    "blob_policy": {
+      "job": 131298120336,
+      "result": "ENVIRONMENT_FAILURE_BEFORE_CHECKER",
+      "code": "local_control_inventory_unavailable",
+      "checker_result": null
+    },
+    "execution_commit": "4f19396c9e45920c982b4aba795605684eabe7a2",
+    "execution_tree_equals_source": true
+  },
+  "source_results_transfer": false,
+  "qualified_adoption": "DENIED",
+  "owner_decision": null,
+  "scientific_status": "HOLD"
+}

@@ -23,6 +23,9 @@ struct MemoryCas {
 struct MemoryState {
     record: Option<FinalHoldoutCasRecordV1>,
     indeterminate_next: bool,
+    indeterminate_next_read: bool,
+    load_count: u64,
+    cas_count: u64,
 }
 
 impl MemoryCas {
@@ -36,10 +39,14 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
         &mut self,
         binding: Digest32,
     ) -> Result<Option<FinalHoldoutCasRecordV1>, FinalHoldoutCasStoreError> {
-        let guard = self
+        let mut guard = self
             .inner
             .lock()
             .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
+        guard.load_count += 1;
+        if std::mem::take(&mut guard.indeterminate_next_read) {
+            return Err(FinalHoldoutCasStoreError::Indeterminate);
+        }
         match &guard.record {
             Some(record) if record.binding != binding => Err(FinalHoldoutCasStoreError::Rejected),
             value => Ok(value.clone()),
@@ -59,6 +66,7 @@ impl FinalHoldoutCasStoreV1 for MemoryCas {
             .inner
             .lock()
             .map_err(|_| FinalHoldoutCasStoreError::Rejected)?;
+        guard.cas_count += 1;
         let actual = match &guard.record {
             Some(record) if record.binding == binding => Some(record.state_digest),
             Some(_) => return Err(FinalHoldoutCasStoreError::Rejected),
@@ -224,4 +232,56 @@ fn state_digest_changes_on_fence_takeover_without_rewriting_journal_head() {
         .expect("take over");
     assert_ne!(second.state_digest(), old_state);
     assert_eq!(second.head_digest(), old_head);
+}
+
+#[test]
+fn indeterminate_original_read_remains_fenced_after_store_recovers() {
+    use pretty_assertions::assert_eq;
+
+    let binding = digest("original-read-recovery");
+    let mut store = MemoryCas::default();
+    let mut owner = FencedFinalHoldoutOwnerV1::initialize(
+        store.clone(),
+        binding,
+        fence("owner-a", 1, "lease-a"),
+    )
+    .expect("initialize original owner");
+    let frozen = plan("original-read-recovery");
+    owner.consume(&frozen).expect("record original consumption");
+    let expected = owner
+        .read_consumption(&frozen)
+        .expect("observe original consumption");
+    store.inner.lock().expect("lock").indeterminate_next_read = true;
+
+    let read_error = Err(FencedHoldoutError::Store(
+        FinalHoldoutCasStoreError::Indeterminate,
+    ));
+    assert_eq!(owner.read_consumption(&frozen), read_error);
+    assert!(owner.is_poisoned());
+    let (load_count, cas_count, retained_record) = {
+        let state = store.inner.lock().expect("lock");
+        (state.load_count, state.cas_count, state.record.clone())
+    };
+
+    // The backend's one-shot read fault has ended, but the original owner must
+    // neither consult it again nor issue an idempotent CAS after uncertainty.
+    assert_eq!(owner.read_consumption(&frozen), read_error);
+    assert_eq!(
+        owner.consume(&frozen),
+        Err(FencedHoldoutError::Indeterminate)
+    );
+    assert_eq!(owner.consume(&frozen), Err(FencedHoldoutError::Poisoned));
+    {
+        let state = store.inner.lock().expect("lock");
+        assert_eq!(
+            (state.load_count, state.cas_count, state.record.clone()),
+            (load_count, cas_count, retained_record.clone()),
+        );
+    }
+    assert_eq!(store.load(binding), Ok(retained_record));
+
+    let mut recovered =
+        FencedFinalHoldoutOwnerV1::recover(store, binding, fence("owner-b", 2, "lease-b"))
+            .expect("recover a new owner without rewriting consumption history");
+    assert_eq!(recovered.read_consumption(&frozen), Ok(expected));
 }

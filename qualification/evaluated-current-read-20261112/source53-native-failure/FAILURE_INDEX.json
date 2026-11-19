@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "derived_from": {
+    "job_id": 131459876749,
+    "bytes": 3842011,
+    "sha256": "2fa1c1754d8e5e3ff600915650bc17e09d7a71ce41795ffcf3f1b58f2c7b3529",
+    "git_blob_sha": "d65c69055773436a43f0a065a34d68fba6c36608"
+  },
+  "failures": [
+    {
+      "line": 13841,
+      "status": "SIGABRT",
+      "elapsed": "3.338s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 13841,
+          "status": "SIGABRT",
+          "elapsed": "3.338s"
+        },
+        {
+          "line": 32101,
+          "status": "SIGABRT",
+          "elapsed": "3.338s"
+        }
+      ]
+    },
+    {
+      "line": 13843,
+      "status": "FAIL",
+      "elapsed": "16.588s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_evaluation_withdrawal",
+      "occurrences": [
+        {
+          "line": 13843,
+          "status": "FAIL",
+          "elapsed": "16.588s"
+        },
+        {
+          "line": 32112,
+          "status": "FAIL",
+          "elapsed": "16.588s"
+        }
+      ]
+    },
+    {
+      "line": 13844,
+      "status": "FAIL",
+      "elapsed": "15.574s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_never_reuses_s_after_training_withdrawal",
+      "occurrences": [
+        {
+          "line": 13844,
+          "status": "FAIL",
+          "elapsed": "15.574s"
+        },
+        {
+          "line": 32138,
+          "status": "FAIL",
+          "elapsed": "15.574s"
+        }
+      ]
+    },
+    {
+      "line": 13845,
+      "status": "FAIL",
+      "elapsed": "20.696s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::evaluated_selection_command_once_reads_originals_and_readonly_evidence",
+      "occurrences": [
+        {
+          "line": 13845,
+          "status": "FAIL",
+          "elapsed": "20.696s"
+        },
+        {
+          "line": 32163,
+          "status": "FAIL",
+          "elapsed": "20.696s"
+        }
+      ]
+    },
+    {
+      "line": 13847,
+      "status": "SIGABRT",
+      "elapsed": "0.380s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_lost_ack_recovers_only_exact_readback",
+      "occurrences": [
+        {
+          "line": 13847,
+          "status": "SIGABRT",
+          "elapsed": "0.380s"
+        },
+        {
+          "line": 32180,
+          "status": "SIGABRT",
+          "elapsed": "0.380s"
+        }
+      ]
+    },
+    {
+      "line": 13848,
+      "status": "SIGABRT",
+      "elapsed": "0.415s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_once_reads_originals_and_readonly_evidence",
+      "occurrences": [
+        {
+          "line": 13848,
+          "status": "SIGABRT",
+          "elapsed": "0.415s"
+        },
+        {
+          "line": 32191,
+          "status": "SIGABRT",
+          "elapsed": "0.415s"
+        }
+      ]
+    },
+    {
+      "line": 13849,
+      "status": "SIGABRT",
+      "elapsed": "0.552s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::command_tests::next_use_command_tests::evaluated_next_use_command_recovered_missing_cannot_claim",
+      "occurrences": [
+        {
+          "line": 13849,
+          "status": "SIGABRT",
+          "elapsed": "0.552s"
+        },
+        {
+          "line": 32202,
+          "status": "SIGABRT",
+          "elapsed": "0.552s"
+        }
+      ]
+    },
+    {
+      "line": 13854,
+      "status": "FAIL",
+      "elapsed": "18.540s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "occurrences": [
+        {
+          "line": 13854,
+          "status": "FAIL",
+          "elapsed": "18.540s"
+        },
+        {
+          "line": 32213,
+          "status": "FAIL",
+          "elapsed": "18.540s"
+        }
+      ]
+    },
+    {
+      "line": 13855,
+      "status": "FAIL",
+      "elapsed": "18.571s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_recovery_of_missing_receipt_never_claims_or_signs",
+      "occurrences": [
+        {
+          "line": 13855,
+          "status": "FAIL",
+          "elapsed": "18.571s"
+        },
+        {
+          "line": 32231,
+          "status": "FAIL",
+          "elapsed": "18.571s"
+        }
+      ]
+    },
+    {
+      "line": 13859,
+      "status": "FAIL",
+      "elapsed": "18.581s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_rereads_actual_source_after_the_final_s_response",
+      "occurrences": [
+        {
+          "line": 13859,
+          "status": "FAIL",
+          "elapsed": "18.581s"
+        },
+        {
+          "line": 32252,
+          "status": "FAIL",
+          "elapsed": "18.581s"
+        }
+      ]
+    },
+    {
+      "line": 13860,
+      "status": "FAIL",
+      "elapsed": "18.637s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_cold_missing_reads_originals_without_claiming",
+      "occurrences": [
+        {
+          "line": 13860,
+          "status": "FAIL",
+          "elapsed": "18.637s"
+        },
+        {
+          "line": 32273,
+          "status": "FAIL",
+          "elapsed": "18.637s"
+        }
+      ]
+    },
+    {
+      "line": 13861,
+      "status": "FAIL",
+      "elapsed": "17.537s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_fences_after_last_s_reply_withdraws_actual_source",
+      "occurrences": [
+        {
+          "line": 13861,
+          "status": "FAIL",
+          "elapsed": "17.537s"
+        },
+        {
+          "line": 32295,
+          "status": "FAIL",
+          "elapsed": "17.537s"
+        }
+      ]
+    },
+    {
+      "line": 13862,
+      "status": "FAIL",
+      "elapsed": "17.424s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::remote_tests::evaluated_remote_c_reads_original_s_and_recovers_exact_six_cut",
+      "occurrences": [
+        {
+          "line": 13862,
+          "status": "FAIL",
+          "elapsed": "17.424s"
+        },
+        {
+          "line": 32317,
+          "status": "FAIL",
+          "elapsed": "17.424s"
+        }
+      ]
+    },
+    {
+      "line": 13875,
+      "status": "FAIL",
+      "elapsed": "26.988s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::version_tests::recovery::evaluated_version_cold_readback_keeps_four_cut_and_original_c_readiness",
+      "occurrences": [
+        {
+          "line": 13875,
+          "status": "FAIL",
+          "elapsed": "26.988s"
+        },
+        {
+          "line": 32337,
+          "status": "FAIL",
+          "elapsed": "26.988s"
+        }
+      ]
+    },
+    {
+      "line": 13889,
+      "status": "TIMEOUT",
+      "elapsed": "60.012s",
+      "crate": "codex-hepta-agentd",
+      "method": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "occurrences": [
+        {
+          "line": 13889,
+          "status": "TIMEOUT",
+          "elapsed": "60.012s"
+        },
+        {
+          "line": 32356,
+          "status": "TIMEOUT",
+          "elapsed": "60.012s"
+        }
+      ]
+    }
+  ]
+}

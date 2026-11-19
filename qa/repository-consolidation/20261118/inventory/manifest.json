@@ -1,0 +1,78 @@
+{
+  "advertisement_sha256": "36549105efd5fb043ecdf057625573558ce8f5151ca387e8e581b20898265f5e",
+  "initial_missing_pages": [],
+  "initial_pagination_count": 7487,
+  "main": 1,
+  "observed_unix": 1794965342.7013893,
+  "ordinary": 7234,
+  "parts": [
+    {
+      "branches": 1000,
+      "bytes": 37266,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-00.json.gz",
+      "sha256": "b83b40933f72cb0c6dc87b6e789610ae3ce89929915ed32326aa3e0cc53cb7e1",
+      "uncompressed_bytes": 147838,
+      "uncompressed_sha256": "cf0e766af8207647926d407407a4e597404068ab0b890fbcffbe33b0936f8651"
+    },
+    {
+      "branches": 1000,
+      "bytes": 36089,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-01.json.gz",
+      "sha256": "b90fcfb9f523aba3491a6f65af0bad4f919e9ba3c3fe63a0968f67b279a6b3a2",
+      "uncompressed_bytes": 150706,
+      "uncompressed_sha256": "da44ad29507bf07320580ced3252f0204bd17d3cc2cc4bd4669b684605186f47"
+    },
+    {
+      "branches": 1000,
+      "bytes": 36605,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-02.json.gz",
+      "sha256": "17da3cc8bb6733a62fad815945df9df35b2b3a526ba678b59b009dfee2e17780",
+      "uncompressed_bytes": 145743,
+      "uncompressed_sha256": "d320ecef4602bfd897d207641184fb14ecbd2c22327e544f37cbe0a00571a36d"
+    },
+    {
+      "branches": 1000,
+      "bytes": 40413,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-03.json.gz",
+      "sha256": "3af68cf8b7e0c255aa82ffa03aa57673296f90a478e1739334891253bef163c6",
+      "uncompressed_bytes": 147524,
+      "uncompressed_sha256": "fbd2d0c4d2de7a346e3cae5f62bd8cd98067f81b94712d4401791658d41317ae"
+    },
+    {
+      "branches": 1000,
+      "bytes": 39144,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-04.json.gz",
+      "sha256": "4b5c59620f18aa9bc22817f360a0e00e1ea70b35b3215ba51e6ed855b372eca8",
+      "uncompressed_bytes": 149183,
+      "uncompressed_sha256": "6bd2f6674f85093d8a0288c161965bff6e90664edc4fb2444dbbca51957bed19"
+    },
+    {
+      "branches": 1000,
+      "bytes": 38204,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-05.json.gz",
+      "sha256": "47f927a05559e47d3e41a6aeec7863f830ea3b9818e9a6acf6a65ce99b5fd80d",
+      "uncompressed_bytes": 150391,
+      "uncompressed_sha256": "4047b3acdfc15d965a99fad931fe0d35ad17f5e4498e906ec362dec79182b3a2"
+    },
+    {
+      "branches": 1000,
+      "bytes": 38665,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-06.json.gz",
+      "sha256": "616bf17323b61e7bdd5551c5cca037a2c9c77643d05ac208d2fb60a00a079263",
+      "uncompressed_bytes": 149805,
+      "uncompressed_sha256": "e703237cb63a76d4e607adcba6fec90d75beaf2e3963a2c116c4cff49d0b74d9"
+    },
+    {
+      "branches": 487,
+      "bytes": 18489,
+      "path": "qa/repository-consolidation/20261118/inventory/branches-07.json.gz",
+      "sha256": "ea9fbdd5f402654f13fc75895982d1e0abf99bbd6faddb1580eb01e838cfe074",
+      "uncompressed_bytes": 71688,
+      "uncompressed_sha256": "d94f46ee8a1e248826b5fed0bca1636658dda1e5bc5fd48c30fa555f0769376a"
+    }
+  ],
+  "protected_hia_cell": 252,
+  "schema": "hepta.consolidation-branch-inventory.v1",
+  "source": "Complete git ls-remote --heads advertisement, reconciled against complete initial GitHub pagination",
+  "total": 7487
+}

@@ -1,0 +1,33 @@
+{
+  "requested_at_utc": "2026-11-06T10:15:00.912Z",
+  "received_at_utc": "2026-11-06T10:15:08.542Z",
+  "host": "desktop",
+  "controller_id": "1a1acdd69f2-fc05-5757",
+  "controller_state": "running",
+  "controller_pid": "356991",
+  "progress_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json",
+  "progress_sha256": "a346d303191f35270e3a693e34e17f078bf4a3c9273c64226200c6781467fe86",
+  "progress_size_bytes": 14149,
+  "progress_updated_utc": "2026-11-06T10:14:55.314150+00:00",
+  "status": "running",
+  "active_stage": "full",
+  "completed_cuda_runs": 1,
+  "requested_cuda_runs": 170,
+  "registered_run_indexes_observed": {
+    "completed": 1,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "global_qualification": "open",
+  "negative_results": [
+    {
+      "name": "original-b-fullshape",
+      "exit_code": 1,
+      "finished_utc": "2026-11-06T07:57:23.847728+00:00",
+      "result_sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1"
+    }
+  ],
+  "atomic_snapshot": false,
+  "read_only": true,
+  "source_branch_ci_not_claimed": true
+}

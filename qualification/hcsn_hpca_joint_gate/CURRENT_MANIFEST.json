@@ -1,0 +1,497 @@
+{
+  "expected_tests": {
+    "c2-terminal": 51,
+    "hcsn-spatial-phase": 19,
+    "hpca-normal": 20,
+    "hpca-optimized": 20
+  },
+  "historical_manifest": {
+    "assembly_commit": "06f96e5f2c041cb3f074f67eed3be847718c5329",
+    "git_blob": "f963f53492fbbfbdc6e24d6305a85e753c77b5ea",
+    "path": "MANIFEST.original-20261112.json",
+    "sha256": "ec51f35c52eb615ba00f5b43d8f4b4c6a99209c14470bbeb35a998992e5b53e8"
+  },
+  "previous_current_manifest": {
+    "path": "CURRENT.pre-windows-20261119.json",
+    "sha256": "93c403dbd544fe786cd28a33d7d25bcd3d1c62a963f2d2d26151393478c3d1b7",
+    "source_head": "c0e525fd94e6eea2957bd1a12764627b86dd71ec"
+  },
+  "production_qualified": false,
+  "retained_stopping_manifest": {
+    "git_blob": "1e0638c72f2f19ab552e9e2c6cbd143c1946b815",
+    "path": "MANIFEST.json",
+    "sha256": "a39c9c8fa3548258ac95e4c3c08bec20c2a434d7cd43145d613184b3150ef951",
+    "source_head": "6cfa2345cc26e271d443d32e3fff669f7492d1bc"
+  },
+  "schema": "hcsn-hpca-joint-source-gate-v2",
+  "scope": "Reviewed ordinary-history source assembly and complete declared C2 Python source bindings; both original assembly and stopping manifests are retained byte-for-byte as historical evidence, not qualification of this revision.",
+  "source_head": "2a7ebd5bd02f8626dca6774bc35e93a285dc6898",
+  "source_revision_history": [
+    {
+      "head": "1bba6e39258a86945c83109e869152b23007d3b7",
+      "reason": "Initial ordinaryWindowsunion before original-producer fixture successor"
+    }
+  ],
+  "source_revisions": [
+    {
+      "current_git_blob": "50d6c24b431fea5897e197927dc75352534c8553",
+      "introduced_by": [
+        "4d3470a2747f9f691c00123760c202f3c805ff11"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py",
+      "previous_git_blob": "00991ce920d8dc73d061102323e089ba87f6b37e",
+      "reason": "Preserve immutable original receipt anchors and all three added adversarial regressions."
+    },
+    {
+      "current_git_blob": "70a28501001481513207972c79305039e3bce857",
+      "introduced_by": [
+        "a0bffd7221c1ea7ad6b269d972a8bb7ee0a0ce5e",
+        "2803c2ef51f31955a10d29285b75403c3640ff06"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py",
+      "previous_git_blob": "a932a8dbac2cfeb888e035bef2cc068045c2542d",
+      "reason": "Preserve immutable original receipt anchors and all three added adversarial regressions."
+    },
+    {
+      "current_git_blob": "c0818b50d6fd7bc6088d736aeca4f4239c6e53bd",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+      "previous_git_blob": "50aae1665910b12373854d80de9aaf7e32db8467",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "47e1cb56322b2a64ff5606ca6af71dd9766d13b3",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "1c8fa952d3b3d5cea575233e07a2edf200b553ee",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py",
+      "previous_git_blob": "75abb706f8380d713df737fcc9c4f5203ab7d904",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "30db936b828c204c229a35b1abb8066df54c9ecb",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_io.py",
+      "previous_git_blob": "9bc26f04b46ea72c11896a17f9ecd5ec687eda5b",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "4673931123f7316e777f47599371ac9cf8f0bf15",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "2f9c083773a08f677c9da79fc117fc1fa77cb729",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py",
+      "previous_git_blob": "5778b49263390c2cce69c4b963ed7d219813e5d6",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "bc857ddda7500360b8884a8fb09e66cc9365992b",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_stopping.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "a5aba062596e0feac21f5b43ed19adf103457110",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_controller_strict_terminal_json.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "b9e0eddd3b088d267df12f7ac01abc745e8a4de6",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "cac82d76c44caac0556e9bb3b18f5b760a48b2fd",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "2067de64e4ce68b8d826b66da455316137fd68ac",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "c9d058b0167cb030568983724da608abb3c63671",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "af712dec083561031281142701bacf07576fab20",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_source_freeze_and_fifo.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "d001146bc7278f44960f86e5809ee183534fe615",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_successor_terminal_strict.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "fb26f4e528a0f3248ba2064f40b9bda43b6291b4",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_successor_wiring.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "55f0f9642bb1733e9f871824ca456e548c044352",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py",
+      "previous_git_blob": "ea4e316053c3d48901c19559642c6db3d2f9b909",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "c95a18cde992b095d921242b4b309abb11b79c2c",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py",
+      "previous_git_blob": "6563ab3b489bb9e44a922ce6d4c35d416978a9a2",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "d27dd64b719235529d3318a849d750b758629bf7",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_stopping.py",
+      "previous_git_blob": null,
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "5d57dc5b7a1a69814172af4927a218cf68b24e21",
+      "introduced_by": [
+        "1bba6e39258a86945c83109e869152b23007d3b7"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/freegen_contract.py",
+      "previous_git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "reason": "Retain reviewed normal ordinary-history union source; bind all current C2 Python sources for its expanded 51-case terminal suite."
+    },
+    {
+      "current_git_blob": "3f14c8c9a37ec99ddd2d57411e3430a949a5b139",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py",
+      "previous_git_blob": "70a28501001481513207972c79305039e3bce857",
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "df77694db392271d30a97bab66ff612c994e2d17",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/BASE_OUTPUT_PLAN.json.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "0c5424595d9b59caa1ceed819afff2bb51517d08",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/CHAT_WRAPPER_PLAN.json.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "fc9a27b78f7fef95d8f3b3235f269c3c24cc2c91",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/HPCA_V2_OOD_PLAN.json.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "dc85662ae1766c421275acab9262141121448a16",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/SOURCE_CUSTODY.json",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/chat_wrapper_probe.py.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/freegen_contract.py.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    },
+    {
+      "current_git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "introduced_by": [
+        "2a7ebd5bd02f8626dca6774bc35e93a285dc6898"
+      ],
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/native_lora_ood_probe.py.original",
+      "previous_git_blob": null,
+      "reason": "Retain all original HPCA assertions and bind original producer fixtures plus live/tampered-source rejection controls; original producer and receipt hashes unchanged."
+    }
+  ],
+  "source_tree": "41a31a62c16b6746fab92d16aac7e056c7dd76b9",
+  "sources": [
+    {
+      "git_blob": "8db869fa0e743393e8c39f8d08181c2608aa2601",
+      "path": "qualification/hcsn_boundary_audit/probe_refractory_transport.py",
+      "sha256": "06f811e0d2f012b67c6a40488b4d34a8425e2583da13276d819ddc5263d8f2be"
+    },
+    {
+      "git_blob": "045dd6f41c117e68e54d787f1d9f748bd4640362",
+      "path": "qualification/hcsn_boundary_audit/probe_spatial_generator.py",
+      "sha256": "607f7ccc351f5460e3ad3af6c07cdac4311e96394d53a18711e1890975de0068"
+    },
+    {
+      "git_blob": "f06253382882042c23f30593afa93357c17725da",
+      "path": "qualification/hcsn_boundary_audit/refractory_transport.py",
+      "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    },
+    {
+      "git_blob": "c0818b50d6fd7bc6088d736aeca4f4239c6e53bd",
+      "path": "qualification/hcsn_boundary_audit/spatial_generator.py",
+      "sha256": "85d369505103ea9339871f0c5036490b64bcfaf715b57faf21c628d86fcd4419"
+    },
+    {
+      "git_blob": "0356decabd3a9b8a67c246f2d77a760ac1b74c53",
+      "path": "qualification/hcsn_boundary_audit/test_phase_delay_oracle.py",
+      "sha256": "86c353af842e19a6f7b1f6a15e00b99a2ac5b893e084dca21441a44baf40886b"
+    },
+    {
+      "git_blob": "0a311fc105bacba11195e1a201457c3ea9af3f87",
+      "path": "qualification/hcsn_boundary_audit/test_refractory_transport.py",
+      "sha256": "2ddb92627dcbe80c2bdcef7f14a17e2f852b6b7031f9f752dc0acf234a9543dc"
+    },
+    {
+      "git_blob": "c3ede2827aa5aa71cb0e9d22b3c78c1f57ec6d2c",
+      "path": "qualification/hcsn_boundary_audit/test_spatial_generator.py",
+      "sha256": "611533442541d3b07d991ff0117f9fa38961610fe6e453590bb1d81907ee9381"
+    },
+    {
+      "git_blob": "47e1cb56322b2a64ff5606ca6af71dd9766d13b3",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_boundary.py",
+      "sha256": "177a23a3d0502a79912efdd2a14a365bc716961698a6949bb45d380ba147e6dd"
+    },
+    {
+      "git_blob": "1c8fa952d3b3d5cea575233e07a2edf200b553ee",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py",
+      "sha256": "2b833933013374958ed3cb99ba67818d9754de7f32fbe7edff4866c93278b48d"
+    },
+    {
+      "git_blob": "30db936b828c204c229a35b1abb8066df54c9ecb",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_io.py",
+      "sha256": "db799aea7014bc60ad00dd7032f8753f356e3460743611d6baf243adfb840378"
+    },
+    {
+      "git_blob": "4673931123f7316e777f47599371ac9cf8f0bf15",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_program_freeze.py",
+      "sha256": "9a315075b11780c153d8238f83e052072198185bb2fb30127841051ab80aea24"
+    },
+    {
+      "git_blob": "50aa3f3b6c4f274b916bba0f0e29032f772a7610",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_recording.py",
+      "sha256": "467e25570d0d7adf4f42b025d9a5a93334371e7416237336ceaa116cf1b4bbe0"
+    },
+    {
+      "git_blob": "2f9c083773a08f677c9da79fc117fc1fa77cb729",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_runner.py",
+      "sha256": "0f3eca68e459c485fb429522de47a228a38fe940fe5bf2ac8946e17c3fe2e73b"
+    },
+    {
+      "git_blob": "bc857ddda7500360b8884a8fb09e66cc9365992b",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_stopping.py",
+      "sha256": "24c476e2a4b51cab82949ed37de676e2d3b7b2140431c83aebbee66658b20e73"
+    },
+    {
+      "git_blob": "a5aba062596e0feac21f5b43ed19adf103457110",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_controller_strict_terminal_json.py",
+      "sha256": "c8535af9ed95c0dbc7554ccbfbc341a20e048d923331f88b24c5f13e055b03d8"
+    },
+    {
+      "git_blob": "b9e0eddd3b088d267df12f7ac01abc745e8a4de6",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_execution_decision_freeze.py",
+      "sha256": "5cbd249978996ed2d7e1a7acb23736aa662708879a0a0ae44d9eb76096d0ae3a"
+    },
+    {
+      "git_blob": "cac82d76c44caac0556e9bb3b18f5b760a48b2fd",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py",
+      "sha256": "7256b9d1750bbc7902a566ea1db54dd3bf8a146eb34e81f91625db4fcd2f6150"
+    },
+    {
+      "git_blob": "2067de64e4ce68b8d826b66da455316137fd68ac",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py",
+      "sha256": "099ef9db99e89e60f152d8cff09e946e45ad906a05e7c09a4be32bcb578b73e1"
+    },
+    {
+      "git_blob": "c9d058b0167cb030568983724da608abb3c63671",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_program_source_closure.py",
+      "sha256": "4683c560762cce92428f08412e7a4a4bc9e81f63b3ff8757d2c26fec6d6aae6c"
+    },
+    {
+      "git_blob": "af712dec083561031281142701bacf07576fab20",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_source_freeze_and_fifo.py",
+      "sha256": "aaf10e8a5d018c5f91c18cdcf18cba5ae4bbae23aac450cbab9e164f9cac7353"
+    },
+    {
+      "git_blob": "d001146bc7278f44960f86e5809ee183534fe615",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_successor_terminal_strict.py",
+      "sha256": "f799c647dde867a98a506b0001dcfcafefb21ea2895f0b871dc15d1c95526304"
+    },
+    {
+      "git_blob": "fb26f4e528a0f3248ba2064f40b9bda43b6291b4",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_successor_wiring.py",
+      "sha256": "61b294e7979c466bd6faeaf1e489e4c4540c817bbe64ac003b2bf1fd1097269b"
+    },
+    {
+      "git_blob": "55f0f9642bb1733e9f871824ca456e548c044352",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py",
+      "sha256": "a0d7c0744bfa249f5a5058105213e8fc848cda36bcd1a3505342e4340cf0ea2a"
+    },
+    {
+      "git_blob": "c95a18cde992b095d921242b4b309abb11b79c2c",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py",
+      "sha256": "d8ebf7fae4b1c2aa06056bd93e5076620e482dc09f9a0fa40b84638b0ddc1420"
+    },
+    {
+      "git_blob": "d27dd64b719235529d3318a849d750b758629bf7",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_stopping.py",
+      "sha256": "bee950dfc8e1d98829fab62cab89e496aa58c2470f2c5d9b2e5d2dbb3057bdc5"
+    },
+    {
+      "git_blob": "df77694db392271d30a97bab66ff612c994e2d17",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/BASE_OUTPUT_PLAN.json.original",
+      "sha256": "ae4b53e867380d5cd582679612ed0a0970fe89d36eadef19ae7a2b243000b555"
+    },
+    {
+      "git_blob": "0c5424595d9b59caa1ceed819afff2bb51517d08",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/CHAT_WRAPPER_PLAN.json.original",
+      "sha256": "5ab417097980e4f878d77288d932319bbb6ea31605acd1ca3b801227aeb33f95"
+    },
+    {
+      "git_blob": "fc9a27b78f7fef95d8f3b3235f269c3c24cc2c91",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/HPCA_V2_OOD_PLAN.json.original",
+      "sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043"
+    },
+    {
+      "git_blob": "dc85662ae1766c421275acab9262141121448a16",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/SOURCE_CUSTODY.json",
+      "sha256": "b68e0bb1154c196a3259aa789802d1a55f1e3747d921ff163e55d4fc16d96a3d"
+    },
+    {
+      "git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/chat_wrapper_probe.py.original",
+      "sha256": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28"
+    },
+    {
+      "git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/freegen_contract.py.original",
+      "sha256": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b"
+    },
+    {
+      "git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/native_lora_ood_probe.py.original",
+      "sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8"
+    },
+    {
+      "git_blob": "50d6c24b431fea5897e197927dc75352534c8553",
+      "path": "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py",
+      "sha256": "be749422d54aae0c6672dc15084ff54805bdabf6448b2e6cc55e272a2c24b870"
+    },
+    {
+      "git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "path": "qualification/hpca-neuroscience-20261110/chat_wrapper_probe.py",
+      "sha256": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28"
+    },
+    {
+      "git_blob": "5d57dc5b7a1a69814172af4927a218cf68b24e21",
+      "path": "qualification/hpca-neuroscience-20261110/freegen_contract.py",
+      "sha256": "268deacf3fa1a01fe6143f0af38fc48fa6845321100ccadaa59c3aa515d5c4f8"
+    },
+    {
+      "git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "path": "qualification/hpca-neuroscience-20261110/native_lora_ood_probe.py",
+      "sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8"
+    },
+    {
+      "git_blob": "1208825572e493015d4de4c949ac29064df54214",
+      "path": "qualification/hpca-neuroscience-20261110/real_freegen.py",
+      "sha256": "230d94cd184f6127d78d5c5671d8b7095307c61b366eb873a73fcc34c4c1056d"
+    },
+    {
+      "git_blob": "3f14c8c9a37ec99ddd2d57411e3430a949a5b139",
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py",
+      "sha256": "3a1c140cc59d990b85bc9dbc27aadec49c381ce8fbc634021631a05aaa71bfad"
+    },
+    {
+      "git_blob": "a65244dbbc8990f780b160c3f5f4aebedf8019e9",
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_wrapper_probe.py",
+      "sha256": "a48f5d78ee61889885435f617be8e0af2e0eac15d18d135eb61b100429177d89"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "assets": [],
+  "completed_utc": "2026-11-10T15:03:14.499106+00:00",
+  "detail": "Traceback (most recent call last):\n  File \"/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/cloud_p2_draft_upload.py\", line 98, in <module>\n    run([GH, 'release', 'download', TAG, '--repo', REPO, '--pattern', name,\n  File \"/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/cloud_p2_draft_upload.py\", line 41, in run\n    result = subprocess.run(argv, stdout=stdout, stderr=stderr, timeout=timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 507, in run\n    stdout, stderr = process.communicate(input, timeout=timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1134, in communicate\n    stdout, stderr = self._communicate(input, endtime, timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 2005, in _communicate\n    self.wait(timeout=self._remaining_time(endtime))\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1189, in wait\n    return self._wait(timeout=timeout)\n  File \"/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py\", line 1909, in _wait\n    raise TimeoutExpired(self.args, timeout)\nsubprocess.TimeoutExpired: Command '['/opt/homebrew/bin/gh', 'release', 'download', 'hcsn-research-20261110-c385', '--repo', 'TrillionniumFoundation/hepta-private-ci', '--pattern', 'cloud-p2-diagnostics-20261110-v1.zip', '--dir', '/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/cloud-p2-draft-upload-v1/authenticated-readback']' timed out after 599.9998759999999 seconds\n",
+  "draft_before": true,
+  "overwrite_existing_assets": false,
+  "publish_requested": false,
+  "release_id": 440410488,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_visibility": "public",
+  "runner_sha256": "f6d7e5d0e77f89298233a911685c78326a3503b2749a7c71d78b5c8b758b011f",
+  "schema": "hcsn-cloud-p2-draft-upload-v1",
+  "started_utc": "2026-11-10T14:42:15.959297+00:00",
+  "status": "error",
+  "tag": "hcsn-research-20261110-c385",
+  "wall_seconds": 1258.5981671250001
+}

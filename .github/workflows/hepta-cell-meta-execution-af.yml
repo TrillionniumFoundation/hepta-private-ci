@@ -1,0 +1,74 @@
+name: Hepta Cell Meta Execution A-F shadow
+
+on:
+  pull_request:
+    paths:
+      - qualification/cell_meta_execution_af/**
+      - .github/workflows/hepta-cell-meta-execution-af.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-af-shadow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  shadow-source:
+    name: A-F exact source negative conformance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate identity and exercise fail-closed evidence cases
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s qualification/cell_meta_execution_af -p 'test_*.py'
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+  shadow-base-merge:
+    name: A-F prospective base merge negative conformance
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Construct bounded synthetic base merge
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta A-F Shadow CI
+          author-email: hepta-af-shadow-ci@users.noreply.github.com
+          message: Synthetic A-F shadow merge
+      - name: Verify merged tree is source-identical for these tests
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          python3 -m unittest discover -v -s qualification/cell_meta_execution_af -p 'test_*.py'
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"

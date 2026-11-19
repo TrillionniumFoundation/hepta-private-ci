@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "experiment_id": "hepta-ndu-dmgp-shadow-a0-a5-v1",
+  "posture": "synthetic-shadow-only",
+  "production_authority": false,
+  "real_model_execution": false,
+  "independent_real_outcomes": false,
+  "stochastic_fbsde_qualified": false,
+  "global_optimality_claim": false,
+  "hardware_efficiency_qualified": false,
+  "learning_efficacy_proven": false,
+  "future_snapshot_selection_authorized": false,
+  "six_scientific_blockers_production_closed": false,
+  "arms": [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5"
+  ],
+  "required_test_command": "python3 -m unittest discover -v",
+  "required_report_command": "python3 experiment.py"
+}

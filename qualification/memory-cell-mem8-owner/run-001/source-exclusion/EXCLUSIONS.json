@@ -1,0 +1,2057 @@
+{
+  "added_by_earlier_pilot": [
+    "merchant-2cb679f1d8580a2031d3b615",
+    "merchant-8e19a10d6e734747ce3246eb"
+  ],
+  "catalog_pin": {
+    "bytes": 1410133,
+    "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/pilot-catalog.json",
+    "sha256": "8433d0c026b0818f8e60ee2f0ae7e7b57c57ae35cbb72cf212b89895b97d0904",
+    "verified": true,
+    "version": [
+      66306,
+      49309256,
+      1410133,
+      1794055079027838200,
+      1794055079027838200
+    ]
+  },
+  "catalog_role_counts": {
+    "NOT_IN_RELEASED_CATALOG": 1,
+    "development": 47,
+    "retention_validation": 18,
+    "train": 3
+  },
+  "categories": {
+    "earlier_causal_pilot": [
+      "merchant-1e4ef8758b5cbae31ea96ae7",
+      "merchant-29033083587ed7b9e3842425",
+      "merchant-2cb679f1d8580a2031d3b615",
+      "merchant-8e19a10d6e734747ce3246eb"
+    ],
+    "mem5_selector": [
+      "merchant-036b28aeec4462cd30be3977",
+      "merchant-084d899075a2446d4c8117c6",
+      "merchant-15027de1f88826b949537528",
+      "merchant-3b819d0f45c5841fbd483fbc",
+      "merchant-3e10b92decd125f2b5698843",
+      "merchant-4fc32cae2f60fcd9908166be",
+      "merchant-4fca23dc8bbeb9bcb9975e8d",
+      "merchant-720fa20b5c1b822a695d7601",
+      "merchant-81d7cc5c3a16b3f0763ace95",
+      "merchant-a836241e4cc70ced0b85032d",
+      "merchant-af3f06c5e836aa37c5bdcd68",
+      "merchant-ce9c38a8b0d5d0f3ca494a80",
+      "merchant-f0f16ba920d590052fc55836",
+      "merchant-f3b516cd5df367d7a17d50a4"
+    ],
+    "mem6_selector": [
+      "merchant-1b4f4efe95f973e1c7955066",
+      "merchant-27813152ee91ca56f6d38d0d",
+      "merchant-3e1515ab7dcb8dad3526c693",
+      "merchant-3ea54da562d82061cc8465e2",
+      "merchant-5abe0c5d2298868e4807b706",
+      "merchant-5c29904ee2eb4422e25f9030",
+      "merchant-7d8d9fb52ebdf19d8e099b90",
+      "merchant-9e2843170e0f93404747e4c4",
+      "merchant-a5f42dc70a133ddb164056ec",
+      "merchant-afaa542fce979f3b39916d11",
+      "merchant-dcc87cfccc27c7b64eab3013",
+      "merchant-e93dd6b28c210477bc84d47c",
+      "merchant-f07092fa0b3e8197ed902118",
+      "merchant-fc5ebb29a36a2eb47936d5e2"
+    ],
+    "mem6_working_state": [
+      "merchant-0ec9b20fec81fde958d52f41",
+      "merchant-143c44441eb6c25249d329d6",
+      "merchant-1e4ef8758b5cbae31ea96ae7",
+      "merchant-20f29f2880c79bc698f88cb5",
+      "merchant-27fe434bec09f1cff315788c",
+      "merchant-40000ee38b8e44e580be8b82",
+      "merchant-46c96e9b64457b54c6a33d79",
+      "merchant-58a28471023079b3c7ced730",
+      "merchant-6a4a837bcc1b5893d524a641",
+      "merchant-7c62fa25b9287465a7fc11da",
+      "merchant-8762f77c6ce5e119d41674f4",
+      "merchant-8be0cc526665e1b3713e88d9",
+      "merchant-9fc0870d20ab74956b64a0a1",
+      "merchant-ad12105d1feff544266fd3fc",
+      "merchant-bcea7cef234c903b8657e3b2",
+      "merchant-ca7395355245b835c2c11b08",
+      "merchant-cf223dbfd79ff6a9279d17b5",
+      "merchant-dad04fa0b1f8b4f71295ac14",
+      "merchant-f1ec6e62d3d92ac03e6ce52f",
+      "merchant-fb9a1918a17fa4a134d3a07a"
+    ],
+    "model_training": [
+      "merchant-5d4b99c3062c5faa80efd221",
+      "merchant-bd1804bb290a96349b65a9ab"
+    ],
+    "original_working_state": [
+      "merchant-1817b88e92e19c764d84dad5",
+      "merchant-29033083587ed7b9e3842425",
+      "merchant-3afa8b8c1a42b5f032c7cfa2",
+      "merchant-68c830ec3f7c0d94ede0ae3a",
+      "merchant-77cfe08039f861291e32675f",
+      "merchant-90f0416334c0ecbd4fb55e1c",
+      "merchant-9382b38b8ce5d67147345956",
+      "merchant-95a36fb42498e9b4d9ae29c8",
+      "merchant-9888410d6d041aa76188eb04",
+      "merchant-9931ae5812db5b76373581f4",
+      "merchant-af9e221fd4c9d78008f2a80b",
+      "merchant-b3a647071736013313212585",
+      "merchant-be450c397968249ab2ac22dc",
+      "merchant-e954850db59a6c787febaed6"
+    ],
+    "public_quarantine": [
+      "merchant-a3992bf7e3041d26a067feab",
+      "merchant-d93e19ca396d00036f1a51d5"
+    ],
+    "tuning": [
+      "merchant-50f46908878b39ed0bd3853f"
+    ]
+  },
+  "category_counts": {
+    "earlier_causal_pilot": 4,
+    "mem5_selector": 14,
+    "mem6_selector": 14,
+    "mem6_working_state": 20,
+    "model_training": 2,
+    "original_working_state": 14,
+    "public_quarantine": 2,
+    "tuning": 1
+  },
+  "global_exposure_complete": false,
+  "groups": [
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                70,
+                71,
+                72,
+                73,
+                74,
+                75,
+                76,
+                77,
+                78,
+                79
+              ],
+              "matching_source_group_id": "merchant-036b28aeec4462cd30be3977",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-036b28aeec4462cd30be3977"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                106,
+                107
+              ],
+              "matching_source_group_id": "merchant-084d899075a2446d4c8117c6",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-084d899075a2446d4c8117c6"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/0",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-0ec9b20fec81fde958d52f41"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/1",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-143c44441eb6c25249d329d6"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                102,
+                103
+              ],
+              "matching_source_group_id": "merchant-15027de1f88826b949537528",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-15027de1f88826b949537528"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/0",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/0",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-1817b88e92e19c764d84dad5"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/0",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-1b4f4efe95f973e1c7955066"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/2",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        },
+        {
+          "category": "earlier_causal_pilot",
+          "evidence": [
+            {
+              "field": "/groups/pilot_new/0",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            },
+            {
+              "field": "/selected_sources_sha256",
+              "path": "inputs/cell-causal/PILOT_PLAN.json",
+              "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+            },
+            {
+              "field": "/pilot_dispatched",
+              "path": "inputs/cell-causal/EVALUATION_RESULT.json",
+              "scope": "Published aggregate only; no new per-source raw rollout audit. Planned/reserved membership alone is sufficient for conservative exclusion.",
+              "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-1e4ef8758b5cbae31ea96ae7"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/3",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-20f29f2880c79bc698f88cb5"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/1",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-27813152ee91ca56f6d38d0d"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/4",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-27fe434bec09f1cff315788c"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/1",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/1",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        },
+        {
+          "category": "earlier_causal_pilot",
+          "evidence": [
+            {
+              "field": "/groups/pilot_new/1",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            },
+            {
+              "field": "/selected_sources_sha256",
+              "path": "inputs/cell-causal/PILOT_PLAN.json",
+              "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+            },
+            {
+              "field": "/pilot_dispatched",
+              "path": "inputs/cell-causal/EVALUATION_RESULT.json",
+              "scope": "Published aggregate only; no new per-source raw rollout audit. Planned/reserved membership alone is sufficient for conservative exclusion.",
+              "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-29033083587ed7b9e3842425"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "earlier_causal_pilot",
+          "evidence": [
+            {
+              "field": "/groups/pilot_retention/1",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            },
+            {
+              "field": "/selected_sources_sha256",
+              "path": "inputs/cell-causal/PILOT_PLAN.json",
+              "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+            },
+            {
+              "field": "/pilot_dispatched",
+              "path": "inputs/cell-causal/EVALUATION_RESULT.json",
+              "scope": "Published aggregate only; no new per-source raw rollout audit. Planned/reserved membership alone is sufficient for conservative exclusion.",
+              "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-2cb679f1d8580a2031d3b615"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/2",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/2",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-3afa8b8c1a42b5f032c7cfa2"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                50,
+                51,
+                52,
+                53,
+                54,
+                55,
+                56,
+                57,
+                58,
+                59
+              ],
+              "matching_source_group_id": "merchant-3b819d0f45c5841fbd483fbc",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-3b819d0f45c5841fbd483fbc"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                30,
+                31,
+                32,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39
+              ],
+              "matching_source_group_id": "merchant-3e10b92decd125f2b5698843",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-3e10b92decd125f2b5698843"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/2",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-3e1515ab7dcb8dad3526c693"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/3",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-3ea54da562d82061cc8465e2"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/5",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-40000ee38b8e44e580be8b82"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/6",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-46c96e9b64457b54c6a33d79"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                60,
+                61,
+                62,
+                63,
+                64,
+                65,
+                66,
+                67,
+                68,
+                69
+              ],
+              "matching_source_group_id": "merchant-4fc32cae2f60fcd9908166be",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-4fc32cae2f60fcd9908166be"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                80,
+                81,
+                82,
+                83,
+                84,
+                85,
+                86,
+                87,
+                88,
+                89
+              ],
+              "matching_source_group_id": "merchant-4fca23dc8bbeb9bcb9975e8d",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-4fca23dc8bbeb9bcb9975e8d"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "tuning",
+          "evidence": [
+            {
+              "field": "/groups/tuning/0",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "train",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-50f46908878b39ed0bd3853f"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/7",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-58a28471023079b3c7ced730"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/4",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-5abe0c5d2298868e4807b706"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/5",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-5c29904ee2eb4422e25f9030"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "model_training",
+          "evidence": [
+            {
+              "field": "/training_source_groups/0",
+              "path": "inputs/MODEL.json",
+              "sha256": "af6472c557e63404548c3291635dc9a10229da63971a160986839f4b09f57f9f"
+            },
+            {
+              "field": "/groups/training/0",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "train",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-5d4b99c3062c5faa80efd221"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/3",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/3",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-68c830ec3f7c0d94ede0ae3a"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/8",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-6a4a837bcc1b5893d524a641"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+              ],
+              "matching_source_group_id": "merchant-720fa20b5c1b822a695d7601",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-720fa20b5c1b822a695d7601"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/4",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/4",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-77cfe08039f861291e32675f"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/9",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-7c62fa25b9287465a7fc11da"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/6",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-7d8d9fb52ebdf19d8e099b90"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                104,
+                105
+              ],
+              "matching_source_group_id": "merchant-81d7cc5c3a16b3f0763ace95",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-81d7cc5c3a16b3f0763ace95"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/10",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-8762f77c6ce5e119d41674f4"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/11",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-8be0cc526665e1b3713e88d9"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "earlier_causal_pilot",
+          "evidence": [
+            {
+              "field": "/groups/pilot_retention/0",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            },
+            {
+              "field": "/selected_sources_sha256",
+              "path": "inputs/cell-causal/PILOT_PLAN.json",
+              "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+            },
+            {
+              "field": "/pilot_dispatched",
+              "path": "inputs/cell-causal/EVALUATION_RESULT.json",
+              "scope": "Published aggregate only; no new per-source raw rollout audit. Planned/reserved membership alone is sufficient for conservative exclusion.",
+              "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-8e19a10d6e734747ce3246eb"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/5",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/5",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-90f0416334c0ecbd4fb55e1c"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/6",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/6",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-9382b38b8ce5d67147345956"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/7",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/7",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-95a36fb42498e9b4d9ae29c8"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/8",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/8",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-9888410d6d041aa76188eb04"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/9",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/9",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-9931ae5812db5b76373581f4"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/7",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-9e2843170e0f93404747e4c4"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/12",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-9fc0870d20ab74956b64a0a1"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "public_quarantine",
+          "evidence": [
+            {
+              "field": "/exposure/quarantined_source_groups/0",
+              "original_metadata_pin": {
+                "bytes": 3231,
+                "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/public-source-exposure-20261107-v3.json",
+                "sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+                "verified": true,
+                "version": [
+                  66306,
+                  49311929,
+                  3231,
+                  1794056991972998700,
+                  1794056991972998700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-a3992bf7e3041d26a067feab"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/8",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-a5f42dc70a133ddb164056ec"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                90,
+                91,
+                92,
+                93,
+                94,
+                95,
+                96,
+                97,
+                98,
+                99
+              ],
+              "matching_source_group_id": "merchant-a836241e4cc70ced0b85032d",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-a836241e4cc70ced0b85032d"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/13",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-ad12105d1feff544266fd3fc"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                100,
+                101
+              ],
+              "matching_source_group_id": "merchant-af3f06c5e836aa37c5bdcd68",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-af3f06c5e836aa37c5bdcd68"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/10",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/10",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-af9e221fd4c9d78008f2a80b"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/9",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-afaa542fce979f3b39916d11"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/11",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/11",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-b3a647071736013313212585"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/14",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-bcea7cef234c903b8657e3b2"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "model_training",
+          "evidence": [
+            {
+              "field": "/training_source_groups/1",
+              "path": "inputs/MODEL.json",
+              "sha256": "af6472c557e63404548c3291635dc9a10229da63971a160986839f4b09f57f9f"
+            },
+            {
+              "field": "/groups/training/1",
+              "path": "inputs/cell-causal/selected-sources.json",
+              "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "train",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-bd1804bb290a96349b65a9ab"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/12",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/12",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-be450c397968249ab2ac22dc"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/15",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-ca7395355245b835c2c11b08"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+                29
+              ],
+              "matching_source_group_id": "merchant-ce9c38a8b0d5d0f3ca494a80",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-ce9c38a8b0d5d0f3ca494a80"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/16",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-cf223dbfd79ff6a9279d17b5"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "public_quarantine",
+          "evidence": [
+            {
+              "field": "/exposure/quarantined_source_groups/1",
+              "original_metadata_pin": {
+                "bytes": 3231,
+                "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/public-source-exposure-20261107-v3.json",
+                "sha256": "6722edfc88e1089bcaf0fba9727c233416830fdc6682b461422d26bdfd4cb6af",
+                "verified": true,
+                "version": [
+                  66306,
+                  49311929,
+                  3231,
+                  1794056991972998700,
+                  1794056991972998700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": null,
+      "role_status": "NOT_IN_RELEASED_CATALOG",
+      "source_group_id": "merchant-d93e19ca396d00036f1a51d5"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/17",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-dad04fa0b1f8b4f71295ac14"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/10",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-dcc87cfccc27c7b64eab3013"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/11",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-e93dd6b28c210477bc84d47c"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "original_working_state",
+          "evidence": [
+            {
+              "field": "/baseline_plan/sources/13",
+              "original_metadata_pin": {
+                "bytes": 172323,
+                "path": "/home/qq/mem-candidate-retention-20261109-a6b21bc7/run-002/PLAN.json",
+                "sha256": "488639ca2bd2b25d5c90c77b3adaf58bd8133932bb2cb1bf70fc547447d187d5",
+                "verified": true,
+                "version": [
+                  66306,
+                  46179448,
+                  172323,
+                  1794227882121713700,
+                  1794227882121713700
+                ]
+              },
+              "path": "HOST_INVENTORY.stdout.json",
+              "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+            },
+            {
+              "field": "/prior_episode_plans/0/source_groups/13",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-e954850db59a6c787febaed6"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/12",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-f07092fa0b3e8197ed902118"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46,
+                47,
+                48,
+                49
+              ],
+              "matching_source_group_id": "merchant-f0f16ba920d590052fc55836",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-f0f16ba920d590052fc55836"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/18",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-f1ec6e62d3d92ac03e6ce52f"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem5_selector",
+          "evidence": [
+            {
+              "field": "/episodes",
+              "matching_row_indices": [
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19
+              ],
+              "matching_source_group_id": "merchant-f3b516cd5df367d7a17d50a4",
+              "path": "inputs/mem5/PLAN.json",
+              "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-f3b516cd5df367d7a17d50a4"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_working_state",
+          "evidence": [
+            {
+              "field": "/retention_sources/19",
+              "original_plan_pin": {
+                "bytes": 329633,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-retention/PLAN.json",
+                "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "development",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-fb9a1918a17fa4a134d3a07a"
+    },
+    {
+      "hard_exclude": true,
+      "reasons": [
+        {
+          "category": "mem6_selector",
+          "evidence": [
+            {
+              "field": "/selector_sources/13",
+              "original_plan_pin": {
+                "bytes": 217644,
+                "path": "/home/qq/mem6-attribution-20261110-484c/freeze-selector/PLAN.json",
+                "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+              },
+              "path": "inputs/PREPARE_RECEIPT.json",
+              "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+            }
+          ]
+        }
+      ],
+      "role_in_pinned_released_catalog": "retention_validation",
+      "role_status": "PINNED",
+      "source_group_id": "merchant-fc5ebb29a36a2eb47936d5e2"
+    }
+  ],
+  "known_exclusion_count": 69,
+  "mem_lineage_count": 67,
+  "observed_at_utc": "2026-11-11T05:32:15.447672+00:00",
+  "prior_pilot_overlap_with_mem": [
+    "merchant-1e4ef8758b5cbae31ea96ae7",
+    "merchant-29033083587ed7b9e3842425"
+  ],
+  "registry_sha256": "09d5f57c5c4c5f421f16c51febd048b7746d5d52723d825240f8655bf7fbdd07",
+  "schema": "hepta.mem.source-group-exclusions.v1",
+  "scope_limits": [
+    "Minimum union of the inspected model training/tuning, quarantine and prior planned or evaluated cohorts; not a universal training or exposure census.",
+    "Source ID equality and pinned bytes do not certify source independence, current admission authority, provider ownership or original owner cold recovery.",
+    "No historic actor result or denominator was recomputed or replaced."
+  ],
+  "source_identity_created": false,
+  "status": "MINIMUM_KNOWN_EXCLUSION_UNION_FROZEN_GLOBAL_EXPOSURE_UNKNOWN"
+}

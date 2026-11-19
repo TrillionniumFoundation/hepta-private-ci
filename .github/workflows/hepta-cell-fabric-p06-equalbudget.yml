@@ -1,0 +1,141 @@
+name: Hepta Neural Cell Fabric P0.6 equal-budget historical original (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - "research/hepta-neural-cell-fabric-p06-equalbudget-20261017"
+    paths:
+      - "qualification/neural-cell-fabric-p0/matched_router_p06.py"
+      - "qualification/neural-cell-fabric-p0/matched_router_oracle_p06.py"
+      - "qualification/neural-cell-fabric-p0/test_matched_router_p06.py"
+      - "qualification/neural-cell-fabric-p0/P06_EQBUDGET_STUDY.md"
+      - ".github/workflows/hepta-cell-fabric-p06-equalbudget.yml"
+  pull_request:
+    paths:
+      - "qualification/neural-cell-fabric-p0/matched_router_p06.py"
+      - "qualification/neural-cell-fabric-p0/matched_router_oracle_p06.py"
+      - "qualification/neural-cell-fabric-p0/test_matched_router_p06.py"
+      - "qualification/neural-cell-fabric-p0/P06_EQBUDGET_STUDY.md"
+      - ".github/workflows/hepta-cell-fabric-p06-equalbudget.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p06-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-tests:
+    name: Exact head source-only adversarial + synthetic physical CPU
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Exact ref and required dependency installs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0
+      - name: Source-only original-label-denial and matched CPU numerics
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 -m py_compile matched_router_p06.py matched_router_oracle_p06.py test_matched_router_p06.py
+          python3 -m unittest -q test_matched_router_p06
+          python3 -O -m unittest -q test_matched_router_p06
+
+  physically-replay-historical-original:
+    name: Real mmBERT feature / 3x equal-touch SGD + prelabel independent reviewer
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Immutable exact source and prerequisite versions
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 safetensors==0.7.0
+          umask 077
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p06-source"
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p06-producer"
+          mkdir -m 700 "$RUNNER_TEMP/hepta-p06-review"
+      - name: Token-isolated acquisition of previously completed publisher study
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 original_fetch.py --kind agnews --out "$RUNNER_TEMP/hepta-p06-source/original.zip"
+          echo "Original source artifact downloaded and SHA-checked; NOT a new pretrained Encoder forward"
+      - name: Freeze label-redacted TRAIN/calibration/holdout model input
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          python3 matched_router_p06.py source \
+            --archive "$RUNNER_TEMP/hepta-p06-source/original.zip" \
+            --output "$RUNNER_TEMP/hepta-p06-producer/redacted.json"
+      - name: Actual 3-seed equal-touch SGD before labels and immutable prelabel seal
+        working-directory: qualification/neural-cell-fabric-p0
+        run: |
+          set -euo pipefail
+          # The actual training subprocess only receives the no-HELD-label view;
+          # the *source custodian* previously read a gold-co-resident archive.
+          python3 matched_router_p06.py producer \
+            --source "$RUNNER_TEMP/hepta-p06-producer/redacted.json" \
+            --prelabel "$RUNNER_TEMP/hepta-p06-producer/prelabel.json" \
+            --seal "$RUNNER_TEMP/hepta-p06-producer/seal.json"
+      - name: Postseal reopen original publisher gold and independent CPU mathematics
+        working-directory: qualification/neural-cell-fabric-p0
+        env:
+          AGNEWS_ORIGINAL_ARCHIVE: ${{ runner.temp }}/hepta-p06-source/original.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest -q test_matched_router_p06
+          python3 -O -m unittest -q test_matched_router_p06
+          python3 matched_router_p06.py review \
+            --archive "$AGNEWS_ORIGINAL_ARCHIVE" \
+            --source "$RUNNER_TEMP/hepta-p06-producer/redacted.json" \
+            --prelabel "$RUNNER_TEMP/hepta-p06-producer/prelabel.json" \
+            --seal "$RUNNER_TEMP/hepta-p06-producer/seal.json" \
+            --out "$RUNNER_TEMP/hepta-p06-review/sanitized-aggregate.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'hepta-p06-review/sanitized-aggregate.json'
+          r=json.loads(p.read_text())
+          assert r['original_model_features_real'] and r['original_model_new_forwards']==0
+          assert r['train_rows']==64 and r['held_rows']==32
+          assert r['independent_fp64_oracle']['trained_head_sets_recomputed']==12
+          assert r['independent_fp64_oracle']['independent_trained_head_prediction_rows_replayed']==672
+          assert r['historical_gated_head_comparator']['correct']==22
+          assert all(tr['score']['centroid_train_loo']['correct']==28 for tr in r['trials'].values())
+          assert not r['truly_new_prospective_panel']
+          assert not r['head_specialization_promotable']
+          assert r['disposition']=='HOLD_NO_GO' and r['authority']=='DENY_ALL'
+          print('HEPTA_P06_REAL_ORIGINAL_CPU / INDEPENDENT_FP64_REPLAY / HOLD_NO_GO')
+          PY
+      - name: Upload SANITIZED aggregates only; no original case ids, tensors or gold
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-p06-historical-original-equal-touch-deny-all
+          retention-days: 14
+          if-no-files-found: error
+          path: ${{ runner.temp }}/hepta-p06-review/sanitized-aggregate.json

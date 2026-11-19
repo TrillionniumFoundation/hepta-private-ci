@@ -1,0 +1,303 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+[1m[92m Downloading[0m crates ...
+[1m[92m  Downloaded[0m ctor-proc-macro v0.0.7
+[1m[92m  Downloaded[0m ctor v0.6.3
+[1m[92m  Downloaded[0m assert-json-diff v2.0.2
+[1m[92m  Downloaded[0m assert_cmd v2.2.2
+[1m[92m  Downloaded[0m deadpool v0.12.3
+[1m[92m  Downloaded[0m yansi v1.0.1
+[1m[92m  Downloaded[0m predicates-tree v1.0.13
+[1m[92m  Downloaded[0m predicates-core v1.0.10
+[1m[92m  Downloaded[0m diff v0.1.13
+[1m[92m  Downloaded[0m wiremock v0.6.5
+[1m[92m  Downloaded[0m pretty_assertions v1.4.1
+[1m[92m  Downloaded[0m predicates v3.1.4
+[1m[92m  Downloaded[0m deadpool-runtime v0.1.4
+[1m[92m  Downloaded[0m num_cpus v1.17.0
+[1m[92m  Downloaded[0m dtor v0.1.1
+[1m[92m  Downloaded[0m difflib v0.4.0
+[1m[92m  Downloaded[0m wait-timeout v0.2.1
+[1m[92m  Downloaded[0m termtree v0.5.1
+[1m[92m  Downloaded[0m dtor-proc-macro v0.0.6
+[1m[92m   Compiling[0m hyper v1.12.0
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:144:9
+    [1m[94m|[0m
+[1m[94m144[0m [1m[94m|[0m         &self,
+    [1m[94m|[0m         [1m[33m^^^^^[0m [1m[33mthe lifetime is elided here[0m
+[1m[94m145[0m [1m[94m|[0m     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    [1m[94m= [0m[1mnote[0m: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m145[0m [1m[94m| [0m    ) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                  [92m++++[0m
+
+[1m[33mwarning[0m[1m: hiding a lifetime that's elided elsewhere is confusing[0m
+   [1m[94m--> [0mthird_party/i18n-config-0.4.8/src/lib.rs:155:26
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m|[0m     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                          [1m[33m^^^^^[0m                     [1m[33m^^[0m [1m[33m^^^^^[0m   [1m[33m^^[0m [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33m|[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33m|[0m  [1m[33mthe same lifetime is hidden here[0m
+    [1m[94m|[0m                          [1m[33m|[0m                         [1m[33mthe same lifetime is elided here[0m
+    [1m[94m|[0m                          [1m[33mthe lifetime is elided here[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mhelp[0m: the same lifetime is referred to in inconsistent ways, making the signature confusing
+[1m[96mhelp[0m: use `'_` for type paths
+    [1m[94m|[0m
+[1m[94m155[0m [1m[94m| [0m    pub fn active_config(&self) -> Result<Option<(&'_ Crate[92m<'_>[0m, &'_ I18nConfig)>, I18nConfigError> {
+    [1m[94m|[0m                                                            [92m++++[0m
+
+[1m[33mwarning[0m: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+[1m[92m   Compiling[0m codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+[1m[92m   Compiling[0m hyper-util v0.1.21
+[1m[92m   Compiling[0m codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+[1m[92m   Compiling[0m hyper-rustls v0.27.10
+[1m[92m   Compiling[0m hyper-tls v0.6.0
+[1m[92m   Compiling[0m reqwest v0.12.28
+[1m[92m   Compiling[0m hyper-timeout v0.5.2
+[1m[92m   Compiling[0m tonic v0.14.6
+[1m[92m   Compiling[0m codex-http-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/http-client)
+[1m[92m   Compiling[0m tonic-prost v0.14.6
+[1m[92m   Compiling[0m opentelemetry-proto v0.31.0
+[1m[92m   Compiling[0m codex-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/protocol)
+[1m[92m   Compiling[0m codex-websocket-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/websocket-client)
+[1m[92m   Compiling[0m codex-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-client)
+[1m[92m   Compiling[0m opentelemetry-http v0.31.0
+[1m[92m   Compiling[0m opentelemetry-otlp v0.31.1
+[1m[92m   Compiling[0m aws-smithy-http-client v1.5.1
+[1m[92m   Compiling[0m axum v0.8.9
+[1m[92m   Compiling[0m aws-smithy-runtime v1.16.1
+[1m[92m   Compiling[0m codex-file-system v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/file-system)
+[1m[92m   Compiling[0m codex-git-utils v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/git-utils)
+[1m[92m   Compiling[0m codex-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-api)
+[1m[92m   Compiling[0m codex-shell-command v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-command)
+[1m[92m   Compiling[0m codex-exec-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server-protocol)
+[1m[92m   Compiling[0m codex-otel v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/otel)
+[1m[92m   Compiling[0m codex-model-provider-info v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider-info)
+[1m[92m   Compiling[0m codex-secrets v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/secrets)
+[1m[92m   Compiling[0m aws-runtime v1.10.0
+[1m[92m   Compiling[0m codex-features v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/features)
+[1m[92m   Compiling[0m codex-windows-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/windows-sandbox-rs)
+[1m[92m   Compiling[0m codex-sandboxing v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/sandboxing)
+[1m[92m   Compiling[0m codex-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/config)
+[1m[92m   Compiling[0m codex-history v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/history)
+[1m[92m   Compiling[0m codex-state v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/state)
+[1m[92m   Compiling[0m codex-agent-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-identity)
+[1m[92m   Compiling[0m codex-workload-identity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/workload-identity)
+[1m[92m   Compiling[0m codex-utils-output-truncation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/output-truncation)
+[1m[92m   Compiling[0m oauth2 v5.0.0
+[1m[92m   Compiling[0m reqwest v0.13.5
+[1m[92m   Compiling[0m codex-exec-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server)
+[1m[92m   Compiling[0m codex-login v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/login)
+[1m[92m   Compiling[0m codex-utils-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/plugins)
+[1m[92m   Compiling[0m rmcp v3.1.3
+[1m[92m   Compiling[0m aws-sdk-sts v1.119.0
+[1m[92m   Compiling[0m aws-sdk-sso v1.114.0
+[1m[92m   Compiling[0m aws-sdk-ssooidc v1.116.0
+[1m[92m   Compiling[0m aws-sdk-signin v1.27.0
+[1m[92m   Compiling[0m aws-config v1.12.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.12.0)
+[1m[92m   Compiling[0m codex-plugin v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/plugin)
+[1m[92m   Compiling[0m sentry v0.46.2
+[1m[92m   Compiling[0m codex-feedback v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/feedback)
+[1m[92m   Compiling[0m codex-aws-auth v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/aws-auth)
+[1m[92m   Compiling[0m codex-models-manager v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/models-manager)
+[1m[92m   Compiling[0m codex-response-debug-context v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/response-debug-context)
+[1m[92m   Compiling[0m codex-code-mode-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode-protocol)
+[1m[92m   Compiling[0m codex-model-provider v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/model-provider)
+[1m[92m   Compiling[0m codex-code-mode v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/code-mode)
+[1m[92m   Compiling[0m codex-connectors v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/connectors)
+[1m[92m   Compiling[0m codex-rmcp-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rmcp-client)
+[1m[92m   Compiling[0m codex-exec-server-test-support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/exec-server/tests/support)
+[1m[92m   Compiling[0m codex-tools v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/tools)
+[1m[92m   Compiling[0m codex-mcp v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-mcp)
+[1m[92m   Compiling[0m codex-context-fragments v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/context-fragments)
+[1m[92m   Compiling[0m codex-rollout v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout)
+[1m[92m   Compiling[0m codex-extension-api v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/extension-api)
+[1m[92m   Compiling[0m codex-app-server-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-protocol)
+[1m[92m   Compiling[0m codex-skills v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/skills)
+[1m[92m   Compiling[0m codex-hooks v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hooks)
+[1m[92m   Compiling[0m codex-apply-patch v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/apply-patch)
+[1m[92m   Compiling[0m codex-shell-escalation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/shell-escalation)
+[1m[92m   Compiling[0m codex-prompts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/prompts)
+[1m[92m   Compiling[0m codex-rollout-trace v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/rollout-trace)
+[1m[92m   Compiling[0m codex-agent-graph-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/agent-graph-store)
+[1m[92m   Compiling[0m codex-memories-read v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/read)
+[1m[92m   Compiling[0m codex-utils-audio v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/audio)
+[1m[92m   Compiling[0m codex-hepta-operations v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-operations)
+[1m[92m   Compiling[0m codex-backend-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/backend-client)
+[1m[92m   Compiling[0m codex-hepta-memory v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-memory)
+[1m[92m   Compiling[0m codex-analytics v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/analytics)
+[1m[92m   Compiling[0m codex-thread-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/thread-store)
+[1m[92m   Compiling[0m codex-core-plugins v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core-plugins)
+[1m[92m   Compiling[0m codex-skills-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/skills)
+[1m[92m   Compiling[0m codex-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core)
+[1m[92m   Compiling[0m codex-linux-sandbox v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/linux-sandbox)
+[1m[92m   Compiling[0m codex-arg0 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/arg0)
+[1m[92m   Compiling[0m codex-home v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/codex-home)
+[1m[92m   Compiling[0m codex-hepta-authbus v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-authbus)
+[1m[92m   Compiling[0m codex-hepta-evidence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-evidence)
+[1m[92m   Compiling[0m codex-connectors-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/connectors)
+[1m[92m   Compiling[0m codex-utils-cli v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/utils/cli)
+[1m[92m   Compiling[0m codex-hepta-governance v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-governance)
+[1m[92m   Compiling[0m codex-hepta-memory-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-memory)
+[1m[92m   Compiling[0m codex-git-attribution v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/git-attribution)
+[1m[92m   Compiling[0m codex-hepta-prompt-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/hepta-prompt)
+[1m[92m   Compiling[0m codex-hepta-automation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-automation)
+[1m[92m   Compiling[0m codex-hepta-agent-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agent-protocol)
+[1m[92m   Compiling[0m codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+[1m[92m   Compiling[0m codex-hepta-supervisor v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-supervisor)
+[1m[92m   Compiling[0m codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+[1m[92m   Compiling[0m codex-memories-write v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/memories/write)
+[1m[92m   Compiling[0m codex-external-agent-migration v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/external-agent-migration)
+[1m[92m   Compiling[0m codex-history-notes-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/history-notes)
+[1m[92m   Compiling[0m codex-app-server-transport v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-transport)
+[1m[92m   Compiling[0m codex-web-search-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/web-search)
+[1m[92m   Compiling[0m codex-memories-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/memories)
+[1m[92m   Compiling[0m codex-chatgpt v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/chatgpt)
+[1m[92m   Compiling[0m codex-mcp-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/mcp)
+[1m[92m   Compiling[0m codex-goal-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/goal)
+[1m[92m   Compiling[0m codex-image-generation-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/image-generation)
+[1m[92m   Compiling[0m codex-agent-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/agent)
+[1m[92m   Compiling[0m codex-queue-extension v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/queue)
+[1m[92m   Compiling[0m codex-guardian-v2 v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/ext/guardian-v2)
+[1m[92m   Compiling[0m codex-cloud-config v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/cloud-config)
+[1m[92m   Compiling[0m codex-hepta-cognitive-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-store)
+[1m[92m   Compiling[0m codex-app-server v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server)
+[1m[92m   Compiling[0m codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+[1m[92m   Compiling[0m predicates-core v1.0.10
+[1m[92m   Compiling[0m num_cpus v1.17.0
+[1m[92m   Compiling[0m assert_cmd v2.2.2
+[1m[92m   Compiling[0m dtor-proc-macro v0.0.6
+[1m[92m   Compiling[0m deadpool-runtime v0.1.4
+[1m[92m   Compiling[0m termtree v0.5.1
+[1m[92m   Compiling[0m difflib v0.4.0
+[1m[92m   Compiling[0m predicates v3.1.4
+[1m[92m   Compiling[0m predicates-tree v1.0.13
+[1m[92m   Compiling[0m deadpool v0.12.3
+[1m[92m   Compiling[0m dtor v0.1.1
+[1m[92m   Compiling[0m assert-json-diff v2.0.2
+[1m[92m   Compiling[0m wait-timeout v0.2.1
+[1m[92m   Compiling[0m ctor-proc-macro v0.0.7
+[1m[92m   Compiling[0m ctor v0.6.3
+[1m[92m   Compiling[0m wiremock v0.6.5
+[1m[92m   Compiling[0m core_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core/tests/common)
+[1m[92m   Compiling[0m yansi v1.0.1
+[1m[92m   Compiling[0m diff v0.1.13
+[1m[92m   Compiling[0m pretty_assertions v1.4.1
+[1m[92m   Compiling[0m app_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server/tests/common)
+[1m[92m   Compiling[0m codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+[1m[92m   Compiling[0m codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+[1m[92m   Compiling[0m codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+[1m[92m   Compiling[0m codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 4m 20s
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.31.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-language@0.1.9` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#windows_x86_64_gnu@0.52.6` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-powershell@0.26.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter-bash@0.25.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#tree-sitter@0.25.10` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-types@1.6.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#object@0.37.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#findshlibs@0.10.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rmcp@3.1.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry-contexts@0.46.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#sentry@0.46.2` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libm@0.2.16` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#noyalib@0.0.58` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#constant_time_eq@0.6.1` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#pulldown-cmark@0.10.3` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#stop-words@0.9.0` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#inotify-sys@0.1.8` which wasn't produced by cargo metadata
+[33;1mwarning[0m: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+[32;1m Nextest run[0m ID [1mde826998-91c8-4dbf-9c57-aae7225dad12[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m1[0m test across [1m1[0m binary ([1m1[0m test [33;1mskipped[0m)
+[33;1m        SKIP[0m [         ] [35;1mcodex-hepta-agentd::notes_thread_seed_product[0m [34;1mstandard_profile_rejects_original_notes_seed_before_model_contact[0m
+[32;1m        PASS[0m [   0.692s] [35;1mcodex-hepta-agentd::notes_thread_seed_product[0m [34;1mlauncher_seeds_one_unused_original_thread_without_model_contact[0m
+────────────
+[32;1m     Summary[0m [   0.693s] [1m1[0m test run: [1m1[0m [32;1mpassed[0m, [1m1[0m [33;1mskipped[0m

@@ -1,0 +1,132 @@
+{
+  "schema": "rrsnn-v4-data-1",
+  "data_spec": {
+    "train": {
+      "episodes": 512,
+      "seed": 1401001,
+      "distribution": "train"
+    },
+    "validation": {
+      "episodes": 128,
+      "seed": 2401001,
+      "distribution": "train"
+    },
+    "test": {
+      "episodes": 256,
+      "seed": 3401001,
+      "distribution": "train"
+    },
+    "shift": {
+      "episodes": 256,
+      "seed": 4401001,
+      "distribution": "shift"
+    },
+    "paired": {
+      "episodes": 256,
+      "seed": 5401001,
+      "value_groups": 64,
+      "conditions": [
+        "A0",
+        "A2",
+        "B0",
+        "B2"
+      ],
+      "value_range": [
+        0.25,
+        1.5
+      ],
+      "budget": 3,
+      "refill": 1,
+      "deadlines_A": [
+        1.0,
+        1.0,
+        3.0,
+        3.0
+      ],
+      "deadlines_B": [
+        2.0,
+        2.0,
+        2.0,
+        2.0
+      ]
+    }
+  },
+  "created_at_utc": "2026-10-29T14:34:04.619282+00:00",
+  "protocol_sha256": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+  "task_sha256": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+  "generator_sha256": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+  "features": [
+    "expected_query_value_cue_0",
+    "expected_query_value_cue_1",
+    "expected_query_value_cue_2",
+    "expected_query_value_cue_3",
+    "budget_over_6",
+    "live_fraction",
+    "mean_remaining_over_4",
+    "remaining_0_over_4",
+    "remaining_1_over_4",
+    "remaining_2_over_4",
+    "remaining_3_over_4",
+    "live_0",
+    "live_1",
+    "live_2",
+    "live_3",
+    "shock_amount_cue_over_3",
+    "shock_time_cue_over_4",
+    "refill_amount_cue_over_2",
+    "refill_time_cue_over_4",
+    "time_over_4",
+    "initial_cue",
+    "renewal_and_output_unit_cost_over_6"
+  ],
+  "initial_event": "cue only, dt zero, task action zero",
+  "query_realizations_generated": false,
+  "real_future_window": false,
+  "splits": [
+    {
+      "name": "train",
+      "episodes": 512,
+      "maximum_observations": 11,
+      "files": {
+        "train.npz": "ec2b041b3eb284a7ec49a7f256974a0c8ca0b355e64d8ef34801bdf4399218d6",
+        "train_scenarios.json": "e9ff112080dde4b56bf51e4f2d3f1bdd0f2af42fc67d0c5f656bfaf3ff4aa181"
+      }
+    },
+    {
+      "name": "validation",
+      "episodes": 128,
+      "maximum_observations": 11,
+      "files": {
+        "validation.npz": "e387032a65a6235e567bdd65aeb8c4e3738ae3095f78f0b88314755d05201e4e",
+        "validation_scenarios.json": "734c8481c22cac24ea9f78c9e139e01717898767cb2fe23d4d08a206acd1a4ce"
+      }
+    },
+    {
+      "name": "test",
+      "episodes": 256,
+      "maximum_observations": 11,
+      "files": {
+        "test.npz": "a2ee45239962ae3319e44693cd2800e95340797a471838a21dd1277625c5a494",
+        "test_scenarios.json": "def5126ba06624e009cf4721006e3c26d133cae6dded4459de7330859e7bc2a5"
+      }
+    },
+    {
+      "name": "shift",
+      "episodes": 256,
+      "maximum_observations": 15,
+      "files": {
+        "shift.npz": "ce56248e5f4f2c280d9c3e8cac427a76c652a4385d6f5503edc7e1261d947732",
+        "shift_scenarios.json": "2840c5ccab68ea853df7ce101f0828edff2ae215beb00a145007ee24dfd7f1f6"
+      }
+    },
+    {
+      "name": "paired",
+      "episodes": 256,
+      "maximum_observations": 11,
+      "files": {
+        "paired.npz": "a3573b11ee4616d7714addc951e35047a3ab00584b34b7561b4ed230480639ae",
+        "paired_scenarios.json": "e1b437a4bfa75725e5aa4f80d424c89c6a323b7342b07fe47b07d11ab4331a84"
+      }
+    }
+  ]
+}

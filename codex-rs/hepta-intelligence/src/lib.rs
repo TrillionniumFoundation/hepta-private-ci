@@ -7,6 +7,18 @@
 #![forbid(unsafe_code)]
 
 mod canonical;
+mod cell_ndu_selection;
+
+pub use cell_ndu_selection::CellNduCandidateEvidenceV1;
+pub use cell_ndu_selection::CellNduEvaluationReceiptV1;
+pub use cell_ndu_selection::CellNduEvaluationRequestV1;
+pub use cell_ndu_selection::CellNduExecutionReceiptV1;
+pub use cell_ndu_selection::CellNduSelectionDecisionV1;
+pub use cell_ndu_selection::CellNduSelectionErrorV1;
+pub use cell_ndu_selection::CellSelectionTokenV1;
+pub use cell_ndu_selection::evaluate_cell_ndu_v1;
+pub use cell_ndu_selection::execute_cell_ndu_v1;
+pub use cell_ndu_selection::select_cell_ndu_v1;
 
 pub use canonical::AdvisoryDecisionReceiptV1;
 pub use canonical::AdvisoryDecisionV1;
@@ -40,6 +52,9 @@ pub use canonical::prepare_intelligence_run;
 pub use canonical::validate_current_snapshot;
 
 mod evaluated_shadow;
+mod generation_episode;
+#[cfg(test)]
+pub(crate) mod generation_episode_test_support;
 mod ndu_stochastic_admission;
 mod neuron_runtime;
 mod outcome_credit_v2;
@@ -51,6 +66,12 @@ pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v2;
 pub use evaluated_shadow::evaluated_shadow_production_decision_v2;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use generation_episode::FrozenGenerationEpisodeInputV1;
+pub use generation_episode::FrozenGenerationEpisodeV1;
+pub use generation_episode::GenerationEpisodeErrorV1;
+pub use generation_episode::GenerationEpisodeEvidenceV1;
+pub use generation_episode::append_generation_outcome_credit_v1;
+pub use generation_episode::append_generation_outcome_v1;
 pub use outcome_credit_v2::ObservedOutcomeRequestV2;
 pub use outcome_credit_v2::OutcomeCreditClosureErrorV2;
 pub use outcome_credit_v2::OutcomeCreditClosureReceiptV2;
@@ -70,7 +91,27 @@ pub use objective_run::ObjectiveRunError;
 pub use objective_run::PublishedObjectiveRunV1;
 pub use objective_run::compile_and_publish_objective_run_v1;
 
+mod learning_decision;
+mod learning_decision_types;
 mod plasticity_product;
+
+pub use learning_decision::complete_authenticated_learning_decision_v1;
+pub use learning_decision::learning_decision_inventory_v1;
+pub use learning_decision::learning_decision_plan_digest_v1;
+pub use learning_decision::learning_decision_signing_payload_v1;
+pub use learning_decision_types::LearningAttemptPhaseV1;
+pub use learning_decision_types::LearningAttemptStatusV1;
+pub use learning_decision_types::LearningAttemptV1;
+pub use learning_decision_types::LearningCandidateResultV1;
+pub use learning_decision_types::LearningCycleDispositionV1;
+pub use learning_decision_types::LearningDecisionAttestationsV1;
+pub use learning_decision_types::LearningDecisionErrorV1;
+pub use learning_decision_types::LearningDecisionInputV1;
+pub use learning_decision_types::LearningDecisionPinsV1;
+pub use learning_decision_types::LearningDecisionPlanV1;
+pub use learning_decision_types::LearningDecisionReceiptV1;
+pub use learning_decision_types::LearningDecisionSummaryV1;
+pub use learning_decision_types::LearningStopV1;
 
 pub use plasticity_product::AnchoredPlasticityWriterErrorV1;
 pub use plasticity_product::AnchoredPlasticityWriterV1;
@@ -331,3 +372,6 @@ mod vertical_tests;
 #[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
 mod plasticity_product_tests;
+
+#[cfg(test)]
+mod directory_test_support;

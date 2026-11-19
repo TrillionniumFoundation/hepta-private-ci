@@ -1,0 +1,276 @@
+{
+  "schema": "hepta.test-only-initial-identity-layout-fix.v1",
+  "status": "candidate-static-review-only",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base": {
+    "commit": "2d3a240d48aaa733775b134877c43981db50b702",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "scope": "Two existing Initial UID0 component fixture files; no product behavior, authority, wire, timeout, checker, CALLERS, reference, or test-count changes.",
+  "original_failure": {
+    "source_commit": "2d3a240d48aaa733775b134877c43981db50b702",
+    "actual_uid": 0,
+    "root_parent_tests": {
+      "executed": 17,
+      "passed": 15,
+      "failed": 2
+    },
+    "junit": {
+      "git_blob": "db50c213e12d5a759544f352eea77b36bcd96afa",
+      "bytes": 8689,
+      "sha256": "4402806b645d9c993b96a7b3a98792347a569f1380e01a537bfad5ffe798d527"
+    },
+    "execution_git_blob": "4f0f4a97b2456961707f461e235f4690b56f005d",
+    "initial_first_child_progress": "ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs",
+    "initial_first_child_error": "Permission denied (os error 13)",
+    "initial_child_exit": 101,
+    "subsequent_parent_errors": [
+      "owner process exited",
+      "initial parent Publish: awaiting ORIGINAL_INPUTS_READY",
+      "Resource temporarily unavailable (os error 11)"
+    ],
+    "source_clean": true,
+    "diagnosis": "The original registered identity performs real canonicalize on fleet_root and workspace. The old fixture placed both paths behind the Root-only protected directory, which UID 60001 cannot traverse. The child used this identity() call without context in the exact interval identified by the original log. This is a source diagnosis consistent with the actual error, not a native pass for the proposed repair."
+  },
+  "source_contracts": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "git_blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+      "contract": "Original identity checks positive spawn generation, exact canonical fleet/workspace paths, and original Fleet layout; these checks remain unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "git_blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "contract": "read_bootstrap repeats original identity validation and retains actual UID/GID/PID, sealed bootstrap, process, writer, checkpoint, and lane checks."
+    },
+    {
+      "path": "codex-rs/hepta-paths/src/fleet.rs",
+      "git_blob": "30d3a88e199578ace3e2fb0387e86d0c467e3806",
+      "contract": "The Fleet root type validates the original absolute path and derives layout; changing fixture path placement is not a new authority."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_agentd_filesystem.rs",
+      "git_blob": "3ff802ccbf081df5a4e85db40fd98cfa2151d762",
+      "contract": "Ordinary agent paths and protected Root authority state are separated; this fixture repair does not invoke or claim the complete agent filesystem handoff."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_agentd_filesystem_tests.rs",
+      "git_blob": "8d3ec559febd4bd3ea4676a2617660353121147c",
+      "contract": "Existing fixture places ordinary fleet/workspace under a traversable ordinary root and keeps the protected root separate; its historical test outcome is not inherited."
+    }
+  ],
+  "design": {
+    "runtime_parent": {
+      "uid": 0,
+      "gid": 60001,
+      "mode": "02710",
+      "changed": false,
+      "construction": "Move the exact existing /run tempdir creation before ordinary identity directories."
+    },
+    "ordinary_identity_directories": {
+      "uid": 0,
+      "gid": 60001,
+      "mode": "0710",
+      "paths": [
+        "workspace",
+        "fleet"
+      ],
+      "purpose": "Allow only dedicated-group pathname traversal needed by real canonicalize; no dedicated-group list/read/write and no world access."
+    },
+    "registry": "Initialize the actual FleetRegistry at its new ordinary path; bind HostAuthorityRegisteredIdentity.fleet_root to that exact typed Fleet root.",
+    "protected_root": "Unchanged Root-only protected paths, CURRENT, witnesses, agent/cognitive/run private modes, and original writer protection.",
+    "diagnostics": "Wrap the unchanged registered_identity.identity() result with the current Initial phase context.",
+    "superseded_unexecuted_candidate": "Initial fixture a9f67235345420baef7a4132bea152bb3b4bf6ca used 0750. It is not the final candidate; final adb691cc4a90f5039e7960c1e39b39e2cb79d337 uses search-only 0710."
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "before_blob": "88374031ceb8467684db2d987054b7394de41f8b",
+      "before_bytes": 23134,
+      "before_sha256": "a81a73eac2f244ff3951c509aecaedd8a2d96219710841c519f0a104e577ab3f",
+      "after_blob": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+      "after_bytes": 23511,
+      "after_sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef",
+      "edits": [
+        {
+          "before": "        let fresh = runtime.block_on(crate::FreshHostCognitiveState::prepare(&registered))?;\n        let runtime_directory = tempfile::Builder::new().prefix(\"hgp-\").tempdir_in(\"/run\")?;\n        owned_mode(\n            runtime_directory.path(),\n            /*uid*/ 0,\n            /*gid*/ 60001,\n            /*mode*/ 0o2710,\n        )?;\n        let local = runtime_directory.path().join(\"consumer-local\");",
+          "after": "        let fresh = runtime.block_on(crate::FreshHostCognitiveState::prepare(&registered))?;\n        let local = runtime_directory.path().join(\"consumer-local\");",
+          "expected_count": 1
+        },
+        {
+          "before": "        let workspace = protected.path().join(\"workspace\");\n        std::fs::create_dir(&workspace)?;\n        let fleet = HeptaFleetRoot::parse(protected.path().join(\"fleet\"))?;\n        let registry = FleetRegistry::initialize(fleet.clone())?;",
+          "after": "        let runtime_directory = tempfile::Builder::new().prefix(\"hgp-\").tempdir_in(\"/run\")?;\n        owned_mode(\n            runtime_directory.path(),\n            /*uid*/ 0,\n            /*gid*/ 60001,\n            /*mode*/ 0o2710,\n        )?;\n        // Ordinary identity paths must be traversable by the dedicated child.\n        // Root authority, CURRENT and witnesses remain in their private domains.\n        let workspace = runtime_directory.path().join(\"workspace\");\n        std::fs::create_dir(&workspace)?;\n        let fleet = HeptaFleetRoot::parse(runtime_directory.path().join(\"fleet\"))?;\n        let registry = FleetRegistry::initialize(fleet.clone())?;\n        owned_mode(\n            &workspace, /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;\n        owned_mode(\n            fleet.as_path(), /*uid*/ 0, /*gid*/ 60001, /*mode*/ 0o710,\n        )?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            fleet_root: protected.path().join(\"fleet\"),",
+          "after": "            fleet_root: fleet.as_path().to_path_buf(),",
+          "expected_count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "before_blob": "d15885d6b7ba946d0ff248f543a133d2e928408d",
+      "before_bytes": 10446,
+      "before_sha256": "22476dae96b1fc8869817813daf28d5906d9a54a1b977baeef3f940275f9d241",
+      "after_blob": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+      "after_bytes": 10567,
+      "after_sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e",
+      "edits": [
+        {
+          "before": "            let identity = original.registered_identity.identity()?;",
+          "after": "            let identity = original.registered_identity.identity()\n                .with_context(|| format!(\"initial child {phase:?}: validating original registered filesystem identity\"))?;",
+          "expected_count": 1
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "exact_forward_and_reverse_replay": true,
+    "every_edit_matches_once": true,
+    "github_blob_readback": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+        "blob": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+        "bytes": 23511,
+        "sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef",
+        "equal": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "blob": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+        "bytes": 10567,
+        "sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e",
+        "equal": true
+      }
+    ],
+    "preserved_marker_counts": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+        "markers": [
+          {
+            "marker": "assert!",
+            "before": 1,
+            "after": 1
+          },
+          {
+            "marker": "assert_eq!",
+            "before": 5,
+            "after": 5
+          },
+          {
+            "marker": "anyhow::ensure!",
+            "before": 8,
+            "after": 8
+          },
+          {
+            "marker": "TIMEOUT",
+            "before": 2,
+            "after": 2
+          },
+          {
+            "marker": "LIFETIME",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "marker": "libc::alarm(60)",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "marker": "claim_final_use",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "marker": "publish(&signed)",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "marker": "initialize_fresh",
+            "before": 1,
+            "after": 1
+          },
+          {
+            "marker": "FreshHostCognitiveState::prepare",
+            "before": 1,
+            "after": 1
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+        "markers": [
+          {
+            "marker": "assert!",
+            "before": 6,
+            "after": 6
+          },
+          {
+            "marker": "assert_eq!",
+            "before": 21,
+            "after": 21
+          },
+          {
+            "marker": "anyhow::ensure!",
+            "before": 1,
+            "after": 1
+          },
+          {
+            "marker": "TIMEOUT",
+            "before": 2,
+            "after": 2
+          },
+          {
+            "marker": "LIFETIME",
+            "before": 4,
+            "after": 4
+          },
+          {
+            "marker": "libc::alarm(60)",
+            "before": 1,
+            "after": 1
+          },
+          {
+            "marker": "claim_final_use",
+            "before": 2,
+            "after": 2
+          },
+          {
+            "marker": "publish(&signed)",
+            "before": 1,
+            "after": 1
+          },
+          {
+            "marker": "initialize_fresh",
+            "before": 0,
+            "after": 0
+          },
+          {
+            "marker": "FreshHostCognitiveState::prepare",
+            "before": 0,
+            "after": 0
+          }
+        ]
+      }
+    ],
+    "native_executed": false,
+    "cargo_executed": false,
+    "rustfmt_executed": false,
+    "production_changed": false,
+    "refs_changed": false,
+    "parent_test_count_changed": false,
+    "limitations": "Static edit/replay and blob byte verification only. The fixed candidate still requires its own original native formatting/compilation and the actual UID0 Root17 execution."
+  },
+  "qualification": {
+    "ordinary_full_chains": 0,
+    "ordinary_positive_adoptions": 0,
+    "ordinary_noupdate_or_rollback_chains": 0,
+    "independent_ordinary_consumer_verified": false,
+    "cold_process_restart_verified": false,
+    "fixture_scope_only": true
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "actual_commands": [
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "--features",
+        "qualification-owned-file-read"
+      ],
+      "exit_code": 0,
+      "receipt_status": "passed_clean",
+      "source_after_dirty": false,
+      "source_before_dirty": false,
+      "timeout_observed": false
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-core"
+      ],
+      "exit_code": 0,
+      "receipt_status": "passed_clean",
+      "source_after_dirty": false,
+      "source_before_dirty": false,
+      "timeout_observed": false
+    },
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox"
+      ],
+      "exit_code": 0,
+      "receipt_status": "failed_or_interrupted",
+      "source_after_dirty": true,
+      "source_before_dirty": false,
+      "timeout_observed": null
+    }
+  ],
+  "actual_postimages": [
+    {
+      "after": {
+        "bytes": 11145,
+        "git_blob": "7f4c84e566250831293392d6b85f6e0a3b236a23",
+        "sha256": "d8d4561eafefa4cd63f4b26eaf921097f23e696c494a9d930221599269b294d2"
+      },
+      "after_local": "/workspace/scratch/ed3538174819/mem-windows-scoped-fix-b054-root/files/phase-3-source-after/postimages/codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "before": {
+        "bytes": 11083,
+        "git_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18",
+        "sha256": "be25bc4eff5f02d5243cec71b865c548fc531e3114ed7fa498e9201ac32c8b30"
+      },
+      "before_local": "/workspace/scratch/ed3538174819/mem-windows-scoped-fix-b054-root/original-source/codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "group": "actual-scoped-clippy-postimage",
+      "mode": "100644",
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs"
+    },
+    {
+      "after": {
+        "bytes": 6817,
+        "git_blob": "3f8a8f401b71b72c274daae62f744060b4d58cbf",
+        "sha256": "f4035ccd79119eb328c800bfd6c3b541225e7d909cab659a5dc6a714a645c6b6"
+      },
+      "after_local": "/workspace/scratch/ed3538174819/mem-windows-scoped-fix-b054-root/files/phase-3-source-after/postimages/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "before": {
+        "bytes": 6825,
+        "git_blob": "346155207c2c726eca0d0e4d761f530b45bbf64e",
+        "sha256": "4fc839000767f9b8e625565ec95420b74f4d06a9b322e53214d5a19770f13ef2"
+      },
+      "before_local": "/workspace/scratch/ed3538174819/mem-windows-scoped-fix-b054-root/original-source/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "group": "actual-scoped-clippy-postimage",
+      "mode": "100644",
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+    }
+  ],
+  "all_zip_members_byte_equal_extracted_files": true,
+  "api_boundary": "The supplied fix-run-raw.json is the original jobs API payload, not a separate run endpoint response. Run/job identities are also present in original phase/result/anchor records.",
+  "artifact": {
+    "bytes": 73486,
+    "git_blob": "62e10a2229c8c4301dc4fcb9fc1f6b4608c63785",
+    "id": 13865786917,
+    "sha256": "fcc5aa8768b96b87c42bc7aa7d7d7d3c597539fda086e4e1c691b58f95578b6d"
+  },
+  "collector": "partial_or_failed",
+  "driver_result": "failed_or_interrupted",
+  "excluded": [
+    "DOWNLOAD_INPUT.json containing the signed artifact URL"
+  ],
+  "harness_head": "c97586834214c8a0a610f860cc7ae261ce8cccde",
+  "independent_peer": "NO_STATIC_MUST_FIX_FOUND",
+  "job_id": 130583219316,
+  "locks_unchanged": true,
+  "meaning": "All three scoped just fix commands returned0. The neuron and core phases remained clean. The Windows sandbox phase rewrote two source files and the unchanged strict clean-source gate failed. This is not three clean qualifications, not a timeout, and not native-case acceptance.",
+  "model_commands": 0,
+  "native_test_commands": 0,
+  "original_file_manifest_entries": 143,
+  "original_full_job": {
+    "bytes": 80304,
+    "git_blob": "19038f7e68da6896f3fa4bac426e27059433d2c6",
+    "sha256": "a57648a1669d46e7e69d9d226dc666f3ba166967ffed1e15a2d574353960a34a"
+  },
+  "overall_job": "failure",
+  "publication_scope": "Original raw evidence and the two unqualified Clippy postimages; no source/ref modification or rerun.",
+  "run_id": 43038376307,
+  "schema": "mem8.windows-scoped-fix-original-summary.v1",
+  "source_head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "tools_unchanged": true,
+  "zip_members": 144
+}

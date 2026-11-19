@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.real-causal-run-diagnostic.v1",
+  "code_commit": "59cbf06b95013ef13b8f4a5af1f904295a2258f0",
+  "prospective_merge_commit": "c6b2a91376246c95387303786c7b3d87eb581b5c",
+  "run_id": 38496683772,
+  "job_id": 115634290660,
+  "artifact_id": 11864626046,
+  "upstream_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "snapshot_sha256": "3ba462804b961de2a935618c3fe82b91c3d0223a6d57854d53bdd392701628af",
+  "actual_parameters": 134515008,
+  "physical_weight_bytes": 538060160,
+  "initial_outputs": [
+    "To calculate 2 + 3, we need to add the two numbers and",
+    "To calculate 7 + 8, we need to add the two numbers together",
+    "To calculate 9 - 4, we need to subtract 4 from ",
+    "To calculate 6 * 3, we need to follow these steps:\n\n"
+  ],
+  "revised_outputs": [
+    "To calculate 2 + 3, we need to add the two numbers and",
+    "To calculate 7 + 8, we need to add the two numbers together",
+    "To calculate 9 - 4, we need to subtract 4 from ",
+    "To calculate 6 * 3, we need to follow these steps:\n\n"
+  ],
+  "initial_exact_scores": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "revised_exact_scores": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "initial_termination": [
+    "token_limit",
+    "token_limit",
+    "token_limit",
+    "token_limit"
+  ],
+  "revised_termination": [
+    "token_limit",
+    "token_limit",
+    "token_limit",
+    "token_limit"
+  ],
+  "repeated_input_exact": true,
+  "fit_status": "blocked",
+  "fit_block": {
+    "qualified": false,
+    "reason": "invalid complete paired segment work"
+  },
+  "independent_task_efficacy": false,
+  "total_cost_matched": false
+}

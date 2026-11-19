@@ -181,6 +181,8 @@ class FastFeedbackTests(unittest.TestCase):
             "scripts/hepta_workspace.py",
             "scripts/test_hepta_workspace.py",
             "scripts/test_hepta_rust_ci_feedback.py",
+            "scripts/hepta_ci_chef.py",
+            "scripts/test_hepta_ci_chef.py",
         ):
             with self.subTest(path=path):
                 result, flags = self.detect(self.changed(path))

@@ -1,0 +1,51 @@
+{
+  "base_source_commit": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "target_candidate_tree": "da7576365ab1da6b4208d4e83fd046660549996d",
+  "graph_qualification": "OLD_GRAPH_SCOPED_NATIVE_ONLY",
+  "before_8_paths_match_4b": true,
+  "after_all_9_records_match_candidate": true,
+  "files": {
+    "codex-rs/Cargo.toml": "e4a06b14ebbcbe6955097d342bedca5327614b3751e1734311fed05efe30ed21",
+    "codex-rs/Cargo.lock": "3b87221ff5ae147a333b3242296648d2ffecfa8440274bba2d609e5d7e53bde5",
+    "codex-rs/hepta-automation/Cargo.toml": "e758c1494f4113350b6fb31899f84361a07d38a37922d7e11229d010594b202d",
+    "codex-rs/hepta-agentd/Cargo.toml": "fd67bdb9303dba468a768a6a8b8093a98ff1d3a9ced40d2a6a118f1442b7f549",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+  },
+  "sqlx_packages": [
+    {
+      "name": "sqlx",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-core",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-macros",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-macros-core",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-mysql",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-postgres",
+      "version": "0.9.0",
+      "source": "registry+https://github.com/rust-lang/crates.io-index"
+    },
+    {
+      "name": "sqlx-sqlite",
+      "version": "0.9.0",
+      "source": null
+    }
+  ]
+}

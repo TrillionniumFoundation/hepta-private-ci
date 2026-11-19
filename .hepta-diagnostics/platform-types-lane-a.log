@@ -1,0 +1,60 @@
+lane-a-foundation verification failed: kernel.operations: missing 'CompletedRuntimeTask::Operations' in codex-rs/hepta-agentd/src/runtime.rs
+lane-a-foundation verification failed: kernel.operations: missing 'CompletedRuntimeTask::Operations' in codex-rs/hepta-agentd/src/runtime.rs
+.....E.E.E......E.
+======================================================================
+ERROR: test_every_current_capability_has_one_evidence_mapping (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_every_current_capability_has_one_evidence_mapping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 43, in test_every_current_capability_has_one_evidence_mapping
+    verify.validate_capability_map(self.matrix, self.capability_map)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 195, in validate_capability_map
+    validate_anchor(f"{capability_id}/{field}", anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: platform.types.canonical-v1.v1/negativeTests: missing 'rejection oracle accepted invalid case' in codex-rs/hepta-types/conformance/verify_rejections.mjs
+
+======================================================================
+ERROR: test_exact_repository_truth_is_valid (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_exact_repository_truth_is_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 28, in test_exact_repository_truth_is_valid
+    verify.validate_matrix(self.matrix)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.operations: missing 'CompletedRuntimeTask::Operations' in codex-rs/hepta-agentd/src/runtime.rs
+
+======================================================================
+ERROR: test_matrix_validation_is_order_independent (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_matrix_validation_is_order_independent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 40, in test_matrix_validation_is_order_independent
+    verify.validate_matrix(value)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.operations: missing 'CompletedRuntimeTask::Operations' in codex-rs/hepta-agentd/src/runtime.rs
+
+======================================================================
+ERROR: test_source_receipt_preserves_scope_and_nonclaims (qualification.module-execution-dossiers.test_lane_a_foundation.LaneAFoundationTruthTests.test_source_receipt_preserves_scope_and_nonclaims)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/module-execution-dossiers/test_lane_a_foundation.py", line 138, in test_source_receipt_preserves_scope_and_nonclaims
+    verify.write_source_receipt(output, verify.git_value("rev-parse", "HEAD"))
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 249, in write_source_receipt
+    write_receipt(output, expected, native=False)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 183, in write_receipt
+    binding = validate_matrix(matrix)
+              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_lib.py", line 100, in validate_matrix
+    validate_anchor(module, anchor, root)
+  File "/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/lane_a_foundation_core.py", line 113, in validate_anchor
+    raise VerificationError(
+lane_a_foundation_core.VerificationError: kernel.operations: missing 'CompletedRuntimeTask::Operations' in codex-rs/hepta-agentd/src/runtime.rs
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.056s
+
+FAILED (errors=4)

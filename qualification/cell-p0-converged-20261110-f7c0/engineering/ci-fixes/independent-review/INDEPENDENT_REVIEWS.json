@@ -1,0 +1,222 @@
+{
+  "schema": "hepta_independent_ci_fix_source_reviews_v1",
+  "record_kind": "retrospective_consolidation_of_completed_source_reviews_not_a_test_receipt",
+  "archived_at_utc": "2026-11-11T03:11:02.108684+00:00",
+  "reviewer": "/root/mem_ctrl_audit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "consolidation_scope": "Four already completed reviews; no review was rerun and no source checkout was mutated while preparing this archive.",
+  "combined_local_candidate": {
+    "commit": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+    "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+    "status": "local identity only; awaiting root published source identity; no final caller scan claimed"
+  },
+  "prior_cb_caller_receipt": {
+    "path": "/workspace/scratch/f7c0ded86bcc/p0_final_caller_audit_cb0598_20261111",
+    "source": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "scope": "Preserved separate receipt for cb0598 only; not transferred to the later candidate."
+  },
+  "reviews": [
+    {
+      "id": "e453_format_and_guard_scope",
+      "commit": "e453a28965ed0364fd5691129a5a5836ecdc85b9",
+      "tree": "947b0bb93c1c903e67fda29e51f640be84497b27",
+      "parent": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "review_checkout": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix",
+      "finding": "NO_BLOCKING_ISSUE_FOUND_IN_READ_ONLY_SOURCE_REVIEW",
+      "files": [
+        {
+          "path": ".github/workflows/hcsn-differentiable.yml",
+          "bytes": 6820,
+          "sha256": "f6d6906c6a6b4602d8358b9c324f57e1e7fbbb6aa7e75f68500bfc8b7bb48e65",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/.github/workflows/hcsn-differentiable.yml",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        },
+        {
+          "path": ".github/workflows/hepta-daemon-learning-native.yml",
+          "bytes": 18827,
+          "sha256": "278f90e1b14afd235106c84efe2d14dd7458ff4eb36ed71f4c823bc8392b885d",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/.github/workflows/hepta-daemon-learning-native.yml",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        },
+        {
+          "path": "docs/hepta-generation-learning-readback.md",
+          "bytes": 8285,
+          "sha256": "11581f969668abd0b8b3e131cbcdb76254955db9da9f7d3b0ba2cee193f3f62b",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/docs/hepta-generation-learning-readback.md",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        },
+        {
+          "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+          "bytes": 15270,
+          "sha256": "f5073ba560a08f5c496e1f13272498b28fd1652eddbd90a18c254dacca5b468e",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        }
+      ],
+      "actually_checked": [
+        "Each YAML file removes exactly one trailing newline; no workflow fields change.",
+        "Markdown changes table padding and separator widths only; normalized cells/alignment and all other lines are unchanged.",
+        "The retained lock guard and all four existing assertions move into one lexical block; the following await is outside the block.",
+        "The old code already explicitly dropped the guard. This is a Clippy scope fix, not evidence of an observed runtime deadlock.",
+        "No other named guard crossing an await was found in this test file; production process/watcher/manager and CALLERS/verifier blobs were unchanged."
+      ],
+      "limits": [
+        "Source review only. No compiler, Clippy, native tests, formatter, or full caller scan was run by this review."
+      ],
+      "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e453a28965ed0364fd5691129a5a5836ecdc85b9"
+    },
+    {
+      "id": "matrix_original_error_diagnostics",
+      "commit": "7b5ff407bb33ccbf1fc067aefb9c2b37e202ed55",
+      "tree": "759aab567611416d20b96aa25a0df29974b62f1b",
+      "parent": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "review_checkout": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter",
+      "finding": "NO_BLOCKING_ISSUE_FOUND_IN_READ_ONLY_SOURCE_REVIEW",
+      "files": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+          "bytes": 28154,
+          "sha256": "737a92f3af84b4ba1356f36307c6b2c3ca81a0fe22bc24829fe620ff1d656e09",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter/codex-rs/hepta-matrix-sdk/src/sdk.rs",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+          "bytes": 23061,
+          "sha256": "aa42e1eebd256f356089e00857718310deb5aa93721bad161b0252ad18156acd",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter/codex-rs/hepta-matrix-sdk/src/sync_tests.rs",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+          "bytes": 12465,
+          "sha256": "0db33a2e8505870351f54fb53c4b0d11b698ee162c88167af54499dd379e4fae",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-training-adapter/codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        }
+      ],
+      "actually_checked": [
+        "All three outer build timeouts retain inner ?? propagation. Configuration and IdentityMismatch keep their original top-level classification.",
+        "The existing five-second constant, timeout boundaries, store_passphrase input, SQLite paths/cache configuration, and successful recovery path remain unchanged.",
+        "Failed/timed-out local restore still drops the original sidecar and performs exactly one existing fresh login call. The new wrapper is produced only if that login also fails.",
+        "The six equality assertions became exact Err(unit variant) matches: two Sync, three Store, one Configuration. Snapshot/checkpoint assertions and operations are unchanged.",
+        "The sole in-repository dependent crate is hepta-matrixd. Its runner propagates login_or_restore through a transparent Sdk variant to main/anyhow; no top-level variant-based retry/relogin or original error-text parser was found.",
+        "Source storage is Box<dyn Error + Send + Sync>; the helper requires static lifetime, matching callback boxing and task propagation requirements. Local SDK 0.19.1 callbacks return SDK Error::MultipleSessionCallbacks, not callback objects.",
+        "The migration test changes only error output from Display to Debug."
+      ],
+      "resolved_pre_review_issue": "An intermediate worktree wrapped inner build errors as Initialization. The fixed reviewed commit restores ?? and preserves original Configuration/IdentityMismatch propagation.",
+      "public_api_changes": [
+        "Initialization changes from a unit variant to a stage/source struct variant.",
+        "RestoreFallback is a new public variant.",
+        "Clone, Copy, Eq, and PartialEq are removed. No in-repository Copy/Clone dependency was found; the six PartialEq test dependencies were adapted."
+      ],
+      "diagnostic_boundaries": [
+        "Error::source for RestoreFallback follows fallback only; the original restore SDK/Elapsed remains in the restore field and Debug output.",
+        "Policy rejections without an underlying error use source=None.",
+        "Original direct restore_session/login.send Authentication mappings remain unchanged; this is not comprehensive authentication-error preservation.",
+        "Unknown repository-external exhaustive matches or trait dependencies were not audited."
+      ],
+      "limits": [
+        "No compile/native test/full caller scan was run. Trait/source compatibility was examined from source and does not substitute for a compiler result."
+      ],
+      "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7b5ff407bb33ccbf1fc067aefb9c2b37e202ed55"
+    },
+    {
+      "id": "bazel_single_crate_optimization",
+      "commit": "7d5c776dca0245a498896f612a24f5412271bb63",
+      "tree": "798442817120be74ac71583eda6e5be371910145",
+      "parent": "73bcbb3a7effcdb6aee4887f63c2f3aa96b992d0",
+      "review_checkout": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix",
+      "finding": "NO_BLOCKING_ISSUE_FOUND_IN_READ_ONLY_SOURCE_REVIEW",
+      "files": [
+        {
+          "path": "MODULE.bazel",
+          "bytes": 24766,
+          "sha256": "3be346c68d608527936a029ca5685e5cb44d3c55d98ee1ff3b210d740318800e",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/MODULE.bazel",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        }
+      ],
+      "actually_checked": [
+        "Exactly seven lines are added to MODULE.bazel; it is the only changed file.",
+        "The annotation selects repository crates, crate matrix-sdk-store-encryption, version string 0.19.1 and adds only -Copt-level=3.",
+        "rules_rs v0.0.96 build_annotation_map filters repository names and annotation_for uses version_map.get(version), an exact string lookup, not a semver range. Local rules patches do not alter that selection logic.",
+        "Pinned schema/readback shows rustc_flags flowing through generated BUILD and rust_crate; authored target flags are appended after compilation-mode flags.",
+        "Cargo.toml, Cargo.lock, MODULE.bazel.lock and Matrix sdk.rs blobs are identical between parent and reviewed commit. Timeout, KDF parameters, passphrase input, dependency versions and other crate optimization settings are unchanged.",
+        "Cargo already specifies profile.dev.package.matrix-sdk-store-encryption opt-level=3 with bounded-startup/full-strength KDF comments."
+      ],
+      "supporting_evidence": [
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/6ec-bazel-matrix-compiler-args.json",
+          "bytes": 34095,
+          "sha256": "73989033c42fbe48cab464148278b5c3798b6fbf14511a3f6941c130ea4baa44"
+        },
+        {
+          "path": "/workspace/scratch/f7c0ded86bcc/p0-cb0598-ci-observation/matrix-bazel-opt3-schema-readback.json",
+          "bytes": 11394,
+          "sha256": "06afb499a8758bf4c13de2e698870456415fa7089097bc99a769528e346d4aed"
+        },
+        {
+          "url": "https://github.com/hermeticbuild/rules_rs/blob/v0.0.96/rs/private/annotations.bzl",
+          "git_blob_sha1": "2e739c0c0c04959e6450797d55333191132a0285",
+          "bytes": 4471,
+          "sha256": "36b9c8015f5d21fcaf033d06bf713ad7f70d8d7b9d123aebada425f2081ad7fe"
+        }
+      ],
+      "old_compiler_evidence_scope": {
+        "tested_source": "3fc1acb49d5bbf9621411c1673de4e50a0bcd71e",
+        "tested_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+        "target": "@@rules_rs++crate+crates__matrix-sdk-store-encryption-0.19.1//:matrix-sdk-store-encryption",
+        "recorded_opt_flag": "--codegen=opt-level=0",
+        "cache_hit": true,
+        "args_sha256": "017d455a9261351e761945175fe4f795658bd21310ff9ba2389efc2f4e70bb11"
+      },
+      "limits": [
+        "Configuration/source review only. No new rustc invocation was observed; optimization effectiveness is not a measured new result.",
+        "The old opt-level=0 record does not establish the cause of the old Matrix failure.",
+        "The separate metadata-only standard lock check was delegated to chain and was not performed or claimed complete by this review.",
+        "No source mutation, native job or full caller scan."
+      ],
+      "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/7d5c776dca0245a498896f612a24f5412271bb63"
+    },
+    {
+      "id": "training_stage_assert_macro_disambiguation",
+      "commit": "03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8",
+      "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+      "parent": "7d5c776dca0245a498896f612a24f5412271bb63",
+      "review_checkout": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix",
+      "finding": "NO_BLOCKING_ISSUE_FOUND_IN_READ_ONLY_SOURCE_REVIEW",
+      "files": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+          "bytes": 13770,
+          "sha256": "c8be41a31e4dc3cd7d70508fcc5b200de2ec438df75e197240cc8c20eb80b65e",
+          "local_file": "/workspace/scratch/f7c0ded86bcc/hepta-p0-ci-finalfix/codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs",
+          "hash_binding": "bytes at the exact reviewed commit; local checkout HEAD may subsequently change"
+        }
+      ],
+      "actually_checked": [
+        "Only one line is added in one file: use pretty_assertions::assert_eq;.",
+        "Deleting that one import from the new file reproduces the parent file byte for byte.",
+        "All six tests, all assertion expressions, inputs, expected results and execution order are unchanged.",
+        "The parent receipt-owner test module already explicitly imports the same pretty_assertions::assert_eq macro. The added import disambiguates this module without weakening checks."
+      ],
+      "limits": [
+        "Source review only. No compile or test execution was performed; the prior E0659 report is not treated as a successful rerun."
+      ],
+      "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/03f4bfea4cc96ef3bb2ec743b7501a45ddf756b8"
+    }
+  ],
+  "execution_boundary": {
+    "new_native_jobs": 0,
+    "new_compilations": 0,
+    "new_full_caller_scans": 0,
+    "new_experimental_samples": 0,
+    "independent_task_benefit_claimed": false,
+    "ordinary_stage_owner_full_chain_claimed": false
+  },
+  "not_repackaged": [
+    "Original CI artifacts/logs remain at their existing root-owned archive paths. This report does not reconstruct or substitute for those raw records.",
+    "The original cb full caller receipt and branch remain separate."
+  ]
+}

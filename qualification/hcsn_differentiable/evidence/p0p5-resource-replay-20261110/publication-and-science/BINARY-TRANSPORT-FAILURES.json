@@ -1,0 +1,58 @@
+{
+  "first_attempt": {
+    "CPU_seconds": null,
+    "completion": "collector script failed parsing a tool-error response after all awaited reads",
+    "failure": "SyntaxError: Unexpected token o, tool call e... is not valid JSON",
+    "individual_responses_retained": false,
+    "mutations": 0,
+    "requests": 4,
+    "wall_seconds": null
+  },
+  "scope": "Read-only binary transport MCP request timeouts. Native files were already complete; no download/upload/model operation was repeated.",
+  "second_attempt": {
+    "chunks": [],
+    "failures": [
+      {
+        "i": 0,
+        "response": {
+          "content": [
+            {
+              "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+              "type": "text"
+            }
+          ],
+          "isError": true
+        }
+      },
+      {
+        "i": 1,
+        "response": {
+          "content": [
+            {
+              "text": "tool call error: tool call failed for `codex_apps/h.binary_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+              "type": "text"
+            }
+          ],
+          "isError": true
+        }
+      }
+    ],
+    "info": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/best-D-publication-and-science-artifact-collection-v1/full-D-publication-originals-v1.zip",
+      "sha256": "d42daa4bc1d65328b9f34d921a5e4c1f181aa89ed44b916a939434bb9ffdf6b8",
+      "size": 82271,
+      "version": "2050:53930034:82271:1794341669231963612:1794341669231963612"
+    }
+  }
+}

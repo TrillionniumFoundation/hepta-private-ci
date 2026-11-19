@@ -1,0 +1,74 @@
+{
+  "verify_only": {
+    "code": 0,
+    "stdout": "{\"restored\": false, \"verified_original_artifacts\": 8}\n",
+    "stderr": ""
+  },
+  "restore_new": {
+    "code": 0,
+    "stdout": "{\"restored\": true, \"verified_original_artifacts\": 8}\n",
+    "stderr": ""
+  },
+  "originals": [
+    {
+      "path": "qa/stem-bakeoff/evidence/20261023-parametric-memory-growth/engineering/ci/remote-ci-critical-080619Z.json",
+      "git_blob": "bf30e87c3bd5a1c70a341a84f0ce3a446a8c7e74",
+      "sha256": "14056dd36966d8629630a5a11d067acb5f6c43628bfc85f53979a07f67153fbf",
+      "bytes": 9898
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261023-parametric-memory-growth/engineering/ci/remote-ci-stack-0729Z.json",
+      "git_blob": "4022e0eb86b8ed18d0f6000132ec0b07786b553f",
+      "sha256": "33f6a768495ccec4a547259db6adf8de80bb756bedea869083dc694bf9a09dde",
+      "bytes": 67423
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261023-parametric-memory-growth/engineering/ci/remote-ci-stack-075339Z.json",
+      "git_blob": "6652dd45ddac875a7cfb18ffe96deabcc281fdbd",
+      "sha256": "dffb8e71732f9f15e9b1890ecae78d0c9c302013c960f2d5c84eba994dddc5d0",
+      "bytes": 93082
+    },
+    {
+      "path": "qualification/hcsn_currentstate_ci_readback/43219061969/JOB.log",
+      "git_blob": "d34685a85e67e39c7c9d9281ac88b9fd51b398ec",
+      "sha256": "ad4a2da71989b46ab44f8c81ec675c9a80712b4485518f3a9039e32b0eb45c17",
+      "bytes": 14848
+    },
+    {
+      "path": "qualification/hcsn_currentstate_n256_joint_admission/evidence/actions-43414960629/original-job-131850414245.log",
+      "git_blob": "8db2bbc51cc5f8cb1de6acb21f3d9a3aeb0ff9e3",
+      "sha256": "76efc9a3511d7c02f593a3acb971d1b9bad761fe5d6ae1929d4f96a47ec0519b",
+      "bytes": 19953
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/p0p5-c2-strict-json-20261111/RED-original.stderr",
+      "git_blob": "3e90d159229881a333be58784abaad67c97061bb",
+      "sha256": "9ffc7614efc355c48b7fd06b872a0742db0862d80712feae6dff0e5ee04058d0",
+      "bytes": 3577
+    },
+    {
+      "path": "qualification/hcsn_saved_continuation_ci_readback/43221327931/JOB.log",
+      "git_blob": "ed798f53488e01a5797a98694cf1c4f04e7d4437",
+      "sha256": "8f1b8988a421e31376704f1a306ef28158c780c58708df2cf1cfc32881865888",
+      "bytes": 14445
+    },
+    {
+      "path": "qualification/hcsn_scale_intent_ci_readback/43226175031/JOB.log",
+      "git_blob": "dee141b432b6e6d6bebac22e01d62d827aaaa709",
+      "sha256": "285e92c4b523689d42e9ff5aaaf07dbc9e134be5280a4d378bce4be2c905b92b",
+      "bytes": 14827
+    }
+  ],
+  "existing_destination": {
+    "code": 2,
+    "stdout": "",
+    "stderr": "usage: restore.py [-h] --repository REPOSITORY [--destination DESTINATION]\nrestore.py: error: destination must not already exist\n"
+  },
+  "inside_repository": {
+    "code": 2,
+    "stdout": "",
+    "stderr": "usage: restore.py [-h] --repository REPOSITORY [--destination DESTINATION]\nrestore.py: error: destination must be separate from the repository\n"
+  },
+  "outside_file_count": 8,
+  "verified": true
+}

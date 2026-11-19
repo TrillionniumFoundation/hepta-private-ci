@@ -1,0 +1,14 @@
+--- v1/input_contract.py
++++ v2/input_contract.py
+@@ -87,7 +87,10 @@
+     require(outer['schema'] == 'c2-resource-analysis-complete-os-envelope-v1'
+             and outer['status'] == 'completed' and outer['process_started'] is True
+             and outer['returncode'] == 0 and outer['timed_out'] is False
+-            and outer['child_terminal_unknown'] is False and outer['unreaped_descendants'] is False,
++            and outer['child_terminal_unknown'] is False and outer['unreaped_descendants'] is False
++            and outer['direct_child_CPU_complete'] is True
++            and outer['total_attempt_CPU_unknown_or_lower_bound'] is False
++            and outer['adopted_child_wait4'] == [],
+             'complete OS analysis-child terminal not admitted')
+     require(outer['limits'] == {'whole_wall_seconds': WALL, 'peak_RSS_bytes': RSS,
+             'workers': 1, 'threads': 1, 'automatic_retry': False}, 'OS analysis envelope changed')

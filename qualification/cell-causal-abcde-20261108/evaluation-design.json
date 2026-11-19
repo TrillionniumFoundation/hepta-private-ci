@@ -1,0 +1,227 @@
+{
+  "arms": {
+    "hepta_light_persistent": [
+      "hepta",
+      "light",
+      "persistent"
+    ],
+    "hepta_light_reset": [
+      "hepta",
+      "light",
+      "reset"
+    ],
+    "hepta_mpc_persistent": [
+      "hepta",
+      "mpc",
+      "persistent"
+    ],
+    "hepta_mpc_reset": [
+      "hepta",
+      "mpc",
+      "reset"
+    ],
+    "hepta_ndu_persistent": [
+      "hepta",
+      "ndu",
+      "persistent"
+    ],
+    "hepta_ndu_reset": [
+      "hepta",
+      "ndu",
+      "reset"
+    ],
+    "hepta_tuned_fixed_persistent": [
+      "hepta",
+      "tuned_fixed",
+      "persistent"
+    ],
+    "hepta_tuned_fixed_reset": [
+      "hepta",
+      "tuned_fixed",
+      "reset"
+    ],
+    "hepta_voi_persistent": [
+      "hepta",
+      "voi",
+      "persistent"
+    ],
+    "hepta_voi_reset": [
+      "hepta",
+      "voi",
+      "reset"
+    ],
+    "ordinary_light_persistent": [
+      "ordinary",
+      "light",
+      "persistent"
+    ],
+    "ordinary_light_reset": [
+      "ordinary",
+      "light",
+      "reset"
+    ],
+    "ordinary_mpc_persistent": [
+      "ordinary",
+      "mpc",
+      "persistent"
+    ],
+    "ordinary_mpc_reset": [
+      "ordinary",
+      "mpc",
+      "reset"
+    ],
+    "ordinary_ndu_persistent": [
+      "ordinary",
+      "ndu",
+      "persistent"
+    ],
+    "ordinary_ndu_reset": [
+      "ordinary",
+      "ndu",
+      "reset"
+    ],
+    "ordinary_tuned_fixed_persistent": [
+      "ordinary",
+      "tuned_fixed",
+      "persistent"
+    ],
+    "ordinary_tuned_fixed_reset": [
+      "ordinary",
+      "tuned_fixed",
+      "reset"
+    ],
+    "ordinary_voi_persistent": [
+      "ordinary",
+      "voi",
+      "persistent"
+    ],
+    "ordinary_voi_reset": [
+      "ordinary",
+      "voi",
+      "reset"
+    ]
+  },
+  "behavior_collector_seed": 271828,
+  "budgets": {
+    "aggregate_job_cpu_quota_percent": 400,
+    "aggregate_job_memory_bytes": 4294967296,
+    "automatic_performance_retries": 0,
+    "episode_wall_seconds": 60,
+    "max_workers": 4,
+    "maximum_actions": 8,
+    "maximum_drain_seconds": 360,
+    "phase_budget_semantics": "Existing scheduler stops new admissions with a 90-second reserve and retains every pending/not-started identity; external native execution owns the hard job bound.",
+    "phase_wall_seconds": 1200,
+    "torch_threads_per_worker": 1,
+    "training_job_overhead_seconds": 15,
+    "training_wall_seconds": 900
+  },
+  "controller": {
+    "discount_per_second": 1.0,
+    "horizon": 3,
+    "latency_weight": 0.01,
+    "max_forecasts": 128,
+    "max_sequences": 84,
+    "particles": 2,
+    "risk": 0.25
+  },
+  "estimand": "matched_training",
+  "expected_inventory": {
+    "content_pretraining_jobs": 8,
+    "development_cases": 10,
+    "frozen_shared_fit_jobs": 8,
+    "joint_fit_jobs": 40,
+    "pilot_episodes": 960,
+    "profiles": 80,
+    "retention_validation_cases": 2,
+    "separate_initial_incumbents": 0,
+    "training_jobs": 56,
+    "tuning_cases": 5,
+    "tuning_episodes": 400
+  },
+  "fixed_schedule_candidates": [
+    [
+      "WRITE_TEXT",
+      "RENDER_IMAGE"
+    ]
+  ],
+  "independent_fit_unit": "Training seed; cores, controllers, memory modes, regimes and episodes are paired conditions, not extra training repeats.",
+  "memory_modes": [
+    "reset",
+    "persistent"
+  ],
+  "objective": {
+    "failed_deployment_decision_utility": "-1 - 0.01 * observed wall seconds; unavailable gross score stays null.",
+    "gross": "Independently pinned actual receipt delivery rubric in [0,1].",
+    "net": "gross_quality - 0.01 * observed_deployment_wall_seconds",
+    "retention_scope": "Two retention-validation source groups for the current matched arms; no separate initial-checkpoint incumbent is included."
+  },
+  "permitted_outcome": "Engineering observations only; Inconclusive or Failed, no adoption or RSI claim.",
+  "purpose": "Prospectively fixed real deployment evaluation of the two-seed matched-memory engineering pilot; no retraining or confirmation.",
+  "regimes": [
+    "frozen",
+    "joint"
+  ],
+  "research_accounting": {
+    "energy_joules": null,
+    "phases": [
+      "source_and_model_transfer",
+      "parameter_replay",
+      "tuning",
+      "deployment_evaluation"
+    ],
+    "provider_charges": null,
+    "upstream_collection_and_training": "Original receipts remain separately charged; do not double count nested model/evaluation work."
+  },
+  "schema": "ndu.real.pilot-design.v1",
+  "scope": "Five constructed receipt workflows; two train source groups, one disjoint train-role tuning group, two development groups and two retention-validation groups.",
+  "source_repository": "jsdnrs/ICDAR2019-SROIE",
+  "source_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "source_selection": {
+    "confirmation_release": "DENIED; confirmation and retention_test are outside this execution.",
+    "order": "Unchanged collector study_id and SHA256 ordering; selected-sources bytes must match the collector plan.",
+    "pilot_new_groups": 2,
+    "pilot_retention_groups": 2,
+    "training_groups": 2,
+    "tuning_groups": 1
+  },
+  "statistics": {
+    "analysis": "Retain the full paired observations and failures for the separate causal analysis; this runner does not apply the old 24-contrast inference protocol.",
+    "budget_stop_analysis_policy": {
+      "analysis_only_mapping": "Map BudgetStop to statistical Completed only when an actual evaluator/rubric-bound finite score and an observed finite nonnegative deployment_wall_seconds are both present; otherwise use Unresolved.",
+      "audit": "Retain original and statistical status counts and every BudgetStop adaptation separately.",
+      "energy_or_provider_unknown_blocks_mapping": false,
+      "full_improvement_budget_gate": false,
+      "meaning": "Resolved statistical observation only; no claim of original execution success or acceptable quality.",
+      "original_terminal_status": "Preserve BudgetStop and the original paired rows.",
+      "required_cost_scope": "Measured deployment wall cost used by the frozen utility; energy and provider prices need not be known for this mapping."
+    },
+    "confirmatory_use": false,
+    "episodes_are_independent_training_replicates": false,
+    "independent_training_seeds": 2,
+    "scientific_admission": "HOLD"
+  },
+  "study_id": "cell-causal-v2-collection-20261108-cf0",
+  "training": {
+    "batch_size": 32,
+    "content_epochs": 2,
+    "content_learning_rate": 0.003,
+    "fit_epochs": 2,
+    "head_learning_rates": [
+      0.003
+    ],
+    "max_wall_seconds": 45,
+    "observation_policy": "matched_episodes"
+  },
+  "training_seeds": [
+    104729,
+    130363
+  ],
+  "tuning": {
+    "criterion": "Existing matrix.tune: mean observed net utility, equally weighted source groups and task families.",
+    "fixed_schedule_candidates": 1,
+    "strongest_comparator": "Select among fixed/VOI/MPC on either core separately within each seed/regime/memory mode; six comparator profiles per memory mode.",
+    "tie_break": "Lowest trial index",
+    "trials_per_active_profile": 1
+  }
+}

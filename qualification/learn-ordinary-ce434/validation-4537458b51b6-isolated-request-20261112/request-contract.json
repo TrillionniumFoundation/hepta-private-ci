@@ -1,0 +1,177 @@
+{
+  "schema": "hepta.learn.fixed-source-isolated-validation-preparation.v1",
+  "status": "prepared-only; not dispatched; not an execution receipt",
+  "source": {
+    "commit": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "production_edits": 0,
+    "pr_actions": 0
+  },
+  "inputs": {
+    "approved_outer": {
+      "git_blob": "d446168389b2d43af74e2d7066b1e3bb9db5de87",
+      "bytes": 93589,
+      "sha256": "6b5d0115e37bd1e5f29825024b8a829be271779d158581c0cc8e17c2dd2297cb",
+      "document_commit": "1cb4cefd51814736075af23519f878decf27563b"
+    },
+    "approved_native": {
+      "git_blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+      "bytes": 13257,
+      "sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1"
+    },
+    "source_runner": {
+      "git_blob": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "bytes": 71126,
+      "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4",
+      "complete_bytes_unchanged": true
+    },
+    "approved_request": {
+      "git_blob": "b9c37cebd498393cdfa87dc52c8820a24a4f10bc",
+      "old_key": "learn-ce434-4537458b51b6-fixed-full-source-native-v1",
+      "dispatch": "parent reports never dispatched; not reused"
+    },
+    "original_frame_exporter": {
+      "git_blob": "ee8881959700608eb43aa391357683818d2ee19a",
+      "original_git_evidence": "5ad5f7ad54a9a34e3a9b0c2c4e4110ef3a578ea1",
+      "h_registry_terminal": "still unknown; not reinterpreted as complete or absent by this preparation",
+      "bounded_scope": "already completed fixed frame files and private Git index; no Cargo/native execution or checkout change"
+    }
+  },
+  "original_workspace": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+    "source": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "required_status": "",
+    "checks": [
+      "before any new output/fetch",
+      "after fetch",
+      "after worktree creation",
+      "immediately before tests",
+      "after both runners and original caller self-test",
+      "best-effort error observation before any failure return"
+    ],
+    "identity": "original directory device/inode/uid/mode kept; exact top-level and no symlink",
+    "git_optional_locks": "0; original status observations do not refresh its index",
+    "forbidden_changes": [
+      "switch",
+      "reset",
+      "clean",
+      "force",
+      "delete worktree",
+      "signals",
+      "new grants",
+      "old source or tests"
+    ],
+    "actual_terminal_inputs": [
+      {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-a6717d722804-validation-v1/result.json",
+        "bytes": 2396,
+        "sha256": "3db7ed1f0760fadbf50a741600f9d877767ef26fb51bed7ee935d3b46c17ce60"
+      },
+      {
+        "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-a6717d722804-v1/result.json",
+        "bytes": 51057,
+        "sha256": "98348f69ead79e7a2428680b822b5d419784e20f99de12c2f0d0f8892f5b1f71"
+      }
+    ],
+    "terminal_validation": "same owned regular single-link descriptor; O_NOFOLLOW; bounded full read, pre/open/post/path identities; full bytes/hash; original failed state and a671 source/tree/clean completion, no invented schema key"
+  },
+  "isolated_workspace": {
+    "path": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+    "outer_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1",
+    "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-4537458b51b6-isolated-v1",
+    "git_transport": "original fixed SOCKS service check and identical original git fetch argv/cwd",
+    "directory_creation": "destination must not exist, including a broken symlink; exclusive mkdir 0700, then git worktree add --detach exact 453, no force; root identity retained",
+    "git_common_directory": "old, original fetch repository and new worktree must resolve to the same original common Git directory; reject inherited GIT_DIR/GIT_WORK_TREE/GIT_COMMON_DIR/GIT_INDEX_FILE",
+    "space_gate": "actual exact-candidate git ls-tree blob lengths rounded up per home filesystem allocation unit, directory blocks, path-dependent index estimate, plus 64 MiB Git-admin reserve; compare actual available bytes/inodes before mkdir. This is a stricter checkout-admission gate, not a new test budget or assurance that Cargo has enough space.",
+    "failure": "record existing created paths, no cleanup/reset/force/retry; old-source observation failure produces uncertain status and cannot pass",
+    "before_tests": "new worktree exact 453/tree8cbd/clean, same common Git dir, tracked Rust count6777 and original inventory blob; old a671/clean checked again"
+  },
+  "native_rebinding": {
+    "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+    "bytes": 13265,
+    "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb",
+    "before_blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+    "before_sha256": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+    "before": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\": raise SystemExit(\"unexpected qualification repository\")",
+    "after": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\": raise SystemExit(\"unexpected qualification repository\")",
+    "unique_delta": true,
+    "reverse_equal": true,
+    "authorization": "parent explicitly permits only the one resolved exact-repository equality literal to change; no deletion or broadening of the guard",
+    "unchanged": [
+      "Path(argv[1]).resolve(strict=True)",
+      "201 exact native cases and43 groups",
+      "original just test argv and packages",
+      "original3600-second CI bound",
+      "original nextest8MiB/60-second configuration",
+      "threads2/retries0",
+      "helper build and verify",
+      "target-v2 and actual creation record",
+      "exact V8 artifacts and original recovery v1 literal"
+    ]
+  },
+  "outputs": {
+    "outer": {
+      "sha": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+      "bytes": 101858,
+      "sha256": "98ebeb50134af56141dfbc06f5c3cf9d24d552719f8d004e6387b47009db00a3"
+    },
+    "request": {
+      "sha": "8c6d6935cbd1d78cb9b711889bd33dbfc30e1f38",
+      "bytes": 106352,
+      "sha256": "fb6d46182ec9fc9d49ffb6ed1e5611175ab93986afc0fcf4aa955344f81784cd"
+    },
+    "request_key": "learn-ce434-4537458b51b6-isolated-full-source-native-v1",
+    "request_metadata_and_argv_prefix_unchanged": true
+  },
+  "static_verification": {
+    "outer_body_exact_edits": 21,
+    "complete_reverse_restores_d446": true,
+    "native_unique_reverse_restores_dd7": true,
+    "embedded_source_runner_full_equal_0397": true,
+    "embedded_native_full_equal_21cb": true,
+    "outer_has_no_signal_cleanup_or_implicit_run_kill_api": true,
+    "outer_readonly_git_and_logged_steps": "Popen then communicate/wait on same handle; no new timeout/kill/terminate",
+    "original_child_deadline_semantics": "unchanged native/CI scripts keep their originally approved bounded-execution behavior; no new outer signals",
+    "no_old_cwd_default_capture": "perform resolves None to the new repo at call time; source/native/self-test calls also pass repo explicitly",
+    "patch": {
+      "outer_hunks": 20,
+      "outer_removed": 23,
+      "outer_added": 139,
+      "native_hunks": 1,
+      "native_removed": 1,
+      "native_added": 1,
+      "postimages_reconstructed": true
+    }
+  },
+  "helper_cwd_review": [
+    {
+      "path": "scripts/hepta_cell_test_helpers.py",
+      "blob": "f5b702a55b44c081c6d8f5556da3a2152a33eec3",
+      "fact": "main derives root from its invoked __file__.resolve().parents[1]; build cwd is that root's codex-rs. Outer invokes this script under the new exact repo through native's unchanged code."
+    },
+    {
+      "path": "scripts/hepta_ci_v8.py",
+      "blob": "088b737c0cca7386161e06b254c794bf972380ad",
+      "fact": "entrypoint resolves CODEX_REPO_ROOT, set from native's exact new repo argument; run cwd is repo_root/codex-rs."
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "fact": "invocation, environment source pins and all original deadline/recording logic unchanged."
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "fact": "nextest config is derived from invoked __file__, so the same fixed configuration in the new worktree is selected."
+    }
+  ],
+  "limitations": [
+    "No H or other shell/OS process was invoked in this preparation.",
+    "No Python parser, source test, compiler, Rust test or formatter run claimed.",
+    "No deployment or ordinary A/B/C/cold-restart acceptance is established.",
+    "Git object storage and the original dedicated target-v2 remain shared as authorized; this is worktree/check-out isolation, not a promise of filesystem-wide isolation.",
+    "Actual free space, identities, helper manifests and runtime outcomes are checked only when Root dispatches this new exact request.",
+    "Unknown original exporter registry state remains separately unknown."
+  ]
+}

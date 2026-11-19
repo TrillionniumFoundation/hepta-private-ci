@@ -1,0 +1,186 @@
+{
+  "status": "DESIGN_ONLY_NOT_EXECUTION_AUTHORITY",
+  "version": 2,
+  "hold_new_train": "UNCHANGED",
+  "parameter_ceiling_per_arm": 36408,
+  "parameter_counts": {
+    "A": 35658,
+    "B": 35658,
+    "C": 36408,
+    "L": 4810
+  },
+  "dense_forward_macs_per_example": {
+    "A": 35328,
+    "B": 35328,
+    "C": 36068,
+    "L": 4736
+  },
+  "dense_forward_backward_macs_per_training_example": {
+    "A": 105984,
+    "B": 105984,
+    "C": 108204,
+    "L": 14208
+  },
+  "qualification": {
+    "seeds": [
+      701
+    ],
+    "arms": [
+      "A",
+      "B",
+      "C",
+      "L"
+    ],
+    "runs": 4,
+    "updates_each": 64,
+    "examples_each": 3928,
+    "common_dense_training_mac_ceiling_each": 425025312,
+    "aggregate_dense_training_mac_ceiling": 1700101248,
+    "worker_cpu_hard_seconds_each": 60,
+    "worker_wall_seconds_each": 90,
+    "singleton_api_calls_each": 16,
+    "singleton_reference_calls_each": 16,
+    "diagnostic_full_forwards_by_arm": {
+      "A": 64,
+      "B": 64,
+      "C": 32,
+      "L": 32
+    },
+    "diagnostic_full_forwards_total": 192,
+    "diagnostic_forward_mac_ceilings_by_arm": {
+      "A": 2308352,
+      "B": 2308352,
+      "C": 1154176,
+      "L": 1154176
+    },
+    "aggregate_diagnostic_forward_mac_ceiling": 6925056,
+    "diagnostic_exact_dense_mac_contract": 5827712,
+    "intervention_threshold": 1e-07,
+    "intervention_B_failure": "any image bytes differ",
+    "intervention_A_zero_or_below_threshold": "report no detected sensitivity; no extra probes or tuning; does not alone fail Q"
+  },
+  "confirmation": {
+    "seeds": [
+      17011,
+      29009,
+      41011
+    ],
+    "arms": [
+      "A",
+      "B",
+      "C",
+      "L"
+    ],
+    "runs": 12,
+    "updates_each": 512,
+    "examples_each": 31200,
+    "common_dense_training_mac_ceiling_each": 3375964800,
+    "aggregate_dense_training_mac_ceiling": 40511577600,
+    "worker_cpu_hard_seconds_each": 180,
+    "worker_wall_seconds_each": 240
+  },
+  "selection": {
+    "groups": 324,
+    "draws": 4,
+    "models": 12,
+    "singleton_calls": 15552,
+    "common_forward_mac_ceiling_per_model": 46744128,
+    "aggregate_forward_mac_ceiling": 560929536,
+    "worker_cpu_hard_seconds": 180,
+    "worker_wall_seconds": 240,
+    "exact_dense_forward_mac_contract": 433356480,
+    "screen_arms": [
+      "A",
+      "B",
+      "C"
+    ],
+    "L_role": "mandatory descriptive only; no screening or inferential contrast"
+  },
+  "final": {
+    "groups": 377,
+    "draws": 4,
+    "models": 12,
+    "singleton_calls": 18096,
+    "common_forward_mac_ceiling_per_model": 54390544,
+    "aggregate_forward_mac_ceiling": 652686528,
+    "bootstrap_replicates": 10000,
+    "worker_cpu_hard_seconds": 240,
+    "worker_wall_seconds": 300,
+    "exact_dense_forward_mac_contract": 504245040
+  },
+  "process_graph": {
+    "shared_existing_lock_required": true,
+    "concurrent_workers_max": 1,
+    "worker_descendants": 0,
+    "blas_threads": 1,
+    "worker_threads": 1,
+    "gpu": false,
+    "nodes": [
+      {
+        "node": "authorized_TRAIN_export",
+        "workers": 1,
+        "cpu_hard_seconds_each": 10,
+        "wall_seconds_each": 20
+      },
+      {
+        "node": "synthetic_only_implementation_qualification",
+        "workers": 1,
+        "cpu_hard_seconds_each": 30,
+        "wall_seconds_each": 60
+      },
+      {
+        "node": "Q",
+        "workers": 4
+      },
+      {
+        "node": "T",
+        "workers": 12
+      },
+      {
+        "node": "S",
+        "workers": 1
+      },
+      {
+        "node": "F",
+        "workers": 1
+      }
+    ],
+    "total_workers_if_all_admitted": 20,
+    "supervisor_instances_max": 6,
+    "supervisor_cpu_hard_seconds_each": 30,
+    "supervisor_tail_observation": "unknown unless separately reaped by an outer accounting process; no such outer process is silently added",
+    "parent_timeout_kill_grace_seconds": 2,
+    "supervisor_wall_seconds": {
+      "authorized_TRAIN_export": 22,
+      "synthetic_only_implementation_qualification": 62,
+      "Q": 362,
+      "T": 2882,
+      "S": 242,
+      "F": 302
+    }
+  },
+  "common_limits": {
+    "worker_address_space_bytes": 1073741824,
+    "worker_file_size_bytes": 16777216,
+    "total_retained_output_bytes_ceiling": 67108864,
+    "output_limit_kind": "bounded schema/writers plus terminal inventory, not filesystem-wide hard quota",
+    "checkpoint_files_max": 16,
+    "checkpoint_bytes_each_ceiling": 1048576,
+    "supervisor_address_space_bytes": 268435456
+  },
+  "accounting": {
+    "worker_cpu_hard_limit_sum_seconds": 2860,
+    "supervisor_cpu_hard_limit_sum_seconds": 180,
+    "strict_total_cpu_claim": false,
+    "actual_runtime_prediction": null,
+    "scope": "all attempted processes, imports, preprocessing, PRNG, initialization, train, optimizer, reference/singleton checks, inference, serialization, persistence, verification, statistics, supervisors and reviews",
+    "no_double_count": "wait4 full child lifetime is primary; internal timing/MAC samples are breakdowns, not additive CPU",
+    "unobserved_costs": "supervisor final tail, tools and design/review labor retained as unknown/separate, never zero",
+    "retries": 0,
+    "budget_increases_on_failure": false,
+    "v1_unapproved_worker_cpu_sum_seconds": 2260,
+    "v1_status": "preserved proposal, never execution or spent CPU",
+    "all_model_phase_limits_approved": false
+  },
+  "next_possible_admission": "implementation plus separately frozen finite synthetic qualification only; no TRAIN export/Q/T/S/F"
+}

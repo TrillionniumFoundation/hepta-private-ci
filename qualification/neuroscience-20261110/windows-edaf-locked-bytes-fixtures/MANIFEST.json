@@ -1,0 +1,145 @@
+{
+  "schema": "neuro4.windows-original-locked-bytes-fixture-fix.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "base_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "original_failure_job": 131310622783,
+  "original_failure_merge": "6344842074357063c00dce9f2b67d789b2988c6f",
+  "all_six_base_blobs_equal_original_merge": true,
+  "code": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "base_blob": "8e2da640dd33e8a480413878dc8d929e30663d1b",
+      "post_blob": "7698284e6f92a5045b0341113f13ceea22622691",
+      "bytes": 24174,
+      "sha256": "aa528545b7d58c1ab91ae671ee368a906a57cc9c6ff196c099090c49e26ab775",
+      "original_merge_blob": "8e2da640dd33e8a480413878dc8d929e30663d1b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_current_journal_tests.rs",
+      "base_blob": "819731fe4771dc56d2241f33a31cd8cb14a75e6c",
+      "post_blob": "c3866666a169c9286a4211646d64aa31b347c476",
+      "bytes": 7956,
+      "sha256": "8a579f9c762d723617d46b0df0a97c3460886920305a14e563d0a38a6e01706c",
+      "original_merge_blob": "819731fe4771dc56d2241f33a31cd8cb14a75e6c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_control_tests.rs",
+      "base_blob": "3539e427ed1228ef45de299a98a476d62c3fd192",
+      "post_blob": "0e0a42c8ec07be14fd2f1f1f2a5139a64ba1ca00",
+      "bytes": 18438,
+      "sha256": "a2c62a0e3aabecd7c46d0fee1d91e3cf74abc9eab7d08b3fd121df165b69abd4",
+      "original_merge_blob": "3539e427ed1228ef45de299a98a476d62c3fd192"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_test_support.rs",
+      "base_blob": "4fbae00ccbfe232df2672a3b00bc04beca677cba",
+      "post_blob": "110912f493316afe4c3f5836358b707152ae7cbd",
+      "bytes": 17190,
+      "sha256": "d8dc3527dfceb9c9044c39580126051bd36f98a5d50bd70d9b279a43357d3053",
+      "original_merge_blob": "4fbae00ccbfe232df2672a3b00bc04beca677cba"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_tests.rs",
+      "base_blob": "d31d0788b1aeb84171cec763693b972cd360ae8c",
+      "post_blob": "0897fd2d97c8ede8fdad9705bfc17aa2e0c10871",
+      "bytes": 7819,
+      "sha256": "b20947dd93040bbfe60236ed8ebeb459c9d8ebbff4e98834379dadbcb38f5c30",
+      "original_merge_blob": "d31d0788b1aeb84171cec763693b972cd360ae8c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_episode_credit_tests.rs",
+      "base_blob": "e311709460ab84d929213ed5532ba9d471edd04f",
+      "post_blob": "ec89e501a471bfb5c42640e026c3feb7b01c00d4",
+      "bytes": 8523,
+      "sha256": "a721f83380042ea90f34a91aed78a92dc289f9a42a3daf183e67f03b6ebce980",
+      "original_merge_blob": "e311709460ab84d929213ed5532ba9d471edd04f"
+    }
+  ],
+  "method_count_added": 0,
+  "method_count_removed": 0,
+  "candidate_original_methods": [
+    "cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+    "cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work",
+    "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+    "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+    "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+    "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+    "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends"
+  ],
+  "original_methods_remaining": [
+    "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+    "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+    "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+    "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+    "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+    "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending",
+    "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen"
+  ],
+  "preserved": [
+    "Full journal/ledger/witness Vec equality assertions",
+    "Original live owner, CURRENT withdrawal, original worker calls and request/receipt/error semantics",
+    "No cloned/inherited application handles; no unlock/relock or empty-byte substitution",
+    "No production lock/source/authority/transport changes",
+    "Original shutdown/reopen stages only; no new service lifecycle",
+    "Existing qualification-legacy-write dev and Bazel dependency graph; Cargo/BUILD/CALLERS unchanged"
+  ],
+  "source_evidence": [
+    {
+      "path": "codex-rs/hepta-neuron/src/journal_lock.rs",
+      "blob": "8cf8324008b4fdc4e50fbb2e3dfd65e2d26d9722",
+      "fact": "Original exclusive lock; cloned/inherited application handles unsupported"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "blob": "0db16e687c9c04862fecd15b21321ea94dd929e5",
+      "fact": "Existing same-original-File test inspection idiom; no clone or unlock"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_service.rs",
+      "blob": "85a81e56298275e41082fc2927fa818cb91ac4f6",
+      "fact": "Host cancellation exits without durable Drain; explicit service retirement is separate"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "blob": "5533c2a59c0fb70b5ce7435f1a96d9e496b5b875",
+      "fact": "host() passes same CancellationToken into RuntimeTasks and the original service"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "blob": "af3990dfed96acafa7ea8a874c3d416c80a730c4",
+      "fact": "Existing qualification_file_bytes consumes exclusive mutable borrow and original Durable ledger plus witness; segmented backend rejected"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/durable_lock.rs",
+      "blob": "e37cc330a1644e6b5877bd86b926fb2329f90b67",
+      "fact": "Original File, <=8MiB bounded, cursor restored; no clone/open/unlock/sync"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "blob": "935a1addd32da00f7ace31107885954f479532c3",
+      "fact": "Existing dev dependency enables qualification-legacy-write"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "blob": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "fact": "Existing unit-test dependency replacement uses qualification ledger library"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/BUILD.bazel",
+      "blob": "ae767a869b77080e9e03d2977bb0977b4031722d",
+      "fact": "Existing testonly qualification library enables same feature"
+    }
+  ],
+  "validation": {
+    "original_windows_failures": "OBSERVED; seven original methods indexed",
+    "static_source_binding": "READ_BACK; six code baselines identical in merge and candidate parent",
+    "format": "NOT_RUN",
+    "rust_compile": "NOT_RUN",
+    "windows_tests": "NOT_RUN",
+    "linux_native": "NOT_RUN",
+    "source_qa": "NOT_RUN"
+  },
+  "owner_decision": null,
+  "science": "HOLD"
+}

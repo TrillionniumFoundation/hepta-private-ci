@@ -1,0 +1,156 @@
+{
+  "jobs": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 130666210831,
+        "run_id": 43061843610,
+        "workflow_name": "MEM V2 subagent native regressions (exact source)",
+        "head_branch": "codex/mem8-native-subagent-v10-20261111-ed353817",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43061843610",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAebFAmDw",
+        "head_sha": "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130666210831",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43061843610/job/130666210831",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-11T16:47:55Z",
+        "started_at": "2026-11-11T16:47:58Z",
+        "completed_at": "2026-11-11T17:35:32Z",
+        "name": "native-subagent",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-11T16:47:59Z",
+            "completed_at": "2026-11-11T16:48:01Z"
+          },
+          {
+            "name": "Record this original job's observed budget anchor",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-11T16:48:01Z",
+            "completed_at": "2026-11-11T16:48:01Z"
+          },
+          {
+            "name": "Checkout the exact harness event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-11T16:48:01Z",
+            "completed_at": "2026-11-11T16:48:18Z"
+          },
+          {
+            "name": "Checkout the independently frozen formatted source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-11T16:48:18Z",
+            "completed_at": "2026-11-11T16:48:32Z"
+          },
+          {
+            "name": "Install the same pinned native compiler and scoped lint component",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-11T16:48:32Z",
+            "completed_at": "2026-11-11T16:48:56Z"
+          },
+          {
+            "name": "Install the repository's pinned test runners",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-11T16:48:56Z",
+            "completed_at": "2026-11-11T16:49:03Z"
+          },
+          {
+            "name": "Build real helpers, qualify the two cases and retain independent scoped lint",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-11T16:49:03Z",
+            "completed_at": "2026-11-11T17:35:18Z"
+          },
+          {
+            "name": "Collect original results without inventing an interrupted exit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-11T17:35:18Z",
+            "completed_at": "2026-11-11T17:35:20Z"
+          },
+          {
+            "name": "Retain every original intent, raw log, JUnit and source rewrite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-11T17:35:20Z",
+            "completed_at": "2026-11-11T17:35:22Z"
+          },
+          {
+            "name": "Post Checkout the independently frozen formatted source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-11T17:35:22Z",
+            "completed_at": "2026-11-11T17:35:24Z"
+          },
+          {
+            "name": "Post Checkout the exact harness event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-11T17:35:24Z",
+            "completed_at": "2026-11-11T17:35:27Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-11T17:35:27Z",
+            "completed_at": "2026-11-11T17:35:27Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130666210831",
+        "labels": [
+          "windows-latest"
+        ],
+        "runner_id": 1000111080,
+        "runner_name": "GitHub Actions 1000111080",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 13876359763,
+        "node_id": "MDg6QXJ0aWZhY3QxMzg3NjM1OTc2Mw==",
+        "name": "mem-native-subagent-d0f6507e08f7f5c5855f5164d07c049a34d1a6d9-43061843610-1",
+        "size_in_bytes": 140237,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13876359763",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13876359763/zip",
+        "expired": false,
+        "digest": "sha256:fc23b01fde7061c301d94f283bb3ac7fb0eeb6f2a6bf3469e5c0794298c6283b",
+        "created_at": "2026-11-11T17:35:22Z",
+        "updated_at": "2026-11-11T17:35:22Z",
+        "expires_at": "2026-11-25T17:35:20Z",
+        "workflow_run": {
+          "id": 43061843610,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/mem8-native-subagent-v10-20261111-ed353817",
+          "head_sha": "ca9ab8c0d07d1a236ef3c4b76a22f0a131d409ae"
+        }
+      }
+    ]
+  }
+}

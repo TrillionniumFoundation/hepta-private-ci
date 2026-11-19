@@ -1,0 +1,103 @@
+{
+  "head_before": "7aa717490a563fe33268326ddc504091468ebe29",
+  "head_after": "7aa717490a563fe33268326ddc504091468ebe29",
+  "worktree_status_before": " M CALLERS.toml\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs\n M qa/b4-no-bypass/test_learning_checkpoint_source_closure.py\n?? codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs\n",
+  "source_before": {
+    "scripts/cell_repo_mdv/contracts.py": {
+      "bytes": 6343,
+      "sha256": "41390127590dcb09176a2e8dbe9a30ee9ce16d63a0df49ef222b61f912816eca"
+    },
+    "scripts/cell_repo_mdv/__init__.py": {
+      "bytes": 78,
+      "sha256": "cee5032bacf0dd3c877cb3a6dbdce30f63946f95fbd1445593292faf6cbddc6e"
+    },
+    "scripts/cell_repo_mdv/runner.py": {
+      "bytes": 16507,
+      "sha256": "80bfcb145c0b84a01fe54981e94cc24d04e4883d6f124e6a4bfba13cee2017ea"
+    },
+    "scripts/cell_repo_mdv/memory.py": {
+      "bytes": 5442,
+      "sha256": "08b89e7051f8a30d0d33305a12e07412bbed11d8fc440f02dd150ea3014bdb47"
+    },
+    "scripts/cell_repo_mdv/test_memory.py": {
+      "bytes": 7053,
+      "sha256": "798269fe3e632715723aa83b86f37ffd51e805a974516ba2db0551826e1b872c"
+    },
+    "scripts/cell_repo_mdv/compare.py": {
+      "bytes": 11577,
+      "sha256": "d171310c7f7999ec45ebaeabd592eb6ead264a250793cc0b97169730cae88824"
+    },
+    "scripts/cell_repo_mdv/test_runner.py": {
+      "bytes": 5524,
+      "sha256": "05ec60f2125a6bf3447d2215cc62c120bfd3424e6aed6179ee58655135aa5b8d"
+    },
+    "scripts/cell_repo_mdv/test_compare.py": {
+      "bytes": 7079,
+      "sha256": "f71163d91b93b012dc41fc6e04590a8b841231c2bf50d66655fa148100295d12"
+    },
+    "scripts/ndu_real_runtime/subprocess_supervisor.py": {
+      "bytes": 9847,
+      "sha256": "2679c877f630148edddd17183e6d3766b9c690d57ce8465308eb8d84a5aafb81"
+    },
+    "scripts/ndu_real_runtime/span_meter.py": {
+      "bytes": 22961,
+      "sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b"
+    }
+  },
+  "source_after": {
+    "scripts/cell_repo_mdv/contracts.py": {
+      "bytes": 6343,
+      "sha256": "41390127590dcb09176a2e8dbe9a30ee9ce16d63a0df49ef222b61f912816eca"
+    },
+    "scripts/cell_repo_mdv/__init__.py": {
+      "bytes": 78,
+      "sha256": "cee5032bacf0dd3c877cb3a6dbdce30f63946f95fbd1445593292faf6cbddc6e"
+    },
+    "scripts/cell_repo_mdv/runner.py": {
+      "bytes": 16507,
+      "sha256": "80bfcb145c0b84a01fe54981e94cc24d04e4883d6f124e6a4bfba13cee2017ea"
+    },
+    "scripts/cell_repo_mdv/memory.py": {
+      "bytes": 5442,
+      "sha256": "08b89e7051f8a30d0d33305a12e07412bbed11d8fc440f02dd150ea3014bdb47"
+    },
+    "scripts/cell_repo_mdv/test_memory.py": {
+      "bytes": 7053,
+      "sha256": "798269fe3e632715723aa83b86f37ffd51e805a974516ba2db0551826e1b872c"
+    },
+    "scripts/cell_repo_mdv/compare.py": {
+      "bytes": 11577,
+      "sha256": "d171310c7f7999ec45ebaeabd592eb6ead264a250793cc0b97169730cae88824"
+    },
+    "scripts/cell_repo_mdv/test_runner.py": {
+      "bytes": 5524,
+      "sha256": "05ec60f2125a6bf3447d2215cc62c120bfd3424e6aed6179ee58655135aa5b8d"
+    },
+    "scripts/cell_repo_mdv/test_compare.py": {
+      "bytes": 7079,
+      "sha256": "f71163d91b93b012dc41fc6e04590a8b841231c2bf50d66655fa148100295d12"
+    },
+    "scripts/ndu_real_runtime/subprocess_supervisor.py": {
+      "bytes": 9847,
+      "sha256": "2679c877f630148edddd17183e6d3766b9c690d57ce8465308eb8d84a5aafb81"
+    },
+    "scripts/ndu_real_runtime/span_meter.py": {
+      "bytes": 22961,
+      "sha256": "3ef63104c27aeb2ee64478ad7461f579dd5f06be05aa4f4c9bcc709e8826a70b"
+    }
+  },
+  "argv": [
+    "python",
+    "-m",
+    "unittest",
+    "cell_repo_mdv.test_compare",
+    "cell_repo_mdv.test_runner",
+    "cell_repo_mdv.test_memory",
+    "-v"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 1.6727243499990436,
+  "source_unchanged": true,
+  "scientific_tasks": 0,
+  "scope": "20 engineering behavioral tests only; unrelated native P0 working changes explicitly recorded"
+}

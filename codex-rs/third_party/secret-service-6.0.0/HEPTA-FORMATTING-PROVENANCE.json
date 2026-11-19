@@ -1,0 +1,302 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/secret-service-6.0.0",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "examples/example.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d2c6266e12e52fef2c97ce67bbc40ef6c16aa724",
+        "sha256": "23774ae4c05951386dfeeb3742ee9356c066ba599284b85c615318750374d95c",
+        "bytes": 1800
+      },
+      "after": {
+        "oid": "1fb3e2eeff66904604d6696b9c689e3c5fd5a7f6",
+        "sha256": "4dc1cb798db3bbfc5e26bd937ab447a033ae6076a3a286099bcb11d870c71e13",
+        "bytes": 1825
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/blocking/collection.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "0d87632597e35d39d2930ba7effb393c07e02b33",
+        "sha256": "428ebc21ff34f29f9cfc54831769af51b718dcff49987dce308169a54e6f277d",
+        "bytes": 10557
+      },
+      "after": {
+        "oid": "17b9040a1f370a5eb7e938a52c1871f021981f9d",
+        "sha256": "dc0ee8758392cc54fe8d87e7e7b9feccb3b71a85ff37de3b10557299aa557e3f",
+        "bytes": 10566
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/blocking/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d4399e322524957c6d609847a113831ead5af139",
+        "sha256": "ae805d5c495f6d0cbf2b3668cd0d779bcb4dd3c2c604e3c4f27814b5a126c763",
+        "bytes": 8362
+      },
+      "after": {
+        "oid": "c4780e896ccd117b73bb5c43cfb985b6c27b8efe",
+        "sha256": "2b2613493220eb2f0c22553abbef2f51aa748bee6ea91dce5e71052733130bbe",
+        "bytes": 8382
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/collection.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b4cf2bd612d5ebb353817bf16f31f21be63c7fb8",
+        "sha256": "10b6ee4fee7465d22f03f0f1df20330e0e2ade89f4c2a0b938946e9f591c6a0c",
+        "bytes": 11603
+      },
+      "after": {
+        "oid": "b6ecd25abf2efb08a943a61c09cf98b9e1f2bc43",
+        "sha256": "1e3bcb0c17ca7bc7dba4b0ad5edf2d6f7707449c73596a461109e39016a448b1",
+        "bytes": 11718
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/item.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "6c0c38c74539195f2b5f5db327e1105debd11e58",
+        "sha256": "d0553187c7757cae0b74a49c85a68bbcd63c48b8a1d4ea58fe22477182d6bbc5",
+        "bytes": 15268
+      },
+      "after": {
+        "oid": "cf257aee6ea16e8e9e06053f1f6443aebd7bfee0",
+        "sha256": "f8a35e565319fd1cd5bbfc6933d5a0067f0e8310251817d8576f084c8daab2ba",
+        "bytes": 15343
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/lib.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a1bcaaee6637bb0b673e180b9f0b946ef52b30dd",
+        "sha256": "671f92210658d6d91f46fb80143d2eecb64d73a0168ac0b4b187d72b877ff417",
+        "bytes": 15288
+      },
+      "after": {
+        "oid": "66acc3ff59780c735528ece6d7a92bbfdc46fc05",
+        "sha256": "cd607946d4a1b0a5c5efaf1b9b591f91a0e2da3e2006bacc923af012bc2c3a4f",
+        "bytes": 15306
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/proxy/collection.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9c30606b070de4f0c6547fed03cf5ecc53c13bd5",
+        "sha256": "967a71544ef2bacfdd68d7c1b23f7fec71a5f00d05657500b5f40b175eda3468",
+        "bytes": 1552
+      },
+      "after": {
+        "oid": "867262e84caf2e66c755d1616aea3a33090cb5a7",
+        "sha256": "55a8330531afaefd05ad707940c5c8229b4de7547b8581ad82c5217580a8a46e",
+        "bytes": 1579
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/proxy/item.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "2fc90dca1943a6be198005648d54f6867a322968",
+        "sha256": "913e26328a6a389a99dd4f4b95f8267e999aa954c38193eaa6821b40efa122e8",
+        "bytes": 1229
+      },
+      "after": {
+        "oid": "be28c5a867b065206594093a93d7cd406bef36b5",
+        "sha256": "be925008c7209be7c288888168d617161d674f54faf321377abf33a5b70e178e",
+        "bytes": 1237
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/proxy/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "24774b5e3c8600e8f1d9e7a22a35d31a3561b259",
+        "sha256": "bc77169c82ac4cd83265c0f9b6bb27c6e7085b6966ec773c841fb772c5901348",
+        "bytes": 361
+      },
+      "after": {
+        "oid": "8aca2dbcb4ce6569c56f7f783fb05a9e34f8220a",
+        "sha256": "3fd6cb37734c5949caf76a83ea1f751c27c6b274e2f89dfc8ac3a71c4e3f33cb",
+        "bytes": 378
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/proxy/service.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c72823ae89de004a426a94cdcaa024f78b0275b3",
+        "sha256": "4d73d6c569c97e159c507434c2ee5b446d9ddd64cbf7f4a65b23ab2a81dd14ab",
+        "bytes": 2127
+      },
+      "after": {
+        "oid": "9220176cf4850a6ffb46755d590009dd6378cddb",
+        "sha256": "1bef8c790ffb03b48c9caab41cbebe3126ad21ef8636208fa685d65f838afa28",
+        "bytes": 2174
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/session.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "270fc24073d886110a1c2d8ff32f19529f0ba0cc",
+        "sha256": "5d89d7f56f7f5e3be4f0b445b1148ba818baa01938d618354ab779135ec92cb6",
+        "bytes": 10318
+      },
+      "after": {
+        "oid": "fe1694be12bc425abe3523e0194b438165acec5a",
+        "sha256": "79c568f69162401f0fae0b57c3075953c983dce727cbb6a2037c7f24ff493b96",
+        "bytes": 10457
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/util.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e822f3b299c3aec8475f605b005909df3e6c4df5",
+        "sha256": "1fa4c9f77d99b3462243b162b89b2689308cf1994ddef6f0dc512c73fa2ed45c",
+        "bytes": 3438
+      },
+      "after": {
+        "oid": "8b1f4fb92e506dab71110e4f72b40fea8f77dd9d",
+        "sha256": "89ad5b18bfa623f9fc6c47039664d5254f8f8094a7df0b466f8e155526cd123e",
+        "bytes": 3480
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    }
+  ],
+  "source_file_count": 12,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/secret-service-6.0.0/Cargo.toml",
+      "mode": "100644",
+      "oid": "950e947420d486b331a587beab0879337f46a22e",
+      "size": 1682,
+      "sha256": "82aa41f0b9a992660d2ae9b930c6de604ffd2acb553670069e919f5d31ea89a1"
+    },
+    {
+      "path": "codex-rs/third_party/secret-service-6.0.0/HEPTA.md",
+      "mode": "100644",
+      "oid": "c776a9954bc33664554995897db712b0cae7aca2",
+      "size": 2249,
+      "sha256": "d0fb5cb2c54a9afe1b239fc037f1cd608e5e37a57723daef9ac7f6802b588d45"
+    },
+    {
+      "path": "codex-rs/third_party/secret-service-6.0.0/README.md",
+      "mode": "100644",
+      "oid": "71e8c005022e9e3d00448636e5a67d5785c75dc1",
+      "size": 4603,
+      "sha256": "18dd46bfce035bbb259dd984a7fef1de1b8c23e2350bf542a5720aef940c68e3"
+    }
+  ],
+  "preserved_license_files": [
+    {
+      "path": "codex-rs/third_party/secret-service-6.0.0/LICENSE-APACHE",
+      "mode": "100644",
+      "oid": "16fe87b06e802f094b3fbb0894b137bca2b16ef1",
+      "bytes": 10847,
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    {
+      "path": "codex-rs/third_party/secret-service-6.0.0/LICENSE-MIT",
+      "mode": "100644",
+      "oid": "39eb723f075c547c6f0c59205477aaf01593fe57",
+      "bytes": 1069,
+      "sha256": "074585dbaf488db540c26f7b20f36053a157d7580bb1c390dc9f6afdb017c83a"
+    }
+  ],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false
+}

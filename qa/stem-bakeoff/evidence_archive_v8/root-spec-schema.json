@@ -1,0 +1,147 @@
+{
+  "$comment": "The standard-library CLI performs semantic checks itself; it does not load a JSON Schema dependency. Additional required semantics: canonical existing workspace/roots, no aliases/symlinks/overlap/whole Git worktrees; unique labels; each sealed/tools root has exact external expected SHA pins for every retained file; safe relative names; only .py/.rs/.sh/.bzl may be omitted as matching same-extension immutable Git references; outputs remain inside workspace but outside all roots. Interrupted roots are explicitly unsealed. Root host approval and full historical expected maps remain mandatory.",
+  "$id": "https://github.com/TrillionniumFoundation/hepta-private-ci/evidence-archive-roots-v8.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "prerequisite_archives": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "minimum": 1,
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "sha256",
+          "bytes",
+          "location"
+        ],
+        "type": "object"
+      },
+      "maxItems": 64,
+      "type": "array"
+    },
+    "roots": {
+      "items": {
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "enum": [
+                    "sealed",
+                    "tools"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "pins": {
+                  "minProperties": 1
+                }
+              }
+            }
+          }
+        ],
+        "properties": {
+          "label": {
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "path": {
+            "pattern": "^/",
+            "type": "string"
+          },
+          "pins": {
+            "additionalProperties": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "purpose": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_references": {
+            "additionalProperties": {
+              "additionalProperties": false,
+              "properties": {
+                "commit": {
+                  "pattern": "^[0-9a-f]{40}$",
+                  "type": "string"
+                },
+                "path": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "repository": {
+                  "pattern": "^https://github.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+                  "type": "string"
+                },
+                "sha256": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "repository",
+                "commit",
+                "path",
+                "sha256"
+              ],
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "sealed",
+              "interrupted",
+              "tools"
+            ]
+          }
+        },
+        "required": [
+          "label",
+          "path",
+          "status",
+          "purpose",
+          "pins"
+        ],
+        "type": "object"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema": {
+      "const": "hepta.evidence-archive-roots.v8"
+    },
+    "workspace": {
+      "pattern": "^/",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "workspace",
+    "roots"
+  ],
+  "title": "Explicit V8 archive roots; syntax companion to runtime validation",
+  "type": "object"
+}

@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+    "dirty": false,
+    "parents": [
+      "2d8295c6d904ab7b770fed345a1cd2a6308c76ca"
+    ],
+    "tree": "6cfb290845cd8952a94ddd1d12fa3ebacb3ef621"
+  },
+  "base_sha": "300ebaaedd9ec578ffcd2bc341c2394ead6a92c8",
+  "before": {
+    "commit": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+    "dirty": false,
+    "parents": [
+      "2d8295c6d904ab7b770fed345a1cd2a6308c76ca"
+    ],
+    "tree": "6cfb290845cd8952a94ddd1d12fa3ebacb3ef621"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--config-file",
+    "/home/qq/hepta-framework-followup-a60a-20261110/validation-r4/nextest.toml"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 271.0812000890728,
+  "exit_code": 0,
+  "finished_at": "2026-11-10T07:35:27.728723+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 184210,
+  "log_file": "tests.json.928eb32c3f194a69985ab4f1bb24c5f1.log",
+  "log_sha256": "256271cac80eb2bcda2fbbbc90f8538e7b5c45cc609e133c4de3d6444d5b3a7b",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 1088,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "started_at": "2026-11-10T07:30:56.646333+00:00",
+  "status": "passed",
+  "tested_sha": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "timed_out": false,
+  "working_directory": "/home/qq/hepta-framework-followup-a60a-20261110/source"
+}

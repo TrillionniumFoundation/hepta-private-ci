@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.authbus-qualification-expect-repair.v1",
+  "source_parent": "6ecaf4f7bab96ae936c2b192df2acb2d0bb7c43a",
+  "changed_path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+  "preimage_git_blob": "f0b8e6a9eb321ff5af84c6ff138c0be3239b5d9f",
+  "postimage_git_blob": "bf7448d7830386e584d919f176e40d144f14b256",
+  "postimage_sha256": "c112c681a81c332a8cd18417ac2315ceeff571d12b825753ca7341868f7f366d",
+  "postimage_bytes": 9837,
+  "scope": [
+    "Propagate Generation and StableId construction errors into the existing PositivePathFailed error.",
+    "Private id and case_evidence return Result through their original callers.",
+    "Public Error variants, qualification cases, digest encoding, authority predicates and all original test assertions remain unchanged."
+  ],
+  "native_qualification": {
+    "tests": {
+      "passed": 3,
+      "skipped": 0,
+      "original_file_unchanged": true
+    },
+    "just_fix_exit": 0,
+    "just_fmt_exit": 0,
+    "final_formatter_change": "One match arm is an equivalent tail expression block, independently reviewed.",
+    "initial_durable_job": "1a1f532fd9f-ffbe-12a0",
+    "initial_durable_exit": 1,
+    "initial_failure_reason": "Post-format byte assertion expected the pre-format source; all three commands exited zero. Original failure and complete logs retained.",
+    "strict_clippy_job": "1a1f5393390-ffbe-12b0",
+    "strict_clippy_exit": 0,
+    "strict_clippy_scope": "cargo clippy -p codex-hepta-authbus-p1-3-qualification --offline --locked --all-targets -- -D warnings",
+    "verified_source_files_before_and_after_strict_lint": 4718,
+    "source_manifest_sha256": "e37523e64baf4de3a58252b4f80ca6b310927a43ea9446ef1bfe4650242a8ee6",
+    "source_manifest_custody": "../round-09-ci-audit-7246/combined-source-inputs.json.gz",
+    "post_fix_fmt_tests_run": false
+  },
+  "retained_limits": [
+    "The unchanged sqlx-sqlite dependency emits 40 deprecated time API warnings; strict selected-package success does not qualify every dependency or the full workspace.",
+    "This source repair does not qualify Windows sandbox behavior or GitHub required checks."
+  ],
+  "resource_cleanup": "Only the owned temporary /dev/shm/hepta-qualification-expect-7246-ci-audit was removed after terminal qualification.",
+  "native_evidence_sha256": "1f57ad27f047dd788f44d96d1ee0ffdf614971684a6dc524ee22259f88cfe92b"
+}

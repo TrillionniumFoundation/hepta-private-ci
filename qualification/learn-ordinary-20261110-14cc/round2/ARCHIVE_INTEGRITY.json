@@ -1,0 +1,245 @@
+{
+  "schema": "hepta.learn.retained-archive-review.v1",
+  "archived_code_executed": false,
+  "behavior_tests_executed": false,
+  "archives": [
+    {
+      "archive": "final-bbab-v1-evidence.tar.gz",
+      "bytes": 292573,
+      "sha256": "63651d42e94ef28dc9e4e11ea6eb508f10b30d7022c9c279426568ff0d8137e6",
+      "safe_regular_files": 58,
+      "internal_inventory_rows_verified": 55,
+      "original_logs_verified": 6,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "final-bbab-v1/qualification-status.json",
+          "source": "bbab98d805f5c44c1a70a91f0dfd98821adddecc",
+          "source_tree": "e11487778d16d8eb30900e2c5dcc62e39372cf41",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 0
+            },
+            {
+              "stage": "root-setup",
+              "exit_code": 0
+            },
+            {
+              "stage": "root",
+              "exit_code": 0
+            },
+            {
+              "stage": "helper-verification",
+              "exit_code": 0
+            },
+            {
+              "stage": "root-unmount",
+              "exit_code": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "source-checks-bbab.tar.gz",
+      "bytes": 14949,
+      "sha256": "87b42d723e4e55890fad1cc7e9f495b3c6b463bacad18dc05b27984aba5e6d34",
+      "safe_regular_files": 9,
+      "internal_inventory_rows_verified": 8,
+      "original_logs_verified": 0,
+      "original_driver_hashes_verified": 0,
+      "retained_execution_summaries": []
+    },
+    {
+      "archive": "custody-evidence.tar.gz",
+      "bytes": 27121,
+      "sha256": "fecadde70977c0c0ae455ffcff6f37c85e64955db644e3994adb9fb3d23b68f6",
+      "safe_regular_files": 15,
+      "internal_inventory_rows_verified": 14,
+      "original_logs_verified": 0,
+      "original_driver_hashes_verified": 0,
+      "retained_execution_summaries": []
+    },
+    {
+      "archive": "maintenance-bbab-complete-v1.tar.xz",
+      "bytes": 285624,
+      "sha256": "bb64b9ce48cf936e8321fa051990343e1ba81616fc999785ca53511adeafdaea",
+      "safe_regular_files": 102,
+      "internal_inventory_rows_verified": 96,
+      "original_logs_verified": 5,
+      "original_driver_hashes_verified": 2,
+      "retained_execution_summaries": []
+    },
+    {
+      "archive": "marker-format-maintenance.tar.gz",
+      "bytes": 18275,
+      "sha256": "666798d142f622e09d87f716dbb27cda8d04228651491c992fd33e68d54aad59",
+      "safe_regular_files": 8,
+      "internal_inventory_rows_verified": 7,
+      "original_logs_verified": 0,
+      "original_driver_hashes_verified": 0,
+      "retained_execution_summaries": []
+    },
+    {
+      "archive": "warm-46fc-v1-evidence.tar.gz",
+      "bytes": 93042,
+      "sha256": "7e7c81dfe24ce9669d8101517f8c55ab340cebf4b482daafb827921cc2554335",
+      "safe_regular_files": 21,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 2,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-46fc-v1/qualification-status.json",
+          "source": "46fc7b6124f46e6cf62e4e70e61c1f5858ee4ffb",
+          "source_tree": "90b1ef87b63b01b80afa840dec3481449e58d423",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 101
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "warm-dfbed-v1-evidence.tar.gz",
+      "bytes": 121346,
+      "sha256": "3f0cb9519e4db7caf77ac855c77a931c3681df6e32559ba890792049360a1e5c",
+      "safe_regular_files": 23,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 2,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-dfbed-v1/qualification-status.json",
+          "source": "dfbed4f4a2dbaa1573b2f4fabdca377e22c8ac6f",
+          "source_tree": "b8a76e8383640f8d1f2248eb57ce35a22d102edd",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 100
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "warm-fe612-focused-v1-evidence.tar.gz",
+      "bytes": 90283,
+      "sha256": "d5adad0c4bc3658eb010fdd7c0865c0b8c1b909ea0bff0e39a52bf6d57a616cf",
+      "safe_regular_files": 28,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 3,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-fe612-focused-v1/qualification-status.json",
+          "source": "fe612eb2b52d696fc079b2e60359b65fe0c0d2de",
+          "source_tree": "66da8a3baecd6d6c28f8fa630a384c1c28781feb",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 0
+            },
+            {
+              "stage": "helper-verify",
+              "exit_code": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "warm-13f3-assembly-v1-evidence.tar.gz",
+      "bytes": 78619,
+      "sha256": "683fe23080d1ce2dc62650946f98bf0781dc9b3470a4b4fe4f02076beb391fff",
+      "safe_regular_files": 16,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 1,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-13f3-assembly-v1/qualification-status.json",
+          "source": "13f3c134e69741c054fa56e65eabaf358e47e1cf",
+          "source_tree": "5f20fb84d49c7488a327ac03ba94889eba6e587a",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "warm-718b-assembly-v1-evidence.tar.gz",
+      "bytes": 82227,
+      "sha256": "418517dda3d6fc49c4febbdfad4c52f403095b3c1c5c2d20e2c6e908cb46f057",
+      "safe_regular_files": 22,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 2,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-718b-assembly-v1/qualification-status.json",
+          "source": "718b9d648d52a9de3559d01ff56d836379250c52",
+          "source_tree": "908f3341427dbf1d202f25d45457e3138df34530",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 101
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "archive": "warm-852c-assembly-v1-evidence.tar.gz",
+      "bytes": 80497,
+      "sha256": "02d9edef74c288dfa4d7c2c0bce8d0bdcb652d290ca86a4d68069656a32e9be5",
+      "safe_regular_files": 21,
+      "internal_inventory_rows_verified": 0,
+      "original_logs_verified": 2,
+      "original_driver_hashes_verified": 1,
+      "retained_execution_summaries": [
+        {
+          "record": "warm-852c-assembly-v1/qualification-status.json",
+          "source": "852c9fe224f5eb601156c5879c02b582094d5b7a",
+          "source_tree": "e2f1a11df485f66546ff48504aa19d009c005d56",
+          "steps": [
+            {
+              "stage": "helper-build",
+              "exit_code": 0
+            },
+            {
+              "stage": "ordinary",
+              "exit_code": 101
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

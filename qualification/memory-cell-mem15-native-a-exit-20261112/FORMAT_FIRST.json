@@ -1,0 +1,138 @@
+{
+  "schema": "hepta.mem15.pretest-native-format.v1",
+  "source_commit": "b0e4ba507aa3e1d7dee8158b54a61453035d75e6",
+  "source_tree": "7bfc61aa8a8b1d408b679dee279ddcf8f9425368",
+  "base": "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d",
+  "started_unix_ns": 1794473565879254711,
+  "status": "failed",
+  "commands": [
+    {
+      "name": "fetch-draft",
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/work/mem13-native-qualification-20261112-ef0c/source",
+        "fetch",
+        "--no-tags",
+        "--depth=5",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "b0e4ba507aa3e1d7dee8158b54a61453035d75e6"
+      ],
+      "started_unix_ns": 1794473565879338558,
+      "finished_unix_ns": 1794473587076347487,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/fetch-draft.log",
+      "bytes": 142,
+      "sha256": "953f1ed0274ce6ca63e827a68a24110945939f432ba700b3430658d180189898",
+      "git_blob": "4047513368d8738d1fe0d938d9740707830511a1"
+    },
+    {
+      "name": "isolated-worktree",
+      "command": [
+        "git",
+        "-C",
+        "/home/qq/work/mem13-native-qualification-20261112-ef0c/source",
+        "worktree",
+        "add",
+        "--detach",
+        "/home/qq/work/mem15-native-qualification-20261112-ef0c/source-draft",
+        "b0e4ba507aa3e1d7dee8158b54a61453035d75e6"
+      ],
+      "started_unix_ns": 1794473587076773902,
+      "finished_unix_ns": 1794473587644277884,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/isolated-worktree.log",
+      "bytes": 135,
+      "sha256": "00e86c884c06d56dddd159fe7b0c8010e54613966f45908aa960d5a87264bb51",
+      "git_blob": "b75f40730e9e07a4491019b5c663fc157b04c0c2"
+    },
+    {
+      "name": "tool-versions",
+      "command": [
+        "/bin/sh",
+        "-c",
+        "rustfmt --version && just --version && uv --version"
+      ],
+      "started_unix_ns": 1794473588046751875,
+      "finished_unix_ns": 1794473588078236740,
+      "exit_code": 0,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/tool-versions.log",
+      "bytes": 94,
+      "sha256": "dae82d72d6280f27163949affa7b0a3f96117ca3e94e87e3265298721f5124cd",
+      "git_blob": "4156c685f899c215d3aad040dacc7780d463b611"
+    },
+    {
+      "name": "just-format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "7f6b5b80cf4528aabd44ad2df1a93d7f70e7590d"
+      ],
+      "started_unix_ns": 1794473588078489520,
+      "finished_unix_ns": 1794473588242211128,
+      "exit_code": 1,
+      "log": "/home/qq/work/mem15-native-qualification-20261112-ef0c/just-format.log",
+      "bytes": 323,
+      "sha256": "fb3df0a6a7e4231768579db6a245908c1de6aec2210f92f95f62b5ab2a9ebaf4",
+      "git_blob": "c3238e0634796f666a98da180b51299e834961c6"
+    }
+  ],
+  "tests_executed": 0,
+  "model_calls": 0,
+  "pretest_format_only": true,
+  "before": {
+    "commit": "b0e4ba507aa3e1d7dee8158b54a61453035d75e6",
+    "tree": "7bfc61aa8a8b1d408b679dee279ddcf8f9425368",
+    "status": ""
+  },
+  "draft_postimages": {
+    "codex-rs/hepta-agentd/BUILD.bazel": {
+      "bytes": 9282,
+      "sha256": "795a10f18ef7de943b5cfc85418b355319cedca138d4e23ad2127bacb15699ac",
+      "git_blob": "8897e427ac7cb2ce4117c7b30257dc81bed9d756"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process.rs": {
+      "bytes": 9417,
+      "sha256": "a173dd55611d43171419c1106a312a9bb0b7b5177270dff2c18bc6fac8c417dc",
+      "git_blob": "6e11e7d88b8717c01e3cf1795a93f01f8751b21a"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child.rs": {
+      "bytes": 9091,
+      "sha256": "348a7b9513b1cb75bebd3a6da6d497088cd72f2fb10608f6592064b1bbbed6b0",
+      "git_blob": "7989eeea372b439516f9efb7648ed0b85af60892"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_process_child_tests.rs": {
+      "bytes": 2504,
+      "sha256": "c29c43559bdbea4f18a757669030dfa7a4d36424ebb9e6d8a851bd4cece29f4e",
+      "git_blob": "931a9dd060d1c2f991f3cbd63bcadd0ecfaf8bb1"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs": {
+      "bytes": 6849,
+      "sha256": "1acfbf6310fed1eec50faa1ecf371a85116ad09083cf26c8f2a08d122deba230",
+      "git_blob": "947289cce8cbbc4dfcd8c8af1e86eaeb23273d4b"
+    },
+    "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs": {
+      "bytes": 25651,
+      "sha256": "4a1ee50e7899269e5172f9eec23c0b4797ba5e07b0321e8b69f433eddf448173",
+      "git_blob": "9316558eedcb564a82ed843d1e617cbdc201856d"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker.rs": {
+      "bytes": 8340,
+      "sha256": "1382fb9ec9aadc9ba16a39bc95258f5fd1a8532ec502815a5272f9a35a1b892a",
+      "git_blob": "ce8ec9e341672d71acbfd19c1e549dee0059dcd9"
+    },
+    "codex-rs/hepta-infer-worker-host/src/bin/hepta-infer-worker/context_delivery_tests.rs": {
+      "bytes": 736,
+      "sha256": "4ad65c8768d26210f221539208a1e887bd78c0e1a303e0caf39f56b09173b4f9",
+      "git_blob": "3cd1b46cdae1d5a9b3a844de8812750801355e19"
+    },
+    "qualification/memory-cell-mem15-native-a-exit-20261112/PROTOCOL.md": {
+      "bytes": 8839,
+      "sha256": "185cb14910570b34870b2029ff28d583d0e9cc62806a21dc7d56cfcab12996f5",
+      "git_blob": "fed4cd99a8be99bfb401d83eb9cc8b6732d3dfce"
+    }
+  },
+  "error": "RuntimeError: just-format failed",
+  "finished_unix_ns": 1794473588243030699
+}

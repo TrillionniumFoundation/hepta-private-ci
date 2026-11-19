@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.native.final-tools-evidence.v1",
+  "qualified_local_model_source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+  "original_training_source_head": "8a47cdd26574a85cd314fabce65cc395dbe316a8",
+  "published_program_snapshot_head": "f92ddcacbe21267514f5040c1df6c380a96f0643",
+  "repository_directory": "qa/stem-bakeoff/evidence/20261025-native-final-tools",
+  "archive": {
+    "path": "native-final-tools-complete-raw.tar.xz",
+    "bytes": 1339240,
+    "sha256": "e8762b3ee13dc49904fb1fb740a7276a83e1eaef966503c54828c2c270bf8ac6",
+    "files": 100,
+    "directories": 51,
+    "uncompressed_file_bytes": 9715407,
+    "all_members_read_back_byte_mode_verified": true
+  },
+  "payload_inventory_sha256": "5147436a9b086cf336ad62b79a012d150e81bf35a5fdb16d7d37c7f6f29c67d7",
+  "capture_audit_sha256": "346cf0245a3354542e983042d3958c253088d44df83afb93675f3fd1a9577b97",
+  "fix": {
+    "exit_code": 0,
+    "wall_seconds": 467.1683784050001,
+    "changed_paths": 3,
+    "insertions": 5,
+    "deletions": 6,
+    "complete_log_bytes": 85421,
+    "zero_warnings_claimed": false
+  },
+  "format": {
+    "exit_code": 0,
+    "wall_seconds": 2.377556843000093,
+    "changed_paths": 32,
+    "complete_log_bytes": 0,
+    "success_output_suppressed_by_formatter_design": true,
+    "explicit_base": "429894ac8e0818102cfdea4ad47a56e4583b2902"
+  },
+  "combined_patch": {
+    "paths": 33,
+    "insertions": 2077,
+    "deletions": 815
+  },
+  "source_inventory_entries_before_and_after_each_phase": 9729,
+  "fix_to_format_inventory_and_patch_bridge": true,
+  "snapshots_verified": {
+    "baseline_git_blobs": 33,
+    "post_fix_original_files": 3,
+    "post_format_actual_files": 33
+  },
+  "isolated_patch_reconstruction_matches": true,
+  "original_bytes_modes_unchanged_by_capture": true,
+  "dotslash": {
+    "version": "DotSlash 0.5.8",
+    "archive_included": true,
+    "archive_sha256": "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120",
+    "actual_installed_binary_sha256": "ff444143d03355b14fc52c473f5423d7c52ac188f1f984c167f6ebad0145ba93",
+    "binary_from_archive_matches_installed": true,
+    "installation_not_reexecuted": true,
+    "install_wall_seconds": null
+  },
+  "independent_mechanical_review": [
+    {
+      "path": "independent-review/final-mechanical-review-001.json",
+      "source": "/workspace/scratch/12ef9c5bdc23/tick-shadow-recovery-20261024/final-mechanical-review-001.json",
+      "sha256": "ba6ba4366e74f10a4167ca0e7b47573bf4a9a16436f0247dce544324624ca94d",
+      "bytes": 104626
+    },
+    {
+      "path": "independent-review/review_final_mechanical.py",
+      "source": "/workspace/scratch/12ef9c5bdc23/tick-shadow-recovery-20261024/review_final_mechanical.py",
+      "sha256": "dd643ddbe77cb09a9a842609b113dfc9e06d7e9b221dba9cdfc73c00a1ac5d59",
+      "bytes": 17826
+    }
+  ],
+  "mechanical_review_summary": {
+    "python_AST_strictly_equal_files": 6,
+    "rust_files_reviewed": 26,
+    "rust_same_scope_import_module_attribute_visibility_expansion_equal_files": 26,
+    "rust_nondeclaration_token_sequence_equal_after_trailing_comma_normalization": 23,
+    "rust_files_requiring_manual_tail_expression_closure_brace_review": 3,
+    "safe_trailing_comma_additions": 84,
+    "safe_trailing_comma_removals": 6,
+    "single_element_tuple_change_candidates": 0,
+    "bazel_AST_equal_after_named_keyword_order_normalization": 1,
+    "other_Rust_nondeclaration_token_edits_in_format_phase": 0
+  },
+  "critical_source_files_byte_unchanged": 95,
+  "published_final_source": {
+    "head": "33c741cb0abe5faac1d92abe5d0ac90bee4abb51",
+    "tree": "02d11c75658c23b498ba2e7f8b6f082d76ec33b3",
+    "pr": 3828,
+    "all33_sha256_git_blob_mode_match_capture": true
+  },
+  "new_tests_executed": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "tools_reexecuted_to_make_archive": false,
+  "final_exact_commit_ci": {
+    "status": "pending",
+    "source_head": "33c741cb0abe5faac1d92abe5d0ac90bee4abb51",
+    "receipt": null,
+    "run_id_reported_by_root": 40149732280,
+    "queue_state_at_root_observation": "queued"
+  },
+  "prior_3a_model_execution_requalified_after_source_change": false,
+  "full_closure": false,
+  "complete_research_blockers_closed": 0,
+  "complete_research_blockers_total": 8,
+  "production_accepted": false
+}

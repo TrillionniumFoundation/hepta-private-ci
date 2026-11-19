@@ -1,0 +1,23 @@
+test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_actual_completed_a_is_joined_before_claim_and_only_final_readback_retires) ... ok
+test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_coordinator_installs_only_the_actual_fresh_token_and_never_replays_candidate) ... ok
+test_every_original_signature_is_revalidated_after_actual_role_and_root_reads (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_every_original_signature_is_revalidated_after_actual_role_and_root_reads) ... ok
+test_exact_new_callers_and_external_registration_stay_closed (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) ... ok
+test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof) ... FAIL
+test_only_actual_strict_cas_can_mint_the_nonrecoverable_token (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_only_actual_strict_cas_can_mint_the_nonrecoverable_token) ... ok
+test_original_grant_registry_revocation_and_local_only_fence_are_mandatory (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_original_grant_registry_revocation_and_local_only_fence_are_mandatory) ... ok
+test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_profile_is_only_canonical_data_and_stable_identity_rejects_rebinding) ... ok
+test_queued_cancel_and_bound_refusal_never_restore_fresh_admission (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_queued_cancel_and_bound_refusal_never_restore_fresh_admission) ... ok
+test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_same_continuation_gate_is_cancelled_and_matches_the_durable_effect) ... ok
+
+======================================================================
+FAIL: test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof (test_resident_root_source_closure.ResidentRootSourceClosureTests.test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/evaluation-host-review-57500bbd-v1/qa/b4-no-bypass/test_resident_root_source_closure.py", line 338, in test_existing_ci_really_selects_root_cases_neuron_and_full_caller_proof
+    self.assertEqual(len(parents), 7 + len(ROOT_CASES))
+AssertionError: 16 != 15
+
+----------------------------------------------------------------------
+Ran 10 tests in 2.251s
+
+FAILED (failures=1)

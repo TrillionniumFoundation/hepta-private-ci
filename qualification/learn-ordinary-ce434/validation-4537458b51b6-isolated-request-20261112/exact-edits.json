@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.learn.isolated-outer-exact-reversible-edits.v1",
+  "before_blob": "d446168389b2d43af74e2d7066b1e3bb9db5de87",
+  "after_blob": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+  "method": "Decode/remove only the two complete one-line runner assignments to the shown placeholders; apply these unique body edits in order; restore source runner with original encoded assignment and native with the one explicitly authorized path-literal substitution. Reverse all body edits in reverse order and the native literal to recover every original d446 byte.",
+  "placeholders": {
+    "native": "native_driver=<PINNED_NATIVE>",
+    "source": "source_runner=<PINNED_SOURCE>"
+  },
+  "native": {
+    "before_blob": "dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+    "after_blob": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+    "before": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\": raise SystemExit(\"unexpected qualification repository\")",
+    "after": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\": raise SystemExit(\"unexpected qualification repository\")"
+  },
+  "source_blob": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+  "edits": [
+    {
+      "label": "stdlib stat only",
+      "before": "import concurrent.futures,hashlib,json,os,re,subprocess,sys,time",
+      "after": "import concurrent.futures,hashlib,json,os,re,stat,subprocess,sys,time"
+    },
+    {
+      "label": "separate original and isolated worktrees",
+      "before": "repo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")",
+      "after": "old_repo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")\nrepo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")"
+    },
+    {
+      "label": "exclusive outer evidence path",
+      "before": "unified-4537458b51b6-validation-v1",
+      "after": "unified-4537458b51b6-isolated-v1"
+    },
+    {
+      "label": "exclusive native evidence path",
+      "before": "live-owners-full-4537458b51b6-v1",
+      "after": "live-owners-full-4537458b51b6-isolated-v1"
+    },
+    {
+      "label": "reject all existing outputs or destination",
+      "before": "if out.exists() or native_out.exists():raise RuntimeError(\"dedicated evidence exists; reconcile this original request\")",
+      "after": "if any(os.path.lexists(path) for path in (out,native_out,repo)):raise RuntimeError(\"dedicated evidence or isolated worktree exists; reconcile this original request\")"
+    },
+    {
+      "label": "readonly old status and no inherited Git directory overrides",
+      "before": "env[\"PYTHONDONTWRITEBYTECODE\"]=\"1\"\nenv[\"PATH\"]=",
+      "after": "env[\"PYTHONDONTWRITEBYTECODE\"]=\"1\"\nenv[\"GIT_OPTIONAL_LOCKS\"]=\"0\"\nif any(env.get(key) for key in (\"GIT_DIR\",\"GIT_WORK_TREE\",\"GIT_COMMON_DIR\",\"GIT_INDEX_FILE\")):raise RuntimeError(\"inherited Git directory or index override is not an isolated worktree input\")\nenv[\"PATH\"]="
+    },
+    {
+      "label": "explicit worktree Git helpers without implicit run kill",
+      "before": "def git(*args):return subprocess.check_output([\"git\",*args],cwd=repo,env=env,text=True).strip()",
+      "after": "def git_bytes_at(worktree,*args):\n    command=[\"git\",*args]\n    process=subprocess.Popen(command,cwd=worktree,env=env,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE)\n    try:stdout,stderr=process.communicate()\n    except BaseException:\n        try:process.communicate()\n        finally:process.wait()\n        raise\n    process.wait()\n    if process.returncode:raise subprocess.CalledProcessError(process.returncode,command,output=stdout,stderr=stderr)\n    return stdout\ndef git_at(worktree,*args):return git_bytes_at(worktree,*args).decode(\"utf-8\").strip()\ndef git(*args):return git_at(repo,*args)\ndef old_git(*args):return git_at(old_repo,*args)\ndef owned_directory(path):\n    info=path.lstat()\n    if not stat.S_ISDIR(info.st_mode) or info.st_uid!=os.getuid() or path.resolve(strict=True)!=path:\n        raise RuntimeError(\"fixed directory is not the original owned directory\")\n    return {\"device\":info.st_dev,\"inode\":info.st_ino,\"uid\":info.st_uid,\"mode\":oct(info.st_mode)}\ndef source_state(worktree):\n    owned_directory(worktree)\n    if git_at(worktree,\"rev-parse\",\"--show-toplevel\")!=str(worktree):raise RuntimeError(\"Git top-level differs from the exact worktree\")\n    return {\"path\":str(worktree),\"head\":git_at(worktree,\"rev-parse\",\"HEAD\"),\"tree\":git_at(worktree,\"rev-parse\",\"HEAD^{tree}\"),\"status\":git_at(worktree,\"status\",\"--porcelain=v1\",\"--untracked-files=all\")}\nold_expected={\"path\":str(old_repo),\"head\":before,\"tree\":\"647b9e78151299c1e7de455eae9c530ca93b28c9\",\"status\":\"\"}\ndef require_old_source():\n    observed=source_state(old_repo)\n    if observed!=old_expected:raise RuntimeError(\"original a671 worktree changed; retain evidence without cleanup\")\n    return observed\ndef common_directory(worktree):\n    directory=Path(git_at(worktree,\"rev-parse\",\"--git-common-dir\"))\n    return (directory if directory.is_absolute() else worktree/directory).resolve(strict=True)\ndef stable_read(path,maximum):\n    first=path.lstat()\n    if not stat.S_ISREG(first.st_mode) or first.st_uid!=os.getuid() or first.st_nlink!=1 or first.st_size>maximum:\n        raise RuntimeError(\"original terminal file type/owner/size differs\")\n    def identity(s):return (s.st_dev,s.st_ino,s.st_mode,s.st_nlink,s.st_uid,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\n    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC|os.O_NONBLOCK)\n    with os.fdopen(fd,\"rb\") as stream:\n        opened=os.fstat(stream.fileno())\n        raw=stream.read(maximum+1)\n        closed=os.fstat(stream.fileno())\n    if identity(first)!=identity(opened) or identity(opened)!=identity(closed) or identity(closed)!=identity(path.lstat()) or len(raw)!=closed.st_size:\n        raise RuntimeError(\"original terminal file changed during read\")\n    return raw"
+    },
+    {
+      "label": "original precondition uses original worktree",
+      "before": "if git(\"rev-parse\",\"HEAD\")!=before or git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\"):raise RuntimeError(\"observed completed original worktree precondition differs\")",
+      "after": "old_source_before=require_old_source()\nold_root_identity=owned_directory(old_repo)\nhome_identity=owned_directory(repo.parent)\nevidence_parent_identity=owned_directory(out.parent)\nif native_out.parent!=out.parent:raise RuntimeError(\"native evidence parent differs\")\nold_common=common_directory(old_repo)\nif common_directory(original)!=old_common:raise RuntimeError(\"original fetch repository is not the same Git object store\")\noriginal_terminals={}"
+    },
+    {
+      "label": "actual original terminal bytes read once stably",
+      "before": "    if path.stat().st_size!=expected_bytes or digest(path)!=expected:raise RuntimeError(\"original a671 full validation terminal differs; do not change the worktree\")\n    previous=json.loads(path.read_bytes())",
+      "after": "    raw=stable_read(path,expected_bytes)\n    if len(raw)!=expected_bytes or hashlib.sha256(raw).hexdigest()!=expected:raise RuntimeError(\"original a671 full validation terminal differs; do not change the worktree\")\n    original_terminals[str(path)]={\"bytes\":len(raw),\"sha256\":hashlib.sha256(raw).hexdigest()}\n    previous=json.loads(raw)"
+    },
+    {
+      "label": "retain original exact tree check on old path",
+      "before": "if git(\"rev-parse\",\"HEAD^{tree}\")!=\"647b9e78151299c1e7de455eae9c530ca93b28c9\":raise RuntimeError(\"observed original a671 tree differs\")",
+      "after": "if old_git(\"rev-parse\",\"HEAD^{tree}\")!=\"647b9e78151299c1e7de455eae9c530ca93b28c9\":raise RuntimeError(\"observed original a671 tree differs\")"
+    },
+    {
+      "label": "own output only",
+      "before": "out.mkdir(parents=True,exist_ok=False)",
+      "after": "out.mkdir(mode=0o700,exist_ok=False)"
+    },
+    {
+      "label": "record both worktrees and fixed terminal evidence",
+      "before": "def save():",
+      "after": "report.update(original_worktree=str(old_repo),isolated_worktree=str(repo),old_source_before=old_source_before,old_root_identity=old_root_identity,home_identity=home_identity,evidence_parent_identity=evidence_parent_identity,original_common_git_directory=str(old_common),original_terminal_records=original_terminals,cleanup_attempted=False,old_checkout_command_issued=False)\ndef save():"
+    },
+    {
+      "label": "outer waits only its same child without a new signal path",
+      "before": "    with path.open(\"xb\") as stream:result=subprocess.run(args,cwd=cwd or repo,env=env,stdout=stream,stderr=subprocess.STDOUT,check=False)\n    return {\"name\":name,\"exit_code\":result.returncode,\"seconds\":time.monotonic()-started,\"bytes\":path.stat().st_size,\"sha256\":digest(path)}",
+      "after": "    actual_cwd=repo if cwd is None else cwd\n    with path.open(\"xb\") as stream:\n        process=subprocess.Popen(args,cwd=actual_cwd,env=env,stdin=subprocess.DEVNULL,stdout=stream,stderr=subprocess.STDOUT)\n        try:process.wait()\n        except BaseException:\n            process.wait()\n            raise\n    return {\"name\":name,\"exit_code\":process.returncode,\"seconds\":time.monotonic()-started,\"bytes\":path.stat().st_size,\"sha256\":digest(path),\"cwd\":str(actual_cwd)}"
+    },
+    {
+      "label": "conservative actual candidate checkout-only admission",
+      "before": "try:\n    save()\n    required(\"fetch-exact-source\"",
+      "after": "def checkout_space_requirement():\n    if owned_directory(repo.parent)!=home_identity:raise RuntimeError(\"owned checkout parent changed\")\n    listing=git_bytes_at(original,\"ls-tree\",\"-r\",\"-l\",\"-z\",\"--full-tree\",fixed)\n    info=os.statvfs(repo.parent)\n    block=info.f_frsize or info.f_bsize\n    if block<=0:raise RuntimeError(\"home filesystem allocation unit unavailable\")\n    entries=listing.split(b\"\\0\")\n    if not entries or entries.pop()!=b\"\":raise RuntimeError(\"fixed candidate tree listing is incomplete\")\n    files=0;gitlinks=0;logical=0;allocated=0;index_bytes=0;directories=set()\n    for entry in entries:\n        header,name=entry.split(b\"\\t\",1)\n        fields=header.split()\n        if len(fields)!=4:raise RuntimeError(\"fixed candidate tree entry differs\")\n        mode,kind,object_id,size=fields\n        parts=name.split(b\"/\")\n        if not parts or any(part in (b\"\",b\".\",b\"..\") for part in parts) or not re.fullmatch(rb\"[0-9a-f]{40}\",object_id):\n            raise RuntimeError(\"fixed candidate path/object differs\")\n        for count in range(1,len(parts)):directories.add(b\"/\".join(parts[:count]))\n        index_bytes+=((128+len(name)+7)//8)*8\n        if kind==b\"blob\" and mode in (b\"100644\",b\"100755\",b\"120000\") and size.isdigit():\n            amount=int(size);files+=1;logical+=amount\n            allocated+=((max(1,amount)+block-1)//block)*block\n        elif kind==b\"commit\" and mode==b\"160000\" and size==b\"-\":\n            gitlinks+=1;directories.add(name)\n        else:raise RuntimeError(\"unsupported original candidate checkout entry\")\n    if not files:raise RuntimeError(\"empty candidate checkout\")\n    required_bytes=allocated+(len(directories)+1)*block+index_bytes+64*1024*1024\n    required_inodes=files+len(directories)+33\n    available_bytes=info.f_bavail*block\n    result={\"source_sha\":fixed,\"source_tree\":tree,\"listing_bytes\":len(listing),\"listing_sha256\":hashlib.sha256(listing).hexdigest(),\"blob_entries\":files,\"gitlinks_not_initialized\":gitlinks,\"directories\":len(directories),\"logical_blob_bytes\":logical,\"rounded_file_bytes\":allocated,\"index_estimate_bytes\":index_bytes,\"git_admin_reserve_bytes\":64*1024*1024,\"filesystem_unit_bytes\":block,\"required_checkout_bytes\":required_bytes,\"available_home_bytes\":available_bytes,\"required_inodes\":required_inodes,\"available_home_inodes\":info.f_favail,\"scope\":\"checkout allocation only; no claim that subsequent Cargo build fits\"}\n    report[\"checkout_space\"]=result;save()\n    if available_bytes<required_bytes or (info.f_files>0 and info.f_favail<required_inodes):\n        raise RuntimeError(\"insufficient existing home space or inodes for the fixed isolated checkout\")\n    return result\ntry:\n    save()\n    initial_space=os.statvfs(repo.parent)\n    report[\"home_before_fetch\"]={\"available_bytes\":initial_space.f_bavail*(initial_space.f_frsize or initial_space.f_bsize),\"available_inodes\":initial_space.f_favail};save()\n    required(\"fetch-exact-source\""
+    },
+    {
+      "label": "independent exact worktree instead of switching original",
+      "before": "    if git(\"rev-parse\",\"HEAD\")!=before or git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\"):raise RuntimeError(\"completed original worktree changed during fetch\")\n    if git(\"rev-parse\",fixed+\"^{tree}\")!=tree:raise RuntimeError(\"fetched exact source tree differs\")\n    required(\"switch-clean-worktree-to-exact-source\",[\"git\",\"switch\",\"--detach\",fixed])\n    if git(\"rev-parse\",\"HEAD\")!=fixed or git(\"rev-parse\",\"HEAD^{tree}\")!=tree or git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\"):raise RuntimeError(\"fixed source identity differs\")",
+      "after": "    report[\"old_source_after_fetch\"]=require_old_source()\n    if old_git(\"rev-parse\",fixed+\"^{tree}\")!=tree:raise RuntimeError(\"fetched exact source tree differs\")\n    checkout_space_requirement()\n    if any(os.path.lexists(path) for path in (repo,native_out)):raise RuntimeError(\"exclusive worktree or native output appeared; do not reuse\")\n    repo.mkdir(mode=0o700,exist_ok=False)\n    report[\"isolated_root_identity\"]=owned_directory(repo);save()\n    required(\"create-isolated-fixed-worktree\",[\"git\",\"worktree\",\"add\",\"--detach\",str(repo),fixed],original)\n    if owned_directory(repo)!=report[\"isolated_root_identity\"]:raise RuntimeError(\"isolated checkout root was replaced\")\n    new_source=source_state(repo)\n    if new_source!={\"path\":str(repo),\"head\":fixed,\"tree\":tree,\"status\":\"\"}:raise RuntimeError(\"isolated fixed source identity differs\")\n    if common_directory(repo)!=old_common:raise RuntimeError(\"isolated worktree changed Git object store\")\n    report[\"isolated_source_before\"]=new_source\n    report[\"old_source_after_worktree_create\"]=require_old_source();save()"
+    },
+    {
+      "label": "new native complete hash only",
+      "before": "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1",
+      "after": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+    },
+    {
+      "label": "old source before any tests",
+      "before": "    report.update(state=\"source-and-native-running\"",
+      "after": "    report[\"old_source_before_tests\"]=require_old_source()\n    if owned_directory(repo)!=report[\"isolated_root_identity\"]:raise RuntimeError(\"isolated checkout root changed before tests\")\n    report.update(state=\"source-and-native-running\""
+    },
+    {
+      "label": "explicit isolated cwd for both original runners",
+      "before": "futures=[pool.submit(perform,\"source-suite\",[\"/usr/bin/python3\",\"-B\",str(sp),str(out)]),pool.submit(perform,\"original-full-native\",[\"/usr/bin/python3\",\"-B\",str(np),str(repo),fixed,str(native_out)])]",
+      "after": "futures=[pool.submit(perform,\"source-suite\",[\"/usr/bin/python3\",\"-B\",str(sp),str(out)],repo),pool.submit(perform,\"original-full-native\",[\"/usr/bin/python3\",\"-B\",str(np),str(repo),fixed,str(native_out)],repo)]"
+    },
+    {
+      "label": "explicit isolated scanner cwd",
+      "before": "record=perform(\"caller-scanner-self-test\",[\"/usr/bin/python3\",\"-B\",\"scripts/verify_hepta_callers.py\",\"self-test\"])",
+      "after": "record=perform(\"caller-scanner-self-test\",[\"/usr/bin/python3\",\"-B\",\"scripts/verify_hepta_callers.py\",\"self-test\"],repo)"
+    },
+    {
+      "label": "original before-after preservation required for a pass",
+      "before": "    report[\"state\"]=\"passed\" if all(step[\"exit_code\"]==0 for step in report[\"steps\"]) and report[\"source_after\"]==fixed and not report[\"source_status_after\"] else \"failed\"",
+      "after": "    report[\"old_source_after\"]=require_old_source()\n    if owned_directory(old_repo)!=old_root_identity or owned_directory(repo)!=report[\"isolated_root_identity\"]:raise RuntimeError(\"original or isolated worktree root identity changed\")\n    report[\"state\"]=\"passed\" if all(step[\"exit_code\"]==0 for step in report[\"steps\"]) and report[\"source_after\"]==fixed and not report[\"source_status_after\"] and report[\"old_source_after\"]==old_expected else \"failed\""
+    },
+    {
+      "label": "exceptions preserve all created paths and observe original only",
+      "before": "except BaseException as error:\n    report.update(state=\"failed\",error_type=type(error).__name__,error=str(error));save();raise",
+      "after": "except BaseException as error:\n    report.update(state=\"failed\",error_type=type(error).__name__,error=str(error),cleanup_attempted=False)\n    try:report[\"old_source_after\"]=require_old_source()\n    except BaseException as observation_error:\n        report.update(state=\"uncertain\",old_source_observation_error_type=type(observation_error).__name__,old_source_observation_error=str(observation_error))\n    report[\"retained_paths\"]=[str(path) for path in (out,native_out,repo) if os.path.lexists(path)]\n    save();raise"
+    }
+  ],
+  "reverse_complete_equal": true
+}

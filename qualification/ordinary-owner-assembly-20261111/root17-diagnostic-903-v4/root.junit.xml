@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="17" failures="2" errors="0" uuid="68124623-5926-4ec1-930e-5419e916e153" timestamp="2026-11-12T09:12:19.096+08:00" time="31.689">
+    <testsuite name="codex-hepta-agentd" tests="15" disabled="0" errors="0" failures="2">
+        <testcase name="authority_host_learning_service_root_tests::root_learning_public_registration_serves_retained_writer_and_recovers_history" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:19.107+08:00" time="0.434">
+        </testcase>
+        <testcase name="authority_host_q24_model_service_root_tests::root_q24_factory_registers_transfers_binds_and_recovers_original_custody" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:19.548+08:00" time="0.987">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_file_pins_reject_alias_replacement_wrong_access_and_missing_witness" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.536+08:00" time="0.012">
+        </testcase>
+        <testcase name="authority_host_service::q24_model::registration::tests::root_factory_record_reopens_bound_without_replacing_original_files" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.548+08:00" time="0.015">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.563+08:00" time="0.016">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_scoped_sealed_pin_preserves_scope_on_cold_reopen" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.579+08:00" time="0.032">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_learning_sealed_pin_and_dedicated_uds_recover_original_checkpoint" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.611+08:00" time="0.020">
+        </testcase>
+        <testcase name="authority_host_service::writer::learning_registration::tests::root_scoped_learning_reopens_exact_scope_and_refuses_legacy_client" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.631+08:00" time="0.022">
+        </testcase>
+        <testcase name="learning_iteration_evidence_client::tests::root::original_external_uid_returns_a_verified_receipt_through_held_pidfd" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.653+08:00" time="0.075">
+        </testcase>
+        <testcase name="neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:20.729+08:00" time="17.205">
+            <failure message="Error: initial child Publish: publishing original Feature CURRENT" type="test failure with exit code 101">Error: initial child Publish: publishing original Feature CURRENT
+
+Caused by:
+    invalid agentd configuration: Unavailable
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: PeerDenied })
+
+Caused by:
+    0: initial parent Publish: awaiting STABLE
+    1: Resource temporarily unavailable (os error 11)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::root_initial_publication_uses_original_consumer_and_readonly_recovery
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 17.19s
+
+</system-out>
+            <system-err>ROOT_COMPONENT_CHILD_CLEANUP pid=2138003 status=Ok(ExitStatus(unix_wait_status(25856)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=343
+
+running 1 test
+test neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::child::original_initial_dedicated_uid_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 5.74s
+
+
+ROOT_COMPONENT_CHILD_STDERR bytes=326
+ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs
+ROOT_INITIAL_CHILD phase=Publish stage=original_five_lane_inputs_open
+ROOT_INITIAL_CHILD phase=Publish stage=original_inputs_ready_sent
+Error: initial child Publish: publishing original Feature CURRENT
+
+Caused by:
+    invalid agentd configuration: Unavailable
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: initial parent Publish, controlled_ack_loss=false: original Root serve result: Err(Custom { kind: Other, error: PeerDenied })
+
+Caused by:
+    0: initial parent Publish: awaiting STABLE
+    1: Resource temporarily unavailable (os error 11)
+</system-err>
+        </testcase>
+        <testcase name="neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:37.941+08:00" time="12.282">
+            <failure message="Error: publication Publish: connect original CURRENT purpose" type="test failure with exit code 101">Error: publication Publish: connect original CURRENT purpose
+
+Caused by:
+    agentd generation fenced: root writer observation is unavailable or fenced
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Publish phase
+
+Caused by:
+    0: publication Publish: control worker failed; service=Err(Custom { kind: Other, error: PeerDenied })
+    1: publication component control awaiting PREPARED
+    2: Resource temporarily unavailable (os error 11)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 12.27s
+
+</system-out>
+            <system-err>ROOT_PUBLICATION_COMPONENT phase=Publish service=Err(Custom { kind: Other, error: PeerDenied })
+ROOT_COMPONENT_CHILD_CLEANUP pid=2148045 status=Ok(ExitStatus(unix_wait_status(25856)))
+ROOT_COMPONENT_CHILD_STDOUT bytes=359
+
+running 1 test
+test neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::publication_root_tests::child::original_publication_dedicated_uid_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1085 filtered out; finished in 1.86s
+
+
+ROOT_COMPONENT_CHILD_STDERR bytes=343
+ROOT_PUBLICATION_CHILD phase=Publish step=receive-original-offers
+ROOT_PUBLICATION_CHILD phase=Publish step=original-inputs-connected
+ROOT_PUBLICATION_CHILD phase=Publish step=learning-ready
+Error: publication Publish: connect original CURRENT purpose
+
+Caused by:
+    agentd generation fenced: root writer observation is unavailable or fenced
+
+ROOT_COMPONENT_CHILD_OUTPUT_END
+Error: publication component Publish phase
+
+Caused by:
+    0: publication Publish: control worker failed; service=Err(Custom { kind: Other, error: PeerDenied })
+    1: publication component control awaiting PREPARED
+    2: Resource temporarily unavailable (os error 11)
+</system-err>
+        </testcase>
+        <testcase name="root_production_handoff::generation_publication::tests::root_publication_handoff_reaches_dedicated_uid_and_refuses_confused_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:50.223+08:00" time="0.045">
+        </testcase>
+        <testcase name="root_production_handoff::learning::tests::root_learning_handoff_reaches_dedicated_uid_with_original_root_pin" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:50.269+08:00" time="0.018">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_preserves_four_original_rights_and_cloexec" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:50.287+08:00" time="0.010">
+        </testcase>
+        <testcase name="root_production_handoff::q24_model::tests::root_model_handoff_rejects_learning_purpose_and_reordered_rights" classname="codex-hepta-agentd" timestamp="2026-11-12T09:12:50.297+08:00" time="0.012">
+        </testcase>
+    </testsuite>
+    <testsuite name="codex-hepta-contracts" tests="2" disabled="0" errors="0" failures="0">
+        <testcase name="final_use::store::root_observer::tests::root_observer_fences_partial_rollback_schema_and_replaced_original_files" classname="codex-hepta-contracts" timestamp="2026-11-12T09:12:50.309+08:00" time="0.308">
+        </testcase>
+        <testcase name="final_use::store::root_observer::tests::root_observer_reads_live_original_and_rejects_revocation_without_claiming" classname="codex-hepta-contracts" timestamp="2026-11-12T09:12:50.617+08:00" time="0.167">
+        </testcase>
+    </testsuite>
+</testsuites>

@@ -1,0 +1,684 @@
+"""Explicit, non-retrying six-fit C2 controller; validation-only unless later enabled."""
+import os
+import time
+
+CONTROLLER_STARTED = time.monotonic()
+
+import argparse
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
+import json
+import hashlib
+import math
+from pathlib import Path
+import resource
+import signal
+import subprocess
+import threading
+import traceback
+
+from c2_boundary import require
+from c2_io import exclusive_json, identity, runtime_identity, sha, verify_files, append_receipt, read_receipts
+from c2_runner import bind_program, require_decision
+
+
+def child_deadline(contract, outer, dispatched):
+    spent = outer.get('whole_process_wall_seconds')
+    ceiling = outer.get('hard_wall_seconds')
+    require(isinstance(spent, (int, float)) and 0 < spent < 43200,
+            'original outer active cost missing')
+    require(isinstance(ceiling, (int, float)) and 0 < ceiling <= 14400,
+            'original actual wall ceiling invalid')
+    total = contract['cumulative_active_wall_seconds']
+    require(ceiling <= total <= 43200 and total > spent, 'invalid new cumulative budget')
+    return dispatched + total - spent
+
+
+def wait_child(process, deadline, *, poll_seconds=0.1):
+    """Collect this PID's actual exit rusage. Popen.poll/wait must not reap it first."""
+    killed, kill_error = False, None
+    while True:
+        pid, status, usage = os.wait4(process.pid, os.WNOHANG)
+        if pid:
+            process.returncode = os.waitstatus_to_exitcode(status)
+            return {'returncode': process.returncode, 'hard_timeout_sent': killed,
+                    'kill_error': kill_error, 'child_terminal_unknown': False,
+                    'child_cpu_seconds': usage.ru_utime + usage.ru_stime,
+                    'child_user_cpu_seconds': usage.ru_utime, 'child_system_cpu_seconds': usage.ru_stime,
+                    'child_peak_rss_bytes': int(usage.ru_maxrss) * 1024,
+                    'child_cpu_scope': 'exact per-PID wait4 whole process including imports and finalization'}
+        if time.monotonic() >= deadline and not killed:
+            try:
+                os.kill(process.pid, signal.SIGKILL)
+                killed = True
+            except ProcessLookupError:
+                # The next wait4 still owns and accounts for the already exited child.
+                killed = True
+            except Exception:
+                kill_error = traceback.format_exc()
+                raise
+        time.sleep(poll_seconds)
+
+
+def harvest_futures(futures, snapshots, record):
+    for future in as_completed(futures):
+        name = futures[future]
+        try:
+            row = future.result()
+            require(isinstance(row, dict) and row.get('name') == name, 'worker returned wrong terminal identity')
+        except Exception:
+            row = dict(snapshots.get(name, {'name': name}))
+            row.update(status='worker_exception', worker_error=traceback.format_exc(),
+                       terminal_accounting_incomplete=True)
+            row.setdefault('process_started', None)
+            row.setdefault('whole_process_wall_seconds', None)
+            row.setdefault('attempt_wrapper_wall_seconds', None)
+            row.setdefault('child_cpu_seconds', None)
+            try:
+                record(row)
+            except Exception:
+                row.setdefault('journal_errors', []).append(traceback.format_exc())
+        yield row
+
+
+def cost_totals(attempts, names):
+    missing_terminal = sorted(set(names) - {r['name'] for r in attempts})
+    incomplete = set(missing_terminal)
+    unknown_launch = set(missing_terminal)
+    for row in attempts:
+        if row.get('process_started') is None:
+            unknown_launch.add(row['name'])
+        if (row.get('whole_process_wall_seconds') is None or row.get('attempt_wrapper_wall_seconds') is None
+                or row.get('terminal_accounting_incomplete') or row.get('journal_errors')
+                or row.get('child_terminal_unknown')
+                or row.get('process_started') is True and row.get('child_cpu_seconds') is None):
+            incomplete.add(row['name'])
+    terminal_incomplete = sorted(set(missing_terminal) | {
+        row['name'] for row in attempts if row.get('process_started') is not False
+        and row.get('terminal_evidence_complete') is not True})
+    unknown_updates = sorted(set(missing_terminal) | {
+        row['name'] for row in attempts if row.get('process_started') is not False
+        and (row.get('terminal_evidence_complete') is not True
+             or type(row.get('new_main_updates_completed')) is not int
+             or row['new_main_updates_completed'] < 0)})
+    return {'missing_terminal_attempt_names': missing_terminal,
+        'actual_continuations_started': sum(r.get('process_started') is True for r in attempts),
+        'launch_status_unknown_names': sorted(unknown_launch),
+        'actual_continuations_started_is_lower_bound': bool(unknown_launch),
+        'sum_attempt_outer_wall_seconds': sum(r['whole_process_wall_seconds'] for r in attempts
+                                              if r.get('whole_process_wall_seconds') is not None),
+        'sum_attempt_wrapper_wall_seconds': sum(r['attempt_wrapper_wall_seconds'] for r in attempts
+                                                if r.get('attempt_wrapper_wall_seconds') is not None),
+        'sum_exact_per_child_cpu_seconds': sum(r['child_cpu_seconds'] for r in attempts
+                                               if r.get('child_cpu_seconds') is not None),
+        'attempt_cost_accounting_complete': not incomplete,
+        'incomplete_attempt_accounting_names': sorted(incomplete),
+        'attempt_sums_are_lower_bounds': bool(incomplete),
+        'attempt_terminal_evidence_complete': not terminal_incomplete,
+        'incomplete_terminal_evidence_names': terminal_incomplete,
+        'sum_verified_new_main_updates_completed': sum(row['new_main_updates_completed']
+            for row in attempts if row.get('terminal_evidence_complete') is True
+            and type(row.get('new_main_updates_completed')) is int and row['new_main_updates_completed'] >= 0),
+        'new_main_update_sum_is_lower_bound': bool(unknown_updates),
+        'new_main_update_count_unknown_names': unknown_updates,
+        'terminal_evidence_scope': 'missing model evidence does not erase separately measured exit CPU or wall'}
+
+
+def strict_c2_json_object(path, *, max_bytes=16 * 1024 * 1024):
+    """Bound and decode every nested JSON object without duplicate-key ambiguity.
+
+    Byte/SHA identity is checked separately by the caller. A valid digest alone
+    cannot make NaN, overflow, or duplicate keys safe to interpret.
+    """
+    path = Path(path)
+    require(path.is_file() and not path.is_symlink() and not path.parent.is_symlink(),
+            'C2 JSON source missing, nonregular or symlinked')
+    require(0 < path.stat().st_size <= max_bytes, 'C2 JSON source size outside bound')
+    raw = path.read_bytes()
+    require(0 < len(raw) <= max_bytes, 'C2 JSON source read outside bound')
+
+    def exact_pairs(pairs):
+        values = {}
+        for key, value in pairs:
+            if key in values:
+                raise ValueError('duplicate C2 JSON key')
+            values[key] = value
+        return values
+
+    def finite_float(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError('nonfinite C2 JSON float')
+        return number
+
+    def reject_constant(value):
+        raise ValueError('nonfinite C2 JSON constant: ' + value)
+
+    try:
+        decoded = json.loads(raw, object_pairs_hook=exact_pairs,
+                             parse_float=finite_float, parse_constant=reject_constant)
+    except (ValueError, UnicodeError, RecursionError, OverflowError) as exc:
+        require(False, 'C2 JSON source has ambiguous or malformed content')
+    require(type(decoded) is dict, 'C2 JSON root must be an object')
+    return decoded
+
+
+def terminal_result_gate(row, path, parent, contract):
+    """An exit code cannot substitute for an identified, complete success artifact.
+
+    All measured process fields are retained on rejection. Terminal evidence
+    completeness is distinct from whether the exit cost itself was measured.
+    """
+    output = dict(row)
+    try:
+        path = Path(path)
+        # A terminal report is externally produced evidence, not a trusted JSON
+        # object. Hash the *same bytes* we parse and reject ambiguous semantics.
+        # Preserve measured process costs if this admission fails.
+        cap = 16 * 1024 * 1024
+        require(path.is_file() and not path.is_symlink()
+                and not path.parent.is_symlink()
+                and 0 < path.stat().st_size <= cap,
+                'terminal result file missing/nonregular/oversized')
+        observed = identity(path)
+        raw = path.read_bytes()
+        require(0 < len(raw) <= cap and len(raw) == observed['bytes']
+                and hashlib.sha256(raw).hexdigest() == observed['sha256'],
+                'terminal JSON bytes changed between identity and parse')
+        output['result'] = observed
+
+        def unique_pairs(pairs):
+            result_pairs = {}
+            for key, value in pairs:
+                require(key not in result_pairs, 'duplicate terminal result JSON key')
+                result_pairs[key] = value
+            return result_pairs
+
+        def finite_float(token):
+            value = float(token)
+            require(math.isfinite(value), 'nonfinite terminal result JSON float')
+            return value
+
+        def no_nonfinite_constant(token):
+            raise ValueError('nonfinite terminal result JSON constant: ' + token)
+
+        result = json.loads(raw, object_pairs_hook=unique_pairs,
+                            parse_constant=no_nonfinite_constant,
+                            parse_float=finite_float)
+        require(type(result) is dict, 'terminal result JSON is not an object')
+        parent_dir = Path(contract['parent_campaign']) / parent['name']
+        parent_result = parent_dir / 'result.json'
+        # The frozen parent is also an external report. A matching digest does
+        # not make duplicate keys, nonfinite floats, or a symlink safe to parse.
+        require(not parent_dir.is_symlink() and parent_result.is_file()
+                and not parent_result.is_symlink()
+                and 0 < parent_result.stat().st_size <= cap,
+                'original parent report missing/nonregular/oversized')
+        parent_identity = identity(parent_result)
+        require(parent_identity['sha256'] == parent['result_sha256'], 'original parent report changed')
+        parent_raw = parent_result.read_bytes()
+        require(0 < len(parent_raw) <= cap
+                and len(parent_raw) == parent_identity['bytes']
+                and hashlib.sha256(parent_raw).hexdigest() == parent_identity['sha256'],
+                'original parent report changed between identity and parse')
+        prior = json.loads(parent_raw, object_pairs_hook=unique_pairs,
+                           parse_constant=no_nonfinite_constant,
+                           parse_float=finite_float)
+        require(type(prior) is dict, 'original parent report JSON is not an object')
+        require(identity(parent_result) == parent_identity,
+                'original parent report changed during terminal admission')
+        require(result.get('schema') == 'hcsn-c2-soft-wall-continuation-v1'
+                and result.get('production_execution') is True
+                and result.get('confirmation_access') is False
+                and result.get('arm') == 'hcsn' and result.get('seed') == parent['seed']
+                and result.get('learning_rate') == parent['learning_rate']
+                and result.get('parent') == str(parent_dir)
+                and result.get('parent_outer') == parent
+                and result.get('parent_report') == parent_identity
+                and result.get('model_configuration') == prior['model_configuration'],
+                'terminal result schema, parent, configuration or fit identity differs')
+        output.update(fit_status=result.get('status'),
+            adequate=result.get('training_adequacy_established') is True,
+            cumulative_epochs_completed=result.get('cumulative_epochs_completed'))
+        if output['returncode'] == 0:
+            require(result.get('status') == 'completed_development', 'exit0 lacks expected success state')
+            counters = ('cumulative_epochs_completed', 'parent_retained_epochs',
+                        'retained_main_updates_at_resume', 'logical_main_updates', 'new_main_updates',
+                        'actual_executed_main_updates_logged_all_phases')
+            require(all(type(result.get(name)) is int and result[name] >= 0 for name in counters),
+                    'exit0 counters must be exact nonnegative integers')
+            require(result.get('source_and_parent_inputs_unchanged') is True
+                    and result.get('common_and_physical_weights_unchanged') is True
+                    and result.get('source_before') == prior['source_before'] == result.get('source_after'),
+                    'exit0 lacks unchanged source/shared/physics evidence')
+            retained, epochs = len(prior['epochs']), result['cumulative_epochs_completed']
+            steps = math.ceil(prior['episodes_train'] / prior['effective_batch_size'])
+            require(type(epochs) is int and retained < epochs <= contract['maximum_epochs']
+                    and result.get('parent_retained_epochs') == retained
+                    and result.get('retained_main_updates_at_resume') == retained * steps
+                    and result.get('logical_main_updates') == epochs * steps
+                    and result.get('new_main_updates') == (epochs - retained) * steps
+                    and result.get('actual_executed_main_updates_logged_all_phases') == prior['main_updates'] + (epochs - retained) * steps,
+                    'exit0 cumulative/partial-work counters differ')
+            require(all(type(r.get('epoch')) is int for r in result.get('epochs', []))
+                    and [r['epoch'] for r in result.get('epochs', [])] == list(range(retained + 1, epochs + 1))
+                    and all(r.get('complete') is True for r in result['epochs']),
+                    'exit0 complete epoch journal coverage differs')
+            require(result.get('parent_full_outer_wall_charged') == parent['whole_process_wall_seconds']
+                    and result.get('cumulative_active_wall_cap_seconds') == contract['cumulative_active_wall_seconds'],
+                    'exit0 resource envelope differs')
+            require(result.get('stop_reason') in ('development_plateau', 'epoch_cap_not_convergence')
+                    and (result['stop_reason'] != 'epoch_cap_not_convergence'
+                         or epochs == contract['maximum_epochs'])
+                    and result.get('training_adequacy_established') is
+                    (result['stop_reason'] == 'development_plateau' and prior['memorization']['passed']),
+                    'exit0 training adequacy/stopping claim differs')
+
+            def bound_object(artifact, expected_sha, maximum_bytes):
+                require(artifact.is_file() and not artifact.is_symlink()
+                        and not artifact.parent.is_symlink()
+                        and 0 < artifact.stat().st_size <= maximum_bytes,
+                        'exit0 bound JSON artifact absent/unsafe/oversized: ' + str(artifact))
+                observed_artifact = identity(artifact)
+                with artifact.open('rb') as artifact_stream:
+                    artifact_bytes = artifact_stream.read(maximum_bytes + 1)
+                require(0 < len(artifact_bytes) <= maximum_bytes
+                        and {'bytes': len(artifact_bytes), 'sha256': hashlib.sha256(artifact_bytes).hexdigest()}
+                        == observed_artifact and observed_artifact['sha256'] == expected_sha,
+                        'exit0 bound JSON bytes differ: ' + str(artifact))
+                artifact_object = json.loads(artifact_bytes, object_pairs_hook=unique_pairs,
+                    parse_constant=no_nonfinite_constant, parse_float=finite_float)
+                require(type(artifact_object) is dict and identity(artifact) == observed_artifact,
+                        'exit0 bound JSON object changed: ' + str(artifact))
+                return artifact_object, observed_artifact
+
+            plan, _ = bound_object(parent_dir / 'plan.json', prior['plan_sha256'], 1024 * 1024)
+            manifest, _ = bound_object(Path(plan['prepared']) / 'data-manifest.json',
+                plan['manifest_sha256'], 16 * 1024 * 1024)
+            require(plan['manifest_sha256'] == contract['data_manifest_sha256']
+                    and type(plan['batch_size']) is int and plan['batch_size'] == prior['effective_batch_size']
+                    and manifest.get('confirmation_access') is False,
+                    'exit0 sample manifest or batch contract differs')
+            from c2_stopping import terminal_stopping
+            stopping_states = terminal_stopping(prior, result, plan, contract['maximum_epochs'])
+            train_ids = [item['id'] for item in manifest['episodes'] if item['partition'] == 'train']
+            require(all(type(name) is str and name for name in train_ids)
+                    and len(train_ids) == len(set(train_ids)) == prior['episodes_train'] > 0,
+                    'exit0 bound training roster differs')
+            for filename, field in [('development_logits.pt', 'selected_development_logits'),
+                    ('events.jsonl', 'events'), ('resume-start.pt', 'resume_start_checkpoint'),
+                    ('RESUME-START.json', 'resume_start_receipt')]:
+                artifact = path.parent / filename
+                require(artifact.is_file() and not artifact.is_symlink()
+                        and identity(artifact) == result.get(field), 'exit0 required artifact differs: ' + filename)
+            for filename, field in [('last.pt', 'last_checkpoint_sha256'), ('best.pt', 'best_checkpoint_sha256')]:
+                artifact = path.parent / filename
+                require(artifact.is_file() and not artifact.is_symlink()
+                        and sha(artifact) == result.get(field), 'exit0 checkpoint artifact differs: ' + filename)
+            # Hash agreement alone cannot corroborate claimed optimizer work.
+            # Parse the exact bounded journal and match the runner's protocol.
+            # This is structural corroboration, not independent training replay.
+            event_path = path.parent / 'events.jsonl'
+            require(0 < event_path.stat().st_size <= 64 * 1024 * 1024,
+                    'exit0 event journal missing/empty/oversized')
+            event_identity = identity(event_path)
+            require(event_identity == result['events'], 'exit0 event journal changed before parse')
+            completed, epoch_index, in_epoch, phase = 0, 0, False, 'resume'
+            event_digest, event_bytes = hashlib.sha256(), 0
+            previous_commit, last_commit_object, episode_order, consumed = None, None, [], 0
+            with event_path.open('rb') as event_stream:
+                for line_number, line in enumerate(iter(lambda: event_stream.readline(1024 * 1024 + 1), b''), 1):
+                    event_digest.update(line)
+                    event_bytes += len(line)
+                    require(line_number <= 1000000 and len(line) <= 1024 * 1024
+                            and event_bytes <= 64 * 1024 * 1024
+                            and line.endswith(b'\n'), 'exit0 event journal truncated/oversized')
+                    event = json.loads(line, object_pairs_hook=unique_pairs,
+                                       parse_constant=no_nonfinite_constant, parse_float=finite_float)
+                    require(type(event) is dict, 'exit0 event journal row is not an object')
+                    kind = event.get('kind')
+                    if phase == 'resume':
+                        require(kind == 'resume_start_committed'
+                                and event.get('receipt') == result['resume_start_receipt']
+                                and event.get('checkpoint') == result['resume_start_checkpoint'],
+                                'exit0 event journal lacks its bound resume witness')
+                        phase = 'between_epochs'
+                    elif kind == 'epoch_started':
+                        require(phase == 'between_epochs' and not in_epoch
+                                and epoch_index < len(result['epochs'])
+                                and type(event.get('epoch')) is int
+                                and event['epoch'] == retained + epoch_index + 1,
+                                'exit0 event epoch start differs')
+                        episode_order = event.get('episode_order')
+                        require(type(episode_order) is list
+                                and all(type(name) is str for name in episode_order)
+                                and len(episode_order) == len(train_ids)
+                                and set(episode_order) == set(train_ids), 'exit0 event sample roster differs')
+                        consumed = 0
+                        in_epoch, phase = True, 'update'
+                    elif kind == 'update_started':
+                        require(in_epoch and phase == 'update' and event.get('phase') == 'main'
+                                and completed < (epoch_index + 1) * steps,
+                                'exit0 event update start is out of order')
+                        episode_ids = event.get('episode_ids')
+                        require(type(episode_ids) is list and episode_ids
+                                and episode_ids == episode_order[consumed:consumed + plan['batch_size']],
+                                'exit0 event batch differs from bound epoch order')
+                        consumed += len(episode_ids)
+                        phase = 'optimizer'
+                    elif kind == 'optimizer_started':
+                        require(in_epoch and phase == 'optimizer' and event.get('phase') == 'main'
+                                and type(event.get('logical_next_update')) is int
+                                and event['logical_next_update'] == retained * steps + completed + 1,
+                                'exit0 event optimizer start differs')
+                        phase = 'completion'
+                    elif kind == 'optimizer_completed':
+                        require(in_epoch and phase == 'completion' and event.get('phase') == 'main'
+                                and type(event.get('number')) is int
+                                and type(event.get('new_number')) is int
+                                and event['number'] == retained * steps + completed + 1
+                                and event['new_number'] == completed + 1,
+                                'exit0 event optimizer completion differs')
+                        completed, phase = completed + 1, 'update'
+                    elif kind == 'epoch_completed':
+                        require(in_epoch and phase == 'update' and completed == (epoch_index + 1) * steps
+                                and consumed == len(train_ids)
+                                and {key: value for key, value in event.items()
+                                     if key not in ('kind', 'commit')} == result['epochs'][epoch_index],
+                                'exit0 event complete epoch differs')
+                        commit_path = path.parent / 'commits' / f'epoch-{event["epoch"]:04d}.json'
+                        commit_receipt = event.get('commit')
+                        require(type(commit_receipt) is dict and type(commit_receipt.get('bytes')) is int
+                                and commit_receipt.get('path') == str(commit_path),
+                                'exit0 epoch commit path differs')
+                        commit, commit_identity = bound_object(commit_path, commit_receipt.get('sha256'), 16 * 1024 * 1024)
+                        require(commit_receipt == {'path': str(commit_path), **commit_identity}
+                                and commit.get('schema') == 'hcsn-c2-complete-epoch-commit-v1'
+                                and type(commit.get('epoch')) is dict
+                                and type(commit['epoch'].get('epoch')) is int
+                                and commit.get('epoch') == result['epochs'][epoch_index]
+                                and type(commit.get('logical_main_updates')) is int
+                                and commit['logical_main_updates'] == retained * steps + completed
+                                and commit.get('previous_commit') == previous_commit,
+                                'exit0 epoch commit lineage differs')
+                        checkpoint_path = path.parent / 'checkpoints' / f'epoch-{event["epoch"]:04d}.pt'
+                        require(commit.get('checkpoint_path') == str(checkpoint_path)
+                                and checkpoint_path.is_file() and not checkpoint_path.is_symlink()
+                                and not checkpoint_path.parent.is_symlink()
+                                and checkpoint_path.stat().st_size > 0
+                                and identity(checkpoint_path) == commit.get('checkpoint'),
+                                'exit0 epoch checkpoint bytes differ')
+                        require(type(commit.get('stopping')) is dict
+                                and type(commit['stopping'].get('best_epoch')) is int
+                                and type(commit['stopping'].get('stale_epochs')) is int
+                                and commit['stopping'] == stopping_states[epoch_index],
+                                'exit0 committed stopping state differs from full metric history')
+                        best_epoch = stopping_states[epoch_index]['best_epoch']
+                        best_path = (path.parent / 'inherited-best.pt' if best_epoch <= retained
+                            else path.parent / 'checkpoints' / f'epoch-{best_epoch:04d}.pt')
+                        require(commit.get('best_path') == str(best_path) and best_path.is_file()
+                                and not best_path.is_symlink() and not best_path.parent.is_symlink()
+                                and best_path.stat().st_size > 0
+                                and identity(best_path) == commit.get('best_checkpoint'),
+                                'exit0 committed best checkpoint is not selected from the metric prefix')
+                        previous_commit, last_commit_object = commit_receipt, commit
+                        epoch_index, in_epoch, phase = epoch_index + 1, False, 'between_epochs'
+                    elif kind == 'finished':
+                        require(phase == 'between_epochs' and not in_epoch
+                                and epoch_index == len(result['epochs'])
+                                and event.get('status') == result['status'],
+                                'exit0 event finished state differs')
+                        phase = 'finished'
+                    else:
+                        raise ValueError('exit0 event journal unknown/out-of-order row')
+            require(phase == 'finished' and completed == result['new_main_updates']
+                    and {'bytes': event_bytes, 'sha256': event_digest.hexdigest()} == event_identity
+                    and identity(event_path) == event_identity,
+                    'exit0 event journal incomplete, counters differ or bytes changed')
+            require(result.get('last_commit') == previous_commit
+                    and last_commit_object['checkpoint']['sha256'] == result['last_checkpoint_sha256']
+                    and last_commit_object['best_checkpoint']['sha256'] == result['best_checkpoint_sha256'],
+                    'exit0 last checkpoint does not match final complete commit')
+            output['event_accounting'] = {'schema': 'hcsn-c2-terminal-event-accounting-v1',
+                'journal': event_identity, 'rows': line_number,
+                'new_main_updates_completed': completed, 'complete_new_epochs': epoch_index,
+                'scope': 'producer journal consistency only; no independent optimizer/checkpoint replay'}
+        else:
+            require(result.get('status') in ('failed', 'budget_exhausted', 'budget_exhausted_finalization',
+                    'recording_hold', 'source_or_parent_changed'), 'nonzero exit has unexpected result state')
+            require(result.get('training_adequacy_established') is False,
+                    'nonzero exit cannot claim completed training adequacy')
+            output['adequate'] = False
+        require(identity(path) == output['result'], 'terminal report changed while checking')
+        completed_updates = result.get('new_main_updates')
+        output['new_main_updates_completed'] = (completed_updates
+            if type(completed_updates) is int and completed_updates >= 0 else None)
+        output.update(terminal_evidence_complete=True,
+            status='timed_out' if output['hard_timeout_sent'] else 'completed' if output['returncode'] == 0 else 'failed')
+    except Exception:
+        output.update(status='failed_terminal_evidence', adequate=False,
+            terminal_evidence_complete=False, terminal_evidence_error=traceback.format_exc())
+    return output
+
+
+def verify_roster(contract, campaign):
+    require(campaign.get('status') == 'completed_attempt_roster' and campaign.get('source_unchanged') is True,
+            'original 42 roster is not source-consistent terminal')
+    require(len(campaign.get('attempts', [])) == 42, 'original roster is incomplete')
+    original = [row for row in campaign['attempts'] if row['arm'] == 'hcsn']
+    target = {(seed, lr) for seed in (101, 211, 307) for lr in (.001, .003)}
+    require(len(original) == 6 and {(r['seed'], r['learning_rate']) for r in original} == target,
+            'original HCSN opportunity roster differs')
+    require(set(contract['fit_names']) == {r['name'] for r in original}
+            and len(contract['fit_names']) == 6, 'C2 contract drops or adds a seed/LR opportunity')
+    for row in original:
+        require(row['status'] == 'failed' and row['fit_status'] == 'budget_exhausted'
+                and row['returncode'] == 2, 'all candidates must have real soft-wall terminal reports')
+    return sorted(original, key=lambda r: r['name'])
+
+
+def run_controller(args):
+    out = Path(args.output)
+    out.mkdir(exist_ok=False)
+    (out / 'attempts').mkdir()
+    (out / 'parent-records').mkdir()
+    (out / 'fits').mkdir()
+    lock = threading.Lock()
+    owner_start_id = 'local-controller-' + str(os.getpid()) + '-' + str(time.time_ns())
+    exclusive_json(out / 'OWNER-START.json', {'schema': 'hcsn-c2-successor-owner-v1',
+        'owner_start_id': owner_start_id, 'pid': os.getpid(),
+        'local_pid_only_not_native_job_evidence': True})
+    journal = (out / 'commands.jsonl').open('x')
+    snapshots, names = {}, []
+    program_inputs = {}
+    report = {'schema': 'hcsn-c2-controller-v2', 'status': 'started', 'attempts': [],
+        'confirmation_access': False, 'scientific_admission': 'HOLD', 'energy_joules': None,
+        'started_utc': datetime.now(timezone.utc).isoformat(), 'fresh_independent_fits_started': 0,
+        'execution_requested': args.execute, 'calendar_scope': 'separate phase; may extend calendar past original 15000s',
+        'cpu_aggregation_scope': 'per-child wait4 exact and RUSAGE_CHILDREN aggregate are two views; do not add together',
+        'controller_setup_scope': 'all imports, source/data admission and launch bookkeeping charged separately once'}
+
+    def record(row, *, final=False):
+        with lock:
+            verified_child = (final and row.get('child_terminal_unknown') is False
+                and type(row.get('returncode')) is int
+                and type(row.get('child_cpu_seconds')) in (int, float)
+                and type(row.get('pid')) is int and type(row.get('result')) is dict
+                and 'sha256' in row['result']
+                and not row.get('terminal_accounting_incomplete'))
+            if verified_child:
+                resource_sha = hashlib.sha256(json.dumps(row, sort_keys=True,
+                    allow_nan=False).encode()).hexdigest()
+                payload = {'status': 'completed' if row.get('status') == 'completed' else 'failed',
+                    'native_job_id': 'local-pid-' + str(row['pid']),
+                    'local_pid_only_not_native_terminal_authority': True,
+                    'result_sha256': row['result']['sha256'],
+                    'resource_sha256': resource_sha}
+                event_type = 'terminal'
+            else:
+                payload, event_type = dict(row), 'progress' if not final else 'unresolved'
+            append_receipt(out / 'controller-receipts', owner_start_id=owner_start_id,
+                attempt_id=row['name'], event_type=event_type, payload=payload)
+            snapshots[row['name']] = dict(row)
+            journal.write(json.dumps(row, allow_nan=False) + '\n')
+            journal.flush()
+            os.fsync(journal.fileno())
+
+    try:
+        program_inputs = bind_program(args.program_manifest)
+        require(str(Path(args.contract).resolve()) in program_inputs, 'controller contract not in frozen manifest')
+        contract = strict_c2_json_object(args.contract)
+        require(contract['execution_authorized'] is False, 'candidate contract must retain its original preparation status')
+        require(contract['maximum_epochs'] == 200 and contract['cumulative_active_wall_seconds'] == 43200
+                and contract['workers'] <= 6 and contract['threads'] == 1
+                and contract['address_space_bytes'] == 8 * 1024**3
+                and contract['peak_rss_bytes'] == 6 * 1024**3, 'C2 frozen resource policy changed')
+        parent_result = Path(contract['parent_campaign']) / 'RESULT.json'
+        require(sha(parent_result) == contract['parent_campaign_result_sha256'], 'original roster hash differs')
+        program_inputs[str(parent_result)] = identity(parent_result)
+        parent_plan = Path(contract['parent_campaign_plan'])
+        require(sha(parent_plan) == contract['parent_campaign_plan_sha256'], 'original campaign plan differs')
+        program_inputs[str(parent_plan)] = identity(parent_plan)
+        require(runtime_identity() == strict_c2_json_object(contract['runtime_identity_path']),
+                'controller runtime differs from original training')
+        require(sha(contract['runtime_identity_path']) == contract['runtime_identity_sha256'], 'runtime receipt differs')
+        program_inputs[contract['runtime_identity_path']] = identity(contract['runtime_identity_path'])
+        parents = verify_roster(contract, strict_c2_json_object(parent_result))
+        names = [p['name'] for p in parents]
+        report['contract'] = identity(args.contract)
+        report['candidate_names'] = names
+        if not args.execute:
+            report['status'] = 'validated_controller_inputs_no_process_started'
+            return report
+        require_decision(args.decision, args.decision_sha256, args.contract, args.program_manifest)
+        program_inputs[str(Path(args.decision).resolve())] = identity(args.decision)
+        report['execution_decision'] = identity(args.decision)
+
+        def run_one(parent):
+            dispatched = time.monotonic()
+            row = {'name': parent['name'], 'status': 'preparing', 'process_started': False,
+                'terminal_evidence_complete': False,
+                'parent_full_outer_wall_seconds': parent['whole_process_wall_seconds'],
+                'parent_actual_hard_wall_seconds': parent['hard_wall_seconds'],
+                'cumulative_active_wall_cap_seconds': contract['cumulative_active_wall_seconds'],
+                'dispatch_utc': datetime.now(timezone.utc).isoformat(),
+                'whole_process_wall_seconds': None, 'attempt_wrapper_wall_seconds': None,
+                'child_cpu_seconds': None}
+            process = None
+            attempt = out / 'attempts' / parent['name']
+            try:
+                record(row)
+                attempt.mkdir(exist_ok=False)
+                outer = out / 'parent-records' / (parent['name'] + '.json')
+                row['parent_outer_record'] = exclusive_json(outer, parent)
+                deadline = child_deadline(contract, parent, dispatched)
+                row['remaining_at_dispatch_seconds'] = deadline - dispatched
+                runner = Path(__file__).with_name('c2_runner.py')
+                command = [contract['python'], '-B', str(runner), '--parent',
+                    str(Path(contract['parent_campaign']) / parent['name']), '--outer', str(outer),
+                    '--source', contract['source'], '--contract', str(args.contract),
+                    '--program-manifest', str(args.program_manifest), '--policy', str(Path(__file__).with_name('POSTERIOR-POLICY.json')),
+                    '--output', str(out / 'fits' / parent['name']), '--execute',
+                    '--decision', str(args.decision), '--decision-sha256', args.decision_sha256]
+                # Do not use preexec_fn from ThreadPoolExecutor threads. A clean
+                # interpreter sets the limit, then execs the exact pinned Python.
+                bootstrap = ('import os,resource,sys; '
+                    f'resource.setrlimit(resource.RLIMIT_AS,({contract["address_space_bytes"]},{contract["address_space_bytes"]})); '
+                    'os.execv(sys.argv[1],sys.argv[1:])')
+                launch = [contract['python'], '-B', '-c', bootstrap, *command]
+                env = os.environ.copy()
+                env.update(HCSN_C2_OWNER_START_ID=owner_start_id,
+                    HCSN_PROCESS_STARTED=str(dispatched), OMP_NUM_THREADS='1',
+                    OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1',
+                    PYTHONDONTWRITEBYTECODE='1', PYTHONHASHSEED='0')
+                row['command'] = launch
+                row['prelaunch_wall_seconds'] = time.monotonic() - dispatched
+                require(deadline - time.monotonic() > contract['finalization_reserve_seconds'],
+                        'no remaining allowance after charged prelaunch setup')
+                with (attempt / 'stdout').open('xb') as stdout, (attempt / 'stderr').open('xb') as stderr:
+                    row['spawn_attempted'] = True
+                    process = subprocess.Popen(launch, cwd=str(Path(__file__).parent), env=env,
+                        stdin=subprocess.DEVNULL, stdout=stdout, stderr=stderr)
+                    row.update(process_started=True, pid=process.pid, status='running')
+                    record(row)
+                    row.update(wait_child(process, deadline))
+                row['whole_process_wall_seconds'] = time.monotonic() - dispatched
+                result_path = out / 'fits' / parent['name'] / 'result.json'
+                row = terminal_result_gate(row, result_path, parent, contract)
+            except Exception:
+                row.update(status='controller_attempt_failure', error=traceback.format_exc())
+                if process is None and row.get('spawn_attempted'):
+                    row.update(process_started=None, terminal_accounting_incomplete=True,
+                               launch_outcome='Popen raised; no per-PID identity returned')
+                if process is not None and process.returncode is None:
+                    try:
+                        os.kill(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                    except Exception:
+                        row['cleanup_kill_error'] = traceback.format_exc()
+                    try:
+                        row.update(wait_child(process, time.monotonic()))
+                    except Exception:
+                        row.update(child_terminal_unknown=True, terminal_accounting_incomplete=True,
+                                   cleanup_wait_error=traceback.format_exc())
+                row['whole_process_wall_seconds'] = time.monotonic() - dispatched
+            finally:
+                row['attempt_wrapper_wall_seconds'] = time.monotonic() - dispatched
+                row['cumulative_parent_and_c2_active_wall_seconds'] = parent['whole_process_wall_seconds'] + row['attempt_wrapper_wall_seconds']
+                row['child_cpu_seconds'] = row.get('child_cpu_seconds')
+                for filename in ('stdout', 'stderr'):
+                    try:
+                        path = attempt / filename
+                        row[filename] = identity(path) if path.is_file() else None
+                    except Exception:
+                        row.setdefault('artifact_errors', []).append(traceback.format_exc())
+                try:
+                    exclusive_json(attempt / 'RESULT.json', row)
+                    record(row, final=True)
+                except Exception:
+                    row.setdefault('journal_errors', []).append(traceback.format_exc())
+            return row
+
+        with ThreadPoolExecutor(max_workers=contract['workers']) as pool:
+            futures = {pool.submit(run_one, parent): parent['name'] for parent in parents}
+            report['attempts'].extend(harvest_futures(futures, snapshots, record))
+        report['status'] = 'completed_attempt_roster'
+    except Exception:
+        report.update(status='controller_failed', error=traceback.format_exc())
+    finally:
+        report.update(cost_totals(report['attempts'], names if args.execute else []))
+        report['source_inputs_before'] = program_inputs
+        try:
+            verify_files(program_inputs)
+            report['source_inputs_unchanged'] = True
+        except Exception:
+            report.update(status='controller_source_changed', source_inputs_unchanged=False,
+                          source_check_error=traceback.format_exc())
+        report.update(controller_full_wall_seconds=time.monotonic() - CONTROLLER_STARTED,
+            controller_full_cpu_seconds=time.process_time(),
+            children_cpu_seconds=resource.getrusage(resource.RUSAGE_CHILDREN).ru_utime + resource.getrusage(resource.RUSAGE_CHILDREN).ru_stime,
+            controller_peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024)
+        if report['missing_terminal_attempt_names']:
+            report['status'] = 'controller_incomplete_attempt_roster'
+        journal.close()
+        report['commands'] = identity(out / 'commands.jsonl')
+        exclusive_json(out / 'RESULT.json', report)
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--contract', type=Path, required=True)
+    parser.add_argument('--program-manifest', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--decision', type=Path)
+    parser.add_argument('--decision-sha256')
+    args = parser.parse_args()
+    result = run_controller(args)
+    return 0 if result['status'] in ('completed_attempt_roster', 'validated_controller_inputs_no_process_started') else 2
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -1,0 +1,34 @@
+{
+  "global_values": [
+    "red",
+    "blue",
+    "green",
+    "yellow",
+    "black",
+    "white",
+    "orange",
+    "purple"
+  ],
+  "learning_rate": 0.001,
+  "minimum_holdout_accuracy": 0.75,
+  "minimum_over_base": 0.5,
+  "minimum_over_shuffled": 0.5,
+  "model_seed": 2718,
+  "phase": "development",
+  "primary_metric": "raw_unconstrained_greedy_exact_match",
+  "production_accepted": false,
+  "rank": 8,
+  "schema": "hepta.parametric-memory.protocol.v1",
+  "scope": "parametric-development",
+  "seed": 413,
+  "source_count": 16,
+  "steps": 512,
+  "test_template": "Which {relation} did we assign to {entity}?",
+  "train_templates": [
+    "What is {entity}'s {relation}?",
+    "Recall the {relation} assigned to {entity}.",
+    "{entity} has which {relation}?",
+    "Return {entity}'s {relation}."
+  ],
+  "value_choice_before_source_sampling": true
+}

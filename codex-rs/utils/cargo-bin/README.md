@@ -7,10 +7,13 @@ behavior consistent in local and remote builds on all platforms. Bazel sets
 `runfiles` crate to resolve runfiles via that manifest.
 
 Function behavior:
-- `cargo_bin`: reads `CARGO_BIN_EXE_*` environment variables (set by Cargo or
-  Bazel) and resolves them via the runfiles manifest when `RUNFILES_MANIFEST_FILE`
-  is present. When not under runfiles, it only accepts absolute paths from
-  `CARGO_BIN_EXE_*` and returns an error otherwise.
+- `cargo_bin`: first reads `CARGO_BIN_EXE_*` environment variables (set by Cargo
+  or Bazel), then `NEXTEST_BIN_EXE_*` runtime variables when Cargo/Bazel metadata
+  is absent. It resolves runfiles through the manifest. Outside runfiles it only
+  accepts an existing absolute path; an invalid explicit value returns an error
+  without falling back to another key or guessing a build-directory path.
+  Nextest exposes binary paths only to integration tests and benchmarks from
+  the same package. This lookup does not supply missing cross-package helpers.
 - `find_resource!`: used by tests to locate fixtures. It chooses the Bazel
   runfiles resolution path when `RUNFILES_MANIFEST_FILE` is set, otherwise it
   falls back to a `CARGO_MANIFEST_DIR`-relative path for Cargo runs.
@@ -18,3 +21,4 @@ Function behavior:
 Background:
 - https://bazel.build/docs/runfiles
 - https://bazel.build/docs/runfiles#runfiles-manifest
+- https://nexte.st/docs/configuration/env-vars/

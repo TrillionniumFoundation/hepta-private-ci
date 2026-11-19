@@ -1,10 +1,10 @@
-//! Accepted topology execution at the existing live runtime owner.
+//! Governed topology validation and product execution admission.
 //!
-//! learning.plasticity remains proposal-only. This boundary requires an
-//! independently issued, single-use kernel.authority token and an already
-//! admitted successor CNS host. The runtime revalidates proposal/handoff,
-//! current/successor generations and actual graph identities immediately before
-//! the existing generation replacement call.
+//! learning.plasticity remains proposal-only. Public runtime mutation is closed
+//! until one Control lifecycle owner binds independent signing custody to durable
+//! native receipts and CNS recovery fences. The private process-local host still
+//! checks proposal/handoff, generations, graph identities and final-use bindings;
+//! those mechanics do not establish physical Cell lifecycle admission.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -117,6 +117,9 @@ pub enum RuntimeTopologyExecutionError {
     Governance(TopologyGovernanceErrorV1),
     FinalUse(FinalUseError),
     Runtime(CnsHierarchyError),
+    /// No durable Control lifecycle owner with independently authenticated
+    /// host/operator/observer provenance and current CNS recovery fences exists.
+    CellLifecycleAdmissionUnavailable,
     Binding,
     Generation,
     Unavailable,
@@ -146,6 +149,21 @@ impl From<CnsHierarchyError> for RuntimeTopologyExecutionError {
     fn from(value: CnsHierarchyError) -> Self {
         Self::Runtime(value)
     }
+}
+
+/// Shared admission for both public mutation paths, before claiming final use.
+///
+/// Cognitive, Learning and Evidence outputs cannot supply execution authority.
+/// There is deliberately no caller flag, role label, receipt digest or signature
+/// format switch that clears this hold. Enabling execution requires composing the
+/// single Control owner with durable CNS CAS/readback, generation fencing and
+/// independently retained recovery/revocation floors, plus independent authenticated
+/// host/operator/observer receipts. An unknown native outcome must remain unresolved
+/// across restart instead of admitting another effect. Process-local callback and
+/// signature tests cannot satisfy those requirements.
+pub(crate) fn require_control_lifecycle_admission_v1() -> Result<(), RuntimeTopologyExecutionError>
+{
+    Err(RuntimeTopologyExecutionError::CellLifecycleAdmissionUnavailable)
 }
 
 pub(crate) struct ValidatedRuntimeTopologyTransitionV1 {

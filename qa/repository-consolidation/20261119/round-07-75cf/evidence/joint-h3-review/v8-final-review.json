@@ -1,0 +1,24 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "bb853fdb731cdec41df2eae826d6be78aa57e366",
+  "tree": "dd414ff4f558eac8c233f5f28e4159e64d5b6eea",
+  "changes": [
+    "A\t.github/workflows/hepta-v8-windows-sandbox.yml"
+  ],
+  "workflow_blob": "33cb559f644fe445f35450477cf889c42f4914d4",
+  "superseded_test_mutex": {
+    "incoming_commit": "bb853fdb731cdec41df2eae826d6be78aa57e366",
+    "current_fix": "c0048ce0723fcb3d5dd979f1d654d0e6aed9d462",
+    "decision": "Retain current Once allocator initialization and concurrent smoke behavior. The old test mutex would hide the concurrent startup condition; its original source remains in the merge parent history."
+  },
+  "build_feature_resolution": "Both sides require sandbox; current version-independent comment and v8 alias preserved.",
+  "workflow_identity_fix": "Bazel COMMIT_SHA now uses the actual checked-out head, matching checkout/ref and identity assertion rather than GitHub PR merge SHA.",
+  "root_refs_written": false,
+  "native_testing_performed": false,
+  "static_validation": {
+    "yaml_parses": true,
+    "read_only_workflow_permissions": true,
+    "bash_syntax": true,
+    "original_test_target_and_assertions_retained": true
+  }
+}

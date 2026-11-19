@@ -1,0 +1,298 @@
+{
+  "schema": "mem8.owner-v11.actual-publication.v1",
+  "observed_utc": "2026-11-11 19:26:10 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 5897,
+  "branch": "codex/mem8-owner-evidence-20261111-ed353817",
+  "expected_previous_head": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+  "ref_update_result": {
+    "success": true
+  },
+  "after": {
+    "ref": "refs/heads/codex/mem8-owner-evidence-20261111-ed353817",
+    "head": "781f675fba693a0717e9326442547e2d86c1a7ef",
+    "pr_head": "781f675fba693a0717e9326442547e2d86c1a7ef",
+    "base": "943196eb18a1a04e7248307cf8708bed38b82b8b",
+    "tree": "ac9f9a4797ba8835590cc34b8426517ea4fbbf5b",
+    "parent": "214cde859281eb13b2d7223c22bfa3a288fcc635",
+    "draft": true,
+    "state": "open",
+    "full_body": "## V11 owner checkpoint: complete baseline plus explicit current companion\n\nAll ten adoption gates remain OPEN. Scientific acceptance is HOLD, the adoption action is NoUpdate, and production adoption is false.\n\n### What changed\n\nThis update preserves the entire original 134,567-byte BLOCKERS.json at blob `2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2` and adds OWNER_FOLLOWUP_V11.json with current publication identities and explicitly scoped new observations. Every original gate, intake, closure requirement and all eighteen previous completed-work entries remain byte-for-byte unchanged. Reading only BLOCKERS.json returns historical V10 execution context; both components together are this V11 checkpoint.\n\nThe companion binds the actual cead source publication in #5935 and the actual V17 evidence publication `21df04700aa885aef72b70962f270b966a112de6` in #5889, with their complete original publication receipts and PR/ref readbacks. Twelve original full reports are verified; six older selected local proof files remain unavailable and are not reconstructed.\n\nThe exact V11 source gate and clean Windows helper/scoped-fix qualification passed. Prior d0f MEM/Architecture/Private and two-case native results keep their exact source boundaries. Original d0f blocking is completed / failure, with 37 terminal jobs: 24 success / 4 failure / 5 cancelled / 4 skipped. All 28 recovered original job logs are byte-bound; original parser/profile gaps remain explicit.\n\n### Current CI and unresolved mechanisms\n\nThe earlier cead five-workflow snapshot at 19:02:55 UTC remains historical. A separate complete 19:08 packet retains ten original API bodies and the full 1,303,056-byte GNU failure log in five exact parts; every payload and complete file hash was independently checked. FLAKY remains distinct from strict pass, the displayed Rust block is not the whole case universe, and the current musl test-stage failure is separate from old d0f dependency cancellation. A later root observation at 19:10:49 UTC shows blocking still in progress, with Mac Intel, musl and GNU already failed at their original Bazel test steps. No current-head required-CI acceptance or transfer of earlier d0f passes is claimed.\n\nThe elevated outside-root delete boundary, memory coverage failure, timeout/flaky native scopes, original provider terminal/physical request count, original H V3/V4 effects and independent owner/trust/effect recovery remain open. V12 is only a reviewed diagnostic patch: no V12 source commit, source gate or native run exists.\n\n### Verification and review\n\nThe full baseline and every new file are verified at the candidate and actual published head. Validation consists of immutable Git full-file reads, exact byte/hash checks, original-report JSON pointer checks and independent static reviews. The managed local environment is unavailable, and the frozen Python owner generator was not run for this explicit companion.\n\n[Review entry point](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/781f675fba693a0717e9326442547e2d86c1a7ef/qualification/memory-cell-mem8-owner/run-001/OWNER_CHECKPOINT_V11.md)\n[Complete unchanged baseline](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/781f675fba693a0717e9326442547e2d86c1a7ef/qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json)\n[Current companion](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/781f675fba693a0717e9326442547e2d86c1a7ef/qualification/memory-cell-mem8-owner/run-001/OWNER_FOLLOWUP_V11.json)\n[Complete V17 evidence checkpoint](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/21df04700aa885aef72b70962f270b966a112de6/qualification/memory-cell-mem8-ci-followup/CHECKPOINT_REPAIR_V17.md)\n\nOriginal owner base `943196eb18a1a04e7248307cf8708bed38b82b8b` is retained. This PR remains draft. No new real model generation, scored actor episode, unknown-request replay, H mutation, merge or deployment is claimed.\n"
+  },
+  "full_raw_ref_and_PR_read": true,
+  "full_PR_body_equal_to_submitted": true,
+  "full_file_readbacks": [
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/ACTUAL_SOURCE_PUBLICATION.json",
+      "bytes": 7453,
+      "sha256": "8a57e5872f84a8e20a49deefcd339d95c3f120ac99c84357489dc06b1b013da6",
+      "git_blob": "f68ea685a44a17879c16f79f128de54f855543c0",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/ACTUAL_EVIDENCE_PUBLICATION.json",
+      "bytes": 5918,
+      "sha256": "113324e110a8556f8e7163e3e244a43db98ff126246f99f9fc1108d64399e8ea",
+      "git_blob": "3d044bfc7548945d8241916bff65a10b6f4d901b",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/PRIOR_OWNER_PUBLICATION.json",
+      "bytes": 4187,
+      "sha256": "25cac64c14d53c7e7869c265fe39df70811e64541443c6589ecd44ae2a0082a2",
+      "git_blob": "02229924b5a89726517e5c45f2017d59b35f26f2",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/VERIFIED_RECOVERED_REPORT_FACTS.json",
+      "bytes": 53336,
+      "sha256": "1fa3cebbec7e4a253f69998980c7d10d40bc4218a2ee2eb9bf2fded8913ba48f",
+      "git_blob": "bb0cd9fc1e5a6481e502d839e2bb808e204c761d",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/APPEND_ONLY_COMPANION_REVIEW.json",
+      "bytes": 9889,
+      "sha256": "7a117b8ce6d54fdd36f92187cf2eb3d557e6932ece1c8a334c6ad7b604ffc45c",
+      "git_blob": "efc94dc5772973bf0c6e0090b0e05ed205469c90",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/SOURCE_PUBLICATION_INDEPENDENT_REVIEW.json",
+      "bytes": 3144,
+      "sha256": "bf9217c09f2134f15d03d4665d87c716ef838eaa2f5f6a7dcef8b15865d50f03",
+      "git_blob": "906a376cfa6c844f6263e8073a71dc2a9f9b0ab0",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/CURRENT_SOURCE_CI_OBSERVATION.json",
+      "bytes": 2757,
+      "sha256": "2726d0f30cc6d6447f1fa3fe6286a72b99ddfa07c37cb352caf7078630c4c4f2",
+      "git_blob": "9c2064f999fe9b5391f86f72148f76fcab6e5c44",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/root-191049/run.json",
+      "bytes": 16560,
+      "sha256": "02e3674305cfe377f70d39077cd0f0ae4040105f83d1a65cf274cd1b112f0912",
+      "git_blob": "ac9456a8fc0ea99eb355eab114938d3cb10d7571",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/root-191049/jobs.json",
+      "bytes": 82845,
+      "sha256": "ceba4b63723424a890e72c4e98c0b51f2697b9e4c5c202ee4629b64d3538ce53",
+      "git_blob": "01b35ee4ea8f4ea61cc915864bf74b6d7316ae8d",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/root-191049/OBSERVATION.json",
+      "bytes": 2913,
+      "sha256": "97594aad3198c0d3ed0fe150b38381f31598d5814ea8488bb814a1c12939c6d1",
+      "git_blob": "bf301e3f8e029df3e40aee6c818d807d7337629f",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/OWNER_FOLLOWUP_V11.json",
+      "bytes": 26684,
+      "sha256": "a6c99cba8dd6fa2d0f42f977503f83f6fc7f5f94b7973684bb11b1cc15b8f5ce",
+      "git_blob": "b65538330f3200ad5b7121e5b47bbbffbf4791ab",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/OWNER_CHECKPOINT_V11.md",
+      "bytes": 12588,
+      "sha256": "d97cf60ac404a80a9d2dd9f474f307259699a8ca858e7471011f2c87c696faab",
+      "git_blob": "fcf599f8fd527086002290debc00ff7aca07d950",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/CORE_BASELINE_INVARIANTS.json",
+      "bytes": 4543,
+      "sha256": "0eb76598417e6d51d466528c107212d68a1d19413254c21555714af8e25d5934",
+      "git_blob": "1b401dd7ce2e84abccb0ba02776d0a96a814e315",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/SELF_CONTAINED_MANIFEST.json",
+      "bytes": 19548,
+      "sha256": "358b2439d0df020cafa91b185e03c3ada0f34b5231b6126cda50c41e158b9a23",
+      "git_blob": "3d4b65c6f1a45e5be26346fb544bee681bb52bd8",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/mem/run.json",
+      "bytes": 14967,
+      "sha256": "f16bf96ef73140c6ae3fc644d755cc633ef78213777f0e908cd6e805765b82a4",
+      "git_blob": "42ffa199bc9a7a361917d6a02c06275e43433a81",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/mem/jobs.json",
+      "bytes": 12174,
+      "sha256": "47ac039d1216a240afc1399525b49eea4d7db7a071ba780c438c30f702e699be",
+      "git_blob": "c9d189018d8b4ed662328b54b06d42e85b03ed0a",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/architecture/run.json",
+      "bytes": 14975,
+      "sha256": "31800ac0d0601acd7fd536226b8ef50ee11f916fe171a72117bddf65e4c132a9",
+      "git_blob": "8ad34bfd8ee6221af514c8a55d3de4fed4535d65",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/architecture/jobs.json",
+      "bytes": 12587,
+      "sha256": "ab148551dcfef20e1161a8c7c7ef88513403f72c32b09ea2b43f657bac3d918e",
+      "git_blob": "a8f111e77fc0032942f15373b44cc6892298c571",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/private/run.json",
+      "bytes": 15011,
+      "sha256": "b3c352f1ebb91d460542a95f5c4c8230a8a7251e83931c0a1668b31e725d1593",
+      "git_blob": "81a50507a3fe1a7df14ecde131f27b86603e943d",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/private/jobs.json",
+      "bytes": 3726,
+      "sha256": "e18da4d752092183b45346605d46a6c74979ece2f4ff0f807f40b8b9e2c33f72",
+      "git_blob": "5879188c3d47ebfa303e0e273cdfa25bb0fe5614",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/windows-current/run.json",
+      "bytes": 14990,
+      "sha256": "38d8293fe0066a3d5937ac569d14eae9fa1b0d89754aedb43b48f09c99afe60f",
+      "git_blob": "1b4335c7e8e4da86b23ed8e8a2d902e73f54a701",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/windows-current/jobs.json",
+      "bytes": 2374,
+      "sha256": "7299d4e8d864ab3b24511fe09889908a72e191c3533df251da4589c515013593",
+      "git_blob": "0261baf31f789a148bab7f2e3386d3e86bcb8e36",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/blocking/run.json",
+      "bytes": 16555,
+      "sha256": "9d4fca5d276eed7dd82d3e38e7fe9f8b3bbf634ced707da45f13eafbc83ac912",
+      "git_blob": "e0ae7f488f86de6c33872c59469bc2714848b436",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/api/blocking/jobs.json",
+      "bytes": 82319,
+      "sha256": "3226729886cc49c6e56e6c27e1c32f77576bc4022e5c789110831f0fba2d4c96",
+      "git_blob": "27569215766dfb3cc02cdc3353f71ac1412b8579",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/OBSERVATION.json",
+      "bytes": 18789,
+      "sha256": "c72af369288732f376e869aa85e05389777a1d93e5483044f8cfea197212a343",
+      "git_blob": "f577481e3fa5570e5cda5e5787131728b3b8dc2f",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/GNU_FAILURE_INDEX.json",
+      "bytes": 1984,
+      "sha256": "85d4e4b9bfc65817ad112fdb23e67a8942f9cda56191acd44c89657c830b6c2b",
+      "git_blob": "8f99043ea3f1a5858bc8a22e603edb121500c809",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/GNU_EXPLANATION.json",
+      "bytes": 14140,
+      "sha256": "2ff7ff59a93d7860d11ca07651706597d2338e77af2af77ff8014387f3084df8",
+      "git_blob": "0fe67ac4ae68fe99423170b604bbe741aaecee4c",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/COLLECTION_SUMMARY.json",
+      "bytes": 664,
+      "sha256": "ccc724a741e7395e8202c91d102add7f3e58e34fa6baf30be73ca7de9a445d60",
+      "git_blob": "15aafa1dcdc70de7758d1f916eb6e00cb8091b18",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/raw/job-130737440544.log.utf8.part-001",
+      "bytes": 300002,
+      "sha256": "92b5367dd50dd618aa1ea8dcc385b4ebbb069bb9e33dcf86066f227dfb803623",
+      "git_blob": "cda377772a8724ca18e142d34c1632066b4c9580",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/raw/job-130737440544.log.utf8.part-002",
+      "bytes": 300000,
+      "sha256": "fea50fccff32b608dd8929e38676b9bc424e8489c9abf059b9a79102e05db3b0",
+      "git_blob": "5a4bb6d0307bf8f5b574237144a974abeb0ed7bc",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/raw/job-130737440544.log.utf8.part-003",
+      "bytes": 300000,
+      "sha256": "1fa3a2f90d3ba76572745e3b8cd0a3da7a7b039bc35561743996f5a7955a0de6",
+      "git_blob": "52e01c7ae6cb83fa038f4ac621b6f5ac8145cc3c",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/raw/job-130737440544.log.utf8.part-004",
+      "bytes": 300096,
+      "sha256": "b999ad6906cf73ebcb8154f67151afb6472fd39e0de13695daf109d9117e92bb",
+      "git_blob": "46fe773bec27c1a86ab9d4bf1aebb3d4ddaff3c2",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/raw/job-130737440544.log.utf8.part-005",
+      "bytes": 102958,
+      "sha256": "897c276aab82234fa7639fb6940b6405b368fa6419cdaee5dea4ddf07e5d81e7",
+      "git_blob": "1f0b8ff6a12189f4b7b88446626c6b58ce82f9bd",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/v11/current-ci/bounded-1908/ROOT_FULL_RECOVERY.json",
+      "bytes": 8534,
+      "sha256": "81e718f165ff2ffc61a0355e906a69ac156914d1a414cc4835789a52d33d9e0d",
+      "git_blob": "80c1dad9f204e3fec49e58fbc0dc63cd07ae1326",
+      "full_content_equal": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json",
+      "bytes": 134567,
+      "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+      "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+      "full_content_equal": true
+    }
+  ],
+  "total_new_files": 34,
+  "complete_original_baseline_unchanged": {
+    "bytes": 134567,
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+    "all_ten_gate_and_intake_objects_unchanged": true,
+    "all_prior_eighteen_closed_entries_unchanged": true
+  },
+  "review_entrypoint": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/781f675fba693a0717e9326442547e2d86c1a7ef/qualification/memory-cell-mem8-owner/run-001/OWNER_CHECKPOINT_V11.md",
+  "independent_final_review": {
+    "bytes": 3327,
+    "sha256": "fea7010f0f4fb8ceef406e5cba6a14f479bea40f87b8d237fd2809ac9f165279",
+    "git_blob": "f7fdeebd1b17af883c8fa1586fbde8c3a1d2add2",
+    "verdict": "PASS_NO_STATIC_MUST_FIX"
+  },
+  "current_source": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "current_evidence": "21df04700aa885aef72b70962f270b966a112de6",
+  "open_adoption_gates": 10,
+  "scientific_acceptance": "HOLD",
+  "adoption_action": "NoUpdate",
+  "production_adoption": false,
+  "current_head_required_CI_accepted": false,
+  "provider_and_H_original_UNKNOWN_unchanged": true,
+  "frozen_Python_generator_executed": false,
+  "new_real_model_requests": 0,
+  "merged": false,
+  "deployed": false
+}

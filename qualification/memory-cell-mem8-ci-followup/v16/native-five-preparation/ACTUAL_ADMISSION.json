@@ -1,0 +1,174 @@
+{
+  "schema": "mem8.v8.native-five.actual-admission.v1",
+  "observed_at": {
+    "current_time": "2026-11-11 15:24:11 UTC"
+  },
+  "branch": "codex/mem8-native-five-v8-20261111-ed353817",
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "harness_head": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+  "harness_tree": "df8a39e57da777a0d59f597cc678230be49414cb",
+  "complete_harness_tree_entries": 14057,
+  "full_remote_file_readbacks": [
+    {
+      "path": ".github/fixtures/mem-native-five-plan.json",
+      "git_blob": "6d611f3f805d87c233bb89700b1dc1b18e750365",
+      "full_remote_bytes_equal": true
+    },
+    {
+      "path": ".github/scripts/mem_native_five.py",
+      "git_blob": "a524828dbc9de8bf65284fb96e1aab47ce2fd738",
+      "full_remote_bytes_equal": true
+    },
+    {
+      "path": ".github/scripts/mem_native_five_support.py",
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "full_remote_bytes_equal": true
+    },
+    {
+      "path": ".github/workflows/hepta-mem-native-five.yml",
+      "git_blob": "602a12f6765d9013021d4e8dc131b276aa1c71a9",
+      "full_remote_bytes_equal": true
+    }
+  ],
+  "scope": {
+    "native_active_cases": 5,
+    "groups": 3,
+    "scoped_fix_packages": [
+      "core_test_support",
+      "codex-core",
+      "codex-windows-sandbox"
+    ],
+    "original_job_budget_minutes": 65,
+    "retries": 0,
+    "profile": "local",
+    "leak_policy": "unchanged default 100ms",
+    "test_capture": "unchanged default",
+    "new_model_requests": 0
+  },
+  "actual_controls": {
+    "metadata": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"sha\":\"5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"node_id\":\"C_kwDOTrgxoNoAKDU1MjlhZWFhY2U4MDQ1OGZiMGIxZWNhZTc3NmY5NWRlNzhjNWY5YzM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:23:09Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:23:09Z\"},\"tree\":{\"sha\":\"df8a39e57da777a0d59f597cc678230be49414cb\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/df8a39e57da777a0d59f597cc678230be49414cb\"},\"message\":\"ci(mem8): qualify five exact Windows regressions and three scoped lint packages on frozen V8 source\",\"parents\":[{\"sha\":\"c89540598693697577cda8cba31cb07f6ce65317\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c89540598693697577cda8cba31cb07f6ce65317\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c89540598693697577cda8cba31cb07f6ce65317\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+        "title": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+        "display_title": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+        "structuredContent": {
+          "title": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+          "content": "{\"sha\":\"5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"node_id\":\"C_kwDOTrgxoNoAKDU1MjlhZWFhY2U4MDQ1OGZiMGIxZWNhZTc3NmY5NWRlNzhjNWY5YzM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"author\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:23:09Z\"},\"committer\":{\"name\":\"Qian QI\",\"email\":\"102159240+ProfHepta@users.noreply.github.com\",\"date\":\"2026-11-11T15:23:09Z\"},\"tree\":{\"sha\":\"df8a39e57da777a0d59f597cc678230be49414cb\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/df8a39e57da777a0d59f597cc678230be49414cb\"},\"message\":\"ci(mem8): qualify five exact Windows regressions and three scoped lint packages on frozen V8 source\",\"parents\":[{\"sha\":\"c89540598693697577cda8cba31cb07f6ce65317\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c89540598693697577cda8cba31cb07f6ce65317\",\"html_url\":\"https://github.com/TrillionniumFoundation/hepta-private-ci/commit/c89540598693697577cda8cba31cb07f6ce65317\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3"
+        }
+      },
+      "isError": false
+    },
+    "branch_absence": {
+      "content": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/refs#get-a-reference\",\"status\":\"404\"}"
+        }
+      ],
+      "structuredContent": {
+        "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/refs#get-a-reference\",\"status\":\"404\"}",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "message": "Not Found",
+          "documentation_url": "https://docs.github.com/rest/git/refs#get-a-reference",
+          "status": "404"
+        }
+      },
+      "isError": true
+    },
+    "create": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "branch": "codex/mem8-native-five-v8-20261111-ed353817"
+      },
+      "isError": false
+    },
+    "before": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"ref\":\"refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoANnJlZnMvaGVhZHMvY29kZXgvbWVtOC1uYXRpdmUtZml2ZS12OC0yMDI2MTExMS1lZDM1MzgxNw\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"object\":{\"sha\":\"c89540598693697577cda8cba31cb07f6ce65317\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c89540598693697577cda8cba31cb07f6ce65317\"}}",
+        "title": "mem8-native-five-v8-20261111-ed353817",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817",
+        "display_title": "mem8-native-five-v8-20261111-ed353817",
+        "structuredContent": {
+          "title": "mem8-native-five-v8-20261111-ed353817",
+          "content": "{\"ref\":\"refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoANnJlZnMvaGVhZHMvY29kZXgvbWVtOC1uYXRpdmUtZml2ZS12OC0yMDI2MTExMS1lZDM1MzgxNw\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"object\":{\"sha\":\"c89540598693697577cda8cba31cb07f6ce65317\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/c89540598693697577cda8cba31cb07f6ce65317\"}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817"
+        }
+      },
+      "isError": false
+    },
+    "update": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "success": true
+      },
+      "isError": false
+    },
+    "after": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "content": "{\"ref\":\"refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoANnJlZnMvaGVhZHMvY29kZXgvbWVtOC1uYXRpdmUtZml2ZS12OC0yMDI2MTExMS1lZDM1MzgxNw\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"object\":{\"sha\":\"5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3\"}}",
+        "title": "mem8-native-five-v8-20261111-ed353817",
+        "modified_date": null,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817",
+        "display_title": "mem8-native-five-v8-20261111-ed353817",
+        "structuredContent": {
+          "title": "mem8-native-five-v8-20261111-ed353817",
+          "content": "{\"ref\":\"refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"node_id\":\"REF_kwDOTrgxoNoANnJlZnMvaGVhZHMvY29kZXgvbWVtOC1uYXRpdmUtZml2ZS12OC0yMDI2MTExMS1lZDM1MzgxNw\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-native-five-v8-20261111-ed353817\",\"object\":{\"sha\":\"5529aeaace80458fb0b1ecae776f95de78c5f9c3\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/5529aeaace80458fb0b1ecae776f95de78c5f9c3\"}}",
+          "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/codex/mem8-native-five-v8-20261111-ed353817"
+        }
+      },
+      "isError": false
+    }
+  },
+  "post_update_read_reconciliation": {
+    "immediate_expected_head_check_failed": true,
+    "immediate_failure_payload_not_retained": true,
+    "subsequent_read_observed_expected_harness": true,
+    "additional_mutation_or_rerun_requests": 0
+  },
+  "actual_run": {
+    "id": 43047914262,
+    "attempt": 1,
+    "event": "push",
+    "head": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+    "created_at": "2026-11-11T15:23:39Z",
+    "status_at_observation": "in_progress"
+  },
+  "admission_is_not_native_pass": true
+}

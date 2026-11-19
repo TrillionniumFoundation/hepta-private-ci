@@ -1,0 +1,30 @@
+{
+  "candidate_tree": "a63a2e790bb52d05b19fb92580228112d747e20a",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "entries": 335,
+  "failures": [
+    {
+      "error": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs: required code order missing: ['let initial_handoff = options.remove', 'if (initial_deployment.is_some() || initial_handoff.is_some())', 'if initial_deployment.is_some() != initial_handoff.is_some()', 'if publication_deployment.is_some() != publication_handoff.is_some()', 'let mut claimed =', 'let initial_handoff = initial_handoff', 'inherited_descriptor(fd, &mut claimed)', 'let owner = std::io::stdin().as_fd().try_clone_to_owned()?', 'RootGenerationInitialDeploymentFilesV1::open_original_initial_deployment(', 'prepared.enable_generation_initial(files.deployment().clone())', 'capability.with_original_initial_deployment(files)?', 'send_root_generation_initial_handoff(', 'if let Some(session) = initial_ready', 'std::io::stdout().flush()?', 'let stop = PublicationDeploymentStop', 'deployment.wait_and_register_initial(stop_ref)?', 'let mut output = stdout.lock()', 'writeln!(output,', 'output.flush()', 'Ok::<_, std::io::Error>(registered)', 'let served = match', 'drop(stop)', 'initial_worker', 'worker.join()', 'served?', 'initial_registered']",
+      "index": 163,
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs: required marker missing: 'ATTEMPTS.fetch_update'",
+      "index": 311,
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs: required marker missing: 'INITIAL_ATTEMPTS.fetch_update('",
+      "index": 332,
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment.rs"
+    },
+    {
+      "error": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs: required marker missing: 'issuer_keys: data.issuer_keys.iter()'",
+      "index": 334,
+      "path": "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs"
+    }
+  ],
+  "native_behavior_executed": false,
+  "official_full_verifier_executed": false,
+  "source_sha": "5daade9e4ce374ac169702d6b59490149ccefd34"
+}

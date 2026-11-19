@@ -1,0 +1,193 @@
+name: HCSN current-state N128 generation-2 warm continuation
+on:
+  push:
+    branches:
+      - research/hcsn-n128-secondcycle-warm-20261112-c06d
+permissions:
+  contents: read
+concurrency:
+  group: hcsn-n128-secondcycle-warm-20261112-c06d-001
+  cancel-in-progress: false
+jobs:
+  actual-n128-secondcycle-warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CANDIDATE_COMMIT: ${{ github.sha }}
+      EXPECTED_BRANCH: research/hcsn-n128-secondcycle-warm-20261112-c06d
+      GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+      MKL_NUM_THREADS: "1"
+      NUMEXPR_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - uses: ./.github/actions/setup-ci-tools
+      - name: Bind exact frozen source before numerical imports
+        run: |
+          set -euo pipefail
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_REF_NAME" = "$EXPECTED_BRANCH"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_COMMIT"
+          git merge-base --is-ancestor 85c73b040448bc58929e40118d533a5ea65705e2 HEAD
+          root="$RUNNER_TEMP/hcsn-n128-secondcycle-warm"
+          mkdir "$root"
+          python -B qualification/hcsn_currentstate_n128_secondcycle_warm/static_inspector.py \
+            --root . --output "$root/STATIC-ADMISSION.json"
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          package = Path('qualification/hcsn_currentstate_n128_secondcycle_warm')
+          request = json.loads((package / 'REQUEST.json').read_text())
+          source = json.loads((package / 'SOURCE.json').read_text())
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          hashes = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest()
+                    for name in source['source_sha256']}
+          if hashes != source['source_sha256']:
+              raise ValueError('remote-frozen source bytes differ')
+          bind = {'source_commit': head, 'parent_head': source['parent_head'],
+                  'identity': request['identity'],
+                  'unique_execution_key': request['unique_execution_key'],
+                  'source_sha256': hashes, 'dynamic_segments': 0,
+                  'matrix_exponentials': 0, 'coordinate_comparisons': 0,
+                  'torch_operations': 0, 'optimizer_updates': 0}
+          output = Path(os.environ['RUNNER_TEMP']) / 'hcsn-n128-secondcycle-warm'
+          (output / 'SOURCE-BIND.json').write_text(json.dumps(bind, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(bind, sort_keys=True))
+          PY
+      - name: Apply exact repository format gate
+        run: |
+          cd codex-rs
+          just fmt --base 85c73b040448bc58929e40118d533a5ea65705e2
+          cd ..
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Install exact numerical runtime
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Bind immediate hosted resource headroom
+        run: |
+          python - <<'PY'
+          import json, os, shutil
+          from pathlib import Path
+          values = {}
+          for line in Path('/proc/meminfo').read_text().splitlines():
+              name, value = line.split(':', 1)
+              values[name] = int(value.strip().split()[0]) * 1024
+          available = values['MemAvailable']
+          if available < 4294967296:
+              raise RuntimeError('host MemAvailable is below the frozen 4 GiB gate')
+          prlimit = shutil.which('prlimit')
+          if not prlimit:
+              raise RuntimeError('prlimit is unavailable')
+          result = {'mem_available_bytes': available,
+                    'minimum_mem_available_bytes': 4294967296,
+                    'address_space_limit_bytes': 1073741824,
+                    'cpu_limit_seconds': 300, 'wall_limit_seconds': 600,
+                    'prlimit': prlimit, 'dynamic_segments': 0,
+                    'matrix_exponentials': 0, 'coordinate_comparisons': 0,
+                    'torch_operations': 0, 'optimizer_updates': 0}
+          output = Path(os.environ['RUNNER_TEMP']) / 'hcsn-n128-secondcycle-warm'
+          (output / 'RESOURCE-PREFLIGHT.json').write_text(
+              json.dumps(result, indent=2, sort_keys=True) + '\n')
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Execute sole bounded N128 generation-2 warm continuation
+        run: |
+          python - <<'PY'
+          import json, os, resource, subprocess, sys, time
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'hcsn-n128-secondcycle-warm'
+          output = root / 'admission'
+          package = Path('qualification/hcsn_currentstate_n128_secondcycle_warm')
+          request = json.loads((package / 'REQUEST.json').read_text())
+          input_root = Path('qualification/hcsn_source_migration_vjp_n128/inputs')
+          roster = Path('qualification/hcsn_currentstate_n128_roster/evidence/source-210b0ad/attempt001')
+          key = request['unique_execution_key']
+          command = ['prlimit', '--as=1073741824', '--cpu=300', '--',
+              sys.executable, '-B', '-m',
+              'qualification.hcsn_currentstate_n128_secondcycle_warm.run',
+              '--start', str(package / 'START.bin'),
+              '--law', str(input_root / 'SELECTED_ORIGINAL_LAW.json'),
+              '--metadata', str(input_root / 'seed37-c0_b1-step24-pos1-n128.json'),
+              '--npz', str(input_root / 'seed37-c0_b1-step24-pos1-n128.npz'),
+              '--roster', str(roster), '--output', str(output),
+              '--identity', request['identity'], '--key', key,
+              '--source-commit', os.environ['CANDIDATE_COMMIT'],
+              '--parent-source-commit', request['base_source_commit']]
+          pre = {'source_commit': os.environ['CANDIDATE_COMMIT'],
+                 'unique_execution_key': key,
+                 'github_run_attempt': int(os.environ['GITHUB_RUN_ATTEMPT']),
+                 'maximum_calls': request['maximum_calls'],
+                 'maximum_coordinate_comparisons': request['comparison_coordinates'],
+                 'address_space_limit_bytes': 1073741824,
+                 'cpu_limit_seconds': 300, 'wall_limit_seconds': 600,
+                 'status': 'STARTING_UNIQUE_ATTEMPT'}
+          (root / 'PRE-EXECUTION.json').write_text(json.dumps(pre, indent=2, sort_keys=True) + '\n')
+          wall = time.perf_counter(); wrapper_cpu = time.process_time()
+          before = resource.getrusage(resource.RUSAGE_CHILDREN)
+          code = None; status = 'UNKNOWN_STARTING_NO_READMISSION'
+          with (root / 'controller.stdout').open('wb') as stdout, (root / 'controller.stderr').open('wb') as stderr:
+              try:
+                  completed = subprocess.run(command, stdout=stdout, stderr=stderr,
+                                             check=False, timeout=600)
+                  code = completed.returncode
+                  status = ('TERMINAL_RESULT_REPORTED' if (output / 'RESULT.json').is_file()
+                            else 'UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION')
+              except subprocess.TimeoutExpired:
+                  status = 'UNKNOWN_WALL_TIMEOUT_NO_READMISSION'
+          after = resource.getrusage(resource.RUSAGE_CHILDREN)
+          cost = {'source_commit': os.environ['CANDIDATE_COMMIT'],
+                  'unique_execution_key': key, 'exit_code': code, 'status': status,
+                  'full_child_tree_wall_seconds': time.perf_counter() - wall,
+                  'full_child_tree_cpu_seconds': after.ru_utime + after.ru_stime - before.ru_utime - before.ru_stime,
+                  'wrapper_cpu_seconds': time.process_time() - wrapper_cpu,
+                  'reported_child_tree_max_rss_kib': after.ru_maxrss,
+                  'maximum_calls': request['maximum_calls'],
+                  'maximum_coordinate_comparisons': request['comparison_coordinates'],
+                  'address_space_limit_bytes': 1073741824,
+                  'cpu_limit_seconds': 300, 'wall_limit_seconds': 600,
+                  'includes_python_numpy_scipy_import_and_all_numerical_work': True}
+          (root / 'WRAPPER-COST.json').write_text(json.dumps(cost, indent=2, sort_keys=True) + '\n')
+          print((root / 'controller.stdout').read_text())
+          print((root / 'controller.stderr').read_text(), file=sys.stderr)
+          print(json.dumps(cost, sort_keys=True))
+          if status != 'TERMINAL_RESULT_REPORTED' or code != 0:
+              raise SystemExit(1)
+          result = json.loads((output / 'RESULT.json').read_text())
+          expected_bytes = request['comparison_coordinates'] * 8
+          if (result['status'] != 'PASS_BOUNDED_N128_SECOND_CYCLE_WARM_ONLY'
+                  or result['identity'] != request['identity']
+                  or result['unique_execution_key'] != key
+                  or result['calls'] != request['maximum_calls']
+                  or [row['coordinates'] for row in result['capsules']]
+                     != request['capsule_coordinate_denominators']
+                  or result['comparison']['coordinates'] != request['comparison_coordinates']
+                  or result['comparison']['failures'] != 0
+                  or not result['comparison']['bitwise_equal']
+                  or (output / 'CANDIDATE-COORDINATES.f64le').stat().st_size != expected_bytes
+                  or (output / 'ORACLE-COORDINATES.f64le').stat().st_size != expected_bytes
+                  or not all(row['cold_container_bytes_exact'] for row in result['capsules'])
+                  or result['qualification'] is not False or result['all_closed'] is not False):
+              raise SystemExit(1)
+          PY
+      - name: Confirm checkout remained immutable
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hcsn-n128-secondcycle-warm-attempt001-originals
+          path: ${{ runner.temp }}/hcsn-n128-secondcycle-warm
+          if-no-files-found: error

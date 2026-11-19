@@ -205,6 +205,7 @@ fn governed_topology_for_runtime(
 #[derive(Debug)]
 struct RuntimeTopologyMigrationFixture {
     handoff_plan_digest: Digest32,
+    snapshots: Arc<AtomicUsize>,
     migrations: Arc<AtomicUsize>,
     rollbacks: Arc<AtomicUsize>,
 }
@@ -212,6 +213,7 @@ struct RuntimeTopologyMigrationFixture {
 #[cfg(unix)]
 impl OrganStateMigrationV1 for RuntimeTopologyMigrationFixture {
     fn snapshot(&mut self, _predecessor: Generation) -> Result<Vec<u8>, OrganMigrationError> {
+        self.snapshots.fetch_add(1, Ordering::SeqCst);
         Ok(b"runtime-topology-owned-state".to_vec())
     }
 
@@ -269,6 +271,7 @@ fn runtime_topology_migration_for(
     (
         Box::new(RuntimeTopologyMigrationFixture {
             handoff_plan_digest: handoff.plan_digest,
+            snapshots: Arc::new(AtomicUsize::default()),
             migrations: Arc::clone(&migrations),
             rollbacks: Arc::clone(&rollbacks),
         }),
@@ -422,6 +425,107 @@ fn sign_runtime_canary_observation(
 }
 
 #[cfg(unix)]
+#[derive(Clone, Copy)]
+enum PublicTopologyEntry {
+    Apply,
+    Recovery,
+}
+
+#[cfg(unix)]
+fn assert_public_topology_entry_is_closed(entry: PublicTopologyEntry) -> Result<()> {
+    // Local signature fixtures exercise refusal only. They cannot supply the
+    // independent custody or durable native receipts required for activation.
+    for subject in [
+        "control.runtime",
+        "cognitive.read",
+        "learning.plasticity",
+        "kernel.evidence",
+    ] {
+        let directory = tempfile::tempdir()?;
+        let root = HeptaStateRoot::parse(directory.path().join("state"))?;
+        let reads = Arc::new(AtomicUsize::default());
+        let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&reads)));
+        let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
+        let current = runtime.topology_snapshot()?;
+        if matches!(entry, PublicTopologyEntry::Recovery) {
+            let mut guard = runtime
+                .organs
+                .host
+                .lock()
+                .map_err(|_| anyhow::anyhow!("test host poisoned"))?;
+            let host = guard.as_mut().map_err(|error| anyhow::anyhow!("{error}"))?;
+            host.host.stop_all()?;
+        }
+
+        let next = build_host_generation(root, state, current.generation().next()?)?;
+        let successor = RuntimeTopologySuccessorV1::new(next.host, next.route)
+            .map_err(|error| anyhow::anyhow!("{error}"))?;
+        let (governed, candidate_id) =
+            governed_topology_for_runtime(subject, &current, &successor.snapshot());
+        let callbacks = Arc::new(AtomicUsize::default());
+        let migration = Box::new(RuntimeTopologyMigrationFixture {
+            handoff_plan_digest: governed.handoffs.first().expect("handoff").plan_digest,
+            snapshots: Arc::clone(&callbacks),
+            migrations: Arc::clone(&callbacks),
+            rollbacks: Arc::clone(&callbacks),
+        });
+        let request = RuntimeTopologyApplyRequestV1 {
+            governed,
+            candidate_id,
+            accepted_subject_id: StableId::new(subject)?,
+            migration,
+            successor,
+        };
+        let binding = match entry {
+            PublicTopologyEntry::Apply => runtime_topology_final_use_binding_v1(&current, &request),
+            PublicTopologyEntry::Recovery => {
+                runtime_topology_recovery_final_use_binding_v1(&current, &request)
+            }
+        }
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+        let (_authority_directory, authority, signed) = final_use_authority_and_grant(
+            binding.clone(),
+            "grant:public-topology:unqualified",
+            deterministic_test_nonce(subject.as_bytes()),
+        );
+
+        let outcome = match entry {
+            PublicTopologyEntry::Apply => {
+                runtime.apply_governed_topology(&authority, &signed, request)
+            }
+            PublicTopologyEntry::Recovery => {
+                runtime.recover_governed_topology(&authority, &signed, request)
+            }
+        };
+        let denied = outcome.expect_err("unqualified product lifecycle must remain closed");
+        assert!(matches!(
+            denied.downcast_ref::<crate::RuntimeTopologyExecutionError>(),
+            Some(crate::RuntimeTopologyExecutionError::CellLifecycleAdmissionUnavailable)
+        ));
+        assert_eq!(runtime.topology_snapshot()?, current);
+        assert_eq!(callbacks.load(Ordering::SeqCst), 0);
+        assert_eq!(reads.load(Ordering::SeqCst), 0);
+
+        // A fresh claim still succeeds: the rejected public transition did not
+        // consume or refund the nonce as part of a partially admitted effect.
+        let _token = authority.claim(&signed, &binding)?;
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn public_governed_topology_denies_before_grant_consumption_or_callbacks() -> Result<()> {
+    assert_public_topology_entry_is_closed(PublicTopologyEntry::Apply)
+}
+
+#[cfg(unix)]
+#[test]
+fn public_topology_recovery_denies_before_grant_consumption_or_callbacks() -> Result<()> {
+    assert_public_topology_entry_is_closed(PublicTopologyEntry::Recovery)
+}
+
+#[cfg(unix)]
 #[test]
 fn governed_topology_requires_final_use_and_replaces_the_live_cns_generation() -> Result<()> {
     let calls = Arc::new(AtomicUsize::new(0));
@@ -511,6 +615,7 @@ fn topology_migration_owner_must_bind_exact_handoff_plan() -> Result<()> {
         accepted_subject_id: StableId::new("operator:migration-binding")?,
         migration: Box::new(RuntimeTopologyMigrationFixture {
             handoff_plan_digest: Digest32::of_bytes(b"wrong-handoff-plan"),
+            snapshots: Arc::new(AtomicUsize::default()),
             migrations: Arc::clone(&migrations),
             rollbacks: Arc::clone(&rollbacks),
         }),

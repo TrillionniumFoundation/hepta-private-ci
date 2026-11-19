@@ -1,0 +1,229 @@
+{
+  "collection_plan_sha256": "7be396821d6a16352b5e71b66f0a374962153c269063134ced06b4ce924d9ee6",
+  "collection_result_sha256": "4d8b2e2d0aeed3da855afbe9813dfe1ddbe6d4f6003e9c9eedf90bcfb048ecf1",
+  "diagnostic_training_rows_sha256": "28411d648b645d3683e3bbcdee7ac6ee9dbef69ad793acc8288d8696bff9c062",
+  "diagnostic_write_text_records": 6,
+  "evaluator_source_sha256": "7988cb2eaaf8e3aad6f943fd762a1fd8847b5d44dbdc6eb5330ca2e45fc6ff45",
+  "interpretation": "The first observable text-quality error is the emitted WRITE_TEXT actor payload: in six of six diagnostic cases the original candidate set already contained canonical-reference matches, while the emitted candidate was a different item. Original actor wire, post-action delivery and evaluator bytes agree; original selection receipts are absent, so exact internal selection mechanism and reason are not established. READ changed no delivered answer in the observed PREPARE-READ-STOP macros; WAIT was not observed.",
+  "native_attempt_result_bytes_verified": 60,
+  "operator_authentication_independently_attested": false,
+  "operator_host_alias": "ai395",
+  "original_action_counts": {
+    "PREPARE_ROI": 24,
+    "READ_ROI": 12,
+    "RENDER_IMAGE": 12,
+    "STOP": 60,
+    "WRITE_TEXT": 12
+  },
+  "original_artifact_inputs_modified": false,
+  "original_source_head": "f6a7d5307f888d30faa8803d23487c78789b99fe",
+  "raw_text_reference_and_candidate_bytes_published": false,
+  "read_roi": {
+    "all_quality_zero": 6,
+    "answer_suffix_performed": false,
+    "diagnostic_records": 6,
+    "four_delivery_snapshots_identical": 6,
+    "real_sequence": "PREPARE_ROI->READ_ROI->STOP"
+  },
+  "readback_export_archive_sha256": "f1d10d6d8e9efcb30980a6fb75439b537dfda05a71f39bcfb1f0f20a17e566a2",
+  "readback_export_manifest_sha256": "c7a5d017c76a2d6c748a97590ddbc71658a48283acb8e1bdaf92a0bc164f137b",
+  "readback_files_verified": 7,
+  "schema": "hepta.ctrl.original-native-readback.v1",
+  "scientific": {
+    "conclusion": "HOLD_NO_GO",
+    "independent_evaluator_causal_holdout_proven": false,
+    "production_update": "no-update",
+    "prospective_control_gain_proven": false,
+    "same_state_observed_stop_continuation_complete": false,
+    "training_tuning_energy_provider_cost_complete": false
+  },
+  "scope": "2026-11-09 frozen #5450 original operator-host collection; read-only forensic audit on 2026-11-10",
+  "total_episodes": 60,
+  "wait": {
+    "future_wait_effect_established": false,
+    "observed_action_count": 0
+  },
+  "write_text": {
+    "actor_payload_exactly_matches_some_candidate": 6,
+    "actor_payload_not_matching_reference": 6,
+    "cause_attributable_to_specific_internal_selector": false,
+    "completed_isolated_launch": 6,
+    "evaluator_source_and_rubric_bound": 6,
+    "exact_reference_candidate_present": 6,
+    "historical_content_selection_receipts_present": 0,
+    "post_action_and_terminal_delivery_identical": 6,
+    "post_action_delivery_equals_actor_payload": 6,
+    "records": [
+      {
+        "action_payload_candidate_indices": [
+          10
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 45,
+        "case_id_sha256": "02bf8991e6d2f0b4f2a0150895417141ee8402c1415a6d82a251dd93e729578e",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "d7f8314082fcddc2d6e475e89fa7085d7194b17b7114c61945a70eec1ec7f259",
+        "ordinal": 1,
+        "original_record_sha256": "41bf3e90c1a3f02157a098ca40b9ea09e539f44dede796bf5c366f86cd10000c",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "029dd5cad7c71ae3d9a6b9a75d61c7bed39f2c1420f9ce39353921cd674f5a35",
+        "post_action_evaluation_sha256": "7f6d51589dc092f72abee804257f04d0244c07a596abc2dca27cd47f9c7179af",
+        "reference_matching_candidate_indices": [
+          19,
+          40
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "33998e14dacf2e8c3e2837abda7a12dee955f774616f4a2acb93e7fd6211eb1a",
+        "terminal_delivery_sha256": "029dd5cad7c71ae3d9a6b9a75d61c7bed39f2c1420f9ce39353921cd674f5a35",
+        "terminal_evaluation_sha256": "d0455af2207fb07e31c74ba4a43bda355bdb5ea4f901c58d034d362667a36a3f",
+        "text_quality": 0,
+        "trajectory_sha256": "1e084f943f668dfe856e1bdb3a32c78d8ed0a48db3a63f496e331c055f2c5eb7"
+      },
+      {
+        "action_payload_candidate_indices": [
+          30,
+          61
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 70,
+        "case_id_sha256": "014c211d7178f94c86917a34b9e1ff1b1b70389f7b501a0a40c6416bffbcff6f",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "a954de046c17fd4e4cd81e133dcee84eeec38ca178e49fa47650b122d4450ccb",
+        "ordinal": 2,
+        "original_record_sha256": "8f45f3b09e33ccdab1d2898b423d46012426f45eff35cb2bb55fb6858d0ac32f",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "f09d56d81d3a7219e8f427734bd786bd0fbaa1d395c67899dbfebcd05b765ca8",
+        "post_action_evaluation_sha256": "d8203bc81fb7da5b59668577a5808837f937d61b4cfbcdf835bb7cfbb692d980",
+        "reference_matching_candidate_indices": [
+          19,
+          52,
+          59
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "482fb6a6b7d0c8dfb16332c6da69dd057949f96da17122e44e527d582aa25568",
+        "terminal_delivery_sha256": "f09d56d81d3a7219e8f427734bd786bd0fbaa1d395c67899dbfebcd05b765ca8",
+        "terminal_evaluation_sha256": "5b0dc11a78a7d9b1944f9a3da4246f22889afbe8b2c86b9beb7fb663d0580458",
+        "text_quality": 0,
+        "trajectory_sha256": "0fadee86cce356a7953e2d5435ad3eccea3a5c840fd9540108ef6e46a069deb8"
+      },
+      {
+        "action_payload_candidate_indices": [
+          44
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 80,
+        "case_id_sha256": "59824395e6b75ea50d1445f419042716232b5f34ca834b20c8dfac20218358dc",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "60b8c0b144e64d84b9d1b1812d342f918204271859631674938d21b1cc5524e2",
+        "ordinal": 3,
+        "original_record_sha256": "d02dfff3ea1f48e8b51a1746b5fcbc1233516b20f2304ad3707ffd1227b95f6a",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "48c54ec4554a75c713390032ae0df197c03d1313470ba4a977448a064fe10127",
+        "post_action_evaluation_sha256": "3b0a330dfe9259d39a736c9a5a426bab4fd0f26886659a4acffcdb638dc98cf3",
+        "reference_matching_candidate_indices": [
+          13
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "28525747cfc7d1501c62320e5fbe560cf67d026395d9c95ffeb182fcbb364378",
+        "terminal_delivery_sha256": "48c54ec4554a75c713390032ae0df197c03d1313470ba4a977448a064fe10127",
+        "terminal_evaluation_sha256": "84a8775eb67ce26e1e527beb4b1b4a2ef26fa5294132bfd48d5ef145d513880a",
+        "text_quality": 0,
+        "trajectory_sha256": "46bda397d4f88ea22095f031158450b4ebe945e2fecc961289c08fe444d36b50"
+      },
+      {
+        "action_payload_candidate_indices": [
+          39
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 71,
+        "case_id_sha256": "319e734318ee4237dbd300109422cafb3f36ae3589547b19edf59924101a4d20",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "3a0d983b449d70030517104809fa6733c3f8b36a00cc4000d27fb3c064d498d4",
+        "ordinal": 4,
+        "original_record_sha256": "081714e51a65774adbbfbcfbe77797994f5fd97bd0d3b96f77904147eca41705",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "91df93de22ee19918cba88f81228ef7dc89a28b2fddd287853954cae9c7f9ad9",
+        "post_action_evaluation_sha256": "b323e741d8d11e6a6eeb380747bca5cb1725aa3ae3c660736ea030ba4181bef3",
+        "reference_matching_candidate_indices": [
+          37
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "4fd24ba058aedd53e489d9c2209f8ecb85334c068d1984443959cd521e619b26",
+        "terminal_delivery_sha256": "91df93de22ee19918cba88f81228ef7dc89a28b2fddd287853954cae9c7f9ad9",
+        "terminal_evaluation_sha256": "ab082097f748205a44b3bce6b66ee3fdffc6c1910c84a7f19b7979f22280884a",
+        "text_quality": 0,
+        "trajectory_sha256": "06d290f5f0b39e67e6afd910f88def2d3828c34712380703bfaba2db6e18f539"
+      },
+      {
+        "action_payload_candidate_indices": [
+          28
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 63,
+        "case_id_sha256": "667f1ada6b2dd6fe52e4933738d23e26db21bd6065dad2a931f948e858ae5540",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "1afff5196ddc2230ca4fc2e59507ff6f53fde07a9fe5925e709ec97fbc9fa4ea",
+        "ordinal": 5,
+        "original_record_sha256": "56e74be26aa319655fa2a68dcde4134b7f2e429edecf23b65e056d9e89f72a6f",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "80d57064cb71ee1c1a13a9b46d8211511828ae84682a216980820c070527451d",
+        "post_action_evaluation_sha256": "373aa06dddfe52163d5103fc9d9ec1706529f61212dc54d7ac55e943e7584b8e",
+        "reference_matching_candidate_indices": [
+          24,
+          56,
+          58
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "24727c86cfaf5094aec571e30f65ef9ba308f53cd2d0c264815c71cbbc74c8e6",
+        "terminal_delivery_sha256": "80d57064cb71ee1c1a13a9b46d8211511828ae84682a216980820c070527451d",
+        "terminal_evaluation_sha256": "3599bc0d20b5cc6e6584a942ff95feae0bbfb0ca7e057e1eaede963539689ebc",
+        "text_quality": 0,
+        "trajectory_sha256": "2b9c2ebefaf3648221556646cb983940e7a6574d97ea1cbe4f40b586b582237e"
+      },
+      {
+        "action_payload_candidate_indices": [
+          10
+        ],
+        "actor_payload_matches_reference": false,
+        "actor_wire_and_trajectory_match": true,
+        "candidate_count": 46,
+        "case_id_sha256": "606175489d11bc7ceb5aaa5bdf9f6a1b8d33b8214bb4e95919a096cda149b3de",
+        "evaluator_receipt_and_normalizer_agree": true,
+        "first_observed_content_failure": "actor_action_payload_not_matching_available_reference",
+        "isolated_launch_completed": true,
+        "launch_sha256": "1757944a7c8150e0d5801831ab13b35e3c51c22b2008b7c335750e108a08c87b",
+        "ordinal": 6,
+        "original_record_sha256": "de9743a28286de22e9d7e5da25c6d4a1c109a7fdc5aa088d9a1033441fd25794",
+        "post_action_delivery_equals_actor_payload": true,
+        "post_action_delivery_sha256": "84a077e6cecea1207d1a24ae013338e7d565804d55ce4d78db8873735f843407",
+        "post_action_evaluation_sha256": "6fa1b6b0871e04e7b20307a80117cd9b09fd068123c7a3d43e5539c8a0594311",
+        "reference_matching_candidate_indices": [
+          27
+        ],
+        "selection_receipt_in_original": false,
+        "source_group_sha256": "387b665d06b6c8a3679e998198e66ac92e9f78637abfc07da261fa239f43369b",
+        "terminal_delivery_sha256": "84a077e6cecea1207d1a24ae013338e7d565804d55ce4d78db8873735f843407",
+        "terminal_evaluation_sha256": "b9b2009d85c5cf0ad1f960bd28eb48852c7e04dff6c87937dfc40c51afdfbe68",
+        "text_quality": 0,
+        "trajectory_sha256": "bdb858503a9cc4823f705f2115cdb5257e6e50b0913981d20dad9935c8176d18"
+      }
+    ],
+    "text_quality_zero_and_normalizer_agrees": 6,
+    "wire_and_trajectory_bound": 6
+  }
+}

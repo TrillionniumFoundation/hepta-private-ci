@@ -119,6 +119,17 @@ Produced contracts:
 - `DomainRead::plasticity_proposal_registryV1`
 - `PlasticityProposalV1`
 - `TopologyProposalV1`
+- `CellSplitV1` (`docs/modules/learning.plasticity/CELL_SPLIT_V1_SCHEMA.json`)
+
+The CellSplit V1 planner is a proposal-only bridge from a typed
+`CellSplitProposalSignalV1` to a complete candidate set. It binds distinct
+generator, evaluator, reviewer and operator identities, exact-successor
+generations, operation lineage, resource budget, risk ceiling, rollback
+procedure, canary, quarantine and independent holdout. Every valid plan
+contains a no-change competitor and remains `RequiresIndependentReview` with
+deny-all authority. The generator cannot select a candidate or perform
+acceptance, promotion or release. Missing signal/evidence, stale generation,
+authority bits, missing rollback or missing holdout are rejection cases.
 
 Consumed contracts:
 

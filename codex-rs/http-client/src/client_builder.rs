@@ -32,6 +32,7 @@ use crate::with_chatgpt_cloudflare_cookie_store;
 pub struct HttpClientBuilder {
     default_headers: Option<HeaderMap>,
     follow_redirects: bool,
+    request_retries: bool,
     connect_timeout: Option<Duration>,
     chatgpt_cloudflare_cookie_store: bool,
     chatgpt_cookie_store: Option<Arc<ChatGptCookieStore>>,
@@ -94,6 +95,11 @@ impl HttpClientBuilder {
 
     pub(crate) fn follows_redirects(&self) -> bool {
         self.follow_redirects
+    }
+
+    pub(crate) fn without_request_retries(mut self) -> Self {
+        self.request_retries = false;
+        self
     }
 
     pub(crate) fn with_rustls_tls(mut self) -> Self {
@@ -316,6 +322,9 @@ impl HttpClientBuilder {
         if !self.follow_redirects {
             builder = builder.redirect(reqwest::redirect::Policy::none());
         }
+        if !self.request_retries {
+            builder = builder.retry(reqwest::retry::never());
+        }
         if let Some(connect_timeout) = self.connect_timeout {
             builder = builder.connect_timeout(connect_timeout);
         }
@@ -334,6 +343,7 @@ impl Default for HttpClientBuilder {
         Self {
             default_headers: None,
             follow_redirects: true,
+            request_retries: true,
             connect_timeout: None,
             chatgpt_cloudflare_cookie_store: false,
             chatgpt_cookie_store: None,

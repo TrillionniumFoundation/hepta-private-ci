@@ -1,0 +1,786 @@
+{
+  "budget": {
+    "claim": "Measured fixture qualification; refinement differences are not certified error bounds or additive independent errors.",
+    "duration": 0.05,
+    "error_scale": "absolute error divided by max(1, absolute continuum reference)",
+    "fixtures": [
+      {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": -0.2,
+        "name": "negative_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": 0.0,
+        "name": "zero_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": 0.2,
+        "name": "positive_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      {
+        "discount": 0.3,
+        "duration": 0.037,
+        "initial_margin": 0.3,
+        "mu": -0.2,
+        "name": "negative_drift_irregular_step",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      }
+    ],
+    "grid": {
+      "active_cells": 128,
+      "endpoint": 2.4,
+      "initial_log_std": 0.08,
+      "phase_cells": 16,
+      "quadrature_order": 32,
+      "refractory": 0.1,
+      "tail_rate": 1.0
+    },
+    "limits": {
+      "combined_value_error": 0.01,
+      "linear_solve_residual_estimate": 2e-10,
+      "phase_refinement_delta": 0.005,
+      "probability_mass_error": 5e-11,
+      "quadrature_refinement_delta": 1e-05,
+      "space_refinement_delta": 0.005,
+      "tail_refinement_delta": 0.005,
+      "time_refinement_delta": 0.005
+    },
+    "outside_scope": [
+      "full parameter domain",
+      "learned policy fidelity",
+      "finite-horizon error bound",
+      "real-task benefit",
+      "FP32",
+      "energy qualification"
+    ],
+    "schema": "hcsn-fixed-policy-error-budget-v1"
+  },
+  "certified_bound": false,
+  "claim": "Declared common-prior, perpetual fixed-policy CPU fixtures only.",
+  "device": "cpu",
+  "finished_utc": "2026-11-08T10:27:28.819453+00:00",
+  "fixtures": [
+    {
+      "continuum_reference": 4.209714834289688,
+      "fixture": {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": -0.2,
+        "name": "negative_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      "gates": {
+        "combined_value_error": {
+          "limit": 0.01,
+          "observed": 0.0012193298448974024,
+          "passed": true
+        },
+        "linear_solve_residual_estimate": {
+          "limit": 2e-10,
+          "observed": 2.377368672283906e-13,
+          "passed": true
+        },
+        "phase_refinement_delta": {
+          "limit": 0.005,
+          "observed": 9.387993933968873e-06,
+          "passed": true
+        },
+        "probability_mass_error": {
+          "limit": 5e-11,
+          "observed": 2.220446049250313e-16,
+          "passed": true
+        },
+        "quadrature_refinement_delta": {
+          "limit": 1e-05,
+          "observed": 1.6325867385739955e-11,
+          "passed": true
+        },
+        "space_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.0009433698673578933,
+          "passed": true
+        },
+        "tail_refinement_delta": {
+          "limit": 0.005,
+          "observed": 2.9926075486590948e-05,
+          "passed": true
+        },
+        "time_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.001230430902158434,
+          "passed": true
+        }
+      },
+      "status": "passed",
+      "variants": {
+        "baseline": {
+          "combined_scaled_error": 0.0012193298448974024,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.7897128222616168e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.214847865225645
+        },
+        "phase": {
+          "combined_scaled_error": 0.0012287178388313714,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 32,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.1931418815077533e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.214887386002973
+        },
+        "quadrature": {
+          "combined_scaled_error": 0.001219329828571535,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 64,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.1931418815077356e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.2148478651569175
+        },
+        "space": {
+          "combined_scaled_error": 0.00027595997753950913,
+          "continuum_value_of_reconstructed_prior": 4.209738144095577,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 256,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 2.3309805889049073e-05,
+          "linear_solve_residual_estimate": 1.7897128222616034e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.210876547100806
+        },
+        "tail": {
+          "combined_scaled_error": 0.0012492559203839933,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 192,
+            "endpoint": 3.5999999999999996,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.7897128222616168e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.214973845469553
+        },
+        "time": {
+          "combined_scaled_error": 0.0024497607470558365,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.025,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 2.377368672283906e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.2200276284470295
+        }
+      }
+    },
+    {
+      "continuum_reference": 2.7394140285158466,
+      "fixture": {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": 0.0,
+        "name": "zero_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      "gates": {
+        "combined_value_error": {
+          "limit": 0.01,
+          "observed": 0.002384135060144561,
+          "passed": true
+        },
+        "linear_solve_residual_estimate": {
+          "limit": 2e-10,
+          "observed": 1.1931418815077356e-13,
+          "passed": true
+        },
+        "phase_refinement_delta": {
+          "limit": 0.005,
+          "observed": 4.858324369690829e-06,
+          "passed": true
+        },
+        "probability_mass_error": {
+          "limit": 5e-11,
+          "observed": 2.220446049250313e-16,
+          "passed": true
+        },
+        "quadrature_refinement_delta": {
+          "limit": 1e-05,
+          "observed": 1.1613633668545861e-11,
+          "passed": true
+        },
+        "space_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.0018349771331177245,
+          "passed": true
+        },
+        "tail_refinement_delta": {
+          "limit": 0.005,
+          "observed": 5.7327686474243066e-05,
+          "passed": true
+        },
+        "time_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.002399449679161453,
+          "passed": true
+        }
+      },
+      "status": "passed",
+      "variants": {
+        "baseline": {
+          "combined_scaled_error": 0.002384135060144561,
+          "continuum_value_of_reconstructed_prior": 2.739567897140973,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00015386862512656307,
+          "linear_solve_residual_estimate": 5.965709407538678e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 2.745945161545483
+        },
+        "phase": {
+          "combined_scaled_error": 0.002388993384514252,
+          "continuum_value_of_reconstructed_prior": 2.739567897140973,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 32,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00015386862512656307,
+          "linear_solve_residual_estimate": 1.1931418815077356e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 2.7459584705074165
+        },
+        "quadrature": {
+          "combined_scaled_error": 0.0023841350485309274,
+          "continuum_value_of_reconstructed_prior": 2.739567897140973,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 64,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00015386862512656307,
+          "linear_solve_residual_estimate": 8.948564111308017e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 2.7459451615136685
+        },
+        "space": {
+          "combined_scaled_error": 0.0005491579270268365,
+          "continuum_value_of_reconstructed_prior": 2.7394524932123723,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 256,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 3.846469652568629e-05,
+          "linear_solve_residual_estimate": 1.1931418815077356e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 2.7409183994450146
+        },
+        "tail": {
+          "combined_scaled_error": 0.0024414627466188043,
+          "continuum_value_of_reconstructed_prior": 2.739567897140973,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 192,
+            "endpoint": 3.5999999999999996,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00015386862512656307,
+          "linear_solve_residual_estimate": 8.948564111308017e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 2.746102205814033
+        },
+        "time": {
+          "combined_scaled_error": 0.004783584739306014,
+          "continuum_value_of_reconstructed_prior": 2.739567897140973,
+          "duration": 0.025,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00015386862512656307,
+          "linear_solve_residual_estimate": 1.1886843361419355e-13,
+          "probability_mass_error": 1.1102230246251565e-16,
+          "projected_value": 2.752518247657296
+        }
+      }
+    },
+    {
+      "continuum_reference": 1.924717421096263,
+      "fixture": {
+        "discount": 0.3,
+        "initial_margin": 0.3,
+        "mu": 0.2,
+        "name": "positive_drift",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      "gates": {
+        "combined_value_error": {
+          "limit": 0.01,
+          "observed": 0.002816496455583133,
+          "passed": true
+        },
+        "linear_solve_residual_estimate": {
+          "limit": 2e-10,
+          "observed": 1.188684336141953e-13,
+          "passed": true
+        },
+        "phase_refinement_delta": {
+          "limit": 0.005,
+          "observed": 2.145492575586461e-06,
+          "passed": true
+        },
+        "probability_mass_error": {
+          "limit": 5e-11,
+          "observed": 2.220446049250313e-16,
+          "passed": true
+        },
+        "quadrature_refinement_delta": {
+          "limit": 1e-05,
+          "observed": 5.8301899676810145e-12,
+          "passed": true
+        },
+        "space_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.0021152154159689283,
+          "passed": true
+        },
+        "tail_refinement_delta": {
+          "limit": 0.005,
+          "observed": 6.615711508964777e-07,
+          "passed": true
+        },
+        "time_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.002756382471680425,
+          "passed": true
+        }
+      },
+      "status": "passed",
+      "variants": {
+        "baseline": {
+          "combined_scaled_error": 0.002816496455583133,
+          "continuum_value_of_reconstructed_prior": 1.9249356513078921,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00021823021162914458,
+          "linear_solve_residual_estimate": 8.948564111308017e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.9301383808907797
+        },
+        "phase": {
+          "combined_scaled_error": 0.0028186419481587193,
+          "continuum_value_of_reconstructed_prior": 1.9249356513078921,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 32,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00021823021162914458,
+          "linear_solve_residual_estimate": 5.965709407538678e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.9301425103577168
+        },
+        "quadrature": {
+          "combined_scaled_error": 0.002816496449752943,
+          "continuum_value_of_reconstructed_prior": 1.9249356513078921,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 64,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00021823021162914458,
+          "linear_solve_residual_estimate": 8.948564111308017e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.9301383808795582
+        },
+        "space": {
+          "combined_scaled_error": 0.0007012810396142045,
+          "continuum_value_of_reconstructed_prior": 1.92477197132101,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 256,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 5.4550224747096365e-05,
+          "linear_solve_residual_estimate": 7.457136759423348e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.926067188930293
+        },
+        "tail": {
+          "combined_scaled_error": 0.0028171580267340296,
+          "continuum_value_of_reconstructed_prior": 1.9249356513078921,
+          "duration": 0.05,
+          "grid": {
+            "active_cells": 192,
+            "endpoint": 3.5999999999999996,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00021823021162914458,
+          "linear_solve_residual_estimate": 5.965709407538678e-14,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.9301396542282991
+        },
+        "time": {
+          "combined_scaled_error": 0.005572878927263558,
+          "continuum_value_of_reconstructed_prior": 1.9249356513078921,
+          "duration": 0.025,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 0.00021823021162914458,
+          "linear_solve_residual_estimate": 1.188684336141953e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 1.9354436382532274
+        }
+      }
+    },
+    {
+      "continuum_reference": 4.209714834289688,
+      "fixture": {
+        "discount": 0.3,
+        "duration": 0.037,
+        "initial_margin": 0.3,
+        "mu": -0.2,
+        "name": "negative_drift_irregular_step",
+        "reset_margin": 0.237,
+        "sigma": 0.4
+      },
+      "gates": {
+        "combined_value_error": {
+          "limit": 0.01,
+          "observed": 0.001657224759595791,
+          "passed": true
+        },
+        "linear_solve_residual_estimate": {
+          "limit": 2e-10,
+          "observed": 4.0230492310030044e-13,
+          "passed": true
+        },
+        "phase_refinement_delta": {
+          "limit": 0.005,
+          "observed": 1.2573428955010665e-05,
+          "passed": true
+        },
+        "probability_mass_error": {
+          "limit": 5e-11,
+          "observed": 2.220446049250313e-16,
+          "passed": true
+        },
+        "quadrature_refinement_delta": {
+          "limit": 1e-05,
+          "observed": 1.7165579872109106e-11,
+          "passed": true
+        },
+        "space_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.0012747085321318421,
+          "passed": true
+        },
+        "tail_refinement_delta": {
+          "limit": 0.005,
+          "observed": 3.141059256191758e-05,
+          "passed": true
+        },
+        "time_refinement_delta": {
+          "limit": 0.005,
+          "observed": 0.0016615652444017777,
+          "passed": true
+        }
+      },
+      "status": "passed",
+      "variants": {
+        "baseline": {
+          "combined_scaled_error": 0.001657224759595791,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.037,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.6092196924012017e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.2166912779439105
+        },
+        "phase": {
+          "combined_scaled_error": 0.0016697981885508018,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.037,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 32,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 2.4138295386018026e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.2167442084943
+        },
+        "quadrature": {
+          "combined_scaled_error": 0.0016572247424302112,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.037,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 64,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.6092196924012017e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.216691277871648
+        },
+        "space": {
+          "combined_scaled_error": 0.00038251622746394894,
+          "continuum_value_of_reconstructed_prior": 4.209738144095577,
+          "duration": 0.037,
+          "grid": {
+            "active_cells": 256,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 2.3309805889049073e-05,
+          "linear_solve_residual_estimate": 4.0230492310030044e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.2113251185267995
+        },
+        "tail": {
+          "combined_scaled_error": 0.0016886353521577088,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.037,
+          "grid": {
+            "active_cells": 192,
+            "endpoint": 3.5999999999999996,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 1.6092196924012017e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.216823507581372
+        },
+        "time": {
+          "combined_scaled_error": 0.003318790003997569,
+          "continuum_value_of_reconstructed_prior": 4.209808078822072,
+          "duration": 0.0185,
+          "grid": {
+            "active_cells": 128,
+            "endpoint": 2.4,
+            "initial_log_std": 0.08,
+            "phase_cells": 16,
+            "quadrature_order": 32,
+            "refractory": 0.1,
+            "tail_rate": 1.0
+          },
+          "initial_projection_error": 9.324453238424013e-05,
+          "linear_solve_residual_estimate": 3.209532953717547e-13,
+          "probability_mass_error": 2.220446049250313e-16,
+          "projected_value": 4.223685993801409
+        }
+      }
+    }
+  ],
+  "formal_fits_started": 0,
+  "physical_energy_joules": null,
+  "python": "3.12.3",
+  "schema": "hcsn-fixed-policy-error-budget-result-v1",
+  "source_after": {
+    "MODEL.md": "983c7a20ddd86529614bedf0cdf040129e2344f5ba5b243671d1d07d2ac71d4f",
+    "README.md": "a917d26bfc407d6a7203956137f0713d10a43a46889a3c995830eb9132b0894e",
+    "__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "error_budget.json": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86",
+    "error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "operator.py": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5",
+    "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "tests/test_benchmark_admission.py": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55",
+    "tests/test_encoder.py": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011",
+    "tests/test_network.py": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759",
+    "tests/test_operator.py": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779",
+    "tests/test_regenerative.py": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0",
+    "tests/test_value.py": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9",
+    "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_before": {
+    "MODEL.md": "983c7a20ddd86529614bedf0cdf040129e2344f5ba5b243671d1d07d2ac71d4f",
+    "README.md": "a917d26bfc407d6a7203956137f0713d10a43a46889a3c995830eb9132b0894e",
+    "__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "benchmark_admission.py": "468f53365852f75d18708b504855ac1b5ad8e982fb4d82a6c5f7ee5bac9eabb0",
+    "checkpoint.py": "9565cba284f479bbab7c8ee61ca7a5330ddb9a9c4efed7786d92a37f7a93c793",
+    "contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "encoder.py": "8297a3a994e0ff7b97e4d73b4ac92f8bdc8a691dfdf145fc8fcc45be5cad7b18",
+    "error_budget.json": "58581f46eaba0381884665b7b7ca7d191a4d026d7b3866622c5da72702649a86",
+    "error_budget.py": "0b378dfea9f72cd946f40248c7573bff324db7fff9570b15cab67d9a2cb78b58",
+    "network.py": "04726551b6d4a53de2eb0daa1d8f5f30d96c7852bcf3ee769220ff584e56a687",
+    "operator.py": "75a81f620c954433ad14ae4b3253038bc88af69f300052495cec8eb782ba58c5",
+    "regenerative.py": "551bdc384257ab0ae510903165b580c50e761410777480989406395750a71ae1",
+    "run_qualification.py": "d84e5fdac31da852f9e4639899dae3e797ee6c0a4e2dd81772d03eff5e43e4c6",
+    "tests/test_benchmark_admission.py": "f5372a17de53d86f39604f79a137cfa2fc0108b1158c04d52f7056b715d01e55",
+    "tests/test_encoder.py": "8f8235398de00aaefef30b92633e189a451c24ed657858220c352e0b6ce66011",
+    "tests/test_network.py": "0ff492b3068cfcb63925d0b986194d8f1cd26ce0672faf48ddbaba07fcb47759",
+    "tests/test_operator.py": "6887878f132ee6a86423f400aaeeac35ff2a96032ac199534e4932fcf3976779",
+    "tests/test_regenerative.py": "d3b6b14859b235f7b2eee3ecefebf76a8e45d1eec34aa55315983be5e26887e0",
+    "tests/test_value.py": "ce6d57768ca785d656fdcb1ab7c86d7379d16f47a58540044474d40378e2acf9",
+    "value.py": "59847f1a39e834e2eb927840ee608b5914b7a61c1ebb4be7fce956b1285b8101"
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-08T10:27:14.915332+00:00",
+  "status": "passed",
+  "torch": "2.8.0+cu128",
+  "wall_seconds": 13.904125570785254
+}

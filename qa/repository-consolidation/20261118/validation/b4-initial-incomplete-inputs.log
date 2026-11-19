@@ -1,0 +1,65 @@
+............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................E.......EEE..................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+======================================================================
+ERROR: setUpClass (test_original_paired_product_source_closure.OriginalPairedProductSourceClosureTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/qa/b4-no-bypass/test_original_paired_product_source_closure.py", line 34, in setUpClass
+    cls.contract = json.loads((ROOT / CONTRACT).read_text())
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/ff772bc098e2/hepta-private-ci/qualification/learn-ordinary-ce434/paired-product-domain-20261112/guard-contract.json'
+
+======================================================================
+ERROR: setUpClass (test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/qa/b4-no-bypass/test_original_positive_root_suffix_source_closure.py", line 108, in setUpClass
+    contract_bytes = (ROOT / CONTRACT_PATH).read_bytes()
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1019, in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/ff772bc098e2/hepta-private-ci/qualification/learn-ordinary-ce434/model-root-closure-repair-441-20261112/route-current-contract.json'
+
+======================================================================
+ERROR: setUpClass (test_original_pre_b_policy_source_closure.OriginalPreBPolicyClosureTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/qa/b4-no-bypass/test_original_pre_b_policy_source_closure.py", line 62, in setUpClass
+    cls.contract = json.loads(CONTRACT.read_text())
+                              ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/ff772bc098e2/hepta-private-ci/qualification/learn-ordinary-ce434/pre-b-agentd-policy-v2-20261112/closure-contract.json'
+
+======================================================================
+ERROR: setUpClass (test_original_product_policy_v2_source_closure.OriginalProductPolicyV2SourceClosureTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ff772bc098e2/hepta-private-ci/qa/b4-no-bypass/test_original_product_policy_v2_source_closure.py", line 32, in setUpClass
+    cls.contract = json.loads((ROOT / CONTRACT).read_text())
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/workspace/scratch/ff772bc098e2/hepta-private-ci/qualification/learn-ordinary-ce434/pre-b-product-policy-v2-20261112/guard-contract.json'
+
+----------------------------------------------------------------------
+Ran 1317 tests in 620.149s
+
+FAILED (errors=4)

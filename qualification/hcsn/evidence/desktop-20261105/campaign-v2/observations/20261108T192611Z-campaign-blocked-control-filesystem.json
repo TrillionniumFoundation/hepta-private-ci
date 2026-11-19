@@ -1,0 +1,160 @@
+{
+  "schema": "hcsn-cuda-campaign-v2-block-observation-v1",
+  "observed_utc": "2026-11-08T19:26:11.849Z",
+  "evidence_branch": "research/hcsn-desktop-evidence-20261105",
+  "expected_branch_head_before_publication": "93eec959dda9b4536e18836e4f8c6cefff84685d",
+  "staging_branch": "staging/hcsn-campaign-evidence-20261108T1926Z",
+  "research_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "frozen_pins": {
+    "candidate_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "campaign": {
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "output_relative": "campaigns/full-v2",
+    "process_status": {
+      "state": "failed",
+      "exit_code": 2,
+      "cancelled": false,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "terminal_publication_confirmed": true,
+      "automatic_retry": false,
+      "at_unix_ms": 1794165971849
+    },
+    "terminal_stdout": {
+      "status": "blocked",
+      "reason": "ValueError: runtime control filesystem below 1 GiB reserve: 460763136 bytes free"
+    },
+    "progress_snapshot": {
+      "status": "blocked",
+      "started_utc": "2026-11-05T17:59:19.201114+00:00",
+      "updated_utc": "2026-11-08T19:26:11.539132+00:00",
+      "finished_utc": "2026-11-08T19:26:11.539096+00:00",
+      "active_stage": "full",
+      "full_stage_status": "running",
+      "completed_cuda_runs": 92,
+      "requested_cuda_runs": 170,
+      "registered_run_indexes": {
+        "completed": 92,
+        "failed": 0,
+        "unavailable": 0
+      },
+      "global_qualification": "open",
+      "no_automatic_training_retries": true,
+      "budget_change_permitted": false,
+      "task_volume_free_bytes": 86222520320,
+      "control_filesystem_free_bytes": 286027776,
+      "runtime_ready_receipts": {
+        "torch_ready_sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+        "mamba_ready_sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+      }
+    },
+    "disk_gate": {
+      "required_control_filesystem_reserve_bytes": 1073741824,
+      "free_bytes_reported_by_gate_error": 460763136,
+      "free_bytes_in_progress_snapshot": 286027776,
+      "observations_disagree": true,
+      "task_volume_free_bytes_in_progress_snapshot": 86222520320,
+      "interpretation": "The recorded block is the separate runtime control filesystem reserve gate, not the task-volume free-space threshold. The two control-filesystem free-space readings differ and require later reconciliation."
+    },
+    "read_boundary": {
+      "progress_json": "read",
+      "process_status": "read",
+      "process_stdout": "read",
+      "terminal_json": "not_read",
+      "full_json": "not_read",
+      "full_runtime_manifest": "not_read",
+      "full_b_audit": "not_read",
+      "checkpoint_attempt_indexes": "not_read",
+      "reason": "Subsequent direct SSH directory/file reads were refused with direct SSH admitted capacity exhausted; no child submitted; no automatic retry. Durable process inventory also exceeded its response byte bound."
+    },
+    "stage_liveness": {
+      "progress_reports_full_stage_running": true,
+      "child_liveness": "unverified",
+      "interpretation": "The parent durable campaign process is terminal failed, while the progress snapshot still labels the full child stage running. No claim is made that the child has stopped; no process was killed."
+    }
+  },
+  "dependency_receipts": {
+    "mamba_wheels": {
+      "job_id": "1a1aca7f6ba-fc05-5631",
+      "state": "succeeded",
+      "exit_code": 0,
+      "scope": "Wheel/file verification only."
+    },
+    "original_torch_job": {
+      "job_id": "1a1aca78192-fc05-562f",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "wheel METADATA identity is ambiguous"
+    },
+    "original_mamba_waiter": {
+      "job_id": "1a1acadd69c-fc05-5654",
+      "state": "failed",
+      "exit_code": 1,
+      "error": "Torch owned job did not succeed; no automatic retry or installation"
+    },
+    "torch_recovery": {
+      "job_id": "1a1afd5eec2-fc05-6c0f",
+      "state": "succeeded",
+      "exit_code": 0,
+      "automatic_retry": false
+    },
+    "mamba_recovery": {
+      "job_id": "1a1afd9a386-fc05-6c2c",
+      "state": "succeeded",
+      "exit_code": 0,
+      "automatic_retry": false
+    }
+  },
+  "ci": {
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_id": 42078258351,
+    "job_id": 127424159520,
+    "job_state": "completed",
+    "job_conclusion": "success",
+    "steps_passed": 10,
+    "steps_total": 10,
+    "scope": "Exact-source hosted CI CPU tests; not desktop CUDA training.",
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "job_id": 127299267982,
+      "state": "completed",
+      "conclusion": "cancelled"
+    }
+  },
+  "qualification": {
+    "full_170_run": "blocked; 92 progress-registered indexes, not independently audited as checkpoint/weight/attempt/budget completions",
+    "baseline_strict": "95/95 passed",
+    "candidate_strict": "109/109 passed",
+    "policy": "policy 1; frozen and uniform for all 20 B identities",
+    "fixed_cpu_cuda_parity": "16/16 each on one-update fixture only",
+    "original_b_fullshape": "forward CUDA OOM; failure retained",
+    "candidate_b_fullshape": "both one-step probes completed; not full B audit",
+    "b_identity_audit": "open; all 20 identities remain in denominator",
+    "mamba2_full_matrix": "open; only one-step CUDA probe established",
+    "complete_shape_parity": "open",
+    "full_checkpoint_weight_attempt_budget_audit": "open",
+    "physical_gpu_energy": {
+      "joules": null,
+      "status": "NVML NVMLError_NotSupported; CPU RAPL PermissionError",
+      "imputation": false
+    },
+    "legacy_smoke_adverse_result": "Filtered hidden-trace RMS .1660–.1977; not final readout prediction RMS and not evidence of resolution independence or task superiority."
+  },
+  "safety": {
+    "this_followup_started_training": false,
+    "this_followup_retried_any_model_budget": false,
+    "model_budget_changed": false,
+    "research_source_branch_modified": false,
+    "campaign_outputs_modified": false,
+    "unrelated_processes_stopped": false,
+    "files_deleted": false,
+    "driver_or_system_services_changed": false,
+    "pr_4873_modified": false,
+    "credentials_or_signed_urls_published": false
+  }
+}

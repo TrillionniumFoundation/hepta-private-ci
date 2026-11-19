@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-terminal-descriptive-resource-analysis-plan-v1",
+  "written_utc": "2026-11-10T19:17:28.678400+00:00",
+  "scope": "Post-terminal descriptive analysis; final scores and selected example epochs were already observed. Only the three resource cuts and target were predeclared in the original campaign. No prospective-confirmation claim.",
+  "input_curves_sha256": "9e2ff18ec234185ac68c581c775e8ac93c15d62a68605c4897c0fc1098da2d94",
+  "fixed_budget_seconds": [
+    300,
+    900,
+    1800
+  ],
+  "target_D_macro_f1": 0.3,
+  "primary_clock": "original process wall; C1 cumulative process wall preserves its original later sample",
+  "views": [
+    "original42_only",
+    "original42_plus_separate_C1"
+  ],
+  "per_budget_quality": "Maximum recorded D macro-F1 at a completed evaluation at or before the per-fit budget, including explicitly timed before-training evaluation. No observation means null, not zero; no interpolation.",
+  "learning_rate_selection": "One common LR per core by mean over all three declared seeds, among both original LRs; if any seed is missing that LR has no three-seed mean. Ties choose lower LR. Preserve both rosters and all diagnostic failures.",
+  "budget_cost": "Actual charged per-fit wall at the cutoff is min(whole recorded chain outer wall, cutoff); sum all six candidates. This is a scoped observed-at-most-budget view, not a claim of matched physical energy or equal granted CPU time.",
+  "original_caps": "Original-only view retains 100-epoch caps and diagnostic failures. The second view explicitly includes post-cap C1 and its costs. No C2.",
+  "final_quality": "Common-LR selection by three-seed final best complete-epoch score; HCSN remains budget-censored/adequacy false, even if a descriptive mean can be calculated.",
+  "target_time": "First observed complete-epoch crossing for each final-selected common-LR seed, using uniform epoch clocks; report median only when all three cross. Noncrossing seeds stay right-censored; before-training evaluations are not target crossings.",
+  "memory": "Report maximum complete-attempt RSS across all six candidates and continuation; this is an upper bound for RSS up to a target, not measured target-time RSS or GPU VRAM.",
+  "CPU": "Retain original measured epoch prefixes; C1 cumulative CPU is only a lower bound because original parent exit CPU is missing. Do not invent a cumulative exact CPU or use it to decide a cutoff.",
+  "validation": [
+    "Recompute 11-class macro-F1 and accuracy from every retained confusion matrix.",
+    "Bind all49 report hashes to archived source/outer receipts and verify source unchanged.",
+    "Reconcile final selected LR/quality/cost against independently reviewed baseline table and six-HCSN terminal summary.",
+    "Verify strict increasing original epoch clocks and C1 exact parent-offset/outer bounded intervals."
+  ],
+  "outputs": [
+    "RESULT.json",
+    "compact recorded points",
+    "Markdown results table",
+    "scientific plot if informative"
+  ],
+  "training_or_model_execution": false,
+  "energy_joules": null,
+  "scientific_admission": "HOLD"
+}

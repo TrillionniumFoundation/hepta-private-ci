@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.v3.development-review",
+  "unit_tests": {
+    "passed": 33,
+    "failed": 0,
+    "command": "PYTHONPATH=experiments/multimodal_output_portfolio:experiments/multimodal_output_portfolio/v3 python -W error -m unittest discover -s experiments/multimodal_output_portfolio/v3 -p test_*.py -v",
+    "seconds": 2.024,
+    "exit_code": 0,
+    "post_test_warning": "Torch/stdlib TemporaryDirectory ResourceWarning printed at interpreter cleanup; all 33 tests and exit code passed; warning retained"
+  },
+  "resolved_development_failures": [
+    {
+      "kind": "wrong test invocation path",
+      "resolution": "use unittest discovery with explicit v3 and parent import paths"
+    },
+    {
+      "kind": "read-only arrays in synthetic mocked-tree fixture",
+      "resolution": "freeze actual NumPy arrays only; copy read-only innovations before Torch conversion"
+    },
+    {
+      "kind": "development001 JSON serialization",
+      "resolution": "explicit NumPy scalar conversion; failed directory retained"
+    }
+  ],
+  "development_runs": [
+    {
+      "run": "development-001",
+      "files": {
+        "failure.json": "0fa16777440f6499b79ae6fece2f17174efc850e2d4c25a852d510383fac5a8c",
+        "feedback-worlds.jsonl.gz": "52ea1f7762723fdb768029e652a1e87710e2f84efef3487c8f87db1e7802eeaf",
+        "native-execution.json": "ee9e2b9b8a06b50cd7e043bbf42545351bd5a1bfd2ef247c805f373057b12e26",
+        "native-transcript.tsv.gz": "80d3098e3559203b9aac2276258318d7347de41a930b413b442c530078706beb",
+        "progress.jsonl": "b41dc1b3fedbfb9e27800d3a139121dc3d4d16a2be46e0a5d3d252caf9c9fbc1",
+        "protocol.json": "8c848ca1666ade0e50801cd03f7d4b0e3f35860e06caea67af9acdf5eccfb956",
+        "results.json": "26093bba660ff529b58a3a4c9b6a3bfb7c79b2eb8d2fbe408a6c171ff1aca92c",
+        "runtime-start.json": "a1b286c3c7c10ae19fc50d1f80aeddf5c8f46e5d4d71a4827a059549e9b7d93e",
+        "seed-5/compiled-policies.json": "955ddebf3bf3cb327d6e74c04475679f31a073d757f59c1db9da1c1669617665",
+        "seed-5/ndu-model.pt": "5f82c938cd15f7ea4efdee9894e1c097d4fb393ca91eee0b6418c499a41bb2e1",
+        "seed-5/ndu-training.json": "6b7149490f4a9c2fbbf7993cb5e7cda7277c8d3ba74311f6d586fd1d3d4f1d5d",
+        "seed-5/preference.json": "6d13c5db96d388077d9239722156dfc905d36827ccbe4bb67e84dd7f2c776054",
+        "seed-5/source-compilation.json": "33dbbacb168e39e9e6a9b9e90569817909dab8715ac4537ce5f7d1485c70732d",
+        "seed-5/static-selection.json": "4cfe73e2008dc25112cf9536423f765abb552a2909e0620f70e6576b499a2bdb",
+        "seed-5/supervised-model.pt": "6628f1b1cd824eda5f2a6daca56b93ee36df5cd16c293657cf594b223603f40a",
+        "seed-5/supervised-training.json": "6a8e051c78cac6b4e3907bb9fcadfba825f5ab14551c15deed16d59806f597dc",
+        "seed-5/warmup.json": "22eab836119e400f08d3606a02001c6f2f7d675ca39ac9994f4ce707bdf82622",
+        "source-worlds.jsonl.gz": "93b9c13ed0c4e4e97df1e492bcf9bec39f6f142c60b00475eba7fa21f82beed3"
+      },
+      "failure.json": {
+        "type": "TypeError",
+        "error": "Object of type bool_ is not JSON serializable"
+      }
+    },
+    {
+      "run": "development-002",
+      "files": {
+        "artifact-manifest.json": "7bc5f174b9b10e676a9f36e303fc6215db82cb8a7adea9338601994f556e1b5c",
+        "bsde-special-case.json": "ddf8385b0084105b90fbadbc433ebf0e6f3392ea8c73f453bba0bc3b1500f07e",
+        "completion.json": "9abec4b5948bc4573a20880e317930884cb9fc072be8e38338d201a07e41541a",
+        "feedback-summaries.json": "1877a65e432001bd8949f8aaabfaa5f9176b988bfa4c6ce93ec284c355089c5f",
+        "feedback-worlds.jsonl.gz": "8131593bcb07c7d61c89f22d68a0b12d453236786b6f8df6462ed1a6f7f7ec3e",
+        "native-execution.json": "eb3a6e142b714bdd2fbdc90ee54e9cec642d266388bdb8a63810749b4b59a9d3",
+        "native-transcript.tsv.gz": "e6923a8f62e560dcd4aaf0f2100d0e8f5fec744109e4c53c54f5711de3df4834",
+        "oracle-audits.json": "7ae78712c25843d9469fb88e0fad947e4f3ad55d03443469eae07301e6ad4fed",
+        "preference-results.json": "e33a4d812b3f47c2c37957070d41b777feea1d5d9c6aedaee1a545b4d8687de4",
+        "progress.jsonl": "e839bf09784e2c2170777547bc90a12b88b886c1b6041657909f8bc7c04089a9",
+        "protocol.json": "8c848ca1666ade0e50801cd03f7d4b0e3f35860e06caea67af9acdf5eccfb956",
+        "results.json": "6cfafce12b6419d9f161e8ab8276d817ff59d51b2bf3fa6df3ef3fda5594d8c2",
+        "runtime-start.json": "4cc4556c2456563cda10225ddaf067f0199719e5612fc489ad8f73072c39497a",
+        "seed-5/compiled-policies.json": "bb7fc1e147a1f63eb4113ddc190e628b13f8a222e56b13387482fad0982d5e5d",
+        "seed-5/ndu-model.pt": "5f82c938cd15f7ea4efdee9894e1c097d4fb393ca91eee0b6418c499a41bb2e1",
+        "seed-5/ndu-training.json": "d79d1acbb24993965c87e579ef5d6594bb04e21bbe9e9c4ace8855afda44e01d",
+        "seed-5/preference.json": "110da293eff90bdb1d3508b53ece3c6e1f4c48b8e9999870711d0a0166537df9",
+        "seed-5/source-compilation.json": "1803b157e20ecfbd5ccf98afc47df8a8338ff62798a908474d969a2c4a10607b",
+        "seed-5/static-selection.json": "4cfe73e2008dc25112cf9536423f765abb552a2909e0620f70e6576b499a2bdb",
+        "seed-5/supervised-model.pt": "6628f1b1cd824eda5f2a6daca56b93ee36df5cd16c293657cf594b223603f40a",
+        "seed-5/supervised-training.json": "3efd01688e6ba68a76d649e1fd0eca95bb5f8bb2461db41e713a33104a12c02e",
+        "seed-5/warmup.json": "a807f141c37eb080900a3614250986fef2e4b58b606715dc1f30731d7a6399ff",
+        "source-summaries.json": "ab2b47a90cfd0cf40823b9cb0da1f7f0d8522fd7c724e823bbc2cb8a99d515a1",
+        "source-worlds.jsonl.gz": "fab8a5a9f26e5268f26975683375a2a7090bdd6039a6f5793df95ab2108a9bcb"
+      },
+      "completion.json": {
+        "completed": true,
+        "wall_seconds": 5.873545038999509,
+        "process_cpu_seconds": 6.925002291,
+        "source_unchanged": true,
+        "smoke": true,
+        "seeds": [
+          5
+        ],
+        "primary_pass": false
+      }
+    }
+  ],
+  "production_or_natural_generation_claim": false,
+  "formal_source_freeze": "9653b066563df803b6f18c0045c49b9f73312c50"
+}

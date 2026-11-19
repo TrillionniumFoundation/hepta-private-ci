@@ -1,0 +1,51 @@
+{
+  "all_costs_included": true,
+  "driver_sha256": "0caa0feea59e37f4b0788907db466560b13e5fbc1fd8ec1ca396bdda78ff159b",
+  "per_trial_hard_wall_seconds": 90,
+  "selection": "final training macro F1, then accuracy, then lowest NLL, then listed order; no D/E scoring",
+  "source_capsule_sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5",
+  "trials": [
+    {
+      "gain": 1.0,
+      "tau": 1.5,
+      "threshold": 0.5
+    },
+    {
+      "gain": 2.0,
+      "tau": 1.5,
+      "threshold": 0.5
+    },
+    {
+      "gain": 1.0,
+      "tau": 1.5,
+      "threshold": 1.0
+    },
+    {
+      "gain": 2.0,
+      "tau": 1.5,
+      "threshold": 1.0
+    },
+    {
+      "gain": 1.0,
+      "tau": 4.0,
+      "threshold": 0.5
+    },
+    {
+      "gain": 2.0,
+      "tau": 4.0,
+      "threshold": 0.5
+    },
+    {
+      "gain": 1.0,
+      "tau": 4.0,
+      "threshold": 1.0
+    },
+    {
+      "gain": 2.0,
+      "tau": 4.0,
+      "threshold": 1.0
+    }
+  ],
+  "updates_each": 256,
+  "workers": 1
+}

@@ -1,0 +1,136 @@
+{
+  "review_type": "Independent saved-artifact review; no candidate import or execution",
+  "review_date_utc": "2026-11-04",
+  "verdict": "PASS for saved synthetic qualification and independent synthetic artifact reconstruction only",
+  "freeze_sha256": "c78a3f89520063cce49d8ff433dbd62d35ce0355b97738d850f68f1e8fc7cda3",
+  "source_review_sha256": "cacfba842b116816d742cbc3860f12ba882a9c6a26ce5b410b63a78bb57ff9a7",
+  "prior_blocked_review_sha256": "cf2189dc4bb437b06b0242ccb74c331d6709891abd36724cba8f47b77d8c30e1",
+  "method": "Fresh stdlib-only reviewer independently constructs the documented300 base17 images with divmod, cycling labels, raw pixel/group and domain hashes, ceil integer thresholds, sorted records, source-row manifest, gzip source identity, canonical JSON files and COMPLETE bindings. Reads only candidate documents/source review, freeze entries and saved handmade synthetic outputs. Does not import/compile/evaluate candidate or rerun any candidate test. No real asset resolution/open/decode.",
+  "checks": {
+    "all_12_freeze_entries_unchanged": true,
+    "initial_blocked_review_unchanged": true,
+    "source_review_unchanged": true,
+    "independent_unique_groups": 300,
+    "independent_partition_counts": {
+      "TRAIN": 190,
+      "selection": 50,
+      "final": 60
+    },
+    "independent_train_class_counts": [
+      16,
+      18,
+      19,
+      22,
+      18,
+      22,
+      22,
+      18,
+      16,
+      19
+    ],
+    "complete_partition_files_byte_identical": 6,
+    "manifest_source_bytes": 1025,
+    "manifest_source_sha256": "2b8f7691592b217c95d46cdd47bf8a828dc4b263bd7f06c73585012f184e1e23",
+    "raw_fixture_bytes": 39239,
+    "duplicate_free_source_rows_exactly_0_through_299": true,
+    "complete_marker_exact": true,
+    "complete_pending_absent": true,
+    "public_receipt_exact": true,
+    "partial_exact_files": [
+      "PUBLIC_RECEIPT.json",
+      "TRAIN/records.jsonl"
+    ],
+    "partial_complete_and_pending_absent": true,
+    "qualification_checks_exact_order": 39,
+    "qualification_negative_exact_records": 32,
+    "negative_type_counts": {
+      "Reject": 29,
+      "FileExistsError": 2,
+      "OSError": 1
+    },
+    "all_saved_json_canonical": true,
+    "terminal_inventory_pre_receipt_exact": true,
+    "terminal_files_including_wait_receipt": 10
+  },
+  "accounting": {
+    "child_exit": 0,
+    "children_started": 1,
+    "children_reaped": 1,
+    "complete_wait": true,
+    "killed": false,
+    "child_cpu_seconds": 0.270839,
+    "parent_observed_cpu_prefix_seconds": 0.027925892,
+    "observed_cpu_subtotal_seconds": "0.298764892",
+    "parent_final_tail": "unknown and nonzero; excluded from observed subtotal, not a zero-cost claim",
+    "wall_seconds_through_receipt_construction": 0.28403174597769976,
+    "child_peak_rss_kib": 23516,
+    "retained_bytes_including_wait_receipt": 161077,
+    "wait_receipt_bytes": 1709,
+    "limits": {
+      "child_AS_bytes": 134217728,
+      "child_CPU_seconds": 4,
+      "child_file_bytes": 2097152,
+      "child_wall_seconds": 30,
+      "retained_bytes": 4194304,
+      "supervisor_kill_after_seconds": 32
+    },
+    "excluded_costs": "Source/review/tool work including this independent reconstruction and final serialization/write/teardown tail are additional. No nested test costs added again to full child wait4. No strict aggregate CPU proof or all-in timing."
+  },
+  "saved_inventory_including_wait_receipt": {
+    "QUALIFICATION.json": {
+      "bytes": 5456,
+      "sha256": "8e4d062006d50b88a940e9c495f97e02f5cf91ca33027e18c2c6d2e716803dcc"
+    },
+    "WAIT4_RECEIPT.json": {
+      "bytes": 1709,
+      "sha256": "54b8917a9b27fdd271c602d44b6b70d52edcdb67fce641ba258c9d6d56a955d3"
+    },
+    "partial_partition/PUBLIC_RECEIPT.json": {
+      "bytes": 258,
+      "sha256": "d93595f6ad415219dbc549d0761a96d53554c464a617d780f94269b569f9fed1"
+    },
+    "partial_partition/TRAIN/records.jsonl": {
+      "bytes": 45752,
+      "sha256": "c36a03b511caf3bc9a9f99957e28b951cf75546f317964b42e3d9693fe7a0dd3"
+    },
+    "synthetic_partition/COMPLETE.json": {
+      "bytes": 585,
+      "sha256": "754c36ee243956cf3972e88a0d932fd62e070c7673c081dbfe7eb2226b4da973"
+    },
+    "synthetic_partition/PUBLIC_RECEIPT.json": {
+      "bytes": 258,
+      "sha256": "d93595f6ad415219dbc549d0761a96d53554c464a617d780f94269b569f9fed1"
+    },
+    "synthetic_partition/TRAIN/records.jsonl": {
+      "bytes": 45752,
+      "sha256": "c36a03b511caf3bc9a9f99957e28b951cf75546f317964b42e3d9693fe7a0dd3"
+    },
+    "synthetic_partition/management/final.jsonl": {
+      "bytes": 14452,
+      "sha256": "c708c2e0904bbcf146a560e22e77771a4dcb4c18bf5db1d6d07f6d688f3de536"
+    },
+    "synthetic_partition/management/manifest.json": {
+      "bytes": 34820,
+      "sha256": "60849f22f0b533188ad2416b667979dc80e4b8c69ebf9a8a8e2f14fb8f520c1b"
+    },
+    "synthetic_partition/management/selection.jsonl": {
+      "bytes": 12035,
+      "sha256": "656300b48245e748bd16ccef2b3f46a3709df2d833fa23e663c1fe33ea397451"
+    }
+  },
+  "evidence_limits": [
+    "Partial PUBLIC_RECEIPT.json contains complete=true because it is identical to the complete publication receipt, but no COMPLETE.json exists there. This public field is not readiness or authority: consumer must require COMPLETE plus every bound artifact verification. Saved partial state is deliberately unusable.",
+    "39 check names and32 exact negative records are saved assertion evidence from the reviewed frozen runner. This review independently verifies their schema/order/content but does not re-trigger negative branches.",
+    "verify_corruption and verify_torn_marker used Path.open interception returning BytesIO, not actual persisted disk corruption. partial_failure raises a designated injected OSError at an open call, not disk-full, power loss or kernel crash. The saved partial directory independently agrees with that failure point.",
+    "No supervisor fault kill, timeout, abnormal-signal reap or lock competition was experimentally qualified. Saved wait4 receipt reports one normal child exit and full reap; it is not independent OS tracing.",
+    "Atomic link and resource inheritance are source-reviewed mechanisms, not experimentally proven crash guarantees. Extra-entry inventory is independently checked here; candidate binding verifier alone does not inventory every entry.",
+    "Empirical synthetic pass is not evidence real asset spelling/parsing succeeds, real partitions meet minima, scientific power is adequate, or training is authorized.",
+    "No real data, model training, selection/final opening, prior Fashion work, denied sources or external writes occurred in this review. No permission is widened."
+  ],
+  "completion": "Synthetic-only implementation/qualification evidence is now independently checked. Preserve all artifacts; no retry or mutation. Real G1 and all later gates remain separately blocked pending explicit authority and their open requirements.",
+  "additional_author_notes_reviewed_sha256": {
+    "SAVED_FINDINGS.md": "5199b66754d841620b3eb2b476370e5e5370877372fcb4a99403752ccd853970",
+    "REAL_G1_ADMISSION_NEXT.md": "8996b71e0f678d83e0fd730bb013868b432cf14f3a819b51ff5c6a72963410d6"
+  },
+  "author_note_assessment": "Both author notes agree with inspected source and saved artifacts on synthetic-only scope, counts, accounting and mock/crash limitations. Existing-lock dev/inode and no real-asset access during original run are author/source claims, not independently observed OS history. The proposed real G1 note is not authorization and still needs its own entrypoint, freeze, budget and independent review; real CSV compatibility remains unknown."
+}

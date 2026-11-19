@@ -1,15 +1,46 @@
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
-@@ -213,6 +213,12 @@ fn consolidate_dependency_search_paths(
-             let file_name_lower = file_name
-                 .to_string_lossy()
-                 .to_ascii_lowercase();
-+            if file_name_lower.contains(".tmp") || file_name_lower.ends_with(".rcgu.o") {
-+                // Native Windows Rust link actions can leave transient `*.exe.tmp*` and
-+                // per-codegen-unit `*.rcgu.o` outputs next to the final binary.
-+                // Those are not stable linker search-path inputs.
+@@ -200,17 +200,28 @@ fn consolidate_dependency_search_paths(
+             })?;
+-            let file_type = entry.file_type().map_err(|e| {
+-                ProcessWrapperError(format!(
+-                    "unable to inspect dependency search path {}: {}",
+-                    path.display(),
+-                    e
+-                ))
+-            })?;
+-            if !(file_type.is_file() || file_type.is_symlink()) {
+-                continue;
+-            }
+-
+-            let file_name = entry.file_name();
+-            let file_name_lower = file_name
+-                .to_string_lossy()
+-                .to_ascii_lowercase();
++            let file_name = entry.file_name();
++            let file_name_lower = file_name
++                .to_string_lossy()
++                .to_ascii_lowercase();
++            if file_name_lower.contains(".tmp")
++                || file_name_lower.ends_with(".rcgu.o")
++                || (file_name_lower.contains(".temp-archive-")
++                    && file_name_lower.ends_with(".a"))
++            {
++                // Native Rust link actions create transient archives and codegen
++                // outputs beside stable dependencies. Filter before metadata lookup:
++                // another action may already have renamed or removed the temporary.
 +                continue;
 +            }
++
++            let file_type = entry.file_type().map_err(|e| {
++                ProcessWrapperError(format!(
++                    "unable to inspect dependency search path {}: {}",
++                    path.display(),
++                    e
++                ))
++            })?;
++            if !(file_type.is_file() || file_type.is_symlink()) {
++                continue;
++            }
++
              if !seen.insert(file_name_lower) {
-                 continue;
-             }

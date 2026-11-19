@@ -1,0 +1,209 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/branch-consolidation",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "output_sha256": "16e3f2c4b98713f33339bc8a4dec8442c85886296e7a61a56f7f503346733615"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "scripts.ndu_bimodal.test_semantic_gate",
+        "-v"
+      ],
+      "exit_code": 0,
+      "output_sha256": "8868cb46a23d9b3fab9754ccfc2d79d72ca154789a3c3171992a77af96710b37"
+    }
+  ],
+  "device": "cpu",
+  "elapsed_seconds": 18.744693122,
+  "git_version": "git version 2.43.0",
+  "passed": true,
+  "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+  "python": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]",
+  "qualified_rust_native": false,
+  "schema": "hepta.rust-consolidation.cloud-validation.v1",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+    "scripts/joint_generation_v4_codecs.py": "59f67ccaa36c4938d0fd9eeb4423c83409c2827af0a84b817bdeb3766d049e19",
+    "scripts/joint_generation_v4_diagnostic.py": "7969c5c97c5cae61fde908ca7068da4481cdd0050ebc64fe4fddab28dda2ca81",
+    "scripts/joint_generation_v4_gradients.py": "a4ccaaf6679cc6e3cca86f08563c9d348653a28169c3b6ef5ddee54340a18d8a",
+    "scripts/joint_generation_v4_io.py": "f2d67927c9f2c7dbf729ff30d9d0c5b5b3477d4a0ff59c148348e45aae6b4fcf",
+    "scripts/joint_generation_v4_model.py": "5b466399293dd825f9a3b9aaff6c51bdff30c3469e6a993f6339c3d573a05d51",
+    "scripts/joint_generation_v4_ndu.py": "c0c8f86bd8c3ed8b24a3ca981b7de86d00d5251c127e8e90828596382b961223",
+    "scripts/joint_generation_v4_receipt.py": "2882997ce3899db554bdbb530569c5f4f122cfa0e053da490f1994f49fdb8ff3",
+    "scripts/ndu_bimodal/delivery.py": "124d6293c033028ac6f8a62dbf99d9935f5224e18582c1757936274560cfe676",
+    "scripts/ndu_bimodal/generator_training.py": "c3a77c27148a33b4b5e2a3ae03526d290fdc30b7660f1fcdd51691bf4ed14411",
+    "scripts/ndu_bimodal/native.py": "1fe60ea93f181c7dc0e228df3a34a6173680a03bca1487b2ccbb838d0410d566",
+    "scripts/ndu_bimodal/semantic_gate.py": "5989c9dc223a3b8fb86855ea1f8e431cc002f14798669d126852615c7ebff465",
+    "scripts/ndu_bimodal/test_semantic_gate.py": "cf66ed1f50f9d15c9d850ab2f66da1ddd1b4d7db3c4933c2002d3087ef223dcc",
+    "tools/branch-consolidation/hepta_branch_consolidation.py": "0705fb81edbf665904c3fb38c4815076ff7b1d35b5fd57a09539624ac614b442",
+    "tools/branch-consolidation/test_hepta_branch_consolidation.py": "1b5c75643ce1b1003dbb74680b9d272346a33820ade577bcbb5687a76e86c4bd"
+  },
+  "torch": "2.11.0+cpu",
+  "training": [
+    {
+      "changed": [
+        "image_encoder.0.weight",
+        "image_encoder.0.bias",
+        "audio_encoder.0.bias",
+        "video_encoder.0.weight",
+        "video_encoder.0.bias",
+        "token_encoder.weight",
+        "text_recurrent.weight",
+        "text_recurrent.bias",
+        "text_condition.weight",
+        "text_condition.bias",
+        "encoder_fusion.0.weight",
+        "encoder_fusion.0.bias",
+        "initial_slots.weight",
+        "initial_slots.bias",
+        "feedback_projection.bias",
+        "transition_input.weight",
+        "transition_input.bias",
+        "action_embedding.weight",
+        "core.layers.0.drift_bias",
+        "core.layers.0.raw_diffusion",
+        "core.layers.0.raw_recovery",
+        "core.layers.0.raw_regeneration",
+        "core.layers.0.raw_adaptation",
+        "core.layers.0.raw_adaptation_decay",
+        "core.layers.0.raw_content_rate",
+        "core.layers.0.raw_boundary",
+        "core.layers.0.drift_input.weight",
+        "core.layers.0.channel_gates.weight",
+        "core.layers.0.channel_gates.bias",
+        "core.layers.0.content_input.weight",
+        "core.layers.0.content_input.bias",
+        "core.layers.0.content_state.weight",
+        "core.layers.0.output.weight",
+        "core.layers.0.norm.weight",
+        "core.layers.0.norm.bias",
+        "adapters.image.0.weight",
+        "adapters.image.0.bias",
+        "adapters.audio.0.weight",
+        "adapters.audio.0.bias",
+        "adapters.video.0.weight",
+        "adapters.video.0.bias",
+        "adapters.text.0.weight",
+        "adapters.text.0.bias",
+        "emissions.image.0.weight",
+        "emissions.image.0.bias",
+        "emissions.image.2.weight",
+        "emissions.image.2.bias",
+        "emissions.text.weight",
+        "emissions.text.bias"
+      ],
+      "independent_state_comparison": true,
+      "report": {
+        "baseline_sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7",
+        "candidate_sha256": "0a5491a74855241551596e5ae8bf7d93858d7f2dc52dc3b3443aacea869d3ab3",
+        "changed_parameter_groups": [
+          "action_embedding",
+          "adapters",
+          "audio_encoder",
+          "core",
+          "emissions",
+          "encoder_fusion",
+          "feedback_projection",
+          "image_encoder",
+          "initial_slots",
+          "text_condition",
+          "text_recurrent",
+          "token_encoder",
+          "transition_input",
+          "video_encoder"
+        ],
+        "frozen_shared_backbone_verified": false,
+        "losses": [
+          {
+            "image_mse": 0.15829262197087093,
+            "step": 0,
+            "text_nll": 5.358055562044599
+          },
+          {
+            "image_mse": 0.15197966274898977,
+            "step": 1,
+            "text_nll": 4.992281871009265
+          }
+        ],
+        "old_actor_trained": false,
+        "private_adapter_trainable_names": [],
+        "schema": "hepta.bimodal.content-training.v1",
+        "scope": "generated colour-card content training; no semantic or NDU gain claim",
+        "seed": 41,
+        "steps": 2,
+        "terminal_heads_trained": false,
+        "training_identity": "eeaac655b00c94197e96728a97c6bff4ee823aab24ab2f782bf06ab9ef227045",
+        "training_scope": "all-content-v1",
+        "training_sources": [
+          "ceb32354dff217e2f9be2889b6d0d1ac9b38f8231ed90c22e9c726864cf62d30",
+          "78a9fe8ade058e5dfedc9a9308ca7505054ddfba43795bd92b2481646a847708"
+        ],
+        "wall_seconds": 6.894230565999976
+      },
+      "scope": "all-content-v1"
+    },
+    {
+      "changed": [
+        "adapters.image.0.weight",
+        "adapters.image.0.bias",
+        "adapters.text.0.weight",
+        "adapters.text.0.bias"
+      ],
+      "independent_state_comparison": true,
+      "report": {
+        "baseline_sha256": "b2bb46e59c4c517b2d21ac1ac3353f61961277aa9d06c239f6815fe7d04423e7",
+        "candidate_sha256": "c22f973341ec485b28b00dd19a6052997ebc5a29824e9061362fbcbec402d8f0",
+        "changed_parameter_groups": [
+          "adapters"
+        ],
+        "frozen_shared_backbone_verified": true,
+        "losses": [
+          {
+            "image_mse": 0.15829262197087093,
+            "step": 0,
+            "text_nll": 5.358055562044599
+          },
+          {
+            "image_mse": 0.1581771638387347,
+            "step": 1,
+            "text_nll": 5.350894195756937
+          }
+        ],
+        "old_actor_trained": false,
+        "private_adapter_trainable_names": [
+          "adapters.image.0.weight",
+          "adapters.image.0.bias",
+          "adapters.text.0.weight",
+          "adapters.text.0.bias"
+        ],
+        "schema": "hepta.bimodal.content-training.v1",
+        "scope": "generated colour-card content training; no semantic or NDU gain claim",
+        "seed": 41,
+        "steps": 2,
+        "terminal_heads_trained": false,
+        "training_identity": "e9cc3cac3c7f82095fecad3b4bed62f926866a85da10d056b18c392b58230b6f",
+        "training_scope": "private-text-image-adapters-v1",
+        "training_sources": [
+          "ceb32354dff217e2f9be2889b6d0d1ac9b38f8231ed90c22e9c726864cf62d30",
+          "78a9fe8ade058e5dfedc9a9308ca7505054ddfba43795bd92b2481646a847708"
+        ],
+        "wall_seconds": 0.47024539999998183
+      },
+      "scope": "private-text-image-adapters-v1"
+    }
+  ]
+}

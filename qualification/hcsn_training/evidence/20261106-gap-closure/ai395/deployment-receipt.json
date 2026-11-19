@@ -1,0 +1,57 @@
+{
+  "archive": {
+    "bytes": 5852924,
+    "path": "/home/qq/work/hcsn-gap-closure-20261106-d216bf53/acceptance-package-03.tar.xz",
+    "sha256": "401a43c849525200293a38259bea5c200109994633c8125d8aa1b6ff348e1f11"
+  },
+  "binary_mode": "0755",
+  "binary_sha256": "2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46",
+  "completed_unix_ns": 1793966587212943011,
+  "cuda_campaign_started": false,
+  "declared_files": 53,
+  "deployment": "/home/qq/work/hcsn-gap-closure-20261106-d216bf53/deployment-03",
+  "directory_mode": "0700",
+  "extracted_members": 54,
+  "host_registration_exercised": false,
+  "hostname": "ai395",
+  "manifest_sha256": "a39b337353a9a45720665cd75d0f9d856d9d7ec37cd2c0787a73f1347511f252",
+  "native_linkage": {
+    "build_receipt_sha256": "8e3b275996fa7c0505ab33a4ae300ac711db36efd260d8475fc2a74285d48fff",
+    "cargo_artifact_stream_sha256": "f7130c1078e80dd0a41f73ae4cf67cb71167bbb82fcee5abcc5c54586a41e387",
+    "deployed_binary_sha256": "2a195957ea1f4f0288ec4af7e00210f96ad78b7283b74da59360aea13494ce46",
+    "native_build_reproduced_here": false,
+    "neuron_is_dependency_of_this_test": false,
+    "original_executable": {
+      "bytes": 257215352,
+      "path": "/workspace/scratch/7ee3ec79bc34/automation-target/debug/deps/hcsn_signed_worker-5b1711c0822eef18",
+      "sha256": "9062d030a432a28fb5bbf0c7b8cd525462309738a503a7352826fe89bcaf3676"
+    },
+    "scope": "consistency of supplied external build/strip receipts; source inventory remains external evidence",
+    "source_inventory_sha256": "44e7b6e336846cb44d97a7b95152db2659a76d27854e30ceaed4ed11866488d5",
+    "strip": {
+      "args": [
+        "--strip-all"
+      ],
+      "path": "/usr/bin/x86_64-linux-gnu-strip",
+      "sha256": "a97ae77cd5d88799edc0edb31caa2fc81d32eecaa9619d329bed890f6fd06e3a",
+      "version": "GNU strip (GNU Binutils for Debian) 2.44"
+    },
+    "strip_receipt_sha256": "f24c3daa6794f43dac554afafeb46d76e94d71a0d1cd08a9364d68881bc2a60b",
+    "support_source_sha256": "48c22882d8648424355f63a66507b26ecad93a0b2a129fedbdd0360858d49361",
+    "test_source_sha256": "dbb7af5257128ea8ab462e3e14c336cd7a9c3127af569da407ddc9b8898c4199"
+  },
+  "no_retry": true,
+  "process_id": 3849394,
+  "production": false,
+  "python": {
+    "executable": "/home/qq/work/hcsn-gap-closure-20261106-d216bf53/venv/bin/python",
+    "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+    "version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]"
+  },
+  "schema_version": 1,
+  "status": "extracted_and_verified",
+  "synthetic_test_key_only": true,
+  "tests_executed_here": false,
+  "torch_imported": false,
+  "worker_started": false
+}

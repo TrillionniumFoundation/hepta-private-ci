@@ -1,0 +1,59 @@
+{
+  "acceptance_scope": "Arithmetic errors reported; not a trained-cell convergence acceptance",
+  "affine_parameters_from_float32": {
+    "alpha": 0.4,
+    "c": 0.1,
+    "lambda": 0.001,
+    "y0": 0.2
+  },
+  "affine_steps": [
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "call_kappa": [
+    0.25,
+    1.0,
+    4.0
+  ],
+  "call_x": [
+    0.1,
+    0.01,
+    0.001,
+    0.0001,
+    1e-05,
+    1e-06,
+    1e-07,
+    1e-08
+  ],
+  "etd2_affine_ode": "dy/dt=-lambda*y+(alpha*y+c), y(0)=y0, T=1",
+  "numpy_version": "2.3.5",
+  "phi": "phi_k(z)=sum_{j>=0} z**j/(j+k)!; k=1,2",
+  "precision_comparison": "Both float64 and float32 use exactly upcast original float32 scalar inputs",
+  "reference_decimal_precision": 80,
+  "reference_semantics": "Exact real function of the same represented float32 inputs; finite-polynomial series is only the candidate, not the oracle",
+  "scope": "new arithmetic diagnosis only; no recovered checkpoint or old-run claim",
+  "series_degree": 18,
+  "series_switch_abs_z": 0.25,
+  "source_sha256": "fb56c61fc1080180d1ad360804240f4526d3ffcb15d628e296549fa7ad3b071d",
+  "z_grid": [
+    -10.0,
+    -1.0,
+    -0.25,
+    -0.1,
+    -0.01,
+    -0.001,
+    -0.0001,
+    -1e-05,
+    -1e-06,
+    -1e-07,
+    -1e-08,
+    0.0
+  ]
+}

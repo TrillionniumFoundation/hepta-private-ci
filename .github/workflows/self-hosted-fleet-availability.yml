@@ -13,6 +13,10 @@ on:
 # so `persist-credentials: false` is not an applicable action input.
 permissions: {}
 
+concurrency:
+  group: kernel-authority-readonly-fleet-probe
+  cancel-in-progress: true
+
 jobs:
   rog:
     name: ROG runner probe

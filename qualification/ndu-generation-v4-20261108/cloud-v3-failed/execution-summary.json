@@ -1,0 +1,138 @@
+{
+  "diagnostic_status": "failed",
+  "execution_binary_sha256": "fb679e6b4892d3eda58831e887252502237ca0d6e9a3aadb48519a84c643d966",
+  "failed_stage": "native initialization selected model profile guard",
+  "failure": "AssertionError: Native execution failed: hepta-joint-propose: bridge requires selected width32/depth1/dual/direct profile\n",
+  "followup_source_change": "Use the supported width32/depth1/dual/direct diagnostic fixture; preserve native guard. Also include separately qualified mechanical lint fixes.",
+  "full_workspace_validation": false,
+  "joint_v4_tests_including_native_passed": 8,
+  "native_trained_checkpoint_accepted": false,
+  "overall_status": "FAIL",
+  "request_id": "ndu-gen-986c-joint-native-20261108-v3",
+  "runtime_contract_tests_passed": 27,
+  "schema": "ndu-joint-native-attempt-summary-v3",
+  "scientific_task_evidence": false,
+  "source_manifest_sha256": "14075ef5a70a3f8aaa5de979c07a893edd150947ba253e0f6469fc44cf1e561d",
+  "source_payload_sha256": "2a42ed418ac1334f7030f6e1e9288e245001900116357b8647d0d85d411afcf9",
+  "training": {
+    "central_difference_checks": 6,
+    "frozen_reference_unchanged": true,
+    "gradient_parameter_groups": {
+      "policy": {
+        "actor": {
+          "l2": 0.01389361679021725,
+          "max_abs": 0.0052322238901897165,
+          "nonzero_elements": 279
+        },
+        "core": {
+          "l2": 0.00012560564050555112,
+          "max_abs": 4.380318809412566e-05,
+          "nonzero_elements": 608
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 2.998423394349058e-05,
+          "max_abs": 9.758697912459668e-06,
+          "nonzero_elements": 72
+        },
+        "text_decoder_condition": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "token_embedding": {
+          "l2": 1.2438833981815881e-05,
+          "max_abs": 8.500059929969714e-06,
+          "nonzero_elements": 64
+        }
+      },
+      "recursive": {
+        "actor": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "core": {
+          "l2": 0.0038181194382251363,
+          "max_abs": 0.0009174236425629953,
+          "nonzero_elements": 616
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 0.0014069307756708178,
+          "max_abs": 0.0004916972831475918,
+          "nonzero_elements": 72
+        },
+        "text_decoder_condition": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "text_emission_head": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "token_embedding": {
+          "l2": 0.000619866886111741,
+          "max_abs": 0.0005008435638359168,
+          "nonzero_elements": 64
+        }
+      },
+      "teacher_forced": {
+        "actor": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "core": {
+          "l2": 0.04913363523490406,
+          "max_abs": 0.01563752004639739,
+          "nonzero_elements": 608
+        },
+        "critics": {
+          "l2": 0.0,
+          "max_abs": 0.0,
+          "nonzero_elements": 0
+        },
+        "ordered_text_shared_recurrence": {
+          "l2": 0.16718026159270108,
+          "max_abs": 0.04098917595405977,
+          "nonzero_elements": 72
+        },
+        "text_decoder_condition": {
+          "l2": 0.14965234479633613,
+          "max_abs": 0.04116610114882113,
+          "nonzero_elements": 136
+        },
+        "text_emission_head": {
+          "l2": 0.916757670635541,
+          "max_abs": 0.10922322436940402,
+          "nonzero_elements": 4131
+        },
+        "token_embedding": {
+          "l2": 0.07977798683664916,
+          "max_abs": 0.023388452792991805,
+          "nonzero_elements": 120
+        }
+      }
+    },
+    "initial_checkpoint_sha256": "e42618a261bbc541b04ad8a990b7a82243cc94ae7afd43b02502c14ba08734ab",
+    "max_absolute_fd_error": 1.7100016024484618e-09,
+    "optimizer_steps": 3,
+    "trained_checkpoint_sha256": "5e9a9a69cdb024d66bf94ba1a9dbd1dfeccacff2d7c59b99281cc9c1b98f2d3a"
+  }
+}

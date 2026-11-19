@@ -1,0 +1,213 @@
+import collections
+import gzip
+import hashlib
+import importlib.util
+import json
+import os
+import sqlite3
+import zipfile
+from pathlib import Path
+import sys
+import tempfile
+import time
+
+import numpy as np
+
+ROOT = Path('/workspace/scratch/bea4b0a478f1/act2-closure-learning')
+RUN = ROOT / 'qualification/act2-learning-20261110/run2'
+OUT = Path('/workspace/scratch/bea4b0a478f1/act2-closure-learning-review')
+SOURCE = ROOT / 'scripts/act2_learning'
+sys.path.insert(0, str(SOURCE))
+import run as runner
+from models import Model, gradient_check
+
+checks=[]
+def check(name, condition, detail=None):
+    checks.append({'name': name, 'passed': bool(condition), 'detail': detail})
+    if not condition:
+        raise AssertionError((name, detail))
+
+def rows(name):
+    with gzip.open(RUN / name, 'rt') as f:
+        return [json.loads(line) for line in f]
+
+def digest(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+started=time.perf_counter_ns()
+manifest=json.loads((RUN/'FROZEN_MANIFEST.json').read_text())
+result=json.loads((RUN/'RESULT.json').read_text())
+receipt=json.loads((ROOT/'qualification/act2-learning-20261110/execution-run2-receipt.json').read_text())
+manifest_hashes=json.loads((RUN/'SHA256SUMS.json').read_text())
+check('recorded_source_before_equals_after',receipt['source_before']==receipt['source_after'])
+for name,h in manifest['source_files_sha256'].items():
+    check('source_hash_'+name,digest(SOURCE/name)==h==receipt['source_before'][name])
+for name,h in manifest_hashes.items():
+    check('artifact_hash_'+name,digest(RUN/name)==h)
+log=ROOT/'qualification/act2-learning-20261110/execution-run2.log'
+check('execution_log_hash',digest(log)==receipt['log_sha256'])
+check('execution_log_length',log.stat().st_size==receipt['log_bytes'])
+check('execution_exit_zero',receipt['exit_code']==0)
+train=rows('training-trajectories.jsonl.gz')
+confirm=rows('confirmation-trajectories.jsonl.gz')
+fits=rows('optimizer-records.jsonl.gz')
+check('training_80',len(train)==80)
+check('confirmation_3200',len(confirm)==3200)
+check('sixteen_fits',len(fits)==16)
+check('eight_model_seeds',set(manifest['training_seeds'])==set(range(700,708)))
+train_tasks={t['id']:t for t in manifest['train_tasks']}
+confirm_tasks={t['id']:t for t in manifest['confirmation_tasks']}
+check('task_ids_disjoint',not set(train_tasks)&set(confirm_tasks))
+for field in ['destination','schema','composition']:
+    left={t[field] for t in train_tasks.values()};right={t[field] for t in confirm_tasks.values()}
+    check('split_disjoint_'+field,not left&right,{'train':sorted(left),'confirmation':sorted(right)})
+check('same_destination_family_explicit',manifest['confirmation_split']['destination_families_disjoint'] is False)
+expected={(s,a,t) for s in manifest['training_seeds'] for a in runner.ARMS for t in confirm_tasks}
+actual={(r['training_seed'],r['arm'],r['task_id']) for r in confirm}
+check('confirmation_complete_cartesian_no_duplicates',expected==actual and len(actual)==len(confirm))
+check('summary_arithmetic',runner.summarize(confirm)==result['summary'])
+for s in manifest['training_seeds']:
+    check('seed_summary_'+str(s),runner.summarize([r for r in confirm if r['training_seed']==s])==result['by_training_seed'][str(s)])
+for r in train+confirm:
+    assert r['primitive_calls']==len(r['events'])
+    assert r['readback_queries']==sum(e['action']=='inspect' for e in r['events'])
+    assert r['unknown']==(not r['claimed_success'])
+    assert r['right_censored']==(r['completion_ns'] is None)
+    assert r['goal_label_available'] is True
+check('all_event_counts_and_claim_semantics',True)
+check('all_observed_false_success_zero',not any(r['claimed_success'] and not r['complete'] for r in confirm))
+check('all_observed_duplicate_effects_zero',not any(r['duplicate_effects'] for r in confirm))
+
+# Inspect retained actual SQLite bytes through a new read-only in-memory observer.
+schemas=[('items','item_key','value'),('objects','object_key','content'),('documents','doc_id','body'),('records','record_id','payload')]
+with zipfile.ZipFile(RUN/'destination-databases.zip') as archive:
+    check('all_3280_destination_databases_retained',len(archive.namelist())==3280)
+    for i,row in enumerate(train+confirm):
+        task=(train_tasks if i<len(train) else confirm_tasks)[row['task_id']]
+        data=archive.read(row['database_archive_member'])
+        assert hashlib.sha256(data).hexdigest()==row['database_sha256']
+        db=sqlite3.connect(':memory:')
+        db.deserialize(data)
+        db.execute('PRAGMA query_only=ON')
+        table,key,value=schemas[task['schema']]
+        actual=dict(db.execute(f'SELECT {key},{value} FROM {table}'))
+        effects=list(db.execute('SELECT key,value FROM effects'))
+        applied=list(db.execute('SELECT operation,payload FROM applied'))
+        db.close()
+        complete=all(actual[str(j)]==g for j,g in enumerate(task['goals']))
+        partial=any(actual[str(j)]==g for j,g in enumerate(task['goals']))
+        duplicate=len(effects)-len({k for k,v in effects})
+        assert (complete,partial,duplicate)==(row['complete'],row['partial'],row['duplicate_effects'])
+        assert len(effects)==len(applied)==row['applied_effects']
+        for operation,payload in applied:
+            index=int(operation.rsplit(':',1)[1])
+            assert operation==task['id']+':'+str(index)
+            assert payload==hashlib.sha256(task['goals'][index].encode()).hexdigest()
+    check('all_destination_database_bytes_and_goal_scores',True)
+
+
+# Re-execute frozen training and confirmation in fresh real SQLite databases.
+# Timings are deliberately excluded from comparison; source-run originals remain untouched.
+stable=['task_id','arm','destination','schema','composition','fault','complete','partial','duplicate_effects','claimed_success','unknown','goal_label_available','right_censored','primitive_calls','readback_queries','write_transactions','independent_oracle_queries','applied_effects','lost_replies','database_sha256','policy_decisions','private_state_bytes','decisions']
+traces=[]
+with tempfile.TemporaryDirectory(prefix='act2-independent-replay-') as temp:
+    temp=Path(temp)
+    for i,r in enumerate(train):
+        fresh,trace=runner.episode(train_tasks[r['task_id']],'B1_macro',None,temp/f'train-{i}',True)
+        check('training_replay_'+str(i),all(fresh[k]==r[k] for k in stable))
+        traces.append(trace)
+    # Construct arrays independently instead of using runner.arrays.
+    width=max(len(f) for f,a in traces)
+    x=np.zeros((len(traces),width,10));y=np.zeros((len(traces),width,3));mask=np.zeros((len(traces),width))
+    for i,(features,actions) in enumerate(traces):
+        x[i,:len(features)]=features
+        y[i,:len(actions)]=np.eye(3)[actions]
+        mask[i,:len(actions)]=1
+    tensor_hash=hashlib.sha256(x.tobytes()+y.tobytes()+mask.tobytes()).hexdigest()
+    check('all_fit_training_tensor_hashes',all(f['train_trajectory_sha256']==tensor_hash for f in fits))
+    parameters_changed={}
+    models={}
+    for fit in fits:
+        kind='head' if fit['arm']=='B3_head' else 'gru'
+        model=Model(kind,fit['seed'])
+        initial={k:v.copy() for k,v in model.p.items()}
+        losses=model.fit(x,y,mask,epochs=220)
+        saved_path=RUN/f"{fit['arm']}-seed-{fit['seed']}.npz"
+        saved=np.load(saved_path)
+        check('model_hash_'+saved_path.name,digest(saved_path)==fit['weights_sha256'])
+        check('fit_steps_'+saved_path.name,len(losses)==fit['optimizer_steps']==220)
+        check('fit_exact_losses_'+saved_path.name,losses==fit['losses'])
+        check('fit_exact_parameters_'+saved_path.name,set(saved.files)==set(model.p) and all(np.array_equal(saved[k],model.p[k]) for k in model.p))
+        changed=sum(not np.array_equal(initial[k],model.p[k]) for k in initial)
+        check('fit_changed_parameters_'+saved_path.name,changed>0,{'changed_groups':changed,'total_groups':len(initial)})
+        parameters_changed[saved_path.name]=changed
+        models[(fit['seed'],fit['arm'])]=model
+    mismatches=[]
+    for i,r in enumerate(confirm):
+        model=models.get((r['training_seed'],r['arm']))
+        fresh,_=runner.episode(confirm_tasks[r['task_id']],r['arm'],model,temp/f'confirm-{i}',False)
+        bad=[k for k in stable if fresh[k]!=r[k]]
+        event_old=[{k:v for k,v in e.items() if k!='at_ns'} for e in r['events']]
+        event_new=[{k:v for k,v in e.items() if k!='at_ns'} for e in fresh['events']]
+        if bad or event_old!=event_new:
+            mismatches.append({'episode':i,'fields':bad,'events_equal':event_old==event_new})
+    check('all_3200_confirmation_replays_stable',not mismatches,{'mismatches':mismatches[:10]})
+
+computed_gradient=gradient_check()
+check('thirteen_gradient_spot_checks',len(computed_gradient)==13 and max(g['absolute_error'] for g in computed_gradient)<2e-7)
+# Recompute the necessary primitive-frontier predicate without relying on stored summary.
+aggregate={a:{'complete':sum(r['complete'] for r in confirm if r['arm']==a),'claimed':sum(r['claimed_success'] for r in confirm if r['arm']==a),'calls':sum(r['primitive_calls'] for r in confirm if r['arm']==a),'false':sum(r['claimed_success'] and not r['complete'] for r in confirm if r['arm']==a),'duplicates':sum(r['duplicate_effects'] for r in confirm if r['arm']==a)} for a in runner.ARMS}
+criteria={}
+for a in runner.ARMS[3:]:
+    c=aggregate[a]
+    criteria[a]=all(c['complete']>=aggregate[b]['complete'] and c['claimed']>=aggregate[b]['claimed'] and c['calls']<aggregate[b]['calls'] for b in runner.ARMS[:3]) and c['false']==0 and c['duplicates']==0
+check('primitive_frontier_false',criteria==result['primitive_frontier_criterion']=={'B3_head':False,'B4_gru':False})
+paired={(r['training_seed'],r['task_id'],r['arm']):r for r in confirm}
+check('B0_B2_identical_decisions',all(paired[s,t,'B0_workflow']['decisions']==paired[s,t,'B2_flat']['decisions'] for s in manifest['training_seeds'] for t in confirm_tasks))
+profiles=collections.Counter(tuple(r['decisions']) for r in confirm if r['arm']=='B1_macro' and r['training_seed']==700)
+with zipfile.ZipFile(ROOT/'qualification/act2-learning-20261110/pilot-source.zip') as archive:
+    pilot_manifest=json.loads((ROOT/'qualification/act2-learning-20261110/run1/FROZEN_MANIFEST.json').read_text())
+    check('pilot_exact_source_preserved',all(hashlib.sha256(archive.read(n)).hexdigest()==h for n,h in pilot_manifest['source_files_sha256'].items()))
+with zipfile.ZipFile(RUN/'destination-databases.zip') as archive:
+    sqlite_writer_versions=sorted({int.from_bytes(archive.read(n)[96:100],'big') for n in archive.namelist()})
+review={
+ 'schema_version':1,'result':'NEGATIVE_RESULT_REPRODUCED_WITH_SCOPE_LIMITS',
+ 'checks_passed':len(checks),'checks':checks,
+ 'source_run':str(RUN),'source_hashes':manifest['source_files_sha256'],
+ 'pilot_source_archive_exact_hashes_verified': True,
+ 'retained_sqlite_writer_header_versions':sqlite_writer_versions,
+ 'review_sqlite_version':sqlite3.sqlite_version,
+ 'review_source_selection_history':'Initial attempt correctly rejected current-source/run1 mismatch before replay; pilot-source.zip preserves run1 exact bytes; final review uses run2 and matching receipt.',
+ 'replay_method':'Independently inspected all 3280 retained original SQLite database payloads and recomputed goal/effect facts. Recomputed all stored hashes and aggregates; regenerated frozen training in fresh SQLite files, independently assembled feature arrays, retrained all sixteen models with exact parameter/loss equality, then replayed all 3200 confirmation episodes in fresh SQLite files and compared stable outcomes/events/database bytes. Replays use reviewed provider/runner implementation; this is not independent external execution attestation.',
+ 'review_replay_elapsed_ns':time.perf_counter_ns()-started,
+ 'counts':aggregate,'primitive_criterion':criteria,
+ 'pilot_source_preserved': True,
+ 'final_run': 'run2; instrumented repeat on the already exposed run1 task set, not a fresh independent confirmation sample',
+ 'gradient_spot_checks':computed_gradient,'training_tensor_sha256':tensor_hash,
+ 'changed_parameter_groups':parameters_changed,'confirmation_B1_unique_decision_sequences':len(profiles),
+ 'limitations':[
+  'B0_workflow and B2_flat are the same primitive() controller, not independent implementations; B1_macro shares the same deterministic underlying heuristic.',
+  'There are five labeled arms but fewer distinct strategy implementations. This does not establish benefits relative to five independently implemented baselines.',
+  'Held-out destinations are instance labels, schemas are SQL table/column renamings normalized by the same provider, and longer compositions repeat the same primitive pattern. All use one SQLite family.',
+  'Replicates change goal hashes without changing control-relevant behavior; repeated baseline runs across training seeds are paired controls, not independent training fits or independent task families.',
+  'Task faults and goals are synthetic and operator-controlled. The scorer is a separate read-only SQLite connection in the same process and authority, not an independent external evaluator.',
+  'UNKNOWN is implemented as no success claim, including known partial/unsatisfied stops. It is not solely an unavailable-label category; all final oracle goal labels are available.',
+  'Optimizer records retain loss per step and final model weights, not Adam moment or gradient history. Exact deterministic retraining confirms updates but does not make absent state records present.',
+  'Gradient check samples one coordinate in each of thirteen parameter groups, not every parameter.',
+  'No process restart, private-state restoration, production FinalUse, real Notes provider, external field acceptance, retention suite or destination-family holdout is exercised.',
+  'Arm execution order is fixed, not randomized/counterbalanced. Nanosecond timing differences are descriptive and not a controlled cross-arm timing qualification.',
+  'Inference and training/collection durations are recorded; process elapsed includes nested setup, tools, oracles and output work. Do not sum nested metrics as independent total cost. Peak/resident memory, tuning/opportunity costs and recovery costs are not qualified.',
+  'The primitive-frontier criterion fails before its additional full-cost requirement is relevant. No full paid-cost advantage is established.',
+ 'run2 repeats already exposed run1 task set and is not a fresh independent confirmation sample.',
+ 'This bounded negative result does not prove all learned hierarchies lack value.',
+ 'Only five distinct B1 macro decision sequences occur among the eighty confirmation instances.',
+ 'Inputs are ten hand-coded state features, not shared semantic foundation integration.',
+ 'Freeze timestamps are local records, not independently signed external attestations.'
+ ],
+ 'decision':'Retain fixed skill library; no learned hierarchy promotion. Reproduced bounded negative research result does not close product integration, authorization, field or full ACT-2 blockers.'
+}
+OUT.mkdir(exist_ok=True)
+(OUT/'REVIEW.json').write_text(json.dumps(review,ensure_ascii=False,indent=2)+'\n')
+print(json.dumps({'result':review['result'],'checks_passed':len(checks),'counts':aggregate,'primitive_criterion':criteria,
+ 'pilot_source_preserved': True,
+ 'final_run': 'run2; instrumented repeat on the already exposed run1 task set, not a fresh independent confirmation sample','profiles':len(profiles),'elapsed_ns':review['review_replay_elapsed_ns']},ensure_ascii=False))

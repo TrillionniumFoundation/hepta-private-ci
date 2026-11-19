@@ -1,0 +1,756 @@
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_hos2_retirement_tests.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_hos2_retirement_tests.rs
+new file mode 100644
+index 0000000000..4c99bcb934
+--- /dev/null
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_hos2_retirement_tests.rs
+@@ -0,0 +1,208 @@
++//! Original HOS2 owner plus explicit native-history and protected-peer fixtures.
++//! No native install is dispatched; this is not guest/kernel qualification.
++
++use super::*;
++use crate::Hos2DeliveryId;
++use crate::Hos2DeliveryObservation;
++use crate::Hos2Device;
++use crate::Hos2InstallBudgetV1;
++use crate::Hos2InstallOutcome;
++use crate::Hos2RetirementObservation;
++use crate::Hos2RetirementPermit;
++use crate::ProductionHos2Target;
++use codex_hepta_operations::OperationIntentV1;
++use codex_hepta_types::Digest32;
++use codex_hepta_types::Generation;
++use codex_hepta_types::StableId;
++use pretty_assertions::assert_eq;
++use std::sync::atomic::AtomicUsize;
++
++struct HistoryDevice {
++    request: Hos2InstallBudgetV1,
++    retirements: AtomicUsize,
++}
++impl Hos2Device for HistoryDevice {
++    fn install(&self, _request: &Hos2InstallBudgetV1) -> Result<Hos2InstallOutcome, String> {
++        panic!("history retirement must never install")
++    }
++    fn observe(&self, request: &Hos2InstallBudgetV1) -> Result<Hos2InstallOutcome, String> {
++        assert_eq!(request, &self.request);
++        self.query(&request.delivery)
++            .map(Hos2InstallOutcome::Observed)
++    }
++    fn query(&self, delivery: &Hos2DeliveryId) -> Result<Hos2DeliveryObservation, String> {
++        assert_eq!(delivery, &self.request.delivery);
++        Ok(Hos2DeliveryObservation::Applied {
++            stable_object_id: [9; 16],
++            previous_revision: 1,
++            revision: 2,
++            effective_ns: crate::HOS2_CPU_PERIOD_NS + 1_001,
++            consumed_ns: 999,
++        })
++    }
++    fn retire(&self, permit: &Hos2RetirementPermit) -> Result<Hos2RetirementObservation, String> {
++        assert_eq!(permit.through(), &self.request.delivery);
++        self.retirements.fetch_add(1, Ordering::SeqCst);
++        Ok(Hos2RetirementObservation {
++            retired_through: 1,
++            next_sequence: 2,
++        })
++    }
++}
++
++async fn settled_hos2(fixture: &ManagedFixture) -> (Arc<HistoryDevice>, Arc<ProductionHos2Target>) {
++    let request = Hos2InstallBudgetV1 {
++        schema_version: 1,
++        delivery: Hos2DeliveryId::new([1; 16], [2; 16], 1).unwrap(),
++        manage_slot: 2,
++        manage_generation: 1,
++        expected_revision: 1,
++        period_ns: crate::HOS2_CPU_PERIOD_NS,
++        cap_ns: 1_001,
++    };
++    let payload = request.to_json().unwrap();
++    let intent = OperationIntentV1::new(
++        StableId::new("hos2:protected:retirement").unwrap(),
++        StableId::new(fixture.writer.owner_agent_id().as_str()).unwrap(),
++        StableId::new(crate::HOS2_DESTINATION_V1).unwrap(),
++        Digest32::of_bytes(payload.as_bytes()),
++        request.scope_digest(),
++        Generation::new(1).unwrap(),
++        /*expected_predecessor*/ None,
++    )
++    .unwrap();
++    let queued = fixture
++        .writer
++        .prepare_operation(intent, crate::HOS2_INSTALL_TOPIC_V1, payload)
++        .await
++        .unwrap();
++    fixture
++        .writer
++        .mark_indeterminate(&queued.occurrence_key, "fixture original install ACK lost")
++        .await
++        .unwrap();
++    let device = Arc::new(HistoryDevice {
++        request,
++        retirements: AtomicUsize::new(0),
++    });
++    let target = Arc::new(ProductionHos2Target::new(device.clone()));
++    assert_eq!(
++        fixture
++            .writer
++            .reconcile_target_batch(target.as_ref(), /*limit*/ 1)
++            .await
++            .unwrap(),
++        1
++    );
++    (device, target)
++}
++
++#[tokio::test]
++async fn hos2_retirement_requires_bound_whole_owner_ack_before_discarding_native_history() {
++    let fixture = ManagedFixture::new().await;
++    let (device, target) = settled_hos2(&fixture).await;
++    fixture
++        .peer
++        .hold_current_reply
++        .store(true, Ordering::SeqCst);
++    let result = fixture
++        .writer
++        .retire_hos2_through(&target, &device.request.delivery)
++        .await;
++    assert_eq!(
++        device.retirements.load(Ordering::SeqCst),
++        0,
++        "native history cannot retire from a merely local terminal prefix while independent Current is unacknowledged"
++    );
++    assert!(result.is_err());
++    assert!(fixture.store.commit_gate.is_fenced());
++}
++
++#[tokio::test]
++async fn hos2_retirement_publishes_complete_original_prefix_and_retries_metadata_only() {
++    let fixture = ManagedFixture::new().await;
++    let (device, target) = settled_hos2(&fixture).await;
++    fixture
++        .writer
++        .retire_hos2_through(&target, &device.request.delivery)
++        .await
++        .unwrap();
++    let acknowledged = fixture.peer.receipt.lock().unwrap().clone();
++    assert_eq!(acknowledged.head.phase, CognitiveCheckpointPhase::Current);
++    assert_eq!(
++        acknowledged.head.last_current,
++        fixture.store.recovery_anchor().await.unwrap()
++    );
++    fixture
++        .writer
++        .retire_hos2_through(&target, &device.request.delivery)
++        .await
++        .unwrap();
++    assert_eq!(*fixture.peer.receipt.lock().unwrap(), acknowledged);
++    assert_eq!(device.retirements.load(Ordering::SeqCst), 2);
++}
++
++#[tokio::test]
++async fn hos2_retirement_cancelled_ack_preserves_history_until_independent_current_readback() {
++    let fixture = ManagedFixture::new().await;
++    let (device, target) = settled_hos2(&fixture).await;
++    fixture
++        .peer
++        .hold_current_reply
++        .store(true, Ordering::SeqCst);
++    let writer = fixture.writer.clone();
++    let destination = target.clone();
++    let delivery = device.request.delivery.clone();
++    let task =
++        tokio::spawn(async move { writer.retire_hos2_through(&destination, &delivery).await });
++    tokio::time::timeout(Duration::from_secs(5), fixture.peer.published.notified())
++        .await
++        .unwrap();
++    task.abort();
++    assert!(task.await.unwrap_err().is_cancelled());
++    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
++    assert!(fixture.store.commit_gate.is_fenced());
++    fixture
++        .peer
++        .hold_current_reply
++        .store(false, Ordering::SeqCst);
++    fixture.peer.wrong_owner_reply.store(true, Ordering::SeqCst);
++    assert!(
++        fixture
++            .writer
++            .retire_hos2_through(&target, &device.request.delivery)
++            .await
++            .is_err()
++    );
++    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
++    fixture
++        .peer
++        .wrong_owner_reply
++        .store(false, Ordering::SeqCst);
++    fixture
++        .writer
++        .retire_hos2_through(&target, &device.request.delivery)
++        .await
++        .unwrap();
++    assert_eq!(device.retirements.load(Ordering::SeqCst), 1);
++    assert!(fixture.writer.verify_current_authority().await.is_err());
++}
++
++#[tokio::test]
++async fn hos2_retirement_revoked_during_publication_never_enters_native_retirement() {
++    let fixture = ManagedFixture::new().await;
++    let (device, target) = settled_hos2(&fixture).await;
++    fixture
++        .peer
++        .revoke_after_publication
++        .store(true, Ordering::SeqCst);
++    assert!(
++        fixture
++            .writer
++            .retire_hos2_through(&target, &device.request.delivery)
++            .await
++            .is_err()
++    );
++    assert_eq!(device.retirements.load(Ordering::SeqCst), 0);
++    assert!(fixture.store.commit_gate.is_fenced());
++}
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_notes_retirement_tests.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_notes_retirement_tests.rs
+index 0e051a2eb0..02d52354cb 100644
+--- a/codex-rs/hepta-memory/src/cognitive_checkpoint_notes_retirement_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_notes_retirement_tests.rs
+@@ -341,11 +341,10 @@ async fn notes_retirement_holds_original_sqlite_lock_through_synchronous_metadat
+     let writer = fixture.writer.clone();
+     let mut mutation =
+         tokio::spawn(async move { writer.admit("retirement-competitor", "fixture", "{}").await });
++    let before_release = tokio::time::timeout(Duration::from_millis(100), &mut mutation).await;
+     assert!(
+-        tokio::time::timeout(Duration::from_millis(100), &mut mutation)
+-            .await
+-            .is_err(),
+-        "a concurrent original writer must not commit while metadata retirement holds its SQLite barrier"
++        before_release.is_err(),
++        "a concurrent original writer must not commit while metadata retirement holds its SQLite barrier: {before_release:?}"
+     );
+     assert!(
+         tokio::time::timeout(Duration::from_millis(20), &mut retirement)
+diff --git a/codex-rs/hepta-memory/src/cognitive_checkpoint_tests.rs b/codex-rs/hepta-memory/src/cognitive_checkpoint_tests.rs
+index 4d708250c6..21cf87267f 100644
+--- a/codex-rs/hepta-memory/src/cognitive_checkpoint_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_checkpoint_tests.rs
+@@ -371,3 +371,7 @@ async fn protected_checkpoint_mismatched_dirty_ack_never_opens_commit_permission
+ 
+ #[path = "cognitive_checkpoint_notes_retirement_tests.rs"]
+ mod notes_retirement_tests;
++
++#[cfg(unix)]
++#[path = "cognitive_checkpoint_hos2_retirement_tests.rs"]
++mod hos2_retirement_tests;
+diff --git a/codex-rs/hepta-memory/src/local_hos2_ordering.rs b/codex-rs/hepta-memory/src/local_hos2_ordering.rs
+index 815e1a08e7..76b120a411 100644
+--- a/codex-rs/hepta-memory/src/local_hos2_ordering.rs
++++ b/codex-rs/hepta-memory/src/local_hos2_ordering.rs
+@@ -183,19 +183,16 @@ async fn verified_terminal(
+ impl LocalLeaseOutbox {
+     /// The exact current writer reads every member of the requested prefix
+     /// from its original database. No cursor or caller receipt is trusted.
++    /// The caller retains this transaction through protected publication and
++    /// synchronous native retirement; this verifier never releases its lock.
+     pub(crate) async fn hos2_durable_prefix(
+         &self,
++        transaction: &mut Transaction<'_, Sqlite>,
+         through: &Hos2DeliveryId,
+     ) -> Result<Sha256Digest, LocalLeaseOutboxError> {
+         let frontier = through.sequence().map_err(LocalLeaseOutboxError::Invalid)?;
+         let (boot, space) = namespace(through)?;
+-        let mut transaction = self
+-            .store
+-            .pool
+-            .begin_with("BEGIN IMMEDIATE")
+-            .await
+-            .map_err(crate::cognitive_store::unavailable)?;
+-        let lease = self.current_lease(&mut transaction).await?;
++        let lease = self.current_lease(transaction).await?;
+         ensure_current_active(&lease, self)?;
+         let pairs: Vec<(String, String)> = sqlx::query_as(
+             "SELECT lease_id, occurrence_key FROM cognitive_local_outbox
+@@ -209,7 +206,7 @@ impl LocalLeaseOutbox {
+         .bind(space)
+         .bind(format!("{frontier:016x}"))
+         .bind((MAX_OUTBOX_ROWS + 1) as i64)
+-        .fetch_all(&mut *transaction)
++        .fetch_all(&mut **transaction)
+         .await
+         .map_err(crate::cognitive_store::unavailable)?;
+         if pairs.len() > MAX_OUTBOX_ROWS || u64::try_from(pairs.len()).ok() != Some(frontier) {
+@@ -222,13 +219,9 @@ impl LocalLeaseOutbox {
+         digest.update(through.boot_id);
+         digest.update(through.space_id);
+         for (index, (source_lease, operation)) in pairs.iter().enumerate() {
+-            let (payload, event_digest) = verified_terminal(
+-                &mut transaction,
+-                &self.owner_agent_id,
+-                source_lease,
+-                operation,
+-            )
+-            .await?;
++            let (payload, event_digest) =
++                verified_terminal(transaction, &self.owner_agent_id, source_lease, operation)
++                    .await?;
+             if payload.delivery.boot_id != through.boot_id
+                 || payload.delivery.space_id != through.space_id
+                 || payload
+@@ -246,10 +239,6 @@ impl LocalLeaseOutbox {
+         }
+         let digest = Sha256Digest::parse(format!("{:x}", digest.finalize()))
+             .map_err(LocalLeaseOutboxError::Corrupt)?;
+-        transaction
+-            .commit()
+-            .await
+-            .map_err(crate::cognitive_store::unavailable)?;
+         Ok(digest)
+     }
+ }
+diff --git a/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs b/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs
+index 5abfd8cfc2..d2d3904263 100644
+--- a/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs
++++ b/codex-rs/hepta-memory/src/production_hos2_conflict_tests.rs
+@@ -515,7 +515,7 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
+         if self.revoked.load(Ordering::SeqCst) {
+             return Err("original issuer revoked the source lease".to_string());
+         }
+-        if self.checks.fetch_add(1, Ordering::SeqCst) == 1 {
++        if self.checks.fetch_add(1, Ordering::SeqCst) == 0 {
+             self.checked
+                 .lock()
+                 .map_err(|error| error.to_string())?
+@@ -523,8 +523,8 @@ impl ProductionAuthorityVerifier for RetirementVerifier {
+                 .ok_or_else(|| "missing authority-check notification".to_string())?
+                 .send(())
+                 .map_err(|_| "authority-check observer closed".to_string())?;
+-            // A committed SQLx connection returns in a spawned task. Yield this
+-            // worker's queued tasks before this fixture waits for its observer.
++            // Pause the first pre-SQLite issuer observation. The final check
++            // after the held prefix transaction must see later revocation.
+             tokio::task::block_in_place(|| {
+                 self.resume
+                     .lock()
+@@ -564,7 +564,7 @@ async fn retirement_rechecks_original_live_authority_after_sqlite_awaits() -> Te
+     let mut retirement =
+         tokio::spawn(async move { writer.retire_hos2_through(&target, &through).await });
+     tokio::time::timeout(Duration::from_secs(5), checked_rx).await??;
+-    // The prefix transaction committed before this paused issuer check.
++    // The first issuer observation is paused before any SQLite checkout.
+     assert!(
+         !retirement.is_finished(),
+         "retirement crossed the paused issuer check before revocation"
+diff --git a/codex-rs/hepta-memory/src/production_hos2_owner.rs b/codex-rs/hepta-memory/src/production_hos2_owner.rs
+index 459e0402ca..2d6abda41c 100644
+--- a/codex-rs/hepta-memory/src/production_hos2_owner.rs
++++ b/codex-rs/hepta-memory/src/production_hos2_owner.rs
+@@ -106,8 +106,18 @@ impl ProductionDurableWriter {
+         through: &Hos2DeliveryId,
+     ) -> Result<Hos2RetirementObservation, ProductionWriterError> {
+         self.verify_authority().await?;
+-        let terminal_chain_sha256 = self.lease.hos2_durable_prefix(through).await?;
+-        self.verify_authority().await?;
++        let mut transaction = self
++            .store
++            .observation_pool()
++            .begin_with("BEGIN IMMEDIATE")
++            .await
++            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
++        let terminal_chain_sha256 = self
++            .lease
++            .hos2_durable_prefix(&mut transaction, through)
++            .await?;
++        self.acknowledge_bound_owner_transaction(&mut transaction)
++            .await?;
+         let permit = Hos2RetirementPermit {
+             through: through.clone(),
+             source_owner: self.owner_agent_id().clone(),
+@@ -117,13 +127,7 @@ impl ProductionDurableWriter {
+         // Recheck the original live verifier after all SQLite awaits. This
+         // check is the source authorization observation immediately before
+         // entry, not a claim to retain an issuer lock across the device call.
+-        self.authority
+-            .validate_for_agent(self.store.owner_agent_id())?;
+-        self.live_verifier
+-            .as_ref()
+-            .ok_or(ProductionWriterError::LiveVerifierRequired)?
+-            .verify(&self.authority, self.store.owner_agent_id())
+-            .map_err(ProductionWriterError::AuthorityRejected)?;
++        self.retirement_live_check()?;
+         let observation = target
+             .retire(&permit)
+             .map_err(ProductionWriterError::Durability)?;
+@@ -135,6 +139,10 @@ impl ProductionDurableWriter {
+                 "native retirement acknowledgement is invalid".to_string(),
+             ));
+         }
++        transaction
++            .rollback()
++            .await
++            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+         Ok(observation)
+     }
+ }
+diff --git a/codex-rs/hepta-memory/src/production_hos2_process_tests.rs b/codex-rs/hepta-memory/src/production_hos2_process_tests.rs
+index f9c8047b8d..2783b88c86 100644
+--- a/codex-rs/hepta-memory/src/production_hos2_process_tests.rs
++++ b/codex-rs/hepta-memory/src/production_hos2_process_tests.rs
+@@ -1,6 +1,7 @@
+ //! SIGKILL boundaries around the actual SQLite writer and FinalUse dispatcher.
+ 
+ use super::*;
++use futures::StreamExt;
+ use pretty_assertions::assert_eq;
+ use std::process::Child;
+ use std::process::Command;
+@@ -90,7 +91,7 @@ async fn hos2_kill_child() -> TestResult {
+ 
+ #[tokio::test]
+ async fn killed_owner_recovers_proof_boundaries_without_resending_unknown_d() -> TestResult {
+-    for (stage, phase) in [
++    let cases = [
+         ("claim", "before-proof"),
+         ("claim", "after-proof"),
+         ("entry", "before-proof"),
+@@ -100,164 +101,191 @@ async fn killed_owner_recovers_proof_boundaries_without_resending_unknown_d() ->
+         ("claim", "new-entered"),
+         ("entry", "new-entered"),
+         ("claim", "after-effect"),
+-    ] {
+-        let directory = tempfile::tempdir()?;
+-        let root = directory.path().canonicalize()?;
+-        let log_path = root.join("child.log");
+-        let log = fs::File::create(&log_path)?;
+-        let stderr = log.try_clone()?;
+-        let mut child = ChildOwner(
+-            Command::new(std::env::current_exe()?)
+-                .args([
+-                    "--exact",
+-                    "production_writer::hos2_tests::process_tests::hos2_kill_child",
+-                    "--nocapture",
+-                    "--test-threads=1",
+-                ])
+-                .env("HEPTA_HOS2_REAUTH_TEST_ROOT", &root)
+-                .env("HEPTA_HOS2_REAUTH_TEST_PHASE", phase)
+-                .env("HEPTA_HOS2_REAUTH_TEST_STAGE", stage)
+-                .env("HEPTA_HOS2_REAUTH_TEST_READY", root.join("ready"))
+-                .stdin(Stdio::null())
+-                .stdout(Stdio::from(log))
+-                .stderr(Stdio::from(stderr))
+-                .spawn()?,
+-        );
+-        let deadline = Instant::now() + Duration::from_secs(45);
+-        loop {
+-            if fs::read_to_string(root.join("ready")).ok().as_deref() == Some(phase) {
+-                break;
+-            }
+-            if let Some(status) = child.0.try_wait()? {
+-                return Err(format!(
+-                    "child exited at {phase} before its durable checkpoint: {status}; {}",
+-                    fs::read_to_string(&log_path)?
+-                )
+-                .into());
+-            }
+-            if Instant::now() >= deadline {
+-                return Err(format!(
+-                    "child timed out at {phase}; {}",
+-                    fs::read_to_string(&log_path)?
+-                )
+-                .into());
+-            }
+-            tokio::time::sleep(Duration::from_millis(20)).await;
++    ];
++    // Every case owns a separate tempdir, SQLite owner and FinalUse store.
++    // Crash hooks are configured only in its child process. Overlap at most two
++    // real lease waits; retain every SIGKILL boundary and the whole-test timeout.
++    let mut pending = futures::stream::iter(cases)
++        .map(|(stage, phase)| recover_killed_owner_at_boundary(stage, phase))
++        .buffer_unordered(/*n*/ 2);
++    while let Some(result) = pending.next().await {
++        result?;
++    }
++    Ok(())
++}
++
++async fn recover_killed_owner_at_boundary(stage: &str, phase: &str) -> TestResult {
++    let started = Instant::now();
++    eprintln!("hos2 recovery {stage}/{phase}: starting");
++    let directory = tempfile::tempdir()?;
++    let root = directory.path().canonicalize()?;
++    let log_path = root.join("child.log");
++    let log = fs::File::create(&log_path)?;
++    let stderr = log.try_clone()?;
++    let mut child = ChildOwner(
++        Command::new(std::env::current_exe()?)
++            .args([
++                "--exact",
++                "production_writer::hos2_tests::process_tests::hos2_kill_child",
++                "--nocapture",
++                "--test-threads=1",
++            ])
++            .env("HEPTA_HOS2_REAUTH_TEST_ROOT", &root)
++            .env("HEPTA_HOS2_REAUTH_TEST_PHASE", phase)
++            .env("HEPTA_HOS2_REAUTH_TEST_STAGE", stage)
++            .env("HEPTA_HOS2_REAUTH_TEST_READY", root.join("ready"))
++            .stdin(Stdio::null())
++            .stdout(Stdio::from(log))
++            .stderr(Stdio::from(stderr))
++            .spawn()?,
++    );
++    let deadline = Instant::now() + Duration::from_secs(45);
++    loop {
++        if fs::read_to_string(root.join("ready")).ok().as_deref() == Some(phase) {
++            break;
++        }
++        if let Some(status) = child.0.try_wait()? {
++            return Err(format!(
++                "child exited at {phase} before its durable checkpoint: {status}; {}",
++                fs::read_to_string(&log_path)?
++            )
++            .into());
+         }
++        if Instant::now() >= deadline {
++            return Err(format!(
++                "child timed out at {phase}; {}",
++                fs::read_to_string(&log_path)?
++            )
++            .into());
++        }
++        tokio::time::sleep(Duration::from_millis(20)).await;
++    }
++    eprintln!(
++        "hos2 recovery {stage}/{phase}: checkpoint after {:?}",
++        started.elapsed()
++    );
++    assert!(
++        !child.kill_and_reap()?.success(),
++        "fixture must be killed, not cleanly closed"
++    );
++    let queued: ProductionQueuedReceipt =
++        serde_json::from_slice(&fs::read(root.join("queued.json"))?)?;
++    let reopened = Fixture::open(&root).await?;
++    eprintln!(
++        "hos2 recovery {stage}/{phase}: reopened after {:?}",
++        started.elapsed()
++    );
++    assert_eq!(
++        reopened.writer.status(OPERATION).await?,
++        LocalOutcomeState::Indeterminate
++    );
++    if stage == "entry" {
++        let old: SignedFinalUseGrant =
++            serde_json::from_slice(&fs::read(root.join("entered-grant.json"))?)?;
+         assert!(
+-            !child.kill_and_reap()?.success(),
+-            "fixture must be killed, not cleanly closed"
+-        );
+-        let queued: ProductionQueuedReceipt =
+-            serde_json::from_slice(&fs::read(root.join("queued.json"))?)?;
+-        let reopened = Fixture::open(&root).await?;
+-        assert_eq!(
+-            reopened.writer.status(OPERATION).await?,
+-            LocalOutcomeState::Indeterminate
++            matches!(
++                reopened.authority.claim(&old, &old.grant.binding),
++                Err(FinalUseError::AlreadyClaimed)
++            ),
++            "the durable FinalUse nonce must survive a killed entry rejection"
+         );
+-        if stage == "entry" {
+-            let old: SignedFinalUseGrant =
+-                serde_json::from_slice(&fs::read(root.join("entered-grant.json"))?)?;
+-            assert!(
+-                matches!(
+-                    reopened.authority.claim(&old, &old.grant.binding),
+-                    Err(FinalUseError::AlreadyClaimed)
+-                ),
+-                "the durable FinalUse nonce must survive a killed entry rejection"
+-            );
+-        }
+-        let proofs: i64 =
+-            sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_pre_boundary_rejections")
+-                .fetch_one(&reopened.writer.store.pool)
+-                .await?;
+-        let head: String = sqlx::query_scalar("SELECT claim_state FROM cognitive_operation_dispatch_claims ORDER BY claim_sequence DESC LIMIT 1")
++    }
++    let proofs: i64 =
++        sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_pre_boundary_rejections")
++            .fetch_one(&reopened.writer.store.pool)
++            .await?;
++    let head: String = sqlx::query_scalar("SELECT claim_state FROM cognitive_operation_dispatch_claims ORDER BY claim_sequence DESC LIMIT 1")
++        .fetch_one(&reopened.writer.store.pool).await?;
++    if proofs == 1 {
++        let stored_stage: String = sqlx::query_scalar("SELECT json_extract(proof_json, '$.stage') FROM cognitive_operation_pre_boundary_rejections")
+             .fetch_one(&reopened.writer.store.pool).await?;
+-        if proofs == 1 {
+-            let stored_stage: String = sqlx::query_scalar("SELECT json_extract(proof_json, '$.stage') FROM cognitive_operation_pre_boundary_rejections")
++        assert_eq!(stored_stage, stage);
++    }
++    match phase {
++        "after-proof" => {
++            assert_eq!((proofs, head.as_str()), (1, "settled"));
++            let eligible: i64 = sqlx::query_scalar("SELECT next_eligible_at_unix_ms FROM cognitive_operation_dispatch_claims ORDER BY claim_sequence DESC LIMIT 1")
+                 .fetch_one(&reopened.writer.store.pool).await?;
+-            assert_eq!(stored_stage, stage);
++            let delay = u64::try_from(eligible)?.saturating_sub(now_unix_ms()?);
++            assert!(delay <= 6_000);
++            eprintln!("hos2 recovery {stage}/{phase}: waiting {delay}ms for original eligibility");
++            tokio::time::sleep(Duration::from_millis(delay + 1)).await;
++            let pending = reopened
++                .writer
++                .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
++                .await?;
++            assert_eq!(pending.len(), 1);
++            assert_eq!(
++                (&pending[0].outbox_id, &pending[0].payload_json),
++                (&queued.outbox_id, &queued.payload_json)
++            );
++            let (binding, fresh) = reopened.signed(&pending[0], /*nonce*/ 3).await?;
++            assert_eq!(
++                reopened
++                    .dispatcher
++                    .dispatch(&reopened.writer, &fresh, &binding, pending[0].clone())
++                    .await?
++                    .state,
++                LocalOutcomeState::Committed
++            );
++            assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 1);
+         }
+-        match phase {
+-            "after-proof" => {
+-                assert_eq!((proofs, head.as_str()), (1, "settled"));
+-                let eligible: i64 = sqlx::query_scalar("SELECT next_eligible_at_unix_ms FROM cognitive_operation_dispatch_claims ORDER BY claim_sequence DESC LIMIT 1")
+-                    .fetch_one(&reopened.writer.store.pool).await?;
+-                let delay = u64::try_from(eligible)?.saturating_sub(now_unix_ms()?);
+-                assert!(delay <= 6_000);
+-                tokio::time::sleep(Duration::from_millis(delay + 1)).await;
+-                let pending = reopened
++        "after-effect" => {
++            assert_eq!((proofs, head.as_str()), (0, "entered"));
++            assert!(
++                reopened
+                     .writer
+                     .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
+-                    .await?;
+-                assert_eq!(pending.len(), 1);
+-                assert_eq!(
+-                    (&pending[0].outbox_id, &pending[0].payload_json),
+-                    (&queued.outbox_id, &queued.payload_json)
+-                );
+-                let (binding, fresh) = reopened.signed(&pending[0], /*nonce*/ 3).await?;
+-                assert_eq!(
+-                    reopened
+-                        .dispatcher
+-                        .dispatch(&reopened.writer, &fresh, &binding, pending[0].clone())
+-                        .await?
+-                        .state,
+-                    LocalOutcomeState::Committed
+-                );
+-                assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 1);
+-            }
+-            "after-effect" => {
+-                assert_eq!((proofs, head.as_str()), (0, "entered"));
+-                assert!(
+-                    reopened
+-                        .writer
+-                        .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
+-                        .await?
+-                        .is_empty()
+-                );
+-                assert_eq!(
+-                    reopened
+-                        .dispatcher
+-                        .reconcile(&reopened.writer, /*limit*/ 8)
+-                        .await?,
+-                    1
+-                );
+-                assert_eq!(
+-                    reopened.writer.status(OPERATION).await?,
+-                    LocalOutcomeState::Committed
+-                );
+-                assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 0);
+-            }
+-            "before-proof" | "new-claimed" | "new-entered" => {
+-                let expected = match phase {
+-                    "before-proof" => (0, "entered"),
+-                    "new-claimed" => (1, "claimed"),
+-                    _ => (1, "entered"),
+-                };
+-                assert_eq!((proofs, head.as_str()), expected);
+-                assert!(
+-                    reopened
+-                        .writer
+-                        .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
+-                        .await?
+-                        .is_empty()
+-                );
+-                let (binding, fresh) = reopened.signed(&queued, /*nonce*/ 3).await?;
+-                assert!(
+-                    reopened
+-                        .dispatcher
+-                        .dispatch(&reopened.writer, &fresh, &binding, queued)
+-                        .await
+-                        .is_err()
+-                );
+-                assert_eq!(
+-                    reopened.writer.status(OPERATION).await?,
+-                    LocalOutcomeState::Indeterminate
+-                );
+-                assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 0);
+-                assert!(!reopened.device.path.exists());
+-            }
+-            _ => return Err("unrecognized fixed crash boundary".into()),
++                    .await?
++                    .is_empty()
++            );
++            assert_eq!(
++                reopened
++                    .dispatcher
++                    .reconcile(&reopened.writer, /*limit*/ 8)
++                    .await?,
++                1
++            );
++            assert_eq!(
++                reopened.writer.status(OPERATION).await?,
++                LocalOutcomeState::Committed
++            );
++            assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 0);
++        }
++        "before-proof" | "new-claimed" | "new-entered" => {
++            let expected = match phase {
++                "before-proof" => (0, "entered"),
++                "new-claimed" => (1, "claimed"),
++                _ => (1, "entered"),
++            };
++            assert_eq!((proofs, head.as_str()), expected);
++            assert!(
++                reopened
++                    .writer
++                    .awaiting_authorization(HOS2_DESTINATION_V1, /*limit*/ 8)
++                    .await?
++                    .is_empty()
++            );
++            let (binding, fresh) = reopened.signed(&queued, /*nonce*/ 3).await?;
++            assert!(
++                reopened
++                    .dispatcher
++                    .dispatch(&reopened.writer, &fresh, &binding, queued)
++                    .await
++                    .is_err()
++            );
++            assert_eq!(
++                reopened.writer.status(OPERATION).await?,
++                LocalOutcomeState::Indeterminate
++            );
++            assert_eq!(reopened.device.calls.load(Ordering::SeqCst), 0);
++            assert!(!reopened.device.path.exists());
+         }
++        _ => return Err("unrecognized fixed crash boundary".into()),
+     }
++    eprintln!(
++        "hos2 recovery {stage}/{phase}: completed after {:?}",
++        started.elapsed()
++    );
+     Ok(())
+ }

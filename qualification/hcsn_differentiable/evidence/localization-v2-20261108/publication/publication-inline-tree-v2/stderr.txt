@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<stdin>", line 14, in <module>
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/retry_native_transport_inline_tree.py", line 84, in <module>
+    runpy.run_path(str(ROOT / 'native_publish_inline_tree.py'), run_name='__main__')
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 268, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/native_publish_inline_tree.py", line 245, in <module>
+    pull = mutate(label + "-pr", f"{PREFIX}/pulls",
+  File "/Users/qianqi/hepta-hcsn-math-closure-20261108-v1/publication/native_publish_inline_tree.py", line 99, in mutate
+    raise RuntimeError("mutation failed or uncertain; no blind replay: " + label)
+RuntimeError: mutation failed or uncertain; no blind replay: stage-02-pr

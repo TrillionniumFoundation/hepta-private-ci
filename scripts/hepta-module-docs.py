@@ -338,6 +338,16 @@ def verify(profile="qualification"):
             == row["production_implementation"],
             mid + " production implementation agreement",
         )
+        implementation = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
+        need(
+            implementation.get("sourceRootPresent") is m["source_root_present"],
+            mid + " implementation map source-root presence agreement",
+        )
+        need(
+            implementation.get("productionImplementation")
+            is m["production_implementation"],
+            mid + " implementation map production implementation agreement",
+        )
         need(m.get("bootstrapWorkPackage") in pkgids, mid + " bootstrap")
         need(
             m["bootstrapWorkPackage"]

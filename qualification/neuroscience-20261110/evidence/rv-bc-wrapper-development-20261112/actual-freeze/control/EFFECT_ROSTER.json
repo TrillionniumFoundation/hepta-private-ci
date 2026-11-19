@@ -1,0 +1,72 @@
+{
+  "effects": [
+    {
+      "arm_id": "tuned-fixed",
+      "context": {
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      },
+      "operation_id": "macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-30942719bb621cf933373a790715f777fc6b5fd559de4bdb66565eaaa2e4f49e",
+      "phase": "B",
+      "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+    },
+    {
+      "arm_id": "conditional",
+      "context": {
+        "case_id": "case-6132a3f806804b12f08cb095",
+        "seed": 130363,
+        "source_id": "merchant-8be0cc526665e1b3713e88d9"
+      },
+      "operation_id": "macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/B/macro-4811071dd4636eecc6825662e083e66d5acd32af0743e20aa3317e305fad8153",
+      "phase": "B",
+      "plan_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5"
+    },
+    {
+      "arm_id": "tuned-fixed",
+      "context": {
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "seed": 130366,
+        "source_id": "merchant-ac7dff025170a6ee898d500b"
+      },
+      "operation_id": "macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C/macro-a937c56aaa1a7817fb2c21047819c9bdf37afe1efd726350c7638c61b39e43d3",
+      "phase": "C",
+      "plan_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a"
+    },
+    {
+      "arm_id": "conditional",
+      "context": {
+        "case_id": "case-fdc68cd739dea87c3c21bb51",
+        "seed": 130366,
+        "source_id": "merchant-ac7dff025170a6ee898d500b"
+      },
+      "operation_id": "macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+      "output": "/home/qq/neuro-rv-bc-development-862531d11598-v1/C/macro-62c9f3d7440ca93fc70a462848763a94406fae374acca4efedf58500c54ecc06",
+      "phase": "C",
+      "plan_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a"
+    }
+  ],
+  "existing_development_sources": 2,
+  "freeze_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+  "independent_new_sources": 0,
+  "intersection": [],
+  "old_effect_count": 576,
+  "old_effect_ids_sha256": "8ff28fd3c2ee71ff0d38824f6f94c1dc29cd1a2b583ea1b1eb769db4f618cd4c",
+  "old_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+  "plans": {
+    "B": {
+      "bytes": 26280,
+      "canonical_sha256": "c0ad1e77c63751c9926506d5be8d70cfd749e72c431f61b26f8da757f2fd61c5",
+      "raw_sha256": "c36ecc23d73bba15695266e68b9181d40e3771a6a34c910402bf91204761138c"
+    },
+    "C": {
+      "bytes": 26280,
+      "canonical_sha256": "0a24aa10847b0991d82cdea0510571551398576179e2824a255c081f2ff22a2a",
+      "raw_sha256": "a7b05980e90456a9226a06cf14b62e1eb0dc24de75844f0c8db3ffcae78d83ac"
+    }
+  },
+  "schema": "hepta.rv.actual-frozen-effect-roster.v1"
+}

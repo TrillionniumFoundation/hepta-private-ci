@@ -1,0 +1,1780 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/matrix-sdk-crypto-0.18.0",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "src/backups/keys/backup.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "90831ef465fcd9730189d9e5b8f86cb54ef04b62",
+        "sha256": "176ad05faf3571c0c338535faa8dec25f48b8b92da1216f395ce5759388358c2",
+        "bytes": 4985
+      },
+      "after": {
+        "oid": "6f74c72ce6cb55ebf1dd3763cdfa50adb6b500ee",
+        "sha256": "a769d075e3d7ad56b20fa453081a666c7b58792bba13fc547d8f6ff324ac29a9",
+        "bytes": 5118
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/backups/keys/decryption.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b9ed5ffe66a7818a3788fabac59797c1bed1b9aa",
+        "sha256": "336c875f4b0d74d3ad89fe3ab73012bf630aba6344592f61bb2371c7fb14df36",
+        "bytes": 15633
+      },
+      "after": {
+        "oid": "97c9cda962e1509cadf49c189cb5f7d7affa5857",
+        "sha256": "78c6cbb99e23105f80bd6e77de3322be0d88ab9aca031d2939241eb02eaa3a42",
+        "bytes": 15888
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/backups/keys/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a197f30f520a38410e348b43ebffe9af38ac11e2",
+        "sha256": "da18c9fbe68817b4aa6a7f8b928106056d75b5c787b9d4ba4273e7d43a916b73",
+        "bytes": 2330
+      },
+      "after": {
+        "oid": "e4200431c02fbcded90d3002ecf49d395eb45d68",
+        "sha256": "a33f6d08be5464974cd723970cb1bc3f4278a130a01958e0d820f047bd2dcf72",
+        "bytes": 2348
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/backups/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d7379fb4f5d97d7d6b1433eb88fd071e7dc23fb7",
+        "sha256": "08d1c2058a9523bb36026b49cbee1331973ad1d014be673472aa19b97f643a9c",
+        "bytes": 34736
+      },
+      "after": {
+        "oid": "f36f11897fbef3602684a772d3a1f008f27db66e",
+        "sha256": "cb9f312adf2d769849aa1bc7845826ce83688fc6e59544d4a6167be133ad2c34",
+        "bytes": 36427
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/ciphers.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c97aa4322b49c0bd97defbe48294ed14218bfd13",
+        "sha256": "97796ab46a2e39ab830bf677e9023385d164098b59f58836693183e4cdae9923",
+        "bytes": 11075
+      },
+      "after": {
+        "oid": "35c4dac1f28ead0698ac38f6590354fdf6221fc9",
+        "sha256": "35dd0eaf0a4428f3e4996a40082cee15669dce1e68bec8f2aca00cbbc9db3061",
+        "bytes": 11234
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/dehydrated_devices.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "5d1ff0fafab8a1bd0c8b46bb8bfb44f1c6a52d40",
+        "sha256": "d26f416e169c0691dcf07f30e528ec42ce109862323c65256ae5a3214228b6f4",
+        "bytes": 28267
+      },
+      "after": {
+        "oid": "db564acd5bb9d3500025724a60b4a771df5cebdf",
+        "sha256": "176a475739f7f54b4ed41b764e8c07100f1f7ae95e7572d24b5937e8b13eba33",
+        "bytes": 29517
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/error.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "fd986ebb7f9d6dd8cf4d8534e99f033ab7f83992",
+        "sha256": "4cf8df71b96fb97912dd3dee8f9c0bd83c0162543758afa31e5b064005508b1b",
+        "bytes": 18279
+      },
+      "after": {
+        "oid": "69fbc2a834c45998b87129a69d19b87cfb350af4",
+        "sha256": "8ec8b724e9f9b4e0077279178245c7ac48f84215f09ff967f2b0262b5a11ea56",
+        "bytes": 18460
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/file_encryption/attachments.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "fd7f26ddbeee90d9e6eb05eb782184d27c5dcb38",
+        "sha256": "4f7dcf9d9241e196eaba949fe6073d66dbdb25fb591dd254842f51a961102a43",
+        "bytes": 11519
+      },
+      "after": {
+        "oid": "aa622d4805fa378e9e62c075b419080dd10ac780",
+        "sha256": "c094e404565a16b3d131a91266b57035c594c6902ac936ec36fc6436d0f545e0",
+        "bytes": 11804
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/file_encryption/key_export.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7b5d47c291d12287f4ee927d6ee507de9187b0e0",
+        "sha256": "98283decacd5a67fdfb23d32b917327a81ed3f4c4c51c69b8e8c20940437e8c8",
+        "bytes": 12808
+      },
+      "after": {
+        "oid": "b97639e2f4cbe340c54011d60e2bf7280ca0affc",
+        "sha256": "a990751d47e9fc53168ea5e4e5e61e9c31c319681346217712452e04ac11bfd0",
+        "bytes": 13556
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/file_encryption/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "dfdf9206e9b37e1c3b1d28761ea0e8d773df1709",
+        "sha256": "e49502b3c6d5b422eda4380abcc7e71b7295505b43f47eb352ce503680345bd8",
+        "bytes": 231
+      },
+      "after": {
+        "oid": "fa0957a0a47b5cda7c740429ba8ce3fd76287c70",
+        "sha256": "75976b4bcad0c15cb89922b603a22a5fda34f2cdd52c1344678bf4b83ac50718",
+        "bytes": 323
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/gossiping/machine.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "2f661a25d530edf608a56a7ffc2ce0d31c1a95ce",
+        "sha256": "2c05e6131da0bd4f444fe0256bf93d8805393dafa8f95dcd8ce6b6d8b62034f1",
+        "bytes": 97164
+      },
+      "after": {
+        "oid": "0962c4cfc0a25d64880781a5f369c73dafbadc77",
+        "sha256": "0a2792feb489f29a333baa326e94f71d48be18293587770cfd763947b39bd1d8",
+        "bytes": 105763
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/gossiping/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "6daab320412066ae79e13aa7e622b94bb762f286",
+        "sha256": "19b6ff78dfd259bece954d3f408a8e1aaf25ef420a34883074202fa105d92b54",
+        "bytes": 12423
+      },
+      "after": {
+        "oid": "62c7f3c36d3512f854e85f088a4949e6007c9ac6",
+        "sha256": "7d5cac7cd4fb6611c3069d61518f2aa1fc6b51be845adc3ac49ec481cc6ccce1",
+        "bytes": 13032
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/identities/device.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "84543b7497bdb76686491a21209769a102eb3d77",
+        "sha256": "5ba8ea85fcac92d8e964e39462dd355ae64b25b62ea08ed4917c6134fe5de982",
+        "bytes": 46319
+      },
+      "after": {
+        "oid": "c10a376b9c0a844091b9adf616dca9dc6211eefd",
+        "sha256": "c0a5e4e930f90034f050582794e0b6f94bc223d145dd250b2e0be8e67ae05d03",
+        "bytes": 47623
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/identities/manager.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c93a2f14b1c43cde2cb782569331e40069efec5f",
+        "sha256": "fe2e1bbaf3af0f8ebe830b5477502a161c765649dc2416964f9d1398df7ee8e4",
+        "bytes": 103281
+      },
+      "after": {
+        "oid": "6329061d35229835e22c2e515dcfd8190c112c23",
+        "sha256": "3096acf2e99c2b17b657302ab41ac7259dba59b3987d6775bc7b116c800f3be2",
+        "bytes": 109247
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/identities/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "abe706cfeefa93a1b6f799fe9661133c4aced9e0",
+        "sha256": "e9053ecb75c71c38c4b379740be465e67aa8385a6c808a78c4a00215a0a1d4c6",
+        "bytes": 2767
+      },
+      "after": {
+        "oid": "dd7ca9cdf56d4c85dab8874a47eac97f06f28301",
+        "sha256": "e0c0f5fe74e7ee02644af04a80197713b1a3c71a6ee99b7e6df216ac150324f9",
+        "bytes": 2913
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/identities/room_identity_state.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "3fdcd11f9ea012294bb8d8806e52532512d7d2bb",
+        "sha256": "1b6148899beee74605cd26fb0cf55e792c42a90eaf4d4b501443dc237fe57316",
+        "bytes": 44411
+      },
+      "after": {
+        "oid": "ce774e1eead10e41e3a9832ce0eb150d9f430bac",
+        "sha256": "a21e724664fc7a55d062ae1159e59e3475de7dc9f7e07270a71fff81f3bb9afd",
+        "bytes": 46565
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/identities/user.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "591f270c735a9cfafe0a6a5b257fb57a4d6b9ae1",
+        "sha256": "3e4a2b3751efdd3d7db0399c23f8ac9248ccb651839195ed898d6d7bdb39edb2",
+        "bytes": 78941
+      },
+      "after": {
+        "oid": "d5d860bad6b7d378ce4deacc34c55cdd727411fa",
+        "sha256": "8350e39199dcfa2d36369ffe2cfc4610ec96a0cb268f54b44fee24dddec74aab",
+        "bytes": 82922
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/lib.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7ef3f730b45f08fb2c41c31a5c6f6d1a2f6176e0",
+        "sha256": "bcc6b433612812e05859d1edbac2ef7c3c6d172d476d8c4e74dd699159c10354",
+        "bytes": 44166
+      },
+      "after": {
+        "oid": "44f1abd5a37700513085ef075cf901dd5cd33043",
+        "sha256": "9c28f5a3168b2ba3b5defc6f07a79fe91d28f7c2b6c2f532929960ebee881739",
+        "bytes": 45344
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9ab71b8e533252bc43f577872e9c663731474dc4",
+        "sha256": "d2b37b4f4d9967f1572be7436a4f325939bf5087e05ec4d5eb9e29a8fa153083",
+        "bytes": 128152
+      },
+      "after": {
+        "oid": "c6c38d16c24ccf2061b49f20327528e4f9812b3d",
+        "sha256": "bad619b1e45efb68168a1d928309c6a27f43750b169bd7e140fe292f71617529",
+        "bytes": 134228
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/machine/test_helpers.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a70a988fdc84c81e07c2c313f38606e606fbe09d",
+        "sha256": "79d3e4286fb84a66092e8a504e4c0e708f6c7f2f9510cef522070a5b0ef29e64",
+        "bytes": 17333
+      },
+      "after": {
+        "oid": "be710e8c5f5ebcf2250d0c8f4493cba0d04b6111",
+        "sha256": "b573cf754f9307b0aad0c5f377d64c5b51738916b903ae83e354e4fa1bc5c85c",
+        "bytes": 18173
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/tests/decryption_verification_state.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7ae02c4d31a47217c4224ceb72bceac2b771d1c2",
+        "sha256": "efe61bc638377e461a52554af6d010d21225567667f4b8fd0f804a4ba2cfaa1c",
+        "bytes": 25587
+      },
+      "after": {
+        "oid": "0b4f9482692155fcbc55937c13c9fe356a482d29",
+        "sha256": "2123777f63af12091fecb51baa7a1dc48934f6d1d87737471ee67b2514670854",
+        "bytes": 27408
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/tests/interactive_verification.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "bd7083d0fa19cbaa7a7b6ee0b1be18b75a2148ca",
+        "sha256": "264debda7ff59f9245f9198b704df6e604507b37db2e9656890a52c61bd013cd",
+        "bytes": 10087
+      },
+      "after": {
+        "oid": "b6bb9a1552c9c46109a782843c1a8fefabb7b188",
+        "sha256": "1b3e5d71151b2f10eeaf0718348f2f242b61f06c6208c5025597a62abd04d649",
+        "bytes": 10617
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/machine/tests/megolm_sender_data.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "5930bfe8004fc477a485daba9372e1eee074a93e",
+        "sha256": "b17d877d116ae94dcd5cb3f1de24119b8c9ee74f069a7d8641452fb847476fab",
+        "bytes": 18684
+      },
+      "after": {
+        "oid": "4dd3ffe0be0e35ef576b6d50c0326c059183d83e",
+        "sha256": "42aa617e211eaabdd57b7f7b74ae62974971a36af819ce15ae54068f0928fb8b",
+        "bytes": 19293
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/tests/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "cee03f339737f9b481bbea996a7a7530c2cf782e",
+        "sha256": "b4730e24e046584f99d889c369c0639c1a2382413024f64cb54d7fe16999340b",
+        "bytes": 74800
+      },
+      "after": {
+        "oid": "4fc61999ac999fd5330eac48e8045b336361ced8",
+        "sha256": "23928ccd5ba819a9b15fa3efad0438b46b7d61b82f1ecbd43d0ef44d7e9b47a0",
+        "bytes": 79850
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/tests/olm_encryption.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a5cb14ae765de49a43a12ee345965752c0126c84",
+        "sha256": "0445a5f53e3f061bad3ed556cbeca05008a98364d66159ff85c857e18a6a9650",
+        "bytes": 10737
+      },
+      "after": {
+        "oid": "7efe88cef0e211c89717d254e870ce2418546a92",
+        "sha256": "d9c328a1d61c11052bdcb64382ca00520252d78dbb04a18cc689f342b92ee823",
+        "bytes": 11372
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/machine/tests/room_settings.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "05760bee2701b01a0b90e55e3af27364479c0f56",
+        "sha256": "ed653ddf1553ca01f56ed5bd670921ec8a3e438db350dbc8694279f983f8b4b6",
+        "bytes": 3241
+      },
+      "after": {
+        "oid": "06914a5142a60571482c8b9d7f803784b1659673",
+        "sha256": "e637eec027291234715f3453b3ea0f4145f41c2e61c73a6835dd5a3abaac8dbf",
+        "bytes": 3497
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/olm/account.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "ba7b5fc3b4819778ba061fe3599101817ab0c7bc",
+        "sha256": "d25bdf9331c9bad4f2d3b2e5f4e1e9c8fc23ccb58bb608cbc059369854a60419",
+        "bytes": 83885
+      },
+      "after": {
+        "oid": "772601ef7e5731c8f689a09e1765abd25dfeb2c8",
+        "sha256": "15e0aef50a458c8e584c545f092396dcf17b650daaacd5ddf93626edc728210c",
+        "bytes": 85723
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/forwarder_data.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d66fe609c6bddcd8d920cc0199d597e98da6c2f2",
+        "sha256": "e6878a5deee90615daa51b712a89d16d37fdcbab5053f6c8dd8486830e0b21b6",
+        "bytes": 6279
+      },
+      "after": {
+        "oid": "fb192a4fca6ca6d486669013fdffc366c5a2f5c1",
+        "sha256": "7a71a21c6c251ad4313173fa174e77bf869bba464e1cf3fb3a2669cd6a76a81f",
+        "bytes": 6490
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/inbound.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a5ee1f5e8aa686560f442779f1c61368645d3a67",
+        "sha256": "66b958e2409e7a6fabdea18a31aac588c12a0b9c8aa0d0d59a4edf193524dd2d",
+        "bytes": 61699
+      },
+      "after": {
+        "oid": "8bcf6d76b56ad905174c80d94eeae16cb96327ca",
+        "sha256": "dfeaa51b73c6f0b2d623beb9d23c1abf047ed2000c9d4efca1116cc78b510062",
+        "bytes": 62811
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e9e01ed8bfb97f9934cc1cbd41b8cabd78964a84",
+        "sha256": "d18a69419f093c63248580c3844c7279e34a7074bcb8ea99445583b8f43db058",
+        "bytes": 13636
+      },
+      "after": {
+        "oid": "9cfacaec8e3e4ad673c3f1db455ab802ba69ccd9",
+        "sha256": "6a5806ce1fa4bfb889428bb635a22c89e6923d6e669c9326f51422af88e5d1a3",
+        "bytes": 14136
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/outbound.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "badfc10340f11a038ed499ad6f212dfcb4bb7ba4",
+        "sha256": "55ba667ef352f6a67d8114d908b26c9c6225f1aa0ee30a346d306bbe67496049",
+        "bytes": 43683
+      },
+      "after": {
+        "oid": "b27729311bb552e3ecdd93d17a21dee5e2d4937e",
+        "sha256": "fa84ba72fed05e5977df0bdad3350a2c4985833e01775f2f942392866484e346",
+        "bytes": 44949
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/sender_data.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d34b39209f5c1ecb985f8acbe892414a2f326c40",
+        "sha256": "1190e0cfda01e13ec7aa1907ada34af5d8617ab76b2769f81ffdcc681ff461a0",
+        "bytes": 34342
+      },
+      "after": {
+        "oid": "610ad9131f4d3aed4146b909ec736e55d3752ed5",
+        "sha256": "b2c9b8a73e2b0b9d4a1c1bfae3ea0860927fea0d2544f6495a3f541015c956d9",
+        "bytes": 36223
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/olm/group_sessions/sender_data_finder.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c60b766718dab933baa19787b8b17f0160a791b4",
+        "sha256": "6661b19a7ee7ca10c4b15dc865d3792817386222f8e1070ee19bb298baeb81b2",
+        "bytes": 43419
+      },
+      "after": {
+        "oid": "3c34afa4895e134545680772585e9b7d219aa40e",
+        "sha256": "4dd9e4a9073751b65f1294eac7aa7e450a2cc99482da3669fb8db3018b3d9367",
+        "bytes": 45370
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/olm/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7ee6a2e7539be3d918377383c721cd9a89875703",
+        "sha256": "e0efd71330ce87a0038a736145c60a5484e2d9dbcea53203b302572d151928d8",
+        "bytes": 12170
+      },
+      "after": {
+        "oid": "b061cc6cbc4cd149d62157344414ded22a1a1d1c",
+        "sha256": "f5209f55acdf06f617cc2e6ac009c669388a5e8269c6581c8edcd0df1c9e7928",
+        "bytes": 13146
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/olm/session.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b97e3ed5debd3ccd1de17a0949afa1f301e78275",
+        "sha256": "a9fbba2523d319297e30471a3a87ba3a2446203fdc50beae99c308ed7763e781",
+        "bytes": 15049
+      },
+      "after": {
+        "oid": "3ff1dcfb7eb820da8e2418eee70ee5c67011843b",
+        "sha256": "addc998ed22b38d728e7b579a53c759b100cab1f4777ff9bc99272fda292126f",
+        "bytes": 15577
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/olm/signing/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7a86b518a7f01512438188e9c7c7153a2db148c4",
+        "sha256": "7ec4a15e51665bdad0cd93885ebb5bc398cae15177f49175ae29206dc1635e44",
+        "bytes": 29372
+      },
+      "after": {
+        "oid": "a7c681e534ef1458425eabdecc3bbc479f4e93c4",
+        "sha256": "041cf07e2f59d2082ab460dd383a1a1a74500814b03d2e86fe60231551cf56b2",
+        "bytes": 31246
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/olm/signing/pk_signing.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "07d0880c52b550308aacde8fe1dfb19bbf794b56",
+        "sha256": "4cded1aa14c9f8c9653b40c7c6e4b6034f6c9f1a2fab4318fb5c3eab12df23a8",
+        "bytes": 11868
+      },
+      "after": {
+        "oid": "171621d3480171eba18c885d58eead6bfea652e9",
+        "sha256": "24f9339000a4d6eb9017926ddda39524742e256b6f319b4d1e3f5d9a234ec96b",
+        "bytes": 12231
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/olm/utility.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d5eeb3492b097dcce613ac57ed9c64ee4aa20f2a",
+        "sha256": "ac3fa0b45d4eea41db8ecfe98688d27a93e78dd3c99fbdb1c4dc1eda1a11c410",
+        "bytes": 8140
+      },
+      "after": {
+        "oid": "5158349e2a3e7466908458ef1aa7a9aead170197",
+        "sha256": "aa9bb43eaa8678179d7e39943f22815d8d6303001d54b525401b99336b55e2da",
+        "bytes": 8393
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/secret_storage.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b091b9896959cea8304b9d734ce99f58a647405d",
+        "sha256": "49138c67c5010ef72c05117fa871fb60173cbe76f54bdf02c11caf40016f613d",
+        "bytes": 36573
+      },
+      "after": {
+        "oid": "bbca9cb5377f98d634588c54d5a3c765c1b6341d",
+        "sha256": "6503bbca783c710ab755c8ee9d164f397b6fad210fe647a3392e78f140bb784e",
+        "bytes": 37442
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/session_manager/group_sessions/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9103821fc9897da0c20161ce6e8154b94fb6ea48",
+        "sha256": "9acb919e4f19a6d4354f3faaa9eb8beadae7adcc0d4e2671922e69bfe4ceab7c",
+        "bytes": 71623
+      },
+      "after": {
+        "oid": "1f3045f51743f8b9665d68e68b2f9897bd175fea",
+        "sha256": "1818208275577dbe87790f7dd458c6c2f6bf6d354ff1b68e17f0862f781d48da",
+        "bytes": 75421
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/session_manager/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "20067e2614d1cdff97d0cc91ad2334073cc7d011",
+        "sha256": "d907e9cc3221e366157c14d378d92fa438ba0e76aaa418a8277bfd2427c3f5e0",
+        "bytes": 972
+      },
+      "after": {
+        "oid": "4983cfe71cd3fcdae6782daca60268f4ad20b85c",
+        "sha256": "437a4d30510b044335ddbef4d3e324de5f642c23cf7323f55d100c313705ca5f",
+        "bytes": 1025
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/session_manager/sessions.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d27b9bc47933fa1c7111555403cd23979134f421",
+        "sha256": "64c9f755b1e4d53a80a3604bed50a194c1322b460da1f349ac871bf7729f156e",
+        "bytes": 40847
+      },
+      "after": {
+        "oid": "a3310b820c15dedbbb6718684fb392541a9a4a5a",
+        "sha256": "2b9229d0eccc9e37761d82a620535dd72d157d5a920a4724480dada2b01ae125",
+        "bytes": 43856
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/store/caches.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "228821d1b471580acb19cabc3723697ca4fb1b4b",
+        "sha256": "e641d961eca67dbcea4b9cc158e2deeeab18234306df409006846cf1e3872f03",
+        "bytes": 17147
+      },
+      "after": {
+        "oid": "c06dc8f39d8114b5b645a5c08bba54a034f8ce45",
+        "sha256": "6d34d82a52a3dc4020aa15892cefb8da165fa8f6762cab3741e78a59c486915b",
+        "bytes": 17552
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store/crypto_store_wrapper.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9dac3aea945aa893830b94e77ee12d07d742face",
+        "sha256": "a54311ada30951b6dbc3f1654f5dc824336c5ad115da356984ecf87103b0504f",
+        "bytes": 18146
+      },
+      "after": {
+        "oid": "157698e08e288cbfcdb4afbb46302ae43d132828",
+        "sha256": "362ca31923c7864c02a3a15e2da30426a7159765e61689a52cd9dbe704abbd06",
+        "bytes": 18976
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store/error.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "f663c5cdabd02fb98bd5635f51e66c8de8da02c8",
+        "sha256": "df90f1b74b30989c9809668290031507a6762ff6984e620c0aa3b7814cb2f6c0",
+        "bytes": 3617
+      },
+      "after": {
+        "oid": "9b1722ae9ead186cf9936dda72a9dee62ef4ff6e",
+        "sha256": "bf5469af4c7dbae8541270e1a5164ac7f19c9e0ed193e3b9258c08e5d4a6547c",
+        "bytes": 3651
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store/integration_tests.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "46d7bb479d3124f8294663928eaa21cc0a48c10c",
+        "sha256": "85aa9f393123d7f37036cca1126e9cc9d6cd0f1a54b8a789fde854dae270fcfa",
+        "bytes": 74750
+      },
+      "after": {
+        "oid": "f353bf14cc7d4a5db0f61d78248f50d8d6134798",
+        "sha256": "f9b2eccab193288548fb6b7998c2b7e39b3458df51dec31ce5b6f1adf64299b8",
+        "bytes": 74939
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store/memorystore.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "35984afad254d30ae9b2a142e5bdb86efb541c83",
+        "sha256": "30e38f42d26fe663118d93cebc7c79d60260d06aafabf8c5a93347c5612fd972",
+        "bytes": 61492
+      },
+      "after": {
+        "oid": "cd499e74750c3d5fe3b603d6a55aa635605837ea",
+        "sha256": "3c285c7ddf0c0ff0bb4f15fbf9899d1cc29ec96646eb60d59ad2c875e40c5420",
+        "bytes": 64792
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/store/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9460d27d07ff74454b1fb5afb5cace44f23be68d",
+        "sha256": "3e544daa00c3f343da36c47dca7f050fe4d707d748880550c9efa4bc6333b3e1",
+        "bytes": 98225
+      },
+      "after": {
+        "oid": "0c4e3768ea76303e8a68a0199680767ad7b80879",
+        "sha256": "778a77a8ae318ff1528557f6efa2f3cabda8600ab36ace0b94e5982ffc928fed",
+        "bytes": 102848
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/store/traits.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7e54a6dbf159de72333c64dd6f94533210c11d11",
+        "sha256": "33d93b4fa508a8f4d06969bf271dbf7fa501de59da8d9cf6c0c4b23eda2a81c6",
+        "bytes": 27287
+      },
+      "after": {
+        "oid": "4393527579af4bb83704ec5661de6c048156345a",
+        "sha256": "c5074beabf73903698d63130fe6fdd31f535529b7bff05879e850324e73bc741",
+        "bytes": 28616
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/store/types.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "234de3fd247e1e771e96f181f160509b0ec27f94",
+        "sha256": "ffe59fce804eafb65c09966f49f458ce19c9f12bfaac0779fc5b017c49c31a7d",
+        "bytes": 21450
+      },
+      "after": {
+        "oid": "1974d9016e8936ac7d455c965593d21b99b713d1",
+        "sha256": "3bca6a13ded68749bd9ac9bee305a0c058cd7ea461a1d7e8ce25f49083722e81",
+        "bytes": 21941
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/backup.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "82a790f3b3454fcc7b1b45e6a5f25dc11dd45238",
+        "sha256": "1e519f61dda715f8795f15b941703ce624303edc008b3cadcd5b182c721767b4",
+        "bytes": 6905
+      },
+      "after": {
+        "oid": "4bea1a272c6b65ab12150a3019607ebd2a018290",
+        "sha256": "bd7702eba472f429f023bc6241fc01a2641c34995241f39dad46050449178f8c",
+        "bytes": 7321
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/cross_signing/common.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "db66a753f60ba17185398e2e3006751f1fa4c7b3",
+        "sha256": "89f73103297da8f5123eef30bd517887ed6de074dd7d39301abef469d069f7d9",
+        "bytes": 6063
+      },
+      "after": {
+        "oid": "bfecfc1aa43123232bb956ade129643de9c26cf9",
+        "sha256": "2b5edc318261eca055dab8f5ea17affb73b6bbc2af4a4213d05b5dc6ca219803",
+        "bytes": 6277
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/cross_signing/master.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "75421cbcc82c1b15f551db33d6a7050e3d2ada8e",
+        "sha256": "f7d288bc30d3c89ad2ffadbe53ff4dad22a5a07a32d9a000976f2083e6864960",
+        "bytes": 5131
+      },
+      "after": {
+        "oid": "f2b82f873d4a88014edb743eaeaef9c08e5e1e43",
+        "sha256": "b69a68f15fdfe249292f531a2d3f1b9198056ecc6260559e76762dc6182f2c56",
+        "bytes": 5209
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/cross_signing/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "4556af96cb68cd937dbb148c8aedc06a912ec1c3",
+        "sha256": "9b47c800789de21f03c15ec4afa252690ac79852bb401e14de2bdcb996e16600",
+        "bytes": 6606
+      },
+      "after": {
+        "oid": "c0849e17572b956567ee7cdf1e1e4052d200b415",
+        "sha256": "f066238c4a2e10bafef1cedc219968e27825a3ccf1b3638417a45892f9fa6776",
+        "bytes": 6835
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/cross_signing/self_signing.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "784aec3837a753465cdf39d0bc4f446345dcf7ac",
+        "sha256": "f288b535e15371c9f262661ab02d1793038d3e4e861e7bd887aabe97f66a3e70",
+        "bytes": 3180
+      },
+      "after": {
+        "oid": "fb261dc34a9776af4200e69de2c05921052befc4",
+        "sha256": "75cddf6ba46983ee053fe3036b83430cfe8080e2d542d29048e33bfbf0e8d7f2",
+        "bytes": 3248
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/cross_signing/user_signing.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c5081fa358a23ee3baed1c4e52c1fbbecdc4c6eb",
+        "sha256": "6c3ecd631446e748f45f5477ff07e83506ecaea50dedff709b32660b4a7fbceb",
+        "bytes": 2967
+      },
+      "after": {
+        "oid": "73cf2cc3ec9cf6d88f021a6809c3f8991bdcf994",
+        "sha256": "ae2b594f0df75f5e69f2e9eb2755b0209882218294a8c83109d05acf61f053af",
+        "bytes": 3034
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/device_keys.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a475c3a3c810e1b8619399f7e3f8570680dafa55",
+        "sha256": "3c7b73b97e346b717aa4e57a42d50b95bc5b23690e5853b1483d3c9b05fc6878",
+        "bytes": 12878
+      },
+      "after": {
+        "oid": "7a803a51181f4cc76fe09a95f9aba3df4be7eefe",
+        "sha256": "06ed4c0de462f3d98cd675ed5165256e3a85c4283f385867c3a3179fec57a72d",
+        "bytes": 13295
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/types/events/dummy.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a298a98f29d91d628a99c8ac60d6abd09c099ebd",
+        "sha256": "60ebb620a48d3a16539c807820d42dbb8d951ccd95c9311240a428b2661def39",
+        "bytes": 2029
+      },
+      "after": {
+        "oid": "a2dff923efb9a1e5c27ef19074705fbc2eea6106",
+        "sha256": "42d3ce2ba81bbb8a185765357e0c6fcc8b89c93b4662ad8f0a1de5e56ed86b6c",
+        "bytes": 2065
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/events/forwarded_room_key.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "1b63d5fb5f154fd5f056ac2e546876742fe703bb",
+        "sha256": "c4aeb6535a6d8832c9c52c8530cc9ee97c71d71a02fa4b898233a37a030c0aef",
+        "bytes": 10096
+      },
+      "after": {
+        "oid": "1b145aa3fbe46aba0175a44a57a0da487da60a5c",
+        "sha256": "8dac59cd2705ea089ecb61e030295d4c8eb3f68e1e5f3348d19604998326219f",
+        "bytes": 10332
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "abdae5832c68f788abfd5748d0e3932fb5551e70",
+        "sha256": "380b5d901c83de1f58236ca01f074239eb1c7a846283ddbd9240bba09ecfc76e",
+        "bytes": 2041
+      },
+      "after": {
+        "oid": "d733d64cc761f0b4cde79fd302a83cdf3c6a6506",
+        "sha256": "addeeb2289d974be75e27bbbf8d6885d50fb730b84a9d366c4769944745fb2c8",
+        "bytes": 2094
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/events/olm_v1.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "2415c214ab972d76d5e0d41bf112442e725cfb79",
+        "sha256": "1d74edc03ae6649b4a37101239027c58cf900bd1ae44fb80cc13192241b557ca",
+        "bytes": 28522
+      },
+      "after": {
+        "oid": "0c1b024339cef161558e88f13a968c0881c99a44",
+        "sha256": "a826eb40c5b228ad1cc952181f86e3d95bc9ef63204cbc0feedd5ece6e9e198e",
+        "bytes": 28921
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/room/encrypted.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "6a1785344027c530810888515f9816970cbce6b2",
+        "sha256": "4982726ba174c3f9fd1d5bbd89cb575ee8add1bb756a7b04371b5ef3b587b2f6",
+        "bytes": 20326
+      },
+      "after": {
+        "oid": "37c653a5b16dba05681fd5c7e4484e259487fb00",
+        "sha256": "8decc88647ddcc193300afed838ed32a7cabb84ed95b3807ed019aca938e2486",
+        "bytes": 20772
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/events/room/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "582bbfe7f9e72f75c7eb2f6e1d13fdcea6035e9a",
+        "sha256": "c0c08b652e9a5550673f1bf1c8c29145060bb4eda76976fac3a7224bec9c4930",
+        "bytes": 2964
+      },
+      "after": {
+        "oid": "8b344a79e68b938570940b061ee387c54a17758d",
+        "sha256": "8c5b72c5b1249ab0758ac0c1214bd5f9037a7e7886d56616e21472b02b890c0d",
+        "bytes": 3018
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/events/room_key.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "15968f1428a70427f4c07cf1887c72c6647334c0",
+        "sha256": "443e6620384b17658ce204aebafc73b7a3a692eedb380bf97c1c90fb60a78c29",
+        "bytes": 10211
+      },
+      "after": {
+        "oid": "399732dce9042d0b420f14ba4837e21d54ba7fd3",
+        "sha256": "160446300f7afc6a83ba505f911b78dae3fe65cd376a3f2fedc7fcfaa737fba8",
+        "bytes": 10407
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/room_key_bundle.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "dc69b6ec86447ea7251c810fd652d966af5ba02b",
+        "sha256": "21439a76c6d1672f3c424ca8d455062f7d4acff04c067f0853cd9e0e4a129028",
+        "bytes": 1543
+      },
+      "after": {
+        "oid": "18b55a2650aaf9feaaed0a37fc3c000c60f40ce0",
+        "sha256": "fa00b5a61d9ef36913d0c6ff28055de1a5ba8b00930ab1f4a97742e24b573fa6",
+        "bytes": 1560
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/events/room_key_request.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e397862c639e0bd99c0031b8befaad88fdca69ba",
+        "sha256": "5744d2ac1c1666420378208a847722f49b5832ec9fdc678882c9436a7a57bb84",
+        "bytes": 14252
+      },
+      "after": {
+        "oid": "aa4d0457e4e00bf1d5c1eac07b4032cff782f14b",
+        "sha256": "d415c266c8e624da3da06f79b8f5aa5ba3b4bb4c9ba46740490723771bd2bcb7",
+        "bytes": 14477
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/room_key_withheld.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "fa8016ad8b11fc76d24fe52aa23788a75b8760c5",
+        "sha256": "967c7e318b961e5a5d0619d2261e9549d9a642c6e0b7a0815e5cc0f0ff94a0c9",
+        "bytes": 27843
+      },
+      "after": {
+        "oid": "8fd0d679da55f0862610846f62b337a6c03f82c1",
+        "sha256": "4799d75fa814c864bfb85639c6a51d11bef4d9a09a1c5d5c4ed861e4c2151798",
+        "bytes": 28302
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/secret_push.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "2e4eea865ed48c714f67d7df21b793477d19223a",
+        "sha256": "215c4c550e574da99bfc682b9179f00c7d17629d45bfd230711ac0c1e03d4ec8",
+        "bytes": 3289
+      },
+      "after": {
+        "oid": "3905006143c8d159a72de0fc879c4dbd95202aef",
+        "sha256": "12cbf8f254d2d299034fb0a4d84638c43c593324a5f962a1edd767f191e9391b",
+        "bytes": 3407
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/secret_send.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7fc7f0e7420c56a8ad84e5ffa28e7055f89bce53",
+        "sha256": "b0218bf091da853f2aca6db39356649b1df2f2ef5c4383463ea46412b8a2753f",
+        "bytes": 3494
+      },
+      "after": {
+        "oid": "93f5b9934fb74521f597ae3c27162f0c6aa63343",
+        "sha256": "2bb2200a5abff36836b1ebbdd13d267405b7f9f506729810b036ac63f7287fb1",
+        "bytes": 3595
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/to_device.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "860cdc15e0b059e9ca0628f314ad95aef4c1b02d",
+        "sha256": "faf51b659c665b66ea845dd0697f3d0f48e21d38926d7e8d918e50031635e0af",
+        "bytes": 23216
+      },
+      "after": {
+        "oid": "d677ab7f76ee2896c1ea93d7e08650a11f898c0e",
+        "sha256": "895f7a1d40ca4a84d6ac98f397e32ad46b014d12bc47e1f82c0a21b8fee1db29",
+        "bytes": 23851
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/events/utd_cause.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "889d487d49e80610e4da2c75754496c130be9bad",
+        "sha256": "19a9f42d56ba16949d55c70ed9ed99ee5b8a5364bf4b97af6d21561e4c5390e7",
+        "bytes": 23335
+      },
+      "after": {
+        "oid": "f447d58e3c9d2691039d0d76242458bf96af6e19",
+        "sha256": "4c4d5d4b38edb737e2b56e214a9371c508f8bc4718488b5679fca8798438c607",
+        "bytes": 24374
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/types/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "99093ecaf630b431e1a4a2700c5fdde1864392d4",
+        "sha256": "c7536236bd3a60b1fa60913c11eb62805da212dc270bdc03c5a8d135389b376f",
+        "bytes": 21766
+      },
+      "after": {
+        "oid": "3f08c236f971f882023e59c42f6139b06bad9b0c",
+        "sha256": "ac90757c5942f3b63b8aeb3b31b105362e3f256e728109f1a49116fb0eb7ce58",
+        "bytes": 22413
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/one_time_keys.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c0f8c700e87a4e26548aec4d8f5cd9ddcf98ce92",
+        "sha256": "d5a3abe18d8aac6fe739a15e6ce9bd9867be74d2d3cabccc322f7dcd5b61c5f8",
+        "bytes": 6614
+      },
+      "after": {
+        "oid": "c4aa88945579d561e9af514dcf2915482f3bdd05",
+        "sha256": "1d02e4e1ec20c29acff3dde28e67fcc46020cb81d107b1b138c4cf53379ab874",
+        "bytes": 6918
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/qr_login/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d56941916f2781420cd371987f0c266e39f6f131",
+        "sha256": "56c36d540235e5eb3df369b5fa2a1a188e3fccbeabbb3df03b9855943c69b093",
+        "bytes": 10003
+      },
+      "after": {
+        "oid": "d2ee4f71de871072b2bd6c8c1a9ad6587078e811",
+        "sha256": "99964b6679c74a8cd315d986837308209bddf89f010d99091b55b3626b7fc3b5",
+        "bytes": 10031
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/qr_login/msc_4108.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "03513ab1174017be17fbdbff02e2589bc2060375",
+        "sha256": "23264a2300622b0221d7d6ea01d1f415c398cdd21440bc2270e6302e6ef2f30f",
+        "bytes": 15282
+      },
+      "after": {
+        "oid": "146ac941f3c689ae3a5cc201443ad5ffae54c3d9",
+        "sha256": "333c42da22ce04f73f0582e9d996f961a692d499eeaa4475b222c3ad17feae4d",
+        "bytes": 15484
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/qr_login/msc_4388.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "dd46894d1b168ba17000c9b8583752148540bf46",
+        "sha256": "7f5423d8036cd593a91128bb3e0162e69146882700936e32099a6666769dd066",
+        "bytes": 13186
+      },
+      "after": {
+        "oid": "b98b968aba5d16114d71efd93295da99d47f1598",
+        "sha256": "aeb20a1a55f861f07bb4fa2b59d516d53548a88c697834370cf5f769faac9d10",
+        "bytes": 13356
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/requests/enums.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d6b589b1552be39a74ffe339214a084471cfd753",
+        "sha256": "5c48c1e5cd6d3dba5aff05242ceeca647f6641d78d3ff581ea45178c508b4317",
+        "bytes": 7205
+      },
+      "after": {
+        "oid": "9345aabbcf249c0ae10b9a6c02a756f377c29d64",
+        "sha256": "9ed13c785485f9ccf9f2e432ea864c98b9efd90b622cb5eb21b46db60a28cc4a",
+        "bytes": 7509
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/requests/keys_backup.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "ca4678367e7d780ec6f3ececf2dab316dde698a0",
+        "sha256": "fcfb5d3c85ba57e806fd44e95fd18a969b0dfb355c8079e61db97619d70505cc",
+        "bytes": 1078
+      },
+      "after": {
+        "oid": "ea8f8791ae0ddab48a1cd6b6462a0f1daebfdbff",
+        "sha256": "cefebadac0fccc12c89bd50ad78fd688c17e77d40a4bb4986f5dacdaddfc582d",
+        "bytes": 1086
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/requests/keys_query.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "02ba70598b175272218c01009f93000c3e402f17",
+        "sha256": "ab35b906dc342b52cd315e0ee9528b82ce3b3c2ea053ce5f683f9343310a3938",
+        "bytes": 1420
+      },
+      "after": {
+        "oid": "6b1fb886fc84edb5f32848f5a7f52816af65a5b7",
+        "sha256": "baeef62b64ce02d46a3ad6aef362b79c7dc98ed9fd1c319f6414f482f6b01948",
+        "bytes": 1468
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/requests/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "11d48156d9f0e8fc4befb745e5e4363bfbeb0743",
+        "sha256": "19807caa939f8ebecb2d1e4a3029b8e85c765b33f1d320e9cff4e5b77f496675",
+        "bytes": 1652
+      },
+      "after": {
+        "oid": "d047f6d47133de52eea0e0f602e7c585375ba0d1",
+        "sha256": "0a11e1fb0271cbc7061b019acaffcff38af3b524e9fbfb74f5dc59e2e383dca2",
+        "bytes": 1660
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/requests/room_message.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "fa050ba4c4b933f909e9db31ff0c56cbc9621aef",
+        "sha256": "b6feb2645238d2cc8e0fb481cd752916b845fa0054d06e484d5169cf4e03b7c5",
+        "bytes": 1228
+      },
+      "after": {
+        "oid": "5046c0f92311d92a027dcd816b42a78c1b413a08",
+        "sha256": "ec161b0e35f13a9c3de942224ca062ee2bdf759f126cf3b1d7124f24a02bd9c4",
+        "bytes": 1246
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/requests/to_device.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "901190d3789d2ccf8fcd053a7d3e42680299f185",
+        "sha256": "f6e232eb1a4905a1211f958d0d58e4ba7ad20e4e9dc8ac49245dd6f9654618eb",
+        "bytes": 5139
+      },
+      "after": {
+        "oid": "7e3d18ed3c45d1cf162793ba0b95c99558e2c593",
+        "sha256": "5f7d31e7e6dfff2e9f917ebd08adf8d8baa23f766f04f493d801031b92e75ec3",
+        "bytes": 5434
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/types/requests/verification.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7c9db88e11468e595e871100999117322b4f0526",
+        "sha256": "d15439572344e1bf8ef7a57bb1859404783b0cb06f133ca439636e7764f19883",
+        "bytes": 1696
+      },
+      "after": {
+        "oid": "38b7bca0eaa8bd723e77649e3d3d507ba963dc33",
+        "sha256": "12abf18c2316e03bddc4aa803b85623aa406c90622c1e43f09122acd62251922",
+        "bytes": 1705
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/types/room_history.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7345cc90002b0ee61e7140e7cf78b7b1b1a1eeca",
+        "sha256": "c4ec6b3da6bb2b27dc84134e27aa560d34efac401fddd891811fa08eece0c60a",
+        "bytes": 5627
+      },
+      "after": {
+        "oid": "b8922ec88d2d60cc98178e171d824d10f7e9e5c1",
+        "sha256": "6574c8a74e1ba679d3df41687f943ebb97148ac3988903076012babd09a2a31f",
+        "bytes": 5817
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/utilities.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "beaa2d82fe64e5cfb8eb40837f532b14c6e6bf3c",
+        "sha256": "f4729d202866cb7f36b3fcd58931a6294cd412b9290a1240db492c62626ea83a",
+        "bytes": 3157
+      },
+      "after": {
+        "oid": "c880afc3e224ac8d0f0eccd9a6467b5e340b72b7",
+        "sha256": "a6d268106a053fb5072db2914634a914e020b551a35cd838e2331d805f151643",
+        "bytes": 3283
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/verification/cache.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9802b8e4627297ac5927c4a4b7066dc14a7e8103",
+        "sha256": "f0df5abfeb2d1ddea891a6b01fcd14be19d40320a1d45c52ad58fc4959f60652",
+        "bytes": 9454
+      },
+      "after": {
+        "oid": "5fdf19b92b0fd225092150271be1c6a7f2df5b9b",
+        "sha256": "26d15bf43c4f4af9102bc91790caf30c07b6537827f0bfe67827f327522486cd",
+        "bytes": 10148
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/verification/event_enums.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "0d120cb5f9caa5ab48389911b420f6302a6ea397",
+        "sha256": "f33db34646f7e05b03a9447b0da1c88d79ce0d7f1941481753e0c9352c17e70d",
+        "bytes": 27373
+      },
+      "after": {
+        "oid": "6e291a2434c42cefdd26217a004d6214dc68e4e5",
+        "sha256": "470f748308a49b842025d5b3a5b154e4788b1ededb81a49bb2dc84b3c84c625e",
+        "bytes": 28198
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/verification/machine.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e2ed238a5817d63ed37e5b0b6d8d34228928d3b9",
+        "sha256": "1f450750fc1a81ff92a1432d790aa5958fab95adea9b5fdaa2fa2f6190a7ce64",
+        "bytes": 31359
+      },
+      "after": {
+        "oid": "09191d46f160fa4ff9175eb2df4f9cc1421463ab",
+        "sha256": "41a716975047a947e124844d5a0418976955920d49cad4753e2258b234e7adb7",
+        "bytes": 33469
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/verification/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "00ad8dda987c8d0733c293590c8c2b6a3414618d",
+        "sha256": "d92c0275eff050aa80abaf988d336488e8b09c57d7e20551cb2b80b88627f43a",
+        "bytes": 31396
+      },
+      "after": {
+        "oid": "78770464b649c8bf51fdfbabcec0468c36de8d4e",
+        "sha256": "a3ae3101d53194dee9e40e9372923bc2c8796a7e405a9d6d4925efb4339bb9da",
+        "bytes": 32678
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/verification/qrcode.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "aace1b47142befa27c499f5f3fc38fd3608cb456",
+        "sha256": "9bd3892729343a5f6950e929c2b2d370e3461f1b721cc82e2a2762a875ea81ba",
+        "bytes": 39866
+      },
+      "after": {
+        "oid": "4e2f10e95c2fe29828b1b4f2a8a2e673d1a9a74b",
+        "sha256": "f04902cb470240e6cddf37993ed7921f350c51c9911c1327fa00994c1bd1ee2f",
+        "bytes": 41329
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/verification/requests.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "07b07f157850079b813859c0a9e510f72ad3ab5c",
+        "sha256": "e335024c663df8a2a7185728fd3ac30b6013e69b6a03e8ab4dc10d89575099af",
+        "bytes": 80217
+      },
+      "after": {
+        "oid": "b11d45486463fb598d2345052f0f5e7b62785061",
+        "sha256": "0eee3f583fc45998aef9b699bc23461b99b2c0b6c03fe81d310cda6049ff0442",
+        "bytes": 82924
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/verification/sas/helpers.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "62ecc062c8dd6e9492c52fef5725bce63a639bd2",
+        "sha256": "ff4a996afc313135384114036af1179effb4f7802183355088fb7f51d7e46dfa",
+        "bytes": 19057
+      },
+      "after": {
+        "oid": "4ce4404df1c85ef61d39a5fc8534434af7de2bd0",
+        "sha256": "4c787044525f1e144e9e4eb72b8e7165f3f1bb6664ab8df3960471464cbcbb6b",
+        "bytes": 21500
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    },
+    {
+      "path": "src/verification/sas/inner_sas.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "364d3c100f0bf4431312c8c30e09e5c56e9fcbf5",
+        "sha256": "c359e1b963fde31508934e0f5c4526fe71620170e62afcbe03d274aa93483365",
+        "bytes": 17215
+      },
+      "after": {
+        "oid": "3370de3d9b1a468a576f5e4ad5a590b6fbb2a61e",
+        "sha256": "64779ba2760dea73bfc4ced74272391fa9a80b208c2945bf28243c37e05fb401",
+        "bytes": 17800
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/verification/sas/mod.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "d2af9c83991ab700d8659b7380502acbdb93e5c0",
+        "sha256": "051fd5a261295ec1555fa0dbd5a1609e825e39c1e20381370b3034ad074ea1db",
+        "bytes": 36577
+      },
+      "after": {
+        "oid": "526e77ccaf01607332e1172d1c5e96cd4b70ba6f",
+        "sha256": "947e4bd0e4e05a41bc23c961929d4462b79ded93857b127ef0e9e6edaac8714f",
+        "bytes": 37865
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation",
+        "equivalent single-expression block/return punctuation or adjacent derive grouping"
+      ]
+    },
+    {
+      "path": "src/verification/sas/sas_state.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "12ab996acda43e28f038535a4139042c18065fbc",
+        "sha256": "f903ec02e13674430068cac0fa2c631bcf1267647ebbef1c52e9856c2e2fb0e6",
+        "bytes": 65579
+      },
+      "after": {
+        "oid": "c89291e0f421bae256949db2c348d75c4ba6c893",
+        "sha256": "e7c716b39822a9681e053af968dbc3e7a07901ad44eee1fb576dd9e8cd6c89ef",
+        "bytes": 67792
+      },
+      "change_categories": [
+        "layout and import regrouping",
+        "trailing list punctuation"
+      ]
+    }
+  ],
+  "source_file_count": 95,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/.cargo_vcs_info.json",
+      "mode": "100644",
+      "oid": "03ac87e01d87c266c93026b55c2491695e5bdede",
+      "size": 118,
+      "sha256": "7205b8da9a5eee62d76da48b05a3230191e745bd2154fd931af2abe09e9cc768"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/Cargo.toml",
+      "mode": "100644",
+      "oid": "0f651874f7d5ac004568d6f8b041e2d3b8895885",
+      "size": 7462,
+      "sha256": "98ce2b8539759300ebc3d29dec537801bd689473d51bb29b9570bcad335d565e"
+    },
+    {
+      "path": "codex-rs/third_party/matrix-sdk-crypto-0.18.0/README.md",
+      "mode": "100644",
+      "oid": "8599056cc7be96044b83c4decb11f06fd3d36281",
+      "size": 5729,
+      "sha256": "5979f1542caa62413d6b37a38917faf117deb39fab3a84bca935628f6bfe92ac"
+    }
+  ],
+  "preserved_license_files": [],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false,
+  "license_inventory_note": "No license-named file exists inside this package in the fixed c213 input; the formatting change does not add or remove one."
+}

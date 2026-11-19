@@ -1,0 +1,368 @@
+{
+  "schema": 1,
+  "utc": "2026-11-17T00:35:15.502934+00:00",
+  "scope": "c2d first-layer 51-source semantic union with checkpoint repair. Original three full packages pass on ROG Linux. This does not establish full incoming history integration, production activation, physical single-writer/CAS, path-race safety, Windows writer identity or Windows durability.",
+  "root": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116",
+  "source_proposal_sha256": "c4626320321188cb42d8b9cd19ca392dd7e56f0dedd290216eb0e8892a6b10d7",
+  "originals": [
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexample-runner-v1.py",
+      "bytes": 10560,
+      "sha256": "ef3a0ed712a9b6afbc90b4e421261e3fb50192a85cd0942b3200885322e79f25",
+      "git_blob": "463ad2065bd26dfbc359f14c21c791eff9dba6e0",
+      "object": "objects/ef3a0ed712a9b6afbc90b4e421261e3fb50192a85cd0942b3200885322e79f25"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/baseline-source-inputs.json.gz",
+      "bytes": 1068714,
+      "sha256": "760423491df2ab18797eced5b0f56b18c0d4ff427a92782b8e29ed3326522195",
+      "git_blob": "d8fbe68b07224abea3fb69df6b000b84bd163721",
+      "object": "objects/760423491df2ab18797eced5b0f56b18c0d4ff427a92782b8e29ed3326522195"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/checkpoint-counterexamples-junit.xml",
+      "bytes": 11742,
+      "sha256": "0269f8164b3ddbb63a66e8e5f1680e39f41d398b739ba217b6fa4570cbd57513",
+      "git_blob": "7003a2b5192ff05f0f8f11522aabe13e9f3b4166",
+      "object": "objects/0269f8164b3ddbb63a66e8e5f1680e39f41d398b739ba217b6fa4570cbd57513"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/counterexample-harness.patch",
+      "bytes": 1646,
+      "sha256": "ca01cf095f953d9054c5beae6ff4829c1f06199edd76d5e113134d31f9b286e2",
+      "git_blob": "071a4d97e3454882eaf0013eaa2b0f5e06096190",
+      "object": "objects/ca01cf095f953d9054c5beae6ff4829c1f06199edd76d5e113134d31f9b286e2"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/explicit-counterexample-rustfmt-check-receipt.json",
+      "bytes": 1191,
+      "sha256": "1eafb1f9c6e342ab1702152ca3dcd74700a67e4e8c84a11fe9947c90e4eb0394",
+      "git_blob": "120653087f679c495505c46917a6bc8d91af1524",
+      "object": "objects/1eafb1f9c6e342ab1702152ca3dcd74700a67e4e8c84a11fe9947c90e4eb0394"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/explicit-counterexample-rustfmt-check.log",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "git_blob": "fa0ee9015c1123be2c704c638dcca5ec102b362f",
+      "object": "objects/46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/harness-review.json",
+      "bytes": 886,
+      "sha256": "f257d86b5c32c5e736fdd54fa571f1b1bfec8140a2f93a4bc9bf05642ef95fc7",
+      "git_blob": "7d95a33213c580bc947cc3c03f8d36c2376cf8b0",
+      "object": "objects/f257d86b5c32c5e736fdd54fa571f1b1bfec8140a2f93a4bc9bf05642ef95fc7"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/isolated-counterexample-rustfmt.log",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "git_blob": "fa0ee9015c1123be2c704c638dcca5ec102b362f",
+      "object": "objects/46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/native-invocation.json",
+      "bytes": 3345,
+      "sha256": "0e6e6a106b8cb72668cadd4695ecb8c3865f698911d95d61826b9ee87f1f736a",
+      "git_blob": "d5e59253bcfc161825efaa9e35ba1bb86283024b",
+      "object": "objects/0e6e6a106b8cb72668cadd4695ecb8c3865f698911d95d61826b9ee87f1f736a"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/native-results.json",
+      "bytes": 5558,
+      "sha256": "c8a33f1b38ca5f30317f80898587fb4da3c21dddcf9b10abdf102763abd7a064",
+      "git_blob": "d9a7f98be427087182e613fb95e4b2c1417d51a6",
+      "object": "objects/c8a33f1b38ca5f30317f80898587fb4da3c21dddcf9b10abdf102763abd7a064"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/old-production-six-checkpoint-regressions-receipt.json",
+      "bytes": 2867,
+      "sha256": "c49134170e29a6060aae0633274c9b2c5dce441260d278dfe79f23a532270163",
+      "git_blob": "e2ae4843dcbe3d5d733d22add5c804c354d9693c",
+      "object": "objects/c49134170e29a6060aae0633274c9b2c5dce441260d278dfe79f23a532270163"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/old-production-six-checkpoint-regressions.log",
+      "bytes": 12416,
+      "sha256": "f6ce1b7b4bacc2b96e8d8ac0930a3900abae238a394798ff29eb5c769fa2679d",
+      "git_blob": "36adfe3830ed485f41daebc73cfae3865f8117f9",
+      "object": "objects/f6ce1b7b4bacc2b96e8d8ac0930a3900abae238a394798ff29eb5c769fa2679d"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/original-just-fmt-receipt.json",
+      "bytes": 621,
+      "sha256": "a3af7a573ac96993ebe56d105bad1cadede31f3e193d3f432654623287a0b5fe",
+      "git_blob": "7b6f125599a5eb7b0b8ab10f8e5b1006efa7de1c",
+      "object": "objects/a3af7a573ac96993ebe56d105bad1cadede31f3e193d3f432654623287a0b5fe"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/original-just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "object": "objects/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/preimage/codex-rs/hepta-cell-roles/src/decision_owner.rs",
+      "bytes": 23914,
+      "sha256": "91f337a4ad4444f72aefdfa9cc3b6ad616bfe4550644538a988b646aac63d159",
+      "git_blob": "58cd6bf06158f4710a926b55312456865928da5c",
+      "object": "objects/91f337a4ad4444f72aefdfa9cc3b6ad616bfe4550644538a988b646aac63d159"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/source/codex-rs/hepta-cell-roles/src/decision_checkpoint_tests.rs",
+      "bytes": 5705,
+      "sha256": "f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056",
+      "git_blob": "6b8d98759f608b43b118b7f48406e93e7985cd43",
+      "object": "objects/f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/source/codex-rs/hepta-cell-roles/src/decision_owner.rs",
+      "bytes": 24357,
+      "sha256": "ad4da406cace8befe7f6d44d5370a37dca19d28a8aa77de95a4e32c67d3ea21b",
+      "git_blob": "e1c190555fd7b58b8ef292f096a70f8db38f3acf",
+      "object": "objects/ad4da406cace8befe7f6d44d5370a37dca19d28a8aa77de95a4e32c67d3ea21b"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/source-inputs.json.gz",
+      "bytes": 1068850,
+      "sha256": "5a48870149a728a610375c0ad8b78e8e988dcfb806b41259dfe612dddd49065d",
+      "git_blob": "1c0761a49a003f4c9e3d3620ee96eb4fc33a42bf",
+      "object": "objects/5a48870149a728a610375c0ad8b78e8e988dcfb806b41259dfe612dddd49065d"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/counterexamples-v1/source-plan.json",
+      "bytes": 4020,
+      "sha256": "431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5",
+      "git_blob": "fd0be3422df0b3d4a9714b395786771a106747db",
+      "object": "objects/431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-runner-v1.py",
+      "bytes": 8760,
+      "sha256": "5e50773f01406c7e20f0f0a0272cc3a51351bb87856457c0c8e371757c80ebc2",
+      "git_blob": "d785f022d261d0464972adfe409852065c9df8d6",
+      "object": "objects/5e50773f01406c7e20f0f0a0272cc3a51351bb87856457c0c8e371757c80ebc2"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/counterexample-source-inputs.json.gz",
+      "bytes": 1068850,
+      "sha256": "5a48870149a728a610375c0ad8b78e8e988dcfb806b41259dfe612dddd49065d",
+      "git_blob": "1c0761a49a003f4c9e3d3620ee96eb4fc33a42bf",
+      "object": "objects/5a48870149a728a610375c0ad8b78e8e988dcfb806b41259dfe612dddd49065d"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/explicit-forty-four-rustfmt-check-receipt.json",
+      "bytes": 7005,
+      "sha256": "dd5f6aef75919326467964b08c001a5a0d5bc0c151a53e79badbb77f38dae8b4",
+      "git_blob": "34531e00f71da049393b6cfc92b9b030aadd10c2",
+      "object": "objects/dd5f6aef75919326467964b08c001a5a0d5bc0c151a53e79badbb77f38dae8b4"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/explicit-forty-four-rustfmt-check.log",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "git_blob": "fa0ee9015c1123be2c704c638dcca5ec102b362f",
+      "object": "objects/46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/full-packages-junit.xml",
+      "bytes": 77742,
+      "sha256": "50f671e1ed4b6faf48c783fbc02f2c502d5c8e0e29cdf3d331f1365d7de400d3",
+      "git_blob": "3f95016135a30abf25d108aa00fc46813c317401",
+      "object": "objects/50f671e1ed4b6faf48c783fbc02f2c502d5c8e0e29cdf3d331f1365d7de400d3"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/materialization-receipt.json",
+      "bytes": 569,
+      "sha256": "4e48a5d78dde6e0a129c813d8ca95653cdc9c9534875254cb9258b63c2534793",
+      "git_blob": "2ce0b4477935bbce1ff3f6c9c93c570649d65575",
+      "object": "objects/4e48a5d78dde6e0a129c813d8ca95653cdc9c9534875254cb9258b63c2534793"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/native-invocation.json",
+      "bytes": 10182,
+      "sha256": "9760321e6c31331879f6e8d3b55199f3b53dcd68125158c2501216bfd3c44135",
+      "git_blob": "35b66536dffeb6391f2e982a16310978d85b3bbd",
+      "object": "objects/9760321e6c31331879f6e8d3b55199f3b53dcd68125158c2501216bfd3c44135"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/native-results.json",
+      "bytes": 11596,
+      "sha256": "fef50a248185e0b2cc8e5e362bec1754170e8be3a6e32dd3ef18075a002550a7",
+      "git_blob": "265a628b8fd3981ea92b7bf40e25c5bc3df66b50",
+      "object": "objects/fef50a248185e0b2cc8e5e362bec1754170e8be3a6e32dd3ef18075a002550a7"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-counterexample-results.json",
+      "bytes": 5558,
+      "sha256": "c8a33f1b38ca5f30317f80898587fb4da3c21dddcf9b10abdf102763abd7a064",
+      "git_blob": "d9a7f98be427087182e613fb95e4b2c1417d51a6",
+      "object": "objects/c8a33f1b38ca5f30317f80898587fb4da3c21dddcf9b10abdf102763abd7a064"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-just-fix-three-packages-receipt.json",
+      "bytes": 846,
+      "sha256": "ed3f26e83db97a48ad17356d0b1f9e4eb5026be57115bf76509eb047c5bf3080",
+      "git_blob": "7530b15219a85b6e1c5f3a039c8e7c0b437447f7",
+      "object": "objects/ed3f26e83db97a48ad17356d0b1f9e4eb5026be57115bf76509eb047c5bf3080"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-just-fix-three-packages.log",
+      "bytes": 38194,
+      "sha256": "3c070fc10701a3409ad52cad9a168546a6bb4108188321c5be660f7c804afc0f",
+      "git_blob": "e96283c3895404a1b8527ffe0a22030f12776483",
+      "object": "objects/3c070fc10701a3409ad52cad9a168546a6bb4108188321c5be660f7c804afc0f"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-just-fmt-receipt.json",
+      "bytes": 678,
+      "sha256": "589f3d638f841203aac4d725d2b95a4daaeea9c641c1eff3e4022bbae84db601",
+      "git_blob": "0dbdf3601bd2967ec04a8b3289125cf0da74d828",
+      "object": "objects/589f3d638f841203aac4d725d2b95a4daaeea9c641c1eff3e4022bbae84db601"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-just-fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "object": "objects/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-three-full-packages-receipt.json",
+      "bytes": 1952,
+      "sha256": "e44664578be53d167c0e090819e92b186d3fcef5d17002db222365d4077a4b4c",
+      "git_blob": "32c8bf60c607f06f5ab83d8f9fe8075604382a32",
+      "object": "objects/e44664578be53d167c0e090819e92b186d3fcef5d17002db222365d4077a4b4c"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/original-three-full-packages.log",
+      "bytes": 90017,
+      "sha256": "e8c5a6916a8200e11b3b8147fd54e9622b7c46cbcf2b599943608f2f3cea0c37",
+      "git_blob": "5bd98f9c936a7cbc22947261018d724a5130e956",
+      "object": "objects/e8c5a6916a8200e11b3b8147fd54e9622b7c46cbcf2b599943608f2f3cea0c37"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/preimage/codex-rs/hepta-cell-roles/src/control_owner.rs",
+      "bytes": 54290,
+      "sha256": "42d427cafb1abd351ad22134fc940a6d911d5e987b65f830f98d5878522bde5f",
+      "git_blob": "6aaf91d3cbcd45f6bed3dbd152dc4a3e0181beca",
+      "object": "objects/42d427cafb1abd351ad22134fc940a6d911d5e987b65f830f98d5878522bde5f"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/preimage/codex-rs/hepta-cell-roles/src/decision_checkpoint_tests.rs",
+      "bytes": 5705,
+      "sha256": "f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056",
+      "git_blob": "6b8d98759f608b43b118b7f48406e93e7985cd43",
+      "object": "objects/f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/preimage/codex-rs/hepta-cell-roles/src/decision_owner.rs",
+      "bytes": 24357,
+      "sha256": "ad4da406cace8befe7f6d44d5370a37dca19d28a8aa77de95a4e32c67d3ea21b",
+      "git_blob": "e1c190555fd7b58b8ef292f096a70f8db38f3acf",
+      "object": "objects/ad4da406cace8befe7f6d44d5370a37dca19d28a8aa77de95a4e32c67d3ea21b"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/preimage/codex-rs/hepta-control-plane/src/ORGAN_HIERARCHY.md",
+      "bytes": 11913,
+      "sha256": "da1fffa6ef9da73d769f18759a55d478f6865fbf7e8d2aa8b0d0dfc65ec7460d",
+      "git_blob": "d3c46ec87d0dfd8a7b423c65c2faec06a131150a",
+      "object": "objects/da1fffa6ef9da73d769f18759a55d478f6865fbf7e8d2aa8b0d0dfc65ec7460d"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source/codex-rs/hepta-cell-roles/src/control_owner.rs",
+      "bytes": 54345,
+      "sha256": "9b489e9bd7520e98abd1fca7c60fb744eb35f594fbc683b4fa12437e050c5205",
+      "git_blob": "1dae2a43fa7d1a90d911fed69f35d5d3ce55e549",
+      "object": "objects/9b489e9bd7520e98abd1fca7c60fb744eb35f594fbc683b4fa12437e050c5205"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source/codex-rs/hepta-cell-roles/src/decision_checkpoint_tests.rs",
+      "bytes": 5705,
+      "sha256": "f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056",
+      "git_blob": "6b8d98759f608b43b118b7f48406e93e7985cd43",
+      "object": "objects/f505ce61f8161f54dea0d0ef9e2b7af8545109b00cf1af8c3746e9177d60a056"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source/codex-rs/hepta-cell-roles/src/decision_owner.rs",
+      "bytes": 26160,
+      "sha256": "d28494eb807499458c27b8c784bdbda4ffac891a0e110d01fd34155c92ee26df",
+      "git_blob": "6f3d410faa3bab10a71508585ff8b36cc1e2ff89",
+      "object": "objects/d28494eb807499458c27b8c784bdbda4ffac891a0e110d01fd34155c92ee26df"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source/codex-rs/hepta-control-plane/src/ORGAN_HIERARCHY.md",
+      "bytes": 11891,
+      "sha256": "dd242d9a41d2f25dd89dcb59179fa50918158baa1ce057c0577d3d56b6925a23",
+      "git_blob": "8f0d7339a5c8ea058d6ff479b55ee67f44daf1a4",
+      "object": "objects/dd242d9a41d2f25dd89dcb59179fa50918158baa1ce057c0577d3d56b6925a23"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source-inputs.json.gz",
+      "bytes": 1068942,
+      "sha256": "f34a84dfcdfb28c0c9a9a4501f48932b274a7294e342df8551c18e713e87c24d",
+      "git_blob": "fb492b6fee1776d748d7e03135cc64ad5c058a5b",
+      "object": "objects/f34a84dfcdfb28c0c9a9a4501f48932b274a7294e342df8551c18e713e87c24d"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/final-native-v1/source-plan.json",
+      "bytes": 4020,
+      "sha256": "431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5",
+      "git_blob": "fd0be3422df0b3d4a9714b395786771a106747db",
+      "object": "objects/431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/transfer/independent-review.json",
+      "bytes": 5366,
+      "sha256": "366c79e14c1c33c0db811350448ee0e9d0debad07a6b4823c333fdf9f1c04ac0",
+      "git_blob": "5f6aa6ff5b11ea9392f9d8c58705e951087eb85d",
+      "object": "objects/366c79e14c1c33c0db811350448ee0e9d0debad07a6b4823c333fdf9f1c04ac0"
+    },
+    {
+      "path": "audit/rust_review/c2d-checkpoint-repair-native-v1/transfer/source-plan.json",
+      "bytes": 4020,
+      "sha256": "431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5",
+      "git_blob": "fd0be3422df0b3d4a9714b395786771a106747db",
+      "object": "objects/431ac165b526bb08894cb7352b5813a753b2d917a5c32c3c7b8bc993be2b73f5"
+    },
+    {
+      "path": "audit/rust_review/c2d-source-union-checkpoint-final-v1/proposal.json",
+      "bytes": 54893,
+      "sha256": "c4626320321188cb42d8b9cd19ca392dd7e56f0dedd290216eb0e8892a6b10d7",
+      "git_blob": "c0d87ce2085a78f0e77f1c06f210d8648e4418e9",
+      "object": "objects/c4626320321188cb42d8b9cd19ca392dd7e56f0dedd290216eb0e8892a6b10d7"
+    },
+    {
+      "path": "audit/rust_review/c2d-source-union-checkpoint-final-v1/proposal.patch",
+      "bytes": 862609,
+      "sha256": "4231eb815bcbf6ccd15961422ece3b0d61b87d1c06db7601d143934eef38ca73",
+      "git_blob": "07215cec73bdea5db457425872cdb723e8dc60de",
+      "object": "objects/4231eb815bcbf6ccd15961422ece3b0d61b87d1c06db7601d143934eef38ca73"
+    },
+    {
+      "path": "audit/rust_review/c2d-source-union-checkpoint-final-v1/source-kit.tar.gz",
+      "bytes": 538888,
+      "sha256": "7c5bde18052d026b959ecea49851b2863e5cc32cca96d12750ae9b56b12e0201",
+      "git_blob": "ce15fa3d13029f2f3625d6074e180a4e8325b14b",
+      "object": "objects/7c5bde18052d026b959ecea49851b2863e5cc32cca96d12750ae9b56b12e0201"
+    }
+  ],
+  "unique_objects": 39,
+  "original_bytes": 6301763,
+  "unique_bytes": 5183336,
+  "old_production_counterexamples": {
+    "run": 6,
+    "failures": 4,
+    "passes": 2
+  },
+  "final_tests": {
+    "run": 357,
+    "passes": 357,
+    "failures": 0,
+    "skipped": 0
+  },
+  "full_input_files": 13679,
+  "native_input_gzip_sha256": "f34a84dfcdfb28c0c9a9a4501f48932b274a7294e342df8551c18e713e87c24d"
+}

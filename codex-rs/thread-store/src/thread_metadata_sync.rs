@@ -1,9 +1,3 @@
-use std::time::Duration;
-use std::time::Instant;
-
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Utc;
 use codex_git_utils::collect_git_info;
 use codex_git_utils::get_git_repo_root;
 use codex_protocol::ThreadId;
@@ -17,6 +11,8 @@ use codex_protocol::protocol::strip_user_message_prefix;
 use codex_protocol::protocol::user_message_preview;
 use codex_rollout::RolloutItem;
 use codex_state::ThreadMetadata;
+use std::time::Duration;
+use std::time::Instant;
 
 use crate::CreateThreadParams;
 use crate::GitInfoPatch;
@@ -42,6 +38,7 @@ pub(crate) struct ThreadMetadataSync {
     last_touch_persisted_at: Option<Instant>,
     defer_create_update_until_history_exists: bool,
     defer_resume_update_until_append: bool,
+    preserve_existing_source_on_resume: bool,
 }
 
 pub(crate) struct PendingThreadMetadataPatch {
@@ -51,7 +48,7 @@ pub(crate) struct PendingThreadMetadataPatch {
 
 impl ThreadMetadataSync {
     pub(crate) async fn for_create(params: &CreateThreadParams) -> Self {
-        let created_at = Utc::now();
+        let created_at = codex_utils_time::Timestamp::now();
         let cwd = params.metadata.cwd.clone().unwrap_or_default();
         let git_info = if get_git_repo_root(cwd.as_path()).is_some() {
             collect_git_info(cwd.as_path()).await.map(|info| GitInfo {
@@ -88,6 +85,7 @@ impl ThreadMetadataSync {
             last_touch_persisted_at: None,
             defer_create_update_until_history_exists: true,
             defer_resume_update_until_append: false,
+            preserve_existing_source_on_resume: false,
         }
     }
 
@@ -113,6 +111,7 @@ impl ThreadMetadataSync {
             last_touch_persisted_at: None,
             defer_create_update_until_history_exists: false,
             defer_resume_update_until_append: false,
+            preserve_existing_source_on_resume: metadata.is_some(),
         };
         if let Some(history) = params.history.as_deref() {
             sync.record_resume_history(history);
@@ -174,7 +173,7 @@ impl ThreadMetadataSync {
             thread_updated_at_touch()
         };
         if advances_recency {
-            update.advance_recency_at = Some(Utc::now());
+            update.advance_recency_at = Some(codex_utils_time::Timestamp::now());
         }
         self.merge_pending_update(Some(update));
         if !affects_metadata
@@ -195,7 +194,7 @@ impl ThreadMetadataSync {
         self.observe_items_with_update(
             items,
             ThreadMetadataPatch {
-                updated_at: Some(Utc::now()),
+                updated_at: Some(codex_utils_time::Timestamp::now()),
                 ..Default::default()
             },
         )
@@ -211,6 +210,12 @@ impl ThreadMetadataSync {
             // initial metadata when resume history is flushed after the first append.
             update.git_info = None;
             update.memory_mode = None;
+            if self.preserve_existing_source_on_resume {
+                // SQLite owns paginated display metadata. Replaying initial
+                // SessionMeta must not overwrite an existing display source;
+                // canonical parent authority is read separately from history.
+                update.source = None;
+            }
         }
         Some(update)
     }
@@ -352,19 +357,15 @@ fn parse_memory_mode(value: &str) -> Option<ThreadMemoryMode> {
     }
 }
 
-fn parse_session_timestamp(value: &str) -> Option<DateTime<Utc>> {
-    DateTime::parse_from_rfc3339(value)
-        .map(|timestamp| timestamp.with_timezone(&Utc))
-        .or_else(|_| {
-            NaiveDateTime::parse_from_str(value, "%Y-%m-%dT%H-%M-%S")
-                .map(|timestamp| DateTime::from_naive_utc_and_offset(timestamp, Utc))
-        })
+fn parse_session_timestamp(value: &str) -> Option<codex_utils_time::Timestamp> {
+    codex_utils_time::Timestamp::parse_from_rfc3339(value)
+        .or_else(|_| codex_utils_time::Timestamp::parse_filename_timestamp(value))
         .ok()
 }
 
 fn thread_updated_at_touch() -> ThreadMetadataPatch {
     ThreadMetadataPatch {
-        updated_at: Some(Utc::now()),
+        updated_at: Some(codex_utils_time::Timestamp::now()),
         ..Default::default()
     }
 }
@@ -750,7 +751,7 @@ mod tests {
         let mut metadata = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             Default::default(),
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Exec,
         )
         .build("test-provider");
@@ -772,6 +773,85 @@ mod tests {
             update.patch.title.as_deref(),
             Some("first textual user message")
         );
+    }
+
+    #[test]
+    fn paginated_resume_preserves_existing_display_source_for_eager_and_lazy_history() {
+        for eager in [true, false] {
+            let thread_id = ThreadId::new();
+            let metadata = codex_state::ThreadMetadataBuilder::new(
+                thread_id,
+                Default::default(),
+                codex_utils_time::Timestamp::now(),
+                SessionSource::Custom("stored-display-source".to_string()),
+            )
+            .build("test-provider");
+            let mut meta = session_meta(thread_id);
+            meta.meta.history_mode = ThreadHistoryMode::Paginated;
+            let history = vec![
+                RolloutItem::SessionMeta(meta),
+                RolloutItem::EventMsg(EventMsg::UserMessage(user_message("resume preview"))),
+            ];
+            let mut params = resume_params(thread_id, history.clone());
+            if !eager {
+                params.history = None;
+            }
+
+            let mut sync = ThreadMetadataSync::for_resume(&params, Some(&metadata));
+            if !eager {
+                // LiveThread loads history after for_resume when it was not supplied.
+                sync.record_resume_history(&history);
+            }
+            let update = sync.take_pending_update().expect("pending metadata update");
+            assert_eq!(update.patch.source, None);
+            assert_eq!(update.patch.preview.as_deref(), Some("resume preview"));
+
+            // New append facts still use the normal source update path.
+            let mut appended = session_meta(thread_id);
+            appended.meta.history_mode = ThreadHistoryMode::Paginated;
+            appended.meta.source = SessionSource::Custom("new-append-source".to_string());
+            let update = sync
+                .observe_appended_items(&[RolloutItem::SessionMeta(appended)])
+                .expect("appended source update");
+            assert_eq!(
+                update.patch.source,
+                Some(SessionSource::Custom("new-append-source".to_string()))
+            );
+        }
+    }
+
+    #[test]
+    fn resume_recovers_canonical_source_without_metadata_and_preserves_legacy_behavior() {
+        for (history_mode, existing_metadata) in [
+            (ThreadHistoryMode::Paginated, false),
+            (ThreadHistoryMode::Legacy, true),
+        ] {
+            for eager in [true, false] {
+                let thread_id = ThreadId::new();
+                let metadata = codex_state::ThreadMetadataBuilder::new(
+                    thread_id,
+                    Default::default(),
+                    codex_utils_time::Timestamp::now(),
+                    SessionSource::Custom("stored-display-source".to_string()),
+                )
+                .build("test-provider");
+                let mut meta = session_meta(thread_id);
+                meta.meta.history_mode = history_mode;
+                let history = vec![RolloutItem::SessionMeta(meta)];
+                let mut params = resume_params(thread_id, history.clone());
+                if !eager {
+                    params.history = None;
+                }
+
+                let mut sync =
+                    ThreadMetadataSync::for_resume(&params, existing_metadata.then_some(&metadata));
+                if !eager {
+                    sync.record_resume_history(&history);
+                }
+                let update = sync.take_pending_update().expect("pending metadata update");
+                assert_eq!(update.patch.source, Some(SessionSource::Exec));
+            }
+        }
     }
 
     fn resume_sync(thread_id: ThreadId, history: Vec<RolloutItem>) -> ThreadMetadataSync {

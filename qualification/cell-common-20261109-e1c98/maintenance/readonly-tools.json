@@ -1,0 +1,73 @@
+{
+  "host": "ai395",
+  "runtime": {
+    "source": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "status": "",
+    "tools": {
+      "rustc": {
+        "path": "/home/qq/.cargo/bin/rustc",
+        "returncode": 0,
+        "output": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n"
+      },
+      "rustfmt": {
+        "path": "/home/qq/.cargo/bin/rustfmt",
+        "returncode": 0,
+        "output": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)\n"
+      },
+      "cargo": {
+        "path": "/home/qq/.cargo/bin/cargo",
+        "returncode": 0,
+        "output": "clippy 0.1.96 (ac68faa20c 2026-05-25)\n"
+      },
+      "uv": {
+        "path": null
+      },
+      "just": {
+        "path": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer/just",
+        "returncode": 0,
+        "output": "just 1.51.0\n"
+      },
+      "git": {
+        "path": "/usr/bin/git",
+        "returncode": 0,
+        "output": "git version 2.53.0\n"
+      }
+    }
+  },
+  "uv": {
+    "uv_candidates": [
+      {
+        "path": "/home/qq/.local/bin/uv",
+        "exists": false,
+        "resolved": "/home/qq/.local/bin/uv"
+      },
+      {
+        "path": "/home/qq/.cargo/bin/uv",
+        "exists": false,
+        "resolved": "/home/qq/.cargo/bin/uv"
+      },
+      {
+        "path": "/usr/local/bin/uv",
+        "exists": false,
+        "resolved": "/usr/local/bin/uv"
+      },
+      {
+        "path": "/usr/bin/uv",
+        "exists": false,
+        "resolved": "/usr/bin/uv"
+      },
+      {
+        "path": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/uv",
+        "exists": false,
+        "resolved": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/uv"
+      }
+    ],
+    "ruff_cached": [
+      "/home/qq/.cache/uv/archive-v0/Xo3Wqxm2ETpU145m/ruff",
+      "/home/qq/.cache/uv/archive-v0/g5BbQ3ZJt-y0GN4j/ruff",
+      "/home/qq/.cache/uv/archive-v0/g5BbQ3ZJt-y0GN4j/ruff-0.15.12.data/scripts/ruff",
+      "/home/qq/.cache/uv/archive-v0/Xo3Wqxm2ETpU145m/ruff-0.15.13.data/scripts/ruff"
+    ]
+  }
+}

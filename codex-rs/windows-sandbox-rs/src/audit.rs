@@ -10,7 +10,6 @@ use crate::path_normalization::canonical_path_key;
 use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
 use crate::setup::effective_write_roots_for_permissions;
 use crate::token::LocalSid;
-use crate::token::world_sid;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::collections::HashSet;
@@ -82,15 +81,19 @@ fn gather_candidates(cwd: &Path, env: &std::collections::HashMap<String, String>
 }
 
 unsafe fn path_has_world_write_allow(path: &Path) -> Result<bool> {
-    let mut world = world_sid()?;
-    let psid_world = world.as_mut_ptr() as *mut c_void;
+    let world = LocalSid::from_string("S-1-1-0")?;
+    let psid_world = world.as_ptr();
     let write_mask = FILE_WRITE_DATA | FILE_APPEND_DATA | FILE_WRITE_EA | FILE_WRITE_ATTRIBUTES;
-    path_mask_allows(
-        path,
-        &[psid_world],
-        write_mask,
-        /*require_all_bits*/ false,
-    )
+    // SAFETY: LocalSid owns the native Everyone SID from ConvertStringSidToSidW.
+    // It remains allocated and unchanged until after this query returns.
+    unsafe {
+        path_mask_allows(
+            path,
+            &[psid_world],
+            write_mask,
+            /*require_all_bits*/ false,
+        )
+    }
 }
 
 pub fn audit_everyone_writable(

@@ -122,6 +122,14 @@ impl ExecServerHarness {
         &self.websocket_url
     }
 
+    pub(crate) fn child_status(&mut self) -> String {
+        match self.child.try_wait() {
+            Ok(Some(status)) => format!("exited with {status}"),
+            Ok(None) => "still running".to_string(),
+            Err(error) => format!("status unavailable: {error}"),
+        }
+    }
+
     pub(crate) async fn disconnect_websocket(&mut self) -> anyhow::Result<()> {
         self.websocket.close(None).await?;
         Ok(())

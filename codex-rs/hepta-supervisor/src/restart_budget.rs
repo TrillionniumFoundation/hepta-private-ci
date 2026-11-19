@@ -136,10 +136,16 @@ pub fn restart_available(
     )
 }
 
-pub fn pending_restart(
+/// One validated read of the consumed budget and any unfinished restart.
+pub(crate) struct RecoveredRestartBudget {
+    pub attempts: u32,
+    pub pending: Option<RestartClaim>,
+}
+
+pub(crate) fn recover_restart_budget(
     run_root: &Path,
     maximum_attempts: u32,
-) -> Result<Option<RestartClaim>, RestartBudgetError> {
+) -> Result<Option<RecoveredRestartBudget>, RestartBudgetError> {
     let Some(state) = read_restart_budget(run_root)? else {
         return Ok(None);
     };
@@ -148,13 +154,18 @@ pub fn pending_restart(
             "restart budget state is outside configured bounds".to_string(),
         ));
     }
-    if !state.pending {
-        return Ok(None);
-    }
-    let now_ms = unix_ms()?;
-    Ok(Some(RestartClaim {
-        attempt: state.attempts,
-        backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
+    let pending = if state.pending {
+        let now_ms = unix_ms()?;
+        Some(RestartClaim {
+            attempt: state.attempts,
+            backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
+        })
+    } else {
+        None
+    };
+    Ok(Some(RecoveredRestartBudget {
+        attempts: state.attempts,
+        pending,
     }))
 }
 
@@ -229,3 +240,7 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[path = "restart_budget_recovery_tests.rs"]
+mod recovery_tests;

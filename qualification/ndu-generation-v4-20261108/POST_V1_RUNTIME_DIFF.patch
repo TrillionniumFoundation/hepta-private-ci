@@ -1,0 +1,126 @@
+--- executed-v1/scripts/ndu_real_runtime/episode.py
++++ final/scripts/ndu_real_runtime/episode.py
+@@ -277,6 +277,12 @@
+             "utility_profile": utility_profile(self.control), "utility_profile_sha256": self.utility_profile_sha256,
+             "control_profile_sha256": self.control_profile_sha256,
+             "memory_mode": self.control.memory_mode, "rubric_sha256": self.config["rubric_sha256"],
++            "external_metric_profile": "ndu.real.observed-quality-minus-wall-cost.v1",
++            "external_metric_formula": "independent_quality - latency_weight * deployment_meter.wall_seconds",
++            "external_metric_latency_weight": self.control.latency_weight,
++            "external_metric_applies_duration_discount": False,
++            "single_episode_certainty_equivalent_observed": False,
++            "recursive_values_are_model_predictions": True,
+             "case_id": self.case["id"], "source_group_id": self.case["source_id"],
+             "episode_group": self.case["episode_group"], "split": self.case["role"],
+             "task_family": self.case["task_family"], "source_sha256": self.source_binding["sha256"],
+--- executed-v1/scripts/ndu_real_runtime/gradient_check.py
++++ final/scripts/ndu_real_runtime/gradient_check.py
+@@ -137,7 +137,8 @@
+     from .trajectory import V2_FIELDS
+ 
+     plan = ControlPlan(horizon=2, particles=2, max_forecasts=12, memory_mode="persistent")
+-    records = numerical_records(plan)
++    collection_plan = ControlPlan(**{**asdict(plan), "memory_mode": "reset"})
++    records = numerical_records(collection_plan)
+     path = root / "numerical-fixture-v2.jsonl"
+     path.write_text("".join(json.dumps(row) + "\n" for row in records))
+     control_path = root / "control.json"
+@@ -154,6 +155,8 @@
+     assert fit["recursive_objective_applied"] and fit["frozen_reference_unchanged"]
+     assert fit["recursive_gradient_into_content"] > 0 and fit["policy_gradient_into_content"] > 0
+     assert receipt["records"]["complete_v2_chains"] == 1
++    assert receipt["replayed_from_memory_modes"] == ["reset"] and receipt["memory_mode_changed_during_replay"]
++    assert not receipt["on_policy_or_counterfactual_return_claimed"]
+     legacy = [{k: v for k, v in row.items() if k not in V2_FIELDS} for row in records]
+     for row in legacy:
+         row["schema"] = "ndu.real.training-transition.v1"
+@@ -220,6 +223,7 @@
+             "policy_gradient_norm": fit["policy_gradient_into_content"], "reference_unchanged": True,
+             "legacy_reset_status": legacy_receipt["status"], "actor_decisions": len(messages) - 1,
+             "actor_memory_changed_across_actions": True, "different_planner_profile_rejected": True,
++            "reset_collection_reencoded_with_persistent_training_memory": True,
+             "fixture_is_real_task_evidence": False}
+ 
+ 
+--- executed-v1/scripts/ndu_real_runtime/test_recursive_contract.py
++++ final/scripts/ndu_real_runtime/test_recursive_contract.py
+@@ -9,7 +9,7 @@
+ from .controllers import ControlPlan, Controller, Forecast, PublicState
+ from .objective import canonical_sha, certainty_equivalent, edge_value, utility_profile
+ from .training import validate_record
+-from .trajectory import V2_SCHEMA, episode_groups, validate_chains
++from .trajectory import V2_SCHEMA, episode_groups, validate_chains, memory_replay_metadata
+ 
+ 
+ def numerical_records(plan):
+@@ -95,6 +95,19 @@
+         row["schema"] = "ndu.real.training-transition.v1"
+         self.assertEqual(validate_record(row), row)
+ 
++    def test_reset_collection_is_explicitly_reencoded_for_persistent_training(self):
++        rows = numerical_records(ControlPlan(memory_mode="reset"))
++        validate_chains(rows)
++        self.assertEqual(len(episode_groups(rows, "persistent")), 1)
++        metadata = memory_replay_metadata(rows, "persistent")
++        self.assertEqual(metadata["replayed_from_memory_modes"], ["reset"])
++        self.assertEqual(metadata["collection_memory_mode_rows"], {"reset": 3})
++        self.assertFalse(metadata["collection_training_memory_equal"])
++        self.assertTrue(metadata["memory_mode_changed_during_replay"])
++        self.assertFalse(metadata["on_policy_or_counterfactual_return_claimed"])
++        legacy = memory_replay_metadata([{"schema": "ndu.real.training-transition.v1"}], "reset")
++        self.assertIsNone(legacy["collection_training_memory_equal"])
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+--- executed-v1/scripts/ndu_real_runtime/training.py
++++ final/scripts/ndu_real_runtime/training.py
+@@ -32,7 +32,7 @@
+ from .metering import Meter, atomic_json, canonical_sha, file_sha
+ from .controllers import ControlPlan
+ from .objective import utility_profile
+-from .trajectory import V2_SCHEMA, V2_FIELDS, validate_link, validate_chains, episode_groups
++from .trajectory import V2_SCHEMA, V2_FIELDS, validate_link, validate_chains, episode_groups, memory_replay_metadata
+ from .fit_loop import train_epochs as _epochs, estimate_residuals as _residuals
+ 
+ SCHEMA = "ndu.real.training-transition.v1"
+@@ -367,6 +367,7 @@
+                 report["rubric_sha256"] = next(iter(rubrics), None)
+                 report["behavior_control_profile_sha256"] = sorted({row["behavior_control_profile_sha256"] for row in v2_rows})
+                 episode_groups(rows, plan.memory_mode)
++                report.update(memory_replay_metadata(rows, plan.memory_mode))
+             if args.pretrained:
+                 with meter.stage("sync", "admit shared content checkpoint and its original receipt"):
+                     base = Path(args.pretrained); previous = json.loads((base / "receipt.json").read_text())
+--- executed-v1/scripts/ndu_real_runtime/trajectory.py
++++ final/scripts/ndu_real_runtime/trajectory.py
+@@ -1,6 +1,6 @@
+ """Bounded, explicit episode chains; digests bind bytes, not observer authority."""
+ 
+-from collections import defaultdict
++from collections import Counter, defaultdict
+ import math
+ 
+ from .controllers import ACTIONS
+@@ -77,6 +77,21 @@
+     return [sorted(sequence, key=lambda r: r["episode_step"]) for sequence in groups.values()]
+ 
+ 
++def memory_replay_metadata(rows, training_memory_mode):
++    """Identify replayed encodings without reattributing the behavior outcomes."""
++    if training_memory_mode not in MEMORY_MODES:
++        raise ValueError("Unknown training memory mode")
++    counts = Counter(row["memory_mode"] if row["schema"] == V2_SCHEMA else "legacy_v1_unspecified" for row in rows)
++    known = sorted(mode for mode in counts if mode in MEMORY_MODES)
++    changed = any(mode != training_memory_mode for mode in known)
++    equal = False if changed else None if counts.get("legacy_v1_unspecified") or not rows else True
++    return {"replayed_from_memory_modes": known, "collection_memory_mode_rows": dict(counts),
++            "training_memory_mode": training_memory_mode, "memory_mode_changed_during_replay": changed,
++            "collection_training_memory_equal": equal,
++            "memory_replay_semantics": "candidate_latents_recomputed; recorded_behavior_actions_and_scores_unchanged",
++            "on_policy_or_counterfactual_return_claimed": False}
++
++
+ def grouped_batches(groups, order, maximum_rows):
+     batch, count = [], 0
+     for index in order:

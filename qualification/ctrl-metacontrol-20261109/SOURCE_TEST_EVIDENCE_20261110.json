@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.ctrl.audit-launch-regression-native.v1",
+  "date": "2026-11-10",
+  "scope": "isolated operator-host scratch with exact GitHub module blob bytes over frozen local Python source; synthetic fixtures only",
+  "host_alias": "ai395",
+  "python": "3.14.4",
+  "head_under_test": "f96eb26181da98365d6362c1fc6aa1b1d3e7dda7",
+  "module_git_blob_sha1": {
+    "content_audit": "8e3925808b5a3498be65f146e7254942d0004710",
+    "test_content_audit": "9c81145123e1edad279f41622c962225ab7c51d8",
+    "content_identity": "45120e8225a80078c206f76f6aba4644c9ac6091",
+    "metering": "de6c2f8cfd31210f4afda0c7a36f93b5c1964150"
+  },
+  "pass_job_id": "1a1c3c906c2-418c-20e",
+  "pass_command": "python3 -m unittest ndu_real_runtime.test_content_audit -v",
+  "pass_summary": {
+    "tests_run": 7,
+    "failures": 0,
+    "errors": 0,
+    "exit_code": 0
+  },
+  "baseline_sha1": "141e3965e1c104fc7aad8224a83201b47d03df5e",
+  "baseline_reproduction_job_id": "1a1c3cba872-418c-21e",
+  "baseline_prepatch_faults": [
+    {
+      "fault": "nonzero_exit",
+      "launch_completed": false,
+      "incorrect_selected_used": true
+    },
+    {
+      "fault": "isolation_not_enforced",
+      "launch_completed": false,
+      "incorrect_selected_used": true
+    },
+    {
+      "fault": "boolean_false_exit_code",
+      "launch_completed": true,
+      "incorrect_selected_used": true
+    }
+  ],
+  "new_patch_fault_disposition": {
+    "all_three": {
+      "isolated_actor_completed": false,
+      "selected_used": null,
+      "first_observed_discrepancy": "isolated_actor_completed"
+    }
+  },
+  "fixture_proves_real_policy_gain": false,
+  "production_adoption": "no-update",
+  "decision": "HOLD_NO_GO"
+}

@@ -82,6 +82,21 @@ pub(crate) fn is_unsupported_restricted_token_host<T>(result: &std::io::Result<T
     })
 }
 
+#[cfg(windows)]
+pub(crate) fn assert_legacy_windows_sandbox_unavailable<T>(result: &std::io::Result<T>) {
+    let error = result
+        .as_ref()
+        .err()
+        .expect("legacy Windows sandbox admission must refuse the request");
+    assert_eq!(error.kind(), std::io::ErrorKind::Other);
+    assert!(
+        error.to_string().ends_with(
+            "windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+        ),
+        "unexpected filesystem error: {error}"
+    );
+}
+
 pub(crate) fn absolute_path(path: std::path::PathBuf) -> AbsolutePathBuf {
     assert!(
         path.is_absolute(),
@@ -121,8 +136,7 @@ pub(crate) fn workspace_write_sandbox(
     writable_root: std::path::PathBuf,
 ) -> FileSystemSandboxContext {
     let writable_root = absolute_path(writable_root);
-    // Keep the runtime policy aligned with the legacy workspace-write projection used by the
-    // unelevated restricted-token preflight.
+    // Keep the workspace-write policy while exercising legacy admission refusal.
     let policy = FileSystemSandboxPolicy::restricted(vec![
         FileSystemSandboxEntry::new(
             FileSystemPath::Special {
@@ -147,8 +161,7 @@ pub(crate) fn workspace_write_sandbox(
 
 fn sandbox_context(mut entries: Vec<FileSystemSandboxEntry>) -> FileSystemSandboxContext {
     if cfg!(windows) {
-        // Restricted-token sandboxing cannot enforce read restrictions, so leave the root
-        // readable while exercising the requested write restrictions.
+        // Preserve the readable-root policy used by the legacy refusal assertions.
         entries.push(FileSystemSandboxEntry::new(
             FileSystemPath::Special {
                 value: FileSystemSpecialPath::Root,

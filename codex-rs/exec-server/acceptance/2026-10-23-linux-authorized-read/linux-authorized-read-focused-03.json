@@ -1,0 +1,27 @@
+{
+  "name": "linux-authorized-read-focused-03",
+  "cwd": "/data/hepta-mcp-implementation-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-exec-server",
+    "--locked",
+    "--test-threads",
+    "2",
+    "-E",
+    "test(local_file_system::authorized_read_tests::) | test(linux_authorized_read::tests::) | test(file_system_bounded_authorized_read) | test(remote_file_system::path_uri_tests::authorized_) | test(authorized_read_rpc_is_capability_gated_and_denies_outside_root)"
+  ],
+  "baseSha": "3b880e484c1e31632ffe900f97753209d14ab7d5",
+  "workingDiffSha256": "73a185c1d707077e7138a440ec6f253fa27ba883b43795491b92ea7cecd56d93",
+  "startedAt": "2026-10-23T20:02:18.612359+00:00",
+  "finishedAt": "2026-10-23T20:12:05.763721+00:00",
+  "elapsedSeconds": 587.1513616350712,
+  "exitCode": 0,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-focused-03.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-mcp-integer-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

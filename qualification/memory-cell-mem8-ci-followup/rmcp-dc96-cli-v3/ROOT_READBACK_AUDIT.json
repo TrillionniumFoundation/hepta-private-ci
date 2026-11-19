@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.mem8.rmcp.root-readback.v1",
+  "evidence_commit": "7b2983b067fb66e12c534d89485153038c3110a6",
+  "archive_bytes": 382660,
+  "archive_sha256": "45c9d0cb7b627ead0852e1db66ad0c839ecd96fedbad641290ea1bd02ea41192",
+  "archive_git_blob": "64610662ba7dbeac2bf6a9e664d18cb23a391ac4",
+  "archive_members": 27,
+  "full_member_hashes_verified": 26,
+  "original_265_pass_3_fail_preserved": true,
+  "followup_exact_three_failed_ids_passed": true,
+  "source_capsule_postimages_verified": 64,
+  "dc96_to_f1fd_existing_postimage_difference": [
+    "codex-rs/Cargo.toml"
+  ],
+  "f1fd_additional_path": "MODULE.bazel",
+  "fresh_f1fd_rmcp_pass_claimed": false,
+  "one_full_268_pass_run_claimed": false,
+  "raw_no_retry_checks": [
+    {
+      "path": "original/rmcp-consumers.raw.log",
+      "bytes": 105062,
+      "sha256": "2824fd5baadd2559beed9097264bc129542c6a30f679bcc3d0714234129dd054",
+      "retry_rows": 0
+    },
+    {
+      "path": "current/original-three-cases-with-same-source-cli.json.e4df10fc060448dfa4476aa7d16c37fd.log",
+      "bytes": 21220,
+      "sha256": "a41a2250c7e058e05a3a159bd5772aa40268750e35cba4fd556bd6ad23343803",
+      "retry_rows": 0
+    }
+  ],
+  "published_verifier_executed_and_passed": true,
+  "validation_observed_before_workspace_loss": true,
+  "publication_time": "2026-11-11 05:43:22 UTC",
+  "new_native_execution": false,
+  "model_calls": 0,
+  "passed": true
+}

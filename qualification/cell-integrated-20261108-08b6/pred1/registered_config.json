@@ -1,0 +1,42 @@
+{
+  "base_commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "batch_size": 128,
+  "checkpoint_selection": "minimum development observed-label NLL",
+  "claim_scope": "controlled simulator; fixed preparation options of 0,2,5 ticks plus a terminal tool; all deterministic time/cost is included; no real tool or autoregressive rollout qualification",
+  "compute_comparison": "matched examples, optimizer opportunities, and approximately matched parameters; measured CPU is not forced equal",
+  "confirm_episodes": 1024,
+  "dev_episodes": 512,
+  "epochs": 30,
+  "family_selection": "maximum development net utility among GRU, diagonal SSM, dual timescale using independent selection training seeds before evaluation training",
+  "history_length": 16,
+  "learning_rate": 0.003,
+  "practical_utility_gain": 0.02,
+  "primary_endpoint": "selected family minus single-step mean net utility including observed history, paired by independent training seed",
+  "schema": "pred1-experiment-v1",
+  "seeds": [
+    3926890411,
+    727086859,
+    1852124203,
+    2302186560,
+    2281010178,
+    440845250,
+    3228430729,
+    3070568927,
+    952767533,
+    3178635790,
+    2295792649,
+    3109268547,
+    111838876,
+    2929527613,
+    2274992072,
+    995533690
+  ],
+  "selection_seeds": [
+    11,
+    22,
+    33
+  ],
+  "target_parameters": 3000,
+  "train_episodes": 4096,
+  "utility": "P(success and T<=deadline and C<=remaining_budget) - 0.03 E[C+prefix_cost] - 0.005 E[T]"
+}

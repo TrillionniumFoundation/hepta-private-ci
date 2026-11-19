@@ -1,0 +1,77 @@
+{
+  "before": {
+    "source_sha": "9aa053abe07b262f6e6fbe6a5c0f9699bcbc74bc",
+    "tree": "e5501108d2ff03c5a6143c3c1c3fc25fcaa9c7db",
+    "dirty": ""
+  },
+  "native_executed": 0,
+  "ordinary_fullchain": 0,
+  "steps": [
+    {
+      "name": "provider-source-guards",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_evaluation_provider_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 1.733635663986206,
+      "bytes": 3081,
+      "sha256": "0fb96ffe1a44971e04e7d9d992cf352a10c29432959439dd5f018452c83cf495"
+    },
+    {
+      "name": "coverage-parser",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.2560548782348633,
+      "bytes": 3123,
+      "sha256": "6d00613eec4a970338cf15bad4e3064651f7455ceed8270d62be2f34eddccf04"
+    },
+    {
+      "name": "py-compile",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-c",
+        "import pathlib,py_compile; paths=[\"qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py\",\"scripts/hepta_c_observer_coverage.py\"]; out=pathlib.Path('/workspace/scratch/ce434f960ee9/provider-qualification-9aa053ab-v1'); [py_compile.compile(p,cfile=str(out/(str(i)+\".pyc\")),doraise=True) for i,p in enumerate(paths)]"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.07274532318115234,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "git-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.015769243240356445,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after": {
+    "source_sha": "9aa053abe07b262f6e6fbe6a5c0f9699bcbc74bc",
+    "tree": "e5501108d2ff03c5a6143c3c1c3fc25fcaa9c7db",
+    "dirty": ""
+  },
+  "source_unchanged": true
+}

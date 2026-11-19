@@ -1,0 +1,1943 @@
+{
+  "schema": 1,
+  "parent_source": "32dfab46c84b46b7b09fbad38433ff73e34eb4b3",
+  "purpose": "Preserve and migrate original Candidate read-only source guard records to the real Begin/Pages/Finish implementation.",
+  "record_audit": {
+    "contract_blob": "32f7ce5786ec0a0147ec2d6986b2a6f3f7be6d01",
+    "counts": {
+      "before": {
+        "boundaries": 569,
+        "protected": 403
+      },
+      "after": {
+        "boundaries": 569,
+        "protected": 404
+      }
+    },
+    "complete_before_matches": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+        "matches": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "matches": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "matches": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "matches": 1
+      }
+    ],
+    "full_record_counter_errors": [],
+    "protected_before": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+        "required": [
+          "runtime.learning.original-q24-training.candidate-material.v1",
+          "const PAGE_BYTES: usize = 2_048",
+          "const MAX_PAGES: usize = 17",
+          "const FRAME_BYTES: usize = 16_384",
+          "#[serde(deny_unknown_fields)]",
+          "enum SessionDisposition",
+          "ContinueReadback",
+          "CloseReadback"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "Action",
+          "Execute",
+          "TrainingNoUpdate {",
+          "pub receipt:",
+          "pub attestation:",
+          "pub batch:",
+          "pub model:",
+          "pub candidate:",
+          "pub signing_payload:",
+          ".claim(",
+          ".complete(",
+          "pub next_page:",
+          "pub completion: Option"
+        ],
+        "required_order": [
+          [
+            "const PAGE_BYTES: usize = 2_048;",
+            "const MAX_PAGES: usize = 17;",
+            "const FRAME_BYTES: usize = 16_384;"
+          ],
+          [
+            "impl Request",
+            "fn new(",
+            "if page >= MAX_PAGES",
+            "return Err(Error::Binding(",
+            "schema: 1",
+            "operation: OPERATION.into()",
+            "request_id",
+            "binding: binding.to_string()",
+            "operation_id: context.dataset.request.operation_id.to_string()",
+            "dataset_head: context.dataset.head_digest.to_string()",
+            "scope_binding: context.scope.binding().to_string()",
+            "actor_id: context.dataset.owners.trainer.to_string()",
+            "completion: completion.to_string()",
+            "page: page as u8"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_context(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.binding != binding.to_string()",
+              "self.operation_id != context.dataset.request.operation_id.as_str()",
+              "self.dataset_head != context.dataset.head_digest.to_string()",
+              "self.scope_binding != context.scope.binding().to_string()",
+              "self.actor_id != context.dataset.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.operation_id != material.initial.request.operation_id.as_str()",
+              "self.scope_binding != material.scope.binding().to_string()",
+              "self.actor_id != material.initial.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_common(",
+            "sequence": [
+              "self.schema != 1",
+              "self.operation != OPERATION",
+              "self.request_id != request_id",
+              "usize::from(self.page) >= MAX_PAGES",
+              "return Err(Error::Binding(",
+              "for value in [",
+              "&self.binding",
+              "&self.dataset_head",
+              "&self.scope_binding",
+              "&self.completion",
+              "let digest: Digest32 = value\n                .parse()",
+              "digest.is_zero() || digest.to_string() != *value",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if self.schema != 1",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_request(",
+            "sequence": [
+              "request.page != self.next_page",
+              "self",
+              ".completion",
+              ".as_ref()",
+              ".is_some_and(|pin| pin != &request.completion)",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if request.page != self.next_page",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn encode_response(",
+            "sequence": [
+              "self.require_request(&request)?",
+              "MaterialResult::Page {\n            offset,\n            total,\n            heads,\n        }",
+              "STANDARD_NO_PAD\n                .decode(heads)",
+              "(*offset as usize)\n                .checked_add(bytes.len())",
+              "!(12..=32_780).contains(&(*total as usize))",
+              "*offset as usize != usize::from(request.page) * PAGE_BYTES",
+              "*offset as usize >= *total as usize",
+              "bytes.len() != PAGE_BYTES.min(*total as usize - *offset as usize)",
+              "STANDARD_NO_PAD.encode(&bytes) != *heads",
+              "end > *total as usize",
+              "return Err(Error::Binding(",
+              "self.next_page = if end == *total as usize",
+              "0",
+              "else",
+              "request.page + 1",
+              "self.completion = Some(request.completion.clone())",
+              "SessionDisposition::ContinueReadback",
+              "SessionDisposition::CloseReadback",
+              "serde_json::to_vec(&Response { request, result })?",
+              "bytes.len() > FRAME_BYTES",
+              "return Err(Error::Binding(",
+              "Ok((bytes, disposition))"
+            ],
+            "top_level": [
+              "self.require_request(&request)?",
+              "let bytes = serde_json::to_vec(&Response { request, result })?",
+              "if bytes.len() > FRAME_BYTES",
+              "Ok((bytes, disposition))"
+            ]
+          },
+          {
+            "function": "fn completion_digest(",
+            "sequence": [
+              "Digest32::of_parts(&[",
+              "&learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "&attestation.signing_bytes()",
+              "&attestation.signature"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn original_page(",
+            "sequence": [
+              "request.completion",
+              "!= completion_digest(material.receipt(), material.attestation())?.to_string()",
+              "return Err(Error::Binding(",
+              "let bytes = material.heads()",
+              "let offset = usize::from(request.page) * PAGE_BYTES",
+              "if offset >= bytes.len()",
+              "return Err(Error::Binding(",
+              "offset.saturating_add(PAGE_BYTES).min(bytes.len())",
+              "Ok(MaterialResult::Page {",
+              "offset: offset as u32",
+              "total: bytes.len() as u32",
+              "heads: STANDARD_NO_PAD.encode(&bytes[offset..end])"
+            ],
+            "top_level": [
+              "let bytes = material.heads()",
+              "let offset = usize::from(request.page) * PAGE_BYTES",
+              "if offset >= bytes.len()",
+              "Ok(MaterialResult::Page {"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "required": [
+          "pub struct OriginalCellQ24CandidateReadbackClientV1",
+          "channel: Mutex<Option<Channel>>",
+          "dataset: OriginalCellQ24MaterialCommandReceiptV1",
+          "expected: OriginalCellQ24TrainingCommandReceiptV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "impl Clone",
+          "derive(Clone",
+          "Deserialize",
+          "pub channel:",
+          "pub expected:",
+          "pub dataset:",
+          "pub baseline:",
+          "original_owner_command_channel_v1(",
+          "HostAuthorityPeerChannel::from_stream",
+          "RootObservationStream",
+          "execution_requested = false",
+          "execution_requested: false",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "timeout:",
+          "lifetime:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_connection(",
+            "sequence": [
+              "let started_at = now()?",
+              "let OriginalCellQ24TrainingCommandClientV1 {",
+              "channel,\n            context,\n            binding,\n            retained",
+              "channel",
+              ".into_inner()",
+              "channel.execution_requested = true",
+              "retained",
+              ".into_inner()",
+              ".as_ref()",
+              ".is_some_and(|pin| pin != &expected)",
+              "context.dataset != *dataset.snapshot()",
+              "context.validate()? != material.initial",
+              "context.scope != material.scope",
+              "context.verifier.trust_digest() != material.verifier.trust_digest()",
+              "baseline.components() != &material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              "signed_length(&context, &expected)?",
+              "candidate_wire::completion_digest(",
+              "expected.receipt()",
+              "expected.attestation()",
+              "check_peer_lifetime()",
+              "verify_original_context(",
+              "&context",
+              "&material",
+              "&dataset",
+              "&expected",
+              "started_at",
+              "Ok(Self {",
+              "channel: Mutex::new(Some(channel))"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "channel.execution_requested = true",
+              "let length = signed_length(&context, &expected)?",
+              "let completion =",
+              "verify_original_context(",
+              "Ok(Self {"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "let started_at = now()?",
+              "self",
+              ".channel",
+              ".try_lock()",
+              ".take()",
+              "if !channel.execution_requested",
+              "return Err(Error::Binding(",
+              "let expected = self.expected.clone()",
+              "let completion = self.completion",
+              "let length = self.length",
+              "tokio::task::spawn_blocking(move || {",
+              "verify_original_context(",
+              "&context",
+              "&material",
+              "&dataset",
+              "&expected",
+              "started_at",
+              "signed_length(&context, &expected)? != length",
+              "let pages = length.div_ceil(candidate_wire::PAGE_BYTES)",
+              "pages == 0 || pages > candidate_wire::MAX_PAGES",
+              "let mut heads = Vec::with_capacity(length)",
+              "for page in 0..pages",
+              "let request_id = channel.next_request_id",
+              "request_id.checked_add(1)",
+              "candidate_wire::Request::new(",
+              "context",
+              "binding",
+              "completion",
+              "request_id",
+              "page",
+              "serde_json::to_vec(&request)",
+              "channel",
+              ".peer",
+              ".request(&encoded)",
+              "serde_json::from_slice(&bytes)",
+              "if response.request != request",
+              "return Err(Error::Binding(",
+              "match response.result",
+              "MaterialResult::Page",
+              "MaterialResult::NoCandidate",
+              "MaterialResult::Missing",
+              "MaterialResult::Pending",
+              "MaterialResult::ReadbackRequired",
+              "MaterialResult::Uncertain",
+              "let expected_offset = page * candidate_wire::PAGE_BYTES",
+              "candidate_wire::PAGE_BYTES.min(length - expected_offset)",
+              "offset as usize != expected_offset",
+              "total as usize != length",
+              "heads.len() != expected_offset",
+              "encoded_heads.len() > candidate_wire::PAGE_BYTES.div_ceil(3) * 4",
+              "return Err(Error::Binding(",
+              "STANDARD_NO_PAD\n                    .decode(&encoded_heads)",
+              "part.len() != expected_page_length",
+              "STANDARD_NO_PAD.encode(&part) != encoded_heads",
+              "check_peer_lifetime()",
+              "last_at =\n                    verify_original_context(",
+              "heads.extend_from_slice(&part)",
+              "if heads.len() != length",
+              "OriginalCellQ24CandidateMaterialV1::from_verified_readback(",
+              "&baseline",
+              "&context.dataset",
+              "heads",
+              "expected.receipt().clone()",
+              "expected.attestation().clone()",
+              "let last_at =\n                verify_original_context(",
+              "Ok::<_, Error>((channel, candidate, last_at))",
+              ".await",
+              ".map_err(|_| Error::Unavailable)??",
+              "check_peer_lifetime()",
+              "verify_original_context(",
+              "&self.context",
+              "&self.material",
+              "&self.dataset",
+              "&self.expected",
+              "last_at",
+              "*self",
+              ".channel",
+              ".try_lock()",
+              "= Some(channel)",
+              "Ok(candidate)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "if !channel.execution_requested",
+              "let (channel, candidate, last_at) =",
+              "*self",
+              "Ok(candidate)"
+            ]
+          },
+          {
+            "function": "fn signed_length(",
+            "sequence": [
+              "LearningIterationObservationV1::Training { artifact_bytes, .. }",
+              "&expected.receipt().observation",
+              "return Err(Error::NoCandidate)",
+              "usize::try_from(*artifact_bytes)",
+              "!(12..=32_780).contains(&length)",
+              "*artifact_bytes > context.dataset.request.budget.maximum_artifact_bytes",
+              "return Err(Error::Binding(",
+              "Ok(length)"
+            ],
+            "top_level": [
+              "let length = usize::try_from(*artifact_bytes)",
+              "Ok(length)"
+            ]
+          },
+          {
+            "function": "fn verify_original_context(",
+            "sequence": [
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "dataset",
+              "material",
+              "let fresh_now = now()?",
+              "checked_at < minimum_now || fresh_now < checked_at",
+              "return Err(Error::Binding(",
+              "wire::authenticate_receipt(",
+              "context",
+              "expected.receipt().clone()",
+              "expected.attestation().clone()",
+              "fresh_now",
+              "if &verified != expected",
+              "return Err(Error::Binding(",
+              "Ok(fresh_now)"
+            ],
+            "top_level": [
+              "let checked_at =",
+              "let fresh_now = now()?",
+              "if checked_at < minimum_now || fresh_now < checked_at",
+              "let verified =",
+              "if &verified != expected",
+              "Ok(fresh_now)"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "required": [
+          "OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "tokio::task::spawn_blocking(move || {",
+              "let _permit = permit",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::CommitUncertain)?"
+            ],
+            "top_level": [
+              "let permit =",
+              "tokio::task::spawn_blocking(move || {"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "candidate_wire::SessionDisposition::CloseReadback",
+              "channel",
+              ".exchange(|bytes|",
+              "self",
+              ".candidate_material_response(",
+              "bytes",
+              "request_id",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "return Ok(request_id - 1)",
+              "if disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session = candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64"
+            ]
+          },
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "let started_at = now()?",
+              "let request: candidate_wire::Request = serde_json::from_slice(bytes)?",
+              "request.require_context(&self.context, self.binding, request_id)?",
+              "session.require_request(&request)?",
+              "SourceBoundCellQ24TrainingStageV1::read_candidate_material(",
+              "self.stage.as_ref()",
+              "&self.context.dataset",
+              "Ok(material) =>",
+              "let fresh_now = now()?",
+              "fresh_now < started_at",
+              "return Err(Error::Binding(",
+              "wire::authenticate_receipt(",
+              "&self.context",
+              "material.receipt().clone()",
+              "material.attestation().clone()",
+              "fresh_now",
+              "candidate_wire::original_page(&request, &material)?",
+              "OriginalCellQ24TrainingStageErrorV1::CandidateMaterial(",
+              "OriginalCellQ24CandidateMaterialErrorV1::NoCandidate",
+              "candidate_wire::MaterialResult::NoCandidate",
+              "match original_state(error)",
+              "wire::CommandResult::Missing => candidate_wire::MaterialResult::Missing",
+              "wire::CommandResult::Pending => candidate_wire::MaterialResult::Pending",
+              "wire::CommandResult::Busy => candidate_wire::MaterialResult::Busy",
+              "_ => candidate_wire::MaterialResult::Uncertain",
+              "session.encode_response(request, result)"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "request.require_context(&self.context, self.binding, request_id)?",
+              "session.require_request(&request)?",
+              "let result =",
+              "session.encode_response(request, result)"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "required": [
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "tokio::task::spawn_blocking(move || {",
+              "let _permit = permit",
+              "original_owner_command_channel_v1(",
+              "stream",
+              "consumer",
+              "consumer_uid",
+              "original_consumer_pidfd",
+              "timeout",
+              "lifetime",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::Uncertain)?"
+            ],
+            "top_level": [
+              "let permit =",
+              "tokio::task::spawn_blocking(move || {"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "candidate_wire::SessionDisposition::CloseReadback",
+              "channel",
+              ".exchange(|bytes|",
+              "self",
+              ".candidate_material_response(",
+              "bytes",
+              "request_id",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "return Ok(request_id - 1)",
+              "if disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session = candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64"
+            ]
+          },
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "let request: candidate_wire::Request =\n            serde_json::from_slice(bytes)",
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?",
+              "OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(",
+              "original.as_ref()",
+              "bytes",
+              "request_id",
+              "session",
+              "session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)"
+            ],
+            "top_level": [
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?"
+            ]
+          }
+        ]
+      }
+    ],
+    "protected_after": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+        "required": [
+          "runtime.learning.original-q24-training.candidate-material.v1",
+          "const PAGE_BYTES: usize = 2_048",
+          "const MAX_PAGES: usize = 17",
+          "const FRAME_BYTES: usize = 16_384",
+          "#[serde(deny_unknown_fields)]",
+          "enum SessionDisposition",
+          "ContinueReadback",
+          "CloseReadback",
+          "pub(super) enum Phase {\n    Begin,\n    Page,\n    Finish,\n}",
+          "pub transfer: u64",
+          "pub phase: Phase",
+          "heads_digest: String",
+          "Finished {",
+          "#[path = \"cell_q24_training_candidate_transfer.rs\"]"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "Action",
+          "Execute",
+          "TrainingNoUpdate {",
+          "pub receipt:",
+          "pub attestation:",
+          "pub batch:",
+          "pub model:",
+          "pub candidate:",
+          "pub signing_payload:",
+          ".claim(",
+          ".complete(",
+          "pub next_page:",
+          "pub completion: Option"
+        ],
+        "required_order": [
+          [
+            "const PAGE_BYTES: usize = 2_048;",
+            "const MAX_PAGES: usize = 17;",
+            "const FRAME_BYTES: usize = 16_384;"
+          ],
+          [
+            "impl Request",
+            "fn new(",
+            "if page >= MAX_PAGES",
+            "return Err(Error::Binding(",
+            "schema: 1",
+            "operation: OPERATION.into()",
+            "request_id",
+            "binding: binding.to_string()",
+            "operation_id: context.dataset.request.operation_id.to_string()",
+            "dataset_head: context.dataset.head_digest.to_string()",
+            "scope_binding: context.scope.binding().to_string()",
+            "actor_id: context.dataset.owners.trainer.to_string()",
+            "completion: completion.to_string()",
+            "page: page as u8"
+          ]
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_context(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.binding != binding.to_string()",
+              "self.operation_id != context.dataset.request.operation_id.as_str()",
+              "self.dataset_head != context.dataset.head_digest.to_string()",
+              "self.scope_binding != context.scope.binding().to_string()",
+              "self.actor_id != context.dataset.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn require_initial(",
+            "sequence": [
+              "self.require_common(request_id)?",
+              "self.operation_id != material.initial.request.operation_id.as_str()",
+              "self.scope_binding != material.scope.binding().to_string()",
+              "self.actor_id != material.initial.owners.trainer.as_str()",
+              "return Err(Error::Binding(",
+              "Ok(())"
+            ],
+            "top_level": [
+              "self.require_common(request_id)?",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn completion_digest(",
+            "sequence": [
+              "Digest32::of_parts(&[",
+              "&learning_iteration_receipt_signing_bytes_v1(receipt)?",
+              "&attestation.signing_bytes()",
+              "&attestation.signature"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "fn finish(",
+              "Self::new(context, binding, completion, request_id, 0)?",
+              "request.transfer = transfer",
+              "request.phase = Phase::Finish",
+              "Ok(request)"
+            ],
+            "top_level": [
+              "let mut request",
+              "request.transfer",
+              "request.phase",
+              "Ok(request)"
+            ]
+          },
+          {
+            "function": "fn require_common(",
+            "sequence": [
+              "fn require_common(",
+              "self.schema != 1",
+              "self.operation != OPERATION",
+              "self.request_id != request_id",
+              "!(1..=128).contains(&request_id)",
+              "self.transfer == 0 || self.transfer > request_id",
+              "usize::from(self.page) >= MAX_PAGES",
+              "return Err(Error::Binding(",
+              "for value in [",
+              "&self.binding",
+              "&self.dataset_head",
+              "&self.scope_binding",
+              "&self.completion",
+              "value\n                .parse()",
+              "digest.is_zero() || digest.to_string() != *value",
+              "Ok(())"
+            ],
+            "top_level": [
+              "if self.schema",
+              "for value",
+              "Ok(())"
+            ]
+          },
+          {
+            "function": "fn original_page(",
+            "sequence": [
+              "fn original_page(",
+              "request.completion",
+              "!= completion_digest(material.receipt(), material.attestation())?.to_string()",
+              "return Err(Error::Binding(",
+              "!matches!(request.phase, Phase::Begin | Phase::Page)",
+              "let bytes = material.heads()",
+              "usize::from(request.page) * PAGE_BYTES",
+              "if offset >= bytes.len()",
+              "offset.saturating_add(PAGE_BYTES).min(bytes.len())",
+              "Ok(MaterialResult::Page {",
+              "offset: offset as u32",
+              "total: bytes.len() as u32",
+              "heads: STANDARD_NO_PAD.encode(&bytes[offset..end])",
+              "heads_digest: Digest32::of_bytes(bytes).to_string()"
+            ],
+            "top_level": [
+              "if request.completion",
+              "if !matches!",
+              "let bytes",
+              "let offset",
+              "if offset",
+              "let end",
+              "Ok(MaterialResult"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "required": [
+          "pub struct OriginalCellQ24CandidateReadbackClientV1",
+          "channel: Mutex<Option<Channel>>",
+          "dataset: OriginalCellQ24MaterialCommandReceiptV1",
+          "expected: OriginalCellQ24TrainingCommandReceiptV1"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "impl Clone",
+          "derive(Clone",
+          "Deserialize",
+          "pub channel:",
+          "pub expected:",
+          "pub dataset:",
+          "pub baseline:",
+          "original_owner_command_channel_v1(",
+          "HostAuthorityPeerChannel::from_stream",
+          "RootObservationStream",
+          "execution_requested = false",
+          "execution_requested: false",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "timeout:",
+          "lifetime:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn from_original_connection(",
+            "sequence": [
+              "let started_at = now()?",
+              "let OriginalCellQ24TrainingCommandClientV1 {",
+              "channel,\n            context,\n            binding,\n            retained",
+              "channel",
+              ".into_inner()",
+              "channel.execution_requested = true",
+              "retained",
+              ".into_inner()",
+              ".as_ref()",
+              ".is_some_and(|pin| pin != &expected)",
+              "context.dataset != *dataset.snapshot()",
+              "context.validate()? != material.initial",
+              "context.scope != material.scope",
+              "context.verifier.trust_digest() != material.verifier.trust_digest()",
+              "baseline.components() != &material.initial.request.selected_bundle.components",
+              "return Err(Error::Binding(",
+              "signed_length(&context, &expected)?",
+              "candidate_wire::completion_digest(",
+              "expected.receipt()",
+              "expected.attestation()",
+              "check_peer_lifetime()",
+              "verify_original_context(",
+              "&context",
+              "&material",
+              "&dataset",
+              "&expected",
+              "started_at",
+              "Ok(Self {",
+              "channel: Mutex::new(Some(channel))"
+            ],
+            "top_level": [
+              "let started_at = now()?",
+              "channel.execution_requested = true",
+              "let length = signed_length(&context, &expected)?",
+              "let completion =",
+              "verify_original_context(",
+              "Ok(Self {"
+            ]
+          },
+          {
+            "function": "fn signed_length(",
+            "sequence": [
+              "LearningIterationObservationV1::Training { artifact_bytes, .. }",
+              "&expected.receipt().observation",
+              "return Err(Error::NoCandidate)",
+              "usize::try_from(*artifact_bytes)",
+              "!(12..=32_780).contains(&length)",
+              "*artifact_bytes > context.dataset.request.budget.maximum_artifact_bytes",
+              "return Err(Error::Binding(",
+              "Ok(length)"
+            ],
+            "top_level": [
+              "let length = usize::try_from(*artifact_bytes)",
+              "Ok(length)"
+            ]
+          },
+          {
+            "function": "fn verify_original_context(",
+            "sequence": [
+              "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context(",
+              "dataset",
+              "material",
+              "let fresh_now = now()?",
+              "checked_at < minimum_now || fresh_now < checked_at",
+              "return Err(Error::Binding(",
+              "wire::authenticate_receipt(",
+              "context",
+              "expected.receipt().clone()",
+              "expected.attestation().clone()",
+              "fresh_now",
+              "if &verified != expected",
+              "return Err(Error::Binding(",
+              "Ok(fresh_now)"
+            ],
+            "top_level": [
+              "let checked_at =",
+              "let fresh_now = now()?",
+              "if checked_at < minimum_now || fresh_now < checked_at",
+              "let verified =",
+              "if &verified != expected",
+              "Ok(fresh_now)"
+            ]
+          },
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "fn readback(",
+              "let started_at = now()?",
+              "self.channel.try_lock()",
+              "take()",
+              "if !channel.execution_requested",
+              "CancelledCandidateRead(Arc::new(AtomicBool::new(false)))",
+              "Arc::clone(&cancelled.0)",
+              "let expected = self.expected.clone()",
+              "let completion = self.completion",
+              "tokio::task::spawn_blocking(move ||",
+              "verify_original_context(",
+              "signed_length(&context, &expected)? != length",
+              "let pages = length.div_ceil(candidate_wire::PAGE_BYTES)",
+              "let transfer = channel.next_request_id",
+              "pages > candidate_wire::MAX_PAGES",
+              "transfer == 0",
+              "transfer.checked_add(pages as u64).is_none_or(|last| last > 128)",
+              "LearningIterationObservationV1::Training { candidate, .. }",
+              "let heads_digest = candidate.components.heads",
+              "heads_digest.is_zero()",
+              "for page in 0..pages",
+              "candidate_wire::Request::new(",
+              "channel.next_request_id, page",
+              "exchange(&mut channel, &request, &cancellation)?",
+              "MaterialResult::Page {",
+              "other => return Err(response_error(other))",
+              "offset as usize != offset_expected || total as usize != length",
+              "heads.len() != offset_expected || digest != heads_digest.to_string()",
+              "encoded_heads.len() > candidate_wire::PAGE_BYTES.div_ceil(3) * 4",
+              "STANDARD_NO_PAD.decode(&encoded_heads)",
+              "part.len() != page_expected || STANDARD_NO_PAD.encode(&part) != encoded_heads",
+              "last_at = verify_original_context(",
+              "heads.extend_from_slice(&part)",
+              "heads.len() != length || Digest32::of_bytes(&heads) != heads_digest",
+              "candidate_wire::Request::finish(",
+              "channel.next_request_id, transfer",
+              "exchange(&mut channel, &finish, &cancellation)?",
+              "MaterialResult::Finished { total, heads_digest: digest }",
+              "total as usize == length && digest == heads_digest.to_string()",
+              "last_at = verify_original_context(",
+              "cancellation.load(Ordering::Acquire)",
+              "OriginalCellQ24CandidateMaterialV1::from_verified_readback(",
+              "&baseline, &context.dataset, heads",
+              "expected.receipt().clone(), expected.attestation().clone()",
+              "let last_at = verify_original_context(",
+              "Ok::<_, Error>((channel, candidate, last_at))",
+              ".await.map_err(|_| Error::Unavailable)??",
+              "channel.peer.check_peer_lifetime()",
+              "verify_original_context(",
+              "&self.context, &self.material, &self.dataset, &self.expected, last_at",
+              "self.channel.try_lock()",
+              "if retained_channel.is_some()",
+              "*retained_channel = Some(channel)",
+              "drop(retained_channel)",
+              "drop(cancelled)",
+              "Ok(candidate)"
+            ],
+            "top_level": [
+              "let started_at",
+              "let mut channel",
+              "if !channel.execution_requested",
+              "let cancelled",
+              "let (channel, candidate, last_at)",
+              "channel.peer.check_peer_lifetime()",
+              "verify_original_context(\n            &self.context, &self.material, &self.dataset, &self.expected, last_at,",
+              "let mut retained_channel",
+              "if retained_channel.is_some()",
+              "*retained_channel",
+              "drop(retained_channel)",
+              "drop(cancelled)",
+              "Ok(candidate)"
+            ]
+          },
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "fn exchange(",
+              "!(1..=128).contains(&channel.next_request_id)",
+              "request.request_id != channel.next_request_id",
+              "channel.peer.check_peer_lifetime()",
+              "cancelled.load(Ordering::Acquire)",
+              "serde_json::to_vec(request)",
+              "encoded.len() > 16_384",
+              "channel.peer.request(&encoded)",
+              "bytes.len() > 16_384",
+              "serde_json::from_slice(&bytes)",
+              "&response.request != request",
+              "channel.peer.check_peer_lifetime()",
+              "cancelled.load(Ordering::Acquire)",
+              "channel.next_request_id += 1",
+              "Ok(response.result)"
+            ],
+            "top_level": [
+              "if !(1..=128)",
+              "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded",
+              "if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded",
+              "let encoded",
+              "if encoded.len()",
+              "let bytes",
+              "if bytes.len()",
+              "let response",
+              "if &response.request",
+              "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1",
+              "if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1",
+              "channel.next_request_id += 1",
+              "Ok(response.result)"
+            ]
+          },
+          {
+            "function": "fn response_error(",
+            "sequence": [
+              "fn response_error(",
+              "R::NoCandidate => Error::NoCandidate",
+              "R::Missing => OriginalCellQ24TrainingCommandErrorV1::Missing.into()",
+              "R::Pending => OriginalCellQ24TrainingCommandErrorV1::Pending.into()",
+              "R::Busy => OriginalCellQ24TrainingCommandErrorV1::Busy.into()",
+              "R::ReadbackRequired => OriginalCellQ24TrainingCommandErrorV1::ReadbackRequired.into()",
+              "R::Uncertain | R::Finished { .. } => OriginalCellQ24TrainingCommandErrorV1::CommitUncertain.into()",
+              "R::Unavailable => Error::Unavailable",
+              "R::Page { .. } => Error::Binding("
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(true, Ordering::Release)"
+            ],
+            "top_level": [
+              "self.0.store("
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "required": [
+          "OriginalCellQ24TrainingCommandOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "fn serve_candidate_material_readback(",
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "let mut channel = original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "CandidateServiceCancelled(Arc::new(AtomicBool::new(false)))",
+              "Arc::clone(&queued.0)",
+              "tokio::task::spawn_blocking(move ||",
+              "let _permit = permit",
+              "channel.check_peer_lifetime()",
+              "cancelled.load(Ordering::Acquire)",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::",
+              "drop(queued)",
+              "result"
+            ],
+            "top_level": [
+              "let permit",
+              "let mut channel",
+              "let queued",
+              "let cancelled",
+              "let result",
+              "drop(queued)",
+              "\n        result\n"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "fn serve_candidate_material_channel(",
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "SessionDisposition::CloseReadback",
+              "channel.exchange(|bytes|",
+              "self\n                    .candidate_material_response(",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "session.unfinished()",
+              "return Err(Error::",
+              "return Ok(request_id - 1)",
+              "disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session",
+              "for request_id",
+              "\n        Err(Error::Unavailable)\n"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(true, Ordering::Release)"
+            ],
+            "top_level": [
+              "self.0.store("
+            ]
+          },
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "fn candidate_material_response(",
+              "let result = (||",
+              "let started_at = now()?",
+              "bytes.len() > 16_384",
+              "serde_json::from_slice(bytes)?",
+              "request.require_context(&self.context, self.binding, request_id)?",
+              "session.require_owner(self as *const Self as usize)?",
+              "session.require_request(&request)?",
+              "request.phase == candidate_wire::Phase::Page",
+              "session.require_current(&self.context, started_at)?",
+              "session.page(&request)?",
+              "} else {",
+              "SourceBoundCellQ24TrainingStageV1::read_candidate_material(",
+              "self.stage.as_ref(), &self.context.dataset",
+              "Ok(material) =>",
+              "let fresh_now = now()?",
+              "fresh_now < started_at",
+              "wire::authenticate_receipt(",
+              "material.receipt().clone()",
+              "material.attestation().clone(), fresh_now",
+              "Phase::Begin => session.begin(&request, material, fresh_now)?",
+              "Phase::Finish => session.finish(&request, material)?",
+              "Phase::Page => return Err(Error::CommitUncertain)",
+              "OriginalCellQ24CandidateMaterialErrorV1::NoCandidate",
+              "MaterialResult::NoCandidate",
+              "match original_state(error)",
+              "CommandResult::Missing => candidate_wire::MaterialResult::Missing",
+              "CommandResult::Pending => candidate_wire::MaterialResult::Pending",
+              "CommandResult::Busy => candidate_wire::MaterialResult::Busy",
+              "_ => candidate_wire::MaterialResult::Uncertain",
+              "if matches!(result, candidate_wire::MaterialResult::Page { .. }",
+              "MaterialResult::Finished { .. }",
+              "session.require_current(&self.context, started_at)?",
+              "session.encode_response(request, result)",
+              "if result.is_err() { session.fail(); }",
+              "result"
+            ],
+            "top_level": [
+              "let result = (||",
+              "if result.is_err()",
+              "\n        result\n"
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "required": [
+          "OriginalCellQ24TrainingBootstrapOwnerV1<TW, RW>"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          ".execute_training(",
+          ".fit_or_readback(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap(",
+          "State::Starting",
+          "State::Ready(",
+          "std::mem::replace",
+          "build_original_owner(",
+          "OriginalCellQ24DatasetCommandReadbackV1::readback(",
+          "OriginalCellQ24TrainingCommandClientV1",
+          "wire::Action",
+          "LearningIterationSnapshotV1",
+          "pub now:",
+          "dyn Fn",
+          "impl Fn"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn candidate_material_response(",
+            "sequence": [
+              "let request: candidate_wire::Request =\n            serde_json::from_slice(bytes)",
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?",
+              "OriginalCellQ24TrainingCommandOwnerV1::candidate_material_response(",
+              "original.as_ref()",
+              "bytes",
+              "request_id",
+              "session",
+              "session.encode_response(request, candidate_wire::MaterialResult::ReadbackRequired)"
+            ],
+            "top_level": [
+              "request.require_initial(&self.config.material, request_id)?",
+              "session.require_request(&request)?",
+              "if let Some(original) = self.ready()?"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_readback(",
+            "sequence": [
+              "fn serve_candidate_material_readback(",
+              "Arc::clone(&self.connections)",
+              ".try_acquire_owned()",
+              ".map_err(|_| Error::Busy)?",
+              "let mut channel = original_owner_command_channel_v1(",
+              "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+              "CandidateServiceCancelled(Arc::new(AtomicBool::new(false)))",
+              "Arc::clone(&queued.0)",
+              "tokio::task::spawn_blocking(move ||",
+              "let _permit = permit",
+              "channel.check_peer_lifetime()",
+              "cancelled.load(Ordering::Acquire)",
+              "self.serve_candidate_material_channel(&mut channel)",
+              ".await",
+              ".map_err(|_| Error::",
+              "drop(queued)",
+              "result"
+            ],
+            "top_level": [
+              "let permit",
+              "let mut channel",
+              "let queued",
+              "let cancelled",
+              "let result",
+              "drop(queued)",
+              "\n        result\n"
+            ]
+          },
+          {
+            "function": "fn serve_candidate_material_channel(",
+            "sequence": [
+              "fn serve_candidate_material_channel(",
+              "candidate_wire::Session::new()",
+              "for request_id in 1..=128_u64",
+              "SessionDisposition::CloseReadback",
+              "channel\n                .exchange(|bytes|",
+              "self\n                        .candidate_material_response(",
+              "&mut session",
+              "HostIssuerTransportError::InvalidRequest",
+              "disposition = next",
+              "Ok(response)",
+              "if !exchanged",
+              "session.unfinished()",
+              "return Err(Error::",
+              "return Ok(request_id - 1)",
+              "disposition == candidate_wire::SessionDisposition::CloseReadback",
+              "return Ok(request_id)",
+              "Err(Error::"
+            ],
+            "top_level": [
+              "let mut session",
+              "for request_id",
+              "\n        Err(Error::Uncertain)\n"
+            ]
+          },
+          {
+            "function": "fn drop(",
+            "sequence": [
+              "fn drop(",
+              "self.0.store(true, Ordering::Release)"
+            ],
+            "top_level": [
+              "self.0.store("
+            ]
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_transfer.rs",
+        "required": [
+          "struct OriginalCandidateTransfer",
+          "material: OriginalCellQ24CandidateMaterialV1",
+          "transfer: u64",
+          "next_page: u8",
+          "last_at: u64",
+          "pub(in super::super) struct Session",
+          "original: Option<OriginalCandidateTransfer>",
+          "completion: Option<String>",
+          "owner: Option<usize>",
+          "failed: bool"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".sign(",
+          "SignedLearningEvidenceV1 {",
+          "File::open",
+          "OpenOptions",
+          "UnixStream::connect",
+          "UnixListener",
+          "permit_all",
+          "if false",
+          "unwrap_or",
+          "Deserialize",
+          "Serialize",
+          "derive(Clone",
+          "impl Clone",
+          "impl Default",
+          "pub material:",
+          "pub original:",
+          "pub transfer:",
+          "pub next_page:",
+          "pub failed:",
+          "pub owner:",
+          "pub completion:",
+          "SourceBoundCellQ24TrainingStageV1",
+          "Semaphore",
+          "MutexGuard",
+          "OwnedSemaphorePermit",
+          "from_verified_readback(",
+          ".fit_or_readback(",
+          ".execute_training(",
+          ".attest_original_completion(",
+          ".claim(",
+          ".complete(",
+          ".compare_and_swap("
+        ],
+        "required_function_order": [
+          {
+            "function": "fn require_owner(",
+            "sequence": [
+              "fn require_owner(",
+              "self.failed || self.owner.is_some_and(|original| original != owner)",
+              "self.fail()",
+              "return Err(Error::CommitUncertain)",
+              "self.owner = Some(owner)",
+              "Ok(())"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn fail(",
+            "sequence": [
+              "fn fail(",
+              "self.failed = true",
+              "self.original = None"
+            ],
+            "top_level": [
+              "self.failed = true",
+              "self.original = None"
+            ]
+          },
+          {
+            "function": "fn require_request(",
+            "sequence": [
+              "fn require_request(",
+              "self.check_request(request)",
+              "checked.is_err()",
+              "self.fail()",
+              "checked"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn check_request(",
+            "sequence": [
+              "fn check_request(",
+              "self.failed || self.completion.as_ref().is_some_and(|prior| prior != &request.completion)",
+              "Err(Error::CommitUncertain)",
+              "match request.phase",
+              "Phase::Begin if self.original.is_none()",
+              "request.page == 0 && request.transfer == request.request_id",
+              "Phase::Page | Phase::Finish",
+              "self.original.as_ref().ok_or(Error::ReadbackRequired)?",
+              "original.material.heads().len().div_ceil(PAGE_BYTES)",
+              "request.transfer != original.transfer",
+              "request.completion != completion_digest(",
+              "original.material.receipt(), original.material.attestation()",
+              "Phase::Page if request.page == original.next_page",
+              "request.page > 0 && usize::from(request.page) < pages",
+              "request.request_id == original.transfer + u64::from(request.page)",
+              "Phase::Finish if request.page == 0",
+              "usize::from(original.next_page) == pages",
+              "request.request_id == original.transfer + pages as u64"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn begin(",
+            "sequence": [
+              "fn begin(",
+              "self.require_request(request)?",
+              "request.phase != Phase::Begin",
+              "request.completion != completion_digest(",
+              "material.receipt(), material.attestation()",
+              "!(12..=32_780).contains(&material.heads().len())",
+              "material.authority() != codex_hepta_types::AuthorityPosture::DENY_ALL",
+              "self.fail()",
+              "let pages = material.heads().len().div_ceil(PAGE_BYTES)",
+              "request.transfer.checked_add(pages as u64).is_none_or(|last| last > 128)",
+              "self.fail()",
+              "original_page(request, &material)?",
+              "self.original = Some(OriginalCandidateTransfer {",
+              "material, transfer: request.transfer, next_page: 0, last_at: at",
+              "Ok(result)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn require_current(",
+            "sequence": [
+              "fn require_current(",
+              "self.original.as_mut().ok_or(Error::ReadbackRequired)?",
+              "super::super::now()?",
+              "current < lower || current < original.last_at",
+              "self.fail()",
+              "super::super::wire::authenticate_receipt(",
+              "original.material.receipt().clone()",
+              "original.material.attestation().clone()",
+              "checked.receipt() != original.material.receipt()",
+              "checked.attestation() != original.material.attestation()",
+              "self.fail()",
+              "original.last_at = current",
+              "Ok(current)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn page(",
+            "sequence": [
+              "fn page(",
+              "self.require_request(request)?",
+              "request.phase != Phase::Page",
+              "self.fail()",
+              "original_page(request, &self.original.as_ref().ok_or(Error::ReadbackRequired)?.material)"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn finish(",
+            "sequence": [
+              "fn finish(",
+              "self.require_request(request)?",
+              "self.original.as_ref().ok_or(Error::ReadbackRequired)?.material",
+              "request.phase != Phase::Finish",
+              "current.heads() != original.heads()",
+              "current.bundle() != original.bundle()",
+              "current.model().components() != original.model().components()",
+              "current.receipt() != original.receipt()",
+              "current.attestation() != original.attestation()",
+              "current.authority() != codex_hepta_types::AuthorityPosture::DENY_ALL",
+              "self.fail()",
+              "return Err(Error::CommitUncertain)",
+              "Ok(MaterialResult::Finished {",
+              "total: current.heads().len() as u32",
+              "heads_digest: Digest32::of_bytes(current.heads()).to_string()"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn encode_response(",
+            "sequence": [
+              "fn encode_response(",
+              "request.phase == Phase::Begin",
+              "original.next_page == 0 && original.transfer == request.transfer",
+              "request.request_id == original.transfer && request.page == 0",
+              "if !first { self.require_request(&request)?; }",
+              "match &result",
+              "MaterialResult::Page { offset, total, heads, heads_digest }",
+              "self.original.as_mut().ok_or(Error::ReadbackRequired)?",
+              "STANDARD_NO_PAD.decode(heads)",
+              "!matches!(request.phase, Phase::Begin | Phase::Page)",
+              "usize::from(request.page) != usize::from(original.next_page)",
+              "request.completion != completion_digest(",
+              "*total as usize != material.heads().len()",
+              "*offset as usize != usize::from(request.page) * PAGE_BYTES",
+              "*offset as usize >= *total as usize",
+              "bytes.len() != PAGE_BYTES.min(*total as usize - *offset as usize)",
+              "STANDARD_NO_PAD.encode(&bytes) != *heads",
+              "*heads_digest != Digest32::of_bytes(material.heads()).to_string()",
+              "bytes.as_slice() != &material.heads()[",
+              "*offset as usize..*offset as usize + bytes.len()",
+              "self.fail()",
+              "original.next_page += 1",
+              "self.completion = Some(request.completion.clone())",
+              "SessionDisposition::ContinueReadback",
+              "MaterialResult::Finished { total, heads_digest }",
+              "request.phase != Phase::Finish",
+              "*total as usize != original.material.heads().len()",
+              "*heads_digest != Digest32::of_bytes(original.material.heads()).to_string()",
+              "self.fail()",
+              "self.original = None",
+              "SessionDisposition::ContinueReadback",
+              "self.fail()",
+              "SessionDisposition::CloseReadback",
+              "serde_json::to_vec(&Response { request, result })?",
+              "bytes.len() > FRAME_BYTES",
+              "self.fail()",
+              "Ok((bytes, disposition))"
+            ],
+            "top_level": [
+              "let first",
+              "if !first",
+              "let disposition",
+              "let bytes = serde_json::to_vec(&Response",
+              "if bytes.len()",
+              "Ok((bytes, disposition))"
+            ]
+          }
+        ]
+      }
+    ],
+    "boundary_changes": [],
+    "source_pins": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+        "sha": "79471343a115970172eac8e16de5ec7eeae2928d",
+        "chars": 7392
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_transfer.rs",
+        "sha": "878eed28141215cd985dbfd4fe796de50dccbe66",
+        "chars": 9893
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "sha": "abdca127862c4c9aaf350267a9d669bb8e1792bc",
+        "chars": 7103
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "sha": "02029f1ac91b719544c7d063136b7d36cdf45852",
+        "chars": 4687
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "sha": "5e73201dba7618038f219bb25d77859c8305d3d8",
+        "chars": 14794
+      }
+    ],
+    "upstream_projection_discrepancies": {
+      "funcs": 30,
+      "seq": 421,
+      "top": 95,
+      "errors": [
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn readback(",
+          "kind": "top",
+          "marker": "verify_original_context(",
+          "count": 5,
+          "depth": 2
+        },
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn exchange(",
+          "kind": "top",
+          "marker": "channel.peer.check_peer_lifetime()",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn exchange(",
+          "kind": "top",
+          "marker": "if cancelled.load",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn exchange(",
+          "kind": "top",
+          "marker": "channel.peer.check_peer_lifetime()",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn exchange(",
+          "kind": "top",
+          "marker": "if cancelled.load",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_readback.rs",
+          "function": "fn exchange(",
+          "kind": "top",
+          "marker": "channel.next_request_id",
+          "count": 3,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_service.rs",
+          "function": "fn serve_candidate_material_readback(",
+          "kind": "top",
+          "marker": "result",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_service.rs",
+          "function": "fn serve_candidate_material_channel(",
+          "kind": "top",
+          "marker": "Err(Error::",
+          "count": 2,
+          "depth": 4
+        },
+        {
+          "file": "cell_q24_training_candidate_service.rs",
+          "function": "fn candidate_material_response(",
+          "kind": "top",
+          "marker": "let result",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_candidate_service.rs",
+          "function": "fn candidate_material_response(",
+          "kind": "top",
+          "marker": "result",
+          "count": 6,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_bootstrap_candidate.rs",
+          "function": "fn serve_candidate_material_readback(",
+          "kind": "top",
+          "marker": "result",
+          "count": 2,
+          "depth": 1
+        },
+        {
+          "file": "cell_q24_training_bootstrap_candidate.rs",
+          "function": "fn serve_candidate_material_channel(",
+          "kind": "top",
+          "marker": "Err(Error::",
+          "count": 2,
+          "depth": 4
+        },
+        {
+          "file": "cell_q24_training_candidate_transfer.rs",
+          "function": "fn encode_response(",
+          "kind": "top",
+          "marker": "let bytes",
+          "count": 2,
+          "depth": 3
+        }
+      ]
+    },
+    "unique_top_corrections": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn readback(",
+        "old": "verify_original_context(",
+        "new": "verify_original_context(\n            &self.context, &self.material, &self.dataset, &self.expected, last_at,"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn exchange(",
+        "old": "channel.peer.check_peer_lifetime()",
+        "new": "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn exchange(",
+        "old": "if cancelled.load",
+        "new": "if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    let encoded"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn exchange(",
+        "old": "channel.peer.check_peer_lifetime()",
+        "new": "channel.peer.check_peer_lifetime()\n        .map_err(OriginalCellQ24TrainingCommandErrorV1::from)?;\n    if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn exchange(",
+        "old": "if cancelled.load",
+        "new": "if cancelled.load(Ordering::Acquire) {\n        return Err(OriginalCellQ24TrainingCommandErrorV1::Cancelled.into());\n    }\n    channel.next_request_id += 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+        "function": "fn exchange(",
+        "old": "channel.next_request_id",
+        "new": "channel.next_request_id += 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "function": "fn serve_candidate_material_readback(",
+        "old": "result",
+        "new": "\n        result\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "function": "fn serve_candidate_material_channel(",
+        "old": "Err(Error::",
+        "new": "\n        Err(Error::Unavailable)\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "function": "fn candidate_material_response(",
+        "old": "let result",
+        "new": "let result = (||"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+        "function": "fn candidate_material_response(",
+        "old": "result",
+        "new": "\n        result\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "function": "fn serve_candidate_material_readback(",
+        "old": "result",
+        "new": "\n        result\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+        "function": "fn serve_candidate_material_channel(",
+        "old": "Err(Error::",
+        "new": "\n        Err(Error::Uncertain)\n"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_transfer.rs",
+        "function": "fn encode_response(",
+        "old": "let bytes",
+        "new": "let bytes = serde_json::to_vec(&Response"
+      }
+    ],
+    "corrected_guard_projection": {
+      "kind": "JavaScript exact code projection of existing Python verifier; Python not executed",
+      "functions": 30,
+      "sequences": 438,
+      "tops": 95,
+      "errors": [],
+      "unique_top_corrections": 13
+    }
+  },
+  "qa": {
+    "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+    "migration": {
+      "edits": [
+        {
+          "old": "\"\"\"Keep original Candidate bytes on one read-only SourceBound owner session.",
+          "new": "\"\"\"Keep original Candidate bytes on one read-only Begin/Pages/Finish session."
+        },
+        {
+          "old": "WIRE = AGENT + \"cell_q24_training_candidate_wire.rs\"\n",
+          "new": "WIRE = AGENT + \"cell_q24_training_candidate_wire.rs\"\nTRANSFER = AGENT + \"cell_q24_training_candidate_transfer.rs\"\n"
+        },
+        {
+          "old": "(CLIENT, \"fn readback(\", \"response.request != request\"),",
+          "new": "(CLIENT, \"fn exchange(\", \"&response.request != request\"),"
+        },
+        {
+          "old": "(CLIENT, \"fn readback(\", \"heads.len() != expected_offset\"),",
+          "new": "(CLIENT, \"fn readback(\", \"heads.len() != offset_expected\"),"
+        },
+        {
+          "old": "(WIRE, \"fn require_request(\", \"request.page != self.next_page\"),",
+          "new": "(TRANSFER, \"fn check_request(\", \"request.page == original.next_page\"),"
+        },
+        {
+          "old": "(WIRE, \"fn require_request(\", \"pin != &request.completion\"),",
+          "new": "(TRANSFER, \"fn check_request(\", \"prior != &request.completion\"),"
+        },
+        {
+          "old": "(WIRE, \"fn encode_response(\", \"SessionDisposition::CloseReadback\"),",
+          "new": "(TRANSFER, \"fn encode_response(\", \"SessionDisposition::CloseReadback\"),"
+        }
+      ],
+      "added_methods": 3,
+      "existing_methods_preserved": 3,
+      "added_source": "\n    def test_begin_and_finish_require_actual_owner_and_complete_current_tail(self):\n        for path, function, marker in (\n            (SERVICE, \"fn candidate_material_response(\", \"session.require_owner(self as *const Self as usize)?\"),\n            (SERVICE, \"fn candidate_material_response(\", \"request.phase == candidate_wire::Phase::Page\"),\n            (SERVICE, \"fn candidate_material_response(\", \"session.require_current(&self.context, started_at)?\"),\n            (SERVICE, \"fn candidate_material_response(\", \"Phase::Begin => session.begin(&request, material, fresh_now)?\"),\n            (SERVICE, \"fn candidate_material_response(\", \"Phase::Finish => session.finish(&request, material)?\"),\n            (SERVICE, \"fn candidate_material_response(\", \"session.encode_response(request, result)\"),\n            (TRANSFER, \"fn require_current(\", \"current < lower || current < original.last_at\"),\n            (TRANSFER, \"fn require_current(\", \"super::super::wire::authenticate_receipt(\"),\n            (TRANSFER, \"fn require_current(\", \"checked.receipt() != original.material.receipt()\"),\n            (TRANSFER, \"fn require_current(\", \"checked.attestation() != original.material.attestation()\"),\n            (TRANSFER, \"fn finish(\", \"request.phase != Phase::Finish\"),\n            (TRANSFER, \"fn finish(\", \"current.heads() != original.heads()\"),\n            (TRANSFER, \"fn finish(\", \"current.bundle() != original.bundle()\"),\n            (TRANSFER, \"fn finish(\", \"current.model().components() != original.model().components()\"),\n            (TRANSFER, \"fn finish(\", \"current.receipt() != original.receipt()\"),\n            (TRANSFER, \"fn finish(\", \"current.attestation() != original.attestation()\"),\n            (TRANSFER, \"fn finish(\", \"current.authority() != codex_hepta_types::AuthorityPosture::DENY_ALL\"),\n            (CLIENT, \"fn readback(\", \"candidate_wire::Request::finish(\"),\n            (CLIENT, \"fn readback(\", \"exchange(&mut channel, &finish, &cancellation)?\"),\n            (CLIENT, \"fn readback(\", \"total as usize == length && digest == heads_digest.to_string()\"),\n            (CLIENT, \"fn readback(\", \"if retained_channel.is_some()\"),\n            (CLIENT, \"fn readback(\", \"*retained_channel = Some(channel)\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker)\n\n    def test_transfer_nonce_and_next_independent_begin_cannot_reuse_current(self):\n        for path, function, marker in (\n            (WIRE, \"fn require_common(\", \"!(1..=128).contains(&request_id)\"),\n            (WIRE, \"fn require_common(\", \"self.transfer == 0 || self.transfer > request_id\"),\n            (WIRE, \"fn finish(\", \"request.transfer = transfer\"),\n            (WIRE, \"fn finish(\", \"request.phase = Phase::Finish\"),\n            (TRANSFER, \"fn require_owner(\", \"self.failed || self.owner.is_some_and(|original| original != owner)\"),\n            (TRANSFER, \"fn require_request(\", \"self.check_request(request)\"),\n            (TRANSFER, \"fn require_request(\", \"self.fail()\"),\n            (TRANSFER, \"fn check_request(\", \"Phase::Begin if self.original.is_none()\"),\n            (TRANSFER, \"fn check_request(\", \"request.page == 0 && request.transfer == request.request_id\"),\n            (TRANSFER, \"fn check_request(\", \"request.transfer != original.transfer\"),\n            (TRANSFER, \"fn check_request(\", \"request.request_id == original.transfer + u64::from(request.page)\"),\n            (TRANSFER, \"fn check_request(\", \"usize::from(original.next_page) == pages\"),\n            (TRANSFER, \"fn check_request(\", \"request.request_id == original.transfer + pages as u64\"),\n            (TRANSFER, \"fn begin(\", \"request.transfer.checked_add(pages as u64).is_none_or(|last| last > 128)\"),\n            (TRANSFER, \"fn encode_response(\", \"original.next_page += 1\"),\n            (TRANSFER, \"fn encode_response(\", \"self.completion = Some(request.completion.clone())\"),\n            (TRANSFER, \"fn encode_response(\", \"self.original = None\"),\n            (TRANSFER, \"fn fail(\", \"self.failed = true\"),\n            (TRANSFER, \"fn fail(\", \"self.original = None\"),\n            (CLIENT, \"fn readback(\", \"transfer.checked_add(pages as u64).is_none_or(|last| last > 128)\"),\n            (CLIENT, \"fn exchange(\", \"channel.next_request_id += 1\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker)\n        for declaration in (\n            \"impl Clone for Session {}\",\n            \"use serde::Deserialize;\",\n            \"fn bypass(stage: SourceBoundCellQ24TrainingStageV1) {}\",\n            \"fn bypass(permit: OwnedSemaphorePermit) {}\",\n            \"fn bypass() { owner.fit_or_readback(); }\",\n            \"fn bypass() { key.sign(); }\",\n        ):\n            with self.subTest(declaration=declaration):\n                source = (ROOT / TRANSFER).read_text()\n                self.verifies(TRANSFER, source)\n                with self.assertRaises(PROOF.VerificationFailure):\n                    self.verifies(TRANSFER, source + \"\\n\" + declaration + \"\\n\")\n\n    def test_cancelled_or_unfinished_transfer_consumes_the_original_channel(self):\n        for path, function, marker in (\n            (CLIENT, \"fn readback(\", \"CancelledCandidateRead(Arc::new(AtomicBool::new(false)))\"),\n            (CLIENT, \"fn readback(\", \"cancellation.load(Ordering::Acquire)\"),\n            (CLIENT, \"fn exchange(\", \"channel.peer.request(&encoded)\"),\n            (CLIENT, \"fn exchange(\", \"cancelled.load(Ordering::Acquire)\"),\n            (CLIENT, \"fn exchange(\", \"encoded.len() > 16_384\"),\n            (CLIENT, \"fn exchange(\", \"bytes.len() > 16_384\"),\n            (CLIENT, \"fn drop(\", \"self.0.store(true, Ordering::Release)\"),\n            (SERVICE, \"fn candidate_material_response(\", \"if result.is_err() { session.fail(); }\"),\n        ):\n            with self.subTest(path=path, marker=marker):\n                self.rejects(path, function, marker)\n        for path in (SERVICE, BOOTSTRAP):\n            for function, marker in (\n                (\"fn serve_candidate_material_readback(\", \"original_owner_command_channel_v1(\"),\n                (\"fn serve_candidate_material_readback(\", \"let _permit = permit\"),\n                (\"fn serve_candidate_material_readback(\", \"channel.check_peer_lifetime()\"),\n                (\"fn serve_candidate_material_readback(\", \"cancelled.load(Ordering::Acquire)\"),\n                (\"fn serve_candidate_material_channel(\", \"for request_id in 1..=128_u64\"),\n                (\"fn serve_candidate_material_channel(\", \"session.unfinished()\"),\n                (\"fn drop(\", \"self.0.store(true, Ordering::Release)\"),\n            ):\n                with self.subTest(path=path, marker=marker):\n                    self.rejects(path, function, marker)\n        source = (ROOT / CLIENT).read_text()\n        code = self.code(source)\n        start = code.index(\"fn exchange(\")\n        end = PROOF._rust_item_end(code, start)\n        self.assertIsNotNone(end)\n        for marker in (\"channel.peer.check_peer_lifetime()\", \"cancelled.load(Ordering::Acquire)\"):\n            with self.subTest(last_actual_exchange_check=marker):\n                # The second check must survive independently of the first.\n                offset = source.rindex(marker, start, end + 1)\n                with self.assertRaises(PROOF.VerificationFailure):\n                    self.verifies(CLIENT, source[:offset] + source[offset + len(marker):])\n\n"
+    },
+    "old_suite_reverse_migration_byte_equal": true,
+    "literal_projection": {
+      "kind": "JavaScript exact existing protected-guard projection, not Python QA execution",
+      "baseline_files": 9,
+      "records": 13,
+      "literal_mutations": 101,
+      "rejected": 101,
+      "errors": []
+    },
+    "other_projection": {
+      "kind": "JavaScript projection, not Python test execution",
+      "other_mutations": 36,
+      "rejected": 36,
+      "errors": []
+    }
+  },
+  "validation": {
+    "python_executed": false,
+    "rust_format_executed": false,
+    "rust_compile_executed": false,
+    "native_executed": false,
+    "ordinary_acceptance": 0,
+    "positive_gate_changed": false
+  }
+}

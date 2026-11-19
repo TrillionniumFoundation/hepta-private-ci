@@ -1,0 +1,199 @@
+{
+  "eligible": {
+    "agnews": {
+      "current/0": 13846,
+      "current/1": 14142,
+      "current/2": 13412,
+      "current/3": 12938,
+      "future/0": 1592,
+      "future/1": 1623,
+      "future/2": 1483,
+      "future/3": 1449,
+      "old/0": 13902,
+      "old/1": 14091,
+      "old/2": 13308,
+      "old/3": 13107
+    },
+    "dbpedia": {
+      "current/0": 19648,
+      "current/1": 19715,
+      "current/2": 19603,
+      "current/3": 19819,
+      "future/0": 4864,
+      "future/1": 4868,
+      "future/2": 4871,
+      "future/3": 4871,
+      "old/0": 19843,
+      "old/1": 19813,
+      "old/2": 19940,
+      "old/3": 19724
+    }
+  },
+  "keys_published": false,
+  "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+  "schema": "hepta.cell-field-data-feature-audit.v6",
+  "scope": "source-only construction and frozen encoder integrity; no model-control outcomes",
+  "selection_audit": {
+    "components": 748555,
+    "excluded_component_hashes": {
+      "any_prior_identity": "11cc341dcb5f036e8ba4817d4809f175e2a57ac397539d1e5db469d7b5cdfcb0",
+      "class_conflict": "d39157be82d7a466038a1056880ab561fc10c7834aca773899831741b0f8abcb",
+      "cross_official_split": "745d23a62cd195ea0448eee333737c0f28929027683ccaf3837a087b3a1cbf83",
+      "cross_task": "48626e7834675e0ff6d62e479e0d2a6cd06c8b1f29589d18db5cf892d156c1a4",
+      "outside_fixed_four_classes": "21fbc77b1202bbdce607b26296c857c2b2b4081cc4d1f041bdf801075a0b79aa",
+      "short_text": "09ca6c72d9e7c0799a5c39b81d048c45d4e8ac1c3ba762c4a53d61c9c8f35d0c"
+    },
+    "excluded_counts": {
+      "any_prior_identity": 144,
+      "class_conflict": 935,
+      "cross_official_split": 940,
+      "cross_task": 54,
+      "outside_fixed_four_classes": 449576,
+      "short_text": 18
+    },
+    "excluded_v5_components_total": 4608,
+    "prior": {
+      "identity_hashes": 429195,
+      "identity_set_sha256": "4b97284315bce82c3f1a5890530efd8fc38ddf9419f5ffd64e253748012fc208",
+      "newsgroup_messages": 18846,
+      "uci_rows": 422935
+    },
+    "raw_rows": 757600,
+    "reason_counts_overlap": true,
+    "v5_exclusion": {
+      "agnews": {
+        "component_set_sha256": "f9fccb58c43a2270c4544348858d67e7d560ecce79fc7ddf310b1ae236e4787c",
+        "excluded_components": 2304
+      },
+      "dbpedia": {
+        "component_set_sha256": "ebfdfa614ce9c7101461070aaa413894102285a21f05489d18e51fba18595d5f",
+        "excluded_components": 2304
+      }
+    }
+  },
+  "source_feasibility_sha256": "6fad9415f8d945987dda448890afce3906ae2486e8515fac5079a25c55299278",
+  "tasks": {
+    "agnews": {
+      "counts": {
+        "current_probe": 128,
+        "current_train": 256,
+        "current_validation": 256,
+        "future_test": 512,
+        "old_probe": 128,
+        "old_test": 512,
+        "old_train": 256,
+        "old_validation": 256
+      },
+      "data_receipt_sha256": "72967fffff545339281451a10067057b5fb6eb7c85baa9887ff31d4da8d65758",
+      "encrypted_label_payloads": {
+        "final": {
+          "aad": {
+            "access": "final",
+            "plaintext_sha256": "12f87bde254413355b838793e83aa1b022b79c0dd252999823c40140d975a2ad",
+            "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+            "task_id": "agnews"
+          },
+          "bytes": 82783,
+          "file": "final_labels.json.aesgcm",
+          "plaintext_bytes": 82755,
+          "sha256": "d360c907dfbb8d2a8d1be9afab4709444cb6ad056aa4acddcb2a7c03a078522e"
+        },
+        "validation": {
+          "aad": {
+            "access": "validation",
+            "plaintext_sha256": "c1527d285f59c9c4f8f5fc58945cf3b072a13620eaee709c81e74acda5629891",
+            "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+            "task_id": "agnews"
+          },
+          "bytes": 41428,
+          "file": "validation_labels.json.aesgcm",
+          "plaintext_bytes": 41400,
+          "sha256": "401f3f95f20845d2ddf51901e0bb1e250e4033453eb3e95edc7f368023b2c9b5"
+        }
+      },
+      "feature_report_sha256": "6fc6926c2d19e68a88e3ced2f1dbbbcccf93eeca17230a07560a930c80ca1f19",
+      "feature_summary": {
+        "dtype": "float32",
+        "encoder_trainable_parameter_count": 0,
+        "encoder_updates": 0,
+        "encoding": {
+          "cpu_ns": 446037255914,
+          "encoded_tokens": 123482,
+          "forward_calls": 144,
+          "wall_ns": 164234091877
+        },
+        "feature_identity": "cbd9fc233f0f39bd61438e220b44f0e8b26bff4d66854bee09557a3e542ae939",
+        "labels_enter_encoder": false,
+        "shape": [
+          2304,
+          384
+        ],
+        "truncated_inputs": 2
+      },
+      "plaintext_evaluation_files_absent": true,
+      "v5_selected_component_overlap": 0
+    },
+    "dbpedia": {
+      "counts": {
+        "current_probe": 128,
+        "current_train": 256,
+        "current_validation": 256,
+        "future_test": 512,
+        "old_probe": 128,
+        "old_test": 512,
+        "old_train": 256,
+        "old_validation": 256
+      },
+      "data_receipt_sha256": "023ea4fa6d034e44f3919e9de653c887bdfecc42ba53acf7f9b0aaf887d6daef",
+      "encrypted_label_payloads": {
+        "final": {
+          "aad": {
+            "access": "final",
+            "plaintext_sha256": "2be82b82d2acc176ae3615335b367730004bd1220b454e81b3779ee83f09d339",
+            "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+            "task_id": "dbpedia"
+          },
+          "bytes": 83807,
+          "file": "final_labels.json.aesgcm",
+          "plaintext_bytes": 83779,
+          "sha256": "8260189745c5de1aa46637d70b0ee0133e69cd375e38af9a7ce9d8dcf5d88a42"
+        },
+        "validation": {
+          "aad": {
+            "access": "validation",
+            "plaintext_sha256": "9c214ecb0ec57cf2a1977694ff9b77cdd6c0356a1cb24ef4e8a39385fa2be190",
+            "protocol_sha256": "cdd777f64265acfd6b8e44960a4f3c3bfbd5d856f76bc7c9d9c696bf4e11f41f",
+            "task_id": "dbpedia"
+          },
+          "bytes": 41940,
+          "file": "validation_labels.json.aesgcm",
+          "plaintext_bytes": 41912,
+          "sha256": "56d8072436e9ee014977d7532f274814c8045403b4c3af8b02679d7419650cb7"
+        }
+      },
+      "feature_report_sha256": "9688fd4afcc2ea0432cd8337ad8db545e35998cc731c610963acd1a320d2fa54",
+      "feature_summary": {
+        "dtype": "float32",
+        "encoder_trainable_parameter_count": 0,
+        "encoder_updates": 0,
+        "encoding": {
+          "cpu_ns": 542870046724,
+          "encoded_tokens": 166660,
+          "forward_calls": 144,
+          "wall_ns": 195810205173
+        },
+        "feature_identity": "cbd9fc233f0f39bd61438e220b44f0e8b26bff4d66854bee09557a3e542ae939",
+        "labels_enter_encoder": false,
+        "shape": [
+          2304,
+          384
+        ],
+        "truncated_inputs": 0
+      },
+      "plaintext_evaluation_files_absent": true,
+      "v5_selected_component_overlap": 0
+    }
+  },
+  "v5_evaluation_labels_decrypted": false,
+  "v6_evaluation_labels_decrypted": false
+}

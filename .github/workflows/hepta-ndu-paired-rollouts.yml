@@ -1,0 +1,50 @@
+name: Hepta NDU paired terminal rollout contracts
+
+on:
+  pull_request:
+    paths:
+      - qa/ndu-real-paired-rollout/**
+      - .github/workflows/hepta-ndu-paired-rollouts.yml
+  push:
+    paths:
+      - qa/ndu-real-paired-rollout/**
+      - .github/workflows/hepta-ndu-paired-rollouts.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-ndu-paired-rollout-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install pinned CPU test dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --no-cache-dir --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu' 'torchvision==0.25.0+cpu'
+          python -m pip install --no-cache-dir --only-binary=:all: 'numpy==2.2.6' 'Pillow==11.3.0'
+      - name: Run terminal covariance and paired rollout contracts
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qa/ndu-terminal-portfolio -p 'test_*.py' -v
+          python -m unittest discover -s qa/ndu-real-paired-rollout -p 'test_*.py' -v
+      - name: Retain scientific evidence boundary
+        if: always()
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          This is a fake-backend/synthetic-fixture unit suite. No pretrained model weights,
+          COCO original JPEGs or test labels were downloaded and no real five-arm study ran.
+          The blind test remains sealed. This result cannot authorize scientific
+          superiority claims, production promotion, or topology/tool actions.
+          EOF

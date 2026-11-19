@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.rv.lifecycle-freeze-preparation-manifest.v1",
+  "date_utc": "2026-11-12",
+  "state": "PREPARED_FOR_REVIEW_NOT_DISPATCHED",
+  "files": [
+    {
+      "path": "README.md",
+      "git_blob": "851bd2e805d34a4511df026151286790390bda0b",
+      "bytes": 7513,
+      "sha256": "d42c1fcc1ea96e2613c1d365cb211694dc74938bf4c6d6336ca459d27dab8ede"
+    },
+    {
+      "path": "driver.py.txt",
+      "git_blob": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+      "bytes": 20215,
+      "sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb"
+    },
+    {
+      "path": "FREEZE_REQUEST.json",
+      "git_blob": "95156b8e5a021af195a9d6f07d4d68e58ad006cd",
+      "bytes": 44431,
+      "sha256": "7eb1d14b658ffbf940395d441050e952cf1e61148fad2915bd16659c7a7cac5a"
+    },
+    {
+      "path": "FREEZE_STDIN.json",
+      "git_blob": "508590799da522ddaadd9957de8d20ef95b6a282",
+      "bytes": 20684,
+      "sha256": "0531a24d5b61d343dd8b338a2793bdf78c0b37fc0f8ee60cfffda70f75d1b91d"
+    },
+    {
+      "path": "PHASE_REQUEST_CONSTRUCTION.json",
+      "git_blob": "58df7a5fd4c5ddd7d9c8af84176efa62503c2795",
+      "bytes": 4261,
+      "sha256": "6184e9ccf3072d5c2faff2f078493bd477e129d260482a843f7816bdaece4de0"
+    },
+    {
+      "path": "OLD_EFFECT_IDS_DERIVED.json",
+      "git_blob": "dfe4b78d3362463e7b9d1979be8cc5f59a72ab57",
+      "bytes": 45563,
+      "sha256": "c123ea3cdae99eac16485677bc0fc011da77d3633807e702b37b32aa2264578e"
+    },
+    {
+      "path": "REGISTRATION.json",
+      "git_blob": "d9af2e485396472b4039ed51188504ec4959bd0d",
+      "bytes": 2414,
+      "sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4"
+    },
+    {
+      "path": "replay_perception_native.py.txt",
+      "git_blob": "94e819d579232597de08a5c239a78e9d40768416",
+      "bytes": 16850,
+      "sha256": "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a"
+    }
+  ],
+  "freeze_request": {
+    "artifact": "FREEZE_REQUEST.json",
+    "git_blob": "95156b8e5a021af195a9d6f07d4d68e58ad006cd",
+    "sha256": "7eb1d14b658ffbf940395d441050e952cf1e61148fad2915bd16659c7a7cac5a",
+    "host": "ai395",
+    "executable": "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "idempotency_key": "neuro4-rv-bc-freeze-862531d-v1",
+    "stage": "freeze",
+    "timeout_seconds": 180,
+    "actual_job_id": null,
+    "actual_requests_sent": 0
+  },
+  "binding": {
+    "runner_git_blob": "d63ff1216eafcc5b4dfdd98c03a83972b268b25e",
+    "runner_sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb",
+    "runner_lines": 364,
+    "wrapper_git_blob": "94e819d579232597de08a5c239a78e9d40768416",
+    "wrapper_sha256": "e0800f6e1187a1b2bab532dbd8b1618d200a9cce786f0337d7c13da228beb82a",
+    "registration_git_blob": "d9af2e485396472b4039ed51188504ec4959bd0d",
+    "registration_sha256": "e8c386af635518c9ee8d73c62f8e217bd9f8bcbf78b1bbe36fb2477f9ba634c4",
+    "native_source_commit": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "old_report_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+    "old_effect_ids": 576
+  },
+  "verification": {
+    "all_eight_artifact_bytes_independently_read_back": true,
+    "request_driver_and_stdin_hash_consistency_verified_in_javascript": true,
+    "python_syntax": "NOT_RUN",
+    "python_runtime": "NOT_RUN",
+    "format": "NOT_RUN",
+    "formal_freeze": "NOT_RUN",
+    "actual_new_effect_roster": "NOT_GENERATED",
+    "phase_B": "NOT_RUN",
+    "phase_C": "NOT_RUN",
+    "remote_jobs_started": 0,
+    "actor_calls": 0
+  },
+  "static_review": {
+    "peer": "replay_perception_research",
+    "reviewed_initial_runner_blob": "bd78fb013aba0b2449199a65dc9c6df29d0f49eb",
+    "finding": "Verified wrapper bytes must be the bytes executed; loader/pyc second load is not proof.",
+    "fix": "Execute compile(verified_source,real_wrapper_path,'exec') in real spec/module namespace; verify wrapper/registration/runner and original inputs by actual before/after byte hashes and stat versions.",
+    "additional_self_review_fix": "B/C exclusive request claim is outside terminal-recording try/finally; duplicate contender cannot write the winning request's terminal; START also binds request and runner hashes.",
+    "scope": "Static code review only; no Python or original API execution is claimed."
+  },
+  "intended_runtime_outputs": {
+    "control": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1",
+    "wrapper_output": "/home/qq/neuro-rv-bc-development-862531d11598-v1",
+    "actual_effect_roster": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/EFFECT_ROSTER.json",
+    "actual_freeze_terminal": "/home/qq/neuro-rv-bc-inputs-862531d11598-v1/freeze-TERMINAL.json"
+  },
+  "scope": {
+    "purpose": "four-row ordinary development wrapper lifecycle only",
+    "planned_macro_rows": 4,
+    "existing_development_sources": 2,
+    "independent_new_sources": 0,
+    "expected_macros_if_successful": {
+      "tuned_fixed": "STOP",
+      "conditional": "STOP"
+    },
+    "calibration_complete": false,
+    "full_cost_observed": false,
+    "native_owner_authenticated": false,
+    "production_admission": false,
+    "owner_decision": null,
+    "qualification_status": "HOLD_NOT_EVALUATED",
+    "old_freezes_checkpoints_source_and_reports_modified": false
+  },
+  "permissions": {
+    "formal_freeze_dispatched": false,
+    "phase_requests_registered": false,
+    "phase_requests_authorized": false,
+    "native_owner_release_created": false
+  },
+  "prior_feasibility_tree": "02e621e7b65ced0524941ef5d7669bb79208bdca"
+}

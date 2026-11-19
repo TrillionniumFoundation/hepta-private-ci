@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.original-ledger-readback-definition-registration-fix.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "diagnostic_source": "19894714403a97fcd58ca8c592e75761de95687c",
+  "diagnostic_result_git_blob": "5d260233a32de13ca6f3aaa1b7fbfd27c39711be",
+  "base_registry_git_blob": "7296ffa44d8bd9e8ba02a835c48dcdfa14a6641d",
+  "boundary": "q24_task_original_ledger_readback",
+  "reason": "The unchanged official checker excludes each definition file from external caller discovery. The only real readback calls are in prepare_learning and recover_learning in the same definition file; both already have protected function-order checks. The original per-file full-index diagnostic found no real external caller, one unrelated DurableCircuitTaskSourceV1 homonym now fixed by its UFCS patch, and this erroneous self-definition expectation. Correct only that expected external set and additionally protect the actual readback state lock, original capture, original ledger lock and status call in the definition function.",
+  "metadata_operations": [
+    {
+      "operation": "exact_section_replace",
+      "path": "CALLERS.toml",
+      "old_section": "[[boundary]]\nid = \"q24_task_original_ledger_readback\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::readback\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn readback(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"]\ncaller_markers = []\n\n",
+      "new_section": "[[boundary]]\nid = \"q24_task_original_ledger_readback\"\nsymbol = \"OriginalCellQ24TaskLedgerProducerV1::readback\"\nreceiver_type = \"OriginalCellQ24TaskLedgerProducerV1\"\ndefinition_path = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\ndefinition_markers = [\"fn readback(\"]\nproduct_callers = []\ncaller_markers = []\n\n"
+    },
+    {
+      "operation": "append_protected_row",
+      "path": "CALLERS.toml",
+      "text": "\n[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\nrequired = [\"/// Observation only: no signing, append, witness repair or task retry.\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn readback(\", sequence = [\"let mut state = self\",\".state\",\".lock()\",\"let captured = self.capture(&mut state)?;\",\"let ledger = self\",\".ledger\",\".lock()\",\"self.status(&mut state, &ledger, &captured)\"] }]\n",
+      "row": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+        "required": [
+          "/// Observation only: no signing, append, witness repair or task retry."
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn readback(",
+            "sequence": [
+              "let mut state = self",
+              ".state",
+              ".lock()",
+              "let captured = self.capture(&mut state)?;",
+              "let ledger = self",
+              ".ledger",
+              ".lock()",
+              "self.status(&mut state, &ledger, &captured)"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "source_changes": [],
+  "existing_guards_preserved": [
+    "prepare_learning retains self.readback after original Dataset freeze/materialization",
+    "recover_learning retains self.readback after original frozen authorization and Prepared recovery",
+    "all original source/current/witness/role/scope validation",
+    "all original checker and registry inventory rules"
+  ],
+  "verification": {
+    "scope": "original per-file diagnostic on 6470 source files plus local original checker for the single additional protected row; no final verifier/native execution",
+    "local_probe_exit": 0,
+    "local_probe_output": "{\n  \"classification\": \"single added protected row only, not full verification\",\n  \"checked\": [\n    \"codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs\"\n  ]\n}\n",
+    "actual_source_for_added_row": "a05394ff45a40024c1321368bedf3f1516818202",
+    "checkers_unchanged": true,
+    "ignored_paths_unchanged": true,
+    "authorityGranted": false
+  }
+}

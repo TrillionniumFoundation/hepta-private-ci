@@ -1,0 +1,48 @@
+{
+  "source_sha": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "source_tree": "2f72d462823e5f1ec6bb9f453b64e14f9590d785",
+  "canonical_tmpdir": "/tmp/hlca-h_u8naza",
+  "v8_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "state": "failed",
+  "steps": [
+    {
+      "name": "helper-build",
+      "exit_code": 0,
+      "seconds": 4.565689594019204,
+      "log_sha256": "a2b174f8986f4ca135754871284ad05186c24a83b4ce56c77df4bc1c7c9254a0",
+      "log_bytes": 209
+    },
+    {
+      "name": "helper-verify",
+      "exit_code": 0,
+      "seconds": 0.19087599497288465,
+      "log_sha256": "bb097c610be79714751784c2f0723010b0d9d79355672acc7000088eee4625fb",
+      "log_bytes": 1171
+    },
+    {
+      "name": "full-native",
+      "exit_code": 100,
+      "seconds": 781.3538341720123,
+      "log_sha256": "f30994c52269bf2b57a6f49b39ba04fac8fd1a6cf54658f5b1c9fafe08117b7c",
+      "log_bytes": 950785
+    },
+    {
+      "name": "full-junit",
+      "exit_code": 1,
+      "seconds": 0.08690513600595295,
+      "log_sha256": "af6e69f1492bd0e8a3c56f6599776ebe575fcc788d5c5d6f7c274812a8baf984",
+      "log_bytes": 1066
+    }
+  ],
+  "full_chain_acceptance": {
+    "positive": 0,
+    "no_update": 0,
+    "daemon_root_cold_restart": 0
+  },
+  "full_exit_code": 100,
+  "full_collection_exit_code": 1,
+  "alias_exit_code": null,
+  "alias_collection_exit_code": null,
+  "source_after": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "source_status_after": ""
+}

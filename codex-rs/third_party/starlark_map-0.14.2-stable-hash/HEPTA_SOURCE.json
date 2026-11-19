@@ -1,0 +1,111 @@
+{
+  "upstreamPackage": "starlark_map",
+  "upstreamVersion": "0.14.2",
+  "upstreamRepository": "https://github.com/facebook/starlark-rust",
+  "crateArchive": "https://static.crates.io/crates/starlark_map/starlark_map-0.14.2.crate",
+  "crateArchiveSha256": "234877898fd216af93b2f5798b08cbbdc1a2e8f16a622a258b1db23a61a1c4ba",
+  "upstreamVcs": {
+    "git": {
+      "sha1": "0c8d107ab963362ba47ee3ab9e0173bc39bd101d"
+    },
+    "path_in_vcs": "starlark_map"
+  },
+  "patchPurpose": "Use repository-owned legacy-compatible hashing for stable Starlark hashes.",
+  "originalFileSha256": {
+    ".cargo_vcs_info.json": "d7599d0a8c62eeb082dfd9d6c411975142ef1f8b03464b1963a1331dd4527b50",
+    "Cargo.lock": "3ef4b59d4f6010a3c468999b023eaa3b6f7d4aae27257a0494cf9a90422961c9",
+    "Cargo.toml": "11ffc934162d64f70a806082adbc528e100298498e2a1f8085266612a78ff35d",
+    "Cargo.toml.orig": "4db6824635568fc1e24233ea872e62b389898e9bc8a958578d739e6b69021c03",
+    "build.rs": "03b17dc7ca19ed3a576133fdbafa93a52fe4894c470696582d34dff883b2c0a8",
+    "src/hash_value.rs": "2ccdc26d7346f6a466e3b5c4504a019bbf1e3fecf2bf0a21c452941a6ace2cbf",
+    "src/hashed.rs": "1539d4ebd8eb297b63f2678273acacdf2511d33f9b4d1367532930876e511fe9",
+    "src/hasher.rs": "b9d5b95af48b0720a2fceb7def654338fe9c812b295724daa2cdbcc1e79c69cb",
+    "src/iter.rs": "83b4ec0816095089610b131e0a6ced111aea0b9da43d989e17c7b16149df2387",
+    "src/lib.rs": "cd0999ef2d7bea324e3b5992ffd8e8b521753720585281688d478b9dc1470f7d",
+    "src/mix_u32.rs": "3d6cf0249280ee44de375fcd170f5ee3da230bbd56f94a42b4c3f6b55058d6c7",
+    "src/ordered_map.rs": "8bafa71536a64ebb53df45ec7619e514d68c5e58f3d31661ebecf9717c3b6d8e",
+    "src/ordered_set.rs": "b311ab2a02417b51648af38061917c419eea7fee169a98c27afb649a41cfe257",
+    "src/small_map/iter.rs": "a4c119f6b966199c63687aa47d45a82174bb4293c8a2897f7f8f32538e8480b4",
+    "src/small_map.rs": "c38b09a6050984d4081012b215aa6487c88c5746d49b803ec22415daa4503422",
+    "src/small_set/iter.rs": "3f74f75fdb2774d44dad0ac2568f51a542715ccea81ed039969c933adbef1388",
+    "src/small_set.rs": "cabfa326da200fce435db8b533eb2575586c1124f43bfe2bfdfaec9aad1e29d4",
+    "src/sorted_map.rs": "9d9c030f24ec10d07973214b25ea762aa6d29f9306ef61ea0c6e6ff68474d215",
+    "src/sorted_set.rs": "5914bfb8e7cad4faa7d0034e6d9266c635d446dc919a05b2b12485dfb740ec21",
+    "src/sorted_vec.rs": "628388269251699bc1ca4f5ca0f5300337842a2cb37409285b5720b7938d3400",
+    "src/sorting/insertion.rs": "6b05830388980e187439cede620c66f4f24f1cfd0bc7a3430d7e2f5bf5215b7f",
+    "src/sorting.rs": "3759f99ee2d91b57f78deadbd714a38f8694b34039eda4d0ba53a8f209816edf",
+    "src/unordered_map.rs": "a57b7e416f713369714cab2fd4248394dc9c2b2bafeb810a12e44bc2a4a56c0a",
+    "src/unordered_set.rs": "915539aaeb72ae72262497e38d713aca864bf79e04a7619cdf37fae3185efd23",
+    "src/vec2/iter.rs": "3b49206460426074da90c4bcaf4b5a6ee5edd5b9c503c6a2998bcbcfdf11d74f",
+    "src/vec2.rs": "7ec3ad9e5b01ae7f3469ea25624fc56cdc489f30c512bb73acdd578edf593df0",
+    "src/vec_map/hint.rs": "277c43cd54a5b633e637b7b16251fba08a7a3c6c2475e20164b30c8616105c83",
+    "src/vec_map/iter.rs": "e9e263b4d57afac9a4cfdd5fb24f668a3f1b5dee1fa4e1a9e1389beea67c5a91",
+    "src/vec_map/simd.rs": "732a6790160f1c110676aeb559588ec9f9afd26846826cde5ffa7c7e1028abac",
+    "src/vec_map.rs": "ce0b5ce43e82d597502a9206066558a8e5e7086eb2929900f364c4e4ea737661"
+  },
+  "changedOriginalFiles": [
+    "Cargo.toml",
+    "src/hash_value.rs",
+    "src/hashed.rs",
+    "src/hasher.rs",
+    "src/sorted_set.rs",
+    "src/sorted_vec.rs"
+  ],
+  "patchedFileSha256": {
+    "Cargo.toml": "de76a56b91deda871b40244fc09a98142f57bf074567d525496b62aca817f388",
+    "src/hash_value.rs": "da1782ad2809997f63b47a31114c9e03123a86be6ca478f57589242357695dd2",
+    "src/hashed.rs": "7e394c4a3be635b571db0bf81325206198aacf05aedf65ae65dc6e620113941a",
+    "src/hasher.rs": "4f0653395cda17d33d11159262ce6d25016706e10e27d866d0ab0972b93cf7c8",
+    "src/sorted_set.rs": "da99fa134848cd9368c295e4b5b3fddeff58dd7cb6c7fde39e2d023b5f3b5670",
+    "src/sorted_vec.rs": "4f77c5b54eefea1aa11fbfc61dee5139e29396d971840c046209a122b35e4c32"
+  },
+  "additionalFiles": [],
+  "supplementalUpstreamLicenseFiles": {
+    "sourceCommit": "0c8d107ab963362ba47ee3ab9e0173bc39bd101d",
+    "files": {
+      "LICENSE": {
+        "gitBlobSha1": "b09cd7856d58590578ee1a4f3ad45d1310a97f87",
+        "sha256": "50e6751797c50dedd75ef1b8a0d9e42f5f8472e9fbce91f34718e9f97b0c780a",
+        "sourceUrl": "https://api.github.com/repos/meta/starlark-rust/git/blobs/b09cd7856d58590578ee1a4f3ad45d1310a97f87"
+      }
+    }
+  },
+  "maintenancePatch": "HEPTA-maintenance.patch",
+  "maintenancePatchSha256": "96dc29ab2c68dcacf63958096080e4dd8f67145d458a86fb2fadd5af1fe86f7e",
+  "functionalChangedOriginalFiles": [
+    "Cargo.toml",
+    "src/hasher.rs"
+  ],
+  "functionalPatchedFileSha256": {
+    "Cargo.toml": "de76a56b91deda871b40244fc09a98142f57bf074567d525496b62aca817f388",
+    "src/hasher.rs": "ef25940ab4e259e61b0ca1f1157feb1d5d2bd5884ad85822e698f47d3b183590"
+  },
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {
+      "src/hash_value.rs": {
+        "beforeSha256": "2ccdc26d7346f6a466e3b5c4504a019bbf1e3fecf2bf0a21c452941a6ace2cbf",
+        "afterSha256": "da1782ad2809997f63b47a31114c9e03123a86be6ca478f57589242357695dd2"
+      },
+      "src/hashed.rs": {
+        "beforeSha256": "1539d4ebd8eb297b63f2678273acacdf2511d33f9b4d1367532930876e511fe9",
+        "afterSha256": "7e394c4a3be635b571db0bf81325206198aacf05aedf65ae65dc6e620113941a"
+      },
+      "src/hasher.rs": {
+        "beforeSha256": "ef25940ab4e259e61b0ca1f1157feb1d5d2bd5884ad85822e698f47d3b183590",
+        "afterSha256": "4f0653395cda17d33d11159262ce6d25016706e10e27d866d0ab0972b93cf7c8"
+      },
+      "src/sorted_set.rs": {
+        "beforeSha256": "5914bfb8e7cad4faa7d0034e6d9266c635d446dc919a05b2b12485dfb740ec21",
+        "afterSha256": "da99fa134848cd9368c295e4b5b3fddeff58dd7cb6c7fde39e2d023b5f3b5670"
+      },
+      "src/sorted_vec.rs": {
+        "beforeSha256": "628388269251699bc1ca4f5ca0f5300337842a2cb37409285b5720b7938d3400",
+        "afterSha256": "4f77c5b54eefea1aa11fbfc61dee5139e29396d971840c046209a122b35e4c32"
+      }
+    },
+    "patch": "HEPTA-formatting.patch",
+    "patchSha256": "0fcbfdfde623acf8c6aa21ea779a21392d2e27e7a854d50c11682d7d1ff628c5"
+  }
+}

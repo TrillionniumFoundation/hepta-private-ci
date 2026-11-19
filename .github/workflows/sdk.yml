@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   python-sdk:
     runs-on: ubuntu-24.04
@@ -14,23 +17,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+
+      - name: Verify exact SDK source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
       - name: Test Python SDK
         shell: bash
         run: |
           set -euo pipefail
 
-          # Run inside a glibc Linux image so dependency resolution exercises
-          # the pinned manylinux runtime wheel that users install.
+          # Build a minimal glibc test image with the real zstd CLI required
+          # by provenance-archive tests. Build-time package installation runs
+          # before repository code; the test container remains unprivileged.
+          image_context="$(mktemp -d)"
+          trap 'rm -rf "${image_context}"' EXIT
+          cat > "${image_context}/Dockerfile" <<'DOCKERFILE'
+          FROM python:3.12-slim
+          RUN apt-get update \
+              && apt-get install -y --no-install-recommends zstd \
+              && zstd --version \
+              && rm -rf /var/lib/apt/lists/*
+          DOCKERFILE
+          docker build --pull --tag "codex-python-sdk-ci:${GITHUB_SHA}" "${image_context}"
+
           docker run --rm \
             --user "$(id -u):$(id -g)" \
             -e HOME=/tmp/codex-python-sdk-home \
             -e UV_LINK_MODE=copy \
             -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \
             -w "${GITHUB_WORKSPACE}/sdk/python" \
-            python:3.12-slim \
+            "codex-python-sdk-ci:${GITHUB_SHA}" \
             sh -euxc '
+              zstd --version
               python -m venv /tmp/uv
               /tmp/uv/bin/python -m pip install uv==0.11.3
               /tmp/uv/bin/uv sync --group dev --frozen
@@ -53,14 +74,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+
+      - name: Verify exact SDK source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
       - name: Install Linux bwrap build dependencies
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -y
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libcap-dev
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pkg-config libdbus-1-dev libcap-dev
 
       - name: Setup pnpm
         uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288 # v5
@@ -79,6 +105,16 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
 
+      # Restore only repository downloads into the path consumed by the shared
+      # Bazel wrapper. A cache miss or unavailable service must not skip the build.
+      - name: Restore bazel repository cache
+        id: cache_bazel_repository_restore
+        continue-on-error: true
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          path: ${{ steps.setup_bazel.outputs.repository-cache-path }}
+          key: bazel-cache-x86_64-unknown-linux-gnu-${{ hashFiles('MODULE.bazel', 'codex-rs/Cargo.lock', 'codex-rs/Cargo.toml') }}
+
       - name: Build codex and code-mode host with Bazel
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -96,7 +132,7 @@ jobs:
             --remote-download-toplevel \
             -- \
             build \
-            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=COMMIT_SHA=${SOURCE_SHA} \
             --build_metadata=TAG_job=sdk \
             -- \
             "${codex_target}" \
@@ -108,8 +144,28 @@ jobs:
             local target="$1"
             local executable_name="$2"
             local cquery_output=""
+            local cquery_stdout=""
+            local cquery_status=0
             local candidate
             local resolved_output
+
+            # Capture the producer status before treating stdout as an output path.
+            # Process substitution would hide a failed cquery that printed a path first.
+            if cquery_stdout="$(
+              ./.github/scripts/run-bazel-ci.sh \
+                -- \
+                cquery \
+                --output=files \
+                -- \
+                "${target}"
+            )"; then
+              :
+            else
+              cquery_status="$?"
+              printf '%s\n' "${cquery_stdout}" >&2
+              echo "Bazel cquery failed for ${target} with status ${cquery_status}." >&2
+              return "${cquery_status}"
+            fi
 
             while IFS= read -r candidate; do
               if [[ "${candidate}" != /* && "${candidate}" != bazel-out/* ]]; then
@@ -118,14 +174,7 @@ jobs:
               if [[ "$(basename "${candidate}")" == "${executable_name}" ]]; then
                 cquery_output="${candidate}"
               fi
-            done < <(
-              ./.github/scripts/run-bazel-ci.sh \
-                -- \
-                cquery \
-                --output=files \
-                -- \
-                "${target}"
-            )
+            done <<< "${cquery_stdout}"
 
             if [[ -z "${cquery_output}" ]]; then
               echo "Bazel did not report ${executable_name} for ${target}." >&2
@@ -181,8 +230,19 @@ jobs:
       - name: Test SDK packages
         run: pnpm -r --filter ./sdk/typescript run test
 
+      - name: Preserve MCP conformance reports
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: sdk-mcp-conformance-reports
+          path: |
+            ${{ runner.temp }}/codex-mcp-conformance-*.json
+            ${{ runner.temp }}/codex-mcp-review-*.json
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Save bazel repository cache
-        if: always() && !cancelled() && steps.setup_bazel.outputs.cache-hit != 'true'
+        if: always() && !cancelled() && steps.setup_bazel.outcome == 'success' && steps.cache_bazel_repository_restore.outputs.cache-hit != 'true'
         continue-on-error: true
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:

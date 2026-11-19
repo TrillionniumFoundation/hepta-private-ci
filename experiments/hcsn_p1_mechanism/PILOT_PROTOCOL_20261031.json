@@ -1,0 +1,95 @@
+{
+  "schema": "hcsn-p1-factorial-pilot-v1",
+  "created_date": "2026-10-31",
+  "tier": "exploratory_P1_pilot_not_scientific_gate",
+  "parent_pr": 4499,
+  "parent_commit": "1d44dcd5fb0f7d2bf766298a58a8db71369ebe65",
+  "arm_order": [
+    "ordinary",
+    "call",
+    "risk",
+    "margin",
+    "call_risk",
+    "call_margin",
+    "risk_margin",
+    "all_three"
+  ],
+  "tasks": [
+    "selective_copy",
+    "key_value_overwrite"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "matched": {
+    "frozen_encoder": true,
+    "same_data_and_labels": true,
+    "identical_561_trainable_parameters": true,
+    "three_basis_coefficients_all_active": true,
+    "local_value_zero_and_signed_slope_plus_one": true,
+    "shared_minibatch_sequence_per_seed": true,
+    "no_arm_specific_early_stopping": true,
+    "no_model_selection": true
+  },
+  "training": {
+    "architecture": "20-unit tanh recurrent, frozen scalar z=tanh(.55*x0-.35*x1+.2*x2)",
+    "updates": 120,
+    "batch": 48,
+    "train_examples": 512,
+    "optimizer": "Adam",
+    "learning_rate": 0.012
+  },
+  "tests": {
+    "id_length": 12,
+    "ood_length": 28,
+    "id_examples": 384,
+    "ood_examples": 384,
+    "disjoint_seed_offsets": [
+      10000,
+      20000,
+      30000
+    ]
+  },
+  "frontend": {
+    "hx_parameters": "published HX() defaults",
+    "financial_feature_table_points": 101,
+    "financial_mapping": "asset=HX.boundary*exp(.95+.26*z)",
+    "mechanism_components": [
+      "equity",
+      "first_hit_risk",
+      "bond_rollover_margin"
+    ],
+    "calibration_anchor_z": 0,
+    "ordinary_nonlinear_controls": "three shifted tanh functions calibrated to value=0 and signed derivative=+1"
+  },
+  "statistics": {
+    "paired_metric": "OOD accuracy vs ordinary (seed paired)",
+    "two_sided_signflip": true,
+    "holm_familywise_for_14_contrasts": true,
+    "positive_claim_requires_p_adjusted_lt": 0.05,
+    "practical_effect_floor": 0.03,
+    "minimum_confirmatory_seeds": "more than this pilot",
+    "no_positive_claim_without_fresh_blind_confirmation": true
+  },
+  "cost": {
+    "cpu": "single thread process CPU, separately records basis precompute/training/inference",
+    "limitation": "shared finance lookup construction excluded; equal optimizer updates not independently equal measured CPU"
+  },
+  "hardware": "PyTorch CPU single thread",
+  "limitations": [
+    "No real multimodal encoder",
+    "No true HCSN Call/Risk/Margin dynamic operator",
+    "Five paired seeds statistically underpowered",
+    "No future-data leakage permitted",
+    "Pilot cannot close P1",
+    "No checkpointed native Cell or GPU"
+  ],
+  "status": {
+    "production_activation": false,
+    "all_scientific_blockers_closed": false
+  }
+}

@@ -1,0 +1,86 @@
+test_actual_bind_program_accepts_only_exact_preview_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_actual_bind_program_accepts_only_exact_preview_bytes) ... ok
+test_cli_missing_contract_reports_hold_without_writing (test_program_manifest_freeze.ProgramManifestFreezeTests.test_cli_missing_contract_reports_hold_without_writing) ... ok
+test_manifest_create_once_not_overwritten (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_create_once_not_overwritten) ... ok
+test_manifest_rejects_duplicate_root_key (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_duplicate_root_key) ... FAIL
+test_manifest_rejects_manifest_symlink (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_manifest_symlink) ... FAIL
+test_manifest_rejects_missing_schema_and_extra_file (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_missing_schema_and_extra_file) ... FAIL
+test_manifest_rejects_nonfinite_metadata (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_nonfinite_metadata) ... FAIL
+test_manifest_rejects_source_symlink_to_matching_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_source_symlink_to_matching_bytes) ... FAIL
+test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) ... 
+  test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='scientific_admission') ... FAIL
+  test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='execution_authorized') ... FAIL
+  test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='schema') ... FAIL
+test_missing_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_missing_publisher_is_fail_closed) ... ok
+test_mutation_after_freeze_is_rejected_by_actual_runner (test_program_manifest_freeze.ProgramManifestFreezeTests.test_mutation_after_freeze_is_rejected_by_actual_runner) ... ok
+test_no_implicit_manifest_or_authorization (test_program_manifest_freeze.ProgramManifestFreezeTests.test_no_implicit_manifest_or_authorization) ... ok
+test_partial_candidate_has_no_publication (test_program_manifest_freeze.ProgramManifestFreezeTests.test_partial_candidate_has_no_publication) ... ok
+test_symlinked_publisher_is_fail_closed (test_program_manifest_freeze.ProgramManifestFreezeTests.test_symlinked_publisher_is_fail_closed) ... ok
+
+======================================================================
+FAIL: test_manifest_rejects_duplicate_root_key (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_duplicate_root_key)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 128, in test_manifest_rejects_duplicate_root_key
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_rejects_manifest_symlink (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_manifest_symlink)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 156, in test_manifest_rejects_manifest_symlink
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_rejects_missing_schema_and_extra_file (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_missing_schema_and_extra_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 112, in test_manifest_rejects_missing_schema_and_extra_file
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_rejects_nonfinite_metadata (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_nonfinite_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 136, in test_manifest_rejects_nonfinite_metadata
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_rejects_source_symlink_to_matching_bytes (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_rejects_source_symlink_to_matching_bytes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 147, in test_manifest_rejects_source_symlink_to_matching_bytes
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='scientific_admission')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 103, in test_manifest_requires_exact_status_and_schema
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='execution_authorized')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 103, in test_manifest_requires_exact_status_and_schema
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+======================================================================
+FAIL: test_manifest_requires_exact_status_and_schema (test_program_manifest_freeze.ProgramManifestFreezeTests.test_manifest_requires_exact_status_and_schema) (field='schema')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-strict-manifest-r9-remote-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 103, in test_manifest_requires_exact_status_and_schema
+    with self.assertRaises(Ineligible):
+AssertionError: Ineligible not raised
+
+----------------------------------------------------------------------
+Ran 14 tests in 3.293s
+
+FAILED (failures=8)

@@ -1,0 +1,35 @@
+{
+  "recorded_utc": "2026-11-19T15:16:49.883225+00:00",
+  "native": {
+    "source_base": "1e681e550a5c5d4584b5882529e531599459dc31",
+    "source_inventory": "ci-evidence/musl-rog-native-10-source-inventory.json",
+    "source_inventory_sha256": "6274fee78a59a11bbaf077250545a5e02b9fb64e0d839003477692686b42e241",
+    "passed_executions": 2529,
+    "historical_failed_executions": 7,
+    "deduplicated_logical_cases": 2398,
+    "cases_with_pass": 2398,
+    "unresolved_observed_failures": 0,
+    "agentd_default_cases": 1552,
+    "agentd_runner_skipped": 171,
+    "failed_cases_resolution": "1 initial synthetic-frontier fixture replaced by actual authority head; 6 later lib-only environment missing-companion failures resolved using real same-source binaries without source edits. Every original failure log retained.",
+    "original_deadline_ms": 500,
+    "GNU_deadline_test_evidence_us": 135650,
+    "limit": "GNU preview1e681 plus38 reviewed source repairs and original lock. Not a final combined main tree test."
+  },
+  "bazel_profile": {
+    "source_head": "db0757eca20bbeaf7840bf162ebfb6ccb4824e57",
+    "source_tree": "98233612665378293d043fbd6a269165677251ee",
+    "report": "ci-evidence/agentd-bazel-profile-full-db0757.json",
+    "report_sha256": "37e3872cc9af258e68abc9def0e27e885ca6e461466b6a5bda5abb84e092aa21",
+    "distinct_targets": 23,
+    "configured_checks": 93,
+    "rustc_actions": 3,
+    "release_assertion_disable_preserved": true,
+    "limit": "Full canonical maintenance graph + ten-file profile patch; actual musl compile/runtime still outstanding."
+  },
+  "pending": [
+    "Pin root combined tree including profile patch and all ordinary source repairs.",
+    "Run actual x86_64-unknown-linux-musl deadline regression with original500ms limit.",
+    "Windows native mechanism/diagnostic and protected total CI gates remain root/GitHub follow-up."
+  ]
+}

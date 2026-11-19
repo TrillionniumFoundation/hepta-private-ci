@@ -48,12 +48,15 @@ impl FleetAuthorityPort {
 
     /// Same concrete owner mutation as `issue`, but returns the canonical
     /// non-authorizing audit witness for durable evidence composition.
+    ///
+    /// The legacy caller clock is not authoritative. Allocation expiry and
+    /// capacity checks use the independently verified final dispatch time.
     pub fn issue_with_witness(
         &self,
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
+        _caller_now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
@@ -62,8 +65,8 @@ impl FleetAuthorityPort {
             .verify_use(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
         let (result, witness) =
-            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {
-                ledger.issue(now_ms, grant)
+            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |witness| {
+                ledger.issue(witness.verified_at_unix_ms, grant)
             })
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
@@ -158,6 +161,7 @@ mod tests {
     use codex_hepta_contracts::authority_lease::AuthorityLease;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
+    use pretty_assertions::assert_eq;
     use sha2::Digest;
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;
@@ -194,8 +198,8 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
+        assert_eq!(
+            ledger.admit_host(HostObservation {
                 host_id: "host-one".into(),
                 failure_domain_id: "rack-one".into(),
                 generation: 1,
@@ -206,24 +210,28 @@ mod tests {
                     memory_bytes: 1 << 20,
                     accelerator_millis: 1_000,
                 },
-            })
-            .unwrap();
+            }),
+            Ok(()),
+            "valid host fixture must be admitted"
+        );
         ledger
     }
 
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .unwrap_or_else(|error| panic!("{error:?}"));
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
+            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!("{error:?}")),
             Arc::new(FixedClock(2_000)),
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("{error:?}"));
         let grant = grant();
-        let binding = FleetAuthorityPort::binding_for_issue(&grant).unwrap();
+        let binding = FleetAuthorityPort::binding_for_issue(&grant)
+            .unwrap_or_else(|error| panic!("{error:?}"));
         registry
             .put_lease(
                 AuthorityLease {
@@ -237,12 +245,12 @@ mod tests {
                 },
                 0,
             )
-            .unwrap();
+            .unwrap_or_else(|error| panic!("{error:?}"));
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
         let (receipt, witness) = port
             .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
-            .unwrap();
+            .unwrap_or_else(|error| panic!("{error:?}"));
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
@@ -256,10 +264,13 @@ mod tests {
             other => panic!("unexpected authority witness: {other:?}"),
         }
 
-        registry.revoke("fleet-issue-one", 1, [9; 32]).unwrap();
+        registry
+            .revoke("fleet-issue-one", 1, [9; 32])
+            .unwrap_or_else(|error| panic!("{error:?}"));
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
-                .unwrap_err(),
+                .err()
+                .unwrap_or_else(|| panic!("revoked lease must be rejected")),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );
     }
@@ -267,11 +278,17 @@ mod tests {
     #[test]
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
-        let first_binding = FleetAuthorityPort::binding_for_issue(&first).unwrap();
+        let first_binding = FleetAuthorityPort::binding_for_issue(&first)
+            .unwrap_or_else(|error| panic!("{error:?}"));
         let mut changed = first;
         changed.resources.cpu_millis += 1;
-        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed).unwrap();
+        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)
+            .unwrap_or_else(|error| panic!("{error:?}"));
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_port_clock_tests.rs"]
+mod clock_tests;

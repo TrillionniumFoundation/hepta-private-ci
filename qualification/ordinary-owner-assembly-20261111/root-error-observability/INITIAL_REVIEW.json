@@ -1,0 +1,170 @@
+{
+  "schema": "hepta.initial-root-test-diagnostic-independent-review.v1",
+  "reviewer": "/root/hepta_audit",
+  "classification": "STATIC_TEST_ONLY_REVIEW_NOT_EXECUTION",
+  "reviewed_manifest": "0cc7b64069463c6de870df2c4b110955dcc1fd6f",
+  "original_failure_scope": {
+    "source": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "root_parents": 17,
+    "passed": 15,
+    "failed": 2,
+    "initial_seconds": 15.663,
+    "initial_failure": "Error: Resource temporarily unavailable (os error 11)",
+    "log_blob": "25319f8b638924e2cf507ef2d0595ac5767aebbe",
+    "log_bytes": 46301,
+    "log_sha256": "e11c42ce884d0b6a0fed01d3020e4008468468179eb9abbd2bbc7fecf3e5e669",
+    "junit_blob": "0cc7d2f7f17ef4b75f1490d640749654c8ceccfb",
+    "execution_blob": "d0375393546dc0f9b8f9e870e4f7b9e323ed4f2f",
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "source_clean_before_after": true
+  },
+  "source_base": {
+    "reference": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "fixture_original_blob": "b7d5bf795d095f19e8137e73397e3d6b28da17ea",
+    "child_tested_blob": "ae0b152c62d28f338ca89fcd5322ef7ca12d9dbc",
+    "child_patch_preimage": "e1938112669ea6fe8373b6ed358931aced1dfee1",
+    "child_preimage_description": "Parent V16 native-formatted postimage, fetched by full Git blob; it is not relabelled as the tested child."
+  },
+  "source_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "before_bytes": 21829,
+      "after_bytes": 23134,
+      "before_sha256": "d853571c067eb78ee9200cdccedfeb2dde09cda9f6c224dd6f0f1b166efa5428",
+      "after_sha256": "a81a73eac2f244ff3951c509aecaedd8a2d96219710841c519f0a104e577ab3f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "before_bytes": 8390,
+      "after_bytes": 10446,
+      "before_sha256": "afeb9ad8436631d6284f810d4dbc14ccce346988bb3c80bde267dd1643d176bf",
+      "after_sha256": "22476dae96b1fc8869817813daf28d5906d9a54a1b977baeef3f940275f9d241"
+    }
+  ],
+  "exact_edits": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "forward_exact": true,
+      "reverse_exact": true,
+      "edits": 9,
+      "counts": [
+        {
+          "literal": "assert_eq!",
+          "before": 5,
+          "after": 5
+        },
+        {
+          "literal": "assert!",
+          "before": 1,
+          "after": 1
+        },
+        {
+          "literal": "anyhow::ensure!",
+          "before": 8,
+          "after": 8
+        },
+        {
+          "literal": "TIMEOUT",
+          "before": 2,
+          "after": 2
+        },
+        {
+          "literal": "LIFETIME",
+          "before": 0,
+          "after": 0
+        },
+        {
+          "literal": "Duration::from",
+          "before": 2,
+          "after": 2
+        },
+        {
+          "literal": "libc::alarm",
+          "before": 0,
+          "after": 0
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "forward_exact": true,
+      "reverse_exact": true,
+      "edits": 17,
+      "counts": [
+        {
+          "literal": "assert_eq!",
+          "before": 21,
+          "after": 21
+        },
+        {
+          "literal": "assert!",
+          "before": 6,
+          "after": 6
+        },
+        {
+          "literal": "anyhow::ensure!",
+          "before": 1,
+          "after": 1
+        },
+        {
+          "literal": "TIMEOUT",
+          "before": 2,
+          "after": 2
+        },
+        {
+          "literal": "LIFETIME",
+          "before": 4,
+          "after": 4
+        },
+        {
+          "literal": "Duration::from",
+          "before": 0,
+          "after": 0
+        },
+        {
+          "literal": "libc::alarm",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    }
+  ],
+  "parent_module": {
+    "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_root_tests.rs",
+    "git_blob": "ec7f167f001c878fff0329a72691a6996fe591a0",
+    "actual_phase_derives": [
+      "Clone",
+      "Copy",
+      "Debug",
+      "Eq",
+      "PartialEq",
+      "serde::Serialize",
+      "serde::Deserialize"
+    ],
+    "timeout": "Duration::from_millis(500)",
+    "lifetime": "Duration::from_secs(15)"
+  },
+  "findings": [
+    "Both complete preimages/postimages were fetched by exact Git blob, byte lengths and SHA256 were independently checked, and all 26 declared edit patterns were applied and reversed with exact occurrence counts.",
+    "The registration thread has an explicit anyhow::Result<()> return type, so mapping the join panic into anyhow::Error and then and_then on the inner result is type-consistent with the original two-question-mark propagation.",
+    "The original served result is obtained before registration.join. The new failure context retains the already-observed original served debug result alongside the original registration error chain, preventing the old registration-first propagation from hiding that earlier Root result.",
+    "Phase already derives Copy and Debug in the fixed parent module, so the added phase labels do not require a new trait or change move/borrow ownership.",
+    "The existing assertions, ensure calls, six-phase order, operation calls, TIMEOUT/LIFETIME references and original libc::alarm(60) remain unchanged. Only three fixed stage lines per child phase are added.",
+    "The controlled lost-ACK branch still extracts the original AgentdError and passes it directly to the original require_uncertain predicate. The new anyhow context on publish is confined to the branch that expects a successful publication.",
+    "The new context wrappers on existing error propagation do not change production code, grants, actual nonce assertions, recovery semantics, denial branches, test selection or the Root parent roster.",
+    "No production cause for EAGAIN is established. This change improves subsequent original error evidence only. Shared ChildOwner failure-output retention remains a separate patch and is not certified by this review."
+  ],
+  "conclusion": "No concrete static blocker found in this narrow diagnostic patch. A new fixed-source native attempt is still required; the original 715 failure remains failed.",
+  "not_executed": {
+    "cargo": true,
+    "native": true,
+    "root_tests": true,
+    "official_checker": true
+  },
+  "authorityGranted": false,
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

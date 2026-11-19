@@ -1,0 +1,21 @@
+{
+  "purpose": "developer test helper; not clean-source native release qualification",
+  "command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "--profile",
+    "dev-small",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--bin",
+    "hepta-joint-propose",
+    "--message-format=json-render-diagnostics"
+  ],
+  "started_at": "2026-11-07T12:11:09.213354+00:00",
+  "source_head": "066cb16c47b0e4dbc561d56fe7746dea98a479d8",
+  "source_status": " M codex-rs/hepta-agentd/src/neuron_generation_update_test_support.rs\n M codex-rs/hepta-neuron/src/cell_generation_journal.rs\n M codex-rs/hepta-neuron/src/lib.rs\n?? codex-rs/hepta-agentd/src/neuron_generation_expected_context_tests.rs\n?? codex-rs/hepta-neuron/src/cell_generation_context.rs\n",
+  "artifacts": [],
+  "exit_code": 0
+}

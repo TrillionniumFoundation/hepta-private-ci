@@ -8,6 +8,8 @@
 use std::error::Error as StdError;
 use std::fmt;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -28,6 +30,16 @@ use crate::SignedArtifactWriterLeaseV1;
 use crate::SignedCurrentArtifactHeadV1;
 use crate::VerifiedCurrentRegistryViewV1;
 use crate::WithdrawalBoundArtifactAdmissionV3;
+
+#[path = "owner_service_readback.rs"]
+mod readback;
+
+#[path = "owner_service_preparation.rs"]
+mod preparation;
+
+pub use preparation::OriginalArtifactPreparationErrorV1;
+pub use preparation::OriginalArtifactPreparedPublicationV1;
+pub use preparation::OriginalArtifactPublicationContextV1;
 
 #[derive(Clone, Debug)]
 pub struct LearningArtifactOwnerServiceConfigV1 {
@@ -56,6 +68,10 @@ pub struct LearningArtifactOwnerService {
     registry: ArtifactRegistry,
     storage_binding: Digest32,
     recovery_required: Option<StableId>,
+    withdrawal_pending: bool,
+    original_preparation_instance: Arc<()>,
+    original_preparation_fenced: AtomicBool,
+    original_preparation_active: bool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerService {
@@ -96,6 +112,10 @@ impl LearningArtifactOwnerService {
                 config.now,
             )?,
         };
+        let withdrawal_registry = host.recover_original_withdrawal_frontier(
+            &config.withdrawal_registry,
+            config.storage_binding,
+        )?;
         let registry = host.recover_current_registry(config.now)?;
         let recovery = host.recovery_required_operations()?;
         if recovery.len() > 1 {
@@ -106,10 +126,14 @@ impl LearningArtifactOwnerService {
             .map(|checkpoint| checkpoint.operation_id.clone());
         Ok(Self {
             host,
-            withdrawal_registry: config.withdrawal_registry,
+            withdrawal_registry,
             registry,
             storage_binding: config.storage_binding,
             recovery_required,
+            withdrawal_pending: false,
+            original_preparation_instance: Arc::new(()),
+            original_preparation_fenced: AtomicBool::new(false),
+            original_preparation_active: false,
         })
     }
 
@@ -125,6 +149,7 @@ impl LearningArtifactOwnerService {
         &self,
         now: u64,
     ) -> Result<VerifiedCurrentRegistryViewV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
         Ok(self.host.current_registry_view(now)?)
     }
 
@@ -154,7 +179,14 @@ impl LearningArtifactOwnerService {
         {
             return Err(LearningArtifactOwnerServiceError::WithdrawalFrontierConflict);
         }
+        self.withdrawal_pending = true;
+        self.host.install_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            &next,
+            self.storage_binding,
+        )?;
         self.withdrawal_registry = next;
+        self.withdrawal_pending = false;
         Ok(())
     }
 
@@ -167,6 +199,17 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
+        // The new split protocol has already consumed this instance's write
+        // entrance. Only its private fresh continuation may finish it; the
+        // legacy reconciliation method must not bypass a lost continuation.
+        if self.original_preparation_active {
+            return Err(LearningArtifactOwnerServiceError::RecoveryRequired(
+                self.recovery_required
+                    .clone()
+                    .ok_or(LearningArtifactOwnerServiceError::UnexpectedPhase)?,
+            ));
+        }
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
         {
@@ -190,6 +233,34 @@ impl LearningArtifactOwnerService {
                 Err(error)
             }
         }
+    }
+
+    /// Read only the exact acknowledged immutable publication. This performs
+    /// no resume, registry append, signature, witness update or payload write.
+    pub fn read_original_publication(
+        &self,
+        operation: &StableId,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.require_original_withdrawal()?;
+        let retained = self
+            .host
+            .recover_publication(operation)?
+            .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+        if retained.checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+            return Err(ArtifactOwnerHostError::Indeterminate.into());
+        }
+        receipt_from_checkpoint(&retained.checkpoint)
+    }
+
+    fn require_original_withdrawal(&self) -> Result<(), ArtifactOwnerHostError> {
+        if self.withdrawal_pending {
+            return Err(ArtifactOwnerHostError::Indeterminate);
+        }
+        self.host.require_original_withdrawal_frontier(
+            &self.withdrawal_registry,
+            self.storage_binding,
+        )?;
+        Ok(())
     }
 
     fn publish_inner(
@@ -287,6 +358,21 @@ fn validate_request_against_checkpoint(
         || checkpoint.withdrawal_head_digest != request.admission.withdrawal_head_digest
         || checkpoint.expected_registry_predecessor_head
             != request.expected_registry_predecessor_head
+    {
+        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+    }
+    // Revalidate the immutable admission at its original time and head.
+    // An acknowledged replay observes an old fact, not new publication
+    // authority: a later expiry or withdrawal must not erase that receipt.
+    crate::verify_artifact_admission_v3(
+        &request.admission,
+        checkpoint.withdrawal_head_digest,
+        request.admission.admitted_at,
+    )
+    .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+    let manifest = &request.admission.validated_manifest.manifest;
+    if u64::try_from(request.payload.len()).ok() != Some(manifest.encoded_size_bytes)
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
     {
         return Err(LearningArtifactOwnerServiceError::RequestMismatch);
     }
@@ -424,7 +510,15 @@ impl From<ArtifactPublicationError> for LearningArtifactOwnerServiceError {
 }
 
 #[cfg(test)]
+#[path = "owner_service_readback_tests.rs"]
+mod publication_readback_tests;
+
+#[cfg(test)]
 mod tests {
+    #[cfg(target_os = "linux")]
+    mod original_read_view {
+        include!("owner_read_view_tests.rs");
+    }
     use super::*;
 
     use std::fs;
@@ -446,10 +540,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-service-{}-{id}",
@@ -467,19 +561,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("stable id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn key() -> SigningKey {
+    pub(super) fn key() -> SigningKey {
         SigningKey::from_bytes(&[9u8; 32])
     }
 
-    fn scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -499,7 +593,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -511,7 +605,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut lease = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -529,7 +623,7 @@ mod tests {
         lease
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -643,6 +737,38 @@ mod tests {
         );
 
         let receipt = service.publish(request.clone()).fixture("publish");
+        let mut changed_payload = request.clone();
+        changed_payload.payload[0] ^= 1;
+        let mut truncated = request.clone();
+        truncated.payload.truncate(truncated.payload.len() - 1);
+        let mut extended = request.clone();
+        extended.payload.push(0);
+        let mut changed_manifest = request.clone();
+        changed_manifest
+            .admission
+            .validated_manifest
+            .manifest
+            .training_code_digest = digest("changed-code-with-retained-admission-digest");
+        let mut changed_admission_time = request.clone();
+        changed_admission_time.admission.admitted_at += 1;
+        let before_conflicts = service.registry().snapshot();
+        for changed in [
+            changed_payload,
+            truncated,
+            extended,
+            changed_manifest,
+            changed_admission_time,
+        ] {
+            assert!(
+                matches!(
+                    service.publish(changed),
+                    Err(LearningArtifactOwnerServiceError::RequestMismatch)
+                ),
+                "same publication operation must refuse changed request bytes"
+            );
+            assert_eq!(service.registry().snapshot(), before_conflicts);
+            assert!(service.recovery_required().is_none());
+        }
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
@@ -654,24 +780,48 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
+        let current = request.signed_current_head.clone();
         drop(service);
 
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
+        let mut reopened =
+            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: Some(current),
+                withdrawal_registry: withdrawals,
+                storage_binding: digest("binding"),
+                now: 21,
+            })
+            .fixture("reopen service");
         assert_eq!(
             reopened.registry().snapshot().head_digest,
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());
+        let mut changed_after_reopen = request.clone();
+        changed_after_reopen.payload[0] ^= 1;
+        assert!(
+            matches!(
+                reopened.publish(changed_after_reopen),
+                Err(LearningArtifactOwnerServiceError::RequestMismatch)
+            ),
+            "cold retry must bind the original publication bytes"
+        );
+        assert_eq!(
+            reopened
+                .publish(request.clone())
+                .fixture("cold exact retry"),
+            receipt
+        );
+        let mut historical = request;
+        historical.now = 2_000;
+        assert_eq!(
+            reopened
+                .publish(historical)
+                .fixture("historical receipt after manifest expiry"),
+            receipt
+        );
         assert_eq!(
             reopened
                 .current_registry_view(21)

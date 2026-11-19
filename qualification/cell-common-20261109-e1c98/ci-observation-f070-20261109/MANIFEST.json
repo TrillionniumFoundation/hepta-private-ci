@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.common.ci-observation-manifest.v1",
+  "files": [
+    {
+      "path": "CARGO_DENY_RETRIEVAL.json",
+      "bytes": 6463,
+      "sha256": "2bcf7c80d30272ff751c16bebaec433b2a4fecf090ad95fd75e2c6cecc5071bd"
+    },
+    {
+      "path": "FORMATTING_HUNK_REVIEW.json",
+      "bytes": 78591,
+      "sha256": "0a0a78d43be4f314812c2fd15a24588cb77a6d9d864a0ef430aa1a67ba174b6b"
+    },
+    {
+      "path": "RAW_LOGS.json",
+      "bytes": 1633,
+      "sha256": "f75170d1a6043a2cd728932415797348a45047c9317233ef3e37752b39e4e5c3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4965,
+      "sha256": "569a61693e88ec65eaeb88c1155cd4b1c8e9fb78a35c05804dffac08450e7fa8"
+    },
+    {
+      "path": "SOURCE_IDENTITY.json",
+      "bytes": 4190,
+      "sha256": "bb1e1c57b191868ebbb1a8c884a44b6d2c0f2804bfb6a51b4bfa7647cef1196d"
+    },
+    {
+      "path": "SUMMARY.json",
+      "bytes": 2947,
+      "sha256": "a3e7784f065f0c168bfab984d8720c47b419f49f6effac9a1418cfdd8c375d46"
+    },
+    {
+      "path": "WINDOWS_COMPARISON.json",
+      "bytes": 17224,
+      "sha256": "ba697fd0fabc5790ea51378914cc8adc89a623817e5d819943292fce0d7b277a"
+    },
+    {
+      "path": "raw-logs/blocking-format-129159652068.log.gz",
+      "bytes": 51272,
+      "sha256": "8d7d0607a2b070eb784c1a9a2d69aad04d002af1c379e5c88f4fc97da309a003"
+    },
+    {
+      "path": "raw-logs/blocking-windows-shard1-129159652726.log.gz",
+      "bytes": 59071,
+      "sha256": "b14f274cfb4408707091f488f00a6ee54be584caaf45c11a6e465e1cd88e476f"
+    },
+    {
+      "path": "raw-logs/blocking-windows-shard3-129159652631.log.gz",
+      "bytes": 137475,
+      "sha256": "86fa95cbc2f07bea5e7f638387e01a7a2c2c38134204fa90486494fcf5547b2a"
+    },
+    {
+      "path": "raw-logs/windows-private-129153808326.log.gz",
+      "bytes": 60708,
+      "sha256": "2172ba85f7015d2fdf63c4830601bd0daa9f8a463764b2b9540a6a461d234274"
+    },
+    {
+      "path": "snapshots/architecture-42615372442-jobs.json",
+      "bytes": 6744,
+      "sha256": "e82566c850bbee0d8977dc806b5b6ec2bffa303e27227cf0939d5a8f27552cfd"
+    },
+    {
+      "path": "snapshots/blocking-42615372714-jobs.json",
+      "bytes": 28292,
+      "sha256": "5be8c585719849f2f0d0764de20138bb5853c480a3a71a0e1054e22ae3ace888"
+    },
+    {
+      "path": "snapshots/windows-private-42615372441-jobs.json",
+      "bytes": 1825,
+      "sha256": "ad45ed7f893675ef10b05a716fcd9f8c17a5b6318928ae21f78b5a2c59040446"
+    }
+  ],
+  "file_count": 14,
+  "maximum_payload_bytes": 137475,
+  "raw_logs_index": "RAW_LOGS.json",
+  "scope": "Read-only CI observation evidence, no runtime source changes or new tests."
+}

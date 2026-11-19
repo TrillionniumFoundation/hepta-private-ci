@@ -1,0 +1,221 @@
+name: Hepta native memory development
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_research:
+        description: Run this bounded research workflow, including its declared compute and downloads
+        type: boolean
+        required: true
+        default: false
+      accept_model_terms:
+        description: "Run the pinned SmolLM2-135M-Instruct native-memory study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  native-source-model-boundary:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.run_research == true
+    runs-on: ubuntu-22.04
+    timeout-minutes: 150
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_BUILD_JOBS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
+      - name: Bind exact source and artifact paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir "$RUNNER_TEMP/hepta-native-artifacts"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-native-artifacts/source.txt"
+          echo "NATIVE_ARTIFACT_ROOT=$RUNNER_TEMP/hepta-native-artifacts" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-native-target" >> "$GITHUB_ENV"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: clippy,rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0,nextest@0.9.149
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          enable-cache: false
+      - name: Install pinned formatter launcher
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --max-time 120 https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.x86_64.tar.gz --output "$NATIVE_ARTIFACT_ROOT/dotslash.tar.gz"
+          echo "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120  $NATIVE_ARTIFACT_ROOT/dotslash.tar.gz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/hepta-native-tools"
+          tar -xzf "$NATIVE_ARTIFACT_ROOT/dotslash.tar.gz" -C "$RUNNER_TEMP/hepta-native-tools"
+          echo "$RUNNER_TEMP/hepta-native-tools" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/hepta-native-tools/dotslash" --version | tee "$NATIVE_ARTIFACT_ROOT/dotslash-version.txt"
+      - name: Native build prerequisites
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y pkg-config libssl-dev
+      - name: Evidence driver failure and timeout regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/native_ci_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/evidence-driver-tests.log"
+      - name: Captured archive byte regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -S -B scripts/memory_cell_native/native_archive_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/archive-snapshot-tests.log"
+          python -I -S -B -O scripts/memory_cell_native/native_archive_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/archive-snapshot-optimized-tests.log"
+      - name: Closed native tick wire regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -S -B scripts/memory_cell_native/native_tick_contract_tests.py 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/tick-wire-tests.log"
+      - name: Scoped tests through repository defaults
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_MEMORY_CRASH_EVIDENCE_ROOT="$NATIVE_ARTIFACT_ROOT/bootstrap-crash-tests"
+          just test --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-tests.log"
+      - name: Current-owner registration in the default Agentd build
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-agentd --lib -E 'test(native_memory_current_) | test(native_memory_registration)' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/default-current-owner-tests.log"
+      - name: Build actual daemon probe
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-agentd --example native_memory_daemon --features qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/build-probe.log"
+      - name: Install measured CPU model runtime
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
+          python -m pip install 'transformers==4.57.1' 'peft==0.17.1' 'tokenizers==0.22.2' 'safetensors==0.6.2' 'numpy==1.26.4' 'huggingface-hub==0.35.3' 'accelerate==1.10.1' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-runtime.log"
+          python -m pip freeze > "$NATIVE_ARTIFACT_ROOT/runtime-freeze.txt"
+      - name: Fixed fresh training and actual Agentd control-socket probe
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/native_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_daemon" --out "$NATIVE_ARTIFACT_ROOT/run" --model-out "$RUNNER_TEMP/hepta-native-base" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/native-driver.log"
+      - name: Build separate controlled shadow qualification example
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked -p codex-hepta-agentd --example native_memory_shadow --features qualification-cognitive-write 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/build-shadow-probe.log"
+      - name: Reuse trained weights for one controlled pretrained v2 shadow callback
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/shadow/native_shadow_ci.py --repo "$GITHUB_WORKSPACE" --binary "$CARGO_TARGET_DIR/debug/examples/native_memory_shadow" --native-run "$NATIVE_ARTIFACT_ROOT/run" --out "$NATIVE_ARTIFACT_ROOT/shadow" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/shadow-driver.log"
+      - name: Prepare independent current-owner factory inputs without retraining
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_current_ci.py prepare --repo "$GITHUB_WORKSPACE" --native-run "$NATIVE_ARTIFACT_ROOT/run" --shadow-run "$NATIVE_ARTIFACT_ROOT/shadow" --out "$NATIVE_ARTIFACT_ROOT/current" --expected-head "$CANDIDATE_SHA"
+      - name: One actual pretrained callback through the default current-owner factory
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_NATIVE_MEMORY_CURRENT_MODEL_CONFIG="$NATIVE_ARTIFACT_ROOT/current/model_config.json"
+          export HEPTA_NATIVE_MEMORY_CURRENT_SOURCE_DOCUMENT="$NATIVE_ARTIFACT_ROOT/run/trial/source_document.json"
+          just test --locked -p codex-hepta-agentd --lib --run-ignored only --retries 0 -E 'test(pretrained_current_factory_executes_one_exact_decoder_and_fences_delivery)' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/current-factory-tests.log"
+      - name: Verify unchanged pretrained inputs and the actual current-owner receipt
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B scripts/memory_cell_native/current/native_current_ci.py finish --repo "$GITHUB_WORKSPACE" --native-run "$NATIVE_ARTIFACT_ROOT/run" --shadow-run "$NATIVE_ARTIFACT_ROOT/shadow" --out "$NATIVE_ARTIFACT_ROOT/current" --expected-head "$CANDIDATE_SHA"
+      - name: Scoped lint fix and final formatting proposal
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fix --locked -p codex-arg0 -p codex-hepta-memory -p codex-hepta-agent-protocol -p codex-hepta-agentd -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-cognitive-store --features codex-hepta-agentd/qualification-cognitive-write --examples 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/scoped-fix.log"
+          just fmt --base 429894ac8e0818102cfdea4ad47a56e4583b2902 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/final-format.log"
+      - name: Retain proposed changes without running tests after formatting
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/hepta-native-artifacts"
+          git diff --binary > "$RUNNER_TEMP/hepta-native-artifacts/post-test-fix-format.patch"
+          git diff --stat > "$RUNNER_TEMP/hepta-native-artifacts/post-test-fix-format.stat"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-native-artifacts/final-worktree-status.txt"
+          df -h > "$RUNNER_TEMP/hepta-native-artifacts/final-filesystem.txt"
+      - name: Preserve complete success or failure evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: native-memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-native-artifacts
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

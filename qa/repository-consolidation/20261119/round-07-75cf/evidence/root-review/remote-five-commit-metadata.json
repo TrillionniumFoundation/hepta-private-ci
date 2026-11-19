@@ -1,0 +1,187 @@
+[
+  {
+    "sha": "df0f52a86747d89e10249ab9f631453505c037b6",
+    "node_id": "C_kwDOTrgxoNoAKGRmMGY1MmE4Njc0N2Q4OWUxMDI0OWFiOWY2MzE0NTM1MDVjMDM3YjY",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/df0f52a86747d89e10249ab9f631453505c037b6",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/df0f52a86747d89e10249ab9f631453505c037b6",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:16:54Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:16:54Z"
+    },
+    "tree": {
+      "sha": "5fb91c3f13210d46f33467da80f83216366ce374",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5fb91c3f13210d46f33467da80f83216366ce374"
+    },
+    "message": "fix: bind control caller guards to the original request deadline\n\nUpdate the three stale required markers to match the existing request_end parameter and timeout_at frame reader. All 1,645 boundary rows, 820 protected-file rows, forbidden markers, and function-order rules remain unchanged apart from those exact strings. Add a regression that rejects restarting the deadline at either connection call or frame read.\n\nValidation: 30 current caller-migration tests, 16 manifest-storage tests, all 820 protected source checks, verifier self-test, independent parsed-manifest comparison, codespell, and just fmt passed. Production Rust is unchanged.",
+    "parents": [
+      {
+        "sha": "adc66e6407f83bbc191648ec1784b351541df4bb",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/adc66e6407f83bbc191648ec1784b351541df4bb",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/adc66e6407f83bbc191648ec1784b351541df4bb"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  {
+    "sha": "54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+    "node_id": "C_kwDOTrgxoNoAKDU0NDMyYmIyM2U3YjZjMGRmMWIxNjY3NzA5MWVjZjFlNDg4M2QxMGI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:17:43Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:17:43Z"
+    },
+    "tree": {
+      "sha": "b66b83f6c62f7921aa5af8a4f46d35b113215ba6",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/b66b83f6c62f7921aa5af8a4f46d35b113215ba6"
+    },
+    "message": "Merge original HCSN review history with exact archive custody\n\nA normal three-way merge preserves all 16 incoming original blobs and the source parent from research/hcsn-executed-review-20261119-d741. Both historical inventory verifiers reconstruct their pinned roots (32,151 and 32,186 files), and the original ZIP SHA256 and CRC validate. The existing size policy now pins the one immutable oversized gzip by exact path and SHA256 without changing the policy limit.\n\nNo Rust, Cargo, Bazel or workflow behavior is changed by this merge. Codespell and the existing blob-size policy pass for all 17 changed paths. All 416 historical HIA protection pins remain outside this candidate ancestry. Main and all HIA refs remain untouched; final required CI and full ordinary-branch consolidation are still pending.",
+    "parents": [
+      {
+        "sha": "df0f52a86747d89e10249ab9f631453505c037b6",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/df0f52a86747d89e10249ab9f631453505c037b6",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/df0f52a86747d89e10249ab9f631453505c037b6"
+      },
+      {
+        "sha": "b5bed98f9db33eede1afe065e2812bffd462ca09",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b5bed98f9db33eede1afe065e2812bffd462ca09",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b5bed98f9db33eede1afe065e2812bffd462ca09"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  {
+    "sha": "9779f135e3f8e8ee44421d6fded1e6cab9d38b90",
+    "node_id": "C_kwDOTrgxoNoAKDk3NzlmMTM1ZTNmOGU4ZWU0NDQyMWQ2ZmRlZDFlNmNhYjlkMzhiOTA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9779f135e3f8e8ee44421d6fded1e6cab9d38b90",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9779f135e3f8e8ee44421d6fded1e6cab9d38b90",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:25:43Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:25:43Z"
+    },
+    "tree": {
+      "sha": "5818c810d6b7175cccbc0afa3ac1e0dcc4b401db",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5818c810d6b7175cccbc0afa3ac1e0dcc4b401db"
+    },
+    "message": "Archive round-06 complete GitHub ref inventory and branch-head delta\n\nRead 7647 exact live refs from one GitHub Git refs response and compare every name and SHA against round-05. Quarantine newly discovered refs pending full historical HIA ancestry verification. Do not change native source, required gates, main or HIA refs; no branch retirement.",
+    "parents": [
+      {
+        "sha": "54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/54432bb23e7b6c0df1b16677091ecf1e4883d10b"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  {
+    "sha": "e7286427b4c372ce4c32e4391dea7d65b8bd9d7a",
+    "node_id": "C_kwDOTrgxoNoAKGU3Mjg2NDI3YjRjMzcyY2U0YzMyZTQzOTFkZWE3ZDY1YjhiZDlkN2E",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e7286427b4c372ce4c32e4391dea7d65b8bd9d7a",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e7286427b4c372ce4c32e4391dea7d65b8bd9d7a",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:28:26Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:28:26Z"
+    },
+    "tree": {
+      "sha": "e357f1c926e04ff09b72f80762a08f6e4f836879",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e357f1c926e04ff09b72f80762a08f6e4f836879"
+    },
+    "message": "ci: trace native AppContainer child deletion without changing admission",
+    "parents": [
+      {
+        "sha": "9779f135e3f8e8ee44421d6fded1e6cab9d38b90",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9779f135e3f8e8ee44421d6fded1e6cab9d38b90",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9779f135e3f8e8ee44421d6fded1e6cab9d38b90"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  {
+    "sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "node_id": "C_kwDOTrgxoNoAKDEwZmIzNGNhNGZmNDllOGNlYjM4YTQxY2MwYjAxOGRiZGY4MTQ1MmQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:28:38Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-19T16:28:38Z"
+    },
+    "tree": {
+      "sha": "e12e5368dcc6d29127906835d7b209345222dbc7",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/e12e5368dcc6d29127906835d7b209345222dbc7"
+    },
+    "message": "Merge original neural free-boundary research with collected CPU evidence\n\nPreserve all eleven original postimages and the original branch tip as the second parent. Keep the independent Bellman oracle, first-order implicit gradients, domain checks and original thresholds unchanged.\n\nThe four original tests passed on a completed and collected CPU run with exact source blob verification before and after. Retain the exact result, artifact manifest, verbatim test log and a privacy-scoped provider summary. The recorded cloud image differs from the workflow-pinned runtime; pinned CI and full integration gates remain required.\n\nAll 416 protected historical HIA pins remain excluded. No main or HIA ref update, branch deletion or safety admission change.",
+    "parents": [
+      {
+        "sha": "e7286427b4c372ce4c32e4391dea7d65b8bd9d7a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e7286427b4c372ce4c32e4391dea7d65b8bd9d7a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e7286427b4c372ce4c32e4391dea7d65b8bd9d7a"
+      },
+      {
+        "sha": "0ca096781651508250c950829c347a38edcfede4",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0ca096781651508250c950829c347a38edcfede4",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0ca096781651508250c950829c347a38edcfede4"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+]

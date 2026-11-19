@@ -9,7 +9,7 @@ use std::fs::FileTimes;
 use std::io::Write;
 use std::path::Path;
 
-use chrono::TimeZone;
+use crate::test_support::private_home;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use time::Duration;
@@ -100,10 +100,11 @@ async fn insert_state_db_thread(
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 12, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 3, /*hour*/ 12, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         rollout_path.to_path_buf(),
@@ -127,7 +128,7 @@ async fn insert_state_db_thread(
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_is_stale() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(302);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -243,7 +244,7 @@ async fn read_thread_item_from_rollout_rejects_unknown_canonical_history_mode() 
 
 #[tokio::test]
 async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(304);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -288,7 +289,7 @@ async fn find_thread_path_falls_back_when_db_path_points_to_another_thread() {
 
 #[tokio::test]
 async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(303);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -324,7 +325,7 @@ async fn find_thread_path_repairs_missing_db_row_after_filesystem_fallback() {
 
 #[tokio::test]
 async fn find_thread_path_accepts_existing_state_db_path_without_canonical_filename() {
-    let temp = TempDir::new().unwrap();
+    let temp = private_home().unwrap();
     let home = temp.path();
     let uuid = Uuid::from_u128(305);
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -1530,12 +1531,11 @@ async fn test_updated_at_uses_file_mtime() -> Result<()> {
     let updated = item
         .updated_at
         .as_deref()
-        .and_then(|s| chrono::DateTime::parse_from_rfc3339(s).ok())
-        .map(|dt| dt.with_timezone(&chrono::Utc))
+        .and_then(|s| codex_utils_time::Timestamp::parse_from_rfc3339(s).ok())
         .expect("updated_at set from file mtime");
-    let now = chrono::Utc::now();
+    let now = codex_utils_time::Timestamp::now();
     let age = now - updated;
-    assert!(age.num_seconds().abs() < 30);
+    assert!(age.whole_seconds().abs() < 30);
 
     Ok(())
 }

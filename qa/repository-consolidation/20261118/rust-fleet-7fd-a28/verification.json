@@ -1,0 +1,58 @@
+{
+  "candidate": "1b16225d7d09c15c0d326d9abc0b088bf4cb67e1",
+  "parents": [
+    "770179d123b879355b53db1d75f8f9f301280d3e",
+    "7fd4b93c6fd917ad5e07115a6b2a929ea62b8964"
+  ],
+  "tree": "6911d7b83a7d2ae573efb4fbe08446f748a7a3a4",
+  "bare_repository": "/tmp/hepta-a28-7fd-merge.git",
+  "worktree": "/tmp/hepta-a28-7fd-worktree",
+  "ref": "refs/a28-fleet/qualified-7fd4b93",
+  "full_tree_identical_to_first_parent": true,
+  "source_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d",
+  "source_sha256": "2e130b0e7b13a443a4effce7300af0abe139b8f0d8d79a11c5cc5a9b164db4f4",
+  "source_changes": [],
+  "callers_or_manifest_changes": [],
+  "conflict_count": 5,
+  "automatic_fragment_count": 6,
+  "incoming_branch_is_real_second_parent": true,
+  "native_or_formatter_commands_run": [],
+  "fresh_hia_boundary_check": {
+    "snapshot": "refs-before-batch-write.tsv",
+    "snapshot_sha256": "43315378c146c099e86b204c2d4b634442a6c86aeb6172430fcc8e1909725f10",
+    "protected_names": 368,
+    "new_source_history": ["7fd4b93c6fd917ad5e07115a6b2a929ea62b8964"],
+    "protected_tip_intersection": [],
+    "hia_roots_or_anchor_intersection": [],
+    "proof_file": "hia-candidate-checks.json"
+  },
+  "ordinary_names_contained": 2065,
+  "incoming_diff_numstat": "25\t28\tcodex-rs/hepta-fleet/src/authority_port.rs\n",
+  "archive": {
+    "path": "evidence.tar.gz",
+    "bytes": 43373,
+    "sha256": "8388dd79f00871943826f3ed12eb1e0777a5810dc36aaa829862faaff31bae54",
+    "regular_members": 39,
+    "all_original_member_sizes_and_hashes_rechecked": true
+  },
+  "root_combined_merge": {
+    "component": "fleet-7fd",
+    "first_parent": "b147a56d17f8d9f95aaaf7feee92e6a5aa064a9b",
+    "incoming_parent": "7fd4b93c6fd917ad5e07115a6b2a929ea62b8964",
+    "merge_bases": ["20141a77ad84a49f3f6b9e73475b30539b397991"],
+    "native_merge_exit": 1,
+    "native_merged_tree": "c223d9ac7f74c6aa607226a76589f1d1ff9ff9d5",
+    "native_changed_paths": ["codex-rs/hepta-fleet/src/authority_port.rs"],
+    "new_incoming_history": ["7fd4b93c6fd917ad5e07115a6b2a929ea62b8964"],
+    "reviewed_conflicts": 5,
+    "reviewed_automatic_edits": 6,
+    "resolved_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d",
+    "resolved_tree": "58795ab96fd7d582f6a313607512014a09b7a358",
+    "local_commit": "684e51748c618343fe71297196bce3c89e19d076",
+    "commit_message": "merge(fleet): reconcile original strict fixture history after reviewed evolution",
+    "resolved_changed_paths": [],
+    "root_independent_review": "Read complete incoming patch; exact base, incoming and current blobs equal the independently reviewed Fleet triplet; reviewed every conflict and automatic Result edit again on the assembled history parent.",
+    "fresh_hia_boundary": "Requires the accompanying latest protected-ref proof before publication."
+  },
+  "independent_root_review": "Complete patch read; base, incoming and current blobs equal the reviewed Fleet triplet. Five conflict texts and six automatic fragments explicitly rechecked on the assembled parent."
+}

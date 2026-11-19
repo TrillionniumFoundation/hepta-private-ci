@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.cell.bakeoff.v1",
+  "baseline": "laya-english",
+  "source_head": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "registered_before_utc": null,
+  "dataset_sha256": null,
+  "threshold": 0.7,
+  "models": [
+    {"name":"laya-english","kind":"typed","repo":"convaiinnovations/laya","subfolder":null,"parameters":421000000,"revision":null,"weights_sha256":null,"tokenizer_sha256":null,"runtime_sha256":null,"head_sha256":null,"license_review":"pending","files_sha256":{}},
+    {"name":"laya-typed","kind":"typed","repo":"convaiinnovations/laya","subfolder":"typed-decisions","parameters":421000000,"revision":null,"weights_sha256":null,"tokenizer_sha256":null,"runtime_sha256":null,"head_sha256":null,"license_review":"pending","files_sha256":{}},
+    {"name":"laya-multilingual","kind":"typed","repo":"convaiinnovations/laya","subfolder":"multilingual","parameters":322000000,"revision":null,"weights_sha256":null,"tokenizer_sha256":null,"runtime_sha256":null,"head_sha256":null,"license_review":"pending","files_sha256":{}},
+    {"name":"arctic-305m","kind":"encoder-head","repo":"Snowflake/snowflake-arctic-embed-m-v2.0","subfolder":null,"parameters":305000000,"revision":null,"weights_sha256":null,"tokenizer_sha256":null,"runtime_sha256":null,"head_sha256":null,"license_review":"pending","files_sha256":{},"head_steps":1000,"head_seed":42,"head_optimizer":"sgd","head_lr":0.1,"train_data_sha256":null},
+    {"name":"harrier-270m","kind":"encoder-head","repo":"microsoft/harrier-oss-v1-270m","subfolder":null,"parameters":270000000,"revision":null,"weights_sha256":null,"tokenizer_sha256":null,"runtime_sha256":null,"head_sha256":null,"license_review":"pending","files_sha256":{},"head_steps":1000,"head_seed":42,"head_optimizer":"sgd","head_lr":0.1,"train_data_sha256":null}
+  ]
+}

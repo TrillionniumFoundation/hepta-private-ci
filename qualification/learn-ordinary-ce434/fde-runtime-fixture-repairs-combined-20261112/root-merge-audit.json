@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.learn.fde.original-runtime-fixture-repairs-combined.v1",
+  "original_source": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+  "parents": [
+    "1fee2c6d462ea3249c3be67e55d4647b00126ef9",
+    "73b5a8219c8393a982fa03a434bd4641fbdfe7cc",
+    "80d45fd5835796345c07e6b015e5d9f054e1874b"
+  ],
+  "purpose": "Combine the already reviewed, nonoverlapping original fixture repairs for the actual FDE failures. Further stack, timeout and C timing diagnoses are still pending.",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35fbdac0b826f2de1b780ece31b64d34d29c379e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7643ab7bc964277d9f7672897dbd6d333d4d948"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8825e69d0a6a558dc9292404c6648e21e53c8d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6dbc8d77b0c2a1d76268bf21b8ac9f5828bcebe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1544fce1d6f863727c69e90a96829926e19ee200"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4274d202bdd47d261139018bd89b7cb64b0b9670"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "835e7b13894b488dbd9ab83bc85621ba47b2ca2d"
+    }
+  ],
+  "existing_source_audits": [
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-original-admission-fixture-repair-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce87accb939a6216399216ef0f0a04ff9a1e854d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-original-admission-fixture-repair-20261112/peer-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4da74218156c89823de5a3225ff69dcaa0a79076"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-source-native-repair-20261112/source-fixture-repair-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4870d3cd07d68b5185d6922d43dab314ce04fc25"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-expiry-fixture-repair-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d2a07acd31d2b963a85d023eb43a2cb2e90089af"
+    }
+  ],
+  "root_reviews": {
+    "provider_same_admission": {
+      "sha": "4da74218156c89823de5a3225ff69dcaa0a79076",
+      "content": "{\n  \"schema\": \"hepta.learn.provider-admission-peer-review.v1\",\n  \"source\": \"fde0086022ab2d877ef7d8aae19e07ad17a8593f\",\n  \"mode\": \"static-only peer review; no source changes or H/Python/Rust execution\",\n  \"reviewed_after\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs\",\n      \"before\": \"3f136713030d875865cc2bfb68e7f56a49eff471\",\n      \"after\": \"bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs\",\n      \"before\": \"d67633cdef0fb00b2119b3f2839219eabf2b84fe\",\n      \"after\": \"35fbdac0b826f2de1b780ece31b64d34d29c379e\"\n    }\n  ],\n  \"related_actual_sources\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs\",\n      \"sha\": \"661ec1c609ba0af1188dad00dd2910c7de4d2020\",\n      \"functions\": [\n        \"Admission\",\n        \"admission\",\n        \"source\",\n        \"start\"\n      ]\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_model_selection_material_support_tests.rs\",\n      \"sha\": \"468f8f6839da381cd7e94791c09b8d3c4dbea1ca\",\n      \"functions\": [\n        \"unstarted_material_with_profile\",\n        \"material_with_profile\"\n      ]\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_original_evaluation_source_support_tests.rs\",\n      \"sha\": \"c46beab25b849632a6b5dd37abd05c7ee2fd6181\",\n      \"functions\": [\n        \"BFixture::new\",\n        \"task\",\n        \"populate\"\n      ]\n    }\n  ],\n  \"full_git_blob_readback_independently_hashed\": true,\n  \"exact_diff_checks\": {\n    \"owner_exact_reverse\": true,\n    \"provider_remaining_all_tests_exact\": true\n  },\n  \"ordering\": [\n    \"preregistered obtains one existing explicit fixture Admission; source preflight compiles the exact existing source_envelope and admission profile.\",\n    \"Primary and retention cohort rules are constructed for that same semantic objective before registration.evaluation_profile is fixed.\",\n    \"That owned Admission is moved into ready_with_admission; no second admission, cloned credentials, substituted objective, or authority DTO is created.\",\n    \"ready_with_admission preserves original run-id derivation and the equality assertion after changing only run_id.\",\n    \"The original support::start consumes that same Admission and signs the actual complete runtime/model/artifact fields with the original fixture issuer before ingress; source preflight itself grants no execution authority.\",\n    \"The actual A runs before Material construction; Material request carries the preregistered evaluation_profile, then Dataset inclusion policy, original freeze, FrozenLearningScope, Source capture, native Training, and original Generator receipt retain their original order.\"\n  ],\n  \"privacy_and_async\": [\n    \"ready_with_profile retains its original signature and private visibility.\",\n    \"ready_with_admission is private, accepts existing support::Admission by value and does not add Clone/Deserialize or public constructors.\",\n    \"evaluation_provider remains the existing child module of owner_support and can access its private ancestor method.\",\n    \"support::Admission retains its existing pub(super) visibility in the q24 fixture module hierarchy.\",\n    \"The same owned admission/runtime/config already crossed the original start await; no new Send/Sync/future bound or boxed future is introduced. This is a static type-surface observation, not a compiler result.\"\n  ],\n  \"assertions_retained\": [\n    \"objective equality\",\n    \"profile equality\",\n    \"nonempty retention\",\n    \"all native provider test bodies and their assertions are byte-identical\",\n    \"no changed label/outcome/metric threshold\"\n  ],\n  \"findings\": [],\n  \"limits\": [\n    \"Does not establish deployed ordinary owner custody or evaluator-only pre-adoption execution permission.\",\n    \"Does not validate scientific positive adoption or make the old shared OPE profile eligible.\",\n    \"No compilation or native run was performed by the reviewer.\"\n  ]\n}\n"
+    },
+    "source_runtime": {
+      "sha": "73b5a8219c8393a982fa03a434bd4641fbdfe7cc",
+      "tree": "6d001285472aae71f31e65927a93246f9b152cb6",
+      "fullPrePostRead": true,
+      "headsExactShape": 4108,
+      "pages": 3,
+      "exchangesPerCompleteRead": 4,
+      "cancellationExchanges": 1,
+      "sourceReadbackLowerBound": 46,
+      "realObservedSourcePeerCounts": [
+        64,
+        64,
+        64
+      ],
+      "allExactEditsAndAssertionsPreserved": true,
+      "timeoutDiagnostics": {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+        "before": "7bec702b0bb67808cacc33f186fdeb673f4742ba",
+        "after": "f8825e69d0a6a558dc9292404c6648e21e53c8d8",
+        "exactRemoval": true,
+        "reports": 33,
+        "unchangedOriginalAssertions": true
+      },
+      "newNativePassClaim": false
+    },
+    "timeout_diagnostic": {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "before": "7bec702b0bb67808cacc33f186fdeb673f4742ba",
+      "after": "f8825e69d0a6a558dc9292404c6648e21e53c8d8",
+      "exactRemoval": true,
+      "reports": 33,
+      "unchangedOriginalAssertions": true
+    },
+    "expiry": {
+      "commit": "80d45fd5835796345c07e6b015e5d9f054e1874b",
+      "tree": "982d566b8d6c3a6816b96313808623842eb1c911",
+      "fullPrePostRead": true,
+      "exactEdits": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+          "before": "9dad4fdd1edabe800a9ef80d876ddeb6a7e6d32b",
+          "after": "835e7b13894b488dbd9ab83bc85621ba47b2ca2d",
+          "edits": 2
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+          "before": "5f2b975e10687be71840f2b3393e216dc9d701c4",
+          "after": "4274d202bdd47d261139018bd89b7cb64b0b9670",
+          "edits": 2
+        }
+      ],
+      "originalVerifierBlob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "originalWindowsUnchanged": true
+    }
+  },
+  "scope": {
+    "production_code_changed": false,
+    "original_cases_deleted": false,
+    "original_limits_relaxed": false,
+    "new_authority": false,
+    "new_grants_keys_uids": false,
+    "actual_native_pass_claimed": false,
+    "ordinary_acceptance": {
+      "positive": 0,
+      "no_update_or_fallback": 0,
+      "fresh_C": 0,
+      "daemon_root_cold_restart": 0
+    }
+  },
+  "unresolved": [
+    "13 stack-overflow/SIGABRT original panel fixture cases",
+    "Original 60-second candidate-material timeout branch",
+    "Third C publication-withdrawal original evidence readback failure"
+  ]
+}

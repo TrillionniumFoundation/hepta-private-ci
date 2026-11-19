@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.independent-native-harness-static-review.v1",
+  "status": "NO_CONFIRMED_STATIC_BLOCKER_REMAINING_IN_REVIEWED_BYTES",
+  "reviewed_script": {
+    "git_blob": "5d718f99edc182f47ae99778d8e9a70a2ab88800",
+    "bytes": 45572,
+    "sha256": "5804a0509071d75b474f867a67d6c8660f9222410773e07e187adf68fc442903",
+    "classification": "parameterized harness; not executed by reviewer"
+  },
+  "superseded_scripts": [
+    {
+      "git_blob": "f1b3b04747eedcefaa3ec5ccec6f9e4497d08cca",
+      "status": "superseded; outer signal/kill behavior is not approved"
+    },
+    {
+      "git_blob": "60811ca934b425520164f0dbdcab110e13908788",
+      "status": "superseded; implicit operator rustc timeout kill and ordinary timeout continuation corrected in final"
+    }
+  ],
+  "original_source_contract": {
+    "inspected_commit": "5daade9e4ce374ac169702d6b59490149ccefd34",
+    "paths": [
+      {
+        "path": "scripts/hepta_ci_exec.py",
+        "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+      },
+      {
+        "path": "scripts/hepta_ci_junit.py",
+        "git_blob": "683626df091bdfe160a8965fdc92bf40f5783cf8"
+      },
+      {
+        "path": "scripts/run-nextest.py",
+        "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595"
+      },
+      {
+        "path": "justfile",
+        "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      {
+        "path": "codex-rs/.config/nextest.toml",
+        "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c"
+      },
+      {
+        "path": ".github/workflows/hepta-daemon-learning-native.yml",
+        "git_blob": "f5d21a533e68b515933476ba82b4e3175b92e4a5"
+      }
+    ],
+    "exact_root_parent_count": 17,
+    "ordinary_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-contracts",
+      "codex-hepta-neuron",
+      "codex-hepta-learning-ledger"
+    ],
+    "root_packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-contracts"
+    ],
+    "future_candidate_condition": "The actual CONFIG must pin its published HEAD/tree/format-base and exact parent roster. The script reparses the actual checked-out workflow and refuses disagreement; this audit transfers no test result from 5daade."
+  },
+  "confirmed_corrections": [
+    {
+      "finding": "Python check_output(... rustc -Vv, timeout=60) implicitly kills a timed-out child although no explicit killpg remains.",
+      "final": "Operator rustc version lookup now uses recorded() and the unmodified source-bound hepta_ci_exec.py, as does the Root lookup. The outer harness has no Rust signal/kill path."
+    },
+    {
+      "finding": "A timed-out/truncated ordinary test could previously fall through to Root Cargo after recording failure.",
+      "final": "Any original recorder timeout/truncation/running/interruption or missing terminal record sets completion_unknown; later recorded Cargo dispatches refuse. A normal terminal test failure may still collect distinct Root results, but the aggregate result stays failed."
+    },
+    {
+      "finding": "An uncertain Root execution must not be collected or have its records/fixtures mutated while it can still be active.",
+      "final": "Unknown completion skips the JUnit collector and all chown/unmount/remove actions. The retained original Popen is only observed; no retry, signal, subsequent Cargo or later cleanup is authorized by its eventual exit."
+    }
+  ],
+  "reviewed_guards": [
+    "Fresh task directory and exact key/value CONFIG; separate operator and Root targets; original pinned Rust 1.96.0 checked in both UID contexts.",
+    "Exact published commit object/tree, clean checkout, no skip-worktree/assume-unchanged/unmerged entries, and every tracked file's physical Git-blob bytes and mode are checked before and after.",
+    "Actual source tools/checkers and external executable bytes are pinned before/after; maintenance dirty output stops behavioral dispatch and preserves the raw patch/postimages.",
+    "Six-crate maintenance and binary check, all four existing QA suites, and the original unchanged full caller verifier precede same-source helper construction and behavior tests.",
+    "Ordinary suite uses original just test --locked --offline, all six packages, --lib, retries 0, full original no-fail-fast wrapper. It retains normal ignored-test scope.",
+    "Root commands enter actual sudo UID0, emit fsynced UID/eUID proof, use a distinct Root-owned target, and compare the actual Root toolchain output to the operator's pinned version.",
+    "Fresh original Cargo metadata plus nextest list compile the two selected Root library binaries. Exact package IDs/library kinds and target-contained binary bytes are pinned; actual ignored filter matches must equal all 17 frozen parent names.",
+    "The original just/nextest wrapper itself already uses fresh --cargo-metadata with graph-free package filters; this does not use --binaries-metadata/archive build replay. RustTestSuiteSummary flattens its binary fields in the machine-readable JSON.",
+    "Both suites move aside old JUnit before launch. The unmodified collector requires exact source-head identity, original just/test/--locked command, report mtime inside the actual execution interval, matching terminal pass/fail counts, and at least one executed test.",
+    "Root JUnit's executed names must exactly equal the 17 original parents, independently of the prior list; helpers are not added as parent passes. Actual Root binaries are rehashed after just test.",
+    "Root fixture cleanup is limited to the inode-proven directory freshly created by this attempt. Both bind unmounts run independently, removal requires successful unmount checks, and chown is limited to this attempt's records and source nextest reports.",
+    "Original recorder root completion must be terminal and neither timed out nor output-truncated before mutable cleanup is permitted. Unknown completion remains unknown even if read-only final source observations are possible."
+  ],
+  "limits": {
+    "python_ast_compiled_by_reviewer": false,
+    "harness_or_cargo_executed_by_reviewer": false,
+    "actual_config_materialized_by_reviewer": false,
+    "parent_must_parse_exact_script_before_launch": true,
+    "original_source_executor_timeout_implementation_changed": false,
+    "overall_budget_is_dispatch_budget_not_forced_terminal_deadline": true,
+    "explanation": "The intentional wait for an already-running original launcher can outlive the dispatch budget. Such an attempt is incomplete/failed and cannot be relabeled PASS or guaranteed process termination. The source executor itself states that escaped sessions require an external sandbox.",
+    "independent_static_review_is_not_native_qualification": true,
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_deployed_consumer_accepted": false,
+    "physical_daemon_root_restart_accepted": false
+  }
+}

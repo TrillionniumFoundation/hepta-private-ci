@@ -1,0 +1,29 @@
+{
+  "version": "2.4.1",
+  "results": [
+    {
+      "case": "baseline-workflow",
+      "exit_code": 65,
+      "source_paths": [
+        "before/.github/workflows/ndu-windows-storage-probe.yml"
+      ],
+      "stdout": "/workspace/scratch/724669789c83/dependency-repair/windows-c52-cmd-entry-candidate/before/.github/workflows/ndu-windows-storage-probe.yml:917: Fo ==> Of, For, To, Do, Go\n",
+      "stderr": "",
+      "stdout_sha256": "6c3a3dc33e8b736e9674b5d22cdfbe335da8c8b2d9dc77378902fb739fe5a46f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "changed-python",
+      "exit_code": 0,
+      "source_paths": [
+        "after/.github/scripts/windows-appcontainer-probe/win32_api.py",
+        "after/.github/scripts/windows-appcontainer-probe/cmd_entry_probe.py"
+      ],
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "finding": "The only whole-candidate explicit-file diagnostic is the unchanged original MSVC /Fo flag; changed Python files pass. No ignore/config/policy change was applied."
+}

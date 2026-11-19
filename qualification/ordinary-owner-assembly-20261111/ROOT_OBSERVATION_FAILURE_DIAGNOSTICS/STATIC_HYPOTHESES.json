@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.root-v4-shared-unavailable-static-review.v1",
+  "source": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "observed": {
+    "junit_blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+    "junit_sha256": "9cfad38d30ffcc18759c9cc3c5ace21361c727312d178133f6aa4d68950f2274",
+    "junit_bytes": 9203,
+    "execution_blob": "b5e89ca3bf9889569a9b4e34539234131b219152",
+    "actual_root_tests": 17,
+    "passed": 15,
+    "failed": 2,
+    "publication_first_child_error": "connect original CURRENT purpose: agentd generation fenced: root writer observation is unavailable or fenced",
+    "initial_first_child_error": "actual Feature CURRENT publication: Invalid(Unavailable)",
+    "root_service_error": "PeerDenied",
+    "not_inherited_by_future_source": true
+  },
+  "findings": [
+    {
+      "status": "source-confirmed exclusion",
+      "topic": "A current-thread child executor",
+      "detail": "Both failing child helpers create a new_multi_thread Tokio runtime with exactly two observation workers. The blocking std control socket wait is inside the block_on root future, while the original observation task can run on those worker threads. This does not prove the live feed met its budget, but rules out attributing these fixtures to a current-thread runtime."
+    },
+    {
+      "status": "source-confirmed error classification",
+      "topic": "Final Root PeerDenied is not a unique first cause",
+      "detail": "HostAuthorityPeerChannel first authenticates SO_PEERCRED, while OwnerChannel::check/wait also returns PeerDenied after the original child pidfd reports exit. Five-lane establishment succeeded and the child reported a live-observation/current-frontier failure. The final Root PeerDenied may therefore be a consequence of child failure, rather than proof that initial peer authentication rejected a wrong UID or PID."
+    },
+    {
+      "status": "source-confirmed shared critical section; V4 causality unproven",
+      "topic": "Late registration can serialize the observation lane behind the original lease fence",
+      "detail": "HostAuthorityWriterRegistration::with_live verifies the retained lease and dispatch_authority_lease_with_witness executes its callback under the original AuthorityLeaseVerifier state Mutex. with_learning_profile and with_initial_publication_context encompass the actual enrollment action in that callback. RegisteredWriter::observe uses the same original registration/verifier. Thus enrollment and observation are not independent at that owner fence despite separate transport threads. No V4 duration record yet proves that this wait exhausted either the 500ms transport budget or the cache's existing 500ms freshness window. No lock, timeout or authority semantics are changed."
+    },
+    {
+      "status": "source-confirmed branch; V4 subcause unproven",
+      "topic": "Publication's original connection first uses the live verifier",
+      "detail": "RootGenerationPublicationHandoffV1::connect requires the captured actual session before opening the purpose socket, and rechecks it later. LiveRoot::verify maps failures of original LiveRoot::current to exactly the reported unavailable/fenced text. Existing V4 output does not identify cache age, cache contention, projection, original Root lifetime or proof failure."
+    },
+    {
+      "status": "additional static candidates reviewed by sibling; not execution evidence",
+      "topic": "Cache serialization and refresh escalation",
+      "detail": "The cache samples BOOTTIME before acquiring retained state, so threads may acquire the lock in a different order from their samples. Separately, the refresh suffix's original try-lock read may return transient Unavailable, after which the original worker terminates and FenceOnDrop fences the feed. These source-permitted interleavings are preserved for diagnosis; no repair is inferred from V4."
+    }
+  ],
+  "patch_scope": {
+    "purpose": "Find the next actual first failure without changing requests, authority or acceptance",
+    "files": [
+      "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "codex-rs/hepta-agentd/src/root_observation_cache.rs"
+    ],
+    "session_source_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+    "session_exactops_blob": "da663f7968c300bbbde8095bace496a7e7f73b33",
+    "logging": "cfg(test) failure-path labels with existing scalar samples/immutable metadata, no keys, credentials, raw signed data or identifiers",
+    "no_added_refresh": true,
+    "no_added_warmup": true,
+    "no_added_live_owner_read": true,
+    "no_added_time_sample": true,
+    "no_changed_error_or_fence": true,
+    "no_changed_ttl": true,
+    "no_changed_assertion_or_parent_roster": true,
+    "session_projection": {
+      "removed_inspect": 16,
+      "removed_test_logs": 3,
+      "original_tokens_ignoring_whitespace_equal": true,
+      "no_original_control_call_removed": true,
+      "not_rust_compile": true
+    },
+    "cache_final_pin": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+    "cache_exactops_blob": "093a8077b031ea0bf8547f8bf0a527fe7bd3a5ca",
+    "cache_review_blob": "b19ff38ff09002e6a162fd097691a7ad0c459d1a",
+    "session_independent_review_blob": "1b21ba619e0c654084b4a2114c1713eb7d9cd68b"
+  },
+  "execution": {
+    "cargo": false,
+    "native": false,
+    "h": false,
+    "refs_mutated": false,
+    "shared_source_mutated": false,
+    "ordinary_business_acceptance": 0
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+      "bytes": 15607,
+      "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+      "bytes": 30620,
+      "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_connection.rs",
+      "git_blob": "c55807fe3cfe826a69389b27ad4d7fe025fe9011",
+      "bytes": 4477,
+      "sha256": "0beba1e9cc469d86b4c3c8ee59619b1db226f8251191531a28ab26fd59a412c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs",
+      "git_blob": "793fb11fce8762cffe016f28cdc5cba428b32a13",
+      "bytes": 6101,
+      "sha256": "d35bbb0327f20c0a377d7d698c9429c3c479cf3008c00bb5f8edd9ce4b48af16"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+      "git_blob": "93f9e4bc85f79954ed70c2a7b7f5517766a2adee",
+      "bytes": 23079,
+      "sha256": "0568b37f58197ea82fcc4cd91b225cb445975187316d19146c5fdc917a194b0b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "git_blob": "09cd6a9d43e7df874d1a0895539914a78a9cd9be",
+      "bytes": 13390,
+      "sha256": "9b7fc5fbd163baabd4f234b8e6c1d06fcdc4ce02f024186509fbf6dfa8342e5b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "git_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+      "bytes": 12120,
+      "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "git_blob": "4459afe74818d940acf090966baf3c0da2bd5384",
+      "bytes": 11796,
+      "sha256": "12a673b7c3d260670b53c676d4e89acfb822b34841e270e4c605a3667e2056c0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_context.rs",
+      "git_blob": "4c7638bd3ffc433dde4cfd8aeb3293b5c57cea11",
+      "bytes": 3950,
+      "sha256": "c208002eedbb031ef13a9e1ed39beba47ba9127359b43934779e5f61cf0d711a"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "git_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "bytes": 61661,
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "git_blob": "867822ffc4de4aa548771108853f1a4d9fd4ef63",
+      "bytes": 6221,
+      "sha256": "cdb79e489fd1759eba1118fa31daa42d06ab77ca816d1f1194d5f9a7a7beda78"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "git_blob": "36e4524baea04320b7610325579f0ff206690fab",
+      "bytes": 6672,
+      "sha256": "3682f24de45022de85758c2052577e5165c3407134eed1590d599d741a117352"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "git_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+      "bytes": 16197,
+      "sha256": "4ddfe5b8a630433726fd530060608c52f6906cf25b6479a646449a1b1bac495e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+      "git_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+      "bytes": 9825,
+      "sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e"
+    }
+  ]
+}

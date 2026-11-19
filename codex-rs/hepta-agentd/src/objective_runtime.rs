@@ -7,6 +7,7 @@
 //! ephemeral runtime coordinator. No effect authority is granted here.
 
 use std::collections::BTreeMap;
+#[cfg(not(unix))]
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::str::FromStr;
@@ -24,6 +25,7 @@ use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_learning_ledger::RunStartRecovery;
+use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
@@ -52,6 +54,25 @@ const MAX_RUN_START_RECORDS: usize = 4_096;
 const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
 const RUN_START_FILE: &str = "journal.bin";
 
+#[path = "objective_history.rs"]
+mod history;
+#[path = "objective_learning_outbox.rs"]
+mod learning_outbox;
+
+#[path = "objective_learning_source.rs"]
+mod learning_source;
+
+#[cfg(unix)]
+#[path = "objective_run_start_files.rs"]
+mod run_start_files;
+
+#[path = "objective_submission.rs"]
+mod submission;
+
+#[cfg(target_os = "linux")]
+#[path = "objective_run_start_retention.rs"]
+mod run_start_retention;
+
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
     Conflict {
@@ -64,14 +85,39 @@ pub(crate) struct ObjectiveRuntimeHost {
     profile: ObjectiveAdmissionProfileV1,
     profile_digest: Digest32,
     state: Mutex<ObjectiveHostState>,
+    #[cfg(target_os = "linux")]
+    original_run_start_retention:
+        Option<crate::production_launcher::run_start_retention::OriginalInitialRunStartRetainerV1>,
 }
 
 struct ObjectiveHostState {
     journal: DurableRunStartJournal,
     highest_sequences: BTreeMap<(String, u64), u64>,
+    notes_cursor: usize,
 }
 
 impl ObjectiveRuntimeHost {
+    pub(crate) fn with_run_start<T>(
+        &self,
+        run_id: &StableId,
+        read: impl FnOnce(&RunStartRecordV1, Digest32) -> Result<T, AgentdError>,
+    ) -> Result<T, AgentdError> {
+        let state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
+        let record = state
+            .journal
+            .get(run_id)
+            .map_err(store_error)?
+            .ok_or_else(|| invalid("no compiled durable objective for this run"))?;
+        if record.admission.profile_digest != self.profile_digest {
+            return Err(invalid(
+                "durable objective profile does not match the attached owner",
+            ));
+        }
+        read(record, state.journal.head_digest())
+    }
+
     pub(crate) fn open(
         identity: &AgentdIdentity,
         profile_file: &Path,
@@ -95,7 +141,10 @@ impl ObjectiveRuntimeHost {
             state: Mutex::new(ObjectiveHostState {
                 journal,
                 highest_sequences,
+                notes_cursor: 0,
             }),
+            #[cfg(target_os = "linux")]
+            original_run_start_retention: None,
         })
     }
 
@@ -107,7 +156,7 @@ impl ObjectiveRuntimeHost {
     ) -> Result<(), AgentdError> {
         // Startup attaches the durable service before App Server readiness.
         // Runtime projection is deferred until the daemon owner admits runs.
-        if !agentd.automation_admission_ready()? {
+        if !agentd.objective_admission_ready()? {
             return Ok(());
         }
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
@@ -124,11 +173,10 @@ impl ObjectiveRuntimeHost {
                 continue;
             }
             if authentication_is_current(record, &trust, agentd.identity(), now_ms)? {
-                if agentd.canonical_intelligence_enabled() {
-                    // A RunStart publication predates the seven-owner handoff.
-                    // Until that exact handoff is durably recovered, startup
-                    // must wait for the authenticated ObjectiveStart retry
-                    // rather than silently entering the compatibility path.
+                if agentd.canonical_intelligence_enabled() || agentd.circuit_task_enabled() {
+                    // An execution-profile handoff must be recovered through
+                    // its original owners on authenticated ObjectiveStart retry.
+                    // Never project it as an unrelated App Server run.
                     continue;
                 }
                 agentd.start_current_run_start(&state.journal, &record.snapshot.run_id)?;
@@ -137,206 +185,47 @@ impl ObjectiveRuntimeHost {
         Ok(())
     }
 
-    pub(crate) async fn submit(
-        &self,
-        agentd: &AgentdState,
-        request: AuthBusObjectiveIngress,
-        current_generation: u64,
-    ) -> Result<ObjectiveStartResult, AgentdError> {
-        authbus_ingress::require_ready(agentd)?;
-        let now_ms = authbus_ingress::now_ms()?;
-        let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
-        if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
-        {
-            return Err(invalid("objective expiry must be within five minutes"));
+    pub(crate) async fn reconcile_notes(&self, agentd: &AgentdState) -> Result<(), AgentdError> {
+        if agentd.notes_objective.get().is_none() && agentd.desktop_objective.get().is_none() {
+            return Ok(());
         }
-
-        let authbus = authbus_ingress::attached(agentd)?;
-        let trust = authbus.trust(agentd)?;
-        let issuer = trust.issuer()?;
-        let message = SignedMessage {
-            claims: objective_claims(agentd.identity(), &request, &payload)?,
-            signature: hex_bytes(&request.signature_hex)?,
+        let records = {
+            let mut state = self
+                .state
+                .lock()
+                .map_err(|_| invalid("objective runtime mutex poisoned"))?;
+            let records = state.journal.records().map_err(store_error)?;
+            let end = (state.notes_cursor + 16).min(records.len());
+            let batch = records[state.notes_cursor.min(records.len())..end]
+                .iter()
+                .map(|record| (**record).clone())
+                .collect::<Vec<_>>();
+            state.notes_cursor = if end == records.len() { 0 } else { end };
+            batch
         };
-        let authenticated = message
-            .authenticate(
-                &issuer,
-                objective_scope(agentd.identity()),
-                Digest32::of_bytes(&payload),
-                now_ms,
-            )
-            .map_err(|error| invalid(&format!("objective signature: {error}")))?;
-
-        let source = decode_source_envelope_json_v1(request.body.source_envelope_json.as_bytes())
-            .map_err(|error| invalid(&format!("objective source: {error}")))?;
-        let now_unix_micros = now_ms
-            .checked_mul(1_000)
-            .ok_or_else(|| invalid("objective host clock overflow"))?;
-        let context = ObjectiveAdmissionContextV1 {
-            revision: Revision::new(request.body.objective_revision)
-                .map_err(|error| invalid(&format!("objective revision: {error}")))?,
-            now_unix_micros,
-            selected_profile_digest: self.profile_digest,
-            source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
-                source_identity: issuer.issuer_id,
-                source_digest: source.structured_intent.provenance.source_digest,
-            },
-        };
-
-        let runtime_body_digest = parse_digest(&request.body.runtime_body_digest, "runtime body")?;
-        let preference_state_digest =
-            parse_digest(&request.body.preference_state_digest, "preference state")?;
-        let model_tuple_digest = parse_digest(&request.body.model_tuple_digest, "model tuple")?;
-        let prompt_registry_digest =
-            parse_digest(&request.body.prompt_registry_digest, "prompt registry")?;
-        let artifact_set_digest = parse_digest(&request.body.artifact_set_digest, "artifact set")?;
-        let run_id = StableId::new(&request.body.run_id)
-            .map_err(|error| invalid(&format!("objective run id: {error}")))?;
-        let authentication = RunStartAuthenticationV1 {
-            issuer_id: authenticated.claims().issuer_id.clone(),
-            key_epoch: authenticated.claims().key_epoch.get(),
-            message_id: authenticated.claims().message_id.clone(),
-            sequence: authenticated.claims().sequence,
-            expires_at_ms: authenticated.claims().expires_at_ms,
-            scope_digest: authenticated.claims().scope_digest,
-            signed_body_digest: authenticated.claims().payload_digest,
-            signature: message.signature,
-        };
-
-        // Durable publication and replay-frontier mutation remain serialized,
-        // but the guard is deliberately dropped before seven-owner execution.
-        let (published, record) = {
-            let mut state = self.state.lock().map_err(|_| {
-                AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
-            })?;
-            require_replay_admission(&state, &authentication, &run_id)?;
-
-            let expected_run_start_head = state.journal.head_digest();
-            let published = match compile_and_publish_objective_run_v1(
-                &source,
-                &self.profile,
-                &context,
-                ObjectiveRunBindingsV1 {
-                    authentication,
-                    run_id: run_id.clone(),
-                    runtime_body_digest,
-                    preference_state_digest,
-                    model_tuple_digest,
-                    prompt_registry_digest,
-                    artifact_set_digest,
-                    authority_epoch: request.body.authority_epoch,
-                    generation: current_generation,
-                    fence_digest: objective_fence(agentd.identity(), current_generation),
-                    expected_run_start_head,
-                },
-                &mut state.journal,
-            ) {
-                Ok(published) => published,
-                Err(ObjectiveRunError::Conflict {
-                    conflict,
-                    publication: _,
-                }) => {
-                    let record = state
-                        .journal
-                        .get_conflict(&run_id)
-                        .map_err(store_error)?
-                        .cloned()
-                        .ok_or_else(|| {
-                            invalid("durable objective conflict publication disappeared")
-                        })?;
-                    let key = (
-                        record.authentication.issuer_id.to_string(),
-                        record.authentication.key_epoch,
-                    );
-                    state
-                        .highest_sequences
-                        .entry(key)
-                        .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                        .or_insert(record.authentication.sequence);
-                    return Ok(ObjectiveStartResult::Conflict {
-                        run_id: request.body.run_id,
-                        conflict_digest: conflict.conflict_digest.to_string(),
-                    });
-                }
-                Err(error) => {
-                    return Err(invalid(&format!("objective publication: {error}")));
-                }
-            };
-
-            let record = state
-                .journal
-                .get(&run_id)
-                .map_err(store_error)?
-                .cloned()
-                .ok_or_else(|| invalid("durable objective publication disappeared"))?;
-            let key = (
-                record.authentication.issuer_id.to_string(),
-                record.authentication.key_epoch,
-            );
-            state
-                .highest_sequences
-                .entry(key)
-                .and_modify(|value| *value = (*value).max(record.authentication.sequence))
-                .or_insert(record.authentication.sequence);
-            (published, record)
-        };
-
-        authbus_ingress::require_ready(agentd)?;
-        let current = authbus.trust(agentd)?;
-        if !authentication_is_current(
-            &record,
-            &current,
-            agentd.identity(),
-            authbus_ingress::now_ms()?,
-        )? {
-            return Err(invalid(
-                "objective trust changed after durable publication; retry after reconciliation",
-            ));
+        for record in records {
+            agentd.execute_notes_objective(&record).await?;
+            agentd.execute_desktop_objective(&record).await?;
         }
-
-        let disposition = match record.disposition {
-            RunStartObjectiveDispositionV1::Compiled => {
-                match agentd.start_canonical_intelligence(&record).await? {
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready { .. }) => {
-                        "canonical_ready"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Abstained) => {
-                        "canonical_abstained"
-                    }
-                    Some(crate::AgentdIntelligenceAdmittedOutcomeV1::SlowPath) => {
-                        "canonical_slow_path"
-                    }
-                    None => {
-                        agentd.start_current_run_start_record(&record)?;
-                        "compiled"
-                    }
-                }
-            }
-            RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
-        };
-
-        Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
-            run_id: published.run_start.run_id.to_string(),
-            objective_digest: published.run_start.objective_digest.to_string(),
-            hard_constraint_digest: published.run_start.hard_constraint_digest.to_string(),
-            publication_digest: published.publication.record_digest.to_string(),
-            chain_digest: published.publication.chain_digest.to_string(),
-            disposition: disposition.to_string(),
-            idempotent: published.publication.disposition
-                == RunStartAppendDisposition::IdempotentReplay,
-        }))
+        Ok(())
     }
 }
 
-fn objective_payload(
+pub(crate) fn objective_payload(
     identity: &AgentdIdentity,
     body: &AuthBusObjectiveBody,
     current_generation: u64,
 ) -> Result<Vec<u8>, AgentdError> {
-    if body.spawn_generation != identity.spawn_generation
+    if body.spawn_generation != identity.spawn_generation || current_generation == 0 {
+        return Err(invalid("objective generation is invalid"));
+    }
+    objective_body_payload(body)
+}
+
+fn objective_body_payload(body: &AuthBusObjectiveBody) -> Result<Vec<u8>, AgentdError> {
+    if body.spawn_generation == 0
         || body.objective_revision == 0
         || body.authority_epoch == 0
-        || current_generation == 0
         || body.source_envelope_json.is_empty()
         || body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES
     {
@@ -361,6 +250,17 @@ fn objective_payload(
     Ok(bytes)
 }
 
+/// Build the exact preimage claims used by original Objective admission.
+/// This validates the structured body and binds the original owner/route; it
+/// neither signs, admits, advances replay state nor grants effect authority.
+pub fn authbus_objective_claims(
+    identity: &AgentdIdentity,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, AgentdError> {
+    let payload = objective_payload(identity, &request.body, identity.spawn_generation)?;
+    objective_claims(identity, request, &payload)
+}
+
 fn objective_claims(
     identity: &AgentdIdentity,
     request: &AuthBusObjectiveIngress,
@@ -382,18 +282,35 @@ fn objective_claims(
     })
 }
 
-fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+pub(crate) fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
 }
 
-fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
+pub(crate) fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
     let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
     bytes.extend_from_slice(&current_generation.to_be_bytes());
     Digest32::of_bytes(&bytes)
+}
+
+/// Check the original publisher's Running generation, independently of the
+/// Cell/model generation. This data binding does not authenticate the record;
+/// callers must retain their original session, physical and trust checks.
+pub(crate) fn run_start_matches_original_publisher(
+    identity: &AgentdIdentity,
+    snapshot: &RunStartSnapshotV1,
+) -> bool {
+    identity.spawn_generation != 0
+        && identity
+            .spawn_generation
+            .checked_add(1)
+            .is_some_and(|running_generation| {
+                snapshot.generation == running_generation
+                    && snapshot.fence_digest == objective_fence(identity, running_generation)
+            })
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {
@@ -405,7 +322,7 @@ fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdErro
     Ok(digest)
 }
 
-fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {
+pub(crate) fn run_start_binding(identity: &AgentdIdentity, profile_digest: Digest32) -> Digest32 {
     let mut bytes = b"hepta:agentd:objective-run-start-owner:v1\0".to_vec();
     bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
     bytes.extend_from_slice(profile_digest.as_array());
@@ -416,25 +333,28 @@ fn open_run_start_journal(
     identity: &AgentdIdentity,
     profile_digest: Digest32,
 ) -> Result<DurableRunStartJournal, AgentdError> {
-    let root = identity.home_root.join(RUN_START_DIRECTORY);
-    prepare_private_directory(&root)?;
-    let path = root.join(RUN_START_FILE);
-    if path.exists() {
-        let metadata = std::fs::symlink_metadata(&path)?;
-        if !metadata.is_file() || metadata.file_type().is_symlink() {
-            return Err(invalid(
-                "objective run-start journal must be a regular file",
-            ));
-        }
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
     #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let file = options.open(path)?;
+    let files = run_start_files::open(&identity.home_root)?;
+    #[cfg(unix)]
+    let file = files.journal;
+    #[cfg(not(unix))]
+    let root = identity.home_root.join(RUN_START_DIRECTORY);
+    #[cfg(not(unix))]
+    let file = {
+        prepare_private_directory(&root)?;
+        let path = root.join(RUN_START_FILE);
+        if path.exists() {
+            let metadata = std::fs::symlink_metadata(&path)?;
+            if !metadata.is_file() || metadata.file_type().is_symlink() {
+                return Err(invalid(
+                    "objective run-start journal must be a regular file",
+                ));
+            }
+        }
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true);
+        options.open(path)?
+    };
     if file.metadata()?.len() == 0 {
         let journal = DurableRunStartJournal::create(
             file,
@@ -442,6 +362,9 @@ fn open_run_start_journal(
             MAX_RUN_START_RECORDS,
         )
         .map_err(store_error)?;
+        #[cfg(unix)]
+        files.directory.sync_all()?;
+        #[cfg(not(unix))]
         sync_run_start_directory(&root)?;
         Ok(journal)
     } else {
@@ -455,12 +378,6 @@ fn open_run_start_journal(
     }
 }
 
-#[cfg(unix)]
-fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::File::open(path)?.sync_all()?;
-    Ok(())
-}
-
 #[cfg(not(unix))]
 fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
     // The selected non-Unix host profile must independently qualify directory-entry
@@ -468,13 +385,9 @@ fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
 
+#[cfg(not(unix))]
 fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
     std::fs::create_dir_all(path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    }
     let metadata = std::fs::symlink_metadata(path)?;
     if !metadata.is_dir() || metadata.file_type().is_symlink() {
         return Err(invalid("objective run-start root must be a real directory"));
@@ -529,7 +442,7 @@ fn require_replay_admission(
     }
 }
 
-fn authentication_is_current(
+pub(crate) fn authentication_is_current(
     record: &RunStartRecordV1,
     trust: &TextTrust,
     identity: &AgentdIdentity,
@@ -551,7 +464,7 @@ fn authentication_is_current(
             sequence: auth.sequence,
             expires_at_ms: auth.expires_at_ms,
         },
-        signature: auth.signature,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(auth.signature),
     };
     match message.authenticate(
         &issuer,
@@ -575,4 +488,4 @@ fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> Agentd
 
 #[cfg(test)]
 #[path = "objective_runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

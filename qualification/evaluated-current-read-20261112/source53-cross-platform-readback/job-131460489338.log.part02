@@ -1,0 +1,1172 @@
+2026-11-12T20:28:25.7428415Z test tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery ... FAILED
+2026-11-12T20:28:25.7428959Z test resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output ... ok
+2026-11-12T20:28:25.7429391Z test session_start::tests::archived_session_requires_confirmation_before_resume_or_fork ... ok
+2026-11-12T20:28:25.7429411Z 
+2026-11-12T20:28:25.7429536Z failures:
+2026-11-12T20:28:25.7429545Z 
+2026-11-12T20:28:25.7430016Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----
+2026-11-12T20:28:25.7430025Z 
+2026-11-12T20:28:25.7430648Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (2632) panicked at tui/src/lib.rs:3265:9:
+2026-11-12T20:28:25.7430813Z assertion failed: `(left == right)`
+2026-11-12T20:28:25.7430822Z 
+2026-11-12T20:28:25.7430963Z Diff < left / right > :
+2026-11-12T20:28:25.7431159Z <"D:\\tmp\\.tmpvdRJbF\\sqlite-home\\logs_2.sqlite"
+2026-11-12T20:28:25.7431375Z >"\\\\?\\D:\\tmp\\.tmpvdRJbF\\sqlite-home\\logs_2.sqlite"
+2026-11-12T20:28:25.7431383Z 
+2026-11-12T20:28:25.7431390Z 
+2026-11-12T20:28:25.7431977Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T20:28:25.7431986Z 
+2026-11-12T20:28:25.7432006Z 
+2026-11-12T20:28:25.7432125Z failures:
+2026-11-12T20:28:25.7432847Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery
+2026-11-12T20:28:25.7432856Z 
+2026-11-12T20:28:25.7433482Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 3.17s
+2026-11-12T20:28:25.7433493Z 
+2026-11-12T20:28:25.7433696Z ================================================================================
+2026-11-12T20:28:25.7433984Z ==================== Test output for //codex-rs/tui:tui-unit-tests (shard 3 of 8):
+2026-11-12T20:28:25.7433991Z 
+2026-11-12T20:28:25.7434114Z running 79 tests
+2026-11-12T20:28:25.7434467Z test app::agent_navigation::tests::picker_subtitle_mentions_shortcuts ... ok
+2026-11-12T20:28:25.7434765Z test additional_dirs::tests::returns_none_for_workspace_write ... ok
+2026-11-12T20:28:25.7435222Z test app::app_server_requests::tests::resolves_exec_approval_through_app_server_request_id ... ok
+2026-11-12T20:28:25.7435748Z test app::background_requests::tests::build_feedback_upload_params_includes_thread_id_and_rollout_path ... ok
+2026-11-12T20:28:25.7436133Z test app::agent_status_feed::tests::agent_status_uses_reasoning_summaries_only ... ok
+2026-11-12T20:28:25.7436958Z test app::background_requests::tests::mcp_inventory_maps_prefix_tool_names_by_server ... ok
+2026-11-12T20:28:25.7437567Z test app::app_server_requests::tests::resolves_permissions_and_user_input_through_app_server_request_id ... ok
+2026-11-12T20:28:25.7438113Z test app::config_persistence::tests::overridden_disabled_guardian_does_not_apply_auto_review_companions ... ok
+2026-11-12T20:28:25.7438555Z test app::agents_overview::tests::filtered_dashboard_actions_use_configured_shortcuts ... ok
+2026-11-12T20:28:25.7439373Z test app::config_persistence::tests::conversation_reasoning_keeps_previous_default_for_ultra_only_model ... ok
+2026-11-12T20:28:25.7440044Z test app::pending_interactive_replay::tests::thread_event_snapshot_drops_resolved_elicitation_after_outbound_resolution ... ok
+2026-11-12T20:28:25.7440714Z test app::pending_interactive_replay::tests::thread_event_snapshot_drops_resolved_patch_approval_after_outbound_approval ... ok
+2026-11-12T20:28:25.7441279Z test app::config_persistence::tests::leaving_conversation_ultra_in_default_clears_the_ephemeral_plan_effort ... ok
+2026-11-12T20:28:25.7442244Z test app::safety_buffering::tests::retry_accepts_a_targeted_latest_turn_and_its_completed_predecessor ... ok
+2026-11-12T20:28:25.7442920Z test app::session_lifecycle::tests::closed_state_for_thread_read_error_preserves_live_state_without_cache_on_transient_error ... ok
+2026-11-12T20:28:25.7443378Z test app::config_persistence::tests::sync_tui_theme_selection_updates_chat_widget_config_copy ... ok
+2026-11-12T20:28:25.7443796Z test app::resize_reflow::tests::resize_reflow_preserves_explicitly_unlimited_history ... ok
+2026-11-12T20:28:25.7444311Z test app::config_persistence::tests::rebuild_config_for_resume_or_fallback_errors_when_cwd_changes ... ok
+2026-11-12T20:28:25.7444662Z test app::tests::chat_widget_frame_reuses_active_cell_height_across_frame_passes ... ok
+2026-11-12T20:28:25.7445573Z [0qtest app::tests::background_exit_tests::daemon_ctrl_c_with_draft_preserves_composer_cancellation ... ok
+2026-11-12T20:28:25.7446105Z [0q[0q[0qtest app::tests::discard_side_thread_removes_agent_navigation_entry ... ok
+2026-11-12T20:28:25.7446705Z [0q[0qtest app::tests::changing_cyber_model_reasoning_preserves_selected_permissions ... ok
+2026-11-12T20:28:25.7447215Z test app::tests::model_catalog::accepted_model_migration_persists_target_default_reasoning_effort ... ok
+2026-11-12T20:28:25.7447810Z [0qtest app::tests::background_exit_tests::non_daemon_ctrl_c_keeps_interrupt_behavior ... ok
+2026-11-12T20:28:25.7448556Z [1049h[1007h[0qtest app::tests::key_chords::completed_global_chord_reuses_the_existing_action_handler ... ok
+2026-11-12T20:28:25.7448888Z test app::tests::open_agent_picker_marks_terminal_read_errors_closed ... ok
+2026-11-12T20:28:25.7449331Z test app::tests::open_agent_picker_preserves_running_hints_until_observed_completion ... ok
+2026-11-12T20:28:25.7450177Z test app::tests::open_agent_picker_refreshes_replay_only_path_backed_liveness ... ok
+2026-11-12T20:28:25.7450540Z test app::tests::open_agent_picker_prunes_terminal_metadata_only_threads ... ok
+2026-11-12T20:28:25.7451302Z [0qtest app::tests::patch_approval_tests::active_patch_approval_preserves_deferred_startup_protection ... ok
+2026-11-12T20:28:25.7452149Z test app::tests::override_turn_context_sends_thread_settings_update ... ok
+2026-11-12T20:28:25.7452790Z [0qtest app::tests::pasted_text_normalizes_mixed_line_endings_at_app_boundary ... ok
+2026-11-12T20:28:25.7453477Z [0qtest app::tests::rate_limits::post_hard_stop_rate_limit_read_clears_recovered_workspace_limit ... ok
+2026-11-12T20:28:25.7454156Z [0qtest app::tests::refresh_agent_picker_thread_liveness_prunes_closed_metadata_only_threads ... ok
+2026-11-12T20:28:25.7454648Z [0qtest app::tests::prompt_edit_before_first_prompt_starts_fresh_thread ... ok
+2026-11-12T20:28:25.7454934Z test app::tests::replace_goal_confirmation_snapshot ... ok
+2026-11-12T20:28:25.7455234Z test app::tests::reset_thread_event_state_aborts_listener_tasks ... ok
+2026-11-12T20:28:25.7455617Z test app::tests::resize_reflow_wraps_transcript_early_when_pet_is_enabled ... ok
+2026-11-12T20:28:25.7456054Z test app::tests::resolved_buffered_approval_does_not_become_actionable_after_drain ... ok
+2026-11-12T20:28:25.7456513Z [0qtest app::tests::remote_exec_resume_current_cwd_is_rejected ... ok
+2026-11-12T20:28:25.7457095Z [0qtest app::tests::remembered_current_cwd_stays_at_launch_across_in_app_resumes ... ok
+2026-11-12T20:28:25.7457778Z [0qtest app::tests::selected_and_resumed_threads_use_server_capability_for_v1_and_v2_children ... ok
+2026-11-12T20:28:25.7458343Z test app::tests::session_lifecycle_requests::paginated_workflows_never_request_full_thread_history ... ok
+2026-11-12T20:28:25.7458901Z test app::tests::session_lifecycle_requests::remote_legacy_history_fork_avoids_unsupported_fields ... ok
+2026-11-12T20:28:25.7459301Z test app::tests::side_restore_user_message_puts_inline_question_back_in_composer ... ok
+2026-11-12T20:28:25.7459616Z test app::tests::side_thread_snapshot_hides_forked_parent_transcript ... ok
+2026-11-12T20:28:25.7462429Z [0q[0q[0q[2026h    Would you like to run the following command?   Reason: needs approval   $ echo hello › 1. Yes, proceed (y)  2. No, and tell Codex what to do differently (esc)   Press enter to confirm or esc to cancel                                       [25l[2026l[0q[0q[25htest app::tests::session_lifecycle_requests::remote_legacy_history_start_retries_unsupported_paginated_variant ... ok
+2026-11-12T20:28:25.7462915Z test app::tests::startup::startup_draft_delayed_approval_becomes_protected_on_redraw ... ok
+2026-11-12T20:28:25.7463177Z test app::tests::startup::startup_paused_goal_prompt_gate_is_only_for_quiet_resume ... ok
+2026-11-12T20:28:25.7463464Z test app::tests::startup::startup_draft_handoff_keeps_approval_shortcuts_in_recently_active_composer ... ok
+2026-11-12T20:28:25.7463783Z [0qtest app::tests::in_app_resume_uses_configured_or_explicit_cwd ... ok
+2026-11-12T20:28:25.7464176Z test app::tests::turn_submission::misalignment_policy_in_parent_stops_active_side_conversation ... ok
+2026-11-12T20:28:25.7464548Z test app::tests::uncapped_resize_reflow_renders_all_cells_under_row_limit ... ok
+2026-11-12T20:28:25.7465595Z [1049h[1007h[1007l[1049l[0qtest app::tests::session_lifecycle_requests::underfilled_scrollback_fetches_older_pages_without_opening_the_transcript ... ok
+2026-11-12T20:28:25.7465608Z 
+2026-11-12T20:28:25.7465725Z /status
+2026-11-12T20:28:25.7465732Z 
+2026-11-12T20:28:25.7466061Z ╭──────────────────────────────────────────────────────────────────╮
+2026-11-12T20:28:25.7466363Z │  >_ OpenAI Codex (v0.0.0)                                        │
+2026-11-12T20:28:25.7466608Z │                                                                  │
+2026-11-12T20:28:25.7467060Z │ Visit ]8;;https://chatgpt.com/codex/settings/usagehttps://chatgpt.com/codex/settings/usage]8;; for up-to-date    │
+2026-11-12T20:28:25.7467647Z │ information on rate limits and credits                           │
+2026-11-12T20:28:25.7467793Z │                                                                  │
+2026-11-12T20:28:25.7467990Z │  Model:                gpt-test (reasoning none, summaries auto) │
+2026-11-12T20:28:25.7468185Z │  Directory:            C:\tmp\project                            │
+2026-11-12T20:28:25.7468369Z │  Permissions:          Read Only (never)                         │
+2026-11-12T20:28:25.7468546Z │  Agents.md:            <none>                                    │
+2026-11-12T20:28:25.7468734Z │  Collaboration mode:   Default                                   │
+2026-11-12T20:28:25.7468934Z │  Session:              01a1d172-5b26-7682-94a1-5b60eca287da      │
+2026-11-12T20:28:25.7469104Z │                                                                  │
+2026-11-12T20:28:25.7469291Z │  Token usage:          0 total  (0 input + 0 output)             │
+2026-11-12T20:28:25.7469482Z │  Limits:               data not available yet                    │
+2026-11-12T20:28:25.7469700Z ╰──────────────────────────────────────────────────────────────────╯M
+2026-11-12T20:28:25.7469840Z │                                                                  │
+2026-11-12T20:28:25.7470045Z │  Thread usage:         50 credits · ~$1.82                       │
+2026-11-12T20:28:25.7470782Z ╰──────────────────────────────────────────────────────────────────╯[0q[0qtest app::tests::thread_usage::failed_thread_usage_after_intervening_history_does_not_duplicate_status ... ok
+2026-11-12T20:28:25.7471022Z test app::thread_goal_actions::tests::unfinished_goals_require_replace_confirmation ... ok
+2026-11-12T20:28:25.7471297Z test app_backtrack::tests::backtrack_fork_before_turn_id_restores_canonical_mention_bindings ... ok
+2026-11-12T20:28:25.7471550Z test app_backtrack::tests::backtrack_fork_before_turn_id_skips_hidden_nested_review_prompts ... ok
+2026-11-12T20:28:25.7472244Z test app_server_approval_conversions::tests::converts_request_permissions_into_granted_permissions ... ok
+2026-11-12T20:28:25.7472549Z test app_server_session::tests::legacy_turn_permissions_project_to_sandbox_when_explicitly_overridden ... ok
+2026-11-12T20:28:25.7472818Z test app::tests::thread_usage::thread_usage_finishing_during_overlay_updates_history_after_close ... ok
+2026-11-12T20:28:25.7473074Z test app_server_session::tests::remote_turn_permissions_preserve_active_profile_selection ... ok
+2026-11-12T20:28:25.7473347Z test app::tests::update_feature_flags_disabling_guardian_clears_review_policy_and_restores_default ... ok
+2026-11-12T20:28:25.7473599Z test app_server_session::tests::persisted_resume_does_not_forward_implicit_service_tier ... ok
+2026-11-12T20:28:25.7473810Z test app::tests::update_memory_settings_updates_current_thread_memory_mode ... ok
+2026-11-12T20:28:25.7474014Z test bottom_pane::app_link_view::tests::auth_suggestion_with_reason_snapshot ... ok
+2026-11-12T20:28:25.7474329Z test bottom_pane::approval_overlay::tests::additional_permissions_rule_shows_non_path_file_system_entries ... ok
+2026-11-12T20:28:25.7474595Z test app_server_session::tests::thread_lifecycle_params_forward_config_overrides_and_service_tier ... ok
+2026-11-12T20:28:25.7474796Z test bottom_pane::approval_overlay::tests::ctrl_shift_a_opens_fullscreen ... ok
+2026-11-12T20:28:25.7475078Z test bottom_pane::approval_overlay::tests::approval_shortcuts_display_chords_in_configured_order ... ok
+2026-11-12T20:28:25.7475263Z test bottom_pane::approval_overlay::tests::esc_cancels_mcp_elicitation ... ok
+2026-11-12T20:28:25.7475503Z test bottom_pane::approval_overlay::tests::network_deny_forever_shortcut_is_not_bound ... ok
+2026-11-12T20:28:25.7475738Z test bottom_pane::approval_overlay::tests::permissions_deny_shortcut_uses_deny_keymap ... ok
+2026-11-12T20:28:25.7476010Z test bottom_pane::approval_overlay::tests::resolved_request_dismisses_overlay_without_emitting_abort ... ok
+2026-11-12T20:28:25.7476586Z test bottom_pane::chat_composer::completion_target::tests::current_prefixed_token_keeps_nested_dollar_prefix_in_same_token ... ok
+2026-11-12T20:28:25.7476909Z test bottom_pane::chat_composer::completion_target::tests::current_prefixed_token_prefers_right_at_token_start ... ok
+2026-11-12T20:28:25.7477285Z test bottom_pane::chat_composer::completion_target::tests::current_prefixed_token_targets_later_segment_between_bound_elements ... ok
+2026-11-12T20:28:25.7477551Z test app_server_session::tests::side_fork_excludes_turns_without_clearing_regular_ephemeral_fork ... ok
+2026-11-12T20:28:25.7477771Z test app_server_session::tests::side_fork_uses_one_request_for_long_paginated_history ... ok
+2026-11-12T20:28:25.7477777Z 
+2026-11-12T20:28:25.7478022Z test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 3702 filtered out; finished in 9.01s
+2026-11-12T20:28:25.7478026Z 
+2026-11-12T20:28:25.7478030Z 
+2026-11-12T20:28:25.7478111Z running 78 tests
+2026-11-12T20:28:25.7478410Z test bottom_pane::chat_composer::history_search::tests::history_search_match_ranges_are_case_insensitive ... ok
+2026-11-12T20:28:25.7478721Z test bottom_pane::chat_composer::history_search::tests::history_search_opens_without_previewing_latest_entry ... ok
+2026-11-12T20:28:25.7479072Z test bottom_pane::chat_composer::slash_input::tests::slash_completion_preserves_existing_draft_tail_for_inline_arg_commands ... ok
+2026-11-12T20:28:25.7479297Z test bottom_pane::chat_composer::tests::bound_at_mentions_do_not_block_arrow_navigation ... ok
+2026-11-12T20:28:25.7479552Z test bottom_pane::chat_composer::tests::adjacent_image_completion_inserts_leading_separator ... ok
+2026-11-12T20:28:25.7479793Z test bottom_pane::chat_composer::tests::burst_paste_fast_large_inserts_placeholder_on_flush ... ok
+2026-11-12T20:28:25.7480040Z test bottom_pane::chat_composer::effort_tests::effort_transition_keeps_the_full_footer_row ... ok
+2026-11-12T20:28:25.7480327Z test bottom_pane::chat_composer::tests::deleting_first_text_element_renumbers_following_text_element ... ok
+2026-11-12T20:28:25.7480546Z test bottom_pane::chat_composer::tests::duplicate_image_placeholders_get_suffix ... ok
+2026-11-12T20:28:25.7480726Z test bottom_pane::chat_composer::tests::edit_clears_pending_paste ... ok
+2026-11-12T20:28:25.7480992Z test bottom_pane::chat_composer::tests::adjacent_plugin_completion_inserts_separator_snapshot ... ok
+2026-11-12T20:28:25.7481223Z test bottom_pane::chat_composer::tests::enter_queues_when_queue_submissions_is_enabled ... ok
+2026-11-12T20:28:25.7481452Z test bottom_pane::chat_composer::tests::enter_submits_when_file_popup_has_no_selection ... ok
+2026-11-12T20:28:25.7481931Z test bottom_pane::chat_composer::tests::file_completion_preserves_separator_before_sigiled_suffix ... ok
+2026-11-12T20:28:25.7482136Z test bottom_pane::chat_composer::tests::handle_paste_small_inserts_text ... ok
+2026-11-12T20:28:25.7482394Z test bottom_pane::chat_composer::tests::history_navigation_restores_remote_only_submissions ... ok
+2026-11-12T20:28:25.7482682Z test bottom_pane::chat_composer::tests::large_paste_numbering_continues_with_same_length_placeholder ... ok
+2026-11-12T20:28:25.7482904Z test bottom_pane::chat_composer::tests::default_unified_mention_popup_snapshot ... ok
+2026-11-12T20:28:25.7483189Z test bottom_pane::chat_composer::tests::large_paste_with_leading_whitespace_trims_and_shifts_elements ... ok
+2026-11-12T20:28:25.7483431Z test bottom_pane::chat_composer::tests::set_connector_mentions_refreshes_open_mention_popup ... ok
+2026-11-12T20:28:25.7483676Z test bottom_pane::chat_composer::tests::set_plugin_mentions_refreshes_open_mention_popup ... ok
+2026-11-12T20:28:25.7483933Z test bottom_pane::chat_composer::tests::plugin_at_mentions_render_with_plugin_accent_snapshot ... ok
+2026-11-12T20:28:25.7484228Z test bottom_pane::chat_composer::tests::slash_popup_not_activated_for_slash_space_text_history_like_input ... ok
+2026-11-12T20:28:25.7484523Z test bottom_pane::chat_composer::tests::tab_queues_slash_led_prompts_while_task_running_without_validation ... ok
+2026-11-12T20:28:25.7485002Z test bottom_pane::chat_composer::tests::task_mention_titles_are_normalized_and_bounded_before_insertion ... ok
+2026-11-12T20:28:25.7485304Z test bottom_pane::chat_composer::tests::skill_popup_falls_back_from_bound_skill_with_path_suffix_snapshot ... ok
+2026-11-12T20:28:25.7485576Z test bottom_pane::chat_composer::tests::test_current_at_token_allows_file_queries_with_second_at ... ok
+2026-11-12T20:28:25.7485772Z test bottom_pane::chat_composer::tests::test_current_at_token_basic_cases ... ok
+2026-11-12T20:28:25.7486027Z test bottom_pane::chat_composer::tests::unified_popup_preserves_empty_at_before_existing_text ... ok
+2026-11-12T20:28:25.7486375Z test bottom_pane::chat_composer_history::search_batch_tests::search_batch_late_data_is_cache_only_after_cancel_or_query_edit ... ok
+2026-11-12T20:28:25.7486715Z test bottom_pane::chat_composer_history::tests::initial_metadata_preserves_startup_history_but_session_changes_clear_it ... ok
+2026-11-12T20:28:25.7487017Z test bottom_pane::chat_composer_history::tests::should_handle_navigation_when_cursor_is_at_line_boundaries ... ok
+2026-11-12T20:28:25.7487250Z test bottom_pane::command_popup::tests::btw_hidden_in_empty_filter_but_shown_for_prefix ... ok
+2026-11-12T20:28:25.7487560Z test bottom_pane::chat_composer::tests::unified_mention_popup_falls_back_from_bound_plugin_on_right_snapshot ... ok
+2026-11-12T20:28:25.7487840Z test bottom_pane::effort_ignition::tests::effort_ignition_styles_are_safe_on_tiny_and_offset_areas ... ok
+2026-11-12T20:28:25.7488127Z test bottom_pane::feedback_view::tests::feedback_upload_consent_lists_windows_sandbox_log_when_included ... ok
+2026-11-12T20:28:25.7488482Z test bottom_pane::feedback_view::tests::should_show_feedback_connectivity_details_only_for_non_good_result_with_diagnostics ... ok
+2026-11-12T20:28:25.7488715Z test bottom_pane::feedback_view::tests::feedback_view_with_connectivity_diagnostics ... ok
+2026-11-12T20:28:25.7488937Z test bottom_pane::footer::tests::footer_status_line_truncates_to_keep_mode_indicator ... ok
+2026-11-12T20:28:25.7489152Z test bottom_pane::hooks_browser_view::tests::renders_review_needed_handler ... ok
+2026-11-12T20:28:25.7489395Z test bottom_pane::hooks_browser_view::tests::review_needed_handler_header_uses_warning_color ... ok
+2026-11-12T20:28:25.7489605Z test bottom_pane::hooks_browser_view::tests::review_needed_hooks_are_not_active ... ok
+2026-11-12T20:28:25.7489912Z test bottom_pane::hooks_browser_view::tests::trust_key_trusts_review_needed_handler_without_changing_enablement ... ok
+2026-11-12T20:28:25.7490177Z test bottom_pane::list_selection_view::tests::auto_all_rows_col_width_does_not_shift_when_scrolling ... ok
+2026-11-12T20:28:25.7490315Z test bottom_pane::footer::tests::footer_snapshots ... ok
+2026-11-12T20:28:25.7490585Z test bottom_pane::list_selection_view::tests::single_line_row_display_truncates_instead_of_wrapping ... ok
+2026-11-12T20:28:25.7490792Z test bottom_pane::chat_composer::tests::slash_popup_model_first_for_mo_logic ... ok
+2026-11-12T20:28:25.7491001Z test bottom_pane::list_selection_view::tests::snapshot_model_picker_width_80 ... ok
+2026-11-12T20:28:25.7491262Z test bottom_pane::list_selection_view::tests::snapshot_auto_all_rows_col_width_mode_scroll_behavior ... ok
+2026-11-12T20:28:25.7491555Z test bottom_pane::mcp_server_elicitation::tests::approval_form_tool_approval_with_param_summary_snapshot ... ok
+2026-11-12T20:28:25.7492078Z test bottom_pane::multi_select_picker::tests::non_orderable_items_cannot_move_or_be_crossed ... ok
+2026-11-12T20:28:25.7492372Z test bottom_pane::pending_input_preview::tests::render_one_message_with_shift_left_binding ... ok
+2026-11-12T20:28:25.7492596Z test bottom_pane::pending_thread_approvals::tests::render_single_thread_snapshot ... ok
+2026-11-12T20:28:25.7492853Z test bottom_pane::list_selection_view::tests::snapshot_narrow_width_counts_halfwidth_sound_marks ... ok
+2026-11-12T20:28:25.7493118Z test bottom_pane::request_user_input::tests::freeform_submit_binding_wins_over_question_navigation ... ok
+2026-11-12T20:28:25.7494482Z test bottom_pane::request_user_input::tests::horizontal_list_keys_move_between_questions_in_options ... ok
+2026-11-12T20:28:25.7494786Z test bottom_pane::list_selection_view::tests::theme_picker_enables_side_content_background_preservation ... ok
+2026-11-12T20:28:25.7495050Z test bottom_pane::skill_popup::tests::filtered_mentions_preserve_results_beyond_popup_height ... ok
+2026-11-12T20:28:25.7495251Z test bottom_pane::slash_commands::tests::clear_command_resolves_for_dispatch ... ok
+2026-11-12T20:28:25.7495455Z test bottom_pane::status_line_setup::tests::git_summary_items_are_selectable_ids ... ok
+2026-11-12T20:28:25.7495801Z test bottom_pane::request_user_input::tests::freeform_footer_displays_configured_chords_without_internal_dispatch_keys ... ok
+2026-11-12T20:28:25.7495988Z test bottom_pane::status_line_setup::tests::preview_uses_runtime_values ... ok
+2026-11-12T20:28:25.7496235Z test bottom_pane::status_line_setup::tests::thread_usage_items_are_independently_selectable ... ok
+2026-11-12T20:28:25.7496484Z test bottom_pane::status_line_style::tests::status_line_segments_can_disable_theme_colors ... ok
+2026-11-12T20:28:25.7496630Z test bottom_pane::textarea::tests::control_h_backspace ... ok
+2026-11-12T20:28:25.7496838Z test bottom_pane::textarea::tests::cursor_pos_with_state_after_movements ... ok
+2026-11-12T20:28:25.7497052Z test bottom_pane::textarea::tests::delete_forward_word_handles_atomic_elements ... ok
+2026-11-12T20:28:25.7497253Z test bottom_pane::textarea::tests::delete_forward_word_respects_word_separators ... ok
+2026-11-12T20:28:25.7497458Z test bottom_pane::tests::status_indicator_visible_during_command_execution ... ok
+2026-11-12T20:28:25.7497652Z test bottom_pane::textarea::tests::vim_d_at_line_end_does_not_remove_newline ... ok
+2026-11-12T20:28:25.7497837Z test bottom_pane::textarea::tests::vim_normal_arrow_keys_move_cursor ... ok
+2026-11-12T20:28:25.7498013Z test bottom_pane::textarea::tests::word_navigation_mixed_ascii_cjk ... ok
+2026-11-12T20:28:25.7498208Z test bottom_pane::textarea::tests::masked_graphemes_align_with_the_cursor ... ok
+2026-11-12T20:28:25.7498386Z test bottom_pane::textarea::tests::wrapping_and_cursor_positions ... ok
+2026-11-12T20:28:25.7498580Z test bottom_pane::textarea::wrapping::tests::nonbreaking_spaces_never_hang ... ok
+2026-11-12T20:28:25.7498816Z test bottom_pane::request_user_input::tests::selected_long_wrapped_option_stays_visible ... ok
+2026-11-12T20:28:25.7499068Z test bottom_pane::chat_composer::tests::non_ascii_burst_preserves_ideographic_space_and_ascii ... ok
+2026-11-12T20:28:25.7499310Z test bottom_pane::textarea::wrapping::tests::wraps_maximum_length_unbroken_word_in_one_pass ... ok
+2026-11-12T20:28:25.7499315Z 
+2026-11-12T20:28:25.7499539Z test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 3703 filtered out; finished in 1.36s
+2026-11-12T20:28:25.7499543Z 
+2026-11-12T20:28:25.7499547Z 
+2026-11-12T20:28:25.7499630Z running 77 tests
+2026-11-12T20:28:25.7499881Z test chatwidget::goal_status::tests::completed_goal_usage_reports_time_without_token_budget ... ok
+2026-11-12T20:28:25.7500128Z test chatwidget::reasoning_shortcuts::tests::next_reasoning_effort_single_option_is_noop ... ok
+2026-11-12T20:28:25.7500329Z test branch_summary::tests::open_pull_request_uses_current_branch_view_first ... ok
+2026-11-12T20:28:25.7500564Z test chatwidget::pets::tests::stale_pet_selection_completion_keeps_current_loading_popup ... ok
+2026-11-12T20:28:25.7500754Z test chatwidget::tests::app_server::invalid_url_elicitation_is_declined ... ok
+2026-11-12T20:28:25.7501013Z test chatwidget::rendering::tests::active_cell_layout_preserves_custom_height_and_bottom_scroll ... ok
+2026-11-12T20:28:25.7501287Z test chatwidget::tests::app_server::live_app_server_guardian_warning_notification_renders_message ... ok
+2026-11-12T20:28:25.7501518Z test chatwidget::tests::app_server::live_app_server_model_verification_renders_warning ... ok
+2026-11-12T20:28:25.7502117Z test chatwidget::tests::app_server::live_app_server_turn_completion_repairs_dropped_message_deltas ... ok
+2026-11-12T20:28:25.7502595Z test chatwidget::tests::app_server::live_app_server_warning_notification_renders_message ... ok
+2026-11-12T20:28:25.7502835Z test chatwidget::tests::app_server::safety_buffering_offers_one_retry_with_app_wording ... ok
+2026-11-12T20:28:25.7503106Z test chatwidget::tests::composer_submission::enqueueing_history_prompt_multiple_times_is_stable ... ok
+2026-11-12T20:28:25.7503405Z test chatwidget::tests::composer_submission::parent_owned_thread_preserves_queued_input_before_draining ... ok
+2026-11-12T20:28:25.7503642Z test chatwidget::tests::composer_submission::remap_placeholders_uses_attachment_labels ... ok
+2026-11-12T20:28:25.7503888Z test chatwidget::tests::app_server::safety_buffering_without_retry_shows_short_app_message ... ok
+2026-11-12T20:28:25.7504227Z test chatwidget::tests::composer_submission::startup_draft_handoff_syncs_file_search_with_restored_interior_cursor ... ok
+2026-11-12T20:28:25.7504494Z test chatwidget::tests::exec_flow::app_server_exec_approval_request_splits_shell_wrapped_command ... ok
+2026-11-12T20:28:25.7504769Z test chatwidget::tests::composer_submission::parent_owned_thread_restores_pending_initial_prompt ... ok
+2026-11-12T20:28:25.7505271Z Snapshot test passes but the existing value is in a legacy format. Please run `cargo insta test --force-update-snapshots` to update to a newer format. Snapshot contents:
+2026-11-12T20:28:25.7505504Z › Inspect @Review database migration
+2026-11-12T20:28:25.7505831Z test chatwidget::tests::composer_submission::task_mention_submission_and_transcript_preserve_the_visible_title ... ok
+2026-11-12T20:28:25.7506063Z test chatwidget::tests::exec_flow::interrupt_preserves_unified_exec_wait_streak_snapshot ... ok
+2026-11-12T20:28:25.7506334Z test chatwidget::tests::exec_flow::unified_exec_wait_status_header_updates_on_late_command_display ... ok
+2026-11-12T20:28:25.7506531Z test chatwidget::tests::exec_flow::view_image_tool_call_adds_history_cell ... ok
+2026-11-12T20:28:25.7506774Z test chatwidget::tests::goal_menu::goal_edit_prompt_preserves_resumable_stopped_statuses ... ok
+2026-11-12T20:28:25.7507012Z test chatwidget::tests::goal_menu::goal_edit_prompt_submits_preserved_status_and_budget ... ok
+2026-11-12T20:28:25.7507188Z test chatwidget::tests::exec_flow::approval_modal_exec_snapshot ... ok
+2026-11-12T20:28:25.7507439Z test chatwidget::tests::exec_flow::exec_approval_decision_truncates_multiline_and_long_commands ... ok
+2026-11-12T20:28:25.7507604Z test chatwidget::tests::goal_menu::goal_menu_blocked_snapshot ... ok
+2026-11-12T20:28:25.7507762Z test chatwidget::tests::goal_menu::goal_menu_active_snapshot ... ok
+2026-11-12T20:28:25.7507934Z test chatwidget::tests::goal_menu::goal_menu_paused_snapshot ... ok
+2026-11-12T20:28:25.7508254Z test chatwidget::tests::goal_validation::goal_slash_command_accepts_multiline_objective_after_blank_first_line ... ok
+2026-11-12T20:28:25.7508475Z test chatwidget::tests::goal_validation::goal_slash_command_accepts_objective_at_limit ... ok
+2026-11-12T20:28:25.7508717Z test chatwidget::tests::guardian::approving_recent_denial_emits_structured_core_op_once ... ok
+2026-11-12T20:28:25.7508975Z test chatwidget::tests::goal_validation::goal_slash_command_preserves_large_pasted_objective ... ok
+2026-11-12T20:28:25.7509275Z test chatwidget::tests::history_replay::replayed_stream_error_does_not_set_retry_status_or_status_indicator ... ok
+2026-11-12T20:28:25.7509531Z test chatwidget::tests::history_replay::replayed_review_prompt_does_not_seed_composer_history ... ok
+2026-11-12T20:28:25.7509777Z test chatwidget::tests::history_replay::replayed_thread_closed_notification_does_not_exit_tui ... ok
+2026-11-12T20:28:25.7510026Z test chatwidget::tests::mcp_startup::pending_mcp_startup_dispatches_queued_slash_commands ... ok
+2026-11-12T20:28:25.7510274Z test chatwidget::tests::mcp_startup::pending_mcp_startup_does_not_unblock_external_review ... ok
+2026-11-12T20:28:25.7510515Z test chatwidget::tests::mcp_startup::pending_mcp_startup_does_not_unblock_foreground_shell ... ok
+2026-11-12T20:28:25.7510929Z test chatwidget::tests::mcp_startup::turn_start_preserves_active_mcp_startup_header ... ok
+2026-11-12T20:28:25.7511170Z test chatwidget::tests::mcp_startup::turn_start_replaces_idle_completed_mcp_startup_header ... ok
+2026-11-12T20:28:25.7511383Z test chatwidget::tests::permissions::approvals_popup_shows_disabled_presets ... ok
+2026-11-12T20:28:25.7511877Z test chatwidget::tests::permissions::permissions_selection_emits_history_cell_when_current_is_selected ... ok
+2026-11-12T20:28:25.7512359Z test chatwidget::tests::misalignment_policy::misalignment_policy_failure_stops_the_thread_and_renders_once ... ok
+2026-11-12T20:28:25.7512646Z test chatwidget::tests::permissions::permissions_selection_history_snapshot_full_access_to_default ... ok
+2026-11-12T20:28:25.7512935Z test chatwidget::tests::permissions::required_windows_sandbox_setup_defers_configured_initial_prompt ... ok
+2026-11-12T20:28:25.7513211Z test chatwidget::tests::permissions::startup_does_not_prompt_for_windows_sandbox_when_not_requested ... ok
+2026-11-12T20:28:25.7513874Z test chatwidget::tests::permissions::windows_sandbox_required_fallback_prompt_snapshot ... ok
+2026-11-12T20:28:25.7514324Z test chatwidget::tests::plan_mode::advanced_reasoning_selection_in_plan_mode_uses_expected_scope ... ok
+2026-11-12T20:28:25.7514635Z test chatwidget::tests::plan_mode::collab_mode_is_sent_after_enabling ... ok
+2026-11-12T20:28:25.7515015Z test chatwidget::tests::plan_mode::handle_request_user_input_sets_pending_notification ... ok
+2026-11-12T20:28:25.7515362Z test chatwidget::tests::plan_mode::collab_mode_shift_tab_cycles_only_when_idle ... ok
+2026-11-12T20:28:25.7515816Z test chatwidget::tests::permissions::approvals_selection_popup_snapshot_windows_degraded_sandbox ... ok
+2026-11-12T20:28:25.7516295Z test chatwidget::tests::plan_mode::plan_implementation_clear_context_requires_default_mode_and_plan ... ok
+2026-11-12T20:28:25.7516832Z test chatwidget::tests::plan_mode::plan_reasoning_scope_popup_mentions_built_in_plan_default_when_no_override ... ok
+2026-11-12T20:28:25.7517266Z test chatwidget::tests::plan_mode::set_reasoning_effort_updates_active_collaboration_mask ... ok
+2026-11-12T20:28:25.7517775Z test chatwidget::tests::plan_mode::plan_reasoning_scope_popup_plan_only_does_not_update_all_modes_reasoning ... ok
+2026-11-12T20:28:25.7518255Z test chatwidget::tests::plan_mode::submit_user_message_blocks_when_thread_model_is_unavailable ... ok
+2026-11-12T20:28:25.7518749Z test chatwidget::tests::plan_mode::unterminated_plan_delta_does_not_redraw_unchanged_stream_tail ... ok
+2026-11-12T20:28:25.7519351Z test chatwidget::tests::popups_and_settings::apps_popup_for_not_installed_app_uses_install_only_selected_description ... ok
+2026-11-12T20:28:25.7519822Z test chatwidget::tests::popups_and_settings::memories_reset_confirmation_sends_event_on_confirm ... ok
+2026-11-12T20:28:25.7520208Z test chatwidget::tests::popups_and_settings::memories_settings_popup_snapshot ... ok
+2026-11-12T20:28:25.7520621Z test chatwidget::tests::popups_and_settings::personality_selection_popup_snapshot ... ok
+2026-11-12T20:28:25.7521210Z test chatwidget::tests::popups_and_settings::plugin_detail_popup_shows_local_share_context_as_read_only_snapshot ... ok
+2026-11-12T20:28:25.7522201Z test chatwidget::tests::popups_and_settings::plugin_detail_popup_snapshot_labels_personal_marketplace_as_local ... ok
+2026-11-12T20:28:25.7522793Z test chatwidget::tests::popups_and_settings::plugins_popup_space_on_uninstalled_row_does_not_start_search ... ok
+2026-11-12T20:28:25.7523367Z test chatwidget::tests::popups_and_settings::plugins_popup_refresh_preserves_duplicate_marketplace_tab_by_path ... ok
+2026-11-12T20:28:25.7523884Z test chatwidget::tests::popups_and_settings::plugins_popup_space_toggles_installed_plugin_from_list ... ok
+2026-11-12T20:28:25.7524501Z test chatwidget::tests::popups_and_settings::plugins_popup_space_with_active_search_does_not_toggle_installed_plugin ... ok
+2026-11-12T20:28:25.7525313Z test chatwidget::tests::popups_and_settings::reasoning_down_shortcuts_lower_reasoning_effort ... ok
+2026-11-12T20:28:25.7525916Z test chatwidget::tests::review_mode::direct_budget_limited_turn_uses_budget_message_snapshot ... ok
+2026-11-12T20:28:25.7526357Z test chatwidget::tests::review_mode::manual_interrupt_restores_pending_steers_to_composer ... ok
+2026-11-12T20:28:25.7526797Z test chatwidget::tests::popups_and_settings::reasoning_up_shortcuts_raise_reasoning_effort ... ok
+2026-11-12T20:28:25.7527213Z test chatwidget::tests::review_mode::interrupted_turn_pending_steers_message_snapshot ... ok
+2026-11-12T20:28:25.7527646Z test chatwidget::tests::review_mode::review_popup_custom_prompt_action_sends_event ... ok
+2026-11-12T20:28:25.7527985Z test chatwidget::tests::side::side_context_label_shows_hidden_side_snapshot ... ok
+2026-11-12T20:28:25.7528339Z test chatwidget::pets::tests::shared_pet_load_uses_cached_builtin_assets ... ok
+2026-11-12T20:28:25.7528351Z 
+2026-11-12T20:28:25.7528792Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 1.93s
+2026-11-12T20:28:25.7528801Z 
+2026-11-12T20:28:25.7528814Z 
+2026-11-12T20:28:25.7528941Z running 77 tests
+2026-11-12T20:28:25.7529458Z test chatwidget::tests::slash_commands::merged_history_record_remaps_override_image_placeholders ... ok
+2026-11-12T20:28:25.7529944Z test chatwidget::tests::slash_commands::no_op_stub_slash_command_is_available_from_local_recall ... ok
+2026-11-12T20:28:25.7530302Z test chatwidget::tests::slash_commands::ctrl_d_with_modal_open_does_not_quit ... ok
+2026-11-12T20:28:25.7530747Z test chatwidget::tests::slash_commands::queued_bang_shell_dispatches_after_active_turn ... ok
+2026-11-12T20:28:25.7531241Z test chatwidget::tests::slash_commands::queued_menu_slash_keeps_agent_turn_complete_notification ... ok
+2026-11-12T20:28:25.7531923Z test chatwidget::tests::slash_commands::goal_control_slash_commands_emit_goal_events ... ok
+2026-11-12T20:28:25.7532312Z test chatwidget::tests::slash_commands::slash_app_requests_desktop_handoff ... ok
+2026-11-12T20:28:25.7532836Z test chatwidget::tests::slash_commands::repeated_token_activity_refreshes_keep_only_latest_card ... ok
+2026-11-12T20:28:25.7533342Z test chatwidget::tests::slash_commands::slash_clear_after_ctrl_c_keeps_stashed_draft_recallable ... ok
+2026-11-12T20:28:25.7533977Z test chatwidget::tests::slash_commands::slash_copy_picker_numeric_shortcuts_copy_whole_response_and_exact_code ... ok
+2026-11-12T20:28:25.7534547Z test chatwidget::tests::slash_commands::slash_copy_picker_previews_whole_response_code_blocks_and_blockquotes ... ok
+2026-11-12T20:28:25.7535012Z test chatwidget::tests::slash_commands::slash_copy_picker_remains_available_from_parent_owned_threads ... ok
+2026-11-12T20:28:25.7535629Z test chatwidget::tests::slash_commands::slash_copy_state_tracks_turn_complete_final_reply ... ok
+2026-11-12T20:28:25.7536036Z test chatwidget::tests::slash_commands::slash_logout_requests_app_server_logout ... ok
+2026-11-12T20:28:25.7536469Z test chatwidget::tests::slash_commands::interrupt_disambiguates_same_sized_goal_pastes ... ok
+2026-11-12T20:28:25.7536935Z test chatwidget::tests::slash_commands::slash_cd_rejects_pending_input_and_unsupported_session_ownership ... ok
+2026-11-12T20:28:25.7537459Z test chatwidget::tests::slash_commands::slash_copy_picker_defers_queued_input_until_selection_or_cancellation_settles ... ok
+2026-11-12T20:28:25.7537690Z test chatwidget::tests::slash_commands::slash_mcp_invalid_args_show_usage ... ok
+2026-11-12T20:28:25.7537914Z test chatwidget::tests::slash_commands::slash_memory_update_reports_stubbed_feature ... ok
+2026-11-12T20:28:25.7538188Z test chatwidget::tests::slash_commands::slash_pets_on_unsupported_terminal_shows_terminal_warning ... ok
+2026-11-12T20:28:25.7538444Z test chatwidget::tests::slash_commands::slash_rename_without_existing_thread_name_starts_empty ... ok
+2026-11-12T20:28:25.7538700Z test chatwidget::tests::slash_commands::slash_resume_opens_picker_while_mcp_startup_is_running ... ok
+2026-11-12T20:28:25.7539156Z test chatwidget::tests::slash_commands::slash_rollout_handles_missing_path ... ok
+2026-11-12T20:28:25.7539481Z test chatwidget::tests::status_and_layout::ambient_pet_hides_notification_text_overlay ... ok
+2026-11-12T20:28:25.7539799Z test chatwidget::tests::slash_commands::slash_pwd_and_cwd_alias_display_current_working_directory_from_composer ... ok
+2026-11-12T20:28:25.7540067Z test chatwidget::tests::status_and_layout::ambient_pet_screen_bottom_anchor_uses_terminal_bottom ... ok
+2026-11-12T20:28:25.7540326Z test chatwidget::tests::status_and_layout::completed_turn_refreshes_credits_only_terminal_title ... ok
+2026-11-12T20:28:25.7540578Z test chatwidget::tests::status_and_layout::chatwidget_exec_and_status_layout_vt100_snapshot ... ok
+2026-11-12T20:28:25.7540807Z test chatwidget::tests::status_and_layout::fast_status_indicator_requires_chatgpt_auth ... ok
+2026-11-12T20:28:25.7541042Z test chatwidget::tests::status_and_layout::completed_turn_clears_visible_running_hook ... ok
+2026-11-12T20:28:25.7541318Z test chatwidget::tests::status_and_layout::goal_status_indicator_formats_statuses_and_budgets ... ok
+2026-11-12T20:28:25.7541622Z test chatwidget::tests::status_and_layout::final_answer_completion_restores_status_indicator_for_pending_steer ... ok
+2026-11-12T20:28:25.7542219Z test chatwidget::tests::status_and_layout::flush_answer_stream_keeps_default_reflow_for_plain_text_tail ... ok
+2026-11-12T20:28:25.7542498Z test chatwidget::tests::status_and_layout::final_reasoning_then_message_without_deltas_are_rendered ... ok
+2026-11-12T20:28:25.7542738Z test chatwidget::tests::status_and_layout::rate_limit_switch_prompt_skips_non_codex_limit ... ok
+2026-11-12T20:28:25.7543031Z test chatwidget::tests::status_and_layout::long_hook_context_is_truncated_with_transcript_hint_snapshot ... ok
+2026-11-12T20:28:25.7543319Z test chatwidget::tests::status_and_layout::rate_limit_switch_prompt_defers_until_task_complete ... ok
+2026-11-12T20:28:25.7543717Z test chatwidget::tests::status_and_layout::session_configured_clears_goal_status_footer ... ok
+2026-11-12T20:28:25.7544115Z test chatwidget::tests::status_and_layout::stale_status_line_git_summary_update_is_ignored ... ok
+2026-11-12T20:28:25.7544616Z test chatwidget::tests::status_and_layout::status_line_estimated_thread_cost_preserves_cached_amount_during_settlement ... ok
+2026-11-12T20:28:25.7545084Z test chatwidget::tests::status_and_layout::status_line_five_hour_item_omits_weekly_only_limit ... ok
+2026-11-12T20:28:25.7545573Z test chatwidget::tests::status_and_layout::single_line_final_answer_hides_working_status_snapshot ... ok
+2026-11-12T20:28:25.7546060Z test chatwidget::tests::status_and_layout::status_line_hostname_renders_current_machine_hostname ... ok
+2026-11-12T20:28:25.7546606Z test chatwidget::tests::status_and_layout::status_line_legacy_context_usage_renders_context_used_percent ... ok
+2026-11-12T20:28:25.7547182Z test chatwidget::tests::status_and_layout::status_line_thread_credits_fetches_and_renders_fractional_credits ... ok
+2026-11-12T20:28:25.7547752Z test chatwidget::tests::status_and_layout::status_line_thread_credits_remain_visible_when_usd_is_unavailable ... ok
+2026-11-12T20:28:25.7548247Z test chatwidget::tests::status_and_layout::status_line_workspace_headline_omits_when_unavailable ... ok
+2026-11-12T20:28:25.7548724Z test chatwidget::tests::status_and_layout::status_line_workspace_headline_renders_cached_value ... ok
+2026-11-12T20:28:25.7549175Z test chatwidget::tests::status_and_layout::stream_error_restores_hidden_status_indicator ... ok
+2026-11-12T20:28:25.7549603Z test chatwidget::tests::status_and_layout::token_count_none_resets_context_indicator ... ok
+2026-11-12T20:28:25.7550191Z test chatwidget::tests::status_and_layout::workspace_headline_fetch_allows_backend_auth_without_chatgpt_account ... ok
+2026-11-12T20:28:25.7550550Z test chatwidget::tests::status_and_layout::status_widget_active_snapshot ... ok
+2026-11-12T20:28:25.7551091Z test chatwidget::tests::status_and_layout::workspace_headline_update_applies_feature_disabled_result ... ok
+2026-11-12T20:28:25.7552250Z test chatwidget::tests::status_command_tests::account_update_rejects_stale_status_rate_limit_snapshots ... ok
+2026-11-12T20:28:25.7552895Z test chatwidget::tests::status_surface_previews::missing_project_root_uses_different_status_and_title_preview_sources ... ok
+2026-11-12T20:28:25.7553381Z test chatwidget::tests::status_and_layout::workspace_owner_nudge_reappears_after_dismissing_no ... ok
+2026-11-12T20:28:25.7553920Z test chatwidget::tests::usage::account_update_invalidates_usage_menu_refresh_when_visible_state_is_unchanged ... ok
+2026-11-12T20:28:25.7554419Z test chatwidget::tests::status_surface_previews::status_surface_preview_lines_live_only_snapshot ... ok
+2026-11-12T20:28:25.7554821Z test chatwidget::tests::usage::no_credit_outcome_disables_reset_entry_in_usage_menu ... ok
+2026-11-12T20:28:25.7555333Z test chatwidget::tests::status_surface_previews::terminal_title_setup_popup_thread_usage_snapshot ... ok
+2026-11-12T20:28:25.7555836Z test chatwidget::thread_usage::tests::early_draw_rearms_thread_usage_retry_after_immediate_redraw ... ok
+2026-11-12T20:28:25.7556365Z test chatwidget::tokens::chart::palette::tests::truecolor_palette_blends_empty_cell_for_light_background ... ok
+2026-11-12T20:28:25.7557057Z test chatwidget::tokens::chart::tests::bar_levels_fill_from_bottom ... ok
+2026-11-12T20:28:25.7557825Z test chatwidget::thread_usage::tests::credits_only_settlement_completes_without_usd_estimates ... ok
+2026-11-12T20:28:25.7558415Z test chatwidget::turn_lifecycle::tests::start_and_finish_update_running_state ... ok
+2026-11-12T20:28:25.7558810Z test clipboard_copy::tests::osc52_rejects_payload_larger_than_limit ... ok
+2026-11-12T20:28:25.7559223Z test clipboard_copy::tests::write_osc52_to_writer_emits_sequence_verbatim ... ok
+2026-11-12T20:28:25.7559637Z test clipboard_paste::pasted_paths_tests::pasted_image_format_png_jpeg_unknown ... ok
+2026-11-12T20:28:25.7560064Z test clipboard_paste::pasted_paths_tests::pasted_image_format_with_windows_style_paths ... ok
+2026-11-12T20:28:25.7560383Z test custom_terminal::tests::diff_buffers_emits_always_update_cells ... ok
+2026-11-12T20:28:25.7560578Z test cwd_prompt::tests::cwd_prompt_fork_snapshot ... ok
+2026-11-12T20:28:25.7561020Z test chatwidget::tokens::chart::tests::daily_graph_snapshot_stays_left_aligned_in_wide_terminal ... ok
+2026-11-12T20:28:25.7561447Z test chatwidget::thread_usage::tests::temporary_thread_usage_failures_have_bounded_retries ... ok
+2026-11-12T20:28:25.7562185Z test cwd_prompt::tests::cwd_prompt_remembered_current_snapshot ... ok
+2026-11-12T20:28:25.7562575Z test debug_config::tests::debug_config_output_lists_session_flag_key_value_pairs ... ok
+2026-11-12T20:28:25.7563071Z test chatwidget::thread_usage::tests::transient_zero_cost_preserves_fresh_credits_and_breakdowns ... ok
+2026-11-12T20:28:25.7563372Z test cwd_prompt::tests::cwd_prompt_persistence_failure_snapshot ... ok
+2026-11-12T20:28:25.7563382Z 
+2026-11-12T20:28:25.7563806Z test result: ok. 77 passed; 0 failed; 0 ignored; 0 measured; 3704 filtered out; finished in 0.46s
+2026-11-12T20:28:25.7563815Z 
+2026-11-12T20:28:25.7563828Z 
+2026-11-12T20:28:25.7563962Z running 91 tests
+2026-11-12T20:28:25.7564260Z test diff_render::tests::ansi16_del_style_uses_foreground_only ... ok
+2026-11-12T20:28:25.7564593Z test diff_render::tests::display_path_prefers_cwd_without_git_repo ... ok
+2026-11-12T20:28:25.7564941Z test diff_render::tests::non_windows_terminal_keeps_ansi16_diff_palette ... ok
+2026-11-12T20:28:25.7565361Z test dynamic_tools::tests::activity_metadata_is_retained_without_including_outputs ... ok
+2026-11-12T20:28:25.7565629Z test diff_render::tests::ui_snapshot_apply_update_block ... ok
+2026-11-12T20:28:25.7566084Z test exec_command::tests::split_command_string_preserves_non_roundtrippable_windows_commands ... ok
+2026-11-12T20:28:25.7566664Z test external_agent_config_migration::flow::tests::external_agent_config_detection_tolerates_a_partial_failure ... ok
+2026-11-12T20:28:25.7568581Z test diff_render::tests::ui_snapshot_apply_add_block ... ok
+2026-11-12T20:28:25.7569314Z test external_agent_config_migration::flow::tests::external_agent_config_migration_messages_snapshot ... ok
+2026-11-12T20:28:25.7569721Z test get_git_diff::tests::get_git_diff_disables_helpers_for_tracked_and_untracked_diffs ... ok
+2026-11-12T20:28:25.7570125Z test git_action_directives::tests::hides_malformed_directives_without_materializing_rows ... ok
+2026-11-12T20:28:25.7570437Z test history_cell::hook_cell::tests::completed_hook_with_warning_uses_default_bold_bullet ... ok
+2026-11-12T20:28:25.7570796Z test history_cell::hook_cell::tests::completed_hook_short_multiline_context_preserves_display_transcript_and_raw_lines ... ok
+2026-11-12T20:28:25.7571057Z test history_cell::hook_cell::tests::visible_hook_animates_transcript_when_animations_enabled ... ok
+2026-11-12T20:28:25.7571360Z test history_cell::mcp::tests::projected_image_marker_still_requires_a_complete_image ... ok
+2026-11-12T20:28:25.7571902Z test history_cell::messages::tests::sanitizer_preserves_owned_buffer_for_clean_and_edge_trimmed_text ... ok
+2026-11-12T20:28:25.7572152Z test history_cell::mcp::tests::mcp_inventory_older_app_server_authentication ... ok
+2026-11-12T20:28:25.7572715Z test history_cell::tests::coalesces_reads_across_multiple_calls ... ok
+2026-11-12T20:28:25.7573304Z test history_cell::tests::agent_markdown_cell_survives_insert_history_rewrap ... ok
+2026-11-12T20:28:25.7573636Z test history_cell::tests::completed_mcp_tool_call_success_snapshot ... ok
+2026-11-12T20:28:25.7574021Z test history_cell::tests::completed_mcp_tool_call_multiple_outputs_inline_snapshot ... ok
+2026-11-12T20:28:25.7574459Z test history_cell::tests::final_message_separator_includes_worked_label_after_one_minute ... ok
+2026-11-12T20:28:25.7574792Z test history_cell::tests::image_generation_call_renders_saved_path ... ok
+2026-11-12T20:28:25.7575114Z test history_cell::tests::ps_output_halfwidth_sound_marks_snapshot ... ok
+2026-11-12T20:28:25.7575475Z test history_cell::tests::ps_output_chunk_leading_whitespace_snapshot ... ok
+2026-11-12T20:28:25.7575769Z test history_cell::tests::ps_output_long_command_snapshot ... ok
+2026-11-12T20:28:25.7576003Z test history_cell::tests::reasoning_summary_block ... ok
+2026-11-12T20:28:25.7576393Z test history_cell::tests::reasoning_summary_block_preserves_literal_html_comment ... ok
+2026-11-12T20:28:25.7576809Z test history_cell::tests::reasoning_summary_block_strips_header_after_leading_empty_part ... ok
+2026-11-12T20:28:25.7577214Z test history_cell::tests::runtime_metrics_label_rounds_fractional_tbt_milliseconds ... ok
+2026-11-12T20:28:25.7577580Z test history_cell::tests::session_header_directory_front_truncates_long_segment ... ok
+2026-11-12T20:28:25.7578078Z test history_cell::tests::structured_tool_cell_renders_raw_plain_text_without_prefix_or_style ... ok
+2026-11-12T20:28:25.7578539Z test history_cell::tests::unified_exec_interaction_cell_height_matches_wrapped_rendering ... ok
+2026-11-12T20:28:25.7578940Z test history_cell::tests::user_history_cell_numbers_multiple_remote_images ... ok
+2026-11-12T20:28:25.7579375Z test inline_visualization::tests::finalized_agent_cell_replays_visualization_link ... ok
+2026-11-12T20:28:25.7579771Z test exec_cell::render::tests::command_display_does_not_split_long_url_token ... ok
+2026-11-12T20:28:25.7580077Z test history_cell::tests::ran_cell_multiline_with_stderr_snapshot ... ok
+2026-11-12T20:28:25.7580540Z test insert_history::tests::vt100_prefixed_url_like_without_scheme_keeps_prefix_and_token_on_same_row ... ok
+2026-11-12T20:28:25.7580911Z test insert_history::tests::vt100_blockquote_wrap_preserves_color_on_all_wrapped_lines ... ok
+2026-11-12T20:28:25.7581287Z test keymap::tests::configured_legacy_vim_normal_bindings_prune_new_substitute_default ... ok
+2026-11-12T20:28:25.7581912Z test keymap::chords::tests::matching_chords_dispatches_the_active_context_action ... ok
+2026-11-12T20:28:25.7582301Z test keymap::tests::configured_substitute_binding_prunes_new_replace_default ... ok
+2026-11-12T20:28:25.7582741Z test keymap::tests::explicit_new_list_bindings_still_conflict_with_legacy_bindings ... ok
+2026-11-12T20:28:25.7583113Z test keymap::tests::explicit_new_vim_normal_substitute_binding_still_conflicts_with_legacy_binding ... ok
+2026-11-12T20:28:25.7583372Z test keymap::tests::explicit_new_vim_operator_binding_still_conflicts_with_legacy_binding ... ok
+2026-11-12T20:28:25.7583555Z test keymap::tests::invalid_global_copy_binding_reports_global_path ... ok
+2026-11-12T20:28:25.7583714Z test keymap::tests::parses_all_named_non_character_keys ... ok
+2026-11-12T20:28:25.7583882Z test keymap::tests::parses_minus_alias_and_legacy_literal_minus ... ok
+2026-11-12T20:28:25.7584122Z test keymap::tests::rejects_main_bindings_that_collide_with_remaining_fixed_shortcuts ... ok
+2026-11-12T20:28:25.7584367Z test keymap::tests::interrupt_turn_allows_backtrack_escape_and_can_be_remapped_or_unbound ... ok
+2026-11-12T20:28:25.7584554Z test keymap::tests::vim_normal_defaults_include_insert_and_arrow_aliases ... ok
+2026-11-12T20:28:25.7584792Z test keymap_setup::tests::action_menu_disables_clear_when_action_has_no_custom_binding ... ok
+2026-11-12T20:28:25.7584970Z test keymap::tests::rejects_shadowing_list_binding_in_app_scope ... ok
+2026-11-12T20:28:25.7585138Z test keymap_setup::tests::picker_common_tab_lists_curated_actions ... ok
+2026-11-12T20:28:25.7585321Z test keymap_setup::tests::picker_covers_every_replaceable_action ... ok
+2026-11-12T20:28:25.7585540Z test keymap_setup::tests::capture_completion_returns_to_selected_keymap_picker_row ... ok
+2026-11-12T20:28:25.7585718Z test keymap_setup::tests::replace_one_preserves_other_bindings ... ok
+2026-11-12T20:28:25.7585873Z test local_chatgpt_auth::tests::rejects_api_key_auth ... ok
+2026-11-12T20:28:25.7586060Z test keymap_setup::tests::picker_customized_tab_contains_root_overrides ... ok
+2026-11-12T20:28:25.7586376Z test markdown::tests::append_markdown_agent_keeps_markdown_fence_with_blank_line_between_header_and_delimiter ... ok
+2026-11-12T20:28:25.7586593Z test markdown::tests::copy_targets_preserve_nested_quote_markdown_and_source_order ... ok
+2026-11-12T20:28:25.7586808Z test markdown_render::markdown_render_tests::blockquote_inside_nested_list ... ok
+2026-11-12T20:28:25.7587015Z test markdown_render::markdown_render_tests::blockquote_multiple_with_break ... ok
+2026-11-12T20:28:25.7587242Z test markdown_render::markdown_render_tests::blockquote_three_paragraphs_short_lines ... ok
+2026-11-12T20:28:25.7587506Z test markdown_render::markdown_render_tests::code_block_inside_unordered_list_item_is_indented ... ok
+2026-11-12T20:28:25.7587713Z test markdown_render::markdown_render_tests::code_block_multiple_lines_root ... ok
+2026-11-12T20:28:25.7587946Z test markdown_render::markdown_render_tests::code_block_preserves_trailing_blank_lines ... ok
+2026-11-12T20:28:25.7588161Z test markdown_render::markdown_render_tests::escaped_pipes_render_in_table_cells ... ok
+2026-11-12T20:28:25.7588399Z test markdown_render::markdown_render_tests::file_link_uses_target_path_for_hash_anchor ... ok
+2026-11-12T20:28:25.7588689Z test markdown_render::markdown_render_tests::html_continuation_paragraph_in_unordered_item_indented ... ok
+2026-11-12T20:28:25.7588883Z test markdown_render::markdown_render_tests::html_inline_is_verbatim ... ok
+2026-11-12T20:28:25.7589029Z test markdown_render::markdown_render_tests::inline_code ... ok
+2026-11-12T20:28:25.7589220Z test markdown_render::markdown_render_tests::list_ordered_custom_start ... ok
+2026-11-12T20:28:25.7589436Z test markdown_render::markdown_render_tests::mixed_tight_then_loose_in_one_list ... ok
+2026-11-12T20:28:25.7589682Z test markdown_render::markdown_render_tests::ordered_item_with_code_block_and_nested_bullet ... ok
+2026-11-12T20:28:25.7589841Z test markdown_render::markdown_render_tests::strikethrough ... ok
+2026-11-12T20:28:25.7590140Z test markdown_render::markdown_render_tests::web_link_labels_use_link_style_and_preserve_inline_formatting ... ok
+2026-11-12T20:28:25.7590393Z test markdown_render::tests::wraps_list_items_preserving_indent ... ok
+2026-11-12T20:28:25.7590647Z test markdown_stream::tests::e2e_stream_blockquote_nested_is_green ... ok
+2026-11-12T20:28:25.7590899Z test markdown_stream::tests::collector_source_chunks_round_trip_into_agent_fence_unwrapping ... ok
+2026-11-12T20:28:25.7591108Z test markdown_stream::tests::e2e_stream_blockquote_wrap_preserves_green_style ... ok
+2026-11-12T20:28:25.7591268Z test markdown_stream::tests::finalize_commits_partial_line ... ok
+2026-11-12T20:28:25.7592080Z test markdown_stream::tests::table_like_lines_inside_fenced_code_are_not_held ... ok
+2026-11-12T20:28:25.7592555Z test motion::tests::reduced_motion_activity_indicator_uses_explicit_fallback ... ok
+2026-11-12T20:28:25.7592774Z test multi_agents::tests::completed_sub_agent_activity_stops_running_liveness ... ok
+2026-11-12T20:28:25.7592968Z test npm_registry::tests::ready_version_rejects_stale_latest_dist_tag ... ok
+2026-11-12T20:28:25.7593114Z test multi_agents::tests::collab_events_snapshot ... ok
+2026-11-12T20:28:25.7593282Z test oss_selection::tests::ctrl_h_l_move_provider_selection ... ok
+2026-11-12T20:28:25.7593543Z test managed_new_thread_defaults::tests::applies_managed_defaults_to_a_new_thread_config ... ok
+2026-11-12T20:28:25.7593689Z test diff_render::tests::ui_snapshot_diff_gallery_94x35 ... ok
+2026-11-12T20:28:25.7593966Z test onboarding::auth::tests::continue_in_browser_preserves_long_link_and_footer_at_narrow_width ... ok
+2026-11-12T20:28:25.7593973Z 
+2026-11-12T20:28:25.7594212Z test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.22s
+2026-11-12T20:28:25.7594217Z 
+2026-11-12T20:28:25.7594221Z 
+2026-11-12T20:28:25.7594298Z running 88 tests
+2026-11-12T20:28:25.7594545Z test pager_overlay::tests::pager_view_is_scrolled_to_bottom_accounts_for_wrapped_height ... ok
+2026-11-12T20:28:25.7594709Z test pets::image_protocol::tests::parses_protocol_selection ... ok
+2026-11-12T20:28:25.7594941Z test pets::image_protocol::tests::pet_image_support_old_iterm2_message_mentions_upgrade ... ok
+2026-11-12T20:28:25.7595175Z test pager_overlay::tests::transcript_overlay_insert_preserves_cached_cell_heights ... ok
+2026-11-12T20:28:25.7595342Z test pets::model::tests::app_notification_states_use_expected_rows ... ok
+2026-11-12T20:28:25.7595506Z test pager_overlay::tests::static_overlay_wraps_long_lines ... ok
+2026-11-12T20:28:25.7595692Z test pets::sixel::tests::encodes_red_pixel_with_palette_and_pixel_data ... ok
+2026-11-12T20:28:25.7595933Z test pets::frames::tests::prepare_png_frames_slices_spritesheet_without_external_command ... ok
+2026-11-12T20:28:25.7596117Z test pets::sixel::tests::multi_band_images_advance_to_next_sixel_band ... ok
+2026-11-12T20:28:25.7596348Z test render::highlight::tests::highlight_code_to_styled_spans_returns_none_for_unknown ... ok
+2026-11-12T20:28:25.7596510Z test render::highlight::tests::highlight_empty_string ... ok
+2026-11-12T20:28:25.7597178Z test render::highlight::tests::list_available_themes_returns_stable_sorted_order ... ok
+2026-11-12T20:28:25.7597622Z test render::highlight::tests::style_conversion_uses_terminal_default_when_alpha_is_one ... ok
+2026-11-12T20:28:25.7598020Z test resize_reflow_cap::tests::auto_resize_reflow_max_rows_prefers_vscode_probe ... ok
+2026-11-12T20:28:25.7598549Z test resume_picker::archive::tests::archived_session_restore_failure_preserves_session_and_allows_retry ... ok
+2026-11-12T20:28:25.7598902Z test resume_picker::tests::ctrl_c_exits_even_when_cancel_is_remapped_to_ctrl_c ... ok
+2026-11-12T20:28:25.7599222Z test resume_picker::tests::density_toggle_clears_stale_more_indicator ... ok
+2026-11-12T20:28:25.7599532Z test resume_picker::tests::enter_on_pathless_thread_uses_thread_id ... ok
+2026-11-12T20:28:25.7599921Z test resume_picker::tests::hint_line_snapshot_uses_distributed_wide_footer ... ok
+2026-11-12T20:28:25.7600364Z test resume_picker::tests::local_db_first_accepts_db_thread_id_without_rollout_validation ... ok
+2026-11-12T20:28:25.7600833Z test resume_picker::tests::long_relative_time_uses_words ... ok
+2026-11-12T20:28:25.7601228Z test resume_picker::tests::paste_uses_existing_search_loading_path ... ok
+2026-11-12T20:28:25.7601693Z test resume_picker::tests::picker_footer_percent_reports_scroll_progress ... ok
+2026-11-12T20:28:25.7601920Z test resume_picker::tests::raw_ctrl_o_toggles_density_without_typing_into_search ... ok
+2026-11-12T20:28:25.7602110Z test resume_picker::tests::transcript_loading_still_allows_ctrl_c_exit ... ok
+2026-11-12T20:28:25.7602434Z test resume_picker::transcript_preview::tests::legacy_transcript_preview_falls_back_for_oversized_hidden_record ... ok
+2026-11-12T20:28:25.7602731Z test resume_picker::transcript_preview::tests::legacy_transcript_preview_scans_tail_across_compaction ... ok
+2026-11-12T20:28:25.7602919Z test pets::model::tests::load_pet_json_path_uses_containing_directory ... ok
+2026-11-12T20:28:25.7603108Z test pets::model::tests::custom_pet_selector_loads_codex_home_pet_manifest ... ok
+2026-11-12T20:28:25.7603369Z test session_queue_commands::tests::recognizes_only_definitively_unsupported_queue_errors ... ok
+2026-11-12T20:28:25.7603914Z [0qtest session_resume::tests::configured_session_cwd_rejects_missing_metadata ... ok
+2026-11-12T20:28:25.7604116Z test session_resume::tests::rollout_resume_state_skips_malformed_lines ... ok
+2026-11-12T20:28:25.7604351Z test session_resume::tests::session_cwd_prefers_state_metadata_over_rollout_context ... ok
+2026-11-12T20:28:25.7604584Z test session_archive_commands::tests::trusts_sqlite_name_over_legacy_index_for_delete ... ok
+2026-11-12T20:28:25.7604959Z [0qtest startup_draft::tests::startup_draft_allows_cancellation_before_session_picker_appears ... ok
+2026-11-12T20:28:25.7609116Z [2026h╭───────────────────────────────────────╮│ >_ OpenAI Codex (v0.0.0)              ││                                       ││ model:     loading   /model to change ││ directory: loading                    │╰───────────────────────────────────────╯  Resuming session… › draft while loading  [0q[25h[2026l[2026h [0q[25h[2026l[0q[2026h╭───────────────────────────────────────╮│ >_ OpenAI Codex (v0.0.0)              ││                                       ││ model:     loading   /model to change ││ directory: loading                    │╰───────────────────────────────────────╯  Forking session… › draft while loading  [0q[25h[2026l[2026h [0q[25h[2026l[0q[2026h╭───────────────────────────────────────╮│ >_ OpenAI Codex (v0.0.0)              ││                                       ││ model:     loading   /model to change ││ directory: loading                    │╰───────────────────────────────────────╯  › Ask Codex to do anything   ? for shortcuts[0q[25h[2026l[0q[2026h╭───────────────────────────────────────╮│ >_ OpenAI Codex (v0.0.0)              ││                                       ││ model:     loading   /model to change ││ directory: loading                    │╰───────────────────────────────────────╯  › Ask Codex to do anything   ? for shortcuts[0q[25h[2026l[0qtest startup_draft::tests::startup_draft_clears_loading_status_when_starting_fresh ... ok
+2026-11-12T20:28:25.7609561Z test startup_draft::tests::startup_draft_preserves_windows_altgr_text_input ... ok
+2026-11-12T20:28:25.7609767Z test startup_hooks_review::tests::untrusted_hooks_need_review_without_bypass ... ok
+2026-11-12T20:28:25.7609952Z test status::rate_limits::tests::non_codex_multi_limit_keeps_group_row ... ok
+2026-11-12T20:28:25.7610151Z test status::tests::stale_monthly_limit_marks_fresh_rolling_snapshot_stale ... ok
+2026-11-12T20:28:25.7610328Z test status::tests::status_permissions_user_defined_profile_shows_name ... ok
+2026-11-12T20:28:25.7610554Z test status::tests::status_snapshot_shows_available_credits_without_display_balance ... ok
+2026-11-12T20:28:25.7610803Z test status::tests::status_snapshot_uses_generic_limit_labels_for_unsupported_windows ... ok
+2026-11-12T20:28:25.7611061Z test status_indicator_widget::tests::details_args_can_disable_capitalization_and_limit_lines ... ok
+2026-11-12T20:28:25.7611232Z test streaming::chunking::tests::drops_back_to_smooth_when_idle ... ok
+2026-11-12T20:28:25.7611734Z test streaming::chunking::tests::enters_catch_up_on_age_threshold ... ok
+2026-11-12T20:28:25.7611935Z test streaming::chunking::tests::severe_backlog_can_reenter_during_hold ... ok
+2026-11-12T20:28:25.7612151Z test streaming::code_fence::tests::lazy_initialization_rejects_a_changed_theme ... ok
+2026-11-12T20:28:25.7612386Z test streaming::controller::tests::controller_holds_blockquoted_table_tail_until_stable ... ok
+2026-11-12T20:28:25.7612690Z test streaming::controller::tests::controller_keeps_markdown_fenced_no_outer_tables_mutable_until_finalize ... ok
+2026-11-12T20:28:25.7612934Z test streaming::controller::tests::controller_loose_vs_tight_with_commit_ticks_matches_full ... ok
+2026-11-12T20:28:25.7613206Z test streaming::controller::tests::controller_renders_separators_for_multi_table_response_shape ... ok
+2026-11-12T20:28:25.7613456Z test streaming::controller::tests::controller_set_width_partial_drain_keeps_pending_queue ... ok
+2026-11-12T20:28:25.7613685Z test streaming::controller::tests::controller_set_width_partial_drain_no_lost_lines ... ok
+2026-11-12T20:28:25.7613904Z test streaming::controller::tests::controller_set_width_preserves_in_flight_tail ... ok
+2026-11-12T20:28:25.7614211Z test streaming::render::tests::code_fence_tests::recomputing_after_resize_or_mode_change_drops_fence_state ... ok
+2026-11-12T20:28:25.7614425Z test table_detect::tests::fence_tracker_close_with_trailing_content_does_not_close ... ok
+2026-11-12T20:28:25.7614586Z test table_detect::tests::is_table_delimiter_segment_valid ... ok
+2026-11-12T20:28:25.7614743Z test table_detect::tests::parse_table_segments_escaped_pipe ... ok
+2026-11-12T20:28:25.7615048Z test terminal_hyperlinks::tests::trusted_file_destination_receives_osc8_without_enabling_plain_file_links ... ok
+2026-11-12T20:28:25.7615227Z test terminal_probe::imp::tests::decodes_console_color_ref_byte_order ... ok
+2026-11-12T20:28:25.7615410Z test terminal_probe::tests::parses_two_and_four_digit_color_components ... ok
+2026-11-12T20:28:25.7615621Z test tests::config_cwd_for_app_server_target_omits_cwd_for_remote_sessions ... ok
+2026-11-12T20:28:25.7615912Z test render::highlight::streaming::tests::crossing_each_highlighting_limit_requires_a_canonical_render ... ok
+2026-11-12T20:28:25.7616413Z test tests::latest_session_lookup_params_keep_explicit_cwd_filter_for_remote_sessions ... ok
+2026-11-12T20:28:25.7616731Z test text_formatting::tests::test_format_json_compact_empty_array ... ok
+2026-11-12T20:28:25.7617047Z test text_formatting::tests::test_truncate_text_shorter_than_limit ... ok
+2026-11-12T20:28:25.7617321Z test text_formatting::tests::test_truncate_very_long_text ... ok
+2026-11-12T20:28:25.7617748Z test theme_picker::tests::subtitle_falls_back_to_preview_instructions_without_tilde_path ... ok
+2026-11-12T20:28:25.7618151Z test theme_picker::tests::subtitle_uses_tilde_path_when_codex_home_under_home_directory ... ok
+2026-11-12T20:28:25.7618675Z test tooltips::tests::announcement_tip_toml_bad_deserialization ... ok
+2026-11-12T20:28:25.7619161Z test tooltips::tests::paid_tooltip_pool_skips_fast_when_fast_mode_is_enabled ... ok
+2026-11-12T20:28:25.7619534Z test transcript_reflow::tests::mark_reflowed_width_reports_unchanged_width ... ok
+2026-11-12T20:28:25.7619810Z test tui::frame_rate_limiter::tests::default_does_not_clamp ... ok
+2026-11-12T20:28:25.7620149Z test tui::frame_requester::tests::test_limits_draw_notifications_to_120fps ... ok
+2026-11-12T20:28:25.7620623Z test tui::history_tail::tests::replacing_soft_wrapped_history_counts_physical_terminal_rows ... ok
+2026-11-12T20:28:25.7621515Z test tui::keyboard_modes::tests::keyboard_enhancement_preserves_repeat_reporting_for_unknown_terminals ... ok
+2026-11-12T20:28:25.7622431Z test tui::keyboard_modes::tests::keyboard_enhancement_suppresses_release_reporting_for_ghostty ... ok
+2026-11-12T20:28:25.7622893Z test tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery ... FAILED
+2026-11-12T20:28:25.7623279Z test tui::tests::windows_console_input_modes_preserve_original_vt_input_state ... ok
+2026-11-12T20:28:25.7623921Z [0qtest tui::tests::inserting_history_lines_schedules_a_draw ... ok
+2026-11-12T20:28:25.7624429Z test wrapping::tests::adaptive_wrap_line_mixed_line_resplits_long_token_for_continuation_width ... ok
+2026-11-12T20:28:25.7624822Z test wrapping::tests::ascii_space_separator_with_no_hyphenation_keeps_url_intact ... ok
+2026-11-12T20:28:25.7625220Z test wrapping::tests::line_has_mixed_url_and_non_url_tokens_detects_prose_plus_url ... ok
+2026-11-12T20:28:25.7625659Z test wrapping::tests::map_owned_wrapped_line_to_range_repro_overconsumes_repeated_prefix_patterns ... ok
+2026-11-12T20:28:25.7625884Z test wrapping::tests::wrap_lines_accepts_str_slices ... ok
+2026-11-12T20:28:25.7626437Z test resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output ... ok
+2026-11-12T20:28:25.7626899Z test session_start::tests::archived_session_requires_confirmation_before_resume_or_fork ... ok
+2026-11-12T20:28:25.7626909Z 
+2026-11-12T20:28:25.7627046Z failures:
+2026-11-12T20:28:25.7627055Z 
+2026-11-12T20:28:25.7627525Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----
+2026-11-12T20:28:25.7627531Z 
+2026-11-12T20:28:25.7628232Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (3720) panicked at tui/src/lib.rs:3265:9:
+2026-11-12T20:28:25.7628393Z assertion failed: `(left == right)`
+2026-11-12T20:28:25.7628400Z 
+2026-11-12T20:28:25.7628545Z Diff < left / right > :
+2026-11-12T20:28:25.7628725Z <"D:\\tmp\\.tmpTbRUk7\\sqlite-home\\logs_2.sqlite"
+2026-11-12T20:28:25.7628922Z >"\\\\?\\D:\\tmp\\.tmpTbRUk7\\sqlite-home\\logs_2.sqlite"
+2026-11-12T20:28:25.7628930Z 
+2026-11-12T20:28:25.7628936Z 
+2026-11-12T20:28:25.7629264Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T20:28:25.7629284Z 
+2026-11-12T20:28:25.7629290Z 
+2026-11-12T20:28:25.7629404Z failures:
+2026-11-12T20:28:25.7629787Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery
+2026-11-12T20:28:25.7629793Z 
+2026-11-12T20:28:25.7630220Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.98s
+2026-11-12T20:28:25.7630234Z 
+2026-11-12T20:28:25.7630423Z ================================================================================
+2026-11-12T20:28:25.7630633Z INFO: Found 147 test targets...
+2026-11-12T20:28:25.8863879Z INFO: Elapsed time: 818.753s, Critical Path: 595.82s
+2026-11-12T20:28:25.8864459Z INFO: 3951 processes: 2587 remote cache hit, 1344 internal, 143 local.
+2026-11-12T20:28:25.8864866Z INFO: Build completed, 1 test FAILED, 3951 total actions
+2026-11-12T20:28:25.8865144Z INFO: 
+2026-11-12T20:28:25.9012498Z //codex-rs/agent-graph-store:agent-graph-store-unit-tests       (cached) PASSED in 2.7s
+2026-11-12T20:28:25.9039268Z   WARNING: //codex-rs/agent-graph-store:agent-graph-store-unit-tests: Test execution time (2.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9042063Z //codex-rs/analytics:analytics-unit-tests                       (cached) PASSED in 3.0s
+2026-11-12T20:28:25.9054313Z   WARNING: //codex-rs/analytics:analytics-unit-tests: Test execution time (3.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9054798Z //codex-rs/ansi-escape:ansi-escape-unit-tests                   (cached) PASSED in 123.1s
+2026-11-12T20:28:25.9056545Z //codex-rs/app-server-client:app-server-client-unit-tests       (cached) PASSED in 186.2s
+2026-11-12T20:28:25.9056993Z //codex-rs/app-server-daemon:app-server-daemon-unit-tests       (cached) PASSED in 3.9s
+2026-11-12T20:28:25.9065975Z   WARNING: //codex-rs/app-server-daemon:app-server-daemon-unit-tests: Test execution time (3.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9068237Z //codex-rs/app-server-protocol-noop-macros:app-server-protocol-noop-macros-unit-tests (cached) PASSED in 127.3s
+2026-11-12T20:28:25.9073237Z //codex-rs/app-server-transport:app-server-transport-unit-tests (cached) PASSED in 8.0s
+2026-11-12T20:28:25.9079097Z   WARNING: //codex-rs/app-server-transport:app-server-transport-unit-tests: Test execution time (8.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9083054Z //codex-rs/async-utils:async-utils-unit-tests                   (cached) PASSED in 88.5s
+2026-11-12T20:28:25.9083919Z //codex-rs/build-info:build-info-unit-tests                     (cached) PASSED in 98.5s
+2026-11-12T20:28:25.9084308Z //codex-rs/code-mode-host:code-mode-host-unit-tests             (cached) PASSED in 80.7s
+2026-11-12T20:28:25.9085521Z //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test (cached) PASSED in 0.2s
+2026-11-12T20:28:25.9087469Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-concurrent_startup-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9088076Z //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests       (cached) PASSED in 9.5s
+2026-11-12T20:28:25.9105843Z   WARNING: //codex-rs/code-mode-runtime:code-mode-runtime-unit-tests: Test execution time (9.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9113475Z //codex-rs/codex-api:codex-api-realtime_websocket_e2e-test      (cached) PASSED in 0.6s
+2026-11-12T20:28:25.9216713Z   WARNING: //codex-rs/codex-api:codex-api-realtime_websocket_e2e-test: Test execution time (0.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9218896Z //codex-rs/codex-api:codex-api-sse_end_to_end-test              (cached) PASSED in 0.1s
+2026-11-12T20:28:25.9225246Z   WARNING: //codex-rs/codex-api:codex-api-sse_end_to_end-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9232765Z //codex-rs/codex-home:codex-home-unit-tests                     (cached) PASSED in 70.5s
+2026-11-12T20:28:25.9237050Z //codex-rs/core-api:core-api-unit-tests                         (cached) PASSED in 6.5s
+2026-11-12T20:28:25.9239850Z   WARNING: //codex-rs/core-api:core-api-unit-tests: Test execution time (6.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9240373Z //codex-rs/core-plugins:core-plugins-unit-tests                 (cached) PASSED in 92.8s
+2026-11-12T20:28:25.9243284Z //codex-rs/exec-server:exec-server-unit-tests                   (cached) PASSED in 13.5s
+2026-11-12T20:28:25.9245131Z   WARNING: //codex-rs/exec-server:exec-server-unit-tests: Test execution time (13.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9245627Z //codex-rs/ext/extension-api:extension-api-model_provider_policy-test (cached) PASSED in 0.1s
+2026-11-12T20:28:25.9248053Z   WARNING: //codex-rs/ext/extension-api:extension-api-model_provider_policy-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9248940Z //codex-rs/ext/extension-api:extension-api-registry-test        (cached) PASSED in 1.2s
+2026-11-12T20:28:25.9250173Z   WARNING: //codex-rs/ext/extension-api:extension-api-registry-test: Test execution time (1.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9250642Z //codex-rs/ext/extension-api:extension-api-unit-tests           (cached) PASSED in 64.6s
+2026-11-12T20:28:25.9251040Z //codex-rs/ext/goal:goal-accounting-test                        (cached) PASSED in 0.3s
+2026-11-12T20:28:25.9252856Z   WARNING: //codex-rs/ext/goal:goal-accounting-test: Test execution time (0.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9253311Z //codex-rs/ext/hepta-prompt:hepta-prompt-unit-tests             (cached) PASSED in 49.6s
+2026-11-12T20:28:25.9253661Z //codex-rs/ext/mcp:mcp-hosted_apps_mcp-test                     (cached) PASSED in 1.3s
+2026-11-12T20:28:25.9254635Z   WARNING: //codex-rs/ext/mcp:mcp-hosted_apps_mcp-test: Test execution time (1.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9255277Z //codex-rs/ext/skills:skills-executor_file_system_authority-test (cached) PASSED in 0.6s
+2026-11-12T20:28:25.9256383Z   WARNING: //codex-rs/ext/skills:skills-executor_file_system_authority-test: Test execution time (0.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9256732Z //codex-rs/ext/skills:skills-unit-tests                         (cached) PASSED in 8.7s
+2026-11-12T20:28:25.9258596Z   WARNING: //codex-rs/ext/skills:skills-unit-tests: Test execution time (8.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9259019Z //codex-rs/ext/web-search:web-search-unit-tests                 (cached) PASSED in 1.9s
+2026-11-12T20:28:25.9260006Z   WARNING: //codex-rs/ext/web-search:web-search-unit-tests: Test execution time (1.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9261086Z //codex-rs/feedback:feedback-unit-tests                         (cached) PASSED in 91.2s
+2026-11-12T20:28:25.9262938Z //codex-rs/hepta-cognitive-store:hepta-cognitive-store-unit-tests (cached) PASSED in 91.5s
+2026-11-12T20:28:25.9264767Z //codex-rs/hepta-contracts:hepta-contracts-authbus_b3_adapter_qualification-test (cached) PASSED in 3.1s
+2026-11-12T20:28:25.9267622Z   WARNING: //codex-rs/hepta-contracts:hepta-contracts-authbus_b3_adapter_qualification-test: Test execution time (3.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9268130Z //codex-rs/hepta-evidence:hepta-evidence-unit-tests             (cached) PASSED in 127.9s
+2026-11-12T20:28:25.9268885Z //codex-rs/hepta-infer-core:hepta-infer-core-unit-tests         (cached) PASSED in 124.2s
+2026-11-12T20:28:25.9269521Z //codex-rs/hepta-inferd:hepta-inferd-unit-tests                 (cached) PASSED in 84.3s
+2026-11-12T20:28:25.9270464Z //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-operator_claim-test (cached) PASSED in 1.9s
+2026-11-12T20:28:25.9273242Z   WARNING: //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-operator_claim-test: Test execution time (1.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9273664Z //codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests (cached) PASSED in 93.3s
+2026-11-12T20:28:25.9273906Z //codex-rs/hepta-intuition:hepta-intuition-unit-tests           (cached) PASSED in 83.9s
+2026-11-12T20:28:25.9274217Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests         (cached) PASSED in 117.2s
+2026-11-12T20:28:25.9274610Z //codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test (cached) PASSED in 1.5s
+2026-11-12T20:28:25.9276246Z   WARNING: //codex-rs/hepta-matrix-store:hepta-matrix-store-sync_observation_v1-test: Test execution time (1.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9276624Z //codex-rs/hepta-matrix-store:hepta-matrix-store-unit-tests     (cached) PASSED in 1.9s
+2026-11-12T20:28:25.9277635Z   WARNING: //codex-rs/hepta-matrix-store:hepta-matrix-store-unit-tests: Test execution time (1.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9278049Z //codex-rs/hepta-memory-retrieval:hepta-memory-retrieval-unit-tests (cached) PASSED in 91.2s
+2026-11-12T20:28:25.9278439Z //codex-rs/hepta-operations:hepta-operations-unit-tests         (cached) PASSED in 2.0s
+2026-11-12T20:28:25.9279887Z   WARNING: //codex-rs/hepta-operations:hepta-operations-unit-tests: Test execution time (2.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9280304Z //codex-rs/hepta-plasticity:hepta-plasticity-unit-tests         (cached) PASSED in 88.8s
+2026-11-12T20:28:25.9280566Z //codex-rs/hepta-prompt-registry:hepta-prompt-registry-unit-tests (cached) PASSED in 98.6s
+2026-11-12T20:28:25.9280777Z //codex-rs/ollama:ollama-unit-tests                             (cached) PASSED in 2.0s
+2026-11-12T20:28:25.9281356Z   WARNING: //codex-rs/ollama:ollama-unit-tests: Test execution time (2.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9283325Z //codex-rs/rollout-trace:rollout-trace-unit-tests               (cached) PASSED in 81.1s
+2026-11-12T20:28:25.9284426Z //codex-rs/state:state-unit-tests                               (cached) PASSED in 90.4s
+2026-11-12T20:28:25.9284690Z   Stats over 4 runs: max = 90.4s, min = 77.5s, avg = 86.5s, dev = 5.3s
+2026-11-12T20:28:25.9285050Z //codex-rs/tools:tools-json_schema_policy_fixtures-test         (cached) PASSED in 0.1s
+2026-11-12T20:28:25.9287886Z   WARNING: //codex-rs/tools:tools-json_schema_policy_fixtures-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9298262Z //codex-rs/tools:tools-unit-tests                               (cached) PASSED in 1.3s
+2026-11-12T20:28:25.9299352Z   WARNING: //codex-rs/tools:tools-unit-tests: Test execution time (1.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9338315Z //codex-rs/utils/audio:audio-unit-tests                         (cached) PASSED in 71.1s
+2026-11-12T20:28:25.9338842Z //codex-rs/utils/cargo-bin:cargo-bin-unit-tests                 (cached) PASSED in 58.0s
+2026-11-12T20:28:25.9339270Z //codex-rs/utils/elapsed:elapsed-unit-tests                     (cached) PASSED in 121.4s
+2026-11-12T20:28:25.9339684Z //codex-rs/utils/fuzzy-match:fuzzy-match-unit-tests             (cached) PASSED in 124.1s
+2026-11-12T20:28:25.9340586Z //codex-rs/utils/home-dir:home-dir-unit-tests                   (cached) PASSED in 109.7s
+2026-11-12T20:28:25.9341783Z //codex-rs/utils/oss:oss-unit-tests                             (cached) PASSED in 6.0s
+2026-11-12T20:28:25.9342790Z   WARNING: //codex-rs/utils/oss:oss-unit-tests: Test execution time (6.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9343546Z //codex-rs/utils/redacted-string:redacted-string-unit-tests     (cached) PASSED in 123.8s
+2026-11-12T20:28:25.9343998Z //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test (cached) PASSED in 0.6s
+2026-11-12T20:28:25.9346309Z   WARNING: //codex-rs/utils/rustls-provider:rustls-provider-preinstalled-test: Test execution time (0.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9346799Z //codex-rs/utils/rustls-provider:rustls-provider-unit-tests     (cached) PASSED in 116.2s
+2026-11-12T20:28:25.9347234Z //codex-rs/utils/string:string-unit-tests                       (cached) PASSED in 115.2s
+2026-11-12T20:28:25.9347611Z //codex-rs/v8-poc:v8-poc-unit-tests                             (cached) PASSED in 88.6s
+2026-11-12T20:28:25.9347946Z //bazel/rules/testing/wine:wine-test-support-unit-tests                 SKIPPED
+2026-11-12T20:28:25.9348359Z //codex-rs/app-server:app-server-all-test-windows-cross                 SKIPPED
+2026-11-12T20:28:25.9348723Z //codex-rs/apply-patch:apply-patch-all-test-windows-cross               SKIPPED
+2026-11-12T20:28:25.9349022Z //codex-rs/cli:cli-debug_models-test-windows-cross                      SKIPPED
+2026-11-12T20:28:25.9349327Z //codex-rs/cli:cli-doctor_enterprise_network-test-windows-cross         SKIPPED
+2026-11-12T20:28:25.9349626Z //codex-rs/cli:cli-features-test-windows-cross                          SKIPPED
+2026-11-12T20:28:25.9349914Z //codex-rs/cli:cli-marketplace_upgrade-test-windows-cross               SKIPPED
+2026-11-12T20:28:25.9350601Z //codex-rs/cli:cli-mcp_list-test-windows-cross                          SKIPPED
+2026-11-12T20:28:25.9350941Z //codex-rs/cli:cli-plugin_cli-test-windows-cross                        SKIPPED
+2026-11-12T20:28:25.9351227Z //codex-rs/cli:cli-sandbox_network_proxy-test-windows-cross             SKIPPED
+2026-11-12T20:28:25.9351638Z //codex-rs/cloud-tasks:cloud-tasks-env_filter-test-windows-cross        SKIPPED
+2026-11-12T20:28:25.9351902Z //codex-rs/code-mode-host:code-mode-host-stdio-test-windows-cross       SKIPPED
+2026-11-12T20:28:25.9352206Z //codex-rs/code-mode-runtime:code-mode-runtime-jit-test-windows-cross   SKIPPED
+2026-11-12T20:28:25.9352475Z //codex-rs/codex-api:codex-api-clients-test-windows-cross               SKIPPED
+2026-11-12T20:28:25.9352648Z //codex-rs/core:core-all-wine-exec-test                                 SKIPPED
+2026-11-12T20:28:25.9352848Z //codex-rs/core:core-responses_headers-test-windows-cross               SKIPPED
+2026-11-12T20:28:25.9353306Z //codex-rs/core:core-responses_headers-wine-exec-test                   SKIPPED
+2026-11-12T20:28:25.9353624Z //codex-rs/core/tests/remote_env_windows:smoke-test                     SKIPPED
+2026-11-12T20:28:25.9353913Z //codex-rs/exec-server:exec-server-environment_config-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9354104Z //codex-rs/exec-server:exec-server-exec_process-test-windows-cross      SKIPPED
+2026-11-12T20:28:25.9354303Z //codex-rs/exec-server:exec-server-health-test-windows-cross            SKIPPED
+2026-11-12T20:28:25.9354501Z //codex-rs/exec-server:exec-server-http_request-test-windows-cross      SKIPPED
+2026-11-12T20:28:25.9354681Z //codex-rs/ext/agent:agent-agent_service-test-windows-cross             SKIPPED
+2026-11-12T20:28:25.9354917Z //codex-rs/ext/extension-api:extension-api-capabilities-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9359000Z //codex-rs/ext/extension-api:extension-api-model_provider_input-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9376526Z //codex-rs/ext/extension-api:extension-api-model_provider_policy-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9384557Z //codex-rs/ext/goal:goal-accounting-test-windows-cross                  SKIPPED
+2026-11-12T20:28:25.9386079Z //codex-rs/ext/history-notes:history-notes-history_notes_extension-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9386625Z //codex-rs/ext/skills:skills-skills_extension-test-windows-cross        SKIPPED
+2026-11-12T20:28:25.9387197Z //codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9387633Z //codex-rs/hepta-agentd:hepta-agentd-kernel_evidence_product-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9389004Z //codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9389520Z //codex-rs/hepta-automation:hepta-automation-durable_causal_chain-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9390078Z //codex-rs/hepta-automation:hepta-automation-kernel_operations_destination-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9391025Z //codex-rs/hepta-automation:hepta-automation-operation_timer_fence-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9391675Z //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9392452Z //codex-rs/hepta-matrix-store:hepta-matrix-store-durable_core-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9392866Z //codex-rs/hepta-matrixd:hepta-matrixd-real_synapse_e2e-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9393301Z //codex-rs/hepta-supervisor:hepta-supervisor-daemon_product-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9393878Z //codex-rs/hepta-supervisor:hepta-supervisor-isolated_execution_handoff_unix-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9395084Z //codex-rs/otel:otel-tests-test-windows-cross                           SKIPPED
+2026-11-12T20:28:25.9395505Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9395912Z //codex-rs/rmcp-client:rmcp-client-resources-test-windows-cross         SKIPPED
+2026-11-12T20:28:25.9397285Z //codex-rs/rmcp-client:rmcp-client-streamable_http_oauth_startup-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9397944Z //codex-rs/rmcp-client:rmcp-client-streamable_http_test_support-test-windows-cross SKIPPED
+2026-11-12T20:28:25.9398341Z //codex-rs/bwrap:bwrap-bin-unit-tests                                    PASSED in 148.7s
+2026-11-12T20:28:25.9398732Z //codex-rs/cli:cli-doctor_enterprise_network-test                        PASSED in 3.4s
+2026-11-12T20:28:25.9399819Z   WARNING: //codex-rs/cli:cli-doctor_enterprise_network-test: Test execution time (3.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9400181Z //codex-rs/cli:cli-exec_server-test                                      PASSED in 1.1s
+2026-11-12T20:28:25.9401232Z   WARNING: //codex-rs/cli:cli-exec_server-test: Test execution time (1.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9402148Z //codex-rs/cli:cli-features-test                                         PASSED in 1.4s
+2026-11-12T20:28:25.9403310Z   WARNING: //codex-rs/cli:cli-features-test: Test execution time (1.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9403705Z //codex-rs/cli:cli-mcp_cloud_config-test                                 PASSED in 38.5s
+2026-11-12T20:28:25.9404193Z //codex-rs/core:codex-write-config-schema-bin-unit-tests                 PASSED in 50.8s
+2026-11-12T20:28:25.9406423Z   WARNING: //codex-rs/core:codex-write-config-schema-bin-unit-tests: Test execution time (50.8s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="moderate" or size="medium".
+2026-11-12T20:28:25.9406881Z //codex-rs/exec:exec-event_processor_with_json_output-test               PASSED in 0.4s
+2026-11-12T20:28:25.9410110Z   WARNING: //codex-rs/exec:exec-event_processor_with_json_output-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9410849Z //codex-rs/exec-server:exec-server-authorized_read_rpc-test              PASSED in 0.1s
+2026-11-12T20:28:25.9412348Z   WARNING: //codex-rs/exec-server:exec-server-authorized_read_rpc-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9412741Z //codex-rs/exec-server:exec-server-chatgpt_cloudflare_affinity-test      PASSED in 0.2s
+2026-11-12T20:28:25.9414832Z   WARNING: //codex-rs/exec-server:exec-server-chatgpt_cloudflare_affinity-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9415300Z //codex-rs/exec-server:exec-server-deferred_environment-test             PASSED in 2.4s
+2026-11-12T20:28:25.9416585Z   WARNING: //codex-rs/exec-server:exec-server-deferred_environment-test: Test execution time (2.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9417002Z //codex-rs/exec-server:exec-server-http_request-test                     PASSED in 0.2s
+2026-11-12T20:28:25.9419086Z   WARNING: //codex-rs/exec-server:exec-server-http_request-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9419541Z //codex-rs/exec-server:exec-server-http_request_logging-test             PASSED in 2.9s
+2026-11-12T20:28:25.9429612Z   WARNING: //codex-rs/exec-server:exec-server-http_request_logging-test: Test execution time (2.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9430179Z //codex-rs/exec-server:exec-server-initialize-test                       PASSED in 0.2s
+2026-11-12T20:28:25.9431470Z   WARNING: //codex-rs/exec-server:exec-server-initialize-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9432099Z //codex-rs/ext/agent:agent-agent_service-test                            PASSED in 1.3s
+2026-11-12T20:28:25.9433205Z   WARNING: //codex-rs/ext/agent:agent-agent_service-test: Test execution time (1.3s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9433905Z //codex-rs/ext/agent:agent-unit-tests                                    PASSED in 101.8s
+2026-11-12T20:28:25.9434329Z //codex-rs/ext/guardian-v2:guardian-v2-unit-tests                        PASSED in 115.8s
+2026-11-12T20:28:25.9434728Z //codex-rs/ext/queue:queue-queue_service-test                            PASSED in 66.9s
+2026-11-12T20:28:25.9438728Z //codex-rs/hepta-agentd:hepta-agentd-browser-bin-unit-tests              PASSED in 2.5s
+2026-11-12T20:28:25.9444480Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-browser-bin-unit-tests: Test execution time (2.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9444974Z //codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test      PASSED in 0.1s
+2026-11-12T20:28:25.9454732Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test: Test execution time (0.1s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9455294Z //codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test          PASSED in 0.3s
+2026-11-12T20:28:25.9456517Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test: Test execution time (0.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9460118Z //codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test        PASSED in 0.2s
+2026-11-12T20:28:25.9461307Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test: Test execution time (0.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9462002Z //codex-rs/hepta-agentd:hepta-agentd-verify1_kernel_evidence_product-test PASSED in 0.2s
+2026-11-12T20:28:25.9464152Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-verify1_kernel_evidence_product-test: Test execution time (0.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9464647Z //codex-rs/hepta-automation:hepta-automation-durable_causal_chain-test   PASSED in 9.9s
+2026-11-12T20:28:25.9465860Z   WARNING: //codex-rs/hepta-automation:hepta-automation-durable_causal_chain-test: Test execution time (9.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9466301Z //codex-rs/hepta-automation:hepta-automation-operation_timer_fence-test  PASSED in 1.7s
+2026-11-12T20:28:25.9467446Z   WARNING: //codex-rs/hepta-automation:hepta-automation-operation_timer_fence-test: Test execution time (1.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9467842Z //codex-rs/hepta-automation:hepta-automation-retirement_recovery-test    PASSED in 10.8s
+2026-11-12T20:28:25.9468915Z   WARNING: //codex-rs/hepta-automation:hepta-automation-retirement_recovery-test: Test execution time (10.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9469276Z //codex-rs/hepta-automation:hepta-automation-taskflow_step-test          PASSED in 2.8s
+2026-11-12T20:28:25.9470331Z   WARNING: //codex-rs/hepta-automation:hepta-automation-taskflow_step-test: Test execution time (2.8s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9470789Z //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test PASSED in 0.7s
+2026-11-12T20:28:25.9472445Z   WARNING: //codex-rs/hepta-intelligence:hepta-intelligence-intuition_frozen_qualification-test: Test execution time (0.7s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9477722Z //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests                        PASSED in 5.2s
+2026-11-12T20:28:25.9487113Z   WARNING: //codex-rs/hepta-matrixd:hepta-matrixd-unit-tests: Test execution time (5.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9516810Z //codex-rs/hepta-neuron:hepta-neuron-unit-tests                          PASSED in 54.5s
+2026-11-12T20:28:25.9517482Z //codex-rs/hepta-supervisor:hepta-final-use-approver-bin-unit-tests      PASSED in 126.0s
+2026-11-12T20:28:25.9519309Z //codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test PASSED in 0.5s
+2026-11-12T20:28:25.9520661Z   WARNING: //codex-rs/hepta-supervisor:hepta-supervisor-signed_intent_recovery-test: Test execution time (0.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9522011Z //codex-rs/http-client:custom_ca_probe-bin-unit-tests                    PASSED in 124.7s
+2026-11-12T20:28:25.9522499Z //codex-rs/linux-sandbox:codex-linux-sandbox-bin-unit-tests              PASSED in 148.7s
+2026-11-12T20:28:25.9522903Z //codex-rs/memories/write:write-unit-tests                               PASSED in 105.1s
+2026-11-12T20:28:25.9523306Z //codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test          PASSED in 5.4s
+2026-11-12T20:28:25.9534507Z   WARNING: //codex-rs/rmcp-client:rmcp-client-mcp_2026_message_limits-test: Test execution time (5.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9536002Z //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests                  PASSED in 128.0s
+2026-11-12T20:28:25.9536437Z //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests        PASSED in 130.0s
+2026-11-12T20:28:25.9536820Z //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test                   PASSED in 0.4s
+2026-11-12T20:28:25.9542164Z   WARNING: //codex-rs/stdio-to-uds:stdio-to-uds-stdio_to_uds-test: Test execution time (0.4s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9542619Z //codex-rs/tui:md-events-bin-unit-tests                                  PASSED in 3.0s
+2026-11-12T20:28:25.9544878Z   WARNING: //codex-rs/tui:md-events-bin-unit-tests: Test execution time (3.0s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9545980Z //codex-rs/tui:tui-all-test                                              PASSED in 0.1s
+2026-11-12T20:28:25.9548864Z   WARNING: //codex-rs/tui:tui-all-test: Test execution time (0.1s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9549378Z //codex-rs/tui:tui-test_backend-test                                     PASSED in 0.2s
+2026-11-12T20:28:25.9550357Z   WARNING: //codex-rs/tui:tui-test_backend-test: Test execution time (0.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9550772Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          PASSED in 51.9s
+2026-11-12T20:28:25.9551050Z   Stats over 8 runs: max = 51.9s, min = 19.6s, avg = 34.6s, dev = 11.1s
+2026-11-12T20:28:25.9553177Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-unit-tests: Test execution time (19.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9555088Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-unit-tests: Test execution time (22.6s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9556190Z   WARNING: //codex-rs/hepta-agentd:hepta-agentd-unit-tests: Test execution time (27.2s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9556593Z //codex-rs/tui:tui-unit-tests                                            FAILED in 3 out of 10 in 65.8s
+2026-11-12T20:28:25.9556888Z   Stats over 10 runs: max = 65.8s, min = 17.7s, avg = 38.0s, dev = 16.7s
+2026-11-12T20:28:25.9559586Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (25.9s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9564709Z   WARNING: //codex-rs/tui:tui-unit-tests: Test execution time (29.5s excluding execution overhead) outside of range for MODERATE tests. Consider setting timeout="short" or size="small".
+2026-11-12T20:28:25.9565362Z   D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test.log
+2026-11-12T20:28:25.9566055Z   D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_1.log
+2026-11-12T20:28:25.9572686Z   D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_2.log
+2026-11-12T20:28:25.9572713Z 
+2026-11-12T20:28:25.9573105Z Executed 43 out of 147 tests: 101 tests pass, 1 fails locally, and 45 were skipped.
+2026-11-12T20:28:27.1690218Z INFO: 
+2026-11-12T20:28:31.0567765Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/8d60800c-0778-4828-8f37-a613991ff152
+2026-11-12T20:28:31.6452121Z ##[error]FAILED: //codex-rs/tui:tui-unit-tests (Summary)
+2026-11-12T20:28:31.6472875Z 
+2026-11-12T20:28:31.6473104Z Bazel failed action diagnostics:
+2026-11-12T20:28:31.6473410Z --------------------------------
+2026-11-12T20:28:31.6473732Z FAILED: //codex-rs/tui:tui-unit-tests (Summary)
+2026-11-12T20:28:31.6474323Z --------------------------------
+2026-11-12T20:28:39.6322976Z ##[group]Bazel test log tail for //codex-rs/tui:tui-unit-tests
+2026-11-12T20:28:39.6570697Z test exec_command::tests::split_command_string_preserves_non_roundtrippable_windows_commands ... ok
+2026-11-12T20:28:39.6572409Z test external_agent_config_migration::flow::tests::external_agent_config_detection_tolerates_a_partial_failure ... ok
+2026-11-12T20:28:39.6573472Z test diff_render::tests::ui_snapshot_apply_add_block ... ok
+2026-11-12T20:28:39.6574510Z test external_agent_config_migration::flow::tests::external_agent_config_migration_messages_snapshot ... ok
+2026-11-12T20:28:39.6575732Z test get_git_diff::tests::get_git_diff_disables_helpers_for_tracked_and_untracked_diffs ... ok
+2026-11-12T20:28:39.6576858Z test git_action_directives::tests::hides_malformed_directives_without_materializing_rows ... ok
+2026-11-12T20:28:39.6578024Z test history_cell::hook_cell::tests::completed_hook_with_warning_uses_default_bold_bullet ... ok
+2026-11-12T20:28:39.6579389Z test history_cell::hook_cell::tests::completed_hook_short_multiline_context_preserves_display_transcript_and_raw_lines ... ok
+2026-11-12T20:28:39.6580775Z test history_cell::hook_cell::tests::visible_hook_animates_transcript_when_animations_enabled ... ok
+2026-11-12T20:28:39.6581916Z test history_cell::mcp::tests::projected_image_marker_still_requires_a_complete_image ... ok
+2026-11-12T20:28:39.6583208Z test history_cell::messages::tests::sanitizer_preserves_owned_buffer_for_clean_and_edge_trimmed_text ... ok
+2026-11-12T20:28:39.6584312Z test history_cell::mcp::tests::mcp_inventory_older_app_server_authentication ... ok
+2026-11-12T20:28:39.6585208Z test history_cell::tests::coalesces_reads_across_multiple_calls ... ok
+2026-11-12T20:28:39.6586082Z test history_cell::tests::agent_markdown_cell_survives_insert_history_rewrap ... ok
+2026-11-12T20:28:39.6586984Z test history_cell::tests::completed_mcp_tool_call_success_snapshot ... ok
+2026-11-12T20:28:39.6587921Z test history_cell::tests::completed_mcp_tool_call_multiple_outputs_inline_snapshot ... ok
+2026-11-12T20:28:39.6589025Z test history_cell::tests::final_message_separator_includes_worked_label_after_one_minute ... ok
+2026-11-12T20:28:39.6590128Z test history_cell::tests::image_generation_call_renders_saved_path ... ok
+2026-11-12T20:28:39.6590982Z test history_cell::tests::ps_output_halfwidth_sound_marks_snapshot ... ok
+2026-11-12T20:28:39.6591864Z test history_cell::tests::ps_output_chunk_leading_whitespace_snapshot ... ok
+2026-11-12T20:28:39.6592851Z test history_cell::tests::ps_output_long_command_snapshot ... ok
+2026-11-12T20:28:39.6593545Z test history_cell::tests::reasoning_summary_block ... ok
+2026-11-12T20:28:39.6594404Z test history_cell::tests::reasoning_summary_block_preserves_literal_html_comment ... ok
+2026-11-12T20:28:39.6595509Z test history_cell::tests::reasoning_summary_block_strips_header_after_leading_empty_part ... ok
+2026-11-12T20:28:39.6596598Z test history_cell::tests::runtime_metrics_label_rounds_fractional_tbt_milliseconds ... ok
+2026-11-12T20:28:39.6597619Z test history_cell::tests::session_header_directory_front_truncates_long_segment ... ok
+2026-11-12T20:28:39.6599081Z test history_cell::tests::structured_tool_cell_renders_raw_plain_text_without_prefix_or_style ... ok
+2026-11-12T20:28:39.6600293Z test history_cell::tests::unified_exec_interaction_cell_height_matches_wrapped_rendering ... ok
+2026-11-12T20:28:39.6601352Z test history_cell::tests::user_history_cell_numbers_multiple_remote_images ... ok
+2026-11-12T20:28:39.6603726Z test inline_visualization::tests::finalized_agent_cell_replays_visualization_link ... ok
+2026-11-12T20:28:39.6604773Z test exec_cell::render::tests::command_display_does_not_split_long_url_token ... ok
+2026-11-12T20:28:39.6605693Z test history_cell::tests::ran_cell_multiline_with_stderr_snapshot ... ok
+2026-11-12T20:28:39.6606744Z test insert_history::tests::vt100_prefixed_url_like_without_scheme_keeps_prefix_and_token_on_same_row ... ok
+2026-11-12T20:28:39.6607935Z test insert_history::tests::vt100_blockquote_wrap_preserves_color_on_all_wrapped_lines ... ok
+2026-11-12T20:28:39.6609036Z test keymap::tests::configured_legacy_vim_normal_bindings_prune_new_substitute_default ... ok
+2026-11-12T20:28:39.6610104Z test keymap::chords::tests::matching_chords_dispatches_the_active_context_action ... ok
+2026-11-12T20:28:39.6611108Z test keymap::tests::configured_substitute_binding_prunes_new_replace_default ... ok
+2026-11-12T20:28:39.6612323Z test keymap::tests::explicit_new_list_bindings_still_conflict_with_legacy_bindings ... ok
+2026-11-12T20:28:39.6613508Z test keymap::tests::explicit_new_vim_normal_substitute_binding_still_conflicts_with_legacy_binding ... ok
+2026-11-12T20:28:39.6614682Z test keymap::tests::explicit_new_vim_operator_binding_still_conflicts_with_legacy_binding ... ok
+2026-11-12T20:28:39.6615683Z test keymap::tests::invalid_global_copy_binding_reports_global_path ... ok
+2026-11-12T20:28:39.6616472Z test keymap::tests::parses_all_named_non_character_keys ... ok
+2026-11-12T20:28:39.6617227Z test keymap::tests::parses_minus_alias_and_legacy_literal_minus ... ok
+2026-11-12T20:28:39.6618085Z test keymap::tests::rejects_main_bindings_that_collide_with_remaining_fixed_shortcuts ... ok
+2026-11-12T20:28:39.6619114Z test keymap::tests::interrupt_turn_allows_backtrack_escape_and_can_be_remapped_or_unbound ... ok
+2026-11-12T20:28:39.6620096Z test keymap::tests::vim_normal_defaults_include_insert_and_arrow_aliases ... ok
+2026-11-12T20:28:39.6621049Z test keymap_setup::tests::action_menu_disables_clear_when_action_has_no_custom_binding ... ok
+2026-11-12T20:28:39.6622102Z test keymap::tests::rejects_shadowing_list_binding_in_app_scope ... ok
+2026-11-12T20:28:39.6622888Z test keymap_setup::tests::picker_common_tab_lists_curated_actions ... ok
+2026-11-12T20:28:39.6623684Z test keymap_setup::tests::picker_covers_every_replaceable_action ... ok
+2026-11-12T20:28:39.6624566Z test keymap_setup::tests::capture_completion_returns_to_selected_keymap_picker_row ... ok
+2026-11-12T20:28:39.6625459Z test keymap_setup::tests::replace_one_preserves_other_bindings ... ok
+2026-11-12T20:28:39.6626162Z test local_chatgpt_auth::tests::rejects_api_key_auth ... ok
+2026-11-12T20:28:39.6626902Z test keymap_setup::tests::picker_customized_tab_contains_root_overrides ... ok
+2026-11-12T20:28:39.6628037Z test markdown::tests::append_markdown_agent_keeps_markdown_fence_with_blank_line_between_header_and_delimiter ... ok
+2026-11-12T20:28:39.6629241Z test markdown::tests::copy_targets_preserve_nested_quote_markdown_and_source_order ... ok
+2026-11-12T20:28:39.6630159Z test markdown_render::markdown_render_tests::blockquote_inside_nested_list ... ok
+2026-11-12T20:28:39.6631065Z test markdown_render::markdown_render_tests::blockquote_multiple_with_break ... ok
+2026-11-12T20:28:39.6632159Z test markdown_render::markdown_render_tests::blockquote_three_paragraphs_short_lines ... ok
+2026-11-12T20:28:39.6633259Z test markdown_render::markdown_render_tests::code_block_inside_unordered_list_item_is_indented ... ok
+2026-11-12T20:28:39.6634268Z test markdown_render::markdown_render_tests::code_block_multiple_lines_root ... ok
+2026-11-12T20:28:39.6635224Z test markdown_render::markdown_render_tests::code_block_preserves_trailing_blank_lines ... ok
+2026-11-12T20:28:39.6636217Z test markdown_render::markdown_render_tests::escaped_pipes_render_in_table_cells ... ok
+2026-11-12T20:28:39.6637233Z test markdown_render::markdown_render_tests::file_link_uses_target_path_for_hash_anchor ... ok
+2026-11-12T20:28:39.6640160Z test markdown_render::markdown_render_tests::html_continuation_paragraph_in_unordered_item_indented ... ok
+2026-11-12T20:28:39.6641221Z test markdown_render::markdown_render_tests::html_inline_is_verbatim ... ok
+2026-11-12T20:28:39.6642143Z test markdown_render::markdown_render_tests::inline_code ... ok
+2026-11-12T20:28:39.6642895Z test markdown_render::markdown_render_tests::list_ordered_custom_start ... ok
+2026-11-12T20:28:39.6643796Z test markdown_render::markdown_render_tests::mixed_tight_then_loose_in_one_list ... ok
+2026-11-12T20:28:39.6644885Z test markdown_render::markdown_render_tests::ordered_item_with_code_block_and_nested_bullet ... ok
+2026-11-12T20:28:39.6645810Z test markdown_render::markdown_render_tests::strikethrough ... ok
+2026-11-12T20:28:39.6646769Z test markdown_render::markdown_render_tests::web_link_labels_use_link_style_and_preserve_inline_formatting ... ok
+2026-11-12T20:28:39.6647910Z test markdown_render::tests::wraps_list_items_preserving_indent ... ok
+2026-11-12T20:28:39.6648717Z test markdown_stream::tests::e2e_stream_blockquote_nested_is_green ... ok
+2026-11-12T20:28:39.6649669Z test markdown_stream::tests::collector_source_chunks_round_trip_into_agent_fence_unwrapping ... ok
+2026-11-12T20:28:39.6650601Z test markdown_stream::tests::e2e_stream_blockquote_wrap_preserves_green_style ... ok
+2026-11-12T20:28:39.6651359Z test markdown_stream::tests::finalize_commits_partial_line ... ok
+2026-11-12T20:28:39.6652380Z test markdown_stream::tests::table_like_lines_inside_fenced_code_are_not_held ... ok
+2026-11-12T20:28:39.6653379Z test motion::tests::reduced_motion_activity_indicator_uses_explicit_fallback ... ok
+2026-11-12T20:28:39.6654339Z test multi_agents::tests::completed_sub_agent_activity_stops_running_liveness ... ok
+2026-11-12T20:28:39.6655272Z test npm_registry::tests::ready_version_rejects_stale_latest_dist_tag ... ok
+2026-11-12T20:28:39.6656041Z test multi_agents::tests::collab_events_snapshot ... ok
+2026-11-12T20:28:39.6656750Z test oss_selection::tests::ctrl_h_l_move_provider_selection ... ok
+2026-11-12T20:28:39.6657672Z test managed_new_thread_defaults::tests::applies_managed_defaults_to_a_new_thread_config ... ok
+2026-11-12T20:28:39.6658589Z test diff_render::tests::ui_snapshot_diff_gallery_94x35 ... ok
+2026-11-12T20:28:39.6659531Z test onboarding::auth::tests::continue_in_browser_preserves_long_link_and_footer_at_narrow_width ... ok
+2026-11-12T20:28:39.6660231Z 
+2026-11-12T20:28:39.6660653Z test result: ok. 91 passed; 0 failed; 0 ignored; 0 measured; 3690 filtered out; finished in 0.22s
+2026-11-12T20:28:39.6661265Z 
+2026-11-12T20:28:39.6661272Z 
+2026-11-12T20:28:39.6661461Z running 88 tests
+2026-11-12T20:28:39.6662357Z test pager_overlay::tests::pager_view_is_scrolled_to_bottom_accounts_for_wrapped_height ... ok
+2026-11-12T20:28:39.6663392Z test pets::image_protocol::tests::parses_protocol_selection ... ok
+2026-11-12T20:28:39.6664398Z test pets::image_protocol::tests::pet_image_support_old_iterm2_message_mentions_upgrade ... ok
+2026-11-12T20:28:39.6665596Z test pager_overlay::tests::transcript_overlay_insert_preserves_cached_cell_heights ... ok
+2026-11-12T20:28:39.6666685Z test pets::model::tests::app_notification_states_use_expected_rows ... ok
+2026-11-12T20:28:39.6667598Z test pager_overlay::tests::static_overlay_wraps_long_lines ... ok
+2026-11-12T20:28:39.6668552Z test pets::sixel::tests::encodes_red_pixel_with_palette_and_pixel_data ... ok
+2026-11-12T20:28:39.6669606Z test pets::frames::tests::prepare_png_frames_slices_spritesheet_without_external_command ... ok
+2026-11-12T20:28:39.6670634Z test pets::sixel::tests::multi_band_images_advance_to_next_sixel_band ... ok
+2026-11-12T20:28:39.6671717Z test render::highlight::tests::highlight_code_to_styled_spans_returns_none_for_unknown ... ok
+2026-11-12T20:28:39.6672938Z test render::highlight::tests::highlight_empty_string ... ok
+2026-11-12T20:28:39.6673950Z test render::highlight::tests::list_available_themes_returns_stable_sorted_order ... ok
+2026-11-12T20:28:39.6676016Z test render::highlight::tests::style_conversion_uses_terminal_default_when_alpha_is_one ... ok
+2026-11-12T20:28:39.6677667Z test resize_reflow_cap::tests::auto_resize_reflow_max_rows_prefers_vscode_probe ... ok
+2026-11-12T20:28:39.6678998Z test resume_picker::archive::tests::archived_session_restore_failure_preserves_session_and_allows_retry ... ok
+2026-11-12T20:28:39.6680314Z test resume_picker::tests::ctrl_c_exits_even_when_cancel_is_remapped_to_ctrl_c ... ok
+2026-11-12T20:28:39.6681381Z test resume_picker::tests::density_toggle_clears_stale_more_indicator ... ok
+2026-11-12T20:28:39.6682583Z test resume_picker::tests::enter_on_pathless_thread_uses_thread_id ... ok
+2026-11-12T20:28:39.6683603Z test resume_picker::tests::hint_line_snapshot_uses_distributed_wide_footer ... ok
+2026-11-12T20:28:39.6684815Z test resume_picker::tests::local_db_first_accepts_db_thread_id_without_rollout_validation ... ok
+2026-11-12T20:28:39.6702708Z test resume_picker::tests::long_relative_time_uses_words ... ok
+2026-11-12T20:28:39.6704573Z test resume_picker::tests::paste_uses_existing_search_loading_path ... ok
+2026-11-12T20:28:39.6705537Z test resume_picker::tests::picker_footer_percent_reports_scroll_progress ... ok
+2026-11-12T20:28:39.6706516Z test resume_picker::tests::raw_ctrl_o_toggles_density_without_typing_into_search ... ok
+2026-11-12T20:28:39.6707515Z test resume_picker::tests::transcript_loading_still_allows_ctrl_c_exit ... ok
+2026-11-12T20:28:39.6708652Z test resume_picker::transcript_preview::tests::legacy_transcript_preview_falls_back_for_oversized_hidden_record ... ok
+2026-11-12T20:28:39.6710083Z test resume_picker::transcript_preview::tests::legacy_transcript_preview_scans_tail_across_compaction ... ok
+2026-11-12T20:28:39.6711214Z test pets::model::tests::load_pet_json_path_uses_containing_directory ... ok
+2026-11-12T20:28:39.6712276Z test pets::model::tests::custom_pet_selector_loads_codex_home_pet_manifest ... ok
+2026-11-12T20:28:39.6713366Z test session_queue_commands::tests::recognizes_only_definitively_unsupported_queue_errors ... ok
+2026-11-12T20:28:39.6715169Z [0 qtest session_resume::tests::configured_session_cwd_rejects_missing_metadata ... ok
+2026-11-12T20:28:39.6716039Z test session_resume::tests::rollout_resume_state_skips_malformed_lines ... ok
+2026-11-12T20:28:39.6716978Z test session_resume::tests::session_cwd_prefers_state_metadata_over_rollout_context ... ok
+2026-11-12T20:28:39.6718065Z test session_archive_commands::tests::trusts_sqlite_name_over_legacy_index_for_delete ... ok
+2026-11-12T20:28:39.6719449Z [0 qtest startup_draft::tests::startup_draft_allows_cancellation_before_session_picker_appears ... ok
+2026-11-12T20:28:39.6740514Z [?2026h[1;1H[J[1;42H[0m[49m[K[2;42H[0m[49m[K[3;42H[0m[49m[K[4;42H[0m[49m[K[5;42H[0m[49m[K[6;42H[0m[49m[K[7;20H[0m[49m[K[8;2H[0m[49m[K[9;22H[0m[49m[K[10;2H[0m[49m[K[11;2H[0m[49m[K[1;1H[2m╭───────────────────────────────────────╮[2;1H│ >_ [22m[1mOpenAI Codex[22m[2m[2m (v0.0.0)              │[3;1H│                                       │[4;1H│ model:     [3mloading[23m   [22m[38;5;6;49m/model[2m[39;49m to change │[5;1H│ directory: [22mloading[2m                    │[6;1H╰───────────────────────────────────────╯[7;1H  Resuming session…[8;1H[22m [9;1H[1m›[22m draft while loading[10;1H [11;1H [39m[49m[0m[0 q[9;22H[?25h[?2026l[?2026h[7;2H[0m[49m[K[7;1H [39m[49m[0m[0 q[9;22H[?25h[?2026l[0 q[?2026h[1;1H[J[1;42H[0m[49m[K[2;42H[0m[49m[K[3;42H[0m[49m[K[4;42H[0m[49m[K[5;42H[0m[49m[K[6;42H[0m[49m[K[7;19H[0m[49m[K[8;2H[0m[49m[K[9;22H[0m[49m[K[10;2H[0m[49m[K[11;2H[0m[49m[K[1;1H[2m╭───────────────────────────────────────╮[2;1H│ >_ [22m[1mOpenAI Codex[22m[2m[2m (v0.0.0)              │[3;1H│                                       │[4;1H│ model:     [3mloading[23m   [22m[38;5;6;49m/model[2m[39;49m to change │[5;1H│ directory: [22mloading[2m                    │[6;1H╰───────────────────────────────────────╯[7;1H  Forking session…[8;1H[22m [9;1H[1m›[22m draft while loading[10;1H [11;1H [39m[49m[0m[0 q[9;22H[?25h[?2026l[?2026h[7;2H[0m[49m[K[7;1H [39m[49m[0m[0 q[9;22H[?25h[?2026l[0 q[?2026h[1;1H[J[1;42H[0m[49m[K[2;42H[0m[49m[K[3;42H[0m[49m[K[4;42H[0m[49m[K[5;42H[0m[49m[K[6;42H[0m[49m[K[7;2H[0m[49m[K[8;2H[0m[49m[K[9;27H[0m[49m[K[10;2H[0m[49m[K[11;18H[0m[49m[K[1;1H[2m╭───────────────────────────────────────╮[2;1H│ >_ [22m[1mOpenAI Codex[22m[2m[2m (v0.0.0)              │[3;1H│                                       │[4;1H│ model:     [3mloading[23m   [22m[38;5;6;49m/model[2m[39;49m to change │[5;1H│ directory: [22mloading[2m                    │[6;1H╰───────────────────────────────────────╯[7;1H[22m [8;1H [9;1H[1m›[22m [2mAsk Codex to do anything[10;1H[22m [11;1H  [2m? for shortcuts[39m[49m[0m[0 q[9;3H[?25h[?2026l[0 q[?2026h[1;1H[J[1;42H[0m[49m[K[2;42H[0m[49m[K[3;42H[0m[49m[K[4;42H[0m[49m[K[5;42H[0m[49m[K[6;42H[0m[49m[K[7;2H[0m[49m[K[8;2H[0m[49m[K[9;27H[0m[49m[K[10;2H[0m[49m[K[11;18H[0m[49m[K[1;1H[2m╭───────────────────────────────────────╮[2;1H│ >_ [22m[1mOpenAI Codex[22m[2m[2m (v0.0.0)              │[3;1H│                                       │[4;1H│ model:     [3mloading[23m   [22m[38;5;6;49m/model[2m[39;49m to change │[5;1H│ directory: [22mloading[2m                    │[6;1H╰───────────────────────────────────────╯[7;1H[22m [8;1H [9;1H[1m›[22m [2mAsk Codex to do anything[10;1H[22m [11;1H  [2m? for shortcuts[39m[49m[0m[0 q[9;3H[?25h[?2026l[0 qtest startup_draft::tests::startup_draft_clears_loading_status_when_starting_fresh ... ok
+2026-11-12T20:28:39.6753722Z test startup_draft::tests::startup_draft_preserves_windows_altgr_text_input ... ok
+2026-11-12T20:28:39.6754569Z test startup_hooks_review::tests::untrusted_hooks_need_review_without_bypass ... ok
+2026-11-12T20:28:39.6755382Z test status::rate_limits::tests::non_codex_multi_limit_keeps_group_row ... ok
+2026-11-12T20:28:39.6756162Z test status::tests::stale_monthly_limit_marks_fresh_rolling_snapshot_stale ... ok
+2026-11-12T20:28:39.6756936Z test status::tests::status_permissions_user_defined_profile_shows_name ... ok
+2026-11-12T20:28:39.6757754Z test status::tests::status_snapshot_shows_available_credits_without_display_balance ... ok
+2026-11-12T20:28:39.6758680Z test status::tests::status_snapshot_uses_generic_limit_labels_for_unsupported_windows ... ok
+2026-11-12T20:28:39.6759675Z test status_indicator_widget::tests::details_args_can_disable_capitalization_and_limit_lines ... ok
+2026-11-12T20:28:39.6760558Z test streaming::chunking::tests::drops_back_to_smooth_when_idle ... ok
+2026-11-12T20:28:39.6761282Z test streaming::chunking::tests::enters_catch_up_on_age_threshold ... ok
+2026-11-12T20:28:39.6762211Z test streaming::chunking::tests::severe_backlog_can_reenter_during_hold ... ok
+2026-11-12T20:28:39.6763315Z test streaming::code_fence::tests::lazy_initialization_rejects_a_changed_theme ... ok
+2026-11-12T20:28:39.6764839Z test streaming::controller::tests::controller_holds_blockquoted_table_tail_until_stable ... ok
+2026-11-12T20:28:39.6765883Z test streaming::controller::tests::controller_keeps_markdown_fenced_no_outer_tables_mutable_until_finalize ... ok
+2026-11-12T20:28:39.6766904Z test streaming::controller::tests::controller_loose_vs_tight_with_commit_ticks_matches_full ... ok
+2026-11-12T20:28:39.6767920Z test streaming::controller::tests::controller_renders_separators_for_multi_table_response_shape ... ok
+2026-11-12T20:28:39.6768960Z test streaming::controller::tests::controller_set_width_partial_drain_keeps_pending_queue ... ok
+2026-11-12T20:28:39.6769933Z test streaming::controller::tests::controller_set_width_partial_drain_no_lost_lines ... ok
+2026-11-12T20:28:39.6770847Z test streaming::controller::tests::controller_set_width_preserves_in_flight_tail ... ok
+2026-11-12T20:28:39.6771829Z test streaming::render::tests::code_fence_tests::recomputing_after_resize_or_mode_change_drops_fence_state ... ok
+2026-11-12T20:28:39.6773117Z test table_detect::tests::fence_tracker_close_with_trailing_content_does_not_close ... ok
+2026-11-12T20:28:39.6773895Z test table_detect::tests::is_table_delimiter_segment_valid ... ok
+2026-11-12T20:28:39.6774466Z test table_detect::tests::parse_table_segments_escaped_pipe ... ok
+2026-11-12T20:28:39.6775744Z test terminal_hyperlinks::tests::trusted_file_destination_receives_osc8_without_enabling_plain_file_links ... ok
+2026-11-12T20:28:39.6776728Z test terminal_probe::imp::tests::decodes_console_color_ref_byte_order ... ok
+2026-11-12T20:28:39.6777502Z test terminal_probe::tests::parses_two_and_four_digit_color_components ... ok
+2026-11-12T20:28:39.6778340Z test tests::config_cwd_for_app_server_target_omits_cwd_for_remote_sessions ... ok
+2026-11-12T20:28:39.6779297Z test render::highlight::streaming::tests::crossing_each_highlighting_limit_requires_a_canonical_render ... ok
+2026-11-12T20:28:39.6780361Z test tests::latest_session_lookup_params_keep_explicit_cwd_filter_for_remote_sessions ... ok
+2026-11-12T20:28:39.6788515Z test text_formatting::tests::test_format_json_compact_empty_array ... ok
+2026-11-12T20:28:39.6789563Z test text_formatting::tests::test_truncate_text_shorter_than_limit ... ok
+2026-11-12T20:28:39.6790341Z test text_formatting::tests::test_truncate_very_long_text ... ok
+2026-11-12T20:28:39.6865265Z test theme_picker::tests::subtitle_falls_back_to_preview_instructions_without_tilde_path ... ok
+2026-11-12T20:28:39.6865896Z test theme_picker::tests::subtitle_uses_tilde_path_when_codex_home_under_home_directory ... ok
+2026-11-12T20:28:39.6870826Z test tooltips::tests::announcement_tip_toml_bad_deserialization ... ok
+2026-11-12T20:28:39.6871751Z test tooltips::tests::paid_tooltip_pool_skips_fast_when_fast_mode_is_enabled ... ok
+2026-11-12T20:28:39.6875305Z test transcript_reflow::tests::mark_reflowed_width_reports_unchanged_width ... ok
+2026-11-12T20:28:39.6876268Z test tui::frame_rate_limiter::tests::default_does_not_clamp ... ok
+2026-11-12T20:28:39.6876741Z test tui::frame_requester::tests::test_limits_draw_notifications_to_120fps ... ok
+2026-11-12T20:28:39.6878458Z test tui::history_tail::tests::replacing_soft_wrapped_history_counts_physical_terminal_rows ... ok
+2026-11-12T20:28:39.6879234Z test tui::keyboard_modes::tests::keyboard_enhancement_preserves_repeat_reporting_for_unknown_terminals ... ok
+2026-11-12T20:28:39.6879883Z test tui::keyboard_modes::tests::keyboard_enhancement_suppresses_release_reporting_for_ghostty ... ok
+2026-11-12T20:28:39.6880480Z test tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery ... FAILED
+2026-11-12T20:28:39.6896862Z test tui::tests::windows_console_input_modes_preserve_original_vt_input_state ... ok
+2026-11-12T20:28:39.6897722Z [0 qtest tui::tests::inserting_history_lines_schedules_a_draw ... ok
+2026-11-12T20:28:39.6898241Z test wrapping::tests::adaptive_wrap_line_mixed_line_resplits_long_token_for_continuation_width ... ok
+2026-11-12T20:28:39.6900045Z test wrapping::tests::ascii_space_separator_with_no_hyphenation_keeps_url_intact ... ok
+2026-11-12T20:28:39.6900605Z test wrapping::tests::line_has_mixed_url_and_non_url_tokens_detects_prose_plus_url ... ok
+2026-11-12T20:28:39.6901350Z test wrapping::tests::map_owned_wrapped_line_to_range_repro_overconsumes_repeated_prefix_patterns ... ok
+2026-11-12T20:28:39.6901847Z test wrapping::tests::wrap_lines_accepts_str_slices ... ok
+2026-11-12T20:28:39.6902601Z test resume_picker::transcript_preview::tests::transcript_preview_preserves_legacy_and_paginated_output ... ok
+2026-11-12T20:28:39.6903241Z test session_start::tests::archived_session_requires_confirmation_before_resume_or_fork ... ok
+2026-11-12T20:28:39.6903573Z 
+2026-11-12T20:28:39.6903654Z failures:
+2026-11-12T20:28:39.6903755Z 
+2026-11-12T20:28:39.6904021Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----
+2026-11-12T20:28:39.6904371Z 
+2026-11-12T20:28:39.6904726Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (3720) panicked at tui/src/lib.rs:3265:9:
+2026-11-12T20:28:39.6905264Z assertion failed: `(left == right)`
+2026-11-12T20:28:39.6905427Z 
+2026-11-12T20:28:39.6905664Z [1mDiff[0m [31m< left[0m / [32mright >[0m :
+2026-11-12T20:28:39.6906051Z [31m<"D:\\tmp\\.tmpTbRUk7\\sqlite-home\\logs_2.sqlite"[0m
+2026-11-12T20:28:39.6906542Z [32m>"[0m[1;48;5;22;32m\\\\?\\[0m[32mD:\\tmp\\.tmpTbRUk7\\sqlite-home\\logs_2.sqlite"[0m
+2026-11-12T20:28:39.6906817Z 
+2026-11-12T20:28:39.6906821Z 
+2026-11-12T20:28:39.6907010Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-12T20:28:39.6907288Z 
+2026-11-12T20:28:39.6907291Z 
+2026-11-12T20:28:39.6907369Z failures:
+2026-11-12T20:28:39.6907676Z     tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery
+2026-11-12T20:28:39.6907957Z 
+2026-11-12T20:28:39.6908220Z test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 2.98s
+2026-11-12T20:28:39.6908764Z 
+2026-11-12T20:28:39.6910111Z ##[endgroup]
+2026-11-12T20:28:39.7141290Z ##[error]Process completed with exit code 3.
+2026-11-12T20:28:39.7821274Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T20:28:39.7822500Z with:
+2026-11-12T20:28:39.7822996Z   name: bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3
+2026-11-12T20:28:39.7823657Z   path: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:28:39.7824124Z   if-no-files-found: ignore
+2026-11-12T20:28:39.7824526Z   compression-level: 6
+2026-11-12T20:28:39.7824883Z   overwrite: false
+2026-11-12T20:28:39.7825237Z   include-hidden-files: false
+2026-11-12T20:28:39.7825639Z   archive: true
+2026-11-12T20:28:39.7825953Z env:
+2026-11-12T20:28:39.7826241Z   CI_BUILD_ROOT: D:
+2026-11-12T20:28:39.7826681Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:28:39.7827235Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:28:39.7827611Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:28:39.7828093Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:28:39.7828998Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43297579660-test-windows-shard
+2026-11-12T20:28:39.7829802Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:28:39.7830219Z   TEMP: D:/tmp
+2026-11-12T20:28:39.7830520Z   TMP: D:/tmp
+2026-11-12T20:28:39.7830864Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:28:39.7840292Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:28:39.7844632Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:28:39.7851191Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:28:39.7856353Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:28:39.7890982Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:28:39.7915431Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:28:39.7915738Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:39.7916147Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:28:39.7916669Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:28:39.7917491Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:28:39.7918131Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:28:39.7919293Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:39.7919607Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:28:39.7919859Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:28:39.7927541Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:28:39.7935577Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:28:39.7935917Z ##[endgroup]
+2026-11-12T20:28:40.6508138Z With the provided path, there will be 1 file uploaded
+2026-11-12T20:28:40.6513965Z Artifact name is valid!
+2026-11-12T20:28:40.6515306Z Root directory input is valid!
+2026-11-12T20:28:40.9423663Z Uploading artifact: bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3.zip
+2026-11-12T20:28:40.9466737Z Beginning upload of artifact content to blob storage
+2026-11-12T20:28:41.5750262Z Uploaded bytes 5163557
+2026-11-12T20:28:41.6029984Z Finished uploading artifact content to blob storage!
+2026-11-12T20:28:41.6030899Z SHA256 digest of uploaded artifact is 40b7a10ae5c098665a73a6764f13ee0eb36b4ce1e0e63867f93c13b7a349375c
+2026-11-12T20:28:41.6031669Z Finalizing artifact upload
+2026-11-12T20:28:42.0628814Z Artifact bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3 successfully finalized. Artifact ID 13981122574
+2026-11-12T20:28:42.0629943Z Artifact bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-3 has been successfully uploaded! Final size is 5163557 bytes. Artifact ID is 13981122574
+2026-11-12T20:28:42.0637829Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43297579660/artifacts/13981122574
+2026-11-12T20:28:42.1013598Z Prepare all required actions
+2026-11-12T20:28:42.1050787Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T20:28:42.1051142Z env:
+2026-11-12T20:28:42.1051319Z   CI_BUILD_ROOT: D:
+2026-11-12T20:28:42.1051581Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:28:42.1051891Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:28:42.1052104Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:28:42.1052376Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:28:42.1052809Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43297579660-test-windows-shard
+2026-11-12T20:28:42.1053547Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:28:42.1053805Z   TEMP: D:/tmp
+2026-11-12T20:28:42.1053983Z   TMP: D:/tmp
+2026-11-12T20:28:42.1054178Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:28:42.1056808Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:28:42.1058835Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:28:42.1061748Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:28:42.1064634Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:28:42.1086483Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:28:42.1100877Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:28:42.1101179Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:42.1101605Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:28:42.1102137Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:28:42.1102873Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:28:42.1103731Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:28:42.1104108Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:42.1104422Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:28:42.1104683Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:28:42.1112802Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:28:42.1120997Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:28:42.1121335Z ##[endgroup]
+2026-11-12T20:28:42.1171748Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T20:28:42.1317730Z ##[group]Run set -euo pipefail
+2026-11-12T20:28:42.1318041Z [36;1mset -euo pipefail[0m
+2026-11-12T20:28:42.1318262Z [36;1m[0m
+2026-11-12T20:28:42.1318703Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T20:28:42.1319210Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T20:28:42.1319474Z [36;1m  exit 0[0m
+2026-11-12T20:28:42.1319660Z [36;1mfi[0m
+2026-11-12T20:28:42.1319827Z [36;1m[0m
+2026-11-12T20:28:42.1320190Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T20:28:42.1320847Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T20:28:42.1321092Z [36;1mexit 1[0m
+2026-11-12T20:28:42.1335911Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-11-12T20:28:42.1336305Z env:
+2026-11-12T20:28:42.1336483Z   CI_BUILD_ROOT: D:
+2026-11-12T20:28:42.1336752Z   CODEX_REPO_ROOT: D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:28:42.1337063Z   BAZEL_OUTPUT_BASE: D:/o
+2026-11-12T20:28:42.1337294Z   BAZEL_OUTPUT_USER_ROOT: D:/b
+2026-11-12T20:28:42.1337566Z   BAZEL_REPOSITORY_CACHE: D:/bazel-repository-cache
+2026-11-12T20:28:42.1338018Z   BAZEL_REPO_CONTENTS_CACHE: D:/bazel-repo-contents-cache-43297579660-test-windows-shard
+2026-11-12T20:28:42.1338466Z   CARGO_TARGET_DIR: D:/cargo-target
+2026-11-12T20:28:42.1338705Z   TEMP: D:/tmp
+2026-11-12T20:28:42.1338887Z   TMP: D:/tmp
+2026-11-12T20:28:42.1339273Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T20:28:42.1342231Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T20:28:42.1344220Z   INCLUDE: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\include;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Auxiliary\VS\include;C:\Program Files (x86)\Windows Kits\10\include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\um;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\shared;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\winrt;C:\Program Files (x86)\Windows Kits\10\\include\10.0.26100.0\\cppwinrt;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\include\um
+2026-11-12T20:28:42.1347183Z   LIB: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.8.1\lib\um\x64;C:\Program Files (x86)\Windows Kits\10\lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\\lib\10.0.26100.0\\um\x64
+2026-11-12T20:28:42.1349628Z   LIBPATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\ATLMFC\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\lib\x86\store\references;C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0;C:\Windows\Microsoft.NET\Framework64\v4.0.30319
+2026-11-12T20:28:42.1367147Z   PATH: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files (x86)\HTML Help Workshop;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\Program Files\PowerShell\7;C:\hostedtoolcache\windows\bazelisk\1.28.1\x64;D:\a\_temp/install-dotslash/bin;C:\Program Files\MongoDB\Server\7.0\bin;C:\vcpkg;C:\tools\zstd;C:\hostedtoolcache\windows\stack\3.11.1\x64;C:\cabal\bin;C:\\ghcup\bin;C:\mingw64\bin;C:\Program Files\dotnet;C:\Program Files\MySQL\MySQL Server 8.4\bin;C:\Program Files\R\R-4.6.2\bin\x64;C:\SeleniumWebDrivers\GeckoDriver;C:\SeleniumWebDrivers\EdgeDriver\;C:\SeleniumWebDrivers\ChromeDriver;C:\Program Files (x86)\sbt\bin;C:\Program Files (x86)\GitHub CLI;C:\Program Files\Git\bin;C:\Program Files (x86)\pipx_bin;C:\npm\prefix;C:\hostedtoolcache\windows\go\1.24.13\x64\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\hostedtoolcache\windows\Ruby\3.3.13\x64\bin;C:\Program Files\OpenSSL\bin;C:\tools\kotlinc\bin;C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.21-9\x64\bin;C:\Program Files\ImageMagick-7.1.2-Q16-HDRI;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\ProgramData\kind;C:\ProgramData\Chocolatey\bin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\WSL\;C:\Program Files\PowerShell\7\;C:\Program Files\Microsoft\Web Platform Installer\;C:\Program Files\Microsoft SQL Server\170\Tools\Binn\;C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\;C:\Program Files\dotnet\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files (x86)\WiX Toolset v3.14\bin;C:\Program Files\Microsoft SQL Server\130\DTS\Binn\;C:\Program Files\Microsoft SQL Server\140\DTS\Binn\;C:\Program Files\Microsoft SQL Server\150\DTS\Binn\;C:\Program Files\Microsoft SQL Server\160\DTS\Binn\;C:\Program Files\Microsoft SQL Server\170\DTS\Binn\;C:\ProgramData\chocolatey\lib\pulumi\tools\Pulumi\bin;C:\Program Files\CMake\bin;C:\Strawberry\c\bin;C:\Strawberry\perl\site\bin;C:\Strawberry\perl\bin;C:\ProgramData\chocolatey\lib\maven\apache-maven-3.9.16\bin;C:\Program Files\Microsoft Service Fabric\bin\Fabric\Fabric.Code;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\LLVM\bin;C:\Program Files (x86)\LLVM\bin;C:\Program Files\nodejs\;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\GitHub CLI\;c:\tools\php;C:\Program Files (x86)\sbt\bin;C:\Program Files\Amazon\AWSCLIV2\;C:\Program Files\Amazon\SessionManagerPlugin\bin\;C:\Program Files\Amazon\AWSSAMCLI\bin\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Program Files\mongosh\;C:\Users\runneradmin\.dotnet\tools;C:\Users\runneradmin\.cargo\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg
+2026-11-12T20:28:42.1383539Z   UCRTVersion: 10.0.26100.0
+2026-11-12T20:28:42.1383842Z   UniversalCRTSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:42.1384271Z   VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\
+2026-11-12T20:28:42.1384813Z   VCToolsInstallDir: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\
+2026-11-12T20:28:42.1385545Z   WindowsLibPath: C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.26100.0;C:\Program Files (x86)\Windows Kits\10\References\10.0.26100.0
+2026-11-12T20:28:42.1386181Z   WindowsSdkBinPath: C:\Program Files (x86)\Windows Kits\10\bin\
+2026-11-12T20:28:42.1386556Z   WindowsSdkDir: C:\Program Files (x86)\Windows Kits\10\
+2026-11-12T20:28:42.1386871Z   WindowsSDKLibVersion: 10.0.26100.0\
+2026-11-12T20:28:42.1387142Z   WindowsSDKVersion: 10.0.26100.0\
+2026-11-12T20:28:42.1396253Z   CODEX_BAZEL_WINDOWS_PATH: C:\Program Files\PowerShell\7;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.51.36231\bin\HostX64\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\VCPackages;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Current\bin\Roslyn;C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.1 Tools\x64\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\FSharp\Tools;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Team Tools\DiagnosticsHub\Collector;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\Extensions\Microsoft\CodeCoverage.Console;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\\x64;C:\Program Files (x86)\Windows Kits\10\bin\\x64;C:\Program Files\Microsoft Visual Studio\18\Enterprise\\MSBuild\Current\Bin\amd64;C:\Windows\Microsoft.NET\Framework64\v4.0.30319;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\Tools\;C:\mingw64\bin;C:\Program Files\Git\bin;C:\hostedtoolcache\windows\Python\3.12.10\x64\Scripts;C:\hostedtoolcache\windows\Python\3.12.10\x64;C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\PowerShell\7\;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\Program Files\Microsoft SDKs\Service Fabric\Tools\ServiceFabricLocalClusterManager;C:\Program Files\Git\cmd;C:\Program Files\Git\ucrt64\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\Llvm\x64\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja;C:\Program Files\Microsoft Visual Studio\18\Enterprise\Common7\IDE\VC\Linux\bin\ConnectionManagerExe;C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\vcpkg;C:\Program Files\nodejs;C:\msys64\mingw64\bin;C:\msys64\ucrt64\bin;C:\Users\runneradmin\AppData\Local\Microsoft\WindowsApps
+2026-11-12T20:28:42.1404530Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: D:\a\_temp/bazel-execution-logs
+2026-11-12T20:28:42.1404890Z ##[endgroup]
+2026-11-12T20:28:42.7019080Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=584]
+2026-11-12T20:28:42.7310823Z Post job cleanup.
+2026-11-12T20:28:42.7319435Z ##[start-action display=Set up Bazel;id=__4d9e55b5-60b5-4301-a4c8-8cd80b1735de.__bazel-contrib_setup-bazel]
+2026-11-12T20:28:42.7485500Z Post job cleanup.
+2026-11-12T20:28:42.9634219Z ##[end-action id=__4d9e55b5-60b5-4301-a4c8-8cd80b1735de.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=231]
+2026-11-12T20:28:42.9876207Z Post job cleanup.
+2026-11-12T20:28:43.2212504Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-11-12T20:28:43.2602284Z git version 2.56.0.windows.4
+2026-11-12T20:28:43.2676469Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\7db82c87-3819-4304-a254-386e6b0ef70d\.gitconfig'
+2026-11-12T20:28:43.2707569Z Temporarily overriding HOME='D:\a\_temp\7db82c87-3819-4304-a254-386e6b0ef70d' before making global git config changes
+2026-11-12T20:28:43.2708793Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T20:28:43.2722299Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\hepta-private-ci\hepta-private-ci
+2026-11-12T20:28:43.3140839Z Removing SSH command configuration
+2026-11-12T20:28:43.3154107Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T20:28:43.3589521Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-11-12T20:28:43.9906523Z Removing HTTP extra header
+2026-11-12T20:28:43.9918715Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T20:28:44.0345981Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-11-12T20:28:44.5979262Z Removing includeIf entries pointing to credentials config files
+2026-11-12T20:28:44.5993605Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T20:28:44.6365785Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:28:44.6366679Z includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:28:44.6419244Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-12T20:28:44.6789923Z D:\a\_temp\git-credentials-2d54e5c9-e8cc-4009-b47d-6afc118c2fa4.config
+2026-11-12T20:28:44.6849531Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git.path D:\a\_temp\git-credentials-2d54e5c9-e8cc-4009-b47d-6afc118c2fa4.config
+2026-11-12T20:28:44.7287623Z [command]"C:\Program Files\Git\bin\git.exe" config --local --get-all includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-12T20:28:44.7654948Z D:\a\_temp\git-credentials-2d54e5c9-e8cc-4009-b47d-6afc118c2fa4.config
+2026-11-12T20:28:44.7708530Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset includeif.gitdir:D:/a/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path D:\a\_temp\git-credentials-2d54e5c9-e8cc-4009-b47d-6afc118c2fa4.config
+2026-11-12T20:28:44.8133640Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-11-12T20:28:45.3822105Z Removing credentials config 'D:\a\_temp\git-credentials-2d54e5c9-e8cc-4009-b47d-6afc118c2fa4.config'
+2026-11-12T20:28:45.4061996Z Cleaning up orphan processes
+2026-11-12T20:28:45.5934942Z Terminate orphan process: pid (7252) (java)

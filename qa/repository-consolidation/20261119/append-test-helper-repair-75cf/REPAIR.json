@@ -1,0 +1,73 @@
+{
+  "parent": "2e3040eedebce38b99fff1268b73dc69fd9ad058",
+  "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+  "before_blob": "8492f8319b7101642cde626524b2eede7bb32bf5",
+  "after_blob": "66058b1353ddc5f38299f0d59017c120ea29fb30",
+  "after_sha256": "9ebcdab49960c0ab7a05c6dbe5bad2c1c4faf7f73cd0d07f4b9be66f65a6c5e4",
+  "after_bytes": 48208,
+  "postimage": "/workspace/scratch/75cf41417dcc/r3-review/append-test-helper-repair/postimages/codex-rs/hepta-infer-core/src/durable_control.rs",
+  "finding": "The only two DurableInferenceControl::append callers are within existing cfg(test) modules; production uses the reserve-aware methods directly.",
+  "change": "Compile the unchanged private test helper only under cfg(test). No lint waiver, no test-body change, no production call-path change.",
+  "native_compilation_executed": false,
+  "schema": "hepta-test-only-helper-compile-repair-v1",
+  "exact_change_one_cfg_test_attribute": true,
+  "method_body_unchanged": true,
+  "existing_test_modules_cfg_test": true,
+  "existing_test_callers": [
+    "generation_control_tests.rs: generation full-frame capacity rejection",
+    "native_control_tests.rs: legacy observation without owner_authority cannot replay as success"
+  ],
+  "source_bindings": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/generation_control.rs",
+      "blob": "f5a3e2d90582b6dee7fdf73d7d178a19e67fd134",
+      "sha256": "93e0252ed009222b493922fd3b28264b73964c468da0162bc4ea77dbbb4fb9dd"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+      "blob": "303e8ad5e31b35b3d9d3bb73567764391f4a590d",
+      "sha256": "051721252816a6a7da514e3218455212358e68f783c2ea02023e9d142cc76736"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "blob": "61fbdb7954c116fda063698c1afea9c73ce620c8",
+      "sha256": "0eb50ce275e50bba1e8d3506a985ddb5303102fe42cb92c05fef3f1482cd4aa9"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+      "blob": "0dae0d27ecc453b0bf4c5ebc9272a0b1d3fbb3be",
+      "sha256": "75632bc3eebd86f19007d8c63bb1bfa83d49dc63905bd9420af1138d4b2bf8c9"
+    }
+  ],
+  "format_check": {
+    "input_sha256": "9ebcdab49960c0ab7a05c6dbe5bad2c1c4faf7f73cd0d07f4b9be66f65a6c5e4",
+    "input_bytes": 48208,
+    "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "command": [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "--edition",
+      "2024",
+      "--config",
+      "imports_granularity=Item,skip_children=true",
+      "--check",
+      "/tmp/hepta-ca77-vendor-75cf-durable-append-20261119.rs"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "input_unchanged": true
+  },
+  "failed_exact_head": "2e3040eedebce38b99fff1268b73dc69fd9ad058",
+  "failed_workflow_run": 44581730778,
+  "failed_job": 135763867479,
+  "failed_job_log_sha256": "ce49c84d811922fdf0ac1f5294243d308df87f5a21bbce1ac82fd8270dfddbef",
+  "failed_job_log_bytes": 5051364,
+  "scope": "No lint suppression, no test skipping, no method-body or active production writer-path change. Actual required CI must evaluate the resulting head.",
+  "protected_refs_unchanged": 478,
+  "protected_pins_checked": 498,
+  "parent_complete_ancestor_count": 44578,
+  "protected_intersection": [],
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "native_compilation_executed_after_fix": false,
+  "native_tests_executed_after_fix": false
+}

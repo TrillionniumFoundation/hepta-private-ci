@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_cells*.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "log_sha256": "7901b124120b5507fae747451dfb66a4cad4b3324ae1173fbfbc3018bfebb2f5",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "source_before": {
+    "scripts/hepta_cells/__init__.py": "471b32b04b9cdd19a98294318d7e6be23c4737e0dc27ab646b5dc2fffe6cd2d1",
+    "scripts/hepta_cells/bundle.py": "c36673b3865a166bd5255b2282c493a6d14441257aae488cf4dcfea3fde60f08",
+    "scripts/hepta_cells/component_types.py": "337c2bd9c08cb580314d9649aa4fafdd4ca9f18a28b3085a37c906330cb2f10a",
+    "scripts/hepta_cells/deterministic.py": "831b4bce076a729e3894d2b25e233529195660b3d22ddb0823f33f140840de30",
+    "scripts/hepta_cells/lifecycle.py": "b4af64b62eb7070d17809b8b0630a5e50fbc429f7e58159739bf412e297fcd82",
+    "scripts/hepta_cells/mlx_provider.py": "4cf7f88513c8df4ed77a3b82ae687c2ed1b4fac49d1303be4fa4a288d57efa98",
+    "scripts/hepta_cells/semantic.py": "55ce8254bb3fb6ff114654340f53481e4b8e23b4e23e7a219a777b006f59be19",
+    "scripts/hepta_cells/semantic_component.py": "c44b099be7654e3e0641ab61661504f9fa610029d29bd3e8a1a8893a0212909a",
+    "scripts/hepta_cells/temporal.py": "af983128715f4706d8c9532eb5b5c5b01a34e836c1fdf1db2f10c5cfac0a76fa",
+    "scripts/hepta_cells/temporal_component.py": "816296dfc744981b7d4f07d25043138902ca9a62c9b5b161a2ff28f9aacfc5fe",
+    "scripts/hepta_pred1/models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7",
+    "scripts/qualify_hepta_cells.py": "7b64a0cf6a2b2beabadfc3f2cf19056c449076caf8e665f979d04fe7908fa6ef",
+    "scripts/test_hepta_cells_bundle.py": "e3c6bb62e1c04e0deb3f94466591ced1812f830ecf3b9fa1187d98022fea47f7",
+    "scripts/test_hepta_cells_composition.py": "8b8b0a402f396b48ff6a9768c924680831a42321ca9cb5c2dab26a04b7407ec9",
+    "scripts/test_hepta_cells_lifecycle.py": "c644aec1a8ea0b1b7c156a092a478bde31d094f28d1271254562f2651bc98af6",
+    "scripts/test_hepta_cells_semantic.py": "6b08971f04c00b47ddc249bbe3099cce35470ccd80f4861d1b4d72842b50ca7a",
+    "scripts/test_hepta_cells_temporal.py": "b27ef33654a9bf729212db0f44e1a8014238c20f1964a6ab2df5ec00a17c6fd7",
+    "scripts/test_hepta_cells_temporal_component.py": "e3674870fa5029c4edb37c780c665b2669a50bf960a4482092bd875159177f7a"
+  },
+  "source_unchanged": true,
+  "tests": 49,
+  "wall_seconds": 0.7319684279937064
+}

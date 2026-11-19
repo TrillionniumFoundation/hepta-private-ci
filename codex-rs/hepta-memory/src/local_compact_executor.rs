@@ -408,12 +408,7 @@ impl LocalCompactExecutor {
             &mut CompactPersistenceJournal,
         ) -> Result<CompactPersistenceAppend, CompactPersistenceError>,
     {
-        let mut transaction = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
+        let mut transaction = self.store.begin_write_transaction().await?;
         if let Some(lease) = self.bound_lease.as_ref() {
             let current = lease
                 .verify_current_in_transaction(&mut transaction)

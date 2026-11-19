@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-fullpacket-v2-smallfixture-receipt-request-v1",
+  "identity": "hcsn-fullpacket-v2-smallfixture-receipt-20261117-c06d-local001",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_pr": 6260,
+  "exact_source_commit": "40232d51886f21520377effcd25deee31bd593e6",
+  "command": "python3 -m unittest qualification.hcsn_currentstate_fullpacket_v2_primitives.test_primitives",
+  "expected_test_count": 5,
+  "expected_coordinate_count": 48,
+  "allowed_scope": "synthetic C5/n3 fullpacket serializer-loader-oracle fixture only",
+  "forbidden_scope": [
+    "N128 dynamics",
+    "N256",
+    "N512",
+    "fullnetwork",
+    "model",
+    "matrix exponential",
+    "Torch",
+    "optimizer",
+    "training"
+  ],
+  "numerical_execution_key": null,
+  "dynamic_runs": 0,
+  "matrix_exponentials": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "admission": "HOLD_SMALL_FIXTURE_ONLY",
+  "preserve_historical_failures_and_unknown": true,
+  "all_closed": false
+}

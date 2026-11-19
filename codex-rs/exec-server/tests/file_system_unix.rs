@@ -23,8 +23,6 @@ use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Arc;
 use std::time::Duration;
-#[cfg(target_os = "linux")]
-use std::time::UNIX_EPOCH;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -307,12 +305,44 @@ async fn file_system_no_follow_metadata_preserves_linux_birthtime(
     let tmp = TempDir::new()?;
     let file = tmp.path().join("created.txt");
     std::fs::write(&file, "created")?;
-    let expected = match std::fs::metadata(&file)?.created() {
-        Ok(created) => Some(i64::try_from(
-            created.duration_since(UNIX_EPOCH)?.as_millis(),
-        )?),
-        Err(error) if error.kind() == std::io::ErrorKind::Unsupported => None,
-        Err(error) => return Err(error.into()),
+    // musl's std metadata can omit birth time even when statx provides it.
+    // Query the kernel independently of the production rustix conversion.
+    let c_path = CString::new(file.as_os_str().as_bytes())?;
+    let mut raw = std::mem::MaybeUninit::<libc::statx>::zeroed();
+    // SAFETY: the path is NUL-terminated and raw is writable statx storage.
+    let result = unsafe {
+        libc::syscall(
+            libc::SYS_statx,
+            libc::AT_FDCWD,
+            c_path.as_ptr(),
+            libc::AT_SYMLINK_NOFOLLOW,
+            libc::STATX_BTIME,
+            raw.as_mut_ptr(),
+        )
+    };
+    let expected = if result == 0 {
+        // SAFETY: a successful statx call initialized raw.
+        let raw = unsafe { raw.assume_init() };
+        if raw.stx_mask & libc::STATX_BTIME == 0 {
+            None
+        } else {
+            Some(
+                raw.stx_btime
+                    .tv_sec
+                    .checked_mul(1_000)
+                    .and_then(|seconds| {
+                        seconds.checked_add(i64::from(raw.stx_btime.tv_nsec / 1_000_000))
+                    })
+                    .context("kernel birth time does not fit milliseconds")?,
+            )
+        }
+    } else {
+        let error = std::io::Error::last_os_error();
+        if matches!(error.raw_os_error(), Some(libc::ENOSYS | libc::EPERM)) {
+            None
+        } else {
+            return Err(error.into());
+        }
     };
 
     let metadata = context
@@ -1111,7 +1141,7 @@ async fn file_system_bounded_authorized_read_enforces_limit_without_prefix(
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
-    let root = tmp.path().join("allowed");
+    let root = tmp.path().canonicalize()?.join("allowed");
     std::fs::create_dir_all(&root)?;
     let exact_path = root.join("exact.txt");
     let oversized_path = root.join("oversized.txt");
@@ -1149,8 +1179,9 @@ async fn file_system_bounded_authorized_read_rejects_symlink_and_parent_escape(
     let file_system = context.file_system;
 
     let tmp = TempDir::new()?;
-    let allowed_dir = tmp.path().join("allowed");
-    let outside_dir = tmp.path().join("outside");
+    let fixture_root = tmp.path().canonicalize()?;
+    let allowed_dir = fixture_root.join("allowed");
+    let outside_dir = fixture_root.join("outside");
     std::fs::create_dir_all(&allowed_dir)?;
     std::fs::create_dir_all(&outside_dir)?;
     let secret = outside_dir.join("secret.txt");

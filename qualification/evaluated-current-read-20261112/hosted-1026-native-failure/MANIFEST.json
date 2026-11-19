@@ -1,0 +1,333 @@
+{
+  "schema": "hepta.original-hosted-native-result-preservation.v1",
+  "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "source_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "original_log_representation": "Complete original decoded GitHub job log response re-encoded as UTF-8; BOM and all original returned line endings preserved. No reconstructed job log or JSON original is substituted.",
+  "native": {
+    "run_id": 43213823243,
+    "job_id": 131167901028,
+    "job_status": "completed",
+    "job_conclusion": "failure",
+    "log": {
+      "bytes": 2009920,
+      "sha256": "0e35ce7b3c97ebb4a89f110b5d38bc0b0b39f544d6157fe7439382a09a47633d",
+      "text_chars": 2009918,
+      "parts": [
+        {
+          "kind": "native",
+          "offset": 0,
+          "bytes": 350000,
+          "sha256": "e1755c163d14020b7ef257a11ccc3c7c47a35260ada504eaedff80257cdead5b",
+          "git_blob": "37595da4eae98c12c8f018cf8cb8d2ba9998fcba",
+          "path": "job131167901028.decoded.log.part-000.bin"
+        },
+        {
+          "kind": "native",
+          "offset": 350000,
+          "bytes": 350000,
+          "sha256": "ad13938f5a3d304ac244a75aa3ab584ba4271a2413e91497788f1d4345da7a66",
+          "git_blob": "dc2e778e1326fb7d282808f1a9168a6d822da787",
+          "path": "job131167901028.decoded.log.part-001.bin"
+        },
+        {
+          "kind": "native",
+          "offset": 700000,
+          "bytes": 350000,
+          "sha256": "128f450c965f9b709809fb58036f0faf1279c2811a69ddfb89d27af93bbf11a9",
+          "git_blob": "d8c1cde61e72a0a43e06d22dad5cdd1009bd3947",
+          "path": "job131167901028.decoded.log.part-002.bin"
+        },
+        {
+          "kind": "native",
+          "offset": 1050000,
+          "bytes": 350000,
+          "sha256": "cf6ba50eea8daf06c4cf04b3e6f3d5eedeb544b7448f677ef00f5d4fcdeb16ab",
+          "git_blob": "0b678acf73dbdf1e0fe0e4b508054bc30288aa1b",
+          "path": "job131167901028.decoded.log.part-003.bin"
+        },
+        {
+          "kind": "native",
+          "offset": 1400000,
+          "bytes": 350000,
+          "sha256": "82044a2f99a05d2ab8b1a7676f70d68f633543179cbe9258a5a24a2d4ce62c60",
+          "git_blob": "c3b48d110805ee6568dcce614b4b2da54b800288",
+          "path": "job131167901028.decoded.log.part-004.bin"
+        },
+        {
+          "kind": "native",
+          "offset": 1750000,
+          "bytes": 259920,
+          "sha256": "baf6aeae625bcc459e2c0eac1edc3b18c882ea0246ad4063464e5f3fde785071",
+          "git_blob": "9573c64bd718ed443f668ebdb2471906deeca050",
+          "path": "job131167901028.decoded.log.part-005.bin"
+        }
+      ],
+      "reassembly": "Concatenate binary parts in ascending offset; no newline separators. Hash full bytes before UTF-8 decoding."
+    },
+    "compile": {
+      "error": "E0659 assert_eq is ambiguous",
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "line": 109,
+      "exit_code": 101,
+      "elapsed_seconds": 275.23069166799996,
+      "tests_observed": 0,
+      "root_suite_executed": false,
+      "fix_executed": false,
+      "fmt_executed": false
+    },
+    "junit": {
+      "status": "rejected",
+      "reason": "Native compilation failed before junit.xml existed; no testcase or fresh JUnit pass is fabricated."
+    },
+    "emitted_records_from_full_log_not_replacements_for_artifact_originals": [
+      {
+        "source_snapshot": "checkout",
+        "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+        "status": "",
+        "files": 15046,
+        "inventory_sha256": "b766639ebb89fe146a7416be131ff97ca3af5a5df7ab236cf9f4cb1c0406bea5"
+      },
+      {
+        "source_snapshot": "before-tests",
+        "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+        "status": "",
+        "files": 15046,
+        "inventory_sha256": "b766639ebb89fe146a7416be131ff97ca3af5a5df7ab236cf9f4cb1c0406bea5"
+      },
+      {
+        "after": {
+          "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+          "dirty": false,
+          "parents": [
+            "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+            "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+          ],
+          "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+        },
+        "base_sha": "",
+        "before": {
+          "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+          "dirty": false,
+          "parents": [
+            "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+            "639f894e088cdc5b30b65ed3732dcaa0a2fbe004"
+          ],
+          "tree": "03dee89cec18fc7275755a77042b973e1d6728a6"
+        },
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-neuron",
+          "--lib",
+          "--test-threads",
+          "2",
+          "--retries",
+          "0",
+          "--status-level",
+          "pass",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final"
+        ],
+        "command_exit_code": 101,
+        "elapsed_seconds": 275.23069166799996,
+        "error": "required tests were not observed passing",
+        "exit_code": 101,
+        "finished_at": "2026-11-12T13:13:01.599306+00:00",
+        "job": "native",
+        "lane": "source-head",
+        "log_bytes": 33065,
+        "log_file": "ordinary.json.bd6fd7d15d6f4a03b8c0e60bd2e03184.log",
+        "log_sha256": "227645d7fe828d2d7b845178a4e8ad9bc648a820a60c1cc6e9f26489454b78b8",
+        "minimum_tests": 1,
+        "observed_failed_tests": 0,
+        "observed_passed_tests": 0,
+        "output_limit_exceeded": false,
+        "returncode": 101,
+        "run_attempt": "1",
+        "run_id": "43213823243",
+        "schema_version": 1,
+        "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "started_at": "2026-11-12T13:08:26.367931+00:00",
+        "status": "failed",
+        "tested_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "timed_out": false,
+        "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-learning-ledger",
+          "-p",
+          "codex-hepta-learning-artifacts",
+          "-p",
+          "codex-hepta-intelligence-eval",
+          "-p",
+          "codex-hepta-neuron",
+          "--lib",
+          "--test-threads",
+          "2",
+          "--retries",
+          "0",
+          "--status-level",
+          "pass",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final"
+        ],
+        "error": "[Errno 2] No such file or directory: '/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml'",
+        "execution_file": "ordinary.json",
+        "execution_sha256": "e00e6eedf470e5f12a7a31c1988a737a1a87dbddba50e4dc3ca53619a16ffd7e",
+        "job": "native",
+        "kind": "native-junit-collection",
+        "native_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+        "run_attempt": "1",
+        "run_id": "43213823243",
+        "schema_version": 1,
+        "source_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "source_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+        "status": "rejected"
+      },
+      {
+        "source_snapshot": "final",
+        "commit": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+        "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+        "status": "",
+        "files": 15046,
+        "inventory_sha256": "b766639ebb89fe146a7416be131ff97ca3af5a5df7ab236cf9f4cb1c0406bea5"
+      }
+    ],
+    "artifact": {
+      "id": 13947227797,
+      "name": "daemon-learning-native-1026bd09bc16e0035e8ea28053def5731d0a235e-1",
+      "size_in_bytes": 3595101,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13947227797",
+      "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13947227797/zip",
+      "expired": false,
+      "created_at": "2026-11-12T13:13:04Z",
+      "expires_at": "2026-11-26T13:13:03Z",
+      "updated_at": "2026-11-12T13:13:04Z",
+      "digest": "sha256:45d86644ebe12f3dc984c2ad06074263e008685f9d2c8a2d7ddc33681c4dd300",
+      "workflow_run": {
+        "id": 43213823243,
+        "repository_id": 1320694176,
+        "head_repository_id": 1320694176,
+        "head_branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+        "head_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e"
+      }
+    }
+  },
+  "windows": {
+    "run_id": 43213822708,
+    "job_id": 131167903537,
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "log": {
+      "bytes": 376423,
+      "sha256": "e649e3afccec55e17c42c3a6ec743aaba6ec1a7d33b4d58d0ed648e9f2e57956",
+      "text_chars": 376133,
+      "git_blob": "33ddc60a9611787e143ce0fd8b67de91829741c7",
+      "path": "job131167903537.decoded.log"
+    },
+    "exact_learn_cases": 36,
+    "observed_pass_rows": 36,
+    "junit_testcases": 36,
+    "junit_failures": 0,
+    "junit_errors": 0,
+    "junit_skipped": 0,
+    "junit_bytes": 9050,
+    "junit_sha256": "4c3a66f7d4e4b223b0568fbdea25482ef086c100a205683f40c5cbf76693ef28",
+    "junit_mtime_ns_as_printed": "1794489148562507200",
+    "artifacts": [
+      {
+        "id": 13948105803,
+        "name": "windows-learn-regressions-1026bd09bc16e0035e8ea28053def5731d0a235e-43213822708-1",
+        "size_in_bytes": 16521,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13948105803",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13948105803/zip",
+        "expired": false,
+        "created_at": "2026-11-12T13:12:32Z",
+        "expires_at": "2026-11-26T13:12:31Z",
+        "updated_at": "2026-11-12T13:12:32Z",
+        "digest": "sha256:ee3957bf966b9f34df1b67bc29c20f044ad252d655154e7c5198b886b2dc9ae6",
+        "workflow_run": {
+          "id": 43213822708,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+          "head_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e"
+        }
+      },
+      {
+        "id": 13947043334,
+        "name": "windows-private-state-acquisition-1026bd09bc16e0035e8ea28053def5731d0a235e-43213822708-1",
+        "size_in_bytes": 13530,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13947043334",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13947043334/zip",
+        "expired": false,
+        "created_at": "2026-11-12T13:12:31Z",
+        "expires_at": "2026-11-26T13:12:30Z",
+        "updated_at": "2026-11-12T13:12:31Z",
+        "digest": "sha256:31209f7ec99daef47fc1c9a935fc9ac202dcb42584604c3775875fa783b66b93",
+        "workflow_run": {
+          "id": 43213822708,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+          "head_sha": "1026bd09bc16e0035e8ea28053def5731d0a235e"
+        }
+      }
+    ],
+    "boundary": "Windows selected LEARN/native regressions and private-state checks only. This does not supply the Linux evaluated CURRENT positive, all-package ordinary suite, Root qualification or scientific recovery."
+  },
+  "source_fix": {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+    "original_blob": "d4d777123a8010b0d8295b7b92f0a66194303ab2",
+    "original_bytes": 8303,
+    "original_sha256": "298bd0608a42faf70392ca2a5534d881a59ad2c142b9dfbfdc64cf83bdc6c00c",
+    "post_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+    "post_bytes": 8338,
+    "post_sha256": "4c97d448da9ff38b5d5d9f12aded6955d8e0328beec68d33afaff16747150022",
+    "only_change": "Explicit pretty_assertions::assert_eq import and separating blank line",
+    "no_assertions_or_behavior_changed": true,
+    "actual_failure_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "actual_failure_job": 131167901028,
+    "postimage_compile_tested": false,
+    "parent_compile_reproduced": false
+  },
+  "proposed_tree": "79997c4f07abc11c4b84ee8f51d314d88c4d5ec3",
+  "preceding_unexecuted_candidate": {
+    "commit": "d3d5e268c15a22ce337d49d7c4ec35480a749a85",
+    "tree": "7b2ce6a8dcc8cc466872350d5ad03a0487dd51b4",
+    "parents": [
+      "1026bd09bc16e0035e8ea28053def5731d0a235e",
+      "4ab34bbd3ca803213b6eecbaba81af719630f5d0"
+    ]
+  },
+  "postimage_formatted_or_compiled": false,
+  "branch_or_ref_changed": false,
+  "original_1026_results_not_transferred_to_candidate": true,
+  "artifact_contents_retrieved_yet": false,
+  "artifact_retrieval_pending": "Original artifact ZIP digests and source bindings are observed; actual ZIP member bytes/JUnit still need download and independent verification. Complete decoded job logs are already preserved."
+}

@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "title": "Independent static audit of original non-Root late-writer launch adapter",
+  "status": "NO_CONFIRMED_REMAINING_STATIC_BLOCKER_IN_PINNED_SOURCE; NATIVE_AND_OFFICIAL_CALLER_GATES_PENDING",
+  "base": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "manifest": "5befaba241b2f9f908cbd6b758986e7060268fc0",
+  "source_operations": "dc65d13c26cae8195f8e66479ea679f8a1b7a347",
+  "callers_delta": "0dc77804ae7fc3d38ef3a9751cdf093444f25ce7",
+  "source_inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+      "git_blob": "2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f",
+      "bytes": 7056,
+      "sha256": "93b954f8d93bc163ce56f3ef6c8bbca3130067ad789c158232d2340213064a64",
+      "matches": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_late_writer_tests.rs",
+      "git_blob": "638269b5c827d8d864b1f40b7ab4b7d964a0a178",
+      "bytes": 5633,
+      "sha256": "7f1a507beed752d0ad7aaaf42bd810c0528b0cdbb12b1fd174a014d14fc57eb5",
+      "matches": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "git_blob": "2a9e7c938e71918173c1ac06c0f04fcaa415c970",
+      "bytes": 26070,
+      "sha256": "40f3c0b611876baf03bb995d9715d16607db3393aa1e9b557eacd0c9d9985340",
+      "matches": true
+    }
+  ],
+  "checks": [
+    {
+      "area": "Inputs and rights",
+      "finding": "The same existing parser runs before descriptor claims; it preserves Primary runtime completeness, distinct FD numbers, optional handoff dependencies and Initial-versus-learned purpose exclusion. This adapter receives only the original THREE-right writer purpose, never falls back to the old two-right marker."
+    },
+    {
+      "area": "Actual identity",
+      "finding": "Before receipt and after assembly the process must have exact actual real/effective UID/GID equal to the nonzero declared dedicated owner. The caller's expected AgentdIdentity is only a comparison; sealed original Root data and original kernel process checks provide authority."
+    },
+    {
+      "area": "Order",
+      "finding": "All five original lanes and original consumer activation complete before original writer loading. Root0600 writer metadata/inode/access checks, retained original lock and actual Fleet Starting/spawn come from unchanged AgentdConfig::from_root_writer_handoff."
+    },
+    {
+      "area": "Learning/Model",
+      "finding": "Optional learning and Model handoffs use the same actual Root inputs and same loaded Config identity. The Model factory receives actual connected learning inputs. Neither JSON nor a caller receipt can construct a factory; publication offers are retained without early connection."
+    },
+    {
+      "area": "Deadlines",
+      "finding": "A single session_end is captured before bootstrap I/O; subsequent phases consume only remaining time and retain the original fixed monotonic bootstrap deadline. Final checks repeat remaining deadlines and live writer proof; no original authorization is extended."
+    },
+    {
+      "area": "Cancellation and custody",
+      "finding": "The method owns each received descriptor/Root session and acquired Config. Refusal/cancellation drops the attempt; original AgentdRootAuthoritySession::drop fences the shared live cache. There is no cloned launch, naked writer-file constructor, retry, reinitialization or restored session from data."
+    },
+    {
+      "area": "Child module/API visibility",
+      "finding": "The new child of production_launcher legitimately constructs its parent's private Launch/RuntimeInputs. The original UID0 startup path is unchanged. Public receive_original_late_writer is a real host API with no ordinary product caller yet; it cannot manufacture Supervisor Starting."
+    },
+    {
+      "area": "Tests",
+      "finding": "The two normal unit tests are negative only: incomplete/aliased arguments leave original rights unclaimed, and deliberately wrong actual credentials reject before any Root offer. Their payload/identity data is not a Root capability. No positive Root restart or adopted writer is established."
+    }
+  ],
+  "original_sources": {
+    "parser": "0599202fbe0db8bef2816fcd72dc031a2c375171",
+    "late_config": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+    "three_right_handoff": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+    "five_lane_inputs": "16edb582995f8dd5b0059421175048199a2c6175",
+    "root_session": "c1af9340a0044b1159d65f5e631d2e918a14f544"
+  },
+  "metadata": {
+    "extended_existing_rows": [
+      "root_original_writer_purpose_receive",
+      "agentd_original_root_writer_consume",
+      "root_learning_original_purpose_receive",
+      "root_q24_factory_purpose_receive",
+      "root_generation_publication_purpose_receive",
+      "root_initial_purpose_receive",
+      "root_learning_original_handoff_consume",
+      "root_q24_factory_original_handoff_connect",
+      "root_learning_original_config_hold"
+    ],
+    "changes": "Each existing boundary adds only production_launcher_late_writer.rs. All old callers, definition markers, receiver restrictions and other metadata remain unchanged. One new public entry boundary and one function-ordered protected block are added.",
+    "checker_changed": false,
+    "original_checker_executed": false
+  },
+  "resolved_review_finding": {
+    "type": "documented precondition",
+    "old_source": "f69687042b0082f568a0b539b4df24d2f9ee7c8a",
+    "fixed_source": "2a802e52f81c6cbda3b36b93a7855a8dc4e96f9f",
+    "finding": "Original draft incorrectly described reuse in the same dedicated process after its previous runtime drained.",
+    "fix": "Final comment accurately requires an already dedicated non-Root recipient of an actual Supervisor Starting admission and states that no old peer retirement, Starting creation or transfer of old retained capabilities occurs. Code bytes otherwise unchanged."
+  },
+  "limits": {
+    "native_executed": false,
+    "tests_executed": false,
+    "rustfmt_executed": false,
+    "positive_component_executed": false,
+    "ordinary_business_loop": 0,
+    "cross_spawn_A_capability_reconstruction": false,
+    "independent_C_or_physical_restart_acceptance": false
+  },
+  "related_scope_review": "d4a5cc19ba56d96d98f3a85e682a46557a4b571d"
+}

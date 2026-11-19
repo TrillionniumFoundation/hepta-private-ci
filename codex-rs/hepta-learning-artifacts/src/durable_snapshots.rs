@@ -214,7 +214,7 @@ pub fn read_artifact_lifecycle_snapshot(
     Ok(journal)
 }
 
-fn encode_withdrawal_snapshot(
+pub(crate) fn encode_withdrawal_snapshot(
     registry: &DatasetWithdrawalRegistry,
     binding: Digest32,
 ) -> Result<Vec<u8>, ArtifactStorageError> {
@@ -250,7 +250,7 @@ fn encode_withdrawal_snapshot(
     Ok(text.into_bytes())
 }
 
-fn decode_withdrawal_snapshot(
+pub(crate) fn decode_withdrawal_snapshot(
     bytes: &[u8],
     expected_binding: Digest32,
 ) -> Result<DatasetWithdrawalRegistry, ArtifactStorageError> {

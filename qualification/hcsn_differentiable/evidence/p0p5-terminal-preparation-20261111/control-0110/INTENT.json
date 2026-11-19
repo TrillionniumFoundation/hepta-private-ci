@@ -1,0 +1,26 @@
+{
+  "schema": "read-only-control-observation-v1",
+  "created": "2026-11-11T01:10:32.967Z",
+  "requests": [
+    {
+      "label": "ORIGINAL-C2-STATUS",
+      "tool": "h_process_status",
+      "args": {
+        "host": "desktop",
+        "job_id": "1a1c74f3308-be2a-75"
+      }
+    },
+    {
+      "label": "V9-RESULT-RECONCILE",
+      "tool": "h_binary_read",
+      "args": {
+        "host": "desktop",
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-epoch-observation-20261110-c385-v9/RESULT.json",
+        "offset": 0,
+        "limit": 16384
+      }
+    }
+  ],
+  "new_jobs_started": 0,
+  "training_mutations": 0
+}

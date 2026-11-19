@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-11-16T16:38:39.770499+00:00",
+  "source": {
+    "baseHead": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+    "path": "codex-rs/hepta-learning-artifacts/src/storage.rs",
+    "baseBlob": "0a133bade5bb0ac62c2ff5912d79fcf9fa648f79",
+    "postBlob": "0cede9d002fa5317734cc8241ecb835863ea7dd9",
+    "postSha256": "fe93ab823ad0a7da9d90f8faf2101505c8473bc76938be2aff3da8d3512882e4",
+    "change": "Remove two redundant borrows of an existing byte slice. All decoder predicates and API types remain unchanged."
+  },
+  "scope": {
+    "nativeInputFiles": 7761,
+    "inputManifestsPreserved": true,
+    "everyStepInputBytesUnchanged": true,
+    "qualification": "The exact original owner package commands, related source guard, and formatter on the named source overlay; not whole repository qualification."
+  },
+  "attempts": [
+    {
+      "name": "initial",
+      "status": "FAILED_ENVIRONMENT",
+      "detail": "Original formatter stopped on paths absent from the sparse checkout. No Cargo build was started, and source bytes did not change."
+    },
+    {
+      "name": "attempt-2",
+      "status": "PASS",
+      "commands": [
+        {
+          "name": "original-just-fmt",
+          "argv": ["just", "fmt"],
+          "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-storage-lint-review/codex-rs",
+          "returncode": 0,
+          "seconds": 0.3796796730021015,
+          "logBytes": 0,
+          "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sourceInputs": 7761,
+          "inputsUnchanged": true
+        },
+        {
+          "name": "original-artifact-head-source-guard",
+          "argv": [
+            "/usr/bin/python3",
+            "-B",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "qa/b4-no-bypass",
+            "-p",
+            "test_original_artifact_head_source_closure.py",
+            "-v"
+          ],
+          "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-storage-lint-review",
+          "returncode": 0,
+          "seconds": 5.330975696007954,
+          "logBytes": 1643,
+          "logSha256": "787584d38c08c152c63ce65f126b89b137feb72c9e4d8e861ce0e98bb54ea308",
+          "sourceInputs": 7761,
+          "inputsUnchanged": true
+        },
+        {
+          "name": "original-strict-clippy",
+          "argv": [
+            "cargo",
+            "clippy",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-storage-lint-review/codex-rs",
+          "returncode": 0,
+          "seconds": 15.643136579019483,
+          "logBytes": 1278,
+          "logSha256": "d77874364b88859295262f293f48a536afc11af598f44e6d0516a2095d5555c3",
+          "sourceInputs": 7761,
+          "inputsUnchanged": true
+        },
+        {
+          "name": "original-owner-regression",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "fail"
+          ],
+          "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-storage-lint-review/codex-rs",
+          "returncode": 0,
+          "seconds": 16.413290787982987,
+          "logBytes": 24597,
+          "logSha256": "4787c02018d36cfebc413c641a4bd1880d5f3e0cc2ee1cb98e46f0a8fc76ce8b",
+          "sourceInputs": 7761,
+          "inputsUnchanged": true
+        }
+      ],
+      "sourceGuardTests": 9,
+      "ownerTestsRun": 150,
+      "ownerTestsPassed": 150,
+      "ownerTestsSkipped": 1,
+      "skipDetail": "Existing ignored case; unchanged original test selection and budgets."
+    }
+  ],
+  "archive": {
+    "encoding": "deterministic gzip of deterministic tar; concatenate listed parts in order if multipart",
+    "compressedBytes": 758175,
+    "compressedSha256": "4e0863802910d5aaf55d05857777da12958472fef7a5ad847f2fbe62fcda368e",
+    "tarBytes": 2160640,
+    "tarSha256": "0ea6206fc85ec23bd1066cbdc5f565739ae040da0a89a9dbbb262b4ebb390b84",
+    "parts": [
+      {
+        "path": "storage-native-proof.tar.part-0000.gz",
+        "bytes": 480000,
+        "sha256": "085088c4d3a168562641b397a90bb4108d89ecca308bc0d3ae1881762475f32d"
+      },
+      {
+        "path": "storage-native-proof.tar.part-0001.gz",
+        "bytes": 278175,
+        "sha256": "41b1d09cd234d6cec874f5de63e7dbcc43e8bca1d8528966e2e97dc4db4ce967"
+      }
+    ],
+    "files": [
+      {
+        "path": "attempt-2/original-artifact-head-source-guard.log",
+        "bytes": 1643,
+        "sha256": "787584d38c08c152c63ce65f126b89b137feb72c9e4d8e861ce0e98bb54ea308"
+      },
+      {
+        "path": "attempt-2/original-just-fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "attempt-2/original-owner-regression.log",
+        "bytes": 24597,
+        "sha256": "4787c02018d36cfebc413c641a4bd1880d5f3e0cc2ee1cb98e46f0a8fc76ce8b"
+      },
+      {
+        "path": "attempt-2/original-strict-clippy.log",
+        "bytes": 1278,
+        "sha256": "d77874364b88859295262f293f48a536afc11af598f44e6d0516a2095d5555c3"
+      },
+      {
+        "path": "attempt-2/validation-inputs.json",
+        "bytes": 1003642,
+        "sha256": "e225b926299ab8f4944af74e52836e0a644db361a95e30e74aef6b948a4da7ad"
+      },
+      {
+        "path": "attempt-2/validation-invocation.json",
+        "bytes": 1637,
+        "sha256": "b6f9ef3cd4fd12266cee17e6285d3b95a72e0ef6d950cf44f4f950e563921575"
+      },
+      {
+        "path": "attempt-2/validation-receipt.json",
+        "bytes": 2140,
+        "sha256": "1793d49e7a090c13c5e65dad0d6bd3294e0405faa8f5e38b5d9b8cd745cdf0bc"
+      },
+      {
+        "path": "blob-readback-receipt.json",
+        "bytes": 562,
+        "sha256": "3f141518270c2962e5ddb04db6f595036b3f74e611bdcc9d00bca14abc356300"
+      },
+      {
+        "path": "original-hosted-qualification.json",
+        "bytes": 46216,
+        "sha256": "7951516297a00a39fa9e5f7190b5cf69a710a42f3497eacacc47820681fb75c9"
+      },
+      {
+        "path": "original-just-fmt.log",
+        "bytes": 553,
+        "sha256": "85a1fa15bbd553393a1f5a252e1af81b2a9aa3b8b4f766dfb14aae755f80135c"
+      },
+      {
+        "path": "patch-payload.json",
+        "bytes": 981,
+        "sha256": "1a3d6ae74637a4f1ea87c3668159fe940893cc614d06de295ebc4de9e2eef98e"
+      },
+      {
+        "path": "proposal/codex-rs/hepta-learning-artifacts/src/storage.rs",
+        "bytes": 26613,
+        "sha256": "fe93ab823ad0a7da9d90f8faf2101505c8473bc76938be2aff3da8d3512882e4"
+      },
+      {
+        "path": "proposal.patch",
+        "bytes": 787,
+        "sha256": "4676bce2c15ea55622ea576bc8e4f8e0d8accfd393867901b9180700b7c55f8e"
+      },
+      {
+        "path": "source-review.json",
+        "bytes": 599,
+        "sha256": "812c081386f999785919de7af348391aaf1ce009e43f1c1c26fbdaecd2584120"
+      },
+      {
+        "path": "sparse-checkout-environment-repair.json",
+        "bytes": 488,
+        "sha256": "f63babc53583df12c4e584bb485f437ae1e516e7581ed2fcf201844c5b82fa37"
+      },
+      {
+        "path": "sparse-checkout-environment-repair.log",
+        "bytes": 132,
+        "sha256": "6bdb3275e8313cadc8a64ff3247ae13036a406682cc7bb4d9f6e67c8ef0cead9"
+      },
+      {
+        "path": "sparse-input-completion-receipt.json",
+        "bytes": 17329,
+        "sha256": "63de650bbd54e3a94bb93fdb426e95dacba2b4765e61c71e4225b117c65fb291"
+      },
+      {
+        "path": "validation-inputs.json",
+        "bytes": 1003642,
+        "sha256": "e225b926299ab8f4944af74e52836e0a644db361a95e30e74aef6b948a4da7ad"
+      },
+      {
+        "path": "validation-invocation.json",
+        "bytes": 1637,
+        "sha256": "9f19418ca62cd1dfae6caa23cfa63e0d7b05cea7b209b922a61ffe2b6bbfad99"
+      },
+      {
+        "path": "validation-receipt.json",
+        "bytes": 415,
+        "sha256": "d0d638378bb91613670145c97e009e689a87eb39bbcaecca5f3cb549187d73fe"
+      }
+    ]
+  }
+}

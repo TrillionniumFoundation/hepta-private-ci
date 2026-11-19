@@ -1,0 +1,868 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:204:55
+    |
+204 |     use time::format_description::BorrowedFormatItem::Literal;
+    |                                                       ^^^^^^^
+    |
+    = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated tuple variant `time::format_description::Component::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:208:52
+    |
+208 |     const YEAR: BorrowedFormatItem<'_> = Component(Year({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Year`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:209:35
+    |
+209 |         let mut value = modifier::Year::default();
+    |                                   ^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::YearRepr::Full`: used only in the deprecated `Year` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:42
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |                                          ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:217:53
+    |
+217 |     const MONTH: BorrowedFormatItem<'_> = Component(Month({
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Month`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:218:35
+    |
+218 |         let mut value = modifier::Month::default();
+    |                                   ^^^^^
+
+warning: use of deprecated unit variant `time::format_description::modifier::MonthRepr::Numerical`: used only in the deprecated `Month` component
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:43
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |                                           ^^^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::Component::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:231:52
+    |
+231 |     const HOUR: BorrowedFormatItem<'_> = Component(Hour({
+    |                                                    ^^^^
+
+warning: use of deprecated struct `time::format_description::modifier::Hour`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:232:35
+    |
+232 |         let mut value = modifier::Hour::default();
+    |                                   ^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:272:13
+    |
+272 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:274:13
+    |
+274 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:276:23
+    |
+276 |             Optional(&Literal(b" ")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:277:23
+    |
+277 |             Optional(&Literal(b"T")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:279:13
+    |
+279 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:281:23
+    |
+281 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:283:23
+    |
+283 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:286:23
+    |
+286 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:294:13
+    |
+294 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:296:13
+    |
+296 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:298:13
+    |
+298 |             Literal(b" "),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:300:13
+    |
+300 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:302:23
+    |
+302 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:304:23
+    |
+304 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:306:23
+    |
+306 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:313:13
+    |
+313 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:315:13
+    |
+315 |             Literal(b"-"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:317:13
+    |
+317 |             Literal(b"T"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:319:13
+    |
+319 |             Literal(b":"),
+    |             ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:321:23
+    |
+321 |             Optional(&Literal(b":")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:323:23
+    |
+323 |             Optional(&Literal(b".")),
+    |                       ^^^^^^^
+
+warning: use of deprecated tuple variant `time::format_description::BorrowedFormatItem::Literal`: use `StringLiteral` instead; raw bytes are not recommended
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:325:23
+    |
+325 |             Optional(&Literal(b"Z")),
+    |                       ^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::padding`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:210:9
+    |
+210 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::repr`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:211:9
+    |
+211 |         value.repr = modifier::YearRepr::Full;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::iso_week_based`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:212:9
+    |
+212 |         value.iso_week_based = false;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Year::sign_is_mandatory`: use one of the various `Year*` components instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:213:9
+    |
+213 |         value.sign_is_mandatory = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::padding`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:219:9
+    |
+219 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::repr`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:220:9
+    |
+220 |         value.repr = modifier::MonthRepr::Numerical;
+    |         ^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Month::case_sensitive`: use `MonthShort`, `MonthLong`, or `MonthNumeric` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:221:9
+    |
+221 |         value.case_sensitive = true;
+    |         ^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::padding`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:233:9
+    |
+233 |         value.padding = modifier::Padding::Zero;
+    |         ^^^^^^^^^^^^^
+
+warning: use of deprecated field `time::format_description::modifier::Hour::is_12_hour_clock`: use `Hour12` or `Hour24` instead
+   --> third_party/sqlx-sqlite-0.9.0/src/types/time.rs:234:9
+    |
+234 |         value.is_12_hour_clock = false;
+    |         ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `sqlx-sqlite` (lib) generated 40 warnings
+warning: `sqlx-sqlite` (lib) generated 40 warnings (40 duplicates)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/hepta-cognitive-types)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.89s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#portable-atomic@1.15.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#parking_lot_core@0.9.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#clang-sys@1.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crc32fast@1.5.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.73.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_properties_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_normalizer_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.46.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ring@0.17.14` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.8.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ahash@0.8.12` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#faster-hex@0.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-epoch@0.9.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#oid-registry@0.8.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustversion@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#anyhow@1.0.104` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#httparse@1.10.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl-sys@0.9.117` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-deque@0.8.8` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#syn@1.0.109` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#schemars@0.8.22` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rayon-core@1.13.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#mime_guess@2.0.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#ref-cast@1.0.27` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#prettyplease@0.2.37` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#typeid@1.0.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#heapless@0.7.17` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#erased-serde@0.4.10` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#openssl@0.10.81` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#allocative@0.3.6` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#logos-codegen@0.15.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#nix@0.28.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#bindgen@0.72.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#native-tls@0.2.18` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-http-headers@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#num-traits@0.2.19` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#cookie@0.18.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#encoding_rs@0.8.42` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_locale_fallback_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#crossbeam-utils@0.8.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#paste@1.0.15` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#memoffset@0.9.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#icu_decimal_data@2.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46` which wasn't produced by cargo metadata
+warning: warning: saw package ID `path+file:///workspace/scratch/ff772bc098e2/hepta-private-ci/codex-rs/third_party/starlark-0.14.2-blake3-backport#starlark@0.14.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.39.1` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rama-dns@0.3.0` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@1.0.69` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID c4bfa67d-aa41-4eab-a2ac-eb2842327ae6 with nextest profile: local
+    Starting 540 tests across 20 binaries (2 tests skipped)
+        PASS [   0.005s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_binds_exact_authoritative_cut_and_record
+        PASS [   0.007s] codex-hepta-cognitive-read authoritative::tests::provider_rejects_scope_frontier_and_epoch_drift
+        PASS [   0.007s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_rejects_identity_provenance_and_lifecycle_drift
+        PASS [   0.008s] codex-hepta-cognitive-read authoritative::tests::canonical_shadow_read_tamper_fails_closed
+        PASS [   0.009s] codex-hepta-cognitive-read authoritative::tests::authoritative_read_binds_provider_vector_and_query
+        PASS [   0.011s] codex-hepta-cognitive-read authoritative::tests::provider_rejects_expired_deadline_and_wrong_read_snapshot
+        PASS [   0.006s] codex-hepta-cognitive-read ids_tests::requested_fields_are_explicit_and_missing_ids_are_not_silent_omissions
+        PASS [   0.016s] codex-hepta-cognitive-read ids_tests::duplicate_and_oversized_requests_fail_closed
+        PASS [   0.010s] codex-hepta-cognitive-read ids_tests::tombstone_state_is_mandatory_even_when_optional_fields_are_empty
+        PASS [   0.009s] codex-hepta-cognitive-read tests::altered_snapshot_fields_are_rejected_before_filtering
+        PASS [   0.008s] codex-hepta-cognitive-read tests::current_revision_is_resolved_before_kind_and_tombstone_filtering
+        PASS [   0.010s] codex-hepta-cognitive-read tests::bounded_result_count_is_explicit
+        PASS [   0.009s] codex-hepta-cognitive-read tests::read_is_snapshot_bound_and_authority_free
+        PASS [   0.006s] codex-hepta-cognitive-read tests::reordered_valid_snapshot_keeps_canonical_read_receipt
+        PASS [   0.012s] codex-hepta-cognitive-read tests::forged_oversize_and_duplicate_snapshot_records_are_rejected
+        PASS [   0.010s] codex-hepta-cognitive-read tests::stale_snapshot_is_rejected
+        PASS [   0.010s] codex-hepta-cognitive-read tombstone_resurrection_tests::a_same_id_tombstone_on_an_unselected_fork_is_not_an_ancestor
+        PASS [   0.006s] codex-hepta-cognitive-read tombstone_resurrection_tests::complete_tombstone_resurrection_is_rejected_in_any_record_order
+        PASS [   0.010s] codex-hepta-cognitive-read tombstone_resurrection_tests::a_cross_record_predecessor_is_not_treated_as_resurrection
+        PASS [   0.010s] codex-hepta-cognitive-read tests::v1_receipt_digest_domain_remains_stable
+        PASS [   0.006s] codex-hepta-cognitive-read tombstone_resurrection_tests::live_lineage_and_terminal_tombstone_remain_readable
+        PASS [   0.009s] codex-hepta-cognitive-read v2::tests::current_tombstone_or_kind_change_never_resurrects_history
+        PASS [   0.009s] codex-hepta-cognitive-read v2::tests::exact_cap_is_accepted_and_the_next_record_is_omitted
+        PASS [   0.010s] codex-hepta-cognitive-read v2::tests::a_valid_result_cannot_be_replayed_as_a_different_query
+        PASS [   0.011s] codex-hepta-cognitive-read v2::tests::complete_envelope_round_trips_and_binds_every_output_byte
+        PASS [   0.007s] codex-hepta-cognitive-read tombstone_resurrection_tests::missing_tombstone_ancestor_is_not_inferred_from_a_truncated_snapshot
+        PASS [   0.009s] codex-hepta-cognitive-read v2::tests::record_and_citation_permutations_have_identical_canonical_bytes
+        PASS [   0.008s] codex-hepta-cognitive-read v2::tests::unknown_tags_authority_and_trailing_fields_are_rejected
+        PASS [   0.007s] codex-hepta-cognitive-read::canonical_consumer_v1 cognitive_read_compiles_against_closed_canonical_inputs
+        PASS [   0.007s] codex-hepta-cognitive-store tests::append_and_correction_are_predecessor_fenced
+        PASS [   0.012s] codex-hepta-cognitive-read v2::tests::recomputed_digests_cannot_bypass_request_semantics
+        PASS [   0.053s] codex-hepta-cognitive-read ids_tests::exact_id_read_reaches_beyond_the_legacy_1024_prefix
+        PASS [   0.008s] codex-hepta-cognitive-store tests::identical_append_is_idempotent
+        PASS [   0.009s] codex-hepta-cognitive-store tests::retry_after_unrelated_append_preserves_original_commit_sequence
+        PASS [   0.008s] codex-hepta-cognitive-store tests::sequence_exhaustion_rejects_correction_without_mutating_store
+        PASS [   0.013s] codex-hepta-cognitive-store tests::exhausted_revision_cannot_be_reused_for_changed_content
+        PASS [   0.015s] codex-hepta-cognitive-store tests::identical_retry_still_succeeds_at_sequence_exhaustion
+        PASS [   0.008s] codex-hepta-cognitive-store tests::sequence_exhaustion_rejects_insert_without_mutating_store
+        PASS [   0.006s] codex-hepta-cognitive-store v2::tests::canonical_adapter_preflight_tests::canonical_valid_metadata_preserves_store_rejection_order_and_state
+        PASS [   0.011s] codex-hepta-cognitive-store v2::tests::admission_appends_full_revision_history_and_advances_frontiers
+        PASS [   0.009s] codex-hepta-cognitive-store v2::tests::admission_rejects_unverified_and_contradicted_candidates_before_materialization
+        PASS [   0.013s] codex-hepta-cognitive-store tests::tombstone_prevents_resurrection
+        PASS [   0.008s] codex-hepta-cognitive-store v2::tests::canonical_event_shadow_receipt_tamper_fails_closed
+        PASS [   0.023s] codex-hepta-cognitive-store tests::stale_correction_is_rejected
+        PASS [   0.009s] codex-hepta-cognitive-store v2::tests::canonical_event_shadow_rejects_provenance_or_verification_drift_before_write
+        PASS [   0.017s] codex-hepta-cognitive-store v2::tests::canonical_adapter_preflight_tests::canonical_valid_metadata_preserves_legacy_commit_and_retry_results
+        PASS [   0.013s] codex-hepta-cognitive-store v2::tests::canonical_event_shadow_binds_exact_admission_and_write_receipt
+        PASS [   0.010s] codex-hepta-cognitive-store v2::tests::canonical_shadow_binding_tests::self_consistent_shadow_must_bind_the_actual_id_consumer_and_digest_pair
+        PASS [   0.011s] codex-hepta-cognitive-store v2::tests::export_reopen_and_snapshot_preserve_history_and_tombstones
+        PASS [   0.013s] codex-hepta-cognitive-store v2::tests::canonical_shadow_binding_tests::comparison_time_remains_metadata_and_original_shadow_error_precedes_binding
+        PASS [   0.016s] codex-hepta-cognitive-store v2::tests::canonical_shadow_binding_tests::another_real_write_shadow_cannot_attest_this_write
+        PASS [   0.006s] codex-hepta-cognitive-store v2::tests::image_rejects_sequence_and_frontier_claims_not_derived_from_history
+        PASS [   0.015s] codex-hepta-cognitive-store v2::tests::image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest
+        PASS [   0.005s] codex-hepta-cognitive-store v2::tests::paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry
+        PASS [   0.033s] codex-hepta-cognitive-store v2::tests::canonical_adapter_preflight_tests::invalid_canonical_metadata_cannot_change_existing_ledger_or_intent_journal
+        PASS [   0.010s] codex-hepta-cognitive-store v2::tests::paged_snapshot_rejects_continuation_after_store_cut_changes
+        PASS [   0.014s] codex-hepta-cognitive-store v2::tests::paged_snapshot_preserves_exact_ancestry_across_page_boundaries
+        PASS [   0.014s] codex-hepta-cognitive-store v2::tests::intent_retry_returns_original_receipt_after_unrelated_commit
+        PASS [   0.008s] codex-hepta-cognitive-store v2::tests::tombstone_is_terminal_and_advances_deletion_frontier
+        PASS [   0.007s] codex-hepta-cognitive-types consumer_tests::consumer_decoder_enforces_declared_direction
+        PASS [   0.014s] codex-hepta-cognitive-store v2::tests::saturated_retry_journal_blocks_new_admission_but_not_forget
+        PASS [   0.012s] codex-hepta-cognitive-store v2::tests::stale_snapshot_and_wrong_authorization_fail_before_mutation
+        PASS [   0.008s] codex-hepta-cognitive-store v2::tests::tombstone_uses_reserved_capacity_after_ordinary_capacity_is_full
+        PASS [   0.006s] codex-hepta-cognitive-types consumer_tests::registry_covers_every_declared_consumer
+        PASS [   0.017s] codex-hepta-cognitive-store::canonical_consumer_v1 cognitive_store_compiles_against_canonical_event_and_receipt
+        PASS [   0.010s] codex-hepta-cognitive-types contract_tests::bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts
+        PASS [   0.013s] codex-hepta-cognitive-types consumer_tests::cutover_requires_exact_shadow_equality
+        PASS [   0.006s] codex-hepta-cognitive-types contract_tests::ctype_01_modality_units_cannot_be_rebound
+        PASS [   0.013s] codex-hepta-cognitive-types contract_tests::all_registered_v1_contracts_have_distinct_cross_language_golden_digests
+        PASS [   0.013s] codex-hepta-cognitive-types contract_tests::canonical_wire_roundtrip_property_holds_across_registered_contracts
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::ctype_03_lifecycle_states_are_semantically_distinct
+        PASS [   0.006s] codex-hepta-cognitive-types contract_tests::engram_validity_and_contextual_binding_are_exact
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::maximum_bounds_reject_before_publication
+        PASS [   0.006s] codex-hepta-cognitive-types contract_tests::recall_abstention_and_selected_revision_are_fail_closed
+        PASS [   0.009s] codex-hepta-cognitive-types contract_tests::q16_and_plasticity_delta_bindings_are_exact
+        PASS [   0.017s] codex-hepta-cognitive-types contract_tests::ctype_02_asset_extent_and_identity_fail_closed
+        PASS [   0.007s] codex-hepta-cognitive-types contract_tests::recall_receipts_bind_counts_and_population_limits
+        PASS [   0.017s] codex-hepta-cognitive-types contract_tests::ctype_04_canonical_wire_vector_is_exact
+        PASS [   0.015s] codex-hepta-cognitive-types contract_tests::proposal_contracts_cannot_self_activate
+        PASS [   0.006s] codex-hepta-cognitive-types contract_tests::replay_receipts_bind_candidate_and_source_bucket_counts
+        PASS [   0.006s] codex-hepta-cognitive-types contract_tests::wire_compatibility_tests::wire_v1_keeps_empty_forget_receipt_while_strict_profile_rejects_it
+        PASS [   0.016s] codex-hepta-cognitive-types contract_tests::wire_compatibility_tests::wire_v1_keeps_empty_plasticity_while_strict_profile_rejects_it
+        PASS [   0.016s] codex-hepta-cognitive-types contract_tests::wire_compatibility_tests::wire_v1_keeps_legacy_topology_delta_while_strict_profile_checks_cardinality
+        PASS [   0.023s] codex-hepta-cognitive-types contract_tests::strict_wire_rejects_unknown_fields_invalid_enum_and_noncanonical_json
+        PASS [   0.024s] codex-hepta-cognitive-types contract_tests::set_insertion_order_cannot_change_wire_or_digest
+        PASS [   0.017s] codex-hepta-cognitive-types contract_tests::wire_compatibility_tests::wire_v1_keeps_zero_weight_synapse_while_strict_profile_rejects_it
+        PASS [   0.007s] codex-hepta-cognitive-types hardening_tests::committed_receipt_binds_full_intent_context
+        PASS [   0.028s] codex-hepta-cognitive-types contract_tests::wire_compatibility_tests::explicit_strict_profile_preserves_valid_zero_origin_and_replay_values
+        PASS [   0.006s] codex-hepta-cognitive-types hardening_tests::rejected_receipt_has_no_fabricated_record_fields
+        PASS [   0.009s] codex-hepta-cognitive-types hardening_tests::registered_reader_accepts_known_receipt_and_rejects_unknown_schema
+        PASS [   0.006s] codex-hepta-cognitive-types hardening_tests::strict_synapse_validator_binds_relation_to_weight_sign
+        PASS [   0.011s] codex-hepta-cognitive-types hardening_tests::selector_context_resolves_ast_gui_and_rfc6901_paths
+        PASS [   0.005s] codex-hepta-cognitive-types lane_c::tests::compact_checkpoint_and_proof_are_non_authoritative
+        PASS [   0.010s] codex-hepta-cognitive-types hardening_tests::write_receipt_binding_tests::original_zero_time_error_still_precedes_new_intent_binding_check
+        PASS [   0.012s] codex-hepta-cognitive-types hardening_tests::write_receipt_binding_tests::real_insert_unchanged_and_rejected_constructors_keep_canonical_roundtrips
+        PASS [   0.008s] codex-hepta-cognitive-types lane_c::tests::memory_admission_requires_unique_bounded_support
+        PASS [   0.014s] codex-hepta-cognitive-types lane_c::tests::federation_result_binds_coverage_snapshot_and_items
+        PASS [   0.008s] codex-hepta-cognitive-types lane_c::tests::projection_publication_requires_exact_predecessor
+        PASS [   0.016s] codex-hepta-cognitive-types hardening_tests::write_receipt_binding_tests::rehashed_outer_receipt_cannot_hide_inconsistent_intent_fields
+        PASS [   0.006s] codex-hepta-cognitive-types tests::duplicate_citation_is_rejected
+        PASS [   0.009s] codex-hepta-cognitive-types lane_c::tests::prompt_snapshot_and_delivery_observation_reject_stale_semantics
+        PASS [   0.008s] codex-hepta-cognitive-types lane_c::tests::snapshot_key_rejects_digest_drift
+        PASS [   0.008s] codex-hepta-cognitive-types tests::duplicate_record_revision_is_rejected
+        PASS [   0.018s] codex-hepta-cognitive-types lane_c::tests::generation_vector_digest_binds_every_generation
+        PASS [   0.006s] codex-hepta-cognitive-types tests::snapshot_is_canonical_and_authority_free
+        PASS [   0.009s] codex-hepta-cognitive-types tests::one_source_identity_cannot_bind_conflicting_digests
+        PASS [   0.013s] codex-hepta-cognitive-types tests::later_revision_requires_predecessor
+        PASS [   0.008s] codex-hepta-cognitive-types::deterministic_properties_v1 generated_rfc6901_escapes_have_total_accept_reject_partition
+        PASS [   0.010s] codex-hepta-cognitive-types tests::valid_v1_record_and_snapshot_digests_remain_stable
+        PASS [   0.006s] codex-hepta-cognitive-types::domain_golden_vectors_v1 unicode_golden_vectors_prove_code_point_preservation
+        PASS [   0.008s] codex-hepta-context-compiler candidate_bound::tests::candidate_identity_and_omitted_tail_are_in_the_binding
+        PASS [   0.011s] codex-hepta-cognitive-types::domain_golden_vectors_v1 rejected_write_receipt_matches_python_and_node_golden_vector
+        PASS [   0.014s] codex-hepta-cognitive-types::deterministic_properties_v1 generated_shadow_states_are_derived_not_caller_selected
+        PASS [   0.014s] codex-hepta-cognitive-types::deterministic_properties_v1 unicode_policy_preserves_code_points_instead_of_silent_normalization
+        PASS [   0.008s] codex-hepta-context-compiler candidate_bound::tests::input_permutation_has_one_candidate_binding
+        PASS [   0.011s] codex-hepta-context-compiler candidate_bound::tests::legacy_validation_errors_are_preserved
+        PASS [   0.010s] codex-hepta-context-compiler candidate_bound::tests::mandatory_requirements_remain_bound_and_authority_free
+        PASS [   0.013s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::canonical_producer_order_is_preserved_without_caller_maps
+        PASS [   0.015s] codex-hepta-context-compiler candidate_bound::tests::omitted_content_is_bound_without_changing_legacy_compilation
+        PASS [   0.011s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::complete_control_content_is_required_even_with_consistent_shorter_framing
+        PASS [   0.006s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::reordering_complete_item_records_cannot_change_selected_order
+        PASS [   0.012s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::declared_length_overflow_is_rejected_before_allocation
+        PASS [   0.013s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::source_view_debug_excludes_content_and_serialized_bytes
+        PASS [   0.019s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::existing_binary_content_is_preserved_without_lossy_text_conversion
+        PASS [   0.007s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::source_view_preserves_v2_bytes_and_exhaustive_typed_fields
+        PASS [   0.012s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::source_view_rejects_another_compilation_and_profile
+        PASS [   0.009s] codex-hepta-context-compiler provider_request::tests::exact_final_request_identity_is_durable_and_receipt_bound
+        PASS [   0.023s] codex-hepta-context-compiler provider_request::tests::compiler_owned_canonical_serializer_is_order_independent_and_fully_covered
+        PASS [   0.018s] codex-hepta-context-compiler provider_request::tests::final_request_segment_map_rejects_gaps_duplicates_and_digest_tampering
+        PASS [   0.014s] codex-hepta-context-compiler provider_request::tests::provider_request_union_tests::attachment_mismatch_still_precedes_the_new_parent_check
+        PASS [   0.039s] codex-hepta-context-compiler provider_bound_v3::canonical::tests::private_derivation_rejects_mutated_truncated_and_appended_bytes
+        PASS [   0.010s] codex-hepta-context-compiler provider_request::tests::provider_request_union_tests::final_request_budget_counts_host_framing_at_the_profile_boundary
+        PASS [   0.012s] codex-hepta-context-compiler provider_request::tests::provider_request_union_tests::final_tokenizer_identity_must_match_both_profile_names
+        PASS [   0.013s] codex-hepta-context-compiler provider_request::tests::typed_snapshot_successor_rejects_reset_and_revocation_resurrection
+        PASS [   0.014s] codex-hepta-context-compiler provider_request::tests::provider_request_union_tests::typed_successor_must_extend_the_attachment_snapshot
+        PASS [   0.005s] codex-hepta-context-compiler requirements::tests::every_required_item_binding_rejects_drift
+        PASS [   0.005s] codex-hepta-context-compiler requirements::tests::required_group_semantics_are_part_of_the_receipt_digest
+        PASS [   0.011s] codex-hepta-context-compiler requirements::tests::insufficient_floor_never_returns_a_partial_provenance_group
+        PASS [   0.011s] codex-hepta-context-compiler requirements::tests::malformed_groups_and_reference_saturation_are_rejected
+        PASS [   0.007s] codex-hepta-context-compiler requirements::tests::reserves_whole_provenance_group_before_optional_evidence
+        PASS [   0.020s] codex-hepta-context-compiler provider_request::tests::unicode_control_and_large_exact_requests_are_counted_over_the_actual_bytes
+        PASS [   0.004s] codex-hepta-context-compiler tests::evidence_never_becomes_instruction
+        PASS [   0.004s] codex-hepta-context-compiler tests::legacy_compile_cannot_omit_trusted_instructions
+        PASS [   0.004s] codex-hepta-context-compiler tests::optional_evidence_omission_is_explicit
+        PASS [   0.016s] codex-hepta-context-compiler tests::duplicate_item_is_rejected
+        PASS [   0.018s] codex-hepta-context-compiler requirements::tests::unknown_member_and_mismatched_snapshot_or_objective_are_rejected
+        PASS [   0.022s] codex-hepta-context-compiler requirements::tests::shared_provenance_is_charged_once_and_order_is_canonical
+        PASS [   0.009s] codex-hepta-context-compiler tests::oversized_required_cost_reports_the_exact_insufficient_floor
+        PASS [   0.009s] codex-hepta-context-compiler tests::secret_bearing_item_is_rejected
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::admission_expires_at_the_exact_expiry_instant
+        PASS [   0.012s] codex-hepta-context-compiler v2::delivery_evidence::tests::distinct_genuine_contexts_keep_distinct_evidence_bindings
+        PASS [   0.018s] codex-hepta-context-compiler v2::delivery_evidence::tests::canonical_evidence_keeps_all_fields_and_each_provider_terminal
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch
+        PASS [   0.018s] codex-hepta-context-compiler v2::delivery_evidence::tests::encoding_is_repeatable_without_mutating_or_disclosing_raw_context
+        PASS [   0.016s] codex-hepta-context-compiler v2::tests::admission_role_binding_prevents_evidence_instruction_confusion
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::delivery_preparation_revalidates_and_rejects_revocation_after_attachment
+        PASS [   0.017s] codex-hepta-context-compiler v2::tests::attachment_revalidation_rejects_compile_then_revoke_toc_tou
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::independent_provider_evidence_verifier_is_required
+        PASS [   0.028s] codex-hepta-context-compiler v2::tests::deterministic_value_per_token_preserves_mandatory_floors
+        PASS [   0.024s] codex-hepta-context-compiler v2::tests::final_serialized_token_count_must_fit_budget_including_framing
+        PASS [   0.023s] codex-hepta-context-compiler v2::tests::mandatory_group_policy_is_bound_even_when_selected_set_is_identical
+        PASS [   0.029s] codex-hepta-context-compiler v2::tests::indeterminate_provider_terminal_remains_indeterminate
+        PASS [   0.010s] codex-hepta-context-compiler v2::tests::provider_and_model_identity_must_match_exact_model_profile
+        PASS [   0.368s] codex-hepta-cognitive-read ids_tests::maximum_exact_id_batch_resolves_from_the_full_snapshot
+        PASS [   0.010s] codex-hepta-context-compiler v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier
+        PASS [   0.010s] codex-hepta-context-compiler v2::tests::raw_candidate_and_realization_bytes_are_bounded_before_serialization
+        PASS [   0.012s] codex-hepta-context-compiler v2::tests::provider_payload_binding_must_match_exact_serialized_payload
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::serialization_validates_real_bytes_and_tokenizes_final_payload
+        PASS [   0.018s] codex-hepta-context-compiler v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt
+        PASS [   0.006s] codex-hepta-context-compiler v2::tests::snapshot_scope_and_authority_domain_are_part_of_admission_truth
+        PASS [   0.013s] codex-hepta-context-compiler v2::tests::serialization_rejects_payload_realization_that_does_not_match_selected_digest
+        PASS [   0.004s] codex-hepta-context-compiler v2::tests::successor_snapshot_rejects_revocation_resurrection
+        PASS [   0.017s] codex-hepta-context-compiler v2::tests::revocation_and_mandatory_reference_bounds_fail_closed
+        PASS [   0.007s] codex-hepta-context-compiler v2::tests::tokenizer_generation_secret_and_profile_drift_fail_closed
+        PASS [   0.008s] codex-hepta-context-compiler v2::tests::well_formed_admission_digest_is_not_enough_without_verifier_acceptance
+        PASS [   0.006s] codex-hepta-context-compiler wire::tests::compiler_composes_into_admitted_v2_transport_without_serializing_authority
+        PASS [   0.209s] codex-hepta-cognitive-types::deterministic_properties_v1 generated_rejection_receipts_round_trip_and_reject_noncanonical_bytes
+        PASS [   0.007s] codex-hepta-context-compiler wire::tests::context_wire_rejects_unknown_fields_and_duplicate_id_partitions
+        PASS [   0.016s] codex-hepta-context-compiler v2::tests::verified_admission_cannot_be_reused_across_request_scope
+        PASS [   0.018s] codex-hepta-context-compiler v2::tests::tiny_budget_refuses_instead_of_truncating_instruction_or_schema
+        PASS [   0.009s] codex-hepta-intelligence canonical::tests::abstention_stops_before_context_and_evaluation
+        PASS [   0.007s] codex-hepta-intelligence canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed
+        PASS [   0.008s] codex-hepta-intelligence canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners
+        PASS [   0.009s] codex-hepta-intelligence canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics
+        PASS [   0.006s] codex-hepta-intelligence capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted
+        PASS [   0.012s] codex-hepta-intelligence canonical::tests::owner_generation_change_between_call_and_publication_fails_closed
+        PASS [   0.005s] codex-hepta-intelligence capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements
+        PASS [   0.011s] codex-hepta-intelligence capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan
+        PASS [   0.012s] codex-hepta-intelligence capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact
+        PASS [   0.011s] codex-hepta-intelligence capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics
+        PASS [   0.009s] codex-hepta-intelligence capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject
+        PASS [   0.007s] codex-hepta-intelligence cell_ndu_selection::tests::evaluator_keeps_ndu_rejected_candidate_in_complete_partition
+        PASS [   0.011s] codex-hepta-intelligence capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements
+        PASS [   0.008s] codex-hepta-intelligence cell_ndu_selection::tests::evaluator_rejects_generation_mismatch_without_dropping_evidence
+        PASS [   0.011s] codex-hepta-intelligence cell_ndu_selection::tests::evaluator_freezes_baseline_and_selector_follows_ndu_recommendation
+        PASS [   0.011s] codex-hepta-intelligence cell_ndu_selection::tests::evaluator_requires_ndu_support_evidence
+        PASS [   0.009s] codex-hepta-intelligence cell_ndu_selection::tests::no_recommendation_is_a_durable_no_change_decision
+        PASS [   0.007s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_caller_supplied_artifact_digest_drift
+        PASS [   0.011s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_distinct_role_identity_rewrites
+        PASS [   0.016s] codex-hepta-intelligence cell_ndu_selection::tests::negative_utility_is_retained_as_rejected_and_cannot_be_selected
+        PASS [   0.014s] codex-hepta-intelligence cell_ndu_selection::tests::roles_and_negative_migration_are_independent_and_fail_closed
+        PASS [   0.008s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_recommendation_rewrite_even_when_v2_digest_is_reused
+        PASS [   0.012s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_future_window_or_utility_evidence_drift
+        PASS [   0.007s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_self_hashed_positive_baseline
+        PASS [   0.024s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_self_hashed_overflowing_penalty
+        PASS [   0.029s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_receipt_role_generation_and_ndu_digest_drift
+        PASS [   0.023s] codex-hepta-intelligence cell_ndu_selection::tests::selector_rejects_self_hashed_promotion_of_negative_utility
+        PASS [   0.532s] codex-hepta-cognitive-read v2::tests::one_mib_ceiling_bounds_the_actual_complete_envelope
+        PASS [   0.123s] codex-hepta-intelligence evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes
+        PASS [   0.382s] codex-hepta-context-compiler provider_request::tests::final_request_receipt_changes_for_any_single_byte_mutation
+        PASS [   0.196s] codex-hepta-intelligence evaluated_shadow::tests::ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_decision
+        PASS [   0.104s] codex-hepta-intelligence evaluated_shadow::tests::locking::external_live_truncation_poisons_the_owner_before_learning_is_recorded
+        PASS [   0.214s] codex-hepta-intelligence evaluated_shadow::tests::ledger_conflict_and_capacity_cannot_report_learning_recorded
+        PASS [   0.115s] codex-hepta-intelligence evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch
+        PASS [   0.018s] codex-hepta-intelligence generation_episode::tests::frozen_versions_and_actual_owner_initial_state_cannot_be_substituted
+        PASS [   0.018s] codex-hepta-intelligence generation_episode::tests::owner_terminal_and_delivery_cut_precedes_independently_signed_outcome
+        PASS [   0.029s] codex-hepta-intelligence generation_episode::tests::signed_decision_must_bind_the_exact_frozen_contract
+        PASS [   0.026s] codex-hepta-intelligence generation_episode::tests::signed_outcome_must_bind_the_owner_cut_evaluator_and_observer
+        PASS [   0.034s] codex-hepta-intelligence ndu_stochastic_admission::tests::withdrawal_frontier_change_invalidates_previously_admitted_artifact
+        PASS [   0.034s] codex-hepta-intelligence ndu_stochastic_admission::tests::current_artifact_and_independent_evidence_compose_to_deny_all_admission
+        PASS [   0.016s] codex-hepta-intelligence neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority
+        PASS [   0.334s] codex-hepta-intelligence evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome
+        PASS [   0.024s] codex-hepta-intelligence objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns
+        PASS [   0.008s] codex-hepta-intelligence objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot
+        PASS [   0.047s] codex-hepta-intelligence outcome_credit_v2::preflight_tests::invalid_credit_does_not_commit_an_otherwise_valid_terminal_outcome
+        PASS [   0.060s] codex-hepta-intelligence objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts
+        PASS [   0.059s] codex-hepta-intelligence outcome_credit_v2::preflight_tests::partial_credit_recovery_and_replay_allow_unrelated_intervening_facts
+        PASS [   0.024s] codex-hepta-intelligence outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation
+        PASS [   0.241s] codex-hepta-intelligence evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal
+        PASS [   0.034s] codex-hepta-intelligence outcome_credit_v2::preflight_tests::partial_credit_recovery_cannot_use_an_outcome_that_has_been_corrected
+        PASS [   0.009s] codex-hepta-intelligence outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append
+        PASS [   0.017s] codex-hepta-intelligence pipeline::tests::full_shadow_path_is_ordered_and_authority_free
+        PASS [   0.037s] codex-hepta-intelligence outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit
+        PASS [   0.438s] codex-hepta-intelligence evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage
+        PASS [   0.013s] codex-hepta-intelligence pipeline::tests::ledger_failure_overrides_advisory_decision
+        PASS [   0.023s] codex-hepta-intelligence pipeline::tests::invalid_budget_fails_before_any_port_call
+        PASS [   0.008s] codex-hepta-intelligence pipeline::tests::optional_neuron_outage_uses_bounded_fallback
+        PASS [   0.015s] codex-hepta-intelligence pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision
+        PASS [   0.015s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_trace_mutation
+        PASS [   0.021s] codex-hepta-intelligence pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages
+        PASS [   0.030s] codex-hepta-intelligence pipeline::tests::mixed_snapshot_rejects_before_next_stage
+        PASS [   0.016s] codex-hepta-intelligence pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage
+        PASS [   0.021s] codex-hepta-intelligence pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt
+        PASS [   0.010s] codex-hepta-intelligence pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision
+        PASS [   0.009s] codex-hepta-intelligence pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts
+        PASS [   0.022s] codex-hepta-intelligence pipeline::tests::required_objective_failure_is_terminal_and_receipted
+        PASS [   0.015s] codex-hepta-intelligence pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement
+        PASS [   0.901s] codex-hepta-cognitive-read tombstone_resurrection_tests::maximum_lineage_keeps_linearithmic_terminal_edge_validation
+        PASS [   0.270s] codex-hepta-intelligence evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery
+        PASS [   0.012s] codex-hepta-intelligence pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation
+        PASS [   0.015s] codex-hepta-intelligence pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts
+        PASS [   0.007s] codex-hepta-intelligence pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt
+        PASS [   0.017s] codex-hepta-intelligence pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage
+        PASS [   0.006s] codex-hepta-intelligence plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap
+        PASS [   0.014s] codex-hepta-intelligence plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator
+        PASS [   0.021s] codex-hepta-intelligence pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call
+        PASS [   0.181s] codex-hepta-intelligence plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append
+        PASS [   0.451s] codex-hepta-intelligence evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports
+        PASS [   0.227s] codex-hepta-intelligence plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded
+        PASS [   0.247s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision
+        PASS [   0.028s] codex-hepta-intelligence prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift
+        PASS [   0.278s] codex-hepta-intelligence plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor
+        PASS [   0.031s] codex-hepta-intelligence prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input
+        PASS [   0.028s] codex-hepta-intelligence prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization
+        PASS [   0.294s] codex-hepta-intelligence plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context
+        PASS [   0.023s] codex-hepta-intelligence prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery
+        PASS [   0.020s] codex-hepta-intelligence prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation
+        PASS [   0.023s] codex-hepta-intelligence prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation
+        PASS [   0.021s] codex-hepta-intelligence tests::duplicate_candidate_is_rejected
+        PASS [   0.327s] codex-hepta-intelligence plasticity_product_tests::durable_proposal_identity_commits_the_exact_qualification_publication
+        PASS [   0.034s] codex-hepta-intelligence prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed
+        PASS [   0.030s] codex-hepta-intelligence tests::canonical_candidate_limit_is_enforced
+        PASS [   0.317s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision
+        PASS [   0.008s] codex-hepta-intelligence tests::highest_eligible_candidate_is_selected_without_effect_authority
+        PASS [   0.156s] codex-hepta-intelligence plasticity_product_tests::product_path_rejects_tampered_frontier_witness
+        PASS [   0.006s] codex-hepta-intelligence topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact
+        PASS [   0.020s] codex-hepta-intelligence tests::maximum_candidate_receipt_is_canonical_and_digest_complete
+        PASS [   0.028s] codex-hepta-intelligence topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record
+        PASS [   0.032s] codex-hepta-intelligence tests::no_eligible_candidate_abstains
+        PASS [   0.051s] codex-hepta-intelligence tests::hard_veto_is_never_overridden
+        PASS [   0.026s] codex-hepta-intelligence vertical_tests::candidate_outside_compiled_legal_actions_fails_closed
+        PASS [   0.026s] codex-hepta-intelligence vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile
+        PASS [   0.029s] codex-hepta-intelligence vertical_tests::omitted_cognitive_read_evidence_fails_closed
+        PASS [   0.017s] codex-hepta-intelligence vertical_tests::selected_objective_profile_digest_cannot_be_replaced
+        PASS [   0.010s] codex-hepta-intelligence vertical_tests::vertical_normalizes_rational_weights_and_preserves_zero_weight_axes
+        PASS [   0.020s] codex-hepta-intelligence vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering
+        PASS [   0.021s] codex-hepta-intelligence vertical_tests::vertical_normalizes_half_weight_without_rewriting_the_admitted_objective
+        PASS [   0.021s] codex-hepta-intelligence vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority
+        PASS [   0.022s] codex-hepta-intelligence vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation
+        PASS [   0.017s] codex-hepta-intelligence vertical_tests::vertical_rejects_an_admitted_zero_weight_total
+        PASS [   0.012s] codex-hepta-intelligence vertical_tests::vertical_scalarization_rounding_is_canonical_on_a_real_frontier
+        PASS [   0.006s] codex-hepta-intelligence::canonical_consumer_v1 intelligence_control_compiles_against_canonical_cognitive_inputs
+        PASS [   0.007s] codex-hepta-intelligence::lane_f_shadow_vertical lane_f_native_shadow_vertical_closes_without_effect_authority
+        PASS [   0.010s] codex-hepta-ndu coefficient_profile::tests::projection_numeric_mutation_rejects_even_with_original_metadata
+        PASS [   0.011s] codex-hepta-ndu coefficient_profile::tests::coefficient_profile_binds_covariance_conversion_units_and_dimensions
+        PASS [   0.011s] codex-hepta-intelligence::intuition_frozen_qualification frozen_model_and_data_produce_signed_current_generation_policy_decision
+        PASS [   0.014s] codex-hepta-ndu coefficient_profile::tests::expired_coefficient_profile_rejects_projection
+        PASS [   0.008s] codex-hepta-ndu covariance::tests::admission_binds_units_convention_and_bounds_without_silent_migration
+        PASS [   0.031s] codex-hepta-intelligence vertical_tests::vertical_rejects_out_of_range_baselines_before_scalarization
+        PASS [   0.019s] codex-hepta-ndu coefficient_profile::tests::q24_projection_requires_exact_covariance_provenance
+        PASS [   0.014s] codex-hepta-ndu covariance::tests::centers_both_terms_and_recovers_correlated_goldens
+        PASS [   0.017s] codex-hepta-ndu covariance::tests::external_moments_are_revalidated_and_actual_values_are_digest_bound
+        PASS [   0.019s] codex-hepta-ndu covariance::tests::full_pilot_dimensions_solve_multiple_utilities
+        PASS [   0.016s] codex-hepta-ndu covariance::tests::identity_covariance_reduces_to_cross_moment_over_dt
+        PASS [   0.016s] codex-hepta-ndu covariance::tests::rejects_singular_indefinite_ill_conditioned_and_collapsed_covariance
+        PASS [   0.016s] codex-hepta-ndu covariance::tests::sample_preflight_rejects_nonfinite_shape_overflow_and_mixed_conditioning
+        PASS [   0.026s] codex-hepta-ndu evaluator::tests::candidate_support_digest_binds_organ_and_contribution_semantics
+        PASS [   0.024s] codex-hepta-ndu evaluator::tests::hard_violation_is_filtered_before_utility
+        PASS [   0.023s] codex-hepta-ndu evaluator::tests::infeasible_abstain_is_rejected_before_any_recommendation
+        PASS [   0.024s] codex-hepta-ndu evaluator::tests::invalid_scalarization_rejects_singleton_and_abstain_only_frontiers
+        PASS [   0.027s] codex-hepta-ndu evaluator::tests::incomplete_or_out_of_range_scalarization_is_rejected_before_owner_open
+        PASS [   0.033s] codex-hepta-ndu covariance::tests::scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds
+        PASS [   0.042s] codex-hepta-ndu covariance::tests::zero_cross_moment_returns_zero_sensitivity
+        PASS [   0.265s] codex-hepta-intelligence plasticity_product_tests::signed_generic_metrics_cannot_replace_the_product_qualification_before_append
+        PASS [   0.015s] codex-hepta-ndu evaluator::tests::missing_uncertainty_axis_is_unavailable
+        PASS [   0.015s] codex-hepta-ndu evaluator::tests::non_dominated_candidates_without_scalarization_require_slow_path
+        PASS [   0.024s] codex-hepta-ndu evaluator::tests::missing_required_contribution_is_not_treated_as_zero
+        PASS [   0.023s] codex-hepta-ndu evaluator::tests::pareto_tolerance_is_digest_bound_and_changes_dominance
+        PASS [   0.028s] codex-hepta-ndu evaluator::tests::policy_digest_is_permutation_invariant
+        PASS [   0.014s] codex-hepta-ndu evaluator::tests::policy_selects_axis_specific_aggregation_instead_of_implicit_sum
+        PASS [   0.013s] codex-hepta-ndu finite_entropic::tests::arbitrarily_small_positive_risk_is_continuous_at_the_mean
+        PASS [   0.017s] codex-hepta-ndu evaluator::tests::scalarization_digest_is_computed_from_canonical_inputs
+        PASS [   0.008s] codex-hepta-ndu finite_entropic::tests::invalid_lottery_and_duration_fail_before_planning
+        PASS [   0.024s] codex-hepta-ndu evaluator::tests::validated_scalarization_is_profile_bound_and_canonical
+        PASS [   0.024s] codex-hepta-ndu evaluator::tests::require_equal_aggregation_rejects_conflicting_owners
+        PASS [   0.026s] codex-hepta-ndu evaluator::tests::registered_scalarization_produces_advisory_recommendation
+        PASS [   0.009s] codex-hepta-ndu finite_entropic::tests::python_golden_vectors_match_the_native_operator
+        PASS [   0.034s] codex-hepta-ndu finite_entropic::tests::duration_discount_and_cost_compose_without_duplicate_terminal_payoff
+        PASS [   0.026s] codex-hepta-ndu generation_rollout::tests::exact_abstain_is_required_and_cannot_be_a_hidden_generation
+        PASS [   0.039s] codex-hepta-ndu finite_entropic::tests::positive_risk_penalizes_spread_and_ignores_zero_probability_extrema
+        PASS [   0.030s] codex-hepta-ndu generation_rollout::tests::completed_joint_rollout_reaches_actual_policy_bound_owner
+        PASS [   0.043s] codex-hepta-ndu finite_entropic::tests::risk_neutral_and_single_particle_degenerate_to_expected_recursion
+        PASS [   0.041s] codex-hepta-ndu fixed::tests::signed_q32_matches_independent_euclidean_integer_oracle
+        PASS [   0.046s] codex-hepta-ndu fixed::tests::multiplication_rounds_half_to_even_for_positive_and_negative_values
+        PASS [   0.021s] codex-hepta-ndu generation_rollout::tests::frozen_scope_pins_and_per_row_scope_digest_reject_transplants
+        PASS [   0.012s] codex-hepta-ndu generation_rollout::tests::modeled_units_and_physical_time_have_independent_hard_ceilings
+        PASS [   0.008s] codex-hepta-ndu generation_rollout::tests::replay_is_deterministic_but_changed_execution_changes_native_receipt
+        PASS [   0.020s] codex-hepta-ndu generation_rollout::tests::high_utility_cannot_override_missing_required_output_or_hard_violation
+        PASS [   0.007s] codex-hepta-ndu group::tests::candidate_set_digest_is_bound_and_deterministic
+        PASS [   0.008s] codex-hepta-ndu group::tests::duplicate_cell_observations_fail_closed
+        PASS [   0.008s] codex-hepta-ndu group::tests::non_positive_continuation_abstains
+        PASS [   0.017s] codex-hepta-ndu generation_rollout::tests::transport_rejects_ambiguous_numbers_extra_fields_and_empty_rows
+        PASS [   0.006s] codex-hepta-ndu group::tests::trace_identity_and_generation_mismatch_fail_closed
+        PASS [   0.028s] codex-hepta-ndu generation_rollout::tests::fabricated_zero_time_and_duplicate_support_are_not_admitted
+        PASS [   0.013s] codex-hepta-ndu group::tests::positive_continuation_is_selected
+        PASS [   0.013s] codex-hepta-ndu group::tests::missing_abstain_and_zero_digest_fail_closed
+        PASS [   0.006s] codex-hepta-ndu observation_adapter::tests::rejects_invalid_evidence_before_group_use
+        PASS [   1.027s] codex-hepta-intelligence evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port
+        PASS [   0.016s] codex-hepta-ndu observation_adapter::tests::converts_q24_evidence_and_resource_cost_to_group_observation
+        PASS [   0.010s] codex-hepta-ndu owner::tests::live_revocation_frontier_blocks_previously_signed_write
+        PASS [   0.016s] codex-hepta-ndu owner::tests::current_tests::current_read_requires_local_authenticated_feed_and_exact_single_use_grant
+        PASS [   0.016s] codex-hepta-ndu owner::tests::current_tests::grant_expiry_feed_expiry_clock_failure_and_other_owner_refuse
+        PASS [   0.007s] codex-hepta-ndu owner::tests::owner_freezes_policy_and_evaluates_without_caller_supplied_relaxations
+        PASS [   0.020s] codex-hepta-ndu owner::tests::current_tests::refreshed_feed_revoked_grant_and_epoch_change_fence_old_proofs
+        PASS [   0.006s] codex-hepta-ndu preference::tests::damped_preference_update_emits_local_solver_receipts
+        PASS [   0.018s] codex-hepta-ndu owner::tests::current_tests::selection_aba_and_revocation_invalidate_same_payload_proof
+        PASS [   0.007s] codex-hepta-ndu preference::tests::impossible_local_receipt_invariants_are_rejected
+        PASS [   0.020s] codex-hepta-ndu owner::tests::exact_signed_binding_is_required_for_durable_mutation
+        PASS [   0.010s] codex-hepta-ndu preference::tests::iteration_exhaustion_is_unavailable
+        PASS [   0.007s] codex-hepta-ndu preference::tests::one_subject_cannot_select_two_artifacts_in_one_generation
+        PASS [   0.007s] codex-hepta-ndu preference::tests::parent_and_child_updates_cannot_share_generation
+        PASS [   0.007s] codex-hepta-ndu preference::tests::unrelated_hierarchy_updates_can_share_generation
+        PASS [   0.015s] codex-hepta-ndu preference::tests::eta_outside_registered_bounds_fails
+        PASS [   0.017s] codex-hepta-ndu preference::tests::already_converged_solve_is_revision_stable_no_op
+        PASS [   0.013s] codex-hepta-ndu preference::tests::nonzero_residual_at_tolerance_is_revision_stable_no_op
+        PASS [   0.005s] codex-hepta-ndu projection_journal::tests::identity_replay_is_idempotent_and_drift_conflicts
+        PASS [   0.006s] codex-hepta-ndu projection_journal::tests::live_selection_and_revocation_require_a_recorded_projection
+        PASS [   0.011s] codex-hepta-ndu preference::tests::preference_dimension_and_value_bounds_fail_at_boundary
+        PASS [   0.004s] codex-hepta-ndu projection_journal::tests::revocation_is_scoped_to_objective_and_subject
+        PASS [   0.007s] codex-hepta-ndu projection_journal::tests::reopen_rejects_well_hashed_revocation_without_projection
+        PASS [   0.007s] codex-hepta-ndu projection_journal::tests::revocation_prevents_projection_resurrection
+        PASS [   0.007s] codex-hepta-ndu projection_store::tests::durable_writer_round_trips_selected_and_revoked_state
+        PASS [   0.014s] codex-hepta-ndu projection_journal::tests::projection_journal_round_trips_and_restores_selection
+        PASS [   0.009s] codex-hepta-ndu projection_journal::tests::truncation_and_tampering_fail_closed
+        PASS [   0.011s] codex-hepta-ndu projection_journal::tests::reopen_rejects_well_hashed_selection_without_projection
+        PASS [   0.008s] codex-hepta-ndu projection_store::tests::concurrent_writer_is_rejected_while_owner_lock_is_live
+        PASS [   0.009s] codex-hepta-ndu projection_store::tests::backup_restore_is_validated_before_replacing_live_state
+        PASS [   0.009s] codex-hepta-ndu projection_store::tests::persistence_failpoints_reconcile_at_real_durability_boundaries
+        PASS [   0.005s] codex-hepta-ndu protocol_v2::tests::legacy_v1_layout_and_digest_remain_compatible
+        PASS [   0.006s] codex-hepta-ndu protocol::tests::solver_receipt_cannot_be_rebound_to_another_subject
+        PASS [   0.006s] codex-hepta-ndu protocol::tests::zero_context_digest_rejects_before_protocol_publication
+        PASS [   0.012s] codex-hepta-ndu projection_store::tests::older_valid_backup_cannot_remove_a_later_revocation
+        PASS [   0.008s] codex-hepta-ndu projection_store::tests::stale_uncommitted_temp_image_is_discarded_before_recovery
+        PASS [   0.014s] codex-hepta-ndu protocol::tests::local_step_requires_complete_context_before_protocol_publication
+        PASS [   0.009s] codex-hepta-ndu protocol_v2::tests::v2_digest_matches_source_bound_input_and_preserves_denial
+        PASS [   0.008s] codex-hepta-ndu protocol_v2::tests::v2_rejects_invalid_context_state_and_dimension
+        PASS [   0.009s] codex-hepta-ndu protocol_v2::tests::v2_rejects_context_rebinding
+        PASS [   0.010s] codex-hepta-ndu protocol_v2::tests::v2_preserves_the_legacy_numerical_result_and_target_order
+        PASS [   0.007s] codex-hepta-ndu protocol_v2::tests::v2_source_identity_changes_with_each_numerical_input
+        PASS [   0.007s] codex-hepta-ndu protocol_v2::tests::v2_validation_detects_changed_sealed_fields
+        PASS [   0.016s] codex-hepta-ndu projection_store::tests::symlinked_root_lock_and_journal_paths_fail_closed
+        PASS [   0.006s] codex-hepta-ndu protocol_v2::tests::v2_zero_step_termination_has_no_step_evidence
+        PASS [   0.006s] codex-hepta-ndu recursive::tests::missing_outcome_or_context_never_becomes_zero_reward
+        PASS [   0.006s] codex-hepta-ndu recursive::tests::negative_utility_uses_signed_rounding
+        PASS [   0.008s] codex-hepta-ndu recursive::tests::horizon_is_bounded
+        PASS [   0.009s] codex-hepta-ndu recursive::tests::malformed_numerical_domain_is_rejected
+        PASS [   0.006s] codex-hepta-ndu recursive::tests::unit_discount_is_allowed_only_as_finite_horizon_arithmetic
+        PASS [   0.011s] codex-hepta-ndu recursive::tests::replay_is_exact_and_input_is_immutable
+        PASS [   0.017s] codex-hepta-ndu recursive::tests::order_and_event_identity_are_validated
+        PASS [   0.017s] codex-hepta-ndu recursive::tests::utility_projection_is_explicit_and_counted
+        PASS [   0.020s] codex-hepta-ndu recursive::tests::reproduces_ndu_gv_001_exact_q32_backward_values
+        PASS [   0.020s] codex-hepta-ndu recursive::tests::actual_numbers_and_preference_revision_are_digest_bound
+        PASS [   0.125s] codex-hepta-ndu recursive::tests::zero_discount_discards_continuation
+        PASS [   0.127s] codex-hepta-ndu recursive::tests::wide_intermediate_projection_does_not_overflow_i64
+        PASS [   0.113s] codex-hepta-ndu shadow_system2::tests::exhausted_budget_abstains_when_threshold_remains_unsafe
+        PASS [   0.111s] codex-hepta-ndu shadow_system2::tests::exhausted_depth_abstains_without_budget_mutation
+        PASS [   0.116s] codex-hepta-ndu shadow_system2::tests::depth_projection_never_emits_negative_risk_or_uncertainty
+        PASS [   0.007s] codex-hepta-ndu shadow_system2::tests::malformed_provenance_fails_closed
+        PASS [   0.006s] codex-hepta-ndu shadow_system2::tests::receipt_digest_is_replayable_and_policy_bound
+        PASS [   0.082s] codex-hepta-ndu z_conversion::tests::coordinate_profile_digest_binds_transform_and_convention
+        PASS [   0.083s] codex-hepta-ndu z_conversion::tests::conversion_rejects_wrong_shape_nonfinite_bound_and_missing_source_identity
+        PASS [   0.207s] codex-hepta-ndu scoring::tests::mixed_direction_dominance_is_irreflexive_transitive_and_has_maximal_elements
+        PASS [   0.085s] codex-hepta-ndu shadow_system2::tests::safe_request_holds_without_spending_budget
+        PASS [   0.211s] codex-hepta-ndu scoring::tests::cyclic_tolerance_counterexample_retains_frontier_in_every_input_order
+        PASS [   0.083s] codex-hepta-ndu z_conversion::tests::profile_admission_rejects_ambiguous_or_singular_coordinate_conventions
+        PASS [   0.199s] codex-hepta-ndu shadow_system2::tests::high_uncertainty_spends_one_bounded_step
+        PASS [   0.086s] codex-hepta-ndu z_conversion::tests::original_coordinates_quantize_q24_with_nearest_ties_even
+        PASS [   0.051s] codex-hepta-objective admission_profile_json::tests::profile_json_rejects_unknown_fields_and_oversize_input
+        PASS [   0.054s] codex-hepta-objective admission_profile_json::tests::profile_json_rejects_unregistered_risk_ordering
+        PASS [   0.052s] codex-hepta-objective compiler::tests::compilation_is_permutation_invariant
+        PASS [   0.059s] codex-hepta-ndu z_conversion::tests::whitened_head_is_converted_back_to_original_increment_coordinates
+        PASS [   0.057s] codex-hepta-objective compiler::tests::changing_soft_weight_preserves_hard_digest
+        PASS [   0.058s] codex-hepta-objective admission_profile_json::tests::strict_profile_json_decodes_and_validates_digest_semantics
+        PASS [   0.054s] codex-hepta-objective compiler::tests::duplicate_semantic_ids_fail_before_digest_publication
+        PASS [   0.010s] codex-hepta-objective compiler::tests::empty_caller_action_set_still_has_explicit_abstain
+        PASS [   0.057s] codex-hepta-objective compiler::tests::contradictory_hard_bounds_return_inclusion_minimal_pair
+        PASS [   0.009s] codex-hepta-objective compiler::tests::explicit_intrinsic_abstain_does_not_consume_an_extra_slot
+        PASS [   0.008s] codex-hepta-objective compiler::tests::forbidden_requested_action_returns_conflict
+        PASS [   0.007s] codex-hepta-objective compiler::tests::intrinsic_abstain_cannot_require_confirmation
+        PASS [   0.009s] codex-hepta-objective compiler::tests::intrinsic_abstain_cannot_be_forbidden
+        PASS [   0.010s] codex-hepta-objective compiler::tests::intrinsic_abstain_has_one_reserved_action_slot
+        PASS [   0.009s] codex-hepta-objective compiler::tests::maximum_caller_set_compiles_to_exactly_128_actions
+        PASS [   0.007s] codex-hepta-objective compiler::tests::untrusted_evidence_cannot_create_privileged_authority
+        PASS [   0.008s] codex-hepta-objective desktop_thread_source::tests::both_desktop_actions_require_the_new_profile_and_keep_one_effect_budget
+        PASS [   0.007s] codex-hepta-objective error_policy::tests::retry_policy_is_variant_specific
+        PASS [   0.014s] codex-hepta-objective compiler::tests::persisted_semantic_bytes_recompute_objective_digest
+        PASS [   0.005s] codex-hepta-objective feasibility::tests::finite_enum_inclusion_and_exclusion_are_intersected
+        PASS [   0.007s] codex-hepta-objective feasibility::tests::core_is_permutation_invariant_and_removes_irrelevant_atoms
+        PASS [   0.012s] codex-hepta-objective desktop_thread_source::tests::desktop_source_refuses_missing_original_operation_binding
+        PASS [   0.008s] codex-hepta-objective feasibility::tests::exhaustion_never_exposes_a_partial_conflict_or_drops_an_atom
+        PASS [   0.009s] codex-hepta-objective feasibility::tests::forbidden_actions_and_transitive_antecedents_are_not_unforced
+        PASS [   0.009s] codex-hepta-objective feasibility::tests::interval_intersection_returns_a_witness_and_ignores_soft_constraints
+        PASS [   0.007s] codex-hepta-objective feasibility::tests::pilot_atom_bound_and_maximum_oracle_count_are_enforced
+        PASS [   0.010s] codex-hepta-objective feasibility::tests::immutable_scope_and_generation_must_match_the_registered_snapshot
+        PASS [   0.009s] codex-hepta-objective feasibility::tests::negative_closure_terminates_cycles_and_is_order_invariant
+        PASS [   0.008s] codex-hepta-objective feasibility::tests::positive_closure_enables_only_forced_actions_and_terminates_cycles
+        PASS [   0.014s] codex-hepta-objective feasibility::tests::registry_action_limit_is_checked_before_solving
+        PASS [   0.015s] codex-hepta-objective feasibility::tests::requiring_a_transitive_antecedent_of_a_forbidden_action_is_infeasible
+        PASS [   0.004s] codex-hepta-objective notes_literal_source::tests::literal_notes_source_refuses_invalid_navigation_and_unbound_inputs
+        PASS [   0.031s] codex-hepta-objective feasibility::tests::horn_solver_and_each_minimal_core_match_exhaustive_boolean_assignments
+        PASS [   0.016s] codex-hepta-objective notes_literal_source::tests::literal_notes_source_binds_original_operation_and_uses_real_admission
+        PASS [   0.021s] codex-hepta-objective feasibility::tests::unsupported_atoms_are_detected_before_a_known_conflict
+        PASS [   0.008s] codex-hepta-objective objective_admission::tests::complete_profile_bound_envelope_compiles_without_dropping_fields
+        PASS [   0.025s] codex-hepta-objective feasibility::tests::unknown_axes_units_observers_and_origins_fail_closed
+        PASS [   0.006s] codex-hepta-objective objective_admission::tests::oversized_profile_mapping_set_is_rejected
+        PASS [   0.014s] codex-hepta-objective notes_thread_source::tests::model_tool_source_uses_its_own_profile_and_cannot_masquerade_as_literal
+        PASS [   0.011s] codex-hepta-objective objective_admission::tests::fractional_utc_timestamp_is_parsed_exactly
+        PASS [   0.013s] codex-hepta-objective objective_admission::tests::resource_conversion_overflow_rejects_without_truncation
+        PASS [   0.008s] codex-hepta-objective objective_admission::tests::semantic_array_reordering_preserves_intent_digest
+        PASS [   0.012s] codex-hepta-objective objective_admission::tests::selected_profile_digest_must_bind_exact_mapping
+        PASS [   0.009s] codex-hepta-objective objective_admission::tests::strict_or_unregistered_comparator_is_never_approximated
+        PASS [   0.067s] codex-hepta-objective compiler::tests::maximum_scalar_conflict_is_deterministic_at_numeric_extremes
+        PASS [   0.006s] codex-hepta-objective objective_admission::tests::unknown_semantic_mapping_is_rejected_before_native_compile
+        PASS [   0.009s] codex-hepta-objective objective_admission::tests::two_phase_admission_matches_convenience_wrapper
+        PASS [   0.020s] codex-hepta-objective objective_admission::tests::risk_profile_ordering_is_monotone
+        PASS [   0.012s] codex-hepta-objective objective_admission::tests::supplied_principal_label_cannot_replace_authenticated_principal
+        PASS [   0.021s] codex-hepta-objective objective_admission::tests::stale_observation_is_not_rewritten_to_current_time
+        PASS [   0.011s] codex-hepta-objective objective_admission::tests::untrusted_evidence_reaches_native_authority_rejection
+        PASS [   0.010s] codex-hepta-objective source_envelope_json::tests::decodes_all_fields_without_loss_or_semantic_admission
+        PASS [   0.009s] codex-hepta-objective source_envelope_json::tests::numeric_and_digest_grammar_remains_exact
+        PASS [   0.012s] codex-hepta-objective source_envelope_json::tests::preserves_empty_caller_actions_for_intrinsic_abstain
+        PASS [   0.007s] codex-hepta-objective source_envelope_v1::tests::duplicate_semantic_ids_reject_even_when_other_fields_differ_without_echoing_source
+        PASS [   0.008s] codex-hepta-objective source_envelope_v1::tests::empty_caller_action_set_is_structurally_valid_for_intrinsic_abstain
+        PASS [   0.014s] codex-hepta-objective source_envelope_json::tests::rejects_positional_structs_and_enum_objects_with_otherwise_correct_contents
+        PASS [   0.004s] codex-hepta-objective source_envelope_v1::tests::source_constraint_bound_reserves_generated_native_slots
+        PASS [   0.019s] codex-hepta-objective source_envelope_json::tests::raw_ingress_budget_and_json_framing_fail_without_source_leakage
+        PASS [   0.009s] codex-hepta-objective source_envelope_v1::tests::structural_validation_retains_semantics_that_native_compilation_cannot_represent
+        PASS [   0.007s] codex-hepta-objective source_envelope_v1::tests::text_limits_count_utf8_bytes_for_every_source_field
+        PASS [   0.021s] codex-hepta-objective source_envelope_json::tests::retains_structural_count_text_and_semantic_key_checks_after_decoding
+        PASS [   0.014s] codex-hepta-objective source_envelope_v1::tests::predicate_families_share_the_native_aggregate_ceiling
+        PASS [   0.009s] codex-hepta-objective source_envelope_v1::tests::validation_preserves_order_cross_array_references_and_conflicts_for_the_semantic_owner
+        PASS [   0.031s] codex-hepta-objective source_envelope_json::tests::every_object_rejects_unknown_missing_null_and_duplicate_fields
+        PASS [   0.021s] codex-hepta-objective source_envelope_v1::tests::every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilation
+        PASS [   0.009s] codex-hepta-prompt-optimizer canonical::tests::hard_conflict_cannot_be_outweighed_by_positive_numeric_utility
+        PASS [   0.007s] codex-hepta-prompt-optimizer local_shadow::tests::empty_support_references_fail_as_insufficient_evidence
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::explicit_zero_edges_make_a_multi_factor_pair_complete
+        PASS [   0.009s] codex-hepta-prompt-optimizer canonical::tests::prerequisite_bundle_can_select_negative_prerequisite_for_positive_bundle
+        PASS [   0.013s] codex-hepta-prompt-optimizer canonical::tests::enumeration_selects_lowest_cost_compatible_realization_per_factor
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::fixed_point_overflow_has_its_own_arithmetic_error_class
+        PASS [   0.010s] codex-hepta-prompt-optimizer local_shadow::tests::factor_and_realization_aliases_are_rejected
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::hard_constraints_are_canonical_unique_and_digest_bound
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::hard_conflict_cannot_be_outweighed_by_numeric_gain
+        PASS [   0.016s] codex-hepta-prompt-optimizer canonical::tests::revocation_after_selection_rejects_exercise_at_delivery_boundary
+        PASS [   0.007s] codex-hepta-prompt-optimizer local_shadow::tests::insufficient_pair_support_has_its_own_error_class
+        PASS [   0.020s] codex-hepta-prompt-optimizer canonical::tests::incomplete_candidate_completeness_cannot_be_authenticated_for_pricing
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::legacy_v1_surface_keeps_its_original_selection_limit
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::invalid_input_has_its_own_error_class
+        PASS [   0.008s] codex-hepta-prompt-optimizer local_shadow::tests::local_baseline_cannot_impersonate_canonical_abstain
+        PASS [   0.010s] codex-hepta-prompt-optimizer local_shadow::tests::interaction_ceiling_is_not_a_token_budget
+        PASS [   0.007s] codex-hepta-prompt-optimizer local_shadow::tests::local_shadow_digest_domains_are_stable
+        PASS [   0.006s] codex-hepta-prompt-optimizer local_shadow::tests::noncanonical_candidate_interaction_and_constraint_inputs_are_rejected
+        PASS [   0.016s] codex-hepta-prompt-optimizer local_shadow::tests::registry_mismatch_has_its_own_integrity_error_class
+        PASS [   0.033s] codex-hepta-prompt-optimizer local_shadow::tests::hard_constraint_edges_have_an_independent_resource_ceiling
+        PASS [   0.016s] codex-hepta-prompt-optimizer local_shadow::tests::total_candidate_limit_includes_the_local_baseline
+        PASS [   0.019s] codex-hepta-prompt-optimizer local_shadow::tests::prerequisite_must_be_selected_before_dependent_factor
+        PASS [   0.016s] codex-hepta-prompt-optimizer local_shadow::tests::result_discloses_local_scope_heuristic_status_and_no_authority
+        PASS [   0.025s] codex-hepta-prompt-optimizer local_shadow::tests::pair_completeness_fails_closed_before_sparse_graph_is_treated_as_zero
+        PASS [   0.006s] codex-hepta-prompt-optimizer tests::budget_and_selection_limits_are_enforced
+        PASS [   0.032s] codex-hepta-prompt-optimizer local_shadow::tests::local_baseline_is_singular_and_cannot_alias_a_factor_candidate
+        PASS [   0.007s] codex-hepta-prompt-optimizer tests::canonical_tie_breaking_uses_identifier_order
+        PASS [   0.008s] codex-hepta-prompt-optimizer local_shadow::tests::unknown_prerequisite_is_rejected_instead_of_ignored
+        PASS [   0.010s] codex-hepta-prompt-optimizer local_shadow::tests::unavailable_prerequisite_blocks_high_gain_dependent_factor
+        PASS [   0.006s] codex-hepta-prompt-optimizer verified::tests::empty_selection_grammar_is_rejected_with_recomputed_digests
+        PASS [   0.016s] codex-hepta-prompt-optimizer local_shadow::tests::unadmitted_illegal_and_zero_cost_factors_fail_closed
+        PASS [   0.006s] codex-hepta-prompt-optimizer verified::tests::forged_pricing_utility_is_rejected
+        PASS [   0.011s] codex-hepta-prompt-optimizer tests::illegal_and_unadmitted_candidates_are_never_selected
+        PASS [   0.009s] codex-hepta-prompt-optimizer verified::tests::forged_portfolio_utility_is_rejected
+        PASS [   0.007s] codex-hepta-prompt-optimizer verified::tests::forged_realization_binding_is_rejected
+        PASS [   0.005s] codex-hepta-prompt-optimizer verified::tests::portfolio_state_drift_is_rejected_before_exercise
+        PASS [   0.017s] codex-hepta-prompt-optimizer tests::registry_snapshot_drift_is_rejected
+        PASS [   0.018s] codex-hepta-prompt-optimizer verified::tests::candidate_order_tamper_is_rejected
+        PASS [   0.010s] codex-hepta-prompt-optimizer verified::tests::invalid_model_tuple_is_rejected_with_recomputed_digests
+        PASS [   0.011s] codex-hepta-prompt-optimizer verified::tests::invalid_registry_frontiers_are_rejected_with_recomputed_digests
+        PASS [   0.008s] codex-hepta-prompt-optimizer verified::tests::realization_model_tuple_drift_is_rejected_with_recomputed_digests
+        PASS [   0.007s] codex-hepta-prompt-optimizer verified::tests::valid_solver_disclosure_is_admitted
+        PASS [   0.016s] codex-hepta-prompt-optimizer verified::tests::invalid_realization_fields_are_rejected_with_recomputed_digests
+        PASS [   0.010s] codex-hepta-prompt-optimizer verified::tests::stale_registry_snapshot_digest_is_rejected
+        PASS [   0.011s] codex-hepta-prompt-optimizer verified::tests::verified_enumeration_recomputes_every_binding_and_digest
+        PASS [   0.013s] codex-hepta-prompt-optimizer::verified_selected_postimage missing_recomputed_hash_keeps_the_original_digest_error
+        PASS [   0.018s] codex-hepta-prompt-optimizer::verified_selected_postimage genuine_public_selection_reopens_with_its_immutable_context
+        PASS [   0.013s] codex-hepta-prompt-optimizer::verified_selected_postimage reordered_entries_keep_the_original_order_error
+        PASS [   0.017s] codex-hepta-prompt-optimizer::verified_selected_postimage recomputing_receipt_hash_cannot_change_utility
+        PASS [   0.012s] codex-hepta-prompt-optimizer::verified_selected_postimage self_consistent_realization_replacement_cannot_change_selected_entries
+        PASS [   0.020s] codex-hepta-prompt-optimizer::verified_selected_postimage recomputing_receipt_hash_cannot_change_interactions
+        PASS [   0.013s] codex-hepta-prompt-optimizer::verified_selected_postimage self_consistent_subset_cannot_drop_selected_entries
+        PASS [   0.011s] codex-hepta-prompt-optimizer::verified_selected_postimage shorter_expiry_keeps_the_original_context_error
+        PASS [   0.020s] codex-hepta-prompt-optimizer::verified_selected_postimage recomputing_receipt_hash_cannot_extend_expiry
+        PASS [   0.729s] codex-hepta-ndu evaluator::tests::pareto_matches_independent_grid_oracle_and_input_permutations
+        PASS [   0.455s] codex-hepta-objective feasibility::exhaustive_tests::all_three_action_graphs_match_truth_table_and_have_minimal_conflicts
+────────────
+     Summary [   2.288s] 540 tests run: 540 passed, 2 skipped

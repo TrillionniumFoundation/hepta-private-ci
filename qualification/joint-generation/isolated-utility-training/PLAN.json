@@ -1,0 +1,39 @@
+{
+  "adapt_steps": 300,
+  "anchor": 0.2,
+  "baseline": "Original published RGB JointModel and exact original additive/NDU objective pullback, freshly trained. Not round04 or recovered checkpoint.",
+  "batch_size": 64,
+  "campaign_child_cpu_cap": 400,
+  "campaign_wall_cap": 600,
+  "cost": "Equal cap and fixed useful updates, not equal actual spend. Complete tests/shared preparation/checkpoints/evaluation/report allocation; historical research and publication cost separate unknown, not zero. Matched two-model forward in every arm; original one-model baseline cheaper and not speed-matched by this wrapper. Gate uses full own-seed base and ALL shared prep/tests/import/report/tails per method (conservative full attribution); amortized campaign costs retained separately. Supervisor tail additional UNKNOWN_NOT_ZERO, no claim entire historical lifecycle is within measured cap. Isolated executes 300 text +300 image optimizer calls; joint executes300 full calls. No dummy backward padding. Equal cap/fixed scheduled updates is not equal actual FLOPs, CPU or fully spent-budget evidence.",
+  "decoder_steps": 300,
+  "equal_method_complete_cpu_cap": 60,
+  "hidden": 32,
+  "hypothesis_is_post_previous_negative": "aa2652f2433f73930ead5ac8445acb90833a43fa; isolates architecture separation from CE-only text objective replacement. Prior two failures preserved.",
+  "learning_rate": 0.003,
+  "lock": "/workspace/shared/rgb-class-preservation-20261030/benchmark.lock; independent synthetic-only campaign, not old missing benchmark lock.",
+  "mechanism": "Separate text/image encoders, both using original anchored additive/NDU objective gradients, computed at same pre-update p/q. Fixed decoder. Same objective, changed sharing architecture.",
+  "modes": [
+    "joint",
+    "isolated"
+  ],
+  "objectives": [
+    "additive",
+    "ndu"
+  ],
+  "pretrain_steps": 500,
+  "rho": 1.5,
+  "schema": "rgb-isolated-utility-plan-v1",
+  "scope": "NEW_INDEPENDENT_RGB_NOT_ROUND04",
+  "seeds": [
+    11,
+    23
+  ],
+  "split_calls": [
+    "train",
+    "validation"
+  ],
+  "success": "Both seeds isolated N-vs-joint-N and N-vs-isolated-A: rho>=.005, text_mass/greedy_text/joint_success no decrease, pixel_mse no increase. All contrasts retained; no success tuning.",
+  "validation": "Previously used benchmark validation is reused exploratory evidence, not new heldout confirmation. No TEST generation.",
+  "variants": 6
+}

@@ -1,0 +1,87 @@
+name: Inference control bootstrap
+
+on:
+  push:
+    branches:
+      - codex/inference-control-production-convergence-20260927
+    paths:
+      - .github/workflows/inference-control-bootstrap.yml
+      - scripts/inference_control_convergence.py
+      - scripts/inference-control-convergence.payload.b64.*
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inference-control-bootstrap-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    name: Compile and commit convergence patch
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      RUST_BACKTRACE: "1"
+    steps:
+      - name: Checkout exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Apply, format, lint and test
+        id: validate
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          exec > >(tee "$RUNNER_TEMP/inference-control-bootstrap.log") 2>&1
+          cat scripts/inference-control-convergence.payload.b64.* > scripts/inference-control-convergence.payload.b64
+          trap 'rm -f scripts/inference-control-convergence.payload.b64' EXIT
+          python3 scripts/inference_control_convergence.py
+          cargo fmt --manifest-path codex-rs/Cargo.toml --all
+          git diff --check
+          cargo check --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --all-targets
+          cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --all-targets -- -D warnings
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib --bins
+
+      - name: Retain candidate patch and validation log
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/inference-control-bootstrap"
+          git diff --binary --no-ext-diff > "$RUNNER_TEMP/inference-control-bootstrap/candidate.patch"
+          git status --short > "$RUNNER_TEMP/inference-control-bootstrap/status.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/inference-control-bootstrap/source-head.txt"
+          cp "$RUNNER_TEMP/inference-control-bootstrap.log" "$RUNNER_TEMP/inference-control-bootstrap/validation.log" 2>/dev/null || true
+
+      - name: Upload bootstrap evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-control-bootstrap-${{ github.sha }}
+          path: ${{ runner.temp }}/inference-control-bootstrap
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce validation result
+        if: steps.validate.outcome != 'success'
+        shell: bash
+        run: exit 1
+
+      - name: Commit validated convergence patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-inference-control-bot"
+          git config user.email "hepta-inference-control-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No convergence changes to commit"
+            exit 0
+          fi
+          git commit -m "feat(inference-control): close durable production contracts [inference-control-converged]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

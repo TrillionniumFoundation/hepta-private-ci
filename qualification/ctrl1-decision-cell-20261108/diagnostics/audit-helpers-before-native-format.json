@@ -1,0 +1,30 @@
+{
+  "schema": "ctrl1.audit-helper-package.v1",
+  "base_sha": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "archive": "/workspace/scratch/839e1cbe28dd/ctrl1-audit-helpers.tar.gz",
+  "archive_sha256": "120408414c481a6d113322d16580c493ab09d5ac245abfc7f7726a741d3ec148",
+  "archive_bytes": 11714,
+  "files": [
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+      "sha256": "7bcf15adbaaf267834c8db45be73c8baa7e2442130400da068844a51b289489a",
+      "bytes": 12217,
+      "operation": "create"
+    },
+    {
+      "path": "qualification/ctrl1-decision-cell-20261108/audit_cpu.py",
+      "sha256": "ffcbb133a291ed6c9bd2ba5a20e647bceeb40c119370f17ab847ea6b764dc945",
+      "bytes": 30967,
+      "operation": "create"
+    }
+  ],
+  "stage": {
+    "message": "ctrl1: replay retained policy outcomes and CPU campaign originals",
+    "paths": [
+      "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+      "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+    ]
+  },
+  "excluded_from_experiment_source_manifest": true,
+  "format": "explicit pinned Ruff format/check because repository default formatter scope does not include qualification"
+}

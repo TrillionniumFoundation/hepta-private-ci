@@ -1,0 +1,124 @@
+{
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+  "previous_head": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "head": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+  "tree": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+  "parent": "d1d999431dcb18adf4e51f64803814d884da8690",
+  "cost_parent": "d1d999431dcb18adf4e51f64803814d884da8690",
+  "base_observed": "1cb195e590f7f5038a38625a943f259badea489a",
+  "paths": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_state.rs",
+      "before": "085bcfd745c7a06426d90e5ee881d04694238ff7",
+      "after": "67141c6af0edbe68eeaf93ac943f083c1449e3c6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+      "before": "dac17a5a338563fe3466637a3c8b405b1fc10753",
+      "after": "2621dfc2c5c25bf66cac95d206d3b4e5d9cc9790"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost.rs",
+      "before": "c73cb763cbf2bd753ae44ce74e33da0a3f951772",
+      "after": "6cbc878cc2d85691dba75c9e21a4699506368164"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_task_cost_tests.rs",
+      "before": "37f607609a62e4e35ead10faccce366a2714b3cd",
+      "after": "0e11345a3456c0140be1d609a16be0175b375fc6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_tests.rs",
+      "before": "bb93de64ccb9467b2e7c3f31bf3c13cc309ed9fb",
+      "after": "7356d3a3431b89ba62fcb0884320c2e835447f32"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_tests.rs",
+      "before": "3970943404e829a6025e7b89f0cfda0215e94eb6",
+      "after": "81791260cc665b9717df81a6596e2c422caa1784"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "before": "b59a9675d4d81554342e7b55235b39eb6ac356ec",
+      "after": "5cc4db827487dd487cecebe8766fc7e6bab92b0c"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "before": "3d2c7385057818e11f15b32d8be8499aa51db493",
+      "after": "c67ed467eddde1e557d89d47ecabb04de4d2447c"
+    }
+  ],
+  "scope": {
+    "production_paths": 2,
+    "test_paths": 6,
+    "new_test_methods": 7,
+    "old_assertions_preserved": true,
+    "model_all_four_methods_required": true,
+    "limits_unchanged": true,
+    "model_aggregate_runner_budget_not_equal_to_original_single_method": true
+  },
+  "published": true,
+  "execution": "PENDING_ORIGINAL_AUTOMATIC_CI",
+  "all_blockers_closed": false,
+  "owner_decision": null,
+  "integrated_base": "1cb195e590f7f5038a38625a943f259badea489a",
+  "new_upstream_requires_review": false,
+  "prepared_eight_head": "82d36ec843a07936f03d69ec73e068e15e71212a",
+  "parents": [
+    "82d36ec843a07936f03d69ec73e068e15e71212a",
+    "1cb195e590f7f5038a38625a943f259badea489a"
+  ],
+  "full_tree_verified": true,
+  "published_at_utc": "2026-11-12 21:16:54 UTC",
+  "actual_ref": {
+    "ref": "refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "node_id": "REF_kwDOTrgxoNoAQnJlZnMvaGVhZHMvcmVzZWFyY2gvbmV1cm80LWV2YWx1YXRlZC1jdXJyZW50LXJlYWQtMjAyNjExMTItODYyNTMxZA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "object": {
+      "sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2f12492547c382156eb0dd15a4d3cf1018e37523"
+    }
+  },
+  "actual_commit": {
+    "sha": "2f12492547c382156eb0dd15a4d3cf1018e37523",
+    "node_id": "C_kwDOTrgxoNoAKDJmMTI0OTI1NDdjMzgyMTU2ZWIwZGQxNWE0ZDNjZjEwMThlMzc1MjM",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2f12492547c382156eb0dd15a4d3cf1018e37523",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2f12492547c382156eb0dd15a4d3cf1018e37523",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:16:35Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:16:35Z"
+    },
+    "tree": {
+      "sha": "9ebc2298ef710b1c090eed85eb402da7a9a61a11",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/9ebc2298ef710b1c090eed85eb402da7a9a61a11"
+    },
+    "message": "Merge reviewed owner caller inventory into native blocker fixes\n\nRetain the exact eight-path reviewed source tree. The upstream seven-caller addition is already byte-identical in this branch; preserve its current sole CALLERS content pin.\n\nIncludes incremental cost batch validation and differential tests, owned command fixture boxing, exact CURRENT RPC expectation, independent model regression cases, and canonical Windows recovery-path assertion. Execution is pending original automatic CI; all scientific and authority gates remain open.",
+    "parents": [
+      {
+        "sha": "82d36ec843a07936f03d69ec73e068e15e71212a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/82d36ec843a07936f03d69ec73e068e15e71212a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/82d36ec843a07936f03d69ec73e068e15e71212a"
+      },
+      {
+        "sha": "1cb195e590f7f5038a38625a943f259badea489a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/1cb195e590f7f5038a38625a943f259badea489a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/1cb195e590f7f5038a38625a943f259badea489a"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

@@ -1,0 +1,33 @@
+name: HPCA prospective development preflight
+
+on:
+  push:
+    branches:
+      - research/hpca-prospective-runner-20261112-c06d
+  pull_request:
+    paths:
+      - '.github/workflows/hpca-prospective-devel-preflight.yml'
+      - 'qualification/hpca-neuroscience-20261110/prospective_devel.py'
+      - 'qualification/hpca-neuroscience-20261110/test_prospective_devel.py'
+      - 'qualification/hpca-neuroscience-20261110/PROSPECTIVE_*.json'
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          sparse-checkout: qualification/hpca-neuroscience-20261110
+      - name: Test protocol without model imports
+        run: |
+          python3 -m unittest discover -s qualification/hpca-neuroscience-20261110 -p test_prospective_devel.py -v
+          git diff --exit-code

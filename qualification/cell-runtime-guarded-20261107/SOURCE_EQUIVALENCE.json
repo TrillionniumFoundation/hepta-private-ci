@@ -1,0 +1,188 @@
+{
+  "base": "7380bddcf3d32046c2b698250a004586df5698de",
+  "changed_owner_runtime_file_count": 21,
+  "code_commits": [
+    "d00b1f417162255edc15e31e0d278236f609ffad",
+    "fc297342e6263bbbcd673754b6e39586c49ef71f",
+    "5e652541263a895453464fec060c209fb3997381",
+    "afab000015524a2641b635c5d7bee903dae3c5ea",
+    "36bf2f573e96efda3fbf70a6ed348a8b480a12f8",
+    "35241616aef22457db021051333023bdb01992bd",
+    "3e248a5223883c5e244040ad1a3745767ef6f9ce"
+  ],
+  "code_tip": "3e248a5223883c5e244040ad1a3745767ef6f9ce",
+  "comparison_scope": {
+    "all_paths_outside": "qualification/cell-runtime-guarded-20261107",
+    "compared_candidate_tree": "f1d191c27206c72c3903908fa32eb17b58c60345",
+    "current_public_summary_tree_not_self_embedded": true,
+    "excluded_folder_difference": "Original eight raw-evidence package entries omitted before adding the six public summary files.",
+    "reference_commit": "b7ebd0491b0745cdbfa5f32824f2397f555a7bf2"
+  },
+  "file_mode_semantics": "Each files[].mode is the observed POSIX permission bits from this worktree, not the Git mode. The whole-tree comparison separately checks Git paths, modes, object types and blob OIDs outside the evidence folder.",
+  "files": [
+    {
+      "bytes": 7487,
+      "git_blob": "ca0c95dbf301574ed4f8a3109f886635e6b7667c",
+      "mode": "0o600",
+      "path": "codex-rs/app-server/src/effective_plugin_change.rs",
+      "sha256": "eb1a592dfb14b033f27d957ae7c66dc562314c20e098504ac45f1409af88cdd0"
+    },
+    {
+      "bytes": 5235,
+      "git_blob": "a7dec8cbc4725c6c63ea8e16d4779ede4e93aef3",
+      "mode": "0o600",
+      "path": "codex-rs/app-server/src/effective_plugin_change_tests.rs",
+      "sha256": "b6653d02fed8124f09a46d800721c8efe618ab9c26f24cdcf8c78abb3d0ab024"
+    },
+    {
+      "bytes": 75040,
+      "git_blob": "1834cb01640e1b847d3a1ce363a686c5c1d1d68a",
+      "mode": "0o600",
+      "path": "codex-rs/app-server/src/message_processor.rs",
+      "sha256": "43684cfd7b4ca689888fdab98950e81d1c98e382d8eb0c9ac025537d2987bbce"
+    },
+    {
+      "bytes": 1560,
+      "git_blob": "9713ffc1f1fd1b08a5bcbcfd1651857bb94a6db9",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_acceptance.rs",
+      "sha256": "5bc27c502950a688fe6697e34c3dc71118b84f9971314a35d64be243016570ef"
+    },
+    {
+      "bytes": 9058,
+      "git_blob": "da869b4a5e741d6bc153a5be0209ddac2906e57f",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_acceptance/lifecycle.rs",
+      "sha256": "990230e7874c747ee4d5819b9947358c16379d217de4b1daf3a8c57dccf04a0b"
+    },
+    {
+      "bytes": 7519,
+      "git_blob": "04477b139f2d780cd96fd1609b97e1ae9bd58e95",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_acceptance/observations.rs",
+      "sha256": "0371c09ab9eb33cce9640295ae8c5464dd7b3cf7cc541c8ce0c72947341c44ff"
+    },
+    {
+      "bytes": 13988,
+      "git_blob": "1aa6ee613593ea59f2f763c22cc59194dc95ccdd",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_acceptance/runner.rs",
+      "sha256": "0c3f747095aebb17aebbc16341904052ded5a35d035769b8b6746401ee457840"
+    },
+    {
+      "bytes": 2085,
+      "git_blob": "0da7ec5ee56649d79a0a6436079ff6dd8114f2c6",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance.rs",
+      "sha256": "0b840739d582d900d7651d139f16a8d1c60fea40c9822a006fb664074a7253e2"
+    },
+    {
+      "bytes": 11274,
+      "git_blob": "92e66173ba2081a9cd335e6250e6db917829a048",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/artifacts.rs",
+      "sha256": "ed8586b819846a66084887326b1c4a2d1b47a6ddd3baaec6a5fad739c1eaff24"
+    },
+    {
+      "bytes": 5060,
+      "git_blob": "a2632d00e3dc24b12c4d1f9ad4895ae1aae9091e",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/assembly.rs",
+      "sha256": "1ac19baaf7eb575794d0f2e592dc98be8167db2e2a98d4be5445c35ee8e190fa"
+    },
+    {
+      "bytes": 3196,
+      "git_blob": "614c2fcb42d2d659baecfcd2d37ddf99c5079713",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/authority.rs",
+      "sha256": "facf4ad394b0e0c8018e5ec668119f419a44c29ab13e00e660ac6f49b86628ef"
+    },
+    {
+      "bytes": 13362,
+      "git_blob": "8ac331d68ca3adc67af9ae167eb3583abf3eeb83",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/flow.rs",
+      "sha256": "66d231db13955d300c881dccdd16d8327f2cf66113b7cd4c4abcf8a0bbf2f5bd"
+    },
+    {
+      "bytes": 5469,
+      "git_blob": "a1b6b7ce7c452efc56c6a055f23897da73187bd7",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/examples/neuron_v13_guarded_acceptance/runner.rs",
+      "sha256": "fdb01ec3e0f310a4f785b563e1a023caa43cc4f3cc92d50da3a9e87348f2bab6"
+    },
+    {
+      "bytes": 10576,
+      "git_blob": "108f08234d1b267463f1255af192df41c4b8e08f",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation.rs",
+      "sha256": "30a15ed6fbed48020d3a4ca03c48cf0d0609bd332728ad11f984b96f4ab7c846"
+    },
+    {
+      "bytes": 12564,
+      "git_blob": "c03f17bfa590a516172f07ed513bab3f2dc1155f",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_context_runtime_tests.rs",
+      "sha256": "bec3fd55247cf95c06562e0fa6285ee84007c9602107bf6666934c30149c3c4b"
+    },
+    {
+      "bytes": 8401,
+      "git_blob": "968ce7f5ecccc219701bf6443ca395bf6440f62c",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_runtime_tests.rs",
+      "sha256": "7dc195d7c73e796dd8a769216402654446b9fcdb4a658a2120eea369eacb3367"
+    },
+    {
+      "bytes": 7812,
+      "git_blob": "61daa7aecdc3f9259626a5db3eba6b13637ff33d",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/src/neuron_v13_generation_initial_test_support.rs",
+      "sha256": "fb38bd624572b446b4ee660c6f1232d08de7153b99b5a8d97d2cd048e048231e"
+    },
+    {
+      "bytes": 14151,
+      "git_blob": "b6958a977b1aae8325711e59525fdf86c9d6d881",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/src/neuron_v13_generation_update.rs",
+      "sha256": "23adf59f901c137f3aca4272e28c8a8b5ebbd10be5ea72b7883196e3beeb56cf"
+    },
+    {
+      "bytes": 1281,
+      "git_blob": "e4c495e6df35ecbfbe17e4955aa56b86e5e6fbf1",
+      "mode": "0o600",
+      "path": "codex-rs/hepta-agentd/v13_acceptance.bzl",
+      "sha256": "c6df197e32de9d4417d03e1ede8f3f899dacdb297a1fbdc110f07d1357b626b5"
+    },
+    {
+      "bytes": 6152,
+      "git_blob": "767a32447cecde4c61fcc651989371213ca0d169",
+      "mode": "0o600",
+      "path": "qualification/neuron-v13-generation/GUARDED_ACCEPTANCE.md",
+      "sha256": "a2116025eaaecfab41e5be092f0b606b15d4450b1e1d55eea01a651be34cee14"
+    },
+    {
+      "bytes": 14255,
+      "git_blob": "3f9edc787429c044ce85098bb065f8192b40d902",
+      "mode": "0o600",
+      "path": "qualification/neuron-v13-generation/make_descriptor.py",
+      "sha256": "b6ca5824e493b20e55b3dc0921be9ee9ffa67a648f755aeac4a893ed12bee582"
+    }
+  ],
+  "integration_tree_before_public_summary": "f1d191c27206c72c3903908fa32eb17b58c60345",
+  "only_diff_from_validated_tree": [
+    "D\tqualification/cell-runtime-guarded-20261107/MANIFEST.json",
+    "D\tqualification/cell-runtime-guarded-20261107/PACKAGE.sha256",
+    "D\tqualification/cell-runtime-guarded-20261107/README.md",
+    "D\tqualification/cell-runtime-guarded-20261107/RECOVERY.json",
+    "D\tqualification/cell-runtime-guarded-20261107/retained-v7.tar.gz",
+    "D\tqualification/cell-runtime-guarded-20261107/source-v7-final.json",
+    "D\tqualification/cell-runtime-guarded-20261107/source-v7-pre-post.json",
+    "D\tqualification/cell-runtime-guarded-20261107/source-v7.json"
+  ],
+  "private_evidence_ancestor_excluded": true,
+  "runtime_test_head": "8c8a75c28c1d3f1080faa3b88cc9b06918f8c098",
+  "runtime_to_static_only_changed_path": "qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+  "schema": "cell-owner-public-source-equivalence-v1",
+  "source_and_all_other_entries_byte_equivalent": true,
+  "validated_source": "b7ebd0491b0745cdbfa5f32824f2397f555a7bf2"
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "hepta.learn.pre-b-product-policy-v2.source-checkpoint.v1",
+  "parent": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+  "parent_tree": "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17",
+  "scope": "Pure pre-B immutable policy metadata, bounded strict canonical codec, local original paired freezer, and remote raw commitment comparison.",
+  "status": {
+    "rust_compiled": false,
+    "formatted": false,
+    "python_source_guards_executed": false,
+    "native_mechanisms_executed": 0,
+    "ordinary_acceptance": 0,
+    "source_only_api_readback": true,
+    "production_caps_added": false,
+    "positive_gate_opened": false
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_tests.rs",
+      "sha": "b2c0d0d3a47bd70cea5d06910f3631e08b864bb3",
+      "bytes": 20865,
+      "sha256": "3f2be3c0f0ed6e3f268ec7a3e8099f5fe87700b4dcf3964e3149ad4996102c08",
+      "previous_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+      "sha": "906a27dc43fe783b0432177dca63919ffee2ac44",
+      "bytes": 42111,
+      "sha256": "87fd42d541758953acdafdf1907aa72328554d2c88a8c28429a2c1710448222f",
+      "previous_blob": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+      "sha": "2c9bccd2d452a03ba7a223fcb4c11e885b447c6d",
+      "bytes": 7797,
+      "sha256": "7d391ab31d9f6fa9a0e9fa43ce4fb20d0860263da6908125f1445933b09d78ae",
+      "previous_blob": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha": "6fe617c550df20434100dd17f0bbaa07e41fd4f2",
+      "bytes": 43087,
+      "sha256": "814c03fb8abdc70ccf8929966797d84a069486d7166f9a4d1ce7683eeb6640f3",
+      "previous_blob": "5159395be8360fc3b6946c130f6b3696902198ed"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+      "sha": "0eed3b3553707b6e4fe00d83bfb27137c5d34542",
+      "bytes": 8332,
+      "sha256": "bf21f015311ebf69d3e35283ca68bc1014dc6251b4aed913282de4110d97a090",
+      "previous_blob": "fdd76d44138b0369a04005dcd11c33309bbe9bb0"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+      "sha": "46d1eb4ded2eae1ce47ee0325604b84a65c5793c",
+      "bytes": 16628,
+      "sha256": "a08ae1fe78dffa3fae87e4bbaf2132de1a51a6aff94117666f3a2e742919bfc7",
+      "previous_blob": "f78e1b87e063c901989b6de6f8154867db250427"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+      "sha": "fa12569244ad8fee9c707065e81d0760dfb677b3",
+      "bytes": 8690,
+      "sha256": "45627454f4c574cc23896b352a76e6f83500c893bb7146768f9486a5e8c24c4a",
+      "previous_blob": null
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+      "sha": "7e54d4f249236d2daba4ddd19ead75ba18e3e2d6",
+      "bytes": 13243,
+      "sha256": "2ecb0c404dfb2dcffdac0b5702ab951c90a64fb01e838ccd279be3e36681d71d",
+      "previous_blob": null
+    }
+  ],
+  "original_function_body_comparison": [
+    {
+      "file": "closure.rs",
+      "old_sha": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+      "unchanged_function_bodies": 36,
+      "changed_original_functions": [
+        "freeze_cross_fold_plan"
+      ],
+      "new_functions": [
+        "normalize_cross_fold_metadata",
+        "cross_fold_plan_commitments",
+        "frozen_plan_from_commitments"
+      ]
+    },
+    {
+      "file": "metric_roles.rs",
+      "old_sha": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+      "unchanged_function_bodies": 5,
+      "changed_original_functions": [
+        "freeze_cross_fold_plan_v2"
+      ],
+      "new_functions": [
+        "cross_fold_plan_v2_commitments"
+      ]
+    },
+    {
+      "file": "product_runner.rs",
+      "old_sha": "5159395be8360fc3b6946c130f6b3696902198ed",
+      "unchanged_function_bodies": 40,
+      "changed_original_functions": [
+        "freeze_product_evaluation_plan_v1"
+      ],
+      "new_functions": [
+        "normalize_product_plan_inputs"
+      ]
+    },
+    {
+      "file": "product_paired_commitments.rs",
+      "old_sha": "fdd76d44138b0369a04005dcd11c33309bbe9bb0",
+      "unchanged_function_bodies": 6,
+      "changed_original_functions": [
+        "plan",
+        "estimand"
+      ],
+      "new_functions": [
+        "plan_fields",
+        "estimand_fields"
+      ]
+    },
+    {
+      "file": "lib.rs",
+      "old_sha": "f78e1b87e063c901989b6de6f8154867db250427",
+      "unchanged_function_bodies": 8,
+      "changed_original_functions": [],
+      "new_functions": []
+    }
+  ],
+  "exact_extracted_regions": [
+    {
+      "name": "cross_fold_original_canonical_encoder",
+      "bytes": 1467,
+      "equal": true
+    },
+    {
+      "name": "cross_fold_original_receipt_fields_and_seal",
+      "bytes": 908,
+      "equal": true
+    },
+    {
+      "name": "product_original_frozen_receipt_and_seal_tail",
+      "bytes": 822,
+      "equal": true
+    }
+  ],
+  "syntax_projection": [
+    {
+      "file": "closure.rs",
+      "functions": 40,
+      "brace_balance": 0
+    },
+    {
+      "file": "metric_roles.rs",
+      "functions": 7,
+      "brace_balance": 0
+    },
+    {
+      "file": "product_runner.rs",
+      "functions": 42,
+      "brace_balance": 0
+    },
+    {
+      "file": "product_paired_commitments.rs",
+      "functions": 10,
+      "brace_balance": 0
+    },
+    {
+      "file": "lib.rs",
+      "functions": 8,
+      "brace_balance": 0
+    },
+    {
+      "file": "product_policy.rs",
+      "functions": 12,
+      "brace_balance": 0
+    },
+    {
+      "file": "product_policy_codec.rs",
+      "functions": 25,
+      "brace_balance": 0
+    },
+    {
+      "file": "product_policy_tests.rs",
+      "functions": 15,
+      "brace_balance": 0
+    }
+  ],
+  "behavior_boundaries": [
+    "freeze validates immutable metadata only and makes no observation or pre-B time claim.",
+    "Full policy timing and candidate authenticity remain on original agentd Rule/profile/T/B chain.",
+    "baseline_id is fixed; only candidate_id, dataset, final holdout manifest and Cell estimand are late Product slots.",
+    "Pair identity/protocol provenance is supplied by the original agentd contract; no new source observation is constructed.",
+    "Declared CrossFold model/prediction hashes are fixed before B and do not themselves prove an actual future fit.",
+    "expected_commitment_bytes uses raw CrossFold V2 commitments, original role encoding and raw paired encoders only; no freezer or old plan/execution/qualification receipt seal is called or recreated.",
+    "instantiate calls the unchanged paired freeze entry with all original metrics, roles, sources, temporal rules and actual late bindings.",
+    "All prior SharedBehavior and paired-on-policy canonical domains remain unchanged; PolicyV2 uses a separate domain.",
+    "131072 bounds one policy metadata encoding only. It is not an assertion that a whole panel body or connection request budget fits.",
+    "No new dependencies, runtime authority, credentials, owner grants, production policy, observations, or promotion route are added."
+  ],
+  "source_extraction_notes": [
+    "The original V1 CrossFold normalization and hash path is shared; the original receipt field construction and seal tail is byte-identical.",
+    "The original V2 role contract bytes and strict comparator are byte-identical. V2 final hash retains cross-fold-plan.v3 over original raw plan digest plus original role contract digest.",
+    "Original Product metadata validation and metric coverage normalization are shared by both original freezer and new metadata-only freeze.",
+    "Paired plan/estimand encoders now accept raw metadata in private helpers; old callers are wrappers over precisely the same field order and domains."
+  ],
+  "original_inputs": {
+    "digest_algorithm_source": "4b6fe231f9faa717067818f509ebb4b150dbfbce",
+    "original_product": "5159395be8360fc3b6946c130f6b3696902198ed",
+    "original_closure": "f11cfafe121c9902d33bcbe9e8311c16221b0aeb",
+    "original_roles": "8916bbdb97f79a8a77da7b1e637b8f51f1296ec2",
+    "original_paired_commitments": "fdd76d44138b0369a04005dcd11c33309bbe9bb0"
+  },
+  "new_native_cases": [
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_roundtrip_normalizes_only_order_and_preserves_every_value",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_all_pre_b_fields_change_the_commitment_or_are_rejected",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_strict_decode_refuses_noncanonical_malformed_and_unbounded_metadata",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_remote_metadata_matches_original_local_freeze_without_releasing_data",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_late_bindings_cannot_change_policy_or_reuse_old_plan_bytes",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_keeps_original_role_fold_and_temporal_rejections",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    },
+    {
+      "crate": "codex-hepta-intelligence-eval",
+      "name": "product_runner::policy::tests::policy_v2_shared_and_paired_original_commitment_bytes_remain_exact",
+      "kind": "pure metadata mechanism, not actual B or adoption"
+    }
+  ],
+  "known_remaining": [
+    "Exact source guards/caller metadata must be added and merged with agentd V2 actual consumers.",
+    "All seven Rust mechanisms await original H execution on a fixed integrated source.",
+    "Original FDE runtime 23 fail +1 timeout remains unresolved; diagnostic e5c ran zero tests due target ENOENT."
+  ]
+}

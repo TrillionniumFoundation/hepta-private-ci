@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.original-owner-aggregate.v1",
+  "source_head": "03fcfdcd347a7125e3f7dd77f083baa0543cda80",
+  "source_tree": "ebeb849e53f1f29745384acde3d559a8f63a7de0",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-hepta-contracts",
+    "-p",
+    "codex-state",
+    "--test-threads",
+    "2"
+  ],
+  "cache_copy_command": [
+    "reuse completed compile cache from preserved dec9 failure; no active writer"
+  ],
+  "original_idle_cache_source": "/data/asterinas-audit-build.8tdrjboi/hepta-owner-aggregate-dec9-01",
+  "cold_build_claimed": false,
+  "target": "/data/asterinas-audit-build.8tdrjboi/hepta-owner-aggregate-target",
+  "temporary": "/data/hepta-owner-aggregate-tmp.4gdiacy_",
+  "original_deadlines_changed": false,
+  "full_workspace": false,
+  "production_qualified": false,
+  "status": "complete",
+  "exit_code": 100,
+  "source_inputs_unchanged": true,
+  "elapsed_seconds": 1931.6
+}

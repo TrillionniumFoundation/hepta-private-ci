@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "source_sha": "3cc4915aee47b1d9921f757cc06e3297512c2431",
+  "source_sha_after": "3cc4915aee47b1d9921f757cc06e3297512c2431",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qian-qi/hepta-rust-audit-078e4036190f-root-native-v2/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "compiler_executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-target/debug/hepta-joint-propose",
+      "executable": "/home/qian-qi/hepta-rust-audit-078e4036190f-logs/root-native-recovery1-helpers/bin/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 1,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "da70e029ba069d119c342d94d972035d76b437193bf123de5f7581a30f0ad36e",
+      "bytes": 6729872
+    }
+  },
+  "complete": true,
+  "exit_code": 0
+}

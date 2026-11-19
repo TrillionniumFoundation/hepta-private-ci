@@ -436,15 +436,17 @@ impl RuntimeTasks {
             if self.failures.len() == MAX_TASKS {
                 self.failures.pop_front();
             }
-            lifecycle_warning(&name, "runtime owner failure retained during shutdown");
-            self.failures.push_back(RuntimeTaskFailure {
-                name,
-                diagnostic: error
-                    .to_string()
-                    .chars()
-                    .take(MAX_DIAGNOSTIC_CHARS)
-                    .collect(),
-            });
+            let diagnostic: String = error
+                .to_string()
+                .chars()
+                .take(MAX_DIAGNOSTIC_CHARS)
+                .collect();
+            lifecycle_warning(
+                &name,
+                &format!("runtime owner failure retained during shutdown: {diagnostic}"),
+            );
+            self.failures
+                .push_back(RuntimeTaskFailure { name, diagnostic });
         }
     }
 

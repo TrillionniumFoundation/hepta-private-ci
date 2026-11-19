@@ -1,0 +1,70 @@
+name: Hepta exact-head lockfile regeneration
+
+# Produce reviewable lockfile artifacts on an explicitly selected source ref.
+# Revision: rustsec-zip9-sync-keyring-20261018
+on:
+  workflow_dispatch:
+    inputs:
+      regenerate_lockfiles:
+        description: Regenerate lockfile artifacts for independent review
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-lock-refresh-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  refresh-locks:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.regenerate_lockfiles == true && github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Regenerate Cargo lock against the exact candidate
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: cargo metadata --format-version 1 --manifest-path codex-rs/Cargo.toml > /dev/null
+      - name: Prepare existing Bazel CI toolchain
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: lockfile-refresh
+      - name: Regenerate Bazel module lock
+        run: bazel mod deps --lockfile_mode=update
+      - name: Check exact regenerated Bazel lock
+        run: ./scripts/check-module-bazel-lock.sh
+      - name: Retain regenerated locks for independent audit
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: hepta-refreshed-lockfiles-${{ github.sha }}
+          retention-days: 7
+          path: |
+            MODULE.bazel.lock
+            codex-rs/Cargo.lock
+      - name: Retain an exact-source patch for review
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/hepta-lock-refresh-proposal"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-lock-refresh-proposal/source.txt"
+          git diff --binary -- MODULE.bazel.lock codex-rs/Cargo.lock > "$RUNNER_TEMP/hepta-lock-refresh-proposal/lockfiles.patch"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-lock-refresh-proposal/worktree-status.txt"
+      - name: Upload the reviewable proposal without writing a branch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lock-refresh-proposal-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-lock-refresh-proposal/
+          if-no-files-found: error
+          retention-days: 7

@@ -60,6 +60,10 @@ use core_test_support::skip_if_no_network;
 use core_test_support::skip_if_no_remote_env;
 use core_test_support::skip_if_sandbox;
 use core_test_support::skip_if_target_windows;
+use core_test_support::streaming_sse::MatchingStreamingSseResponse;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::StreamingSseResponse;
+use core_test_support::streaming_sse::start_matching_streaming_sse_server;
 use core_test_support::test_codex::TestCodex;
 use core_test_support::test_codex::local;
 use core_test_support::test_codex::test_codex;
@@ -79,6 +83,7 @@ use tempfile::TempDir;
 use test_case::test_case;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use tokio::sync::oneshot;
 
 const NETWORK_TEST_HOST: &str = "codex-network-test.invalid";
 const NETWORK_TEST_TARGET: &str = "http://codex-network-test.invalid:80";
@@ -237,7 +242,7 @@ async fn strict_auto_review_routes_network_approval_to_guardian_when_user_review
 
     let server = start_mock_server().await;
     let test = managed_network_unified_exec_test_with_features(
-        &server,
+        &server.uri(),
         &[Feature::RequestPermissionsTool],
     )
     .await?;
@@ -561,70 +566,117 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
 
-    let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test(&server).await?;
     let call_id = "guardian-network-timeout";
     let poll_call_id = "guardian-network-timeout-poll";
-    mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request)
-                && request_body_contains(request, "time out the Guardian network review")
+    let (guardian_requested_tx, mut guardian_requested_rx) =
+        tokio::sync::mpsc::channel::<tokio::time::Instant>(/*buffer*/ 1);
+    let (guardian_ready_tx, guardian_ready_rx) = oneshot::channel();
+    let (guardian_release_tx, guardian_release_rx) = oneshot::channel();
+    let _guardian_delay = tokio::spawn(async move {
+        if let Some(requested_at) = guardian_requested_rx.recv().await {
+            // Keep the original delayed review response: no headers before
+            // 300 s from its actual HTTP request, beyond the 91 s advance.
+            let release_at = requested_at + Duration::from_secs(/*secs*/ 300);
+            let _ = guardian_ready_tx.send(());
+            tokio::time::sleep_until(release_at).await;
+            let _ = guardian_release_tx.send(());
+        }
+    });
+    let parent_poll_seen = Arc::new(tokio::sync::Notify::new());
+    let parent_poll_seen_for_match = Arc::clone(&parent_poll_seen);
+    let (parent_poll_tx, parent_poll_rx) = oneshot::channel();
+    let (server, _completions, responses) = start_matching_streaming_sse_server(vec![
+        MatchingStreamingSseResponse {
+            matcher: Box::new(|request: &wiremock::Request| {
+                !is_guardian_request(request)
+                    && request_body_contains(request, "time out the Guardian network review")
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent"),
+                        ev_function_call(
+                            call_id,
+                            "exec_command",
+                            &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
+                        ),
+                        ev_completed("resp-guardian-timeout-parent"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent"),
-            ev_function_call(
-                call_id,
-                "exec_command",
-                &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
-            ),
-            ev_completed("resp-guardian-timeout-parent"),
-        ]),
-    )
-    .await;
-    let pending_guardian = mount_response_once_match(
-        &server,
-        is_guardian_request,
-        sse_response(sse(vec![
-            ev_response_created("resp-guardian-timeout-review"),
-            ev_assistant_message("msg-guardian-timeout-review", r#"{"outcome":"allow"}"#),
-            ev_completed("resp-guardian-timeout-review"),
-        ]))
-        .set_delay(Duration::from_secs(300)),
-    )
-    .await;
-    mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request) && request_body_contains(request, call_id)
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                is_guardian_request(request)
+                    && guardian_requested_tx
+                        .try_send(tokio::time::Instant::now())
+                        .is_ok()
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(guardian_release_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-review"),
+                        ev_assistant_message(
+                            "msg-guardian-timeout-review",
+                            r#"{"outcome":"allow"}"#,
+                        ),
+                        ev_completed("resp-guardian-timeout-review"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent-followup"),
-            ev_function_call(
-                poll_call_id,
-                "write_stdin",
-                &serde_json::to_string(&json!({
-                    "session_id": 1000,
-                    "chars": "",
-                    "yield_time_ms": 1_000,
-                }))?,
-            ),
-            ev_completed("resp-guardian-timeout-parent-followup"),
-        ]),
-    )
-    .await;
-    let parent_final = mount_sse_once_match(
-        &server,
-        |request: &wiremock::Request| {
-            !is_guardian_request(request) && request_body_contains(request, poll_call_id)
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                let matched =
+                    !is_guardian_request(request) && request_body_contains(request, call_id);
+                if matched {
+                    parent_poll_seen_for_match.notify_one();
+                }
+                matched
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(parent_poll_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent-followup"),
+                        ev_function_call(
+                            poll_call_id,
+                            "write_stdin",
+                            &serde_json::to_string(&json!({
+                                "session_id": 1000,
+                                "chars": "",
+                                "yield_time_ms": 1_000,
+                            }))?,
+                        ),
+                        ev_completed("resp-guardian-timeout-parent-followup"),
+                    ]),
+                }],
+            },
         },
-        sse(vec![
-            ev_response_created("resp-guardian-timeout-parent-final"),
-            ev_assistant_message("msg-guardian-timeout-parent-final", "timed out"),
-            ev_completed("resp-guardian-timeout-parent-final"),
-        ]),
-    )
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && request_body_contains(request, poll_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-guardian-timeout-parent-final"),
+                        ev_assistant_message("msg-guardian-timeout-parent-final", "timed out"),
+                        ev_completed("resp-guardian-timeout-parent-final"),
+                    ]),
+                }],
+            },
+        },
+    ])
     .await;
+    let test = managed_network_unified_exec_test_with_features(server.uri(), &[]).await?;
 
     submit_managed_network_turn(
         &test,
@@ -634,14 +686,46 @@ async fn timed_out_guardian_network_review_uses_timeout_outcome_without_user_fal
         AskForApproval::OnRequest,
     )
     .await?;
-    wait_for_response_request(&pending_guardian).await;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        guardian_ready_rx
+            .await
+            .context("Guardian response delay was not armed")?;
+        // This request follows the initial exec result, so its original
+        // process has been retained before the simulated review deadline.
+        parent_poll_seen.notified().await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for the original Guardian and parent requests")??;
     tokio::time::pause();
     tokio::time::advance(Duration::from_secs(91)).await;
     tokio::time::resume();
-    wait_for_completion_without_network_prompt(&test).await;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 10), async {
+        // Advancing the clock wakes both the review timeout and unrelated
+        // poll timers. Release the one original poll only after the real
+        // terminal event, whose watcher waits for the denial monitor.
+        let terminal = wait_for_event(&test.codex, |event| match event {
+            EventMsg::ExecCommandEnd(end) => end.call_id == call_id,
+            EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_) => true,
+            _ => false,
+        })
+        .await;
+        anyhow::ensure!(
+            matches!(&terminal, EventMsg::ExecCommandEnd(end) if end.call_id == call_id),
+            "expected the original exec terminal event without user approval: {terminal:?}"
+        );
+        parent_poll_tx
+            .send(())
+            .map_err(|_| anyhow::anyhow!("original parent poll response closed"))?;
+        wait_for_completion_without_network_prompt(&test).await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for original network denial and turn completion")??;
 
-    let tool_output = parent_final
-        .requests()
+    let requests = responses.requests();
+    assert_eq!(requests.len(), 4);
+    let tool_output = requests
         .iter()
         .find_map(|request| request.function_call_output_text(poll_call_id))
         .context("expected timed-out Guardian tool output")?;
@@ -670,12 +754,6 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
 
-    let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test_with_features(
-        &server,
-        &[Feature::RequestPermissionsTool],
-    )
-    .await?;
     let start_call_id = "cross-turn-network-start";
     let permission_call_id = "cross-turn-network-permissions";
     let stdin_call_id = "cross-turn-network-stdin";
@@ -692,67 +770,148 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     start_args["environment_id"] = json!(LOCAL_ENVIRONMENT_ID);
     start_args["tty"] = json!(true);
     start_args["yield_time_ms"] = json!(250);
-    let responses = mount_sse_sequence(
-        &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-start"),
-                ev_function_call(
-                    start_call_id,
-                    "exec_command",
-                    &serde_json::to_string(&start_args)?,
-                ),
-                ev_completed("resp-cross-turn-network-start"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-first-complete"),
-                ev_assistant_message("msg-cross-turn-network-first-complete", "terminal started"),
-                ev_completed("resp-cross-turn-network-first-complete"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-permissions"),
-                ev_function_call(
-                    permission_call_id,
-                    "request_permissions",
-                    &serde_json::to_string(&json!({
-                        "reason": "Automatically review the existing terminal's network access",
-                        "permissions": requested_permissions,
-                    }))?,
-                ),
-                ev_completed("resp-cross-turn-network-permissions"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-stdin"),
-                ev_function_call(
-                    stdin_call_id,
-                    "write_stdin",
-                    &serde_json::to_string(&json!({
-                        "session_id": 1000,
-                        "chars": "continue\n",
-                        "yield_time_ms": 1_000,
-                    }))?,
-                ),
-                ev_completed("resp-cross-turn-network-stdin"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-guardian"),
-                ev_assistant_message(
-                    "msg-cross-turn-network-guardian",
-                    r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The existing terminal's network request is safe."}"#,
-                ),
-                ev_completed("resp-cross-turn-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-second-complete"),
-                ev_assistant_message(
-                    "msg-cross-turn-network-second-complete",
-                    "network request approved",
-                ),
-                ev_completed("resp-cross-turn-network-second-complete"),
-            ]),
-        ],
-    )
+    let (complete_tx, complete_rx) = oneshot::channel();
+    let (server, _completions, responses) = start_matching_streaming_sse_server(vec![
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && !request_body_contains(request, start_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-start"),
+                        ev_function_call(
+                            start_call_id,
+                            "exec_command",
+                            &serde_json::to_string(&start_args)?,
+                        ),
+                        ev_completed("resp-cross-turn-network-start"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request)
+                    && request_body_contains(request, start_call_id)
+                    && !request_body_contains(
+                        request,
+                        "allow the existing background terminal to request network access",
+                    )
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-first-complete"),
+                        ev_assistant_message("msg-cross-turn-network-first-complete", "terminal started"),
+                        ev_completed("resp-cross-turn-network-first-complete"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request)
+                    && request_body_contains(
+                        request,
+                        "allow the existing background terminal to request network access",
+                    )
+                    && !request_body_contains(request, permission_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-permissions"),
+                        ev_function_call(
+                            permission_call_id,
+                            "request_permissions",
+                            &serde_json::to_string(&json!({
+                                "reason": "Automatically review the existing terminal's network access",
+                                "permissions": requested_permissions,
+                            }))?,
+                        ),
+                        ev_completed("resp-cross-turn-network-permissions"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request)
+                    && request_body_contains(request, permission_call_id)
+                    && !request_body_contains(request, stdin_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-stdin"),
+                        ev_function_call(
+                            stdin_call_id,
+                            "write_stdin",
+                            &serde_json::to_string(&json!({
+                                "session_id": 1000,
+                                "chars": "continue\n",
+                                "yield_time_ms": 1_000,
+                            }))?,
+                        ),
+                        ev_completed("resp-cross-turn-network-stdin"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                is_guardian_request(request)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-guardian"),
+                        ev_assistant_message(
+                            "msg-cross-turn-network-guardian",
+                            r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The existing terminal's network request is safe."}"#,
+                        ),
+                        ev_completed("resp-cross-turn-network-guardian"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && request_body_contains(request, stdin_call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(complete_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-cross-turn-network-second-complete"),
+                        ev_assistant_message(
+                            "msg-cross-turn-network-second-complete",
+                            "network request approved",
+                        ),
+                        ev_completed("resp-cross-turn-network-second-complete"),
+                    ]),
+                }],
+            },
+        },
+    ])
     .await;
+    let test = managed_network_unified_exec_test_with_features(
+        server.uri(),
+        &[Feature::RequestPermissionsTool],
+    )
+    .await?;
 
     submit_managed_network_turn(
         &test,
@@ -820,6 +979,9 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     };
     assert_eq!(assessment.turn_id, active_turn.turn_id);
     assert_ne!(assessment.turn_id, first_turn.turn_id);
+    complete_tx
+        .send(())
+        .map_err(|_| anyhow::anyhow!("parent completion stream ended before Guardian approval"))?;
     wait_for_turn_complete(&test).await;
 
     let actions = guardian_network_actions(&responses)?;
@@ -842,6 +1004,9 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
         "approved network access must not terminate the background process"
     );
     test.codex.submit(Op::CleanBackgroundTerminals).await?;
+    assert_eq!(responses.requests().len(), 6);
+    assert_eq!(server.requests().await.len(), 6);
+    server.shutdown().await;
 
     Ok(())
 }
@@ -1658,45 +1823,97 @@ async fn guardian_receives_exact_triggers_for_concurrent_network_requests() -> R
     Ok(())
 }
 
+#[derive(Clone, Copy)]
+enum SingleNetworkRequestTiming {
+    Immediate,
+    AfterInitialYield,
+}
+
+#[test_case(SingleNetworkRequestTiming::Immediate; "before_initial_yield")]
+#[test_case(SingleNetworkRequestTiming::AfterInitialYield; "after_initial_yield")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[cfg_attr(
     not(target_os = "linux"),
     ignore = "requires the trusted Linux proxy bridge"
 )]
-async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<()> {
+async fn guardian_receives_exact_trigger_for_single_network_request(
+    timing: SingleNetworkRequestTiming,
+) -> Result<()> {
     skip_if_target_windows!(Ok(()), "uses the POSIX/Python network fixture");
     skip_if_host_windows!(Ok(()));
     skip_if_no_network!(Ok(()));
     skip_if_sandbox!(Ok(()));
 
-    let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test(&server).await?;
+    let call_id = "exec-network-single";
     let command = "python3 -c \"import urllib.request; opener = urllib.request.build_opener(urllib.request.ProxyHandler()); print('OK:' + opener.open('http://1.1.1.1', timeout=10).read().decode(errors='replace'))\"".to_string();
-    let responses = mount_sse_sequence(
-        &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-network-single"),
-                ev_function_call(
-                    "exec-network-single",
-                    "exec_command",
-                    &serde_json::to_string(&network_exec_args(&command))?,
-                ),
-                ev_completed("resp-network-single"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-guardian"),
-                ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
-                ev_completed("resp-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-network-done"),
-                ev_assistant_message("msg-network-done", "done"),
-                ev_completed("resp-network-done"),
-            ]),
-        ],
-    )
+    let command = match timing {
+        SingleNetworkRequestTiming::Immediate => command,
+        SingleNetworkRequestTiming::AfterInitialYield => {
+            format!("while [ ! -f network-request-release ]; do sleep 0.01; done; {command}")
+        }
+    };
+    let parent_requested = Arc::new(tokio::sync::Notify::new());
+    let parent_requested_for_match = Arc::clone(&parent_requested);
+    let (parent_release_tx, parent_release_rx) = oneshot::channel();
+    let (server, _completions, responses) = start_matching_streaming_sse_server(vec![
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                !is_guardian_request(request) && !request_body_contains(request, call_id)
+            }),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-single"),
+                        ev_function_call(
+                            call_id,
+                            "exec_command",
+                            &serde_json::to_string(&network_exec_args(&command))?,
+                        ),
+                        ev_completed("resp-network-single"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(is_guardian_request),
+            response: StreamingSseResponse {
+                header_gate: None,
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-guardian"),
+                        ev_assistant_message("msg-network-guardian", r#"{"outcome":"deny"}"#),
+                        ev_completed("resp-network-guardian"),
+                    ]),
+                }],
+            },
+        },
+        MatchingStreamingSseResponse {
+            matcher: Box::new(move |request: &wiremock::Request| {
+                let matched =
+                    !is_guardian_request(request) && request_body_contains(request, call_id);
+                if matched {
+                    parent_requested_for_match.notify_one();
+                }
+                matched
+            }),
+            response: StreamingSseResponse {
+                header_gate: Some(parent_release_rx),
+                chunks: vec![StreamingSseChunk {
+                    gate: None,
+                    body: sse(vec![
+                        ev_response_created("resp-network-done"),
+                        ev_assistant_message("msg-network-done", "done"),
+                        ev_completed("resp-network-done"),
+                    ]),
+                }],
+            },
+        },
+    ])
     .await;
+    let test = managed_network_unified_exec_test_with_features(server.uri(), &[]).await?;
 
     submit_managed_network_turn(
         &test,
@@ -1706,12 +1923,66 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
         AskForApproval::OnRequest,
     )
     .await?;
-    wait_for_turn_complete(&test).await;
+    tokio::time::timeout(Duration::from_secs(10), async {
+        if matches!(timing, SingleNetworkRequestTiming::AfterInitialYield) {
+            // The original exec result has reached the parent while its process
+            // still waits. Only then may it request Guardian approval.
+            parent_requested.notified().await;
+            fs::write(test.config.cwd.join("network-request-release"), "release")?;
+        }
+        let terminal = wait_for_event(&test.codex, |event| match event {
+            EventMsg::ExecCommandEnd(end) => end.call_id == call_id,
+            EventMsg::ExecApprovalRequest(_) | EventMsg::TurnComplete(_) => true,
+            _ => false,
+        })
+        .await;
+        anyhow::ensure!(
+            matches!(&terminal, EventMsg::ExecCommandEnd(end) if end.call_id == call_id),
+            "expected the original exec terminal event without user approval: {terminal:?}"
+        );
+        parent_release_tx
+            .send(())
+            .map_err(|_| anyhow::anyhow!("original parent response closed"))?;
+        wait_for_turn_complete(&test).await;
+        Ok::<(), anyhow::Error>(())
+    })
+    .await
+    .context("timed out waiting for original network review and turn completion")??;
 
+    assert_eq!(responses.requests().len(), 3);
     assert_eq!(
         guardian_network_triggers(&[&responses])?,
-        vec![("exec-network-single".to_string(), command)]
+        vec![("exec-network-single".to_string(), command)],
+        "recorded request order, roles, and triggering call outputs: {:#?}",
+        responses
+            .requests()
+            .iter()
+            .enumerate()
+            .map(|(request_index, request)| {
+                let body = request.body_json();
+                let call_outputs = body
+                    .get("input")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter(|item| {
+                        item.get("type").and_then(Value::as_str) == Some("function_call_output")
+                            && item.get("call_id").and_then(Value::as_str)
+                                == Some("exec-network-single")
+                    })
+                    .cloned()
+                    .collect::<Vec<_>>();
+                json!({
+                    "request_index": request_index,
+                    "model": body["model"],
+                    "body_subagent": body["client_metadata"]["x-openai-subagent"],
+                    "header_subagent": request.header("x-openai-subagent"),
+                    "triggering_call_outputs": call_outputs,
+                })
+            })
+            .collect::<Vec<_>>()
     );
+    server.shutdown().await;
 
     Ok(())
 }
@@ -2241,11 +2512,11 @@ async fn approved_network_host_for_one_environment_still_prompts_in_another() ->
 }
 
 async fn managed_network_unified_exec_test(server: &wiremock::MockServer) -> Result<TestCodex> {
-    managed_network_unified_exec_test_with_features(server, &[]).await
+    managed_network_unified_exec_test_with_features(&server.uri(), &[]).await
 }
 
 async fn managed_network_unified_exec_test_with_features(
-    server: &wiremock::MockServer,
+    server_uri: &str,
     features: &[Feature],
 ) -> Result<TestCodex> {
     let home = Arc::new(TempDir::new()?);
@@ -2287,7 +2558,9 @@ allow_local_binding = true
                 .set_permission_profile(permission_profile_for_config)
                 .expect("set permission profile");
         });
-    let test = builder.build_with_remote_and_local_env(server).await?;
+    let test = builder
+        .build_with_remote_and_local_env_at_uri(server_uri)
+        .await?;
     assert!(
         test.config.managed_network_requirements_enabled(),
         "expected managed network requirements to be enabled"

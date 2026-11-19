@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.root-checkpoint-adoption-qualification.v1",
+  "source_head": "338bf7ed24cd9058e0368c34ead587094800a0b9",
+  "source_tree": "9972af456543778b31aee0f7aa163e6511e0b808",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.215
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-adoption-qualification-02/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 554.242
+    },
+    {
+      "stage": "actual-root-tests",
+      "argv": [
+        "sudo",
+        "-n",
+        "/usr/bin/env",
+        "PATH=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/.cargo/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "RUSTC=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "CARGO_TARGET_DIR=/data/asterinas-audit-build.8tdrjboi/root-final-use-target",
+        "TMPDIR=/data/checkpoint-adopt-tmp.0u_ggg13",
+        "CARGO_NET_OFFLINE=true",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "CARGO_HOME=/home/qian-qi/.cargo",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/var/lib/hepta-authority-os3-20261023/checkpoint-adoption-69g5w0an",
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import os,sys; os.umask(0o077); os.execv(sys.argv[1],sys.argv[1:])",
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-adoption-qualification-02/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-checkpoint-adoption-qualification-02/binaries-metadata.json",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(authority_host_checkpoint::)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 16.912
+    }
+  ],
+  "status": "complete",
+  "passed": true,
+  "cache_reused": "completed isolated consumer Rust1.96 target, exclusive subsequent use",
+  "production_authority": false,
+  "service_wire_qualified": false,
+  "qualification_phase": "freshcounter1 and uncertain-result fix after actual baseline12pass2fail",
+  "scope": "Original seven root/data backend tests, six real pidfd clean-handoff/uncertain-result tests, one concrete fresh Root/original client binding; synthetic authorization fixtures remain explicit.",
+  "root_fixture": {
+    "path": "/var/lib/hepta-authority-os3-20261023/checkpoint-adoption-69g5w0an",
+    "uid": 0,
+    "mode": "0o700"
+  },
+  "source_inputs_unchanged": true
+}

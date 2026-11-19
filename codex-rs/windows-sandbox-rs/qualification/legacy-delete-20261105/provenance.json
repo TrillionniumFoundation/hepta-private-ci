@@ -1,0 +1,36 @@
+{
+  "status": "P0_OPEN_CONTAINMENT_ONLY",
+  "original_run_id": 41966043093,
+  "original_job_id": 127043294552,
+  "original_run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/41966043093/job/127043294552",
+  "original_head_sha": "3419b6ac8adf5b47b140e553f5fff9e74c98d352",
+  "original_base_sha": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "original_tested_merge_sha": "9459cf8a4e5e43d6645e2b619b86455132c7df67",
+  "repair_base_sha": "4e31abc907f09740d402d1ddef7a1d2fe0a366a6",
+  "runner_os": "Windows Server 2025 10.0.26100",
+  "runner_image": "windows-2025-vs2026 20261030.294.1",
+  "decoded_original_job_log": {
+    "file": "original-job-127043294552.log.gz",
+    "bytes": 600398,
+    "sha256": "a30a35effe2fe56d997ef570b27f3c81b358b33fb13401e3977ed6277bec0bb1",
+    "gzip_sha256": "790ace694194dfb58da3a3de99c5f333a3700798a098d98a5f87ba04a53698c9"
+  },
+  "preserved_test_files": {
+    "src/token_tests.rs": {
+      "bytes": 12030,
+      "sha256": "34dc7ff709ef92eda479d90a1463ce2bde59255d0b0be11aa53846ad25b099ae",
+      "git_blob_sha": "25cf2a9b066aacda4e5e7e92dc933159b46574d5"
+    },
+    "src/unified_exec/tests.rs": {
+      "bytes": 43042,
+      "sha256": "e4b2ec59194ddce41f11633798346adea5f4448a3f5dcfac77e3aa0278f1f8a9",
+      "git_blob_sha": "1c06624f04400b15221708fa7e39e5ae76480d18"
+    }
+  },
+  "original_failed_tests": [
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "acceptance_requires_actual_original_operations": true,
+  "containment_refusal_is_not_original_acceptance": true
+}

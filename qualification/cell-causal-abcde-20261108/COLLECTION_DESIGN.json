@@ -1,0 +1,252 @@
+{
+  "schema": "ndu.real.pilot-design.v1",
+  "study_id": "cell-causal-v2-collection-20261108-cf0",
+  "purpose": "New complete v2 train trajectories for paired memory engineering pilot; no confirmation or adoption.",
+  "scope": "Five constructed workflows on independently grouped real receipt scans in one domain; actual text and source-image crop outputs",
+  "fixed_parent_protocol_commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+  "source_repository": "jsdnrs/ICDAR2019-SROIE",
+  "source_revision": "bffe40c26759f3376ec2b3ae9031dbba54cd587c",
+  "source_selection": {
+    "order": "SHA256(study_id:role:source_group); one receipt per group ordered by SHA256(study_id:episode_group)",
+    "training_groups": 2,
+    "tuning_groups": 1,
+    "tuning_source_role": "train, after and disjoint from the 40 model-fitting groups",
+    "pilot_new_groups": 2,
+    "pilot_new_source_role": "development",
+    "pilot_retention_groups": 2,
+    "pilot_retention_source_role": "retention_validation",
+    "disclosed_source_exclusion": "Exclude every nontrain source group in the independently pinned public-source-exposure ledger before pilot selection; retain old registration bytes and quarantine the entire exposed confirmation group",
+    "confirmation_source_roles": [
+      "confirmation",
+      "retention_test"
+    ],
+    "confirmation_release": "DENIED pending externally authenticated owner, model/comparator locks and prospective power plan"
+  },
+  "training_seeds": [
+    104729,
+    130363
+  ],
+  "behavior_collector_seed": 271828,
+  "independent_fit_unit": "One full from-initialization training replicate per seed; episode seeds and common behavior collector are not independent fits",
+  "training": {
+    "common_data": "Actual isolated train-only OCR observations, then actual predeclared exploration trajectories using a separately fitted behavior collector",
+    "content_epochs": 2,
+    "fit_epochs": 2,
+    "content_learning_rate": 0.003,
+    "head_learning_rates": [
+      0.003
+    ],
+    "training_job_wall_budget_seconds": 45,
+    "outer_training_process_timeout_seconds": 660,
+    "training_phase_bound": "Finite 152-job grid; each subprocess is bounded. The 7200-second admission timer applies to episode phases, not a separate global training timer.",
+    "frozen": "Actual same-content weights per core/seed across controllers; all content tensors frozen and hashed",
+    "joint": "Matched per-controller initialization/data/opportunity; real task and observed utility/transition/router losses in the same backward pass",
+    "unmatched_active_parameter_claim": "Report actual stored/trainable/executed capacities. Do not pad unused parameters or claim legacy exact-active-capacity admission.",
+    "common_auxiliary_losses": "Unused controller heads may receive the same fitted-data opportunity with detached content; count their complete training work"
+  },
+  "arms": {
+    "A": [
+      "ordinary",
+      "light"
+    ],
+    "B": [
+      "ordinary",
+      "ndu"
+    ],
+    "C": [
+      "hepta",
+      "light"
+    ],
+    "D": [
+      "hepta",
+      "ndu"
+    ],
+    "initial": [
+      "ordinary",
+      "initial"
+    ],
+    "tuned_fixed": [
+      "ordinary",
+      "tuned_fixed"
+    ],
+    "voi": [
+      "ordinary",
+      "voi"
+    ],
+    "mpc": [
+      "ordinary",
+      "mpc"
+    ],
+    "initial_hepta": [
+      "hepta",
+      "initial"
+    ],
+    "tuned_fixed_hepta": [
+      "hepta",
+      "tuned_fixed"
+    ],
+    "voi_hepta": [
+      "hepta",
+      "voi"
+    ],
+    "mpc_hepta": [
+      "hepta",
+      "mpc"
+    ]
+  },
+  "regimes": [
+    "frozen",
+    "joint"
+  ],
+  "fixed_schedule_candidates": [
+    [
+      "WRITE_TEXT",
+      "RENDER_IMAGE"
+    ],
+    [
+      "PREPARE_ROI",
+      "READ_ROI",
+      "WRITE_TEXT",
+      "RENDER_IMAGE"
+    ],
+    [
+      "WRITE_TEXT",
+      "PREPARE_ROI",
+      "READ_ROI",
+      "WRITE_TEXT",
+      "RENDER_IMAGE"
+    ]
+  ],
+  "exploration_candidates": [
+    [
+      "WRITE_TEXT",
+      "RENDER_IMAGE",
+      "STOP"
+    ],
+    [
+      "PREPARE_ROI",
+      "READ_ROI",
+      "WRITE_TEXT",
+      "RENDER_IMAGE",
+      "STOP"
+    ],
+    [
+      "RENDER_IMAGE",
+      "WRITE_TEXT",
+      "PREPARE_ROI",
+      "READ_ROI",
+      "WRITE_TEXT",
+      "RENDER_IMAGE",
+      "STOP"
+    ]
+  ],
+  "exploration_selection": "SHA256(case_id) modulo three, before viewing any private score; remove operations forbidden by public committed outputs",
+  "controller": {
+    "risk": 0.25,
+    "discount_per_second": 1.0,
+    "latency_weight": 0.01,
+    "horizon": 3,
+    "max_forecasts": 128,
+    "max_sequences": 84,
+    "particles": 2,
+    "memory_mode": "reset"
+  },
+  "objective": {
+    "gross": "Externally pinned exact-answer / actual-pixel-crop rubric in [0,1]",
+    "net": "gross_quality - 0.01 * observed_deployment_wall_seconds",
+    "weight_rationale": "Prospective research latency trade-off: 100 seconds costs one full quality unit. This is not a provider price, energy conversion, or production owner approval.",
+    "failed_deployment_decision_utility": "-1 - 0.01 * observed_deployment_wall_seconds; preserve gross_score=null when external scoring did not occur",
+    "net_minimum_useful_effect": 0.05,
+    "planning_alternative_net_gain": 0.1,
+    "retention_noninferiority_margin": 0.02,
+    "planning_alternative_retention_difference": 0.0,
+    "retention_scope": "Held-out receipt field retrieval; compare each joint A/B/C/D both to its frozen counterpart and to the same-seed/core pretrained content decoder actually executing WRITE_TEXT then STOP. No claim about unmeasured historic multimodal abilities."
+  },
+  "budgets": {
+    "max_workers": 2,
+    "torch_threads_per_worker": 1,
+    "episode_wall_seconds": 60,
+    "maximum_actions": 8,
+    "aggregate_job_memory_bytes": 4294967296,
+    "aggregate_job_cpu_quota_percent": 200,
+    "phase_wall_seconds": 240,
+    "phase_budget_semantics": "Stop new episode admissions before the 7200-second deadline; drain already admitted episodes within the declared 360-second bound. This is not a hard total phase kill timer.",
+    "maximum_drain_seconds": 360,
+    "automatic_performance_retries": 0,
+    "failed_originals": "Always retained; any explicit infrastructure correction gets a new operation ID and predecessor. No failed attempt disappears."
+  },
+  "tuning": {
+    "criterion": "Highest mean net latency utility, equally weighted source groups and five families, on the disjoint eight train-role tuning groups",
+    "trials_per_active_profile": 3,
+    "tie_break": "Lowest trial index",
+    "strongest_comparator": "Per fit/regime choose the strongest tuned member of initial/tuned_fixed/voi/mpc on either ordinary or Hepta core, before any development pilot execution; retain the original 16 profiles plus 8 same-Hepta supplementary profiles",
+    "initial_delivery": "No learned policy choice or extra encoding; exact same incoming delivery and model-loading accounting"
+  },
+  "statistics": {
+    "family_size": 24,
+    "alpha": 0.05,
+    "target_power": 0.8,
+    "confirmatory_use": false,
+    "required_contrasts_per_regime": [
+      "B-A",
+      "D-C",
+      "D-B",
+      "interaction",
+      "B-strongest",
+      "D-strongest"
+    ],
+    "additional_contrasts": [
+      "joint-frozen:A",
+      "joint-frozen:B",
+      "joint-frozen:C",
+      "joint-frozen:D",
+      "retention:A",
+      "retention:B",
+      "retention:C",
+      "retention:D",
+      "incumbent-retention:A",
+      "incumbent-retention:B",
+      "incumbent-retention:C",
+      "incumbent-retention:D"
+    ],
+    "bootstrap": "Paired within fit/source, equal family weights, resample independent fits and source groups separately; 20000 draws, seed 32452843; Bonferroni 24 descriptive intervals",
+    "power": "Estimate fit, source and interaction variance from actual pilot; prospective future mean variance vf/R + vs/G + vi/(R*G). Superiority assumes true net gain .10 against the useful-effect null .05, giving gap .05; retention assumes true difference 0 against null -.02, giving gap .02. Never fit the planning alternative to observed gains, invent variance, or reuse pilot fits/groups as confirmation.",
+    "missing_or_failed_runs": "Retain all planned rows and failures; report coverage, failure penalties and missing measurement. Formal gates remain HOLD."
+  },
+  "research_accounting": {
+    "deployment_categories": [
+      "encoder",
+      "shared",
+      "decoder",
+      "critic",
+      "planning",
+      "codec",
+      "failure",
+      "retry",
+      "sync"
+    ],
+    "research_phases": [
+      "acquisition",
+      "registration",
+      "engineering",
+      "collection",
+      "training",
+      "search",
+      "evaluation",
+      "native_reconciliation"
+    ],
+    "unknowns": [
+      "energy_joules",
+      "provider_charges",
+      "historic_environment_preparation"
+    ],
+    "amortization_deployments": [
+      100,
+      1000,
+      10000
+    ],
+    "double_count_rule": "Research includes its actual evaluation inference. Do not add the same deployment envelope again when totaling research. Nested costs are reconciled, never summed twice."
+  },
+  "native_boundary": "A research Cell journal and actual incumbent next inference do not authenticate three independent controlling authorities or constitute protected FinalUse consumption",
+  "permitted_outcome": "Inconclusive or Failed; no scientific adoption, no zero-delta V5 update, no relaxation of no-op or positive-gain rules"
+}

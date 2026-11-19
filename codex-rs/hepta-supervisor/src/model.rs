@@ -12,7 +12,8 @@ use serde::Serialize;
 
 use crate::SupervisorError;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AgentCommand {
     pub program: PathBuf,
     pub args: Vec<OsString>,
@@ -308,6 +309,18 @@ pub struct AgentSupervisorSnapshot {
     pub(crate) runtime_fenced: bool,
     pub(crate) release_change: Option<ControlReleaseChange>,
     pub(crate) has_last_command: bool,
+}
+
+impl AgentSupervisorSnapshot {
+    /// Restart-attempt counter captured by this snapshot.
+    pub fn restart_attempt(&self) -> u32 {
+        self.restart_attempt
+    }
+
+    /// Whether this snapshot records a queued restart.
+    pub fn restart_pending(&self) -> bool {
+        self.restart_pending
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]

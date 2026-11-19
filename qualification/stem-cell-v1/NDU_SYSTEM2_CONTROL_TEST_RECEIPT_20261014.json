@@ -1,0 +1,154 @@
+{
+  "actual_pretrained_generator": false,
+  "branch": "research/shared-stem-ndu-system2-control-20261014",
+  "checks": {
+    "compileall": "passed",
+    "diff_check": "passed",
+    "just_fmt": "not_run: no just or codex-rs checkout",
+    "native_full_repository_rust": "not_run",
+    "remote_CI": "not_observed",
+    "remote_source_blob_matches": 6
+  },
+  "code_candidate": "935d1a4ef8adc3d8d21955581057bd1eb7d48e2c",
+  "date": "2026-10-14",
+  "evidence_files": {
+    "baseline.log": {
+      "bytes": 39276,
+      "sha256": "3cdda55e2c4e4e3acdf6b2fdfa774c23eac53a103e32581658efaa93a762b792"
+    },
+    "final1.log": {
+      "bytes": 44272,
+      "sha256": "f6ec97e7ed88f101d5f213b0acc1c8b23a11b82065e5706415c66e8210b5e678"
+    },
+    "final2.log": {
+      "bytes": 44272,
+      "sha256": "6118235a4bf930b83066e4ce6982072ae038dad81d31323e5b1d4b41eb70154c"
+    },
+    "full-first.log": {
+      "bytes": 43260,
+      "sha256": "f1ee65aff22ece6762984d70e2e7d691fa220587cf1e8d4c234ac6a3c8e45e8a"
+    },
+    "hf-attempt.log": {
+      "bytes": 285,
+      "sha256": "56075e8aa8ba1ace6456f805b62337b8b2f532cee5702b2846e1c9d6bb806916"
+    },
+    "legacy-system2.log": {
+      "bytes": 1372,
+      "sha256": "611de0d3f3f7e995d665ca3ffa300b8548c85a1aa14307795f34a3cfacc5ddc6"
+    },
+    "ndu-bound.log": {
+      "bytes": 4083,
+      "sha256": "ae3f852c5ffc7a8e4bbb5159375a8720b428f19cdf27ee97d9cd76a5b1a16b06"
+    },
+    "ndu-diagnostic.json": {
+      "bytes": 42473,
+      "sha256": "4b71dcbd92735c9547caa00dbf1d69f0bc522779e8335ae4e53242f4dbf5d0a8"
+    },
+    "ndu-diagnostic.py": {
+      "bytes": 1724,
+      "sha256": "8baa5aa3d82ac4f7bb0fcfeb0a47a40708b6f325adfec4a87bd9a8faf1243e37"
+    },
+    "ndu-final.log": {
+      "bytes": 4739,
+      "sha256": "5a07f77234c27b0e58b632c7723444e8b66bf0b109946167e50291d5898fd714"
+    },
+    "ndu-final2.log": {
+      "bytes": 6197,
+      "sha256": "eb94a24d6679a82243b77419bb5f2b84f4a6e9c1151d4296cc7c09c3df422ddb"
+    },
+    "ndu-first.log": {
+      "bytes": 4083,
+      "sha256": "627fcd0d4f55f8d0b5c8e80c4b72adc8750fe83249cf0c4b2ff9d46d2d6a2e43"
+    },
+    "ndu-pass-final.log": {
+      "bytes": 5095,
+      "sha256": "19056eee13ef41fe26c10b434039f376895b5e7f3b06b82681e2faea2e587352"
+    },
+    "ndu-pass.log": {
+      "bytes": 4921,
+      "sha256": "972c4294144ce6222a9a697dfbb0e8a5acc42fb771f447d8749771fe1873b2de"
+    },
+    "source_hashes.json": {
+      "bytes": 1298,
+      "sha256": "39b2c899e9e8b3fd778eb229400938b71354bda5cbeb874aad0ecc813ac67af2"
+    }
+  },
+  "full_cost_qualification": false,
+  "independent_reasoning_gain_established": false,
+  "installed_hf_attempt": {
+    "checks_defined": 3,
+    "checks_executed": 0,
+    "exit_code": 1,
+    "failure": "ModuleNotFoundError: transformers",
+    "included_in_pass_count": false
+  },
+  "native_ndu_owner_integrated": false,
+  "ndu_matrix_arm_enabled": false,
+  "production_authorized": false,
+  "run_seconds": {
+    "baseline": 26.188,
+    "final1": 27.392,
+    "final2": 26.565
+  },
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu",
+    "transformers_installed": false
+  },
+  "schema": "hepta.ndu-system2-control-source-tests.v1",
+  "source_baseline": "2baa214ce95048ec970a5eab651b58e4e076f553",
+  "source_blobs": {
+    "execution_meter.py": {
+      "bytes": 11217,
+      "git_blob_sha1": "2ab4c102f6f056ee1ad988d0e57e218bd39dcf6d",
+      "lines": 226,
+      "sha256": "a0610030d3cb10cc9d264a20f900dd54c394f26cf3f2994303c932d096d0e069"
+    },
+    "ndu_continuation.py": {
+      "bytes": 11113,
+      "git_blob_sha1": "fd57bbe1094e480048bde2301a4be8f1b69e91d8",
+      "lines": 207,
+      "sha256": "897217e61386d52aa2ae554cebe5474ab5fcf11b3a8483e05a6b62cb2ad22e57"
+    },
+    "system2_execution.py": {
+      "bytes": 13905,
+      "git_blob_sha1": "97860d8882b68932556fbc3157ab7ba80b79218c",
+      "lines": 261,
+      "sha256": "4ca5b45c5f83d44283e9774d5ac65040ff920645fdcf64d0b8354d337bed9e8d"
+    },
+    "test_ndu_continuation.py": {
+      "bytes": 6549,
+      "git_blob_sha1": "7103c43eb822f9b9ed5ae76df9d30be68a4afb1f",
+      "lines": 123,
+      "sha256": "a2af6c30d5a8e2af40bfb9b5070f25ecd6746d038f8c0b737db12f9749a35056"
+    },
+    "test_ndu_reasoning.py": {
+      "bytes": 11590,
+      "git_blob_sha1": "999430527cef3c2932e59341abd9a48ae8026d81",
+      "lines": 218,
+      "sha256": "e88e8f62f5dafba7e37d8d9dd7778c21eea8d8a0525a6ed5b3df7d399824e787"
+    },
+    "work_record.py": {
+      "bytes": 5312,
+      "git_blob_sha1": "42055d820c8b7c5fa92732766c30433c2e6f3002",
+      "lines": 91,
+      "sha256": "08b84ed03afd1e69bcdc6f96d6c912d5b1c765c7279f42a8264b08cffafb14f0"
+    }
+  },
+  "surface": "session Linux CPU source slice, not target cloud or full checkout",
+  "tests": {
+    "baseline": 248,
+    "distinct_ids": 279,
+    "errors": 0,
+    "failures": 0,
+    "final_count": 279,
+    "final_runs": 2,
+    "new_continuation": 12,
+    "new_reasoning_integration": 19,
+    "retained": 248,
+    "skips": 0
+  },
+  "trained_critic_validated": false
+}

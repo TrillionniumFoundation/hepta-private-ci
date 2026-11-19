@@ -1,0 +1,38 @@
+name: Hepta Group Six-Block Independent Review (Research)
+on:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/group_feedback_factorial_aggregate.py'
+      - 'qualification/stem-cell-v1/test_group_feedback_factorial_aggregate.py'
+      - '.github/workflows/hepta-group-feedback-six-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-group-six-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  independent-stdlib:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Compile exact source without pretrained or third-party packages
+        run: |
+          python -m py_compile qualification/stem-cell-v1/group_feedback_factorial_aggregate.py
+          python -m py_compile qualification/stem-cell-v1/test_group_feedback_factorial_aggregate.py
+      - name: Independent six-block negative tests, normal Python and -O
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python -S -m unittest test_group_feedback_factorial_aggregate -v
+          python -S -O -m unittest test_group_feedback_factorial_aggregate -v

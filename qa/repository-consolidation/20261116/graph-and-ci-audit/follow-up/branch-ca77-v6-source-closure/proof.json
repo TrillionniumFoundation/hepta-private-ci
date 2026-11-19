@@ -1,0 +1,597 @@
+{
+  "schema": "ca77-v6-additional-source-review-v1",
+  "utc": "2026-11-16T21:03:39.858239+00:00",
+  "incoming_commit": "ca77c88d01b5dc800bdba7cfdc673c7d8d89101a",
+  "source_plan_reference": {
+    "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-source-plan-v1.json",
+    "bytes": 218960,
+    "sha256": "92b883c23b4e3d5f2244b1f1ff239bb5e50d31b858ed63c52cc27227c4279f48"
+  },
+  "source_only_tree": "5b69f26a34163af35b9a2b8321dc00b882238983",
+  "native_context_local_commit": "f8769bf0b4132691fac486a82c842add332bf0c3",
+  "native_context_tree": "ea64c1e3064c00e46bcb8d9b0e6ff4edddef1f4f",
+  "native_frozen_manifest": {
+    "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-ndu-generation-owner-five-v1/rust-input-manifest.json.gz",
+    "gzip_sha256": "2b941011896469cb1d881a78a04d28af9766730bace2b140e984daa8344705ab"
+  },
+  "additional_original_tests": {
+    "returncode": 0,
+    "seconds": 19.51627269599703,
+    "summaries": ["Ran 75 tests in 14.484s", "OK"],
+    "log_bytes": 15290,
+    "log_sha256": "b63c6c803e544cec66be253caf5802641c6bc79ab51b02e90438de970b1e7980",
+    "all_427_inputs_unchanged": true,
+    "git_status_porcelain": "",
+    "source_identity_files": 421,
+    "source_identity_bundle": "3d7c606e080a08136712bf2a3c3aeed682e334bb074dc591897dd9eda934788d",
+    "utc_end": "2026-11-16T20:57:08.175395+00:00",
+    "prior_27_rerun": false,
+    "prior_native_five_rerun": false,
+    "scientific_or_historical_calibration_run": false
+  },
+  "test_methods": [
+    {
+      "module": "completed_owner_fixture_tests",
+      "test_methods": [
+        {
+          "class": "CompletedOwnerAuditTests",
+          "method": "test_original_membership_request_and_bytes",
+          "line": 61
+        },
+        {
+          "class": "CompletedOwnerAuditTests",
+          "method": "test_self_resealed_foreign_row_is_rejected",
+          "line": 68
+        },
+        {
+          "class": "CompletedOwnerAuditTests",
+          "method": "test_changed_public_input_is_rejected",
+          "line": 82
+        },
+        {
+          "class": "CompletedOwnerAuditTests",
+          "method": "test_independent_row_log_pin_cannot_be_replaced",
+          "line": 92
+        }
+      ],
+      "count": 4
+    },
+    {
+      "module": "distribution_tests",
+      "test_methods": [
+        {
+          "class": "ConditionalDistributionTests",
+          "method": "test_actual_post_action_scale_changes_risk_ranking_and_gamma_zero_limit",
+          "line": 57
+        },
+        {
+          "class": "ConditionalDistributionTests",
+          "method": "test_public_conditioning_uses_mask_hints_pixels_and_rejects_target_or_drift",
+          "line": 84
+        },
+        {
+          "class": "ConditionalDistributionTests",
+          "method": "test_checkpoint_file_profile_and_parameter_binding_preserve_legacy_loader",
+          "line": 100
+        },
+        {
+          "class": "ConditionalFittingTests",
+          "method": "test_cross_fit_withholds_every_route_of_each_original_pair",
+          "line": 128
+        },
+        {
+          "class": "ConditionalFittingTests",
+          "method": "test_empirical_crps_and_group_scores_do_not_inflate_source_count",
+          "line": 150
+        },
+        {
+          "class": "ConditionalFittingTests",
+          "method": "test_forecast_selection_stays_within_each_public_view_and_initialization",
+          "line": 160
+        },
+        {
+          "class": "ConditionalFittingTests",
+          "method": "test_full_offline_fit_calibrates_once_per_disjoint_pair_and_supports_opaque_states",
+          "line": 177
+        }
+      ],
+      "count": 7
+    },
+    {
+      "module": "inference_guard_tests",
+      "test_methods": [
+        {
+          "class": "InferenceGuardTests",
+          "method": "test_standalone_identity_retains_parameter_mutation_detection",
+          "line": 42
+        },
+        {
+          "class": "InferenceGuardTests",
+          "method": "test_persistent_model_or_forecast_mutation_blocks_guard_exit",
+          "line": 52
+        },
+        {
+          "class": "InferenceGuardTests",
+          "method": "test_nested_cross_thread_and_exceptional_use_do_not_leak_guard",
+          "line": 67
+        },
+        {
+          "class": "InferenceGuardTests",
+          "method": "test_guarded_and_strict_real_rollouts_have_identical_decisions_and_outputs",
+          "line": 90
+        },
+        {
+          "class": "InferenceGuardTests",
+          "method": "test_decode_time_mutation_prevents_rollout_return",
+          "line": 106
+        }
+      ],
+      "count": 5
+    },
+    {
+      "module": "joint_contract_tests",
+      "test_methods": [
+        {
+          "class": "JointContractTests",
+          "method": "test_current_pair_passes_and_all_four_slots_remain_explicit",
+          "line": 40
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_unimplemented_unknown_duplicate_and_missing_requirements_reject",
+          "line": 50
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_exact_mask_complete_slots_and_event_coverage_are_required",
+          "line": 60
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_shared_clock_bounds_and_tolerance_are_enforced",
+          "line": 79
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_all_four_request_fails_before_source_or_dataset_preparation",
+          "line": 100
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_real_decoder_state_and_reopened_outputs_bind_without_fake_media",
+          "line": 114
+        },
+        {
+          "class": "JointContractTests",
+          "method": "test_reporter_rejects_resealed_contract_drift_and_preserves_legacy_scope",
+          "line": 143
+        }
+      ],
+      "count": 7
+    },
+    {
+      "module": "neuron_calibration_tests",
+      "test_methods": [
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_projection_uses_each_block_and_preserves_sign",
+          "line": 38
+        },
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_ood_far_uses_ood_denominator_not_semantic_error_or_selection",
+          "line": 50
+        },
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_complete_census_keeps_negative_ood_result",
+          "line": 60
+        },
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_missing_duplicate_pair_and_source_are_rejected",
+          "line": 66
+        },
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_resealed_score_and_label_tamper_are_rejected",
+          "line": 77
+        },
+        {
+          "class": "NeuronCalibrationTests",
+          "method": "test_original_completion_rejects_renamed_or_replaced_checkpoint",
+          "line": 85
+        }
+      ],
+      "count": 6
+    },
+    {
+      "module": "oracle_tests",
+      "test_methods": [
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_clean_expected_commit_passes_all_128_cases",
+          "line": 50
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_dirty_controller_rejected_without_report",
+          "line": 61
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_wrong_expected_commit_rejected_without_report",
+          "line": 68
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_source_bytes_checked_even_when_git_status_hides_changes",
+          "line": 75
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_existing_report_is_preserved",
+          "line": 84
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_import_error_has_no_credited_output",
+          "line": 92
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_persistent_mutation_during_cases_rejected",
+          "line": 100
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_completed_numerical_failures_are_reported_with_nonzero_exit",
+          "line": 116
+        },
+        {
+          "class": "OracleCustodyTests",
+          "method": "test_atomic_publication_cannot_overwrite_a_late_destination",
+          "line": 130
+        }
+      ],
+      "count": 9
+    },
+    {
+      "module": "replay_tests",
+      "test_methods": [
+        {
+          "class": "ReplayTests",
+          "method": "test_only_physical_timings_may_change",
+          "line": 24
+        },
+        {
+          "class": "ReplayTests",
+          "method": "test_incomplete_original_fails_before_data_or_checkpoint_access",
+          "line": 46
+        },
+        {
+          "class": "ReplayTests",
+          "method": "test_original_tree_is_never_an_output_destination",
+          "line": 60
+        }
+      ],
+      "count": 3
+    },
+    {
+      "module": "run_tests",
+      "test_methods": [
+        {
+          "class": "RunCustodyTests",
+          "method": "test_preparation_failure_is_preserved_without_changing_cwd",
+          "line": 18
+        },
+        {
+          "class": "RunCustodyTests",
+          "method": "test_native_dependencies_are_bound_into_source_identity",
+          "line": 39
+        },
+        {
+          "class": "HeldoutRegistrationTests",
+          "method": "test_new_registration_excludes_previous_source_pixels",
+          "line": 62
+        },
+        {
+          "class": "HeldoutRegistrationTests",
+          "method": "test_aliasing_pixel_identity_cannot_evade_the_exclusion",
+          "line": 79
+        },
+        {
+          "class": "HeldoutRegistrationTests",
+          "method": "test_invalid_offsets_and_out_of_range_cohorts_fail_before_training",
+          "line": 90
+        }
+      ],
+      "count": 5
+    },
+    {
+      "module": "terminal_fixture_tests",
+      "test_methods": [
+        {
+          "class": "TerminalFixtureTests",
+          "method": "test_q32_binary64_half_grid_and_neighbors",
+          "line": 15
+        },
+        {
+          "class": "TerminalFixtureTests",
+          "method": "test_unfinished_status_rejects_before_outcome_access",
+          "line": 32
+        },
+        {
+          "class": "TerminalFixtureTests",
+          "method": "test_completed_summary_cannot_authenticate_replaced_protocol_or_census",
+          "line": 44
+        }
+      ],
+      "count": 3
+    },
+    {
+      "module": "test_control",
+      "test_methods": [
+        {
+          "class": "ControlTests",
+          "method": "test_tiny_gamma_wide_payoffs_and_zero_mass",
+          "line": 66
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_invalid_probability_or_nonfinite_inputs_fail",
+          "line": 81
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_recursive_policy_and_values_match_independent_oracle",
+          "line": 89
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_risk_and_state_conditional_law_change_choice",
+          "line": 106
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_oracle_respects_reserved_search_and_future_generation_cost",
+          "line": 117
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_search_spend_execution_and_stop_conserve_budget",
+          "line": 129
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_search_truncation_charges_attempted_neural_work",
+          "line": 144
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_fixed_router_and_allocation_ablation",
+          "line": 153
+        },
+        {
+          "class": "ControlTests",
+          "method": "test_identity_drift_and_in_place_prediction_rejected",
+          "line": 166
+        }
+      ],
+      "count": 9
+    },
+    {
+      "module": "test_forecast",
+      "test_methods": [
+        {
+          "class": "ForecastTests",
+          "method": "test_ridge_learns_public_mapping_and_rejects_nonfinite_data",
+          "line": 30
+        },
+        {
+          "class": "ForecastTests",
+          "method": "test_offline_fit_partition_counts_backend_and_roundtrip",
+          "line": 38
+        },
+        {
+          "class": "ForecastTests",
+          "method": "test_duplicate_source_pixels_and_wrong_snapshot_rejected",
+          "line": 82
+        },
+        {
+          "class": "ForecastTests",
+          "method": "test_conditional_support_counts_groups_and_balances_their_mass",
+          "line": 97
+        },
+        {
+          "class": "ForecastTests",
+          "method": "test_opaque_controlled_snapshot_uses_same_backend_protocol",
+          "line": 114
+        }
+      ],
+      "count": 5
+    },
+    {
+      "module": "test_reporting",
+      "test_methods": [
+        {
+          "class": "ReportingTests",
+          "method": "test_fractional_tail_keeps_the_boundary_mass",
+          "line": 60
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_full_census_preserves_adverse_seed_and_correlated_sample_counts",
+          "line": 66
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_missing_or_duplicated_arm_is_rejected",
+          "line": 78
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_adverse_corruption_is_visible_separately_from_the_mean",
+          "line": 83
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_relabelled_pixel_identity_cannot_cross_source_cases",
+          "line": 101
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_distinct_frozen_observer_artifacts_are_required_when_declared",
+          "line": 109
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_receipt_model_and_metric_changes_are_rejected",
+          "line": 132
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_changed_original_bytes_and_hidden_work_are_rejected",
+          "line": 146
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_missing_malformed_or_changed_forecast_identity_is_rejected",
+          "line": 156
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_declared_file_pins_bind_checkpoint_bytes_and_every_paired_row",
+          "line": 167
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_previous_heldout_pixels_are_independently_rejected",
+          "line": 202
+        },
+        {
+          "class": "ReportingTests",
+          "method": "test_native_export_keeps_risk_unknown_conservative_and_cost_separate",
+          "line": 211
+        }
+      ],
+      "count": 12
+    }
+  ],
+  "count_correction": {
+    "static_prefix_count": 103,
+    "actual_original_unittest_methods": 99,
+    "new_namespace_regressions": 3,
+    "combined_unittest_methods": 102,
+    "production_function_incorrectly_counted": "paired_fixture.test_source_ids",
+    "tests_omitted": 0,
+    "test_definitions_changed": 0
+  },
+  "previous_proof_reference": {
+    "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-v6-generation-closure-v1/evidence-publication-native-five-v2/proof.json",
+    "bytes": 56193,
+    "sha256": "d96c39dde4dcbf7f9ae6a007314b0e660c41a625f354aa5fb4a99d1f157a81af"
+  },
+  "gates_reference": {
+    "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-source-gates-v1/gate-summary.json",
+    "bytes": 17721,
+    "sha256": "bba168ab34e61498a710958a93e095cd1e97cb16d69351ea114416a6838e1870"
+  },
+  "source_identity_reference": {
+    "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-original-tests-v1/source-identity.stdout.json",
+    "bytes": 53230,
+    "sha256": "5f54ab5c0d07fc23237ffe1da17826ae88e13e7507e6390275a3e54dcc4158df"
+  },
+  "runtime": {
+    "python": "3.12.3",
+    "torch": "2.14.1+cpu",
+    "numpy": "2.3.5",
+    "pillow": "12.3.0",
+    "incoming_workflow_python": "3.12.14",
+    "hosted_environment_qualification_claimed": false
+  },
+  "historical_calibration_re_signed": false,
+  "scientific_run_executed": false,
+  "workflows_modified": 0,
+  "remote_writes": 0,
+  "new_evidence_archives": [
+    {
+      "name": "original-tests.log.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-original-tests-v1/original-76-tests.log",
+        "bytes": 15290,
+        "sha256": "b63c6c803e544cec66be253caf5802641c6bc79ab51b02e90438de970b1e7980"
+      },
+      "gzip": {
+        "bytes": 2607,
+        "sha256": "45dfe3708ea73082ddd71b1be620ad6e4a315138d9c7b354305da8050fb02399",
+        "git_sha": "f02b69417e74919b1507280a3687ece8602c0974"
+      }
+    },
+    {
+      "name": "invocation.json.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-original-tests-v1/invocation.json",
+        "bytes": 2229,
+        "sha256": "327199a3264c77c3f95689c3ab4817c16adfa75a94e747659b64b34ade5cb748"
+      },
+      "gzip": {
+        "bytes": 771,
+        "sha256": "84a1720abf5bd0ea1c2f1d038c7d014699ec1bea7b609e57e76fce298ef6448c",
+        "git_sha": "9d77db229388647a60bacb4095e5837ecbd42344"
+      }
+    },
+    {
+      "name": "source-identity.json.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-original-tests-v1/source-identity.stdout.json",
+        "bytes": 53230,
+        "sha256": "5f54ab5c0d07fc23237ffe1da17826ae88e13e7507e6390275a3e54dcc4158df"
+      },
+      "gzip": {
+        "bytes": 20034,
+        "sha256": "93c2d8b95520bf3f9433ca673ce0c5fbfb5050aa9fc0dc9787b969f51dd2666a",
+        "git_sha": "7dd4ba876fd44e12590dd82c7cd15812f487ae30"
+      }
+    },
+    {
+      "name": "input-manifest.json.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-original-tests-v1/input-manifest.json",
+        "bytes": 71498,
+        "sha256": "e52d6c4437be1ba411a2160b4c60207616867c16484dba409e30512bfe6a2439"
+      },
+      "gzip": {
+        "bytes": 22357,
+        "sha256": "03625e6767ac2893195d1f45b81ee42785c942b7b39b491861fb7f7f52381af1",
+        "git_sha": "4b76cac254faf99428da7160817fd110e08eae9b"
+      }
+    },
+    {
+      "name": "source-plan-and-native-context.json.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-source-plan-v1.json",
+        "bytes": 218960,
+        "sha256": "92b883c23b4e3d5f2244b1f1ff239bb5e50d31b858ed63c52cc27227c4279f48"
+      },
+      "gzip": {
+        "bytes": 41171,
+        "sha256": "d1e9d47811fff130b99c173523a9124b9da62c8ff915b89bda860d463ee8a470",
+        "git_sha": "19b33edd0427adc0dacccc4ad2042987bee6919a"
+      }
+    },
+    {
+      "name": "source-gates.json.gz",
+      "raw": {
+        "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/ca77-full-v6-minimal-closure-v1/additional-source-gates-v1/gate-summary.json",
+        "bytes": 17721,
+        "sha256": "bba168ab34e61498a710958a93e095cd1e97cb16d69351ea114416a6838e1870"
+      },
+      "gzip": {
+        "bytes": 2833,
+        "sha256": "6edf7f7ce18ab6c0bd2ebf8f02715a0875d5de64cc09668d858f0dc286187da6",
+        "git_sha": "bacddb2c522ce731f137c29f3e5afa258a78979f"
+      }
+    }
+  ]
+}

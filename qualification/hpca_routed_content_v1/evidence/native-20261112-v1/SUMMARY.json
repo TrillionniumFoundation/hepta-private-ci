@@ -1,0 +1,294 @@
+{
+  "base": {
+    "content": {
+      "accuracy_including_invalid": 0.5,
+      "correct": 32,
+      "n": 64,
+      "valid": 64
+    },
+    "retention": {
+      "accuracy_including_invalid": 0.25,
+      "correct": 8,
+      "n": 32,
+      "valid": 14
+    }
+  },
+  "claims_not_established": [
+    "independent future efficacy",
+    "full model or LoRA retraining",
+    "retention adequacy",
+    "native HPCA integration",
+    "content x NDU 2x2",
+    "production Owner",
+    "adoption",
+    "energy benefit",
+    "old eight-adapter 624-generation experiment"
+  ],
+  "conclusion": "Actual content-head updates and unrestricted generated text are recorded and replayable; correct routing does not establish a consistent content improvement. Four-seed routed mean is below unchanged base. Baseline retention competence gate fails.",
+  "content_by_arm": {
+    "no_eligibility": {
+      "correct_by_seed": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "descriptive_repeated_observation_correct": 128,
+      "descriptive_repeated_observation_n": 256,
+      "descriptive_repeated_observation_valid": 256,
+      "mean_accuracy": 0.5,
+      "not_256_independent_tasks": true,
+      "unique_tasks": 64,
+      "valid_by_seed": [
+        64,
+        64,
+        64,
+        64
+      ]
+    },
+    "routed": {
+      "correct_by_seed": [
+        27,
+        32,
+        24,
+        37
+      ],
+      "descriptive_repeated_observation_correct": 120,
+      "descriptive_repeated_observation_n": 256,
+      "descriptive_repeated_observation_valid": 233,
+      "mean_accuracy": 0.46875,
+      "not_256_independent_tasks": true,
+      "unique_tasks": 64,
+      "valid_by_seed": [
+        56,
+        64,
+        50,
+        63
+      ]
+    },
+    "scalar": {
+      "correct_by_seed": [
+        24,
+        32,
+        24,
+        32
+      ],
+      "descriptive_repeated_observation_correct": 112,
+      "descriptive_repeated_observation_n": 256,
+      "descriptive_repeated_observation_valid": 228,
+      "mean_accuracy": 0.4375,
+      "not_256_independent_tasks": true,
+      "unique_tasks": 64,
+      "valid_by_seed": [
+        50,
+        64,
+        50,
+        64
+      ]
+    },
+    "shuffled": {
+      "correct_by_seed": [
+        29,
+        32,
+        24,
+        33
+      ],
+      "descriptive_repeated_observation_correct": 118,
+      "descriptive_repeated_observation_n": 256,
+      "descriptive_repeated_observation_valid": 236,
+      "mean_accuracy": 0.4609375,
+      "not_256_independent_tasks": true,
+      "unique_tasks": 64,
+      "valid_by_seed": [
+        58,
+        64,
+        50,
+        64
+      ]
+    }
+  },
+  "decision": "HOLD_NO_GO",
+  "feedback_same_across_arms": true,
+  "independent_future_B": false,
+  "native_cold": {
+    "completed_generations": 204,
+    "cost_excludes": [
+      "source preparation",
+      "queue",
+      "prior model training",
+      "energy",
+      "Owner lifecycle"
+    ],
+    "cpu_seconds": 90.378343927,
+    "emitted_tokens_including_eos": 408,
+    "failed_generations": 0,
+    "fixed_attempt_denominator": 204,
+    "generation_attempts": 204,
+    "generation_body_forward_calls": 408,
+    "independently_recomputed_exact_rows": 204,
+    "is_fresh_process_checkpoint_inference": true,
+    "is_training_reexecution": false,
+    "job_id": "1a1ce8f4634-2564-16ee",
+    "peak_rss_kib": 1136512,
+    "process_exit": 0,
+    "reported_all_exact": true,
+    "result_sha256": "9b42ff62fc3c1fb1b1daf56b523ee86c2d67362c7e1ac94b681321569183be56",
+    "wall_seconds": 27.28165430901572
+  },
+  "native_main": {
+    "completed_generations": 1632,
+    "cost_excludes": [
+      "source preparation",
+      "queue",
+      "prior model training",
+      "energy",
+      "Owner lifecycle"
+    ],
+    "cpu_seconds": 1015.173846611,
+    "emitted_tokens_including_eos": 5749,
+    "failed_generations": 0,
+    "generation_attempts": 1632,
+    "generation_body_forward_calls": 5749,
+    "job_id": "1a1ce85599c-2564-16db",
+    "peak_rss_kib": 1138232,
+    "process_exit": 0,
+    "result_sha256": "0bd8a380cd565fc76b42bc184357c14d25f030b69286769d0863af68819e7e2b",
+    "wall_seconds": 279.6556043238379
+  },
+  "no_eligibility_equals_base_generation_rows": 384,
+  "no_post_result_tuning": true,
+  "observation_unit": {
+    "content_paired_blocks": 32,
+    "content_source_cluster_strings": 64,
+    "content_unique_tasks": 64,
+    "repeated_training_seeds": 4,
+    "retention_source_clusters": 16,
+    "retention_unique_tasks": 32,
+    "seeds_do_not_create_new_tasks": true
+  },
+  "paired_routing_counts": {
+    "11": {
+      "content": {
+        "both_correct": 0,
+        "correct_difference_routed_minus_shuffled": -2,
+        "n": 64,
+        "neither_correct": 8,
+        "routed_invalid": 8,
+        "routed_only_correct": 27,
+        "shuffled_invalid": 6,
+        "shuffled_only_correct": 29
+      },
+      "retention": {
+        "both_correct": 0,
+        "correct_difference_routed_minus_shuffled": 1,
+        "n": 32,
+        "neither_correct": 21,
+        "routed_invalid": 23,
+        "routed_only_correct": 6,
+        "shuffled_invalid": 22,
+        "shuffled_only_correct": 5
+      }
+    },
+    "17": {
+      "content": {
+        "both_correct": 32,
+        "correct_difference_routed_minus_shuffled": 0,
+        "n": 64,
+        "neither_correct": 32,
+        "routed_invalid": 0,
+        "routed_only_correct": 0,
+        "shuffled_invalid": 0,
+        "shuffled_only_correct": 0
+      },
+      "retention": {
+        "both_correct": 8,
+        "correct_difference_routed_minus_shuffled": 0,
+        "n": 32,
+        "neither_correct": 22,
+        "routed_invalid": 17,
+        "routed_only_correct": 1,
+        "shuffled_invalid": 15,
+        "shuffled_only_correct": 1
+      }
+    },
+    "23": {
+      "content": {
+        "both_correct": 24,
+        "correct_difference_routed_minus_shuffled": 0,
+        "n": 64,
+        "neither_correct": 40,
+        "routed_invalid": 14,
+        "routed_only_correct": 0,
+        "shuffled_invalid": 14,
+        "shuffled_only_correct": 0
+      },
+      "retention": {
+        "both_correct": 2,
+        "correct_difference_routed_minus_shuffled": 0,
+        "n": 32,
+        "neither_correct": 28,
+        "routed_invalid": 25,
+        "routed_only_correct": 1,
+        "shuffled_invalid": 27,
+        "shuffled_only_correct": 1
+      }
+    },
+    "29": {
+      "content": {
+        "both_correct": 32,
+        "correct_difference_routed_minus_shuffled": 4,
+        "n": 64,
+        "neither_correct": 26,
+        "routed_invalid": 1,
+        "routed_only_correct": 5,
+        "shuffled_invalid": 0,
+        "shuffled_only_correct": 1
+      },
+      "retention": {
+        "both_correct": 8,
+        "correct_difference_routed_minus_shuffled": 0,
+        "n": 32,
+        "neither_correct": 24,
+        "routed_invalid": 18,
+        "routed_only_correct": 0,
+        "shuffled_invalid": 18,
+        "shuffled_only_correct": 0
+      }
+    }
+  },
+  "pr": 6172,
+  "retention_competency_gate": false,
+  "routed_minus_shuffled_correct_by_seed": [
+    -2,
+    0,
+    0,
+    4
+  ],
+  "routed_minus_shuffled_mean_accuracy_percentage_points": 0.78125,
+  "same_external_feedback_sha256_by_seed": {
+    "11": "da7ec276aec6c6a6411827efd49d306c472ff52d0233a7721bf5ab064b8c5fbd",
+    "17": "181ef56979e78797a866fd73817da81bc64602afc7d2a8871b0ad839db28efed",
+    "23": "a0b4f98950deace0899cd07dd3e804af5f8717e3da68afc1a544ce6b826f338a",
+    "29": "6feda10080af63f0372df0d3f669f9c320db736e667a960d3869085cc1d0f2f4"
+  },
+  "schema": "hpca-routed-content-native-summary-v1",
+  "seed_order": [
+    11,
+    17,
+    23,
+    29
+  ],
+  "source_commit": "b0ea141de2d5218869823b2d9e075db6d7b215dd",
+  "source_tree": "132da19ad5829e38a3e96f304c061c0c4c96becf",
+  "training": {
+    "body_weight_updates": 0,
+    "feature_prefill_seconds": 5.19334818306379,
+    "head_training_seconds": 0.2236768128350377,
+    "independent_arithmetic_replayed_steps": 4096,
+    "manual_sgd_calls": 4096,
+    "model_load_seconds": 0.115146768046543,
+    "nonzero_update_calls": 3072,
+    "torch_optimizer_calls": 0,
+    "training_prefill_calls": 64
+  }
+}

@@ -1,0 +1,11 @@
+Original invocation: python3 - <<'PY'
+The exact Python body of that heredoc is preserved in cell-v13-proc-diagnostic.py.
+The observed original result is preserved in cell-v13-proc-diagnostic.json.
+
+Replay command (does not compile Rust or edit repository source):
+python3 /workspace/scratch/93ddee66e1b3/hepta-cell-validation/cell-v13-proc-diagnostic.py
+
+The replay prints new observations and uses exclusive creation for the original
+JSON path. If that JSON already exists, the replay reports SAVE_FAILED rather
+than overwriting the original evidence. Redirect stdout to a separate private
+log if a second observation is needed.

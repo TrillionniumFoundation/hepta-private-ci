@@ -1,0 +1,38 @@
+{
+  "counterexample_reproduced": true,
+  "cpu_seconds": 0.010118396000000002,
+  "expected_status": "failed",
+  "extracted_logic_sha256": "753f45a174ba8dd95ba81e268967b4a228f428a26e23efee2809e196faef96c0",
+  "model_processes_started": 0,
+  "model_reads_or_forward_backward_or_optimizer_steps": 0,
+  "old_cost_totals": {
+    "actual_continuations_started": 1,
+    "actual_continuations_started_is_lower_bound": false,
+    "attempt_cost_accounting_complete": true,
+    "attempt_sums_are_lower_bounds": false,
+    "incomplete_attempt_accounting_names": [],
+    "launch_status_unknown_names": [],
+    "missing_terminal_attempt_names": [],
+    "sum_attempt_outer_wall_seconds": 2.0,
+    "sum_attempt_wrapper_wall_seconds": 2.1,
+    "sum_exact_per_child_cpu_seconds": 0.5
+  },
+  "old_terminal_row": {
+    "attempt_wrapper_wall_seconds": 2.1,
+    "child_cpu_seconds": 0.5,
+    "hard_timeout_sent": false,
+    "name": "explicit-software-counterexample",
+    "process_started": true,
+    "returncode": 0,
+    "status": "completed",
+    "whole_process_wall_seconds": 2.0
+  },
+  "program_sha256": "e039a1a57236bdedd417b1864edb0449f30a7ae512c8a31cbc90ca1dc1c5eaad",
+  "schema": "c2-v1-missing-terminal-result-reproduction-v1",
+  "scope": "synthetic metadata values only; not a native process outcome",
+  "source": "c2-execution-candidate-v1/c2_controller.py",
+  "source_bytes": 17796,
+  "source_sha256": "195c8100a4147111cbc6b220cd1548aa8ca76d13ba4ebe0f4063005ef1912791",
+  "source_unchanged": true,
+  "wall_seconds": 0.010413185998913832
+}

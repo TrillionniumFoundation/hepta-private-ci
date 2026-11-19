@@ -1,0 +1,48 @@
+{
+  "after": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+    "dirty": false,
+    "parents": [
+      "7d31bf9677748330ae17efe964de48d98ba5e542"
+    ],
+    "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47"
+  },
+  "command": [
+    "/home/qq/hepta-smollm2-weight-research-20261103/ci-env/bin/python",
+    "-B",
+    "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/source/scripts/verify_hepta_callers.py",
+    "verify"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 154.42577228997834,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T12:34:40.225362+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 75335,
+  "log_file": "caller-proof.json.db3b2a8b5f1b4b5daa48e4632bbdd496.log",
+  "log_sha256": "64483cf38afc661e3d8e37d3ec511f9801ebf7f9eb13171fa02f09fca631e360",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "started_at": "2026-11-12T12:32:05.797866+00:00",
+  "status": "passed",
+  "tested_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "timed_out": false,
+  "working_directory": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/source"
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "hcsn-n256-execution-receipt-publisher-source-intent-v1",
+  "identity": "hcsn-n256-execution-receipt-publisher-source-20261115-c06d-001",
+  "base_commit": "ca307ce5f1e1856b8da5a36e301a1dbc30b24666",
+  "parent_draft": 6380,
+  "parent_receipt_schema": "hcsn-n256-uniformization-execution-receipt-v1",
+  "required_external_originals": {
+    "provider_admission_sha256": null,
+    "execution_freeze_sha256": null,
+    "result_manifest_sha256": null,
+    "runtime_profile_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null
+  },
+  "required_process_facts": {
+    "execution_started_at_utc": null,
+    "execution_completed_at_utc": null,
+    "process_exit_code": null,
+    "execution_complete": null
+  },
+  "execution_key": null,
+  "execution_receipt_output_sha256": null,
+  "numerical_execution_allowed": false,
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

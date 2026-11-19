@@ -1,0 +1,45 @@
+{
+  "base": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "tests": 56,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "success": true,
+  "sha256": "84dd61974d763dfb11fbd0dec17098184441aafeb9193f240a010eaaf71e999f",
+  "bytes": 11144,
+  "files": [
+    "test_original_training_owner_source_closure.py",
+    "test_original_training_command_source_closure.py",
+    "test_original_training_bootstrap_source_closure.py",
+    "test_original_training_initial_connection_source_closure.py",
+    "test_original_training_source_capture_source_closure.py",
+    "test_original_training_snapshot_source_closure.py",
+    "test_original_candidate_material_source_closure.py",
+    "test_original_candidate_stage_source_closure.py",
+    "test_q24_model_proposal_source_closure.py"
+  ],
+  "changed_files": [
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py"
+  ],
+  "protected_rows_verified": 31,
+  "changed_protected_indices": [
+    287,
+    288,
+    289,
+    290,
+    292,
+    340,
+    341,
+    350
+  ],
+  "changed_marker_slots": 42,
+  "py_compile": "passed",
+  "boundary_and_inventory_unchanged": true,
+  "problems": [],
+  "commit": "4ae6c73ea7731e69c6819c1d188f8ff26ba1fbb7",
+  "tree": "f2c7d861717117c9d74591db38bbcf19f06f55fe",
+  "branch": "codex/learn-training-candidate-guards-514-ce434-20261112-v1",
+  "git_readback": "both blobs byte equal; exact parent and tree confirmed",
+  "verification_scope": "owned Python guards only; no Rust, H or full caller proof"
+}

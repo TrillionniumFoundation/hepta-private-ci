@@ -25,9 +25,12 @@ mod metric_roles;
 
 pub use metric_roles::MetricRoleContractV2;
 pub use metric_roles::MetricRoleV2;
+pub(crate) use metric_roles::cross_fold_plan_v2_commitments;
 pub(crate) use metric_roles::decide_independently_v2;
 pub(crate) use metric_roles::digest_evaluation_roles;
+pub(crate) use metric_roles::evaluation_role_commitment_bytes;
 pub use metric_roles::freeze_cross_fold_plan_v2;
+pub(crate) use metric_roles::role_contract_commitment_bytes;
 
 #[path = "holdout_codec.rs"]
 mod holdout_codec;
@@ -247,10 +250,13 @@ fn decide_with_metric_contract(
         }
     }
 
-    let disposition = if !failed_metrics.is_empty() {
-        IndependentEvaluationDispositionV1::Ineligible
-    } else if insufficient {
+    // A known negative metric does not complete the other evidence gates.
+    // Retain that negative evidence, but only a complete comparison may become
+    // Ineligible for downstream use as an evaluated NoUpdate.
+    let disposition = if insufficient {
         IndependentEvaluationDispositionV1::InsufficientEvidence
+    } else if !failed_metrics.is_empty() {
+        IndependentEvaluationDispositionV1::Ineligible
     } else {
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     };
@@ -316,29 +322,19 @@ pub struct CrossFoldPlanReceiptV1 {
     receipt_seal: Digest32,
 }
 
-pub fn freeze_cross_fold_plan(
-    mut plan: CrossFoldPlanV1,
-) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {
-    if !(2..=MAX_FOLDS).contains(&plan.folds.len()) {
+/// Validate and normalize only preregistrable fold and metric metadata.
+/// This path accepts no candidate, dataset, manifest or receipt seal.
+pub(crate) fn normalize_cross_fold_metadata(
+    metric_contracts: &mut [MetricContractV1],
+    folds: &mut [CrossFoldPartitionV1],
+    final_holdout_window_id: &StableId,
+) -> Result<Digest32, EvaluationClosureError> {
+    if !(2..=MAX_FOLDS).contains(&folds.len()) {
         return Err(EvaluationClosureError::FoldLimit);
     }
-    for (label, digest) in [
-        ("evaluation objective", plan.objective_digest),
-        ("evaluation dataset", plan.dataset_digest),
-        ("evaluation estimand", plan.estimand_digest),
-        ("final holdout", plan.final_holdout_digest),
-    ] {
-        require_digest(digest, label)?;
-    }
-    if !(1..=100_000).contains(&plan.family_alpha_ppm)
-        || !(1..=1_024).contains(&plan.simultaneous_comparisons)
-    {
-        return Err(EvaluationClosureError::MultiplicityProfile);
-    }
-    let metric_contract_digest = digest_metric_contracts(&mut plan.metric_contracts)?;
-    plan.folds.sort_by_key(|fold| fold.fold_id.clone());
-    if let Some(adjacent) = plan
-        .folds
+    let metric_contract_digest = digest_metric_contracts(metric_contracts)?;
+    folds.sort_by_key(|fold| fold.fold_id.clone());
+    if let Some(adjacent) = folds
         .windows(2)
         .find(|adjacent| adjacent[0].fold_id == adjacent[1].fold_id)
     {
@@ -351,7 +347,7 @@ pub fn freeze_cross_fold_plan(
     let mut held_out_episodes = BTreeSet::new();
     let mut held_out_windows = BTreeSet::new();
     let mut final_holdout_count = 0_usize;
-    for fold in &mut plan.folds {
+    for fold in folds.iter_mut() {
         require_digest(fold.model_digest, "fold model")?;
         require_digest(fold.predictions_digest, "fold predictions")?;
         for values in [
@@ -375,14 +371,10 @@ pub fn freeze_cross_fold_plan(
                 fold.fold_id.to_string(),
             ));
         }
-        if fold
-            .training_windows
-            .contains(&plan.final_holdout_window_id)
-        {
+        if fold.training_windows.contains(final_holdout_window_id) {
             return Err(EvaluationClosureError::FinalHoldoutLeakage);
         }
-        final_holdout_count +=
-            usize::from(fold.holdout_windows.contains(&plan.final_holdout_window_id));
+        final_holdout_count += usize::from(fold.holdout_windows.contains(final_holdout_window_id));
         insert_unique_holdouts(&mut held_out_principals, &fold.holdout_principals)?;
         insert_unique_holdouts(&mut held_out_episodes, &fold.holdout_episodes)?;
         insert_unique_holdouts(&mut held_out_windows, &fold.holdout_windows)?;
@@ -390,6 +382,40 @@ pub fn freeze_cross_fold_plan(
     if final_holdout_count != 1 {
         return Err(EvaluationClosureError::FinalHoldoutCoverage);
     }
+
+    Ok(metric_contract_digest)
+}
+
+pub(crate) struct CrossFoldPlanCommitmentsV2 {
+    pub(crate) metric_contract_digest: Digest32,
+    pub(crate) plan_digest: Digest32,
+}
+
+/// Pure normalized metadata and hashes; no frozen-plan receipt seal is made.
+pub(crate) fn cross_fold_plan_commitments(
+    plan: &mut CrossFoldPlanV1,
+) -> Result<CrossFoldPlanCommitmentsV2, EvaluationClosureError> {
+    if !(2..=MAX_FOLDS).contains(&plan.folds.len()) {
+        return Err(EvaluationClosureError::FoldLimit);
+    }
+    for (label, digest) in [
+        ("evaluation objective", plan.objective_digest),
+        ("evaluation dataset", plan.dataset_digest),
+        ("evaluation estimand", plan.estimand_digest),
+        ("final holdout", plan.final_holdout_digest),
+    ] {
+        require_digest(digest, label)?;
+    }
+    if !(1..=100_000).contains(&plan.family_alpha_ppm)
+        || !(1..=1_024).contains(&plan.simultaneous_comparisons)
+    {
+        return Err(EvaluationClosureError::MultiplicityProfile);
+    }
+    let metric_contract_digest = normalize_cross_fold_metadata(
+        &mut plan.metric_contracts,
+        &mut plan.folds,
+        &plan.final_holdout_window_id,
+    )?;
 
     let mut bytes = b"hepta.intelligence-eval.cross-fold-plan.v2".to_vec();
     push_id(&mut bytes, &plan.plan_id);
@@ -425,6 +451,27 @@ pub fn freeze_cross_fold_plan(
         bytes.extend_from_slice(fold.predictions_digest.as_array());
     }
     let plan_digest = Digest32::of_bytes(&bytes);
+    Ok(CrossFoldPlanCommitmentsV2 {
+        metric_contract_digest,
+        plan_digest,
+    })
+}
+
+pub fn freeze_cross_fold_plan(
+    mut plan: CrossFoldPlanV1,
+) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {
+    let commitments = cross_fold_plan_commitments(&mut plan)?;
+    frozen_plan_from_commitments(plan, commitments)
+}
+
+pub(crate) fn frozen_plan_from_commitments(
+    plan: CrossFoldPlanV1,
+    commitments: CrossFoldPlanCommitmentsV2,
+) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {
+    let CrossFoldPlanCommitmentsV2 {
+        metric_contract_digest,
+        plan_digest,
+    } = commitments;
     let mut receipt = CrossFoldPlanReceiptV1 {
         plan_id: plan.plan_id,
         claim_scope: plan.claim_scope,
@@ -534,10 +581,14 @@ impl HoldoutBindingV1 {
     }
 
     fn use_digest(&self, registry_digest: Digest32) -> Digest32 {
+        Digest32::of_bytes(&self.use_commitment(registry_digest))
+    }
+
+    fn use_commitment(&self, registry_digest: Digest32) -> Vec<u8> {
         let mut bytes = b"hepta.intelligence-eval.final-holdout-use.v2".to_vec();
         self.append_to(&mut bytes);
         bytes.extend_from_slice(registry_digest.as_array());
-        Digest32::of_bytes(&bytes)
+        bytes
     }
 }
 
@@ -816,6 +867,18 @@ pub(crate) fn digest_evaluation_bundle(
     disposition: IndependentEvaluationDispositionV1,
     failed_metrics: &[StableId],
 ) -> Result<Digest32, EvaluationClosureError> {
+    Ok(Digest32::of_bytes(&evaluation_bundle_commitment_bytes(
+        bundle,
+        disposition,
+        failed_metrics,
+    )?))
+}
+
+pub(crate) fn evaluation_bundle_commitment_bytes(
+    bundle: &IndependentEvaluationBundleV1,
+    disposition: IndependentEvaluationDispositionV1,
+    failed_metrics: &[StableId],
+) -> Result<Vec<u8>, EvaluationClosureError> {
     let mut bytes = b"hepta.intelligence-eval.independent-decision.v1".to_vec();
     push_id(&mut bytes, &bundle.evaluation_id);
     push_id(&mut bytes, &bundle.candidate_id);
@@ -859,7 +922,7 @@ pub(crate) fn digest_evaluation_bundle(
     }
     bytes.push(disposition.tag());
     push_id_vec(&mut bytes, failed_metrics)?;
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
 }
 
 fn validate_frozen_evaluation_binding(
@@ -1113,3 +1176,18 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "closure_tests.rs"]
 mod tests;
+
+pub(crate) fn original_holdout_commitment_bytes(
+    plan: &CrossFoldPlanReceiptV1,
+    holdout: &HoldoutUseReceiptV1,
+) -> Result<Vec<u8>, EvaluationClosureError> {
+    validate_frozen_plan_receipt_integrity(plan)?;
+    validate_holdout_use_receipt_integrity(holdout)?;
+    let bytes = HoldoutBindingV1::from_plan(plan).use_commitment(holdout.registry_digest);
+    if Digest32::of_bytes(&bytes) != holdout.use_digest {
+        return Err(EvaluationClosureError::HoldoutUseBindingMismatch(
+            "original holdout commitment",
+        ));
+    }
+    Ok(bytes)
+}

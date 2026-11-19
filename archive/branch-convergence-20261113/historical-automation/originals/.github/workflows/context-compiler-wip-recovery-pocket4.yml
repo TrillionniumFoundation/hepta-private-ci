@@ -1,0 +1,64 @@
+name: Context compiler Pocket4 WIP recovery
+
+on:
+  push:
+    branches: [context-compiler-product-closure]
+
+permissions:
+  contents: write
+
+jobs:
+  recover-via-pocket4:
+    name: Recover desktop worktree through Pocket4 SSH
+    runs-on: [self-hosted, linux, x64, pocket4]
+    timeout-minutes: 30
+    steps:
+      - name: Locate the configured desktop alias and publish the same candidate
+        shell: bash
+        env:
+          BRANCH: context-compiler-product-closure
+          EXPECTED_REMOTE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          candidates=(qian-qi desktop hepta-desktop)
+          if [ -f "$HOME/.ssh/config" ]; then
+            while IFS= read -r alias; do
+              candidates+=("$alias")
+            done < <(
+              awk 'tolower($1)=="host" {for (i=2;i<=NF;i++) print $i}' "$HOME/.ssh/config" \
+                | grep -Eiv '[*?!]' \
+                | grep -Ei 'qian|desktop|hepta' \
+                | sort -u
+            )
+          fi
+          target=''
+          for host in "${candidates[@]}"; do
+            if ssh -o BatchMode=yes -o ConnectTimeout=5 "$host" \
+              'test -d /tmp/hepta-context-compiler-converge-20260925-JWHsTh/repo/.git'; then
+              target="$host"
+              break
+            fi
+          done
+          test -n "$target"
+          ssh -o BatchMode=yes "$target" bash -s -- "$BRANCH" "$EXPECTED_REMOTE_SHA" <<'REMOTE'
+          set -euo pipefail
+          BRANCH="$1"
+          EXPECTED_REMOTE_SHA="$2"
+          R=/tmp/hepta-context-compiler-converge-20260925-JWHsTh/repo
+          exec 9>/tmp/hepta-context-compiler-converge-20260925-JWHsTh/recovery.lock
+          flock -w 120 9
+          test "$(git -C "$R" branch --show-current)" = "$BRANCH"
+          test "$(git -C "$R" rev-parse HEAD)" = a126987b84737dbc2ee2592442a314117bddb4a2
+          test -f /tmp/hepta-context-compiler-converge-20260925-JWHsTh/backup-current/working-tree.patch
+          git -C "$R" diff --check
+          git -C "$R" add -A
+          if ! git -C "$R" diff --cached --quiet; then
+            git -C "$R" -c user.name='Hepta Context Closure' \
+              -c user.email='context-closure@users.noreply.github.com' \
+              commit -s -m 'feat(context.compiler): compose verified product delivery path'
+          fi
+          gh auth setup-git
+          git -C "$R" push \
+            --force-with-lease="refs/heads/$BRANCH:$EXPECTED_REMOTE_SHA" \
+            origin "HEAD:refs/heads/$BRANCH"
+          REMOTE

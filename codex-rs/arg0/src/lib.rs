@@ -58,8 +58,32 @@ impl Arg0PathEntryGuard {
 }
 
 pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_helper_mode();
+    prepare_regular_invocation()
+}
+
+/// Dispatch helper modes and point child-process aliases at an explicit executable.
+///
+/// Test harnesses use this when their own executable cannot dispatch helper modes
+/// before the Rust runtime starts. Call only before creating other threads.
+pub fn arg0_dispatch_for_executable(executable: &Path) -> Option<Arg0PathEntryGuard> {
+    dispatch_helper_mode();
+    prepare_regular_invocation_with(|existing_path| {
+        prepare_path_entry_for_executable(existing_path, executable)
+    })
+}
+
+/// Dispatch helper re-execs before product-specific configuration is loaded.
+///
+/// Recognized helpers exit through their own entry points. A regular invocation
+/// returns without loading dotenv, creating aliases, or starting runtime threads,
+/// so the product can bind its private home before calling `arg0_dispatch`.
+pub fn dispatch_helper_mode() {
+    dispatch_helper_mode_with_args(std::env::args_os());
+}
+
+fn dispatch_helper_mode_with_args(mut args: impl Iterator<Item = OsString>) {
     // Determine if we were invoked via the special alias.
-    let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
     let exe_name = Path::new(&argv0)
         .file_name()
@@ -153,7 +177,15 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         };
         std::process::exit(exit_code);
     }
+}
 
+fn prepare_regular_invocation() -> Option<Arg0PathEntryGuard> {
+    prepare_regular_invocation_with(prepare_path_entry_for_codex_aliases)
+}
+
+fn prepare_regular_invocation_with(
+    prepare_aliases: impl FnOnce(Option<OsString>) -> std::io::Result<(Arg0PathEntryGuard, OsString)>,
+) -> Option<Arg0PathEntryGuard> {
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.
     load_dotenv();
@@ -161,7 +193,7 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
     let (path_entry_guard, updated_path_env_var) = prepare_path_env_var_with_aliases(
         InstallContext::current(),
         std::env::var_os("PATH"),
-        prepare_path_entry_for_codex_aliases,
+        prepare_aliases,
     );
     if let Some(updated_path_env_var) = updated_path_env_var {
         // It is safe to call set_var() because our process is single-threaded at
@@ -221,10 +253,27 @@ where
     F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
     Fut: Future<Output = anyhow::Result<()>>,
 {
+    arg0_dispatch_or_else_with_preflight(|| Ok(main_fn))
+}
+
+/// Run a synchronous owner preflight only after helper dispatch and before
+/// creating any threads. The preflight returns the ordinary async entry point.
+/// Alias files and dotenv loading happen afterwards under the final owner, so
+/// an embedding can drop privileges without leaving Root-owned helper aliases.
+/// This does not authorize a privilege transition; the embedding must verify
+/// its original inherited ownership and capabilities itself.
+pub fn arg0_dispatch_or_else_with_preflight<P, F, Fut>(preflight: P) -> anyhow::Result<()>
+where
+    P: FnOnce() -> anyhow::Result<F>,
+    F: FnOnce(Arg0DispatchPaths) -> Fut + Send + 'static,
+    Fut: Future<Output = anyhow::Result<()>>,
+{
+    dispatch_helper_mode();
+    let main_fn = preflight()?;
     // Retain the TempDir so it exists for the lifetime of the invocation of
     // this executable. Admittedly, we could invoke `keep()` on it, but it
     // would be nice to avoid leaving temporary directories behind, if possible.
-    let path_entry_guard = arg0_dispatch();
+    let path_entry_guard = prepare_regular_invocation();
     let current_exe = std::env::current_exe().ok();
 
     // Regular invocation. Run the async entry point on a thread with the same
@@ -338,6 +387,13 @@ where
 fn prepare_path_entry_for_codex_aliases(
     existing_path: Option<OsString>,
 ) -> std::io::Result<(Arg0PathEntryGuard, OsString)> {
+    prepare_path_entry_for_executable(existing_path, &std::env::current_exe()?)
+}
+
+fn prepare_path_entry_for_executable(
+    existing_path: Option<OsString>,
+    exe: &Path,
+) -> std::io::Result<(Arg0PathEntryGuard, OsString)> {
     let codex_home = find_codex_home()?;
     #[cfg(not(debug_assertions))]
     {
@@ -392,12 +448,10 @@ fn prepare_path_entry_for_codex_aliases(
         #[cfg(unix)]
         EXECVE_WRAPPER_ARG0,
     ] {
-        let exe = std::env::current_exe()?;
-
         #[cfg(unix)]
         {
             let link = path.join(filename);
-            symlink(&exe, &link)?;
+            symlink(exe, &link)?;
         }
 
         #[cfg(windows)]
@@ -418,7 +472,7 @@ fn prepare_path_entry_for_codex_aliases(
     let updated_path_env_var = path_env_with_entry(path, existing_path);
 
     let paths = Arg0DispatchPaths {
-        codex_self_exe: std::env::current_exe().ok(),
+        codex_self_exe: Some(exe.to_path_buf()),
         codex_linux_sandbox_exe: {
             #[cfg(target_os = "linux")]
             {
@@ -591,6 +645,54 @@ mod tests {
             install_context,
             path_dir,
         })
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn fs_helper_dispatch_runs_without_product_environment() -> anyhow::Result<()> {
+        use std::ffi::OsString;
+        use std::io::Seek;
+        use std::io::Write;
+
+        const CHILD_MODE: &str = "CODEX_ARG0_FS_HELPER_TEST_CHILD";
+        if std::env::var_os(CHILD_MODE).is_some() {
+            super::dispatch_helper_mode_with_args(
+                [
+                    OsString::from("codex-hepta-agentd"),
+                    OsString::from(codex_exec_server::CODEX_FS_HELPER_ARG1),
+                ]
+                .into_iter(),
+            );
+            anyhow::bail!("filesystem helper returned to the product entry point");
+        }
+
+        let mut request = tempfile::tempfile()?;
+        writeln!(
+            request,
+            "{{\"operation\":\"fs/canonicalize\",\"params\":{{\"path\":\"file:///\",\"sandbox\":null}}}}"
+        )?;
+        request.rewind()?;
+        let output = std::process::Command::new(std::env::current_exe()?)
+            .args([
+                "--exact",
+                "tests::fs_helper_dispatch_runs_without_product_environment",
+                "--nocapture",
+            ])
+            .env_clear()
+            .env(CHILD_MODE, "1")
+            .stdin(request)
+            .output()?;
+        ensure!(
+            output.status.success(),
+            "filesystem helper failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let stdout = String::from_utf8(output.stdout)?;
+        ensure!(
+            stdout.lines().any(|line| line == r#"{"status":"ok","payload":{"operation":"fs/canonicalize","response":{"path":"file:///"}}}"#),
+            "filesystem helper did not return its canonicalized path: {stdout}"
+        );
+        Ok(())
     }
 
     #[test]

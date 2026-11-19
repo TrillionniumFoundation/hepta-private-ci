@@ -1,0 +1,64 @@
+[
+  {
+    "id": "authority_port.rs:conflict-1",
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "native_conflict_lines": [215, 258],
+    "selected_text": "            }),\n            Ok(()),\n            \"valid host fixture must be admitted\"\n        );\n        ledger\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() {\n        let directory = tempfile::tempdir().unwrap_or_else(|error| panic!(\"{error:?}\"));\n        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!(\"{error:?}\")),\n            Arc::new(FixedClock(2_000)),\n        )\n        .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n",
+    "incoming_text": "            })?;\n        Ok(ledger)\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> FixtureResult<()> {\n        let directory = tempfile::tempdir()?;\n        std::fs::set_permissions(\n            directory.path(),\n            std::fs::Permissions::from_mode(0o700),\n        )?;\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7)?,\n            Arc::new(FixedClock(2_000)),\n        )?;\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)?;\n",
+    "semantic_mapping_ids": [
+      "host_admission",
+      "temporary_directory",
+      "private_permissions",
+      "authority_frontier",
+      "registry_open",
+      "issue_binding",
+      "result_return_plumbing"
+    ],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  },
+  {
+    "id": "authority_port.rs:conflict-2",
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "native_conflict_lines": [271, 276],
+    "selected_text": "            )\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n",
+    "incoming_text": "            )?;\n",
+    "semantic_mapping_ids": ["lease_publication"],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  },
+  {
+    "id": "authority_port.rs:conflict-3",
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "native_conflict_lines": [280, 285],
+    "selected_text": "            .issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n",
+    "incoming_text": "            .issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())?;\n",
+    "semantic_mapping_ids": ["issue_with_witness"],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  },
+  {
+    "id": "authority_port.rs:conflict-4",
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "native_conflict_lines": [299, 314],
+    "selected_text": "        registry\n            .revoke(\"fleet-issue-one\", 1, [9; 32])\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err()\n                .unwrap_or_else(|| panic!(\"revoked lease must be rejected\")),\n            FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)\n",
+    "incoming_text": "        registry.revoke(\"fleet-issue-one\", 1, [9; 32])?;\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err(),\n            Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))\n",
+    "semantic_mapping_ids": ["revoke_setup", "revoked_negative"],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  },
+  {
+    "id": "authority_port.rs:conflict-5",
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "native_conflict_lines": [322, 334],
+    "selected_text": "        let first_binding = FleetAuthorityPort::binding_for_issue(&first)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n",
+    "incoming_text": "        let first_binding = FleetAuthorityPort::binding_for_issue(&first)?;\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)?;\n",
+    "semantic_mapping_ids": ["first_binding", "changed_binding"],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  },
+  {
+    "id": "registry_tests.rs:conflict-1",
+    "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "native_conflict_lines": [275, 284],
+    "selected_text": "            // The oracle exercises overlap isolation, not lexical path rejection.\n            // Windows canonicalize() may add a verbatim disk prefix (\\\\\\\\?\\\\).\n            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)\n",
+    "incoming_text": "            // Match the input contract on Windows, where canonical paths gain\n            // the extended-length prefix even without traversing a symlink.\n            let canonical = path.canonicalize()?;\n            WorkspaceBinding::new(&canonical, &fleet.root)\n",
+    "semantic_mapping_ids": ["canonical_workspace_input"],
+    "decision": "Retain the current representation because the complete incoming semantic change is covered by the linked checks; preserve current production interfaces and unrelated newer tests."
+  }
+]

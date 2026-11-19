@@ -1,0 +1,28 @@
+{
+  "schema": "independent-static-review-execution-v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/c2-v4-budget-reporting-independent-review-v1/check_inputs.py"
+  ],
+  "returncode": 0,
+  "whole_child_wall_seconds": 0.14112427000145544,
+  "whole_waited_child_cpu_seconds": 0.137377,
+  "script_before": {
+    "bytes": 6102,
+    "sha256": "ebf0dd28018a518f295d1307b75fa12be7a50b45c76dcb4728768f34845ce410"
+  },
+  "script_after": {
+    "bytes": 6102,
+    "sha256": "ebf0dd28018a518f295d1307b75fa12be7a50b45c76dcb4728768f34845ce410"
+  },
+  "stdout": {
+    "bytes": 1733,
+    "sha256": "2ba819c8c27f43ae36410c72e51c9762a29837560698de15ba356f72ef54d7c3"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "one local stdlib source/AST/JSON/ZIP validation child; no test rerun, model read, or training"
+}

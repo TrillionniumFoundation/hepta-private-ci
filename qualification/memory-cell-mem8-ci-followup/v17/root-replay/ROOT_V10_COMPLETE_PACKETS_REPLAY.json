@@ -1,0 +1,155 @@
+{
+  "schema": "mem8.v17.v10-complete-packets-root-replay.v1",
+  "ref": "d761b425e971caf067509886d8f7fbb069899a73",
+  "previous_full_remote_object_byte_checks": 60,
+  "packets": [
+    {
+      "folder": "source-v10",
+      "archive": {
+        "bytes": 5696952,
+        "sha256": "570d4511d38483585c0af6331f8321a5f151feb6e8902be22158365b837338a2",
+        "git_blob": "b50c8091dc682298efafd1e23893b2c9adb46637"
+      },
+      "outer_members": 32,
+      "unchanged_offline_verifier_exit": 0,
+      "full_original_result_equal": true,
+      "comparison": "complete original reader result",
+      "scope": {
+        "source_gate_run": 43060276203,
+        "source_gate_job": 130660630288,
+        "original_ZIP_members": 386,
+        "canonical_members": 387,
+        "original_manifest_members": 386,
+        "formatter_changes": 0,
+        "source_after_clean": true,
+        "python_pass": 18,
+        "overlay_paths": 118,
+        "rust_files": 6204,
+        "old_name_hits": 0,
+        "elapsed_seconds": 235.941709,
+        "native_results": false
+      }
+    },
+    {
+      "folder": "native-two-preparation",
+      "archive": {
+        "bytes": 802788,
+        "sha256": "41f8ef614099289bb7cc3ffafcf6cfafb4a2e9cd574bbc8a5d2d2087b85e8873",
+        "git_blob": "744b56fbb507bbaa0f36b016f3d25a55d6f77d30"
+      },
+      "outer_members": 90,
+      "unchanged_offline_verifier_exit": 0,
+      "full_original_result_equal": true,
+      "comparison": "every original result field from execution wrapper; reader bytes and additional bound source/plan fields verified",
+      "scope": {
+        "status": "PASS_COMPLETE_PREPARATION_ARCHIVE",
+        "archive": {
+          "bytes": 802788,
+          "sha256": "41f8ef614099289bb7cc3ffafcf6cfafb4a2e9cd574bbc8a5d2d2087b85e8873",
+          "git_blob": "744b56fbb507bbaa0f36b016f3d25a55d6f77d30"
+        },
+        "members": 90,
+        "reference_sources": 19,
+        "final_source_dependencies": 26,
+        "full_source_tree_leaves": 14053,
+        "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "active_cases": 2,
+        "scoped_fix_packages": [
+          "codex-core"
+        ],
+        "job_budget_minutes": 65,
+        "offline_parser_controls": {
+          "errors": 0,
+          "failures": 0,
+          "run": 7,
+          "skipped": 0
+        },
+        "actual_admission_preserved": true,
+        "source_or_native_tests_or_models_executed_by_reader": 0,
+        "native_results_included": false
+      }
+    },
+    {
+      "folder": "windows-fix-preparation",
+      "archive": {
+        "bytes": 421520,
+        "sha256": "daafce4226ba7d23d2c03c5b87c305caac43ff94f68bd0324f5654dfbc571c54",
+        "git_blob": "042bd167a9de65f0539a864d309787728ceca8cf"
+      },
+      "outer_members": 27,
+      "unchanged_offline_verifier_exit": 0,
+      "full_original_result_equal": true,
+      "comparison": "complete original reader result",
+      "scope": {
+        "four_objects": [
+          {
+            "bytes": 15877,
+            "git_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+            "path": ".github/scripts/mem_windows_sandbox_fix.py",
+            "sha256": "3b6f63c55d18463ef12b5c35c456f52d720cff406615c616aa59e5514905b75f"
+          },
+          {
+            "bytes": 6574,
+            "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+            "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+            "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+          },
+          {
+            "bytes": 4517,
+            "git_blob": "bd94e2dc6f712c3c48da30597c0c45001dd5e81e",
+            "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+            "sha256": "9ea2def1193798e7c9bb6fc20f3e8998e3a8a1271bb2661b01c06456caa26a1f"
+          },
+          {
+            "bytes": 7099,
+            "git_blob": "3dbbcb516d0aa5386d2e2bbf550824422017d724",
+            "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+            "sha256": "db4dd341980625241262c989b816442c52b1a0ed4af95bc036e3478fe2edfaec"
+          }
+        ],
+        "full_entries": 14053,
+        "members": 27,
+        "model_requests": 0,
+        "native_execution": 0,
+        "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "status": "PASS_OFFLINE_PREPARATION_BYTES_ONLY",
+        "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "workflow_admission": false,
+        "full_twenty_source_byte_recovery": "Separate frozen dependency input addendum required; the 27-member package carries the complete tree and twenty pins, not all twenty loose source files."
+      }
+    },
+    {
+      "folder": "mac-memory-code-c895",
+      "archive": {
+        "bytes": 70060,
+        "sha256": "68271d0b570436348579b9c728dcfcef68309508d9637f2a2f3dc3228677d418",
+        "git_blob": "c9a7f50111183e54068a89448fb3d3e5d6b9faf7"
+      },
+      "outer_members": 28,
+      "unchanged_offline_verifier_exit": 0,
+      "full_original_result_equal": true,
+      "comparison": "complete original reader result",
+      "scope": {
+        "code_mode_actual_summary": {
+          "failed": 1,
+          "passed": 69
+        },
+        "full_original_raw_rechecked": true,
+        "full_tree_inventory_rechecked": true,
+        "memory_visible_display_rows": {
+          "FAILED": 1,
+          "ignored": 9,
+          "ok": 364
+        },
+        "new_native_or_model_execution": 0,
+        "raw_slices": 3,
+        "regular_members": 28,
+        "root_cause_status": "CAUSE_NOT_UNIQUELY_DETERMINED_NO_SOURCE_PATCH_NO_NATIVE_RUN",
+        "source_files": 14,
+        "status": "PASS_READONLY_EVIDENCE_BYTES"
+      }
+    }
+  ],
+  "new_native_or_model_executions": 0
+}

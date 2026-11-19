@@ -1,0 +1,523 @@
+{
+  "schema": "hepta.ndu-grounded-evaluation.v1",
+  "engineering_pass": true,
+  "experiment_pass": false,
+  "production_pass": false,
+  "alpha": 0.9,
+  "quality_rule": "0.5*box_F1 + 0.2*count + 0.1*largest_side + 0.1*label + 0.1*text_consistency; invalid/incomplete/over-budget=0",
+  "severe_rule": "invalid/incomplete/over-budget OR count/side/label/text error OR box_F1<0.5",
+  "artifact_scope": "PNG byte integrity and original dimensions; no independent pixel-generation or overlay-geometry claim",
+  "cost_scope": "sum of exclusive durations, checked against episode wall receipt when present; failed/resampled work must be included upstream",
+  "experiment_blockers": [
+    "Descriptive observed-frontier report does not establish confirmatory improvement or verify strategy/training provenance."
+  ],
+  "errors": [],
+  "required_methods": [
+    "base",
+    "static_cells",
+    "learned_router",
+    "best_of_n",
+    "mean_only",
+    "risk_actor_critic",
+    "ndu",
+    "ablate_covariance",
+    "ablate_fixed_weights",
+    "ablate_crossmodal",
+    "ablate_missing_modality",
+    "ablate_shuffled_pair"
+  ],
+  "points": [
+    {
+      "point_id": "ablate_covariance:wall_seconds:10.0",
+      "method": "ablate_covariance",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8591145833333333,
+      "coverage": 1.0,
+      "severe": 0.375,
+      "box_f1": 0.8432291666666667,
+      "cvar": 0.5307291666666667,
+      "wall_seconds": 2.504546878359065,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "ablate_crossmodal:wall_seconds:10.0",
+      "method": "ablate_crossmodal",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8591145833333333,
+      "coverage": 1.0,
+      "severe": 0.375,
+      "box_f1": 0.8432291666666667,
+      "cvar": 0.5307291666666667,
+      "wall_seconds": 2.4837437326251575,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "ablate_fixed_weights:wall_seconds:10.0",
+      "method": "ablate_fixed_weights",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8432291666666666,
+      "coverage": 0.96875,
+      "severe": 0.375,
+      "box_f1": 0.8302083333333332,
+      "cvar": 0.7010416666666667,
+      "wall_seconds": 2.8548211543904927,
+      "budget_exceeded": 2
+    },
+    {
+      "point_id": "ablate_missing_modality:wall_seconds:10.0",
+      "method": "ablate_missing_modality",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.4526041666666667,
+      "coverage": 0.984375,
+      "severe": 0.984375,
+      "box_f1": 0.14583333333333331,
+      "cvar": 0.8250000000000001,
+      "wall_seconds": 2.67067305801595,
+      "budget_exceeded": 1
+    },
+    {
+      "point_id": "ablate_shuffled_pair:wall_seconds:10.0",
+      "method": "ablate_shuffled_pair",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.4036458333333333,
+      "coverage": 0.984375,
+      "severe": 0.984375,
+      "box_f1": 0.041666666666666664,
+      "cvar": 0.8312499999999999,
+      "wall_seconds": 2.411763429577718,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "base:wall_seconds:10.0",
+      "method": "base",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8263020833333333,
+      "coverage": 0.96875,
+      "severe": 0.40625,
+      "box_f1": 0.8119791666666667,
+      "cvar": 0.7010416666666667,
+      "wall_seconds": 2.732249434405958,
+      "budget_exceeded": 2
+    },
+    {
+      "point_id": "best_of_n:wall_seconds:10.0",
+      "method": "best_of_n",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8690104166666667,
+      "coverage": 1.0,
+      "severe": 0.34375,
+      "box_f1": 0.8536458333333332,
+      "cvar": 0.5333333333333333,
+      "wall_seconds": 2.564518055218741,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "learned_router:wall_seconds:10.0",
+      "method": "learned_router",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8567708333333334,
+      "coverage": 1.0,
+      "severe": 0.375,
+      "box_f1": 0.8385416666666666,
+      "cvar": 0.5307291666666667,
+      "wall_seconds": 2.40437109017239,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "mean_only:wall_seconds:10.0",
+      "method": "mean_only",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8591145833333333,
+      "coverage": 1.0,
+      "severe": 0.375,
+      "box_f1": 0.8432291666666667,
+      "cvar": 0.5307291666666667,
+      "wall_seconds": 2.423561467499667,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "ndu:wall_seconds:10.0",
+      "method": "ndu",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.83359375,
+      "coverage": 0.96875,
+      "severe": 0.390625,
+      "box_f1": 0.8171875,
+      "cvar": 0.7010416666666667,
+      "wall_seconds": 3.178648508422043,
+      "budget_exceeded": 2
+    },
+    {
+      "point_id": "risk_actor_critic:wall_seconds:10.0",
+      "method": "risk_actor_critic",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8591145833333333,
+      "coverage": 1.0,
+      "severe": 0.375,
+      "box_f1": 0.8432291666666667,
+      "cvar": 0.5307291666666667,
+      "wall_seconds": 2.4844425621714663,
+      "budget_exceeded": 0
+    },
+    {
+      "point_id": "static_cells:wall_seconds:10.0",
+      "method": "static_cells",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "episodes": 64,
+      "source_groups": 64,
+      "quality": 0.8432291666666667,
+      "coverage": 0.96875,
+      "severe": 0.375,
+      "box_f1": 0.8302083333333332,
+      "cvar": 0.7010416666666667,
+      "wall_seconds": 2.733154305484163,
+      "budget_exceeded": 2
+    }
+  ],
+  "empirical_frontier": [
+    "best_of_n:wall_seconds:10.0",
+    "learned_router:wall_seconds:10.0",
+    "mean_only:wall_seconds:10.0"
+  ],
+  "paired_comparisons": [
+    {
+      "candidate": "ndu",
+      "baseline": "base",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.04531249999999998,
+          "high": 0.06406250000000013
+        },
+        "cvar": {
+          "low": -0.32350260416666676,
+          "high": 0.3125000000000001
+        },
+        "wall_seconds": {
+          "low": -0.5529732984492284,
+          "high": 1.5724854327978244
+        },
+        "coverage": {
+          "low": -0.0625,
+          "high": 0.0625
+        }
+      }
+    },
+    {
+      "candidate": "ndu",
+      "baseline": "static_cells",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.042454427083333364,
+          "high": 0.0234375
+        },
+        "cvar": {
+          "low": -0.2343750000000001,
+          "high": 0.23749999999999993
+        },
+        "wall_seconds": {
+          "low": -0.2728308801822578,
+          "high": 1.3345126282023072
+        },
+        "coverage": {
+          "low": -0.046875,
+          "high": 0.046875
+        }
+      }
+    },
+    {
+      "candidate": "ndu",
+      "baseline": "learned_router",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.06250651041666666,
+          "high": 0.004687499999999956
+        },
+        "cvar": {
+          "low": -0.00520833333333337,
+          "high": 0.41458333333333336
+        },
+        "wall_seconds": {
+          "low": 0.021406356806377858,
+          "high": 1.7945477343514167
+        },
+        "coverage": {
+          "low": -0.078125,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "candidate": "ndu",
+      "baseline": "best_of_n",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.07656249999999998,
+          "high": -0.0026041666666667407
+        },
+        "cvar": {
+          "low": -0.01041666666666663,
+          "high": 0.40937500000000004
+        },
+        "wall_seconds": {
+          "low": -0.141083336868067,
+          "high": 1.6410121667540603
+        },
+        "coverage": {
+          "low": -0.078125,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "candidate": "ndu",
+      "baseline": "mean_only",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.06666666666666665,
+          "high": 0.0
+        },
+        "cvar": {
+          "low": 0.0,
+          "high": 0.4145963541666667
+        },
+        "wall_seconds": {
+          "low": -0.004691189732952238,
+          "high": 1.7951497604262094
+        },
+        "coverage": {
+          "low": -0.078125,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "candidate": "ndu",
+      "baseline": "risk_actor_critic",
+      "budget_unit": "wall_seconds",
+      "budget_cap": 10.0,
+      "source_groups": 64,
+      "resamples": 2000,
+      "interval_type": "descriptive paired source-cluster percentile 95%; not multiplicity-adjusted",
+      "deltas": {
+        "quality": {
+          "low": -0.06666666666666665,
+          "high": 0.0
+        },
+        "cvar": {
+          "low": 0.0,
+          "high": 0.4145963541666667
+        },
+        "wall_seconds": {
+          "low": -0.08058828485652896,
+          "high": 1.754187893258242
+        },
+        "coverage": {
+          "low": -0.078125,
+          "high": 0.0
+        }
+      }
+    }
+  ],
+  "calibration": {
+    "ablate_covariance": {
+      "brier": 0.24823667667537455,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "ablate_crossmodal": {
+      "brier": 0.24809554288256652,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "ablate_fixed_weights": {
+      "brier": 0.23457224596341208,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "ablate_missing_modality": {
+      "brier": 0.5385158417736267,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "ablate_shuffled_pair": {
+      "brier": 0.3591111245318146,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "base": {
+      "brier": 0.25612920679248297,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "best_of_n": {
+      "brier": 0.2560005858419343,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "learned_router": {
+      "brier": 0.2513685104500093,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "mean_only": {
+      "brier": 0.2475547975517879,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "ndu": {
+      "brier": 0.23944854807321686,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "risk_actor_critic": {
+      "brier": 0.24788170887120015,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    },
+    "static_cells": {
+      "brier": 0.23311563933137597,
+      "available": 64,
+      "missing": 0,
+      "invalid": 0,
+      "risk_coverage": 1.0
+    }
+  },
+  "selection": {
+    "split": "dev",
+    "criterion": "mean_quality - 0.5 * CVaR_0.9; ties lower risk weight",
+    "chosen_risk_weight": 0.0,
+    "points": [
+      {
+        "method": "base",
+        "risk_weight": 0.5,
+        "quality": 0.8651041666666667,
+        "cvar": 0.5489583333333333,
+        "selection_score": 0.590625,
+        "seconds": 2.694972262156398
+      },
+      {
+        "method": "static_cells",
+        "risk_weight": 0.5,
+        "quality": 0.8765625,
+        "cvar": 0.5489583333333333,
+        "selection_score": 0.6020833333333333,
+        "seconds": 2.741596557437788
+      },
+      {
+        "method": "ndu",
+        "risk_weight": 0.0,
+        "quality": 0.8713541666666667,
+        "cvar": 0.4864583333333334,
+        "selection_score": 0.6281249999999999,
+        "seconds": 2.674000729344243
+      },
+      {
+        "method": "ndu",
+        "risk_weight": 0.5,
+        "quality": 0.8713541666666667,
+        "cvar": 0.4864583333333334,
+        "selection_score": 0.6281249999999999,
+        "seconds": 2.8484746107187675
+      },
+      {
+        "method": "ndu",
+        "risk_weight": 1.0,
+        "quality": 0.8713541666666667,
+        "cvar": 0.4864583333333334,
+        "selection_score": 0.6281249999999999,
+        "seconds": 2.7798958855310048
+      }
+    ],
+    "test_used": false,
+    "policy_weights_updated": false
+  },
+  "execution": {
+    "episodes": 768,
+    "failures": 0,
+    "argmax_changes": 743,
+    "max_ledger_difference": 0.0,
+    "final_test_generation_after_selection_and_calibration": true
+  },
+  "raw_report_sha256": "90e8866d199376e74335158566ee0b8dbe29a696748ab6fcd1d02b0d4c599b91"
+}

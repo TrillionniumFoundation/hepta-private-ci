@@ -816,3 +816,6 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
 
 #[path = "longitudinal_time_tests.rs"]
 mod longitudinal_time_tests;
+
+#[path = "closure_incomplete_evidence_tests.rs"]
+mod incomplete_evidence;

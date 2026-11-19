@@ -1,0 +1,580 @@
+{
+  "schema_version": 1,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "head_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "tree_sha": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+  "run_id": 42222767973,
+  "job_id": 127908599809,
+  "artifact_id": 13504634465,
+  "artifact_bytes": 30445,
+  "artifact_sha256": "a34f9ec9fdf7781fff3ec4f5e55fc6df93b63214a7e43527bde1299ed0f6c776",
+  "artifact_digest_verified": true,
+  "caller_proof_content_verified": true,
+  "caller_proof": {
+    "authorityGranted": false,
+    "boundaries": [
+      {
+        "callPattern": null,
+        "id": "supervisor_authorized_boot",
+        "productCallers": [
+          "codex-rs/hepta-supervisor/src/main.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "run_supervisord_with_grant_verifier"
+      },
+      {
+        "callPattern": null,
+        "id": "memory_production_writer_open",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_writer_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "ProductionDurableWriter::open_with_live_verifier"
+      },
+      {
+        "callPattern": null,
+        "id": "cognitive_store_recovery_open",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_writer_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "CognitiveStore::open_with_recovery"
+      },
+      {
+        "callPattern": "\\bcognitive_mutation_capability\\s*\\(",
+        "id": "cognitive_production_mutation_capability",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_writer_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "ProductionDurableWriter::cognitive_mutation_capability"
+      },
+      {
+        "callPattern": null,
+        "id": "agentd_production_writer_host",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AgentdProductionWriterHost::open"
+      },
+      {
+        "callPattern": "\\boperations\\s*\\.\\s*attach\\s*\\(",
+        "id": "agentd_production_operation_runtime",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/runtime.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AgentdProductionOperationRuntimeConfig::attach"
+      },
+      {
+        "callPattern": null,
+        "id": "learning_artifact_owner_bootstrap",
+        "productCallers": [
+          "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "LearningArtifactOwnerHost::open"
+      },
+      {
+        "callPattern": null,
+        "id": "learning_artifact_owner_restart",
+        "productCallers": [
+          "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "LearningArtifactOwnerHost::open_with_required_current_head"
+      },
+      {
+        "callPattern": "\\bcandidate\\s*\\.\\s*with_current\\s*\\(",
+        "id": "learning_artifact_verified_current_view",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "RevalidatingCandidate::with_current"
+      },
+      {
+        "callPattern": null,
+        "id": "provider_effect_coordinator",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "ProviderEffectCoordinator::new"
+      },
+      {
+        "callPattern": null,
+        "id": "http_provider_effect_adapter",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "HttpProviderEffectAdapter::new"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_open_state",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+          "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseAuthority::open_state_dir"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_claim",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/browser_servo.rs",
+          "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "claim_final_use"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_claim_raw",
+        "productCallers": [
+          "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+          "codex-rs/hepta-memory/src/production_writer.rs",
+          "codex-rs/hepta-ndu/src/owner.rs",
+          "codex-rs/hepta-operations/src/durable_store.rs",
+          "codex-rs/hepta-prompt-registry/src/admission.rs",
+          "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "codex-rs/hepta-runtime/src/organs.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": "FinalUseAuthority",
+        "symbol": "FinalUseAuthority::claim"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_delivery",
+        "productCallers": [
+          "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "deliver_final_use"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_delivery_witness",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "deliver_final_use_with_witness"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_delivery_raw",
+        "productCallers": [
+          "codex-rs/hepta-memory/src/production_writer.rs",
+          "codex-rs/hepta-ndu/src/owner.rs",
+          "codex-rs/hepta-operations/src/durable_store.rs",
+          "codex-rs/hepta-prompt-registry/src/admission.rs",
+          "codex-rs/hepta-prompt-registry/src/durable.rs",
+          "codex-rs/hepta-runtime/src/organs.rs"
+        ],
+        "receiverMethods": [
+          "with_verified_use",
+          "enter_verified_use"
+        ],
+        "receiverType": "FinalUseAuthority",
+        "symbol": "FinalUseAuthority::with_verified_use"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_dispatch",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/browser_servo.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "dispatch_final_use"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_dispatch_witness",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "dispatch_final_use_with_witness"
+      },
+      {
+        "callPattern": "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\(",
+        "id": "final_use_dispatch_raw",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseAuthority::with_dispatch_boundary"
+      },
+      {
+        "callPattern": "authority\\s*\\.\\s*update_revocations\\s*\\(",
+        "id": "final_use_revocation_update",
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseAuthority::update_revocations"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_approval_trust",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseApprovalVerifier::new"
+      },
+      {
+        "callPattern": "approval_verifier\\s*\\.\\s*verify\\s*\\(",
+        "id": "final_use_approval_verify",
+        "productCallers": [
+          "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseApprovalVerifier::verify"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_revocation_feed_trust",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseRevocationFeedVerifier::new"
+      },
+      {
+        "callPattern": "revocation_verifier\\s*\\.\\s*apply\\s*\\(",
+        "id": "final_use_revocation_feed_apply",
+        "productCallers": [
+          "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseRevocationFeedVerifier::apply"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_revocation_convergence_trust",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseRevocationConvergenceVerifier::new"
+      },
+      {
+        "callPattern": "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+        "id": "final_use_revocation_convergence_verify",
+        "productCallers": [
+          "codex-rs/hepta-fleet/src/revocation_control.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseRevocationConvergenceVerifier::verify"
+      },
+      {
+        "callPattern": "\\.\\s*consume_kv_v2\\s*\\(",
+        "id": "bao_final_use_consumer",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "BaoClient::consume_kv_v2"
+      },
+      {
+        "callPattern": null,
+        "id": "bao_registered_consumer_new",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "RegisteredBaoConsumer::new"
+      },
+      {
+        "callPattern": null,
+        "id": "bao_final_use_host_new",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "BaoFinalUseHost::new"
+      },
+      {
+        "callPattern": "\\.\\s*apply_revocation_update\\s*\\(",
+        "id": "bao_registered_revocation_update",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "BaoFinalUseHost::apply_revocation_update"
+      },
+      {
+        "callPattern": "(?:bao_host|final_use_host|BaoFinalUseHost)\\s*(?:\\.|::)\\s*consume_kv_v2\\s*\\(",
+        "id": "bao_registered_final_use_host",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "BaoFinalUseHost::consume_kv_v2"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_open_state",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseRegistry::open_state_dir"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_put",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseRegistry::put_lease"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_revoke",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseRegistry::revoke"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_prune",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseRegistry::prune_expired_leases"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_epoch_advance",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseRegistry::advance_epoch"
+      },
+      {
+        "callPattern": "\\bverifier\\s*\\.\\s*verify_use\\s*\\(",
+        "id": "authority_lease_verify_use",
+        "productCallers": [
+          "codex-rs/hepta-fleet/src/authority_port.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseVerifier::verify_use"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_delivery",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseVerifier::with_verified_use"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_delivery_witness",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "deliver_authority_lease_with_witness"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_dispatch_raw",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "AuthorityLeaseVerifier::with_dispatch_boundary"
+      },
+      {
+        "callPattern": null,
+        "id": "authority_lease_dispatch_witness",
+        "productCallers": [
+          "codex-rs/hepta-fleet/src/authority_port.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "dispatch_authority_lease_with_witness"
+      },
+      {
+        "callPattern": null,
+        "id": "final_use_async_dispatch_fence",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseAuthority::with_verified_use_async"
+      },
+      {
+        "callPattern": null,
+        "id": "automation_taskflow_provider_effect_bridge",
+        "productCallers": [],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "ProviderEffectTaskFlowDriver::new"
+      },
+      {
+        "callPattern": "\\bauthority\\s*\\.\\s*with_verified_effect\\s*\\(",
+        "id": "final_use_guarded_effect",
+        "productCallers": [
+          "codex-rs/hepta-automation/src/authorized_effect.rs"
+        ],
+        "receiverMethods": [],
+        "receiverType": null,
+        "symbol": "FinalUseAuthority::with_verified_effect"
+      }
+    ],
+    "privilegedInventory": [
+      "agentd_production_operation_runtime",
+      "agentd_production_writer_host",
+      "authority_lease_delivery",
+      "authority_lease_delivery_witness",
+      "authority_lease_dispatch_raw",
+      "authority_lease_dispatch_witness",
+      "authority_lease_epoch_advance",
+      "authority_lease_open_state",
+      "authority_lease_prune",
+      "authority_lease_put",
+      "authority_lease_revoke",
+      "authority_lease_verify_use",
+      "automation_taskflow_provider_effect_bridge",
+      "bao_final_use_consumer",
+      "bao_final_use_host_new",
+      "bao_registered_consumer_new",
+      "bao_registered_final_use_host",
+      "bao_registered_revocation_update",
+      "cognitive_production_mutation_capability",
+      "cognitive_store_recovery_open",
+      "final_use_approval_trust",
+      "final_use_approval_verify",
+      "final_use_async_dispatch_fence",
+      "final_use_claim",
+      "final_use_claim_raw",
+      "final_use_delivery",
+      "final_use_delivery_raw",
+      "final_use_delivery_witness",
+      "final_use_dispatch",
+      "final_use_dispatch_raw",
+      "final_use_dispatch_witness",
+      "final_use_guarded_effect",
+      "final_use_open_state",
+      "final_use_revocation_convergence_trust",
+      "final_use_revocation_convergence_verify",
+      "final_use_revocation_feed_apply",
+      "final_use_revocation_feed_trust",
+      "final_use_revocation_update",
+      "http_provider_effect_adapter",
+      "learning_artifact_owner_bootstrap",
+      "learning_artifact_owner_restart",
+      "learning_artifact_verified_current_view",
+      "memory_production_writer_open",
+      "provider_effect_coordinator",
+      "supervisor_authorized_boot"
+    ],
+    "protectedFiles": [
+      "codex-rs/hepta-supervisor/src/main.rs",
+      "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "codex-rs/model-provider/src/provider_effect.rs",
+      "codex-rs/hepta-contracts/src/final_use.rs",
+      "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+    ],
+    "rustFilesScanned": 4421,
+    "schema": "hepta.caller-proof-receipt.v2",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET"
+  },
+  "tests_passed": 7,
+  "tests_filtered_out": 168,
+  "test_summary": "Summary [   0.409s] 7 tests run: 7 passed, 168 skipped",
+  "passed_test_lines": [
+    "PASS [   0.009s] codex-hepta-agentd automation_effect_host::hcsn::tests::private_directory_validation_rejects_permission_changes_and_symlink_redirection",
+    "PASS [   0.008s] codex-hepta-agentd automation_effect_host::hcsn::tests::production_profile_is_refused_before_any_classical_authority_or_worker_state",
+    "PASS [   0.008s] codex-hepta-agentd automation_effect_host::hcsn::tests::profile_cannot_be_omitted_or_inferred_from_classical_key_fields",
+    "PASS [   0.007s] codex-hepta-agentd automation_effect_host::hcsn::tests::retained_request_read_rejects_linked_or_exposed_bytes",
+    "PASS [   0.008s] codex-hepta-agentd automation_effect_host::hcsn::tests::unregistered_operation_is_rejected_before_supervisor_pin_io",
+    "PASS [   0.206s] codex-hepta-agentd automation_effect_host::recovery_tests::local_terminal_recovery_preserves_uncertain_history_without_provider_lookup",
+    "PASS [   0.160s] codex-hepta-agentd automation_effect_host::tests::host_dispatches_exact_wire_payload_once"
+  ],
+  "clippy_step": "success",
+  "tracked_source_unchanged": true,
+  "production_PQ_qualification": false,
+  "files": {
+    "artifact-13504634465/_temp/hcsn-agentd/callers.json": {
+      "bytes": 15811,
+      "sha256": "484a9970d641a242f8b5e9a1e072a6a1f5e11b89647a6cd7edec8e091e529186"
+    },
+    "artifact-13504634465/_temp/hcsn-agentd/clippy.log": {
+      "bytes": 49130,
+      "sha256": "f81bf9e145d50b00014ddc35f4c818125c00464dd75b605a840ca834ee40c447"
+    },
+    "artifact-13504634465/_temp/hcsn-agentd/source-unchanged.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "artifact-13504634465/_temp/hcsn-agentd/source.txt": {
+      "bytes": 82,
+      "sha256": "b117bbeaf9e9917328f670f3d4e9095b7ae6d8d8338731777d21e81f25925ba4"
+    },
+    "artifact-13504634465/_temp/hcsn-agentd/tests.log": {
+      "bytes": 95500,
+      "sha256": "9c36d7793ecd8bdc64872b96e6d1fb1c67885832bd4c5be819c661229102f63e"
+    },
+    "github-blob-receipts.json": {
+      "bytes": 704,
+      "sha256": "1562058f10d44ae026cbfeb5366e60d1133b3bd9d1e7026144bb2a68096a4efc"
+    },
+    "hcsn-agentd-44e539313e0c54badb4b9b687425dd87ecba6e67-1.zip": {
+      "bytes": 30445,
+      "sha256": "a34f9ec9fdf7781fff3ec4f5e55fc6df93b63214a7e43527bde1299ed0f6c776"
+    },
+    "interim-summary.json": {
+      "bytes": 2602,
+      "sha256": "8ce625277415967ab7ebf2890fea9de3fc44e3c2a107a0c8a44a92c1188e695e"
+    },
+    "job-127908599809-decoded-exact.log": {
+      "bytes": 270205,
+      "sha256": "2b3f9f05869ec7c30906df42a9a739d3363f729e309818b8b151e35753d8480a"
+    },
+    "job-127908599809-raw.json": {
+      "bytes": 274353,
+      "sha256": "682217251d82e565ed07c131f12f612d9edc36288a56c53579390494e3320eb5"
+    },
+    "terminal-api.json": {
+      "bytes": 10009,
+      "sha256": "de33c7535169cf89614fdbfd81c718f4d4c2a1aa921a7094cedd0f85f93ea72b"
+    }
+  },
+  "raw_log_git_blob_sha": "cd65581f94a367ceadf29847f07248ee7b1b7200",
+  "raw_api_git_blob_sha": "6b9e18dae124f6b5c1ac7ceb22880b79e5cc4df1",
+  "zip_git_blob_sha": "7eb49be310d79390e847398f22b5ab7e6301c40a",
+  "caller_receipt_git_blob_sha": "dae28386f6d241d0487aceb76a922d3c7e9bbe01",
+  "supersedes_interim_summary_git_blob_sha": "60688360bc6c71402a76327315ddbd6221997517",
+  "conclusion": "success",
+  "scope": "actual Agentd compile, seven selected host tests, original caller closed-set proof, Clippy, unchanged source and independently verified original GitHub ZIP; exact head 44e5393 only",
+  "code_head_modified_by_evidence_preservation": false
+}

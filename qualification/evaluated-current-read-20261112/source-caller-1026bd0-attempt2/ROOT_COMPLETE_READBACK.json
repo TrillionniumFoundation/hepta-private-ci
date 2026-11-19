@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.owner-source-caller.original-root-readback.v1",
+  "observed_at_utc": "2026-11-12 13:00:44 UTC",
+  "source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+  "tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+  "job": "1a1cfb4675b-2564-1a8e",
+  "status": "FOUR_SOURCE_GATES_PASSED",
+  "source_tests": {
+    "explicit_ok": 398,
+    "reported": 398,
+    "failed": 0
+  },
+  "parser_tests": {
+    "passed": 16,
+    "failed": 0
+  },
+  "caller_selftest_exit": 0,
+  "full_caller_verify": {
+    "exit": 0,
+    "elapsed_seconds": 898.0422165810596,
+    "raw_bytes": 251315,
+    "raw_sha256": "c4c6e37e012fbd7a1a47afff7d3d313f963276eac94ade0a609475afb6fe4651",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "boundaries": 537,
+    "privilegedInventory": 537,
+    "protectedFiles": 386,
+    "rustFilesScanned": 6597,
+    "authorityGranted": false
+  },
+  "source_identity": {
+    "files": 15046,
+    "unchanged": true,
+    "inventory_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+    "full_inventory_payload": "Not yet independently transferred in this snapshot; original RESULT and identical before/after identity are read."
+  },
+  "original_core_manifest": "ARCHIVE_MANIFEST.json",
+  "all_manifest_text_artifacts_git_sha256_verified": true,
+  "native_started": false,
+  "native_hold": "Missing matching Clang21 builtin resource, observed in separate ACT native build on shared host. Exact native request remains undispatched.",
+  "scientific_qualification": "HOLD",
+  "owner_decision": null
+}

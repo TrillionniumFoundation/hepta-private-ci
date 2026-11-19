@@ -253,11 +253,7 @@ async fn write_local_rehydration_witness_inner(
     }
 
     let store = lease.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let current_lease = lease
         .verify_current_in_transaction(&mut transaction)
         .await?;

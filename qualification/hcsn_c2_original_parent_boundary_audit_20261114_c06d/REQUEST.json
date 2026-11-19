@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-c2-original-parent-boundary-audit-request-v1",
+  "identity": "hcsn-c2-original-parent-boundary-audit-20261114-c06d-v1",
+  "idempotency_key": "hcsn-c2-original-parent-boundary-audit-20261114-c06d-v1",
+  "source_commit": "5a5bb1102ad2996845073e0c6ecd167b0fdf1b89",
+  "source_path": "qualification/hcsn_c2_original_parent_boundary_audit_20261114_c06d/audit_boundary.py",
+  "host": "desktop",
+  "mode": "read_only_stdlib",
+  "torch_imports": 0,
+  "checkpoint_deserializations": 0,
+  "model_or_optimizer_execution": 0,
+  "scope": "six original campaign-v2 last.pt save boundaries and post-boundary event deltas",
+  "non_claims": [
+    "not a training replay",
+    "not next-loss or next-gradient equality",
+    "not new-run continuation equality",
+    "not remaining-wall or resource admission",
+    "not production adoption"
+  ],
+  "status": "HOLD",
+  "all_closed": false
+}

@@ -1,0 +1,56 @@
+{
+  "actions": {
+    "four_cell_average": {
+      "argmax_changes": 16,
+      "source_episodes_exposed": 25,
+      "token_steps": 94
+    },
+    "horizontal_cell": {
+      "argmax_changes": 21,
+      "source_episodes_exposed": 16,
+      "token_steps": 58
+    },
+    "no_cell": {
+      "argmax_changes": 0,
+      "source_episodes_exposed": 20,
+      "token_steps": 88
+    },
+    "stop_cell": {
+      "argmax_changes": 0,
+      "source_episodes_exposed": 21,
+      "token_steps": 80
+    },
+    "vertical_cell": {
+      "argmax_changes": 34,
+      "source_episodes_exposed": 27,
+      "token_steps": 98
+    },
+    "vocab_cell": {
+      "argmax_changes": 0,
+      "source_episodes_exposed": 19,
+      "token_steps": 75
+    }
+  },
+  "all_four_individual_cells_changed_argmax": false,
+  "audit_scope": "pinned historical token logs; observed local argmax switches only",
+  "four_cell_cooperation_or_synergy_proven": false,
+  "independent_per_cell_terminal_contribution_proven": false,
+  "long_horizon_8_to_16_decisions_proven": false,
+  "ndu_decisions_per_episode_histogram": {
+    "0": 2,
+    "2": 47,
+    "3": 15
+  },
+  "ndu_decisions_total": 139,
+  "ndu_mean_only_equal_quality_on_completed": 62,
+  "ndu_mean_only_jointly_completed": 62,
+  "ndu_mean_only_not_jointly_completed": 2,
+  "ndu_modifier_applied_steps": 493,
+  "observed_method_roster": 12,
+  "observed_source_count": 64,
+  "observed_test_rows": 768,
+  "schema": "hepta.ndu-v1-posthoc-cell-action-audit.v1",
+  "scientific_authorization": false,
+  "source_provenance": "original frozen 2026-10-22 v1 test journal",
+  "source_sha256": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39"
+}

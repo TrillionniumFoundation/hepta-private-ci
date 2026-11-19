@@ -1,0 +1,34 @@
+{
+  "schema": "concurrent-ci-repair-reconciliation-v1",
+  "created_at_utc": "2026-11-19T17:40:06.510491+00:00",
+  "ordered_parents": [
+    "15cc18152fb93acf0193a1610bb0f2dbe7b61e9d",
+    "60e508e44f3419985e275e1131c87a812981c711"
+  ],
+  "merge_base": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "actual_normal_merge_tree": "390f4f7eaad8b57333d241d50073d831f804fb25",
+  "actual_normal_merge_exit": 1,
+  "conflict_paths": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/hepta-architecture-convergence.yml"
+  ],
+  "resolution": "Both sides use byte-identical concurrency expressions. Preserve the explanatory comments and all other ours bytes in the two workflows. Preserve remote main.rs manifest choice and its round08 checkpoint. Adapt the stronger exact-root regression to that same, byte-identical wrapper and keep all recursion/include/binary assertions.",
+  "independent_expected_source_tree": "514852fdb8f6321fc6066a6a63a4dd922acdfe8d",
+  "resolved_source_tree": "514852fdb8f6321fc6066a6a63a4dd922acdfe8d",
+  "expected_overlay_matches": true,
+  "tested_input_files_bound_to_source_tree": 19,
+  "original_tests": {
+    "passed": 68,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 6.065
+  },
+  "complete_parent_closure_commits": 44576,
+  "protected_pin_count": 498,
+  "protected_ancestor_intersection": [],
+  "no_other_source_paths_changed_from_first_parent": true,
+  "full_required_ci": "PENDING exact final published merge head",
+  "main_updates": 0,
+  "branch_deletions": 0,
+  "hia_ref_changes": 0
+}

@@ -1,0 +1,31 @@
+import hashlib,io,json,os,pathlib,subprocess,sys,tarfile,urllib.request
+from datetime import datetime,timezone
+cfg=json.loads(sys.argv[1]);root=pathlib.Path(cfg["directory"]);out=pathlib.Path(cfg["evidence"]);out.mkdir(parents=True,exist_ok=False)
+result={"schema_version":1,"started_at":datetime.now(timezone.utc).isoformat(),"uid":os.getuid(),"euid":os.geteuid(),"source_changed":False,"native_build_or_test_started":False,"sudo_or_escalation_attempted":False,"status":"preparing","release":cfg}
+try:
+ if os.geteuid()==0:raise RuntimeError("ordinary prerequisite install requires non-Root")
+ root.mkdir(parents=True,exist_ok=False);(root/"bin").mkdir()
+ request=urllib.request.Request(cfg["asset"]["url"],headers={"User-Agent":"hepta-owner-native-prerequisite-verification"})
+ with urllib.request.urlopen(request,timeout=90) as response:data=response.read(cfg["asset"]["bytes"]+1)
+ digest=hashlib.sha256(data).hexdigest()
+ if len(data)!=cfg["asset"]["bytes"] or digest!=cfg["asset"]["sha256"]:raise RuntimeError("official archive size or SHA mismatch")
+ archive=root/cfg["asset"]["name"];archive.write_bytes(data)
+ with tarfile.open(fileobj=io.BytesIO(data),mode="r:gz") as pack:
+  members=[member for member in pack.getmembers() if pathlib.PurePosixPath(member.name).name=="dotslash"]
+  if len(members)!=1:raise RuntimeError("expected exactly one DotSlash binary")
+  member=members[0];relative=pathlib.PurePosixPath(member.name)
+  if not member.isfile() or relative.is_absolute() or ".." in relative.parts or not 0<member.size<=64*1024*1024:raise RuntimeError("invalid selected binary member")
+  stream=pack.extractfile(member)
+  if stream is None:raise RuntimeError("missing binary stream")
+  binary=stream.read(member.size+1)
+  if len(binary)!=member.size:raise RuntimeError("invalid binary size")
+ executable=root/"bin/dotslash";executable.write_bytes(binary);executable.chmod(0o555)
+ version=subprocess.run([str(executable),"--version"],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=30,check=False)
+ result["binary"]={"path":str(executable),"bytes":len(binary),"sha256":hashlib.sha256(binary).hexdigest(),"version":version.stdout.decode(errors="strict"),"version_exit_code":version.returncode}
+ if version.returncode:raise RuntimeError("DotSlash cannot execute")
+ result["status"]="prepared";result["exit_code"]=0
+except Exception as error:
+ result["status"]="failed";result["exit_code"]=1;result["error_type"]=type(error).__name__;result["error"]=str(error)
+finally:
+ result["finished_at"]=datetime.now(timezone.utc).isoformat();(out/"RESULT.json").write_text(json.dumps(result,sort_keys=True,indent=2)+"\n");print(json.dumps(result,sort_keys=True),flush=True)
+raise SystemExit(result["exit_code"])

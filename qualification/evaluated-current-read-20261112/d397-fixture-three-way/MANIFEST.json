@@ -1,0 +1,345 @@
+{
+  "schema": "hepta.fixture-three-way-manifest.v1",
+  "code_tree": "9f45afbf3465e3c8a9bc7f04ef954d96ec0acb8a",
+  "fixed": {
+    "ancestor": "a96d1b821d10ed3d9e99dd06c5141f9f242ae318",
+    "ours": "872b1b68342285893abd4c09f9141bcc19d8f9ce",
+    "theirs": "d3977d9a1bed3e89952c576c45660b04ea674faf",
+    "base_tree": "57558558841da4a3209164d0033b903a553205d6"
+  },
+  "status": "STATIC_MERGE_READY_FOR_INDEPENDENT_REVIEW_NOT_RUN_NOT_FMT",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "name": "cell_q24_training_candidate_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "14c46a6e0518f511c0e8cf59c67f7486d274d8cf",
+          "bytes": 22074,
+          "sha256": "2f0568bf7ef872dc494b19833e75fe9a71a82c77b20976c9f4487c6722a73259"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "2c787e9e1faea7eb11dc525ddd549229341ec06a",
+          "bytes": 23597,
+          "sha256": "b2a8ff84ebfb1db4e66ba0bb0fcc6c07bdc4c8d4ecbd43d8e4b0513797147b01"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "bc1fb375181db5ea9d2965e53f38a1d0ef1eff8c",
+          "bytes": 22434,
+          "sha256": "901312679e082bc2d924d0a5596deb2471f9cf439803835da89ad566a926cd4c"
+        }
+      ],
+      "post": {
+        "blob_sha": "d4d927027d1a23d8a2b61ab6c9470773fcfecb92",
+        "bytes": 23957,
+        "sha256": "cf2847521dc4a2ff5dba43cc3a0e0eec724fb1d858fc036a9f05c6ab886c0949"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "name": "circuit_completion_readiness_support_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "3dbd154ed4558c310625f57138c41aedaa182cc7",
+          "bytes": 4535,
+          "sha256": "3cf718150e9bf51439fcd599733b3eb28af724df492e2a26542f42cf811a4966"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "0c3f8a1c20a739f5e32bd17f6cd494b5a357a2e8",
+          "bytes": 4562,
+          "sha256": "f07aa067607edbbe18b68b8a02f0ed647ccb74b59208497e59dde0166a787c64"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+          "bytes": 4901,
+          "sha256": "22f1bcbc7e50bcbe4e3ea0e0732840f40b443de3dd43688c0af5ddfc29599ee3"
+        }
+      ],
+      "post": {
+        "blob_sha": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+        "bytes": 4901,
+        "sha256": "22f1bcbc7e50bcbe4e3ea0e0732840f40b443de3dd43688c0af5ddfc29599ee3"
+      },
+      "unchanged_from_theirs": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "name": "circuit_evaluated_next_use_receipt_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "f83c91242ee6b27f0523fb40e78eb923b607d953",
+          "bytes": 19294,
+          "sha256": "b373ed0887d2eb21998d3fa3114c32793733242947b99fbe622cc602328f6566"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "316d35149c78e6c961a8d942fedb19e9c826e587",
+          "bytes": 20216,
+          "sha256": "bd0dfbca029fe2ad237a8687a0a4dbe5b11d42bb5d088e77f10d7d31eacc012a"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "843407d83bfeb48dfc7db01a7d574a5a02740373",
+          "bytes": 19368,
+          "sha256": "bd54174dcf2d470853166fe835dab0d4b0a8231be2d5607d51edaf64ff130aef"
+        }
+      ],
+      "post": {
+        "blob_sha": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+        "bytes": 20290,
+        "sha256": "717989ff369c95862e1f728d9a1022e7c894d1ab4a37716361183382c9a39ac9"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "name": "circuit_evaluated_retention_publication_support_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "0254a9257c0a6f2f2c21a3b4ea37284235b13802",
+          "bytes": 12745,
+          "sha256": "d7ee7f0dc75ac86fcbf39e3cdc2d6fcd69d521832a786b7cbb3df7bd84e77175"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "1158844757e5eaac308922eba2476db88442a207",
+          "bytes": 12750,
+          "sha256": "e7f6a493ea703a6026895360338a1c2222583bf63f0477f66fd188a3702ac96e"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "f9b33de904789c2af255afcbd3473c751d134997",
+          "bytes": 13427,
+          "sha256": "70f2680732b9319addd807c548502df635316355195e46ba9273120987861e19"
+        }
+      ],
+      "post": {
+        "blob_sha": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+        "bytes": 13432,
+        "sha256": "956415acbe1737f3edccb84e009e53413530a69c7c36850532ce1d285ac9a3de"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "name": "circuit_evaluated_retention_receipt_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "c3866fec34f554713cfa0c436a84c14c1bb2f7e0",
+          "bytes": 15361,
+          "sha256": "638960b10793c4ee351d22bb0e58db8e797d578d36209570bc1ec769a79652f2"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "4b73e8a07bd27bd108d8d3fd539632974514a378",
+          "bytes": 15368,
+          "sha256": "ef828331e2d00dce4a02ef3f69c2cd80c2959c7ebdc18328ecbd9c7e5ce1fef6"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "a4b4fd8169407c81360b279f6796b366240de9ca",
+          "bytes": 15513,
+          "sha256": "28c5131f78a1671e4e7ba4b0918a1c9ae825f8d6c87fb2f6ae3540930cfaad1f"
+        }
+      ],
+      "post": {
+        "blob_sha": "bd394bc80915f0cedd71792ee04e90df5d45a8f1",
+        "bytes": 15520,
+        "sha256": "acf64d1b659757bc62ffb46faf6e228a6b49e7af5b80bd1cd3bbddc2ef88909d"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "name": "circuit_next_use_command_support_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "901c0a2fdfb475d4f09477a273a00fe437d47393",
+          "bytes": 11057,
+          "sha256": "d3e68a64c6080889f6b1074fea121ef3ff8159c404046a52ada05c0fc1101dc5"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "4f54cff102f768355bcf8422cbfbe14250f70d3d",
+          "bytes": 12881,
+          "sha256": "2612d41ee5b49db641f288478b2dda7a884fc850d8ed9fdd258c6d1b40ad52e1"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "233e8d41360320695aa6a152c9c78212800843f3",
+          "bytes": 12515,
+          "sha256": "ebc449bed4954ebfaea7ba74a86352ad88ef48f9adfb57ea55cf34b072e792ad"
+        }
+      ],
+      "post": {
+        "blob_sha": "86b78a362f7244c06393e8b013750cc824c4e3cf",
+        "bytes": 17415,
+        "sha256": "253bdd820fc6750daf52d1560e2d94f79b5629c68c4cb160b03cfd8c78512d0b"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "name": "circuit_original_evaluation_host_support_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "d15d23cbab985ef52d9490c1c00349c8892d44e2",
+          "bytes": 6823,
+          "sha256": "39db9ce7cfd8e083fc570f3cb7d25e1e4370003288425914ca7b8108bcf14740"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "b251f72da8c5a6640c0cb4b00502de155d27e4ff",
+          "bytes": 6884,
+          "sha256": "ee1c7e50cf2a36be22adb23582dcec66cb0f9c6444fe73d70ee63885d846a643"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "7f2fd5d54dfb0a391a260db864d4d989c87cac8e",
+          "bytes": 6991,
+          "sha256": "b08d5a1c024a970ca0143833c7a3827148046d84974257e6deb2894df8be46d4"
+        }
+      ],
+      "post": {
+        "blob_sha": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+        "bytes": 7072,
+        "sha256": "2a0ee970718403be404f4c4393690ca011de0e092492c25dadbb741aedf2f14d"
+      },
+      "unchanged_from_theirs": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "name": "circuit_original_evaluation_panel_tests.rs",
+      "originals": [
+        {
+          "side": "ancestor",
+          "blob_sha": "ccc2f10eeba27fe2c2dd2f94a13d1dfc19eeecb4",
+          "bytes": 9368,
+          "sha256": "8d03478bec93f2410bd6b89bc8befd14948be6ac4d55c081779a4da1272b65b6"
+        },
+        {
+          "side": "ours",
+          "blob_sha": "02a46c7735336689df347040f34dd2aeeb30d345",
+          "bytes": 9720,
+          "sha256": "0a7b94ff4cad4f9816ebfffcf156c3944ccb3714e152167e3861f289d87eace0"
+        },
+        {
+          "side": "theirs",
+          "blob_sha": "b10204ed4683a6afd83585c81ef7e05268284cca",
+          "bytes": 10044,
+          "sha256": "0225526b57b6c9788f498105c3e4694835d329e1ccbdb1012fd484e311b1f015"
+        }
+      ],
+      "post": {
+        "blob_sha": "94f7031daabce5873329350758545227235c5656",
+        "bytes": 10396,
+        "sha256": "a911a9fa0b928a8f5cf61a68c45c6afb05c9bfcb56c2bf746f3bd606baabf551"
+      },
+      "unchanged_from_theirs": false
+    }
+  ],
+  "originals_hash_verified": 24,
+  "postimages_readback_verified": 8,
+  "readback": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "blob_sha": "d4d927027d1a23d8a2b61ab6c9470773fcfecb92",
+      "bytes": 23957,
+      "sha256": "cf2847521dc4a2ff5dba43cc3a0e0eec724fb1d858fc036a9f05c6ab886c0949",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_completion_readiness_support_tests.rs",
+      "blob_sha": "fcf8819ba26b451c0d5dd978c375dec9b2312838",
+      "bytes": 4901,
+      "sha256": "22f1bcbc7e50bcbe4e3ea0e0732840f40b443de3dd43688c0af5ddfc29599ee3",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "blob_sha": "e79c335decb6283335ee60afcdfd76c68db1bd2a",
+      "bytes": 20290,
+      "sha256": "717989ff369c95862e1f728d9a1022e7c894d1ab4a37716361183382c9a39ac9",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication_support_tests.rs",
+      "blob_sha": "bc1eaa7628ac840ca9ee51e4a2f93f3b70541e64",
+      "bytes": 13432,
+      "sha256": "956415acbe1737f3edccb84e009e53413530a69c7c36850532ce1d285ac9a3de",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_receipt_tests.rs",
+      "blob_sha": "bd394bc80915f0cedd71792ee04e90df5d45a8f1",
+      "bytes": 15520,
+      "sha256": "acf64d1b659757bc62ffb46faf6e228a6b49e7af5b80bd1cd3bbddc2ef88909d",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_support_tests.rs",
+      "blob_sha": "86b78a362f7244c06393e8b013750cc824c4e3cf",
+      "bytes": 17415,
+      "sha256": "253bdd820fc6750daf52d1560e2d94f79b5629c68c4cb160b03cfd8c78512d0b",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "blob_sha": "e6d04aef9a58c2db7e78d73d78e2ba6de2320d4a",
+      "bytes": 7072,
+      "sha256": "2a0ee970718403be404f4c4393690ca011de0e092492c25dadbb741aedf2f14d",
+      "readback_verified": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob_sha": "94f7031daabce5873329350758545227235c5656",
+      "bytes": 10396,
+      "sha256": "a911a9fa0b928a8f5cf61a68c45c6afb05c9bfcb56c2bf746f3bd606baabf551",
+      "readback_verified": true
+    }
+  ],
+  "review": {
+    "path": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/MERGE_REVIEW.json",
+    "blob_sha": "e31f3398e0e21a6376083ab2cb53b3e051212721",
+    "bytes": 7208,
+    "sha256": "7c23cb6293acb51567378d1de378bd9588bfb29a6618f2a315a3a6163ac266b0"
+  },
+  "patch": {
+    "path": "qualification/evaluated-current-read-20261112/d397-fixture-three-way/DIFF.patch",
+    "blob_sha": "77c9e988d62c853a7a549e16e52f27ed7d671e36",
+    "bytes": 24175,
+    "sha256": "b213953e25ff10f23845cba8e712c619f18c43c88565a2348458e137281bb68f"
+  },
+  "dependency_scope": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "c45505b07af09894ff697030bcb57838e4bc5a43",
+      "reason": "Preserve ours-only actual PanelMemberFixture::complete boxed output; no extra edit here."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "blob": "7b64a69e5e0ad9c3dbb7c6a8180f9ecabb843d99",
+      "reason": "Peer production merge provides cfg(test) EvidenceDiagnosticsFlush outside each original exchange and original fixture response wrapper; retain new upstream timing/4 stage markers."
+    }
+  ],
+  "execution": {
+    "fmt": "NOT_RUN",
+    "source_checks": "NOT_RUN",
+    "rust_compile": "NOT_RUN",
+    "native_tests": "NOT_RUN",
+    "actors": 0
+  },
+  "claims": "Static faithful merge and byte identity only; no format/source gate/native/actor success claim."
+}

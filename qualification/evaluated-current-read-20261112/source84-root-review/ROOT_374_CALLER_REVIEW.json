@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.root-374-caller-review.v1",
+  "ours_git_blob": "f6efa0852dd91312b3571332bea862908eb8997c",
+  "theirs_git_blob": "b56a7967f0ab444595704bb5995ae16007730c70",
+  "post_git_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+  "post_bytes": 1895095,
+  "post_sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f",
+  "actual_parent_theirs_tree_verified": "981c4675a6579dfd9748046d3d01a2268f11c36f",
+  "parser": "Python tomllib full raw bytes",
+  "boundaries": 628,
+  "inventory_exact": true,
+  "protected_rows": 429,
+  "protected_paths": 355,
+  "function_order_rows": 1349,
+  "unique_path_function": 1310,
+  "all_parent_ids_paths_preserved": true,
+  "all_sequences_at_least_two": true,
+  "non_callers_active_rules_unchanged": 60,
+  "sole_callers_pin": "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+  "authority": {
+    "runtime_authority": false,
+    "production_caller": false,
+    "production_writer": false,
+    "external_effect": false,
+    "self_issued_acceptance": false,
+    "promotion": false,
+    "release": false
+  },
+  "full_source_gate": "NOT_RUN",
+  "native_gate": "NOT_RUN",
+  "owner_decision": null
+}

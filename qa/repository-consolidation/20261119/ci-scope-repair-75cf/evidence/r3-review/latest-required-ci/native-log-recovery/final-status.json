@@ -1,0 +1,133 @@
+{
+  "schema": "hepta-old-cargo-deny-log-recovery-final-v1",
+  "status": "INCOMPLETE_OLD_JOB_LOG_RECOVERY_STOPPED_FOR_CURRENT_CI",
+  "finished_utc": "2026-11-19T17:25:52.180275+00:00",
+  "github_job": {
+    "id": 135711856766,
+    "run_id": 44566606095,
+    "run_attempt": 1,
+    "head_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "name": "cargo-deny / cargo-deny",
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-11-19T16:31:58Z",
+    "completed_at": "2026-11-19T16:33:53Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44566606095/job/135711856766"
+  },
+  "job_identity_verified": true,
+  "first_native_job": "1a1f4cde068-ffbe-1166",
+  "first_get_exit": 124,
+  "received_prefix": {
+    "path": "/Users/qianqi/ci-cargo-deny-log-20261119-75cf/cargo-deny-job135711856766.log.stdout",
+    "bytes": 2443338,
+    "sha256": "4973ff91d79c9c20b25eb6c4b794b3579c59e5a73655a28313beaef4bd883e84"
+  },
+  "received_prefix_complete": false,
+  "resume_native_job": "1a1f4d25f7e-ffbe-1172",
+  "resume_get_exit": 1,
+  "resume_error": "TCP connection to api.github.com timed out; response body zero bytes.",
+  "archive_native_job": "1a1f4d57383-ffbe-117b",
+  "archive_terminal": {
+    "at_unix_ms": 1795109094104,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": true,
+    "exit_code": -15,
+    "job_id": "1a1f4d57383-ffbe-117b",
+    "launch_nonce": "f7a903f6a52c566584b3d9fb36b033fd",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "cancelled",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "archive_completeness_not_claimed": true,
+  "reason_stopped": "Parent prioritized current ceb13 CI; CI audit independently recovered the new scope/architecture job logs. No further old or new GitHub log fetch was started.",
+  "observations": [
+    "The exact old10fb job completed with conclusion failure; Run cargo-deny step failed.",
+    "The preceding RustSec policy guard ran7 tests successfully.",
+    "Downloaded prefix covers setup and early duplicate warnings; it does not contain a verified chrono error."
+  ],
+  "unknowns": [
+    "Complete original cargo-deny log was not recovered.",
+    "The exact chrono diagnostic remains unknown from this recovered evidence.",
+    "Old10fb failure and the incomplete prefix do not establish any current52831/ceb13 dependency-graph result."
+  ],
+  "safety_and_scope": {
+    "github_ref_check_config_changes": false,
+    "credential_contents_read_or_printed": false,
+    "login_attempts": false,
+    "tests_run": false,
+    "only_cancelled_process": "Own durable Python/gh archive-download job; no Rust process was signalled."
+  },
+  "artifacts": {
+    "recovery-result.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/recovery-result.json",
+      "bytes": 3409,
+      "sha256": "135f4d0cea6d2215f1a2d1b24f37759494625263ba78f073b076cc98a44c3569"
+    },
+    "job-metadata.stdout": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/job-metadata.stdout",
+      "bytes": 2694,
+      "sha256": "ef594024f07f4bf4b5c56d78ec1a6734a401036505287038ac30f13d7d6a1d78"
+    },
+    "resume-result.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/resume-result.json",
+      "bytes": 2056,
+      "sha256": "a819fc0e4d9fa37f9056f20a93021ea0443914060186d66cab5dee17318b1189"
+    },
+    "resume.stderr": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/resume.stderr",
+      "bytes": 146,
+      "sha256": "aac6d81fdab6a2fbd7c80cf4cdeac1e2a16cb9e0f793921cdad18bb80e649fa9"
+    },
+    "partial-diagnostic.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/partial-diagnostic.json",
+      "bytes": 8556,
+      "sha256": "3d5c15ffb7fbc108d18d377ce197c1ae7cf40d1bf381aa6752b33ae7f7ad8382"
+    },
+    "job-status-final.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/job-status-final.json",
+      "bytes": 952,
+      "sha256": "38db6766f21084a2044f478fd470cb25631baebb22b85bc731609f941a600cb5"
+    },
+    "resume-job-status-final.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/resume-job-status-final.json",
+      "bytes": 952,
+      "sha256": "b773884f5c0fee7a55d744522506382f582659196420e986b5be0519eec8b072"
+    },
+    "archive-job-cancel.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/archive-job-cancel.json",
+      "bytes": 398,
+      "sha256": "905a269532fb59cc47769e14050af525638c62055defc36c351399683016db15"
+    },
+    "archive-job-status-final.json": {
+      "path": "/workspace/scratch/75cf41417dcc/r3-review/latest-required-ci/native-log-recovery/archive-job-status-final.json",
+      "bytes": 949,
+      "sha256": "005afdabfcf0e853e8425c6d750d58db8a6b05d4350ff508f841e595b02aad99"
+    }
+  }
+}

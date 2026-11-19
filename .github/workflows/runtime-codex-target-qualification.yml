@@ -1,0 +1,20 @@
+name: runtime.codex target qualification (HOLD)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualification-hold:
+    name: Target qualification unavailable
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Keep target-host qualification closed
+        shell: bash
+        run: |
+          echo "SOURCE_ONLY_HOLD: this repository has no independently trusted target-host qualification verifier." >&2
+          echo "See library-recovery/runtime-codex-target-qualification-20261113/README.md for the preserved procedure and unresolved trust boundaries." >&2
+          exit 1

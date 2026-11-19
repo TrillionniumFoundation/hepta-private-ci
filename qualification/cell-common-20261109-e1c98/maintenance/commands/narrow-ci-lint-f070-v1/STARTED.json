@@ -1,0 +1,70 @@
+{
+  "attempt": "narrow-ci-lint-f070-v1",
+  "cgroup_before": {
+    "cgroup.events": "populated 1\nfrozen 0\n",
+    "cpu.max": "200000 100000\n",
+    "cpu.stat": "usage_usec 146414\nuser_usec 68177\nsystem_usec 78236\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 1\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+    "membership": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1c04d7ee2-5e21-9c2.service\n",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+    "memory.max": "max\n",
+    "memory.peak": "39137280\n",
+    "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1c04d7ee2-5e21-9c2.service"
+  },
+  "command": [
+    "git",
+    "-C",
+    "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "apply",
+    "--",
+    "/home/qq/hepta-cell-common-e1c98-20261109/maintenance-tools/narrow-ci-lint.patch"
+  ],
+  "controller_sha256": "f10cb2cedf97d985c7b82cf80fe2bafad444524bc0d7e4f32dc9b40d33363003",
+  "cost_scope": "whole subprocess including compilation, lint, and child processes",
+  "cwd": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/codex-rs",
+  "energy_joules": null,
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_BUILD_JOBS": "8",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qq/hepta-cell-common-e1c98-20261109/target",
+    "CODEX_REPO_ROOT": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PATH": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/home/qq/hepta-smollm2-weight-research-20261103/bootstrap-env/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/scripts:/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "RUSTUP_HOME": "/home/qq/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "TMPDIR": "/home/qq/hepta-cell-common-e1c98-20261109/tmp",
+    "UV_NO_PROGRESS": "1",
+    "UV_OFFLINE": "1"
+  },
+  "maintenance_worktree_inherits_no_test_pass_claim": true,
+  "phase": "fix",
+  "plan_sha256": "c353352c32f1ed1a69f559c9375a2115b76f46ae9964a28f962b44d36485ad36",
+  "provider_cost": null,
+  "schema": "hepta.common.maintenance-command.v1",
+  "source_before": {
+    "changed_files": [],
+    "head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "index_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": "",
+    "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+    "tree_is_committed_tree_not_dirty_worktree_digest": true,
+    "untracked": [],
+    "working_diff": {
+      "bytes": 0,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/maintenance/narrow-ci-lint-f070-v1/before.patch",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "started_unix": 1794227667.443616,
+  "tested_runtime_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "tested_runtime_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "tests_executed_by_this_command": false
+}

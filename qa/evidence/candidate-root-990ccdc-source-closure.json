@@ -1,0 +1,325 @@
+{
+  "qualification": "only six selected source-closure suites and py_compile; no Rust, full caller proof, formatting or native claims",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "runs": [
+    {
+      "before": {
+        "commit": "5ef305715dd61d272641d03e359318ab87f8c8bb",
+        "tree": "443f19f8ded53c6645bce587097fa5c2dcfde846",
+        "status": ""
+      },
+      "after": {
+        "commit": "5ef305715dd61d272641d03e359318ab87f8c8bb",
+        "tree": "443f19f8ded53c6645bce587097fa5c2dcfde846",
+        "status": ""
+      },
+      "tests": [
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.4343748092651367,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_original_candidate_stage_source_closure.log",
+          "bytes": 1220,
+          "sha256": "44ab317343876f14427fdb402a9c5ea57d10f2bb04b80f6c5fdf0d1b6fe9e4e6"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.2175462245941162,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_resident_candidate_stage_source_closure.log",
+          "bytes": 1220,
+          "sha256": "c653ba37c6e5e22abf5c4fe5dd4372718b28dde90666a3b1b646246f2d5fb501"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.24483585357666016,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_original_candidate_material_source_closure.log",
+          "bytes": 1226,
+          "sha256": "6d6fa6bbcfecb216455ddfdd305b15f28f4dc0a68e883897856dee9073ed4668"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.19789719581604004,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_original_no_update_stage_source_closure.log",
+          "bytes": 1219,
+          "sha256": "c822ec6af82f92ca53344a50222bad77d08500e814bbb2b104c38242a7cc943c"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.18597173690795898,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_original_training_initial_connection_source_closure.log",
+          "bytes": 1236,
+          "sha256": "a5c9efb5fea331636d07ae62d812b70e1fd93dd35f3e4169f8a73298b9552372"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "exit": 5,
+          "elapsed": 0.17667365074157715,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5ef3057-v1/test_resident_root_source_closure.log",
+          "bytes": 1206,
+          "sha256": "c722e7114e88d47e475746bb6726e244b74f1fcdddff15bac3d605347003599f"
+        }
+      ],
+      "passed": false,
+      "raw_logs": {
+        "test_original_candidate_material_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.OriginalCandidateMaterialClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 48, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.103s\n\nFAILED (errors=1)\n",
+        "test_original_candidate_stage_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.OriginalCandidateStageClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_stage_source_closure.py\", line 47, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.269s\n\nFAILED (errors=1)\n",
+        "test_original_no_update_stage_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.OriginalNoUpdateStageClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py\", line 71, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.080s\n\nFAILED (errors=1)\n",
+        "test_original_training_initial_connection_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.OriginalTrainingConnectionClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py\", line 42, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.072s\n\nFAILED (errors=1)\n",
+        "test_resident_candidate_stage_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.ResidentCandidateStageClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py\", line 42, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.100s\n\nFAILED (errors=1)\n",
+        "test_resident_root_source_closure.log": "E\n======================================================================\nERROR: setUpClass (__main__.ResidentRootSourceClosureTests)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_root_source_closure.py\", line 109, in setUpClass\n    cls.manifest = tomllib.loads((ROOT / \"CALLERS.toml\").read_text())\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 119, in loads\n    pos, header = create_list_rule(src, pos, out)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py\", line 316, in create_list_rule\n    raise suffixed_err(src, pos, f\"Cannot mutate immutable namespace {key}\")\ntomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11849, column 41)\n\n----------------------------------------------------------------------\nRan 0 tests in 0.071s\n\nFAILED (errors=1)\n"
+      }
+    },
+    {
+      "before": {
+        "commit": "5e2f650fb17918976dafa2a2124e672a3edcb49c",
+        "tree": "500f124ad25bbfea62b654fbd7aeba9ee7bc73c2",
+        "status": ""
+      },
+      "after": {
+        "commit": "5e2f650fb17918976dafa2a2124e672a3edcb49c",
+        "tree": "500f124ad25bbfea62b654fbd7aeba9ee7bc73c2",
+        "status": ""
+      },
+      "tests": [
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.340428352355957,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_original_candidate_stage_source_closure.log",
+          "bytes": 104,
+          "sha256": "6e5347f276b818d66ccf0b30984053ac3072d29d3efad51b1d98407ec1e39f1a"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 0.6157770156860352,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_resident_candidate_stage_source_closure.log",
+          "bytes": 102,
+          "sha256": "fefa6e93b3043bfe40cc13f853d62ff4730da93fcaeb7ff1bd7cb950f40c2a22"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+          "exit": 1,
+          "elapsed": 0.9674348831176758,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_original_candidate_material_source_closure.log",
+          "bytes": 19816,
+          "sha256": "5657ca68823b041aaca678230c57f4219782cb48bcd2ebb0e36565d9099605ba"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "exit": 1,
+          "elapsed": 3.147313117980957,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_original_no_update_stage_source_closure.log",
+          "bytes": 1238,
+          "sha256": "21573a72a956bb5080b424677d0a0c4b6584eb58a1ec3a1a40f62c02c09189a2"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.0767524242401123,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_original_training_initial_connection_source_closure.log",
+          "bytes": 104,
+          "sha256": "0263af2e786d0e9d956d4dcfaab97455a2724c0bc91bb0690d452db403291023"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "exit": 1,
+          "elapsed": 2.114863395690918,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-5e2f650-v2/test_resident_root_source_closure.log",
+          "bytes": 5630,
+          "sha256": "bf98b9a365cef090ae0859583dd71dd90aadfc7ae412ca2655b2ebf3d4d0264c"
+        }
+      ],
+      "py_compile": [
+        "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "scripts/hepta_c_observer_coverage.py"
+      ],
+      "passed": false,
+      "raw_logs": {
+        "test_original_candidate_material_source_closure.log": "EEEEEEEEEEE\n======================================================================\nERROR: test_one_session_pins_original_windows_pages_and_full_training_signature (__main__.OriginalCandidateMaterialClosureTests.test_one_session_pins_original_windows_pages_and_full_training_signature) (bound='const ORIGINAL_Q24_CANDIDATE_HEAD_BYTES: usize = 12 + 64 * 64 * 8')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 158, in test_one_session_pins_original_windows_pages_and_full_training_signature\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='candidate.bundle != *signed')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='baseline.components() != &dataset.request.selected_bundle.components')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='if changed.next().is_some()')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='baseline.validate_single_head_candidate(candidate, head)?')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='Digest32::of_bytes(heads)')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='components.heads = head_digest')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_original_source_lane_and_complete_model_binding_cannot_be_bypassed (__main__.OriginalCandidateMaterialClosureTests.test_original_source_lane_and_complete_model_binding_cannot_be_bypassed) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='if signed != &expected')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 118, in test_original_source_lane_and_complete_model_binding_cannot_be_bypassed\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (__main__.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', marker='AuthorityPosture::DENY_ALL')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 186, in test_readback_cannot_initialize_recover_fit_sign_or_promote_missing\n    self.rejects(path, function, marker)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 75, in rejects\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (__main__.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', declaration='impl Clone for OriginalCellQ24CandidateMaterialV1 {}')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 200, in test_readback_cannot_initialize_recover_fit_sign_or_promote_missing\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n======================================================================\nERROR: test_readback_cannot_initialize_recover_fit_sign_or_promote_missing (__main__.OriginalCandidateMaterialClosureTests.test_readback_cannot_initialize_recover_fit_sign_or_promote_missing) (path='codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs', declaration='use serde::Deserialize;')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 200, in test_readback_cannot_initialize_recover_fit_sign_or_promote_missing\n    self.verifies(path, source)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_candidate_material_source_closure.py\", line 66, in verifies\n    PROOF._verify_protected_files(root, {\"protected_file\": rows})\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 713, in _verify_protected_files\n    _verify_function_order(row, code, relative, text)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 685, in _verify_function_order\n    _verify_required_order(\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 583, in _verify_required_order\n    raise VerificationFailure(\noriginal_candidate_material_proof.VerificationFailure: codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs:fn authority(: required_order must contain marker sequences\n\n----------------------------------------------------------------------\nRan 3 tests in 0.823s\n\nFAILED (errors=11)\n",
+        "test_original_candidate_stage_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.120s\n\nOK\n",
+        "test_original_no_update_stage_source_closure.log": "...E....\n======================================================================\nERROR: test_only_concrete_original_edges_and_resident_installation_are_registered (__main__.OriginalNoUpdateStageClosureTests.test_only_concrete_original_edges_and_resident_installation_are_registered) (boundary='circuit_feature_original_selection_observation')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_original_no_update_stage_source_closure.py\", line 113, in test_only_concrete_original_edges_and_resident_installation_are_registered\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 556, in _verify_boundary\n    raise VerificationFailure(\noriginal_no_update_stage_proof.VerificationFailure: circuit_feature_original_selection_observation: caller codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs lacks guard marker 'cell.read_learning_selection(&coordinator)?'\n\n----------------------------------------------------------------------\nRan 8 tests in 3.023s\n\nFAILED (errors=1)\n",
+        "test_original_training_initial_connection_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.948s\n\nOK\n",
+        "test_resident_candidate_stage_source_closure.log": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.466s\n\nOK\n",
+        "test_resident_root_source_closure.log": "...EEEE......\n======================================================================\nERROR: test_exact_new_callers_and_external_registration_stay_closed (__main__.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_original_custody_retain')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 528, in _verify_boundary\n    matched = any(\n              ^^^^\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 529, in <genexpr>\n    has_authority_call(code, boundary.receiver_type, method, fields)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/hepta_typed_callers.py\", line 212, in has_authority_call\n    raise UnresolvedTypedReceiver(\nhepta_typed_callers.UnresolvedTypedReceiver: unresolved possible HostAuthorityService::retain_original_resident_root receiver\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_root_source_closure.py\", line 144, in test_exact_new_callers_and_external_registration_stay_closed\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 533, in _verify_boundary\n    raise VerificationFailure(\nresident_root_caller_proof.VerificationFailure: root_resident_original_custody_retain: codex-rs/hepta-agentd/src/authority_host_runtime.rs: unresolved possible HostAuthorityService::retain_original_resident_root receiver\n\n======================================================================\nERROR: test_exact_new_callers_and_external_registration_stay_closed (__main__.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_original_intent_current')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_root_source_closure.py\", line 144, in test_exact_new_callers_and_external_registration_stay_closed\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 544, in _verify_boundary\n    raise VerificationFailure(\nresident_root_caller_proof.VerificationFailure: root_resident_original_intent_current: caller set mismatch; missing=['codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs'], unexpected=[]\n\n======================================================================\nERROR: test_exact_new_callers_and_external_registration_stay_closed (__main__.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_late_delivery_run')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_root_source_closure.py\", line 144, in test_exact_new_callers_and_external_registration_stay_closed\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 544, in _verify_boundary\n    raise VerificationFailure(\nresident_root_caller_proof.VerificationFailure: root_resident_late_delivery_run: caller set mismatch; missing=['codex-rs/hepta-agentd/src/runtime.rs'], unexpected=[]\n\n======================================================================\nERROR: test_exact_new_callers_and_external_registration_stay_closed (__main__.ResidentRootSourceClosureTests.test_exact_new_callers_and_external_registration_stay_closed) (boundary='root_resident_checkpoint_fresh_cas')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 528, in _verify_boundary\n    matched = any(\n              ^^^^\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 529, in <genexpr>\n    has_authority_call(code, boundary.receiver_type, method, fields)\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/hepta_typed_callers.py\", line 212, in has_authority_call\n    raise UnresolvedTypedReceiver(\nhepta_typed_callers.UnresolvedTypedReceiver: unresolved possible ResidentCheckpointV3::admit receiver\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/qa/b4-no-bypass/test_resident_root_source_closure.py\", line 144, in test_exact_new_callers_and_external_registration_stay_closed\n    PROOF._verify_boundary(ROOT, row, sources, ())\n  File \"/workspace/scratch/ce434f960ee9/candidate-review-5ef3057/scripts/verify_hepta_callers.py\", line 533, in _verify_boundary\n    raise VerificationFailure(\nresident_root_caller_proof.VerificationFailure: root_resident_checkpoint_fresh_cas: codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs: unresolved possible ResidentCheckpointV3::admit receiver\n\n----------------------------------------------------------------------\nRan 10 tests in 2.000s\n\nFAILED (errors=4)\n"
+      }
+    },
+    {
+      "before": {
+        "commit": "2d149a4cd2f25c02a04b2c5dcf8e2bb3616907cb",
+        "tree": "1e5d69d6d6a24d99aeebae7d492db7f218e4560b",
+        "status": ""
+      },
+      "after": {
+        "commit": "2d149a4cd2f25c02a04b2c5dcf8e2bb3616907cb",
+        "tree": "1e5d69d6d6a24d99aeebae7d492db7f218e4560b",
+        "status": ""
+      },
+      "tests": [
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.982851266860962,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_original_candidate_stage_source_closure.log",
+          "bytes": 104,
+          "sha256": "55ee3c35df3931d9ef5bbb324ce15d57d21ca096082a372d854d517afd0f73fa"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.312779426574707,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_resident_candidate_stage_source_closure.log",
+          "bytes": 102,
+          "sha256": "c32404c3a6d305097f06abf85991e0647b313a7711eb895b05e542a7ff9f603c"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.3366963863372803,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_original_candidate_material_source_closure.log",
+          "bytes": 101,
+          "sha256": "991e8eea9ea6f0ae00c976bffb0081f97edbd11b7c2f02a497545a7e1c5b8e9c"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 3.224355697631836,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_original_no_update_stage_source_closure.log",
+          "bytes": 106,
+          "sha256": "f8f9ce0fb6e624af936ee9e33f1dd160d132cddbfbd1c2d9ccb8c00c098f883e"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.6376378536224365,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_original_training_initial_connection_source_closure.log",
+          "bytes": 104,
+          "sha256": "5e45f408e6a5d62d3c858c4d64842a58fcd3d0c452688c24e3ebd86b0d4e801c"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "exit": 0,
+          "elapsed": 2.3447625637054443,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-2d149a4-v3/test_resident_root_source_closure.log",
+          "bytes": 109,
+          "sha256": "42340c3548833f0ec6af43822921e26a8cb4beef14e2706c7cca6e2b4e9505fe"
+        }
+      ],
+      "py_compile": [
+        "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "scripts/hepta_c_observer_coverage.py"
+      ],
+      "passed": true,
+      "raw_logs": {
+        "test_original_candidate_material_source_closure.log": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.184s\n\nOK\n",
+        "test_original_candidate_stage_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.665s\n\nOK\n",
+        "test_original_no_update_stage_source_closure.log": "........\n----------------------------------------------------------------------\nRan 8 tests in 3.097s\n\nOK\n",
+        "test_original_training_initial_connection_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.481s\n\nOK\n",
+        "test_resident_candidate_stage_source_closure.log": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.983s\n\nOK\n",
+        "test_resident_root_source_closure.log": "..........\n----------------------------------------------------------------------\nRan 10 tests in 2.196s\n\nOK\n"
+      }
+    },
+    {
+      "before": {
+        "commit": "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+        "tree": "1e5d69d6d6a24d99aeebae7d492db7f218e4560b",
+        "status": ""
+      },
+      "after": {
+        "commit": "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+        "tree": "1e5d69d6d6a24d99aeebae7d492db7f218e4560b",
+        "status": ""
+      },
+      "tests": [
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.27132248878479,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_original_candidate_stage_source_closure.log",
+          "bytes": 104,
+          "sha256": "9be98fa7922f85f8cab8385acdb8e58ece9be684f6c2ab28befe9b7a70581f06"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 0.6505157947540283,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_resident_candidate_stage_source_closure.log",
+          "bytes": 102,
+          "sha256": "5760fcb9107c773f7825da4f6bf64180456531e1065beb60f52a19b4500bf4d9"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.5733470916748047,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_original_candidate_material_source_closure.log",
+          "bytes": 101,
+          "sha256": "3b4026e5ad0d0d617d66ae0897b1e8e957da61df0c2b1f2e489242b12b186688"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+          "exit": 0,
+          "elapsed": 3.474005699157715,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_original_no_update_stage_source_closure.log",
+          "bytes": 106,
+          "sha256": "55c9fc3ba4cdbe2b21b36c6879c5e8160f53290e2985bcd33dea624ede090516"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+          "exit": 0,
+          "elapsed": 1.0362863540649414,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_original_training_initial_connection_source_closure.log",
+          "bytes": 104,
+          "sha256": "4c3bd528e55241764c4bcab44ba540b55d64a7765b43d23e018d331c84bafc40"
+        },
+        {
+          "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+          "exit": 0,
+          "elapsed": 3.5365800857543945,
+          "log": "/workspace/scratch/ce434f960ee9/candidate-evidence-990ccdc-v4/test_resident_root_source_closure.log",
+          "bytes": 109,
+          "sha256": "219ebf1d9def5e801b61415cb01fef7105d9bf6993dedca731f838ac5ae75a26"
+        }
+      ],
+      "py_compile": [
+        "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "scripts/hepta_c_observer_coverage.py"
+      ],
+      "passed": true,
+      "raw_logs": {
+        "test_original_candidate_material_source_closure.log": "...\n----------------------------------------------------------------------\nRan 3 tests in 1.416s\n\nOK\n",
+        "test_original_candidate_stage_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 1.133s\n\nOK\n",
+        "test_original_no_update_stage_source_closure.log": "........\n----------------------------------------------------------------------\nRan 8 tests in 3.341s\n\nOK\n",
+        "test_original_training_initial_connection_source_closure.log": "......\n----------------------------------------------------------------------\nRan 6 tests in 0.903s\n\nOK\n",
+        "test_resident_candidate_stage_source_closure.log": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.461s\n\nOK\n",
+        "test_resident_root_source_closure.log": "..........\n----------------------------------------------------------------------\nRan 10 tests in 3.317s\n\nOK\n"
+      },
+      "result_sha256": "931b40971ded2440fd5325e4296770f51fa71d2ca3b15ac8c99f10b7e14f8ec2"
+    }
+  ],
+  "exact_published_source": "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+  "executed_script": "import hashlib,json,os,pathlib,subprocess,sys,time\nrepo=pathlib.Path.cwd()\nout=repo.parent/\"candidate-evidence-990ccdc-v4\"\nout.mkdir(exist_ok=False)\ndef git(*args):\n return subprocess.check_output([\"git\",*args],text=True).strip()\nsubprocess.run([\"git\",\"diff\",\"--check\",\"e93114e38ac7a1c6eb1101437a5a2310f1384768\",\"HEAD\"],check=True)\nbefore={\"commit\":git(\"rev-parse\",\"HEAD\"),\"tree\":git(\"rev-parse\",\"HEAD^{tree}\"),\"status\":git(\"status\",\"--porcelain\")}\nassert before[\"commit\"]==\"990ccdc24942dfaaa69dc13d696b258b53eb71da\" and not before[\"status\"], before\nenv=dict(os.environ,PYTHONDONTWRITEBYTECODE=\"1\",TMPDIR=\"/dev/shm\")\nresults=[]\nfor p in [\"qa/b4-no-bypass/test_original_candidate_stage_source_closure.py\",\"qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py\",\"qa/b4-no-bypass/test_original_candidate_material_source_closure.py\",\"qa/b4-no-bypass/test_original_no_update_stage_source_closure.py\",\"qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py\",\"qa/b4-no-bypass/test_resident_root_source_closure.py\"]:\n start=time.time()\n r=subprocess.run([sys.executable,\"-B\",p],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,env=env,timeout=120)\n log=out/(pathlib.Path(p).stem+\".log\")\n log.write_bytes(r.stdout)\n results.append({\"path\":p,\"exit\":r.returncode,\"elapsed\":time.time()-start,\"log\":str(log),\"bytes\":len(r.stdout),\"sha256\":hashlib.sha256(r.stdout).hexdigest()})\n print(json.dumps(results[-1]),flush=True)\ncompile_results=[]\nimport py_compile\nfor p in [\"qa/b4-no-bypass/test_original_candidate_stage_source_closure.py\",\"qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py\",\"qa/b4-no-bypass/test_original_candidate_material_source_closure.py\",\"qa/b4-no-bypass/test_original_no_update_stage_source_closure.py\",\"qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py\",\"qa/b4-no-bypass/test_resident_root_source_closure.py\",\"scripts/hepta_c_observer_coverage.py\"]:\n cfile=out/(pathlib.Path(p).name+\".pyc\")\n py_compile.compile(str(repo/p),cfile=str(cfile),doraise=True)\n compile_results.append(p)\nprint(json.dumps({\"py_compile\":compile_results,\"passed\":True}),flush=True)\nafter={\"commit\":git(\"rev-parse\",\"HEAD\"),\"tree\":git(\"rev-parse\",\"HEAD^{tree}\"),\"status\":git(\"status\",\"--porcelain\")}\nassert after==before,(before,after)\nresult={\"before\":before,\"after\":after,\"tests\":results,\"py_compile\":compile_results,\"passed\":all(x[\"exit\"]==0 for x in results)}\n(out/\"result.json\").write_text(json.dumps(result,indent=2)+\"\\n\")\nprint(json.dumps({\"result\":str(out/\"result.json\"),\"passed\":result[\"passed\"]}),flush=True)\nsys.exit(0 if result[\"passed\"] else 1)\n",
+  "committed_diffcheck": {
+    "base": "e93114e38ac7a1c6eb1101437a5a2310f1384768",
+    "head": "990ccdc24942dfaaa69dc13d696b258b53eb71da",
+    "exit": 0
+  }
+}

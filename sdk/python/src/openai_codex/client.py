@@ -18,6 +18,11 @@ from ._message_router import MessageRouter
 from ._version import __version__ as SDK_VERSION
 from .errors import CodexError, InvalidRequestError, TransportClosedError
 from .generated.notification_registry import NOTIFICATION_MODELS
+from .generated.process_observation import (
+    ProcessExitedNotification,
+    ProcessIndeterminateNotification,
+    ProcessOutputDeltaNotification,
+)
 from .generated.v2_all import (
     AccountLoginCompletedNotification,
     AgentMessageDeltaNotification,
@@ -66,6 +71,12 @@ ModelT = TypeVar("ModelT", bound=BaseModel)
 ApprovalHandler = Callable[[str, JsonObject | None], JsonObject]
 RUNTIME_PKG_NAME = "openai-codex-cli-bin"
 _GOAL_START_TIMEOUT_S = 30.0
+
+_PROCESS_OBSERVATION_MODELS: dict[str, type[BaseModel]] = {
+    "process/exited": ProcessExitedNotification,
+    "process/indeterminate": ProcessIndeterminateNotification,
+    "process/outputDelta": ProcessOutputDeltaNotification,
+}
 
 
 @dataclass(slots=True)
@@ -220,6 +231,7 @@ class CodexClient:
         self.config = config or CodexConfig()
         self._approval_handler = approval_handler or self._default_approval_handler
         self._proc: subprocess.Popen[str] | None = None
+        self._process_indeterminate_enabled = False
         self._lock = threading.Lock()
         self._thread_start_locks_guard = threading.Lock()
         self._thread_start_locks: dict[str, _ThreadStartLock] = {}
@@ -272,6 +284,7 @@ class CodexClient:
         self._start_reader_thread()
 
     def close(self) -> None:
+        self._process_indeterminate_enabled = False
         if self._proc is None:
             return
         proc = self._proc
@@ -291,7 +304,8 @@ class CodexClient:
             self._reader_thread.join(timeout=0.5)
 
     def initialize(self) -> InitializeResponse:
-        result = self.request(
+        self._process_indeterminate_enabled = False
+        raw_result = self._request_raw(
             "initialize",
             {
                 "clientInfo": {
@@ -301,10 +315,14 @@ class CodexClient:
                 },
                 "capabilities": {
                     "experimentalApi": self.config.experimental_api,
+                    "processIndeterminate": True,
                 },
             },
-            response_model=InitializeResponse,
         )
+        if not isinstance(raw_result, dict):
+            raise CodexError("initialize response must be a JSON object")
+        result = InitializeResponse.model_validate(raw_result)
+        self._process_indeterminate_enabled = raw_result.get("processIndeterminate") is True
         self.notify("initialized", None)
         return result
 
@@ -322,6 +340,10 @@ class CodexClient:
 
     def _request_raw(self, method: str, params: JsonObject | None = None) -> JsonValue:
         """Send a JSON-RPC request and wait for the reader thread to route its response."""
+        if method == "process/spawn" and not self._process_indeterminate_enabled:
+            raise CodexError(
+                "process/spawn requires the server's processIndeterminate initialize confirmation"
+            )
         request_id = str(uuid.uuid4())
         waiter = self._router.create_response_waiter(request_id)
 
@@ -750,7 +772,7 @@ class CodexClient:
     def _coerce_notification(self, method: str, params: object) -> Notification:
         params_dict = params if isinstance(params, dict) else {}
 
-        model = NOTIFICATION_MODELS.get(method)
+        model = _PROCESS_OBSERVATION_MODELS.get(method) or NOTIFICATION_MODELS.get(method)
         if model is None:
             return Notification(method=method, payload=UnknownNotification(params=params_dict))
 

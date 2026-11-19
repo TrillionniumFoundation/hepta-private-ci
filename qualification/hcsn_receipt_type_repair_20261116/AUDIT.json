@@ -1,0 +1,68 @@
+{
+  "schema": "hcsn-receipt-type-repair-audit-v1",
+  "recorded_utc": "2026-11-16T01:13:48.487844+00:00",
+  "repair_base_commit": "9fd4f17f28c5d5f729803cd7a61dade5eaf565db",
+  "original_custody_commit": "203c1200404d0f78a1b06cc741ca976a4df10fc6",
+  "original_receipt_source_sha256": "de570dd7fd9f82edd547b5e483f585553ea76e64fbcae543e745f7d3521cbf2a",
+  "repaired_receipt_source_sha256": "6f6f28ab504f1789c526439b321fc091a14390a51455635d1ba9732d368c64a2",
+  "repaired_receipt_tests_sha256": "d0f17a841de481d2fa7cdc1ea85cacaa597a71534924ea0c73bb48dc3fd0ebf2",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "finding": "Python boolean false and floating zero compare equal to integer zero, allowing correctly rehashed persisted receipts to bypass the integer exit fact required by the publisher. Terminal publication validation inherited the bypass.",
+  "repair": "Require an exact int process_exit_code before the existing success comparison; refresh downstream exact dependency pins with prior source-freeze and verifier bytes archived.",
+  "regression_red": {
+    "test_methods": 15,
+    "failed_attack_subtests": 4,
+    "existing_tests_passed": 13,
+    "process_exit": 1
+  },
+  "green": {
+    "package_count": 6,
+    "normal_test_methods_passed": 33,
+    "optimized_test_methods_passed": 33,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "rehashed_type_attack_cases_rejected": 4,
+    "source_verifiers_passed": 3
+  },
+  "nonfinite_review": {
+    "probes_rejected": 12,
+    "elapsed_duration_field_present": false,
+    "interval_representation": "canonical UTC timestamp strings parsed to finite datetime values",
+    "provider_fullstate_bridge_isfinite_guard_present": true
+  },
+  "preservation": {
+    "original_source_and_dependency_files_byte_identical": 12,
+    "historical_negative_and_unknown_preserved": true,
+    "prior_terminal_and_ci_evidence_unchanged": true
+  },
+  "authentic_execution_receipts": 0,
+  "authentic_publications": 0,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false,
+  "status": "SCOPED_TYPE_REPAIR_VERIFIED_HOLD_EXTERNAL_ORIGINALS",
+  "files": {
+    "CHECKS.json": {
+      "bytes": 3939,
+      "sha256": "6dfcb95817c5ebd36c2a6aca129c21a8213773f1e60e8efecc767aa3078e56fb"
+    },
+    "GREEN.stderr": {
+      "bytes": 7628,
+      "sha256": "4b0b12341e5b6e3916fdaa29f966f8ee2ef4c35baedeb41b63313a03e73db6cf"
+    },
+    "GREEN_OPT.stderr": {
+      "bytes": 7628,
+      "sha256": "504834e026d4af237b0e4bef5bb1bce2db86b03f826e9ca5f9bb149afabc96e6"
+    },
+    "NONFINITE_PROBES.json": {
+      "bytes": 2212,
+      "sha256": "265ae14262bdcf6d23f7e77f8413175bad3c80f287e2b95831fa66885d864dce"
+    },
+    "RED.stderr": {
+      "bytes": 7611,
+      "sha256": "0baadbdeb21ee5f0a6e401609268fce58d6004f4c7220c866f9273e06d374d78"
+    }
+  },
+  "raw_log_whitespace": "RED.stderr preserves two trailing spaces emitted by unittest before failed subtest lines; no evidence bytes were normalized. The scoped source diff whitespace check passes."
+}

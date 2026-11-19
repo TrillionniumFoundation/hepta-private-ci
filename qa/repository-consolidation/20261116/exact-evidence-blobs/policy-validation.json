@@ -1,0 +1,94 @@
+{
+  "checker_git_blob": "1627511aaf298126141f96517e2a243908174351",
+  "fixture_base": "7836b3e57ed2833feee49ace3c5af5bbe4fcbfb9",
+  "observations": {
+    "exact_pinned_blobs_allowed": 22,
+    "one_byte_changes_rejected": 22,
+    "original_unlisted_blobs_rejected": 22,
+    "size_limit_unchanged": 512000
+  },
+  "one_byte_changed_head": "530740ed0342f6ebe0251812536a7ee167f6228d",
+  "original_blob_head": "d3c99c56077c0d2ec4204c9c73f1e0774590834a",
+  "results": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "scripts/check_blob_size.py",
+        "--base",
+        "7836b3e57ed2833feee49ace3c5af5bbe4fcbfb9",
+        "--head",
+        "d3c99c56077c0d2ec4204c9c73f1e0774590834a",
+        "--allowlist",
+        "before-allowlist.txt"
+      ],
+      "elapsed_seconds": 0.201,
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "log": "original-policy-negative.log",
+      "name": "original-policy-negative",
+      "sha256": "419634973c0c6885b58b4401635ff71b7d7e5e5fa2b83ab966b4901b3ebfcf00"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "scripts/check_blob_size.py",
+        "--base",
+        "7836b3e57ed2833feee49ace3c5af5bbe4fcbfb9",
+        "--head",
+        "d3c99c56077c0d2ec4204c9c73f1e0774590834a",
+        "--allowlist",
+        "exact-allowlist.txt"
+      ],
+      "elapsed_seconds": 0.421,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log": "exact-pins-positive.log",
+      "name": "exact-pins-positive",
+      "sha256": "45e13d5208916f24932a0836bfd89fb31f8db9d1df20f57c08abffc349cab80d"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "scripts/check_blob_size.py",
+        "--base",
+        "7836b3e57ed2833feee49ace3c5af5bbe4fcbfb9",
+        "--head",
+        "530740ed0342f6ebe0251812536a7ee167f6228d",
+        "--allowlist",
+        "exact-allowlist.txt"
+      ],
+      "elapsed_seconds": 0.325,
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "log": "changed-bytes-negative.log",
+      "name": "changed-bytes-negative",
+      "sha256": "57ff444674c640a4ffea1eb68b303cd783fce0b494045e49f701fe3f43c81acf"
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_blob_size_policy.py",
+        "-v"
+      ],
+      "elapsed_seconds": 1.389,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log": "existing-policy-tests.log",
+      "name": "existing-policy-tests",
+      "sha256": "a4a0b21d3862cbe6768d012bd45b7ae21b388d3b32550c92e0a92c2050f7d559"
+    }
+  ],
+  "schema": "hepta.exact-blob-policy-fixture-validation.v1",
+  "scope": "Only isolated disposable policy fixtures are committed here; no repository or remote refs are mutated.",
+  "tests_git_blob": "ad0e3d91dde0168e104b7000ad716baae6e4b360"
+}

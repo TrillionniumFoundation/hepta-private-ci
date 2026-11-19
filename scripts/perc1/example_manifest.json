@@ -1,0 +1,29 @@
+{
+  "schema": "perc1.manifest.v1",
+  "dataset_sha256": null,
+  "encoder": {
+    "kind": "external_artifact",
+    "checkpoint_sha256": null,
+    "preprocessor_sha256": null,
+    "dimension": null
+  },
+  "controller": {"sha256": null, "training_runs": []},
+  "evaluator": {
+    "identity_sha256": null,
+    "rubric_sha256": null,
+    "targets_sha256": null,
+    "canaries_sha256": null
+  },
+  "teacher_sha256": null,
+  "budget": {
+    "unit": "microcredits_v1",
+    "cap": null,
+    "tariff": {
+      "acquisition": null, "encoding": null, "communication": null,
+      "decision": null, "planning": null, "inference": null, "wait": null,
+      "training": null, "evaluation": null, "failure": null, "cancellation": null
+    }
+  },
+  "splits": {"train": [], "dev": [], "confirmation": []},
+  "thresholds": null
+}

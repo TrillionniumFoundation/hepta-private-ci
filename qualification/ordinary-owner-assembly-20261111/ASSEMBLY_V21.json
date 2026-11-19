@@ -1,0 +1,128 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.candidate.v21",
+  "parent": "c96bbc586d08de370a46bc32aa3ffbd42ecd79b2",
+  "parent_tree": "aeeb81b6679bb99d66f80974aa12b7c79afa1af2",
+  "status": "reviewed-candidate-not-native-qualified",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "post_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+      "bytes": 20232,
+      "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18",
+      "exact_operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "post_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+      "bytes": 20216,
+      "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871",
+      "exact_operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "post_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+      "bytes": 13042,
+      "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5",
+      "exact_operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "post_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+      "bytes": 24228,
+      "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd",
+      "exact_operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs",
+      "post_blob": "9a4c6a4093dd53e17f7f36096f1f98e7b04ae822",
+      "bytes": 29377,
+      "sha256": "ae68fb5c93d0080359e6784ac8bf339f0af55d819c517ee8ffc67cc56e43fc74",
+      "exact_operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_publication_deployment_tests.rs",
+      "post_blob": "9af36ecda3f1a729a225cf27503bdbe921c8ce0d",
+      "bytes": 14099,
+      "sha256": "aa6e2d353689e80585170683926c43d9cae38db1f2adf68b34d5cc6260e70d5a",
+      "exact_operations": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "post_blob": "15137d8b600108733994b9d807b7b716591bc582",
+      "bytes": 8900,
+      "sha256": "cbf412a67a58dabe0226c1e1b9445741be56457908522b11742338789f4ca88b",
+      "exact_operations": 2
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "post_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac",
+      "bytes": 32386,
+      "sha256": "20c2ad06db87ed4c97805d673945393fa373aacd93ed03be57149126f6b6242a",
+      "exact_operations": 4
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "post_blob": "bb9f481e3e63be557a081963335f4b354458cfd5",
+      "bytes": 16052,
+      "sha256": "8a642ea51aa2f056964a3d9c5b742e0a34dd56eb7b342387071e378387c8560b",
+      "exact_operations": 1
+    }
+  ],
+  "source_scope": "Eight existing test modules and test-build-only failure witness in one existing runtime module. Normal-build authority and refresh behavior are unchanged.",
+  "initial_manifest": "05ff3da16e2a9a2233c95353cfe9f54c2dcb5a06",
+  "initial_exact_ops": "633e22ddad42492df155b8bd1215aed6cc556b61",
+  "publication_manifest": "f2dbe1740ad85804f8750719f6bf32831ca5f45d",
+  "publication_exact_ops": "d7baf02e47e422dfc0f7afd720607a663a432fec",
+  "publication_fixture_cleanup": {
+    "manifest": "913ed0da843cbeff94c37d84f41c440c279b99e6",
+    "review": "459cb223db09bde4c0c9b6807ff19a831f1e281a",
+    "final_post_blob": "1b73fc06dba2a7afb620787d9ea0a3f9eaafffac"
+  },
+  "reviews": [
+    "19c9c709d000d0b377c0bdeeb27138f9ab99973e",
+    "4d56e15e60ef83b7dd6fe7b47fe81afc5907f231",
+    "459cb223db09bde4c0c9b6807ff19a831f1e281a"
+  ],
+  "registry": {
+    "sections": {
+      "boundary": 492,
+      "protected_file": 358
+    },
+    "git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "bytes": 649761,
+    "sha256": "ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "checkers_modified": false
+  },
+  "registry_changed": false,
+  "root_parent_count": 17,
+  "root_roster_changed": false,
+  "added_test_methods": 0,
+  "original_v5_failure": {
+    "source": "0c896bdf941f4174797ff45378bc7439075c11e4",
+    "tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+    "executed": 17,
+    "passed": 15,
+    "failed": 2,
+    "actual_uid": 0,
+    "records": "root17-diagnostic-0c896-v5",
+    "outcome_unchanged": true
+  },
+  "native_required": "A fresh fixed-source Root17 diagnosis followed by all required same-source final maintenance, QA, full caller, six-crate ordinary and Root gates; no predecessor results accepted.",
+  "no_main_merge": true,
+  "no_qualification_inheritance": true,
+  "remaining_code_and_protocol_gaps": [
+    "Original in-memory retained A cannot survive the actual retirement required for a new Starting incarnation; no authorized reconstruction/rebinding path is assembled.",
+    "Current B contract still requires actual selected-parent provenance, equal cumulative budgets and complete authenticated costs.",
+    "No ordinary product caller connects the late-writer adapter.",
+    "Successor durable source still defaults to NonLearning; ordinary C-to-A experience feedback is not connected."
+  ],
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  }
+}

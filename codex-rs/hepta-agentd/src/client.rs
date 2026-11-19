@@ -12,16 +12,8 @@ use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_uds::UnixStream;
-use tokio::io::AsyncBufReadExt;
-use tokio::io::AsyncReadExt;
-use tokio::io::AsyncWriteExt;
-use tokio::io::BufReader;
-use tokio::time::timeout;
 
-use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
 use crate::AGENTD_CONTROL_SCHEMA_VERSION;
-use crate::AGENTD_OVERLOAD_RETRY_AFTER_MS;
 use crate::AgentContextAttachment;
 use crate::AgentRunCancellation;
 use crate::AgentRunPhase;
@@ -31,19 +23,27 @@ use crate::AgentdCapabilitySet;
 use crate::AgentdError;
 use crate::AgentdPayload;
 use crate::AgentdRequest;
-use crate::AgentdResponse;
 use crate::AuthBusObjectiveIngress;
 use crate::AutomationEffectReconcileSnapshot;
 use crate::AutomationEffectSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
-use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
 use crate::ObjectiveStartOutcome;
 use crate::SessionIngress;
+
+#[path = "client_control.rs"]
+mod control;
+#[cfg(target_os = "linux")]
+#[path = "client_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
+#[path = "client_q24_outcome.rs"]
+mod q24_outcome;
+pub(crate) use control::ObjectiveStartReplyV1;
 
 pub struct AgentdClient {
     socket_path: PathBuf,
@@ -91,16 +91,49 @@ impl AgentdClient {
         }
     }
 
-    pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
+    /// Operate the explicitly configured generation owner over its existing
+    /// private socket. An uncertain response must be retried with the exact
+    /// original request or inspected by its retained request digest.
+    pub async fn generation(
+        &self,
+        request: codex_hepta_agent_protocol::GenerationControlRequestV1,
+    ) -> Result<codex_hepta_agent_protocol::GenerationControlResponseV1, AgentdError> {
         match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::Generation {
+                    request: Box::new(request),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::Generation(response) => Ok(response),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
+        let (_, snapshot) = self.health_with_current_generation().await?;
+        Ok(snapshot)
+    }
+
+    /// Read health and its lifecycle generation from the same identity-checked
+    /// response. This generation can initialize a new admission; it must not
+    /// replace the original generation of an already admitted run.
+    pub async fn health_with_current_generation(
+        &self,
+    ) -> Result<(u64, HealthSnapshot), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((response.current_generation, snapshot)),
             payload => unexpected(payload),
         }
     }
@@ -137,23 +170,55 @@ impl AgentdClient {
         &self,
         request: AuthBusObjectiveIngress,
     ) -> Result<ObjectiveStartOutcome, AgentdError> {
+        match self.objective_start_once(request).await? {
+            control::ObjectiveStartReplyV1::Completed(outcome) => Ok(outcome),
+            control::ObjectiveStartReplyV1::AcknowledgementLost(error) => Err(error),
+        }
+    }
+
+    /// Read one exact request's historical publication. This never retries the
+    /// request and cannot prove non-admission or an external-effect outcome.
+    pub async fn objective_admission(
+        &self,
+        query: crate::ObjectiveAdmissionQuery,
+    ) -> Result<crate::ObjectiveAdmissionOutcome, AgentdError> {
         match self
-            .send(AgentdRequest::objective_start(
-                self.request_id(),
-                self.spawn_generation,
-                request,
-            ))
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::ObjectiveAdmission { query },
+            })
             .await?
             .payload
         {
-            AgentdPayload::ObjectiveRun(receipt) => Ok(ObjectiveStartOutcome::Admitted { receipt }),
-            AgentdPayload::ObjectiveConflict {
-                run_id,
-                conflict_digest,
-            } => Ok(ObjectiveStartOutcome::Conflict {
-                run_id,
-                conflict_digest,
-            }),
+            AgentdPayload::ObjectiveAdmission { outcome } => Ok(outcome),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Synchronize an already admitted source snapshot into the original owner.
+    /// On an uncertain acknowledgement, retry identical bytes and source events.
+    pub async fn import_episodic_snapshot(
+        &self,
+        snapshot_json: String,
+    ) -> Result<crate::EpisodicSnapshotImportResult, AgentdError> {
+        if snapshot_json.len() > codex_hepta_agent_protocol::MAX_EPISODIC_SNAPSHOT_IMPORT_BYTES {
+            return Err(AgentdError::Invalid(
+                "episodic control input exceeds 20 KiB".into(),
+            ));
+        }
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::EpisodicSnapshotImport { snapshot_json },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::EpisodicSnapshotImported(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }
@@ -242,6 +307,32 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::AuthBusTextStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Typed absence is observation only. The original daemon verifies its
+    /// independent replay checkpoint; absence never authorizes a new send.
+    pub async fn authbus_text_lookup(
+        &self,
+        delivery_id: String,
+    ) -> Result<Option<crate::AuthBusTextStatus>, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusTextLookup {
+                    delivery_id: delivery_id.clone(),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextLookup {
+                delivery_id: observed,
+                status,
+            } if observed == delivery_id => Ok(status),
             payload => unexpected(payload),
         }
     }
@@ -437,6 +528,82 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::RunStatus { run } => Ok(run),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_mark_bound_dispatched(
+        &self,
+        binding: crate::AgentRunBinding,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_mark_bound_dispatched(
+                self.request_id(),
+                self.spawn_generation,
+                binding,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_cancel_bound(
+        &self,
+        binding: crate::AgentRunBinding,
+        reason: String,
+    ) -> Result<AgentRunCancellation, AgentdError> {
+        match self
+            .send(AgentdRequest::run_cancel_bound(
+                self.request_id(),
+                self.spawn_generation,
+                binding,
+                reason,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunCancellation(cancellation) => Ok(cancellation),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Compare the frozen snapshot and context in the same lock as terminal CAS.
+    pub async fn run_observe_bound_terminal(
+        &self,
+        observation: crate::AgentRunTerminalObservation,
+    ) -> Result<AgentRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest::run_observe_bound_terminal(
+                self.request_id(),
+                self.spawn_generation,
+                observation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Read the original admitted tuple and current receipt in one owner lock.
+    pub async fn run_reconciliation_state(
+        &self,
+        run_id: String,
+    ) -> Result<Option<crate::AgentRunReconciliationState>, AgentdError> {
+        match self
+            .send(AgentdRequest::run_reconciliation_state(
+                self.request_id(),
+                self.spawn_generation,
+                run_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReconciliationState { run } => Ok(run),
             payload => unexpected(payload),
         }
     }
@@ -715,49 +882,36 @@ impl AgentdClient {
         }
     }
 
-    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
-        let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
-        let (reader, mut writer) = tokio::io::split(stream);
-        let mut bytes = serde_json::to_vec(&request)?;
-        bytes.push(b'\n');
-        if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
-            return Err(AgentdError::Protocol(
-                "agentd request exceeded frame bound".to_string(),
-            ));
+    pub async fn memory_cell_read_start(
+        &self,
+        request: codex_hepta_agent_protocol::MemoryCellReadIngress,
+    ) -> Result<codex_hepta_agent_protocol::MemoryCellReadSnapshot, AgentdError> {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: self.request_id(),
+            spawn_generation: self.spawn_generation,
+            method: crate::AgentdMethod::MemoryCellReadStart { request },
+        };
+        match self.send(request).await?.payload {
+            AgentdPayload::MemoryCellRead(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
         }
-        timeout(self.timeout, writer.write_all(&bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
-        let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
-        {
-            return Err(AgentdError::Protocol(
-                "agentd returned an invalid bounded response frame".to_string(),
-            ));
+    }
+
+    pub async fn memory_cell_read_status(
+        &self,
+        invocation_id: String,
+    ) -> Result<codex_hepta_agent_protocol::MemoryCellReadSnapshot, AgentdError> {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: self.request_id(),
+            spawn_generation: self.spawn_generation,
+            method: crate::AgentdMethod::MemoryCellReadStatus { invocation_id },
+        };
+        match self.send(request).await?.payload {
+            AgentdPayload::MemoryCellRead(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
         }
-        if response_bytes.as_slice() == AGENTD_CONTROL_OVERLOAD_FRAME {
-            return Err(AgentdError::Overloaded {
-                retry_after_ms: AGENTD_OVERLOAD_RETRY_AFTER_MS,
-            });
-        }
-        let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
-        if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
-            || response.request_id != expected_request_id
-            || response.agent_id != self.expected_agent_id
-            || response.spawn_generation != self.spawn_generation
-        {
-            return Err(AgentdError::Protocol(
-                "agentd response identity does not match request".to_string(),
-            ));
-        }
-        Ok(response)
     }
 
     fn request_id(&self) -> u64 {

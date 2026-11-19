@@ -1,0 +1,134 @@
+{
+  "schema": 1,
+  "source_head": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "source_tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f",
+  "jobs": [
+    {
+      "label": "gnu",
+      "job_id": 131310622854,
+      "bytes": 1199859,
+      "sha256": "3ea31954ec5bdd264a286413135650db7f1571329703f96147c5fc1a9771febe",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "timeout_seconds": 300,
+      "announced_test_methods": 1190,
+      "explicit_ok": 917,
+      "explicit_failed": 15,
+      "explicit_ignored": 87,
+      "failed_methods": [
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners"
+      ],
+      "panic_or_assertion_diagnostic_lines": [],
+      "test_result_summary_present": false,
+      "normalized_target_output_sha256": "5e69f7233f093293b8861e413b18df3187cb0becc1db653cae28c862ecdb8ac9",
+      "actual_checkout_lines": [
+        "2026-11-12T16:06:24.3356493Z HEAD is now at 63448420 Merge 9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca into a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+      ],
+      "status_unobserved_methods": 171,
+      "running_over_60_seconds_lines": [
+        "2026-11-12T16:15:54.1928002Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1929594Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1930420Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1931266Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1942234Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b has been running for over 60 seconds"
+      ],
+      "final_target_output_lines": [
+        "2026-11-12T16:15:54.1922883Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_expired_training_signature_permanently_fences_readback ... ok",
+        "2026-11-12T16:15:54.1923713Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication ... ok",
+        "2026-11-12T16:15:54.1924249Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes ... ok",
+        "2026-11-12T16:15:54.1924850Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows ... ok",
+        "2026-11-12T16:15:54.1925359Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_renewed_original_signatures ... ok",
+        "2026-11-12T16:15:54.1925878Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_zero_support_consumes_holdout_once ... ok",
+        "2026-11-12T16:15:54.1926573Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows ... ok",
+        "2026-11-12T16:15:54.1927143Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption ... ok",
+        "2026-11-12T16:15:54.1928002Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1928770Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners ... FAILED",
+        "2026-11-12T16:15:54.1929594Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1930420Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1931266Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication has been running for over 60 seconds",
+        "2026-11-12T16:15:54.1932007Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c ... ok",
+        "2026-11-12T16:15:54.1942234Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b has been running for over 60 seconds"
+      ]
+    },
+    {
+      "label": "musl",
+      "job_id": 131310622804,
+      "bytes": 1184809,
+      "sha256": "8844c93d9e587c8b12558a4e14ec8b38d896b4c95d308c0727255f8c3ff4e76d",
+      "target": "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+      "timeout_seconds": 300,
+      "announced_test_methods": 1190,
+      "explicit_ok": 917,
+      "explicit_failed": 15,
+      "explicit_ignored": 87,
+      "failed_methods": [
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_refuses_pages_renewal_window_withdrawal_and_cancel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::ordinary_stages::candidate_stage_reads_actual_candidate_from_same_three_original_owners",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_failed_source_or_pending_claim_never_rearms",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_reconstructs_actual_pages_and_cold_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::command_connection::deferred_training_connection_preserves_expiry_and_readonly_cold_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::candidate_material::original_candidate_material_readonly_preserves_no_update_missing_and_pending",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_uses_actual_material_cut_and_original_source_without_precreation",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_preserves_cold_signature_and_initial_deadline",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_wrong_context_does_not_consume_original_custody",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_lost_ack_recovers_same_job_and_original_signature",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::original_readback::original_training_readback_changed_evidence_and_withdrawal_consume_channel",
+        "learning_iteration_evidence_client::training_command::bootstrap::tests::deferred_training_missing_dataset_or_partial_owners_never_bootstrap_replacements",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_post_commit_training_change_fences_selector_without_resigning",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+        "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners"
+      ],
+      "panic_or_assertion_diagnostic_lines": [],
+      "test_result_summary_present": false,
+      "normalized_target_output_sha256": "5e69f7233f093293b8861e413b18df3187cb0becc1db653cae28c862ecdb8ac9",
+      "actual_checkout_lines": [
+        "2026-11-12T16:06:24.8324440Z HEAD is now at 63448420 Merge 9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca into a96d1b821d10ed3d9e99dd06c5141f9f242ae318"
+      ],
+      "status_unobserved_methods": 171,
+      "running_over_60_seconds_lines": [
+        "2026-11-12T16:15:54.2051915Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2054050Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2055677Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2056525Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2058215Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b has been running for over 60 seconds"
+      ],
+      "final_target_output_lines": [
+        "2026-11-12T16:15:54.2042470Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_expired_training_signature_permanently_fences_readback ... ok",
+        "2026-11-12T16:15:54.2043548Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::decision_binding::original_b_refuses_validly_signed_decision_for_another_policy_or_publication ... ok",
+        "2026-11-12T16:15:54.2044717Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_and_wrong_unit_outcomes ... ok",
+        "2026-11-12T16:15:54.2045812Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_ledger_corruption_and_clock_rollback_never_release_cached_rows ... ok",
+        "2026-11-12T16:15:54.2046767Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_renewed_original_signatures ... ok",
+        "2026-11-12T16:15:54.2047657Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_zero_support_consumes_holdout_once ... ok",
+        "2026-11-12T16:15:54.2048723Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_unreleased_and_cold_readonly_never_release_cached_rows ... ok",
+        "2026-11-12T16:15:54.2049765Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption ... ok",
+        "2026-11-12T16:15:54.2051915Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2053215Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::current_read_positive::evaluated_retained_current_reads_fresh_and_cold_original_owners ... FAILED",
+        "2026-11-12T16:15:54.2054050Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2055677Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_prepared_owner_withdrawal_is_uncertain_and_never_spends_grant has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2056525Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_preserved_owner_connections_reject_withdrawal_after_publication has been running for over 60 seconds",
+        "2026-11-12T16:15:54.2057405Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_lost_ack_recovers_exact_original_publication_and_baseline_c ... ok",
+        "2026-11-12T16:15:54.2058215Z test runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::evaluated_retention_publishes_baseline_from_same_a_training_and_independent_b has been running for over 60 seconds"
+      ]
+    }
+  ],
+  "boundaries": {
+    "normalization": "Only a derived target-output comparison strips GitHub line timestamps. Original full logs are retained verbatim in ordered parts.",
+    "method_counts": "1190 announced, 917 explicit ok, 15 explicit FAILED, 87 existing ignored, 171 methods without observed terminal status in the captured target output; these are partial observations before the 300s target timeout, not a completed test-result summary.",
+    "diagnosis": "The original target log contains no failed-method panic/assertion details before termination; do not infer a shared method failure cause from the target timeout.",
+    "rerun": false,
+    "old_expiry_fixture": "No line for qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence appears in either current target output. No status is asserted for that method."
+  }
+}

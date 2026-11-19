@@ -1,0 +1,686 @@
+{
+  "schema": "hepta.learn.model-root-441-full-error-corroboration.v1",
+  "evidence_commit": "6f0f7f4997b8811daf2249088a87b70fdb42d220",
+  "tested_source_commit": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "source_log": {
+    "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/source-suite.log",
+    "bytes": 384649,
+    "sha256": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4",
+    "blob": "502d5a1c81205741df5b6f9091ae8e3bcb007b96",
+    "sha256_expected": "579750613553fa90ce30c2fc4965e8760b964ef80d84ef633515d5ece15010d4",
+    "equal": true,
+    "full_contents_read": true
+  },
+  "selected_windows": {
+    "path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-441-terminal/selected-exception-windows.json",
+    "blob": "9776a6d32f32f4b498bb31c17e75b74512f903ab",
+    "bytes": 24989
+  },
+  "original_summary": {
+    "methods": 423,
+    "errors": 69,
+    "failures": 5,
+    "skipped": 0,
+    "elapsed_seconds_from_log": 306.565,
+    "native_tests": 0
+  },
+  "fixed_source": {
+    "commit": "41523fe03f3d76da74df6ffccf5accf9ef549735",
+    "tree": "45d0431ea9cd7b39b898176b20ae199b910dcfa0",
+    "guard_contract_blob": "a7a3550b6ed75401f2036f3d0538161c34db5a37",
+    "current_route_contract_blob": "398718743fa9e0b6fac6ccdc51cd136cf7f18948",
+    "old_historical_contract_blob": "7bd8640208158a08e329a7f8ab852b09804c04fd"
+  },
+  "complete_actual_error_partition": {
+    "root_suffix_errors": 42,
+    "root_suffix_error_type": "positive_root_suffix_proof.VerificationFailure",
+    "root_suffix_by_protected_path": {
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs": 6,
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs": 8,
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs": 12,
+      "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs": 16
+    },
+    "root_mutation_case_positive_controls": 41,
+    "root_private_data_method_positive_control": 1,
+    "model_version_service_receiver_errors": 1,
+    "evaluator_checkpoint_receiver_errors": 1,
+    "evaluator_product_literal_errors": 25,
+    "total": 69,
+    "scope": "Only the Root 42 errors, Root five failures and Model/Version service one error are corroborated against this repair. Evaluator owns the remaining 26 errors."
+  },
+  "actual_root_mutation_cases": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "operation.require_owner(self)?",
+      "original_mutation_index": 18,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        846,
+        859
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "lane.failed = true",
+      "original_mutation_index": 19,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        862,
+        875
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(",
+      "original_mutation_index": 20,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        878,
+        891
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "original.finish().await.map_err(|_| Error::CommitUncertain)?",
+      "original_mutation_index": 21,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        894,
+        907
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "completed.model() != &before",
+      "original_mutation_index": 22,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        910,
+        923
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "function": "fn read_model_for_adoption(",
+      "marker": "super::adoption::publication_context(self, operation, &completed)?",
+      "original_mutation_index": 23,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        926,
+        939
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "CandidateOriginalOperation::begin(self, snapshot).await?",
+      "original_mutation_index": 24,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        942,
+        957
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "self.read_model_for_adoption(&operation).await?",
+      "original_mutation_index": 25,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        960,
+        975
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "OriginalCircuitModelVersionClientV1::publish_original_version(",
+      "original_mutation_index": 26,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        978,
+        993
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "OriginalCircuitModelSelectionCommandClientV1::execute_selection(",
+      "original_mutation_index": 27,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        996,
+        1011
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "CandidateOriginalOperation::close(operation).await",
+      "original_mutation_index": 28,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        1014,
+        1029
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "require_published_selection(publication, &original)?",
+      "original_mutation_index": 29,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        1032,
+        1047
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn original_selection(",
+      "marker": "closed.selection(completed, original.clone(), publication.clone())",
+      "original_mutation_index": 30,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_original_channels_model_finish_and_owner_effects_remain_real",
+      "source_log_lines": [
+        1050,
+        1065
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn await_original_candidate_c(",
+      "marker": "for _ in 0..127",
+      "original_mutation_index": 31,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1084,
+        1099
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn await_original_candidate_c(",
+      "marker": "self.require_adoption_effect(snapshot).await?",
+      "original_mutation_index": 32,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1102,
+        1117
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn await_original_candidate_c(",
+      "marker": "OriginalCircuitCandidateCompletionReadinessClientV1::read_current(readiness)",
+      "original_mutation_index": 33,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1120,
+        1135
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn await_original_candidate_c(",
+      "marker": "context.authenticate_material(completed.material(), auth::now()?, true)",
+      "original_mutation_index": 34,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1138,
+        1153
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "ready.publication_digest() != publication.publication_digest()",
+      "original_mutation_index": 35,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1156,
+        1171
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "ready.source_input_digest() != publication.task_digest()",
+      "original_mutation_index": 36,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1174,
+        1189
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "ready.source_publication_digest().is_none()",
+      "original_mutation_index": 37,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1192,
+        1207
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "OriginalCircuitCandidateNextUseCommandClientV1::attest_completed_task(",
+      "original_mutation_index": 38,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1210,
+        1225
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "OriginalCircuitCandidateNextUseCommandClientV1::readback(",
+      "original_mutation_index": 39,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1228,
+        1243
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "ready.observation() != &original.receipt().observation",
+      "original_mutation_index": 40,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1246,
+        1261
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "CandidateOriginalOperation::close(operation).await",
+      "original_mutation_index": 41,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1264,
+        1279
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "function": "fn original_next_use(",
+      "marker": "closed.next_use(completed, selection, original.clone(), publication, ready)",
+      "original_mutation_index": 42,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1282,
+        1297
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "signatures.len() != 4",
+      "original_mutation_index": 43,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1300,
+        1315
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "context.original_predecessors().as_slice() != signatures.as_slice()",
+      "original_mutation_index": 44,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1318,
+        1333
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "context.verifier().scope_digest() != material.verifier.scope_digest()",
+      "original_mutation_index": 45,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1336,
+        1351
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "selection.snapshot().receipts.len() != 6",
+      "original_mutation_index": 46,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1354,
+        1369
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "publication.authority() != AuthorityPosture::DENY_ALL",
+      "original_mutation_index": 47,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1372,
+        1387
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "verify_signed_actor_separation(generator, &selector, now)",
+      "original_mutation_index": 48,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1390,
+        1405
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "verify_signed_actor_separation(evaluator, &selector, now)",
+      "original_mutation_index": 49,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1408,
+        1423
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "next_use.model() != model",
+      "original_mutation_index": 50,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1426,
+        1441
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "next_use.training_attestation() != operation.training.attestation()",
+      "original_mutation_index": 51,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1444,
+        1459
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "next_use.selection_attestation() != selection.attestation()",
+      "original_mutation_index": 52,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1462,
+        1477
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "next_use.snapshot().receipts.len() != 7",
+      "original_mutation_index": 53,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1480,
+        1495
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "completed.observation() != &next_use.receipt().observation",
+      "original_mutation_index": 54,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1498,
+        1513
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "completed.publication_digest() != publication.publication_digest()",
+      "original_mutation_index": 55,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1516,
+        1531
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "completed.source_input_digest() != publication.task_digest()",
+      "original_mutation_index": 56,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1534,
+        1549
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "completed.source_publication_digest().is_none()",
+      "original_mutation_index": 57,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1552,
+        1567
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "function": "fn authenticate_original_suffix(",
+      "marker": "verify_signed_actor_separation(&selector, &observer, now)",
+      "original_mutation_index": 58,
+      "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_readiness_and_full_original_s_c_evidence_remain_separate",
+      "source_log_lines": [
+        1570,
+        1585
+      ],
+      "exception_type": "positive_root_suffix_proof.VerificationFailure",
+      "positive_control_failed_before_mutation": true
+    }
+  ],
+  "private_data_method": {
+    "method_id": "test_original_positive_root_suffix_source_closure.OriginalPositiveRootSuffixClosureTests.test_private_adoption_data_cannot_create_signers_or_reconnect",
+    "source_log_lines": [
+      1068,
+      1081
+    ],
+    "actual_exception_type": "positive_root_suffix_proof.VerificationFailure",
+    "protected_path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+    "failed_at": "self.verifies(row[\"path\"], source)",
+    "injection_attempt_reached": false,
+    "explanation": "The unmodified source fails the stale adoption complete record before any injection is attempted; the current exact record is pinned by 415."
+  },
+  "five_complete_record_failures": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "source_log_lines": [
+        1610,
+        1615
+      ],
+      "exception": "AssertionError: 0 != 1",
+      "historical_record_occurrences_in_441": 0,
+      "current_record_occurrences_in_441": 1,
+      "covered_by_fixed_route_contract": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "source_log_lines": [
+        1618,
+        1623
+      ],
+      "exception": "AssertionError: 0 != 1",
+      "historical_record_occurrences_in_441": 0,
+      "current_record_occurrences_in_441": 1,
+      "covered_by_fixed_route_contract": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+      "source_log_lines": [
+        1626,
+        1631
+      ],
+      "exception": "AssertionError: 0 != 1",
+      "historical_record_occurrences_in_441": 0,
+      "current_record_occurrences_in_441": 1,
+      "covered_by_fixed_route_contract": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+      "source_log_lines": [
+        1634,
+        1639
+      ],
+      "exception": "AssertionError: 0 != 1",
+      "historical_record_occurrences_in_441": 0,
+      "current_record_occurrences_in_441": 1,
+      "covered_by_fixed_route_contract": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+      "source_log_lines": [
+        1642,
+        1647
+      ],
+      "exception": "AssertionError: 0 != 1",
+      "historical_record_occurrences_in_441": 0,
+      "current_record_occurrences_in_441": 1,
+      "covered_by_fixed_route_contract": true
+    }
+  ],
+  "actual_service_receiver_error": {
+    "method_id": "test_positive_model_version_source_closure.PositiveModelVersionSourceClosureTests.test_exact_private_edges_and_unregistered_callers",
+    "source_log_lines": [
+      1588,
+      1607
+    ],
+    "exception": "positive_model_version_proof.VerificationFailure: learning_positive_publication_context_authenticate: codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs: unresolved possible OriginalCircuitModelPublicationContextV1::authenticate receiver",
+    "service_path": "codex-rs/hepta-agentd/src/circuit_model_selection_command_service.rs",
+    "fixed_actual_receiver": "OriginalCircuitCandidateLearningReadContextV1",
+    "fixed_real_calls": 2,
+    "caller_list_change": false
+  },
+  "corroboration": {
+    "all_42_root_errors_fail_unmodified_positive_control": true,
+    "all_41_case_headers_match_unique_original_69_mutations": true,
+    "all_69_mutation_definitions_unchanged": true,
+    "all_five_failures_match_the_exact_five_record_refreshes": true,
+    "new_production_changes_required": false,
+    "new_tests_or_verifier_relaxation_required": false,
+    "reason": "All actual Root exceptions are the previously projected stale complete-record failures; the actual service receiver error is exactly the existing explicit-type repair. The new original log supplies missing evidence, not a new source change."
+  },
+  "limits": {
+    "original_python_rerun": false,
+    "rust_or_native_run": false,
+    "H_execution": false,
+    "source_pass_claim": false,
+    "native_pass_claim": false,
+    "ordinary_acceptance": 0,
+    "original_415_evidence_preserved": "The earlier statement that complete per-subtest stacks had not yet been acquired remains historical truth; this later audit now supplies the full-log correspondence.",
+    "remaining_gate": "Run the original Python suite on the integrated fixed successor; static correspondence is not a test pass."
+  }
+}

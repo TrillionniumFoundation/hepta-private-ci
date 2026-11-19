@@ -1,0 +1,170 @@
+{
+  "accounting": {
+    "aggregation_policy": "No aggregate total is inferred. Cloud body, per-request and manager durations are nested within phase/native intervals; do not add overlapping scopes. Preparation, transfer, queue/idle, failed attempts and prior lineages are not erased.",
+    "capability_cloud_body_seconds_nested_in_capability_native_phase": 7.166673060999983,
+    "complete_end_to_end_cost": null,
+    "phase_body_intervals": [
+      {
+        "body_wall_seconds": 13.384846652974375,
+        "finished_utc": "2026-11-07T21:55:56.667486+00:00",
+        "phase": "create",
+        "private_receipt_sha256": "fd022e26ab95eadfdb9875d5cfae437e18f3dedc3f035891f7eb40e15ce51937",
+        "started_utc": "2026-11-07T21:55:43.282642+00:00"
+      },
+      {
+        "body_wall_seconds": 17.712977035960648,
+        "finished_utc": "2026-11-07T21:57:42.590298+00:00",
+        "phase": "bind",
+        "private_receipt_sha256": "8e652a5fedb43d5f164ec5bf05aad56cd4e9cfb91411c240a673274968205c3e",
+        "started_utc": "2026-11-07T21:57:24.877323+00:00"
+      },
+      {
+        "body_wall_seconds": 29.657289160008077,
+        "finished_utc": "2026-11-07T21:58:45.262454+00:00",
+        "phase": "capability_native",
+        "private_receipt_sha256": "17872a25787ce12c8f5e10c52b20edf66c53f8f6a984e835770864bbd0085e83",
+        "started_utc": "2026-11-07T21:58:15.605168+00:00"
+      },
+      {
+        "body_wall_seconds": 34.32695178798167,
+        "finished_utc": "2026-11-07T21:59:52.344676+00:00",
+        "phase": "asset_upload_attempt",
+        "private_receipt_sha256": "d4ee840388844b1a358b3513ffec965c0b55e823d8e561938fa531aaf4d79279",
+        "started_utc": "2026-11-07T21:59:18.017728+00:00"
+      },
+      {
+        "body_wall_seconds": 37.4978102070163,
+        "finished_utc": "2026-11-07T22:07:56.217343+00:00",
+        "phase": "readonly_exact_part",
+        "private_receipt_sha256": "4ec0e2bdc9636942abdbe63ea8d58e06d57ea72dc38141044b84ae75e7f7d48f",
+        "started_utc": "2026-11-07T22:07:18.719534+00:00"
+      },
+      {
+        "body_wall_seconds": 4.934610684984364,
+        "finished_utc": "2026-11-07T22:11:31.700390+00:00",
+        "phase": "readonly_contents_differential",
+        "private_receipt_sha256": "b25deb8c4aebc19ce25d51b82c212fa4d54c41c71ab875fff414075b471dd435",
+        "started_utc": "2026-11-07T22:11:26.765781+00:00"
+      },
+      {
+        "body_wall_seconds": 4.494502497953363,
+        "finished_utc": "2026-11-07T22:16:35.558479+00:00",
+        "phase": "readonly_assignment_check",
+        "private_receipt_sha256": "e00cc67604ca73c284a75c708b98baf3158e1e92d917b8cf655c27a62d09e527",
+        "started_utc": "2026-11-07T22:16:31.063979+00:00"
+      }
+    ],
+    "total_billable_seconds": null
+  },
+  "as_of_utc": "2026-11-07T22:16:35.558479+00:00",
+  "asset_attempt": {
+    "archive_sha256": "6a68e807df2f00f5ed90a83bb310bfb595feae66d5d0cbb99cf3ece5386ec1d2",
+    "journal_status": "UNKNOWN",
+    "native_result": "failed_exit_2",
+    "parent_directory_read_initially_succeeded": true,
+    "part0_error_class": "ReadTimeout",
+    "part0_status": "PRECHECK_UNKNOWN",
+    "parts_1_to_9_status": "PLANNED",
+    "receipt_status": "HOLD_NO_REPLAY",
+    "registered_asset_bytes": 632249,
+    "success_path_postchecks_completed": false,
+    "zero_put_basis": "Durable zero counters and the pinned exception branch returning before PUT_INTENT and the only asset write call."
+  },
+  "asset_part_put_attempts": 0,
+  "asset_parts": 10,
+  "candidate_source": {
+    "additional_control_pins": 18,
+    "all_78_claimed_cloud_executed": false,
+    "preserved_parent_pins": 60,
+    "state": "PROSPECTIVE_CANDIDATE_NOT_A_FROZEN_STUDY_PLAN",
+    "total_pins": 78,
+    "unchanged_original_scientific_pins": 42
+  },
+  "capability_observation": {
+    "compute_capability": [
+      7,
+      5
+    ],
+    "cuda_available": true,
+    "cuda_computation_verified": true,
+    "cuda_version": "13.0",
+    "device_name": "Tesla T4",
+    "does_not_supply_full_qualification_or_training_admission": true,
+    "models_constructed": 0,
+    "numpy": "2.4.6",
+    "observed_utc": "2026-11-07T21:58:21.501102+00:00",
+    "optimizer_updates": 0,
+    "python": "3.13.16",
+    "scipy": "1.16.3",
+    "status": "PASS_DIAGNOSTIC_ONLY",
+    "task_dataset_reads": 0,
+    "torch": "2.14.1+cu130"
+  },
+  "continuation_policy": {
+    "automatic_write_retry_performed": false,
+    "grant_to_replay_or_resume_from_this_report": false,
+    "old_failure_and_unknown_records_immutable": true,
+    "training_admission": false
+  },
+  "cross_campaign": {
+    "hepta_ndu_completion_credit_from_v4": 0,
+    "original_170_completion_credit_from_v4": 0,
+    "original_170_independent_progress_snapshot": {
+      "completed_progress_entries": 38,
+      "observed_utc_begin": "2026-11-07T22:01:21.761138+00:00",
+      "observed_utc_end": "2026-11-07T22:01:23.857136+00:00",
+      "private_review_sha256": "66fce3585da0420d3f22f43083c4fe794ef8c1fd34ad6de433cde82a2fa5a110",
+      "registered_denominator": 170,
+      "scope": "Separate original owner progress observation, not V4 work or a refreshed all-terminal cost audit. Original B adverse/OOM evidence remains retained."
+    },
+    "prior_resource_attempt_completion_credit_from_v4": 0
+  },
+  "formal_task_optimizer_updates": 0,
+  "formal_training_fits": 0,
+  "frozen_plan_created": false,
+  "frozen_plan_sha256": null,
+  "full_physical_energy_joules": null,
+  "full_qualification_completed": false,
+  "full_qualification_registered": false,
+  "monetary_cost": null,
+  "readonly_observations": [
+    {
+      "exact_part0_download_gets": 1,
+      "manager_observation": "bound_same_owned_identity",
+      "order": 1,
+      "original_failure_reclassified": false,
+      "qualification_rows": 0,
+      "receipt_sha256": "4ec0e2bdc9636942abdbe63ea8d58e06d57ea72dc38141044b84ae75e7f7d48f",
+      "result": "ReadTimeout"
+    },
+    {
+      "absence_or_write_admission": false,
+      "order": 2,
+      "parent_directory_get_http_status": 404,
+      "part0_metadata_get_http_status": 404,
+      "qualification_rows": 0,
+      "receipt_sha256": "b25deb8c4aebc19ce25d51b82c212fa4d54c41c71ab875fff414075b471dd435"
+    },
+    {
+      "cached_gets_status": "SKIPPED_UNCONFIRMED_CURRENT_BINDING",
+      "cached_url_gets_performed": 0,
+      "manager_error_code": "FIXED_RUNTIME_NOT_FOUND",
+      "observed_assignments_count": 0,
+      "observed_matching_assignments_count": 0,
+      "order": 3,
+      "qualification_rows": 0,
+      "receipt_sha256": "e00cc67604ca73c284a75c708b98baf3158e1e92d917b8cf655c27a62d09e527"
+    }
+  ],
+  "root_cause": {
+    "authentication_failure_established": false,
+    "idle_reclamation_established": false,
+    "physical_runtime_destruction_established": false,
+    "proxy_expiry_established": false,
+    "status": "UNDETERMINED"
+  },
+  "schema": "hcsn-colab-v4-prequalification-halt-v1",
+  "source_map_sha256": "7e8c8b9e61d86f30a0c8a1c85011fec1d966b1508858b95bfb0f50a4b685296c",
+  "status": "HALTED_BEFORE_FULL_QUALIFICATION",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v4"
+}

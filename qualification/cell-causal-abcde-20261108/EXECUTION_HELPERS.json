@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.cell-causal.execution-helpers.v1",
+  "source_code_commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+  "files": [
+    {
+      "path": "tools/build_evaluation.py",
+      "sha256": "530427179406d2b7d72b0a6abf3d58123d331657bab91625efec0bc2d899d6c9",
+      "bytes": 14984
+    },
+    {
+      "path": "tools/evaluate_b.py",
+      "sha256": "5d2b1e5cfa227a15e36329751bf8eab67fd7a5042ded8b8f3669bbc29729c2c6",
+      "bytes": 24806
+    },
+    {
+      "path": "tools/analyze_b.py",
+      "sha256": "c65f3eef739d1994aefedd6ef114d867d94b5f529470dc03ec78d4d329bcf29a",
+      "bytes": 36582
+    },
+    {
+      "path": "tools/run_analysis_remote.py",
+      "sha256": "20bb28e6bce810ffd3efe2dbf3bcac4df0121a7919d0a8570da1963f76e8969f",
+      "bytes": 6639
+    },
+    {
+      "path": "tools/aggregate_b_profiles.py",
+      "sha256": "88715e29c1976af21bc4a1aaf6e2ae79a0e3800fe86457a68f3317c6b4c9a442",
+      "bytes": 11108
+    }
+  ],
+  "scope": "These exact helper bytes accompany original bounded evaluation and frozen analysis; profile aggregation is a descriptive reporting supplement. Embedded base64 transport carriers are not source substitutes and are excluded from this review directory."
+}

@@ -1,0 +1,109 @@
+{
+  "actions": {
+    "new_host_probes": 0,
+    "new_model_calls": 0,
+    "new_native_runs": 0,
+    "only_immutable_blobs_created": true,
+    "original_v1_review_modified": false,
+    "ref_changes": 0,
+    "unsafe_original_projection_or_archive_included": false
+  },
+  "archive": {
+    "bytes": 392476,
+    "create_response_git_blob_sha_matches": true,
+    "filename": "mem8-composition-ci-blocker-review-v2.tar.xz",
+    "full_remote_binary_readback": "PENDING_ROOT_PUBLISHED_PATH_READBACK",
+    "git_blob_sha": "ddbdcb458f0336d6162d9a90b942a3589c134eef",
+    "local_tar_readback_all_members_match": true,
+    "members": 157,
+    "sha256": "e5988a03861667afeb195e9c09bd6f43f89ea87d562ed59f281e2bded6afa46d"
+  },
+  "files": [
+    {
+      "bytes": 4873,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "ee02572db1af6607f947853fe5b3aea503dbe25f",
+      "name": "README.md",
+      "sha256": "11853ca218d97b632b53acc0819505d9dd0d285ce57f45230aadcde9c08e9991"
+    },
+    {
+      "bytes": 43931,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "a2fce6f893b7aa0f800a6c33b4c19322cdaff03b",
+      "name": "MEMBER_MANIFEST.json",
+      "sha256": "e2a83ae575ba79390a1ba37889c6cf9f0cfd186b6a1c3f40b3be437e847c828d"
+    },
+    {
+      "bytes": 1411,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "b0ca86349ab1344d466ae7c884cf273a96a9b629",
+      "name": "LOCAL_BUNDLE_AUDIT.json",
+      "sha256": "5cebfe755722c53f87bd89cd8a2b0663c52809d04b512a1161ad4a52e1fde419"
+    },
+    {
+      "bytes": 8038,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "8789b330aa238d48a2d36fd16fac2df6fbb5fe1f",
+      "name": "verify_review_bundle.py",
+      "sha256": "ba44883e0d373f93da9b51633f1b4f1c771366faf0506e68ae704886645cbe09"
+    },
+    {
+      "bytes": 48095,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "9614332de8d8776703895163960da407b3a957bc",
+      "name": "FINAL_BLOCKER_REVIEW_V2.json",
+      "sha256": "103f89ac20928ac2b83f6ca22d818b10e1af4c89e6c39a6ae9089151c19b9f2e"
+    },
+    {
+      "bytes": 39012,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "d5f80b15298d5e29e3c23ec73db6a68377685915",
+      "name": "FINAL_BLOCKER_REVIEW_V2.md",
+      "sha256": "b753513ce2b7b3f98b6646ffbf5e5f2e60e6c4e27ab126115148848e07f4f091"
+    },
+    {
+      "bytes": 9285,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "b3ec3d21403ba9b8cbca19ca08a7b580d8d59264",
+      "name": "COMPOSITION_REVIEW.md",
+      "sha256": "a286a9cccedd768a7523b037bda963bed7dba41fefe5abb9925effca50caaa67"
+    },
+    {
+      "bytes": 14363,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "89324f28bb49c3d6dcd785eee62daeaaf68a11e0",
+      "name": "CI_REVIEW.md",
+      "sha256": "a2e4afcbb7567c18da84a6b96ecac896b0cde7aee07b91f2fdf768556292cd2d"
+    },
+    {
+      "bytes": 23708,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "73cf4a55ff71100bd0ebcaea79398ce80421472b",
+      "name": "GIT_TREE_PLAN.json",
+      "sha256": "752ba348ffa7399ba74e5c20e29ceb153d0ec2cab7ba8aecc844275f3dd1c953"
+    },
+    {
+      "bytes": 1466,
+      "full_remote_text_readback_match": true,
+      "git_blob_sha": "a0b40a2ca294a7f1017c6f64b7a5e26e64922bc8",
+      "name": "ROOT_TREE_AUDIT.json",
+      "sha256": "50ab7049477bba93a1b1d74802fe0e6f7ab3ec8d0bef90f0e1670db84c91cda5"
+    }
+  ],
+  "offline_verification": {
+    "active_blocker_review_evidence_pins": 30,
+    "branch_roots": 4,
+    "ci_frozen_files": 121,
+    "ci_source_files": 107,
+    "original_blockers_open": 10,
+    "original_git_trees": 73,
+    "overlay_files": 112,
+    "passed": true
+  },
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.mem8.final-review-bundle-publication.v1",
+  "scope": "Review/source identity and existing CI policy only; combined-head CI terminals are not asserted. Original provider failure and UNKNOWN physical outcome retained.",
+  "source_commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "source_tree": "12159640adcf073b51f3837e75575e11f5c20233"
+}
+

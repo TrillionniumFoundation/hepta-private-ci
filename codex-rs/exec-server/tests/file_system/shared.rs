@@ -34,6 +34,8 @@ use test_case::test_case;
 
 use super::support::FileSystemImplementation;
 use super::support::absolute_path;
+#[cfg(windows)]
+use super::support::assert_legacy_windows_sandbox_unavailable;
 use super::support::create_file_system_context;
 #[cfg(windows)]
 use super::support::is_unsupported_restricted_token_host;
@@ -160,6 +162,12 @@ async fn file_system_create_directory_creates_nested_directories(
     if is_unsupported_restricted_token_host(&result) {
         return Ok(());
     }
+    #[cfg(windows)]
+    if sandboxed {
+        assert_legacy_windows_sandbox_unavailable(&result);
+        assert!(!nested_dir.exists());
+        return Ok(());
+    }
     result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
     assert!(nested_dir.is_dir());
 
@@ -197,21 +205,33 @@ async fn file_system_write_file_writes_bytes(
     if is_unsupported_restricted_token_host(&result) {
         return Ok(());
     }
-    result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
-    assert_eq!(std::fs::read(file_path)?, b"hello from trait");
+    if cfg!(windows) && sandboxed {
+        #[cfg(windows)]
+        assert_legacy_windows_sandbox_unavailable(&result);
+        assert!(!file_path.exists());
+    } else {
+        result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
+        assert_eq!(std::fs::read(file_path)?, b"hello from trait");
+    }
 
     let file_path = root.join("existing.txt");
     std::fs::write(&file_path, b"before")?;
-    file_system
+    let result = file_system
         .write_file(
             &PathUri::from_host_native_path(&file_path)?,
             b"after".to_vec(),
             WriteFileOptions { follow_symlinks },
             sandbox.as_ref(),
         )
-        .await
-        .with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
-    assert_eq!(std::fs::read(file_path)?, b"after");
+        .await;
+    if cfg!(windows) && sandboxed {
+        #[cfg(windows)]
+        assert_legacy_windows_sandbox_unavailable(&result);
+        assert_eq!(std::fs::read(file_path)?, b"before");
+    } else {
+        result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
+        assert_eq!(std::fs::read(file_path)?, b"after");
+    }
 
     Ok(())
 }
@@ -284,9 +304,13 @@ async fn file_system_read_file_stream_returns_bounded_chunks(
     let path = PathUri::from_host_native_path(file_path)?;
     let sandbox = read_only_sandbox(tmp.path().to_path_buf());
     for sandbox in [None, Some(&sandbox)] {
-        let chunks = file_system
-            .read_file_stream(&path, sandbox)
-            .await
+        let stream = file_system.read_file_stream(&path, sandbox).await;
+        #[cfg(windows)]
+        if sandbox.is_some() {
+            assert_legacy_windows_sandbox_unavailable(&stream);
+            continue;
+        }
+        let chunks = stream
             .with_context(|| format!("mode={implementation}"))?
             .try_collect::<Vec<_>>()
             .await?;
@@ -684,8 +708,13 @@ async fn file_system_walk_honors_read_sandbox(
             },
             Some(&sandbox),
         )
-        .await
-        .with_context(|| format!("mode={implementation}"))?;
+        .await;
+    #[cfg(windows)]
+    if cfg!(windows) {
+        assert_legacy_windows_sandbox_unavailable(&outcome);
+        return Ok(());
+    }
+    let outcome = outcome.with_context(|| format!("mode={implementation}"))?;
     assert_eq!(
         outcome,
         WalkOutcome {
@@ -764,20 +793,32 @@ async fn file_system_remove_no_follow_removes_file_and_empty_directory(
     if is_unsupported_restricted_token_host(&result) {
         return Ok(());
     }
-    result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
-    assert!(!file_path.exists());
+    if cfg!(windows) && sandboxed {
+        #[cfg(windows)]
+        assert_legacy_windows_sandbox_unavailable(&result);
+        assert_eq!(std::fs::read(&file_path)?, b"remove");
+    } else {
+        result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
+        assert!(!file_path.exists());
+    }
 
     let directory_path = root.join("remove-me");
     std::fs::create_dir(&directory_path)?;
-    file_system
+    let result = file_system
         .remove(
             &PathUri::from_host_native_path(&directory_path)?,
             options,
             sandbox.as_ref(),
         )
-        .await
-        .with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
-    assert!(!directory_path.exists());
+        .await;
+    if cfg!(windows) && sandboxed {
+        #[cfg(windows)]
+        assert_legacy_windows_sandbox_unavailable(&result);
+        assert!(directory_path.is_dir());
+    } else {
+        result.with_context(|| format!("mode={implementation}, sandboxed={sandboxed}"))?;
+        assert!(!directory_path.exists());
+    }
 
     Ok(())
 }
@@ -869,8 +910,26 @@ async fn file_system_sandboxed_metadata_and_read_allow_readable_root(
             Default::default(),
             Some(&sandbox),
         )
-        .await
-        .with_context(|| format!("mode={implementation}"))?;
+        .await;
+    #[cfg(windows)]
+    if cfg!(windows) {
+        assert_legacy_windows_sandbox_unavailable(&metadata);
+        let contents = file_system
+            .read_file(
+                &PathUri::from_host_native_path(&file_path)?,
+                Default::default(),
+                Some(&sandbox),
+            )
+            .await;
+        assert_legacy_windows_sandbox_unavailable(&contents);
+        let stream = file_system
+            .read_file_stream(&PathUri::from_host_native_path(&file_path)?, Some(&sandbox))
+            .await;
+        assert_legacy_windows_sandbox_unavailable(&stream);
+        assert_eq!(std::fs::read(&file_path)?, b"sandboxed hello");
+        return Ok(());
+    }
+    let metadata = metadata.with_context(|| format!("mode={implementation}"))?;
     assert_eq!(
         metadata,
         FileMetadata {
@@ -1044,8 +1103,13 @@ pub(crate) async fn assert_sandboxed_canonicalize_resolves_directory_alias(
 
     let canonical_path = file_system
         .canonicalize(&requested_path, Some(&sandbox))
-        .await
-        .with_context(|| format!("mode={implementation}"))?;
+        .await;
+    #[cfg(windows)]
+    if cfg!(windows) {
+        assert_legacy_windows_sandbox_unavailable(&canonical_path);
+        return Ok(());
+    }
+    let canonical_path = canonical_path.with_context(|| format!("mode={implementation}"))?;
     assert_eq!(canonical_path, expected_path);
 
     Ok(())

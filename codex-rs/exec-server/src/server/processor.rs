@@ -307,6 +307,7 @@ mod tests {
             /*id*/ 1,
             INITIALIZE_METHOD,
             &InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             },
@@ -402,6 +403,7 @@ mod tests {
             /*id*/ 1,
             INITIALIZE_METHOD,
             &InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             },
@@ -443,6 +445,7 @@ mod tests {
             /*id*/ 1,
             INITIALIZE_METHOD,
             &InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: Some(initialize_response.session_id.clone()),
             },

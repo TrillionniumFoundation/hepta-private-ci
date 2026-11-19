@@ -1,0 +1,107 @@
+{
+  "schema": "hcsn-quadrature-counterfactual-evidence-v1",
+  "date_utc": "2026-11-12",
+  "parent_pr": 6080,
+  "parent_exact_head": "93c9ab45a7d35cc1a1da74d0b51ca0aed5530c98",
+  "source_git_blobs": {
+    "qualification/hcsn_differentiable/operator.py": "4f68cbd2b9b620e48a1aa85a9a6d04ff2313ace3",
+    "qualification/hcsn_differentiable/contract.py": "802c227f7104658ef0accdb7b92bf497000eb714",
+    "qualification/hcsn_boundary_audit/test_quadrature_nonsemigroup.py": "cf643dad13d5b992336f46285b782a94c8bb3163"
+  },
+  "source_sha256": {
+    "qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e"
+  },
+  "host": "heptaruntime desktop",
+  "environment": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cpu",
+    "dtype": "float64",
+    "cpu_quota_percent": 25,
+    "memory_max_bytes": 2147483648,
+    "threads": 1,
+    "source_directory": "/home/qian-qi/hcsn-p1-strict-trace-r11-20261111",
+    "immutable_existing_source": true
+  },
+  "grid": {
+    "active_cells": 16,
+    "phase_cells": 8,
+    "refractory": 0.2,
+    "endpoint": 4.8,
+    "tail_rate": 1,
+    "initial_log_std": 0.08,
+    "state_size": 25
+  },
+  "physics": {
+    "log_boundary": 0,
+    "mu": 0,
+    "sigma": 0.35,
+    "absolute_reset": 1.7332530178673953,
+    "discount": 0.08,
+    "dt": 0.02
+  },
+  "definition": "rowwise TV of Q(dt)Q(dt) vs Q(2dt); compare quadrature orders only, fixed representation",
+  "measurements": [
+    {
+      "order": 8,
+      "active_mean_tv": 0.050664016130343076,
+      "finite": true,
+      "mass_error": 2.220446049250313e-16,
+      "max_tv": 0.09262439245108663
+    },
+    {
+      "order": 16,
+      "active_mean_tv": 0.05063870509388512,
+      "finite": true,
+      "mass_error": 4.440892098500626e-16,
+      "max_tv": 0.09262459023061453
+    },
+    {
+      "order": 32,
+      "active_mean_tv": 0.050638582087830564,
+      "finite": true,
+      "mass_error": 4.440892098500626e-16,
+      "max_tv": 0.09262459023061462
+    },
+    {
+      "order": 64,
+      "active_mean_tv": 0.05063858208774455,
+      "finite": true,
+      "mass_error": 5.551115123125783e-16,
+      "max_tv": 0.09262459023061444
+    }
+  ],
+  "red": {
+    "job_id": "1a1cd9f9764-2564-131b",
+    "exit_code": 1,
+    "failed_assertion": "quadrature64 reduces max TV by at least 50%",
+    "expected_negative_control": true,
+    "output_complete": true
+  },
+  "green": {
+    "job_id": "1a1cd9fe5bf-2564-131f",
+    "exit_code": 0,
+    "tests_passed": 2,
+    "tests_run": 2,
+    "output_complete": true
+  },
+  "published_blob_green": {
+    "job_id": "1a1cda17d7e-2564-1323",
+    "source_git_blob": "cf643dad13d5b992336f46285b782a94c8bb3163",
+    "exit_code": 0,
+    "tests_passed": 2,
+    "tests_run": 2,
+    "output_complete": true
+  },
+  "original_c2_resumed": false,
+  "original_c2_modified": false,
+  "trained_posterior_evaluated": false,
+  "continuum_value_accuracy_established": false,
+  "production_admission": "HOLD_NO_GO",
+  "scope_limitations": [
+    "one synthetic zero-drift point and one fixed dt",
+    "changing quadrature alone does not diagnose unique source of discrepancy",
+    "the 14336/14336 training visit continuation failures of PR6073 are unchanged",
+    "no six-run C2 replay or performance uplift"
+  ]
+}

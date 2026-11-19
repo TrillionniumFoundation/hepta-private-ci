@@ -1,0 +1,102 @@
+--- superseded-unpublished-final/BLOCKERS.json
++++ candidate-v9-final2/BLOCKERS.json
+@@ -1605,7 +1605,7 @@
+     "new_database_reads_for_redaction": 0
+   },
+   "checkpoint_revision": 9,
+-  "publication_state": "FROZEN_LOCAL_REVIEW_CANDIDATE_NOT_REF_PUBLISHED",
++  "publication_state": "PUBLISHED_DRAFT_CHECKPOINT",
+   "hosted_ci_followup_189": {
+     "scope": "Original runs on 189711; separate from V5 source-only and any subsequent candidate native jobs.",
+     "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+@@ -1724,7 +1724,7 @@
+     },
+     "source_gate": {
+       "schema": "hepta.mem8.source-ci-v5.root-original-audit.v1",
+-      "verified_at_utc": "2026-11-11T12:18:05.185071+00:00",
++      "verified_at_utc": "2026-11-11T12:11:28.029096+00:00",
+       "original_run": 43015979473,
+       "original_job": 130507034042,
+       "workflow_head": "720f7ff5042a66490e2433bf4652c2eef93e4b7d",
+@@ -1793,10 +1793,12 @@
+     },
+     "source_gate_root_audit": {
+       "path": "qualification/memory-cell-mem8-ci-followup/v14/ROOT_SOURCE_CI_V5_AUDIT.json",
++      "commit": "e9c8d26d159edfb72eb9c2b8f4580478b4b37a2d",
+       "bytes": 3131,
+-      "sha256": "d118359fac0231474cd8bb9797746db74261c0a575e6c5bd077a4f64389f36bb",
+-      "git_blob": "7a0f63ae2dceaa7264fb7531046453112a3564fa",
+-      "root_complete_original_archive_audit": true
++      "sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
++      "git_blob": "75f47d1f0e8bb3cb8d38afc1751e6da4a09195c1",
++      "root_complete_original_archive_audit": true,
++      "independent_full_published_file_readback": true
+     },
+     "formatter_output_publication": {
+       "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+@@ -1955,6 +1957,12 @@
+       "independent_commit_identity_readback": true,
+       "path": "qualification/memory-cell-mem8-ci-followup/v14",
+       "scope": "Complete V14 source-preparation, original189 CI, source-only V5 and Bazel R2 evidence; new9bd2 MEM/Architecture native results remain separate."
++    },
++    "source_gate_snapshot_scope": {
++      "verified_at_utc": "2026-11-11T12:11:28.029096+00:00",
++      "embedded_audit_is_exact_published_document": true,
++      "remaining_field_is_historical": true,
++      "scope": "The audit remaining list reflects its original 12:11 observation. Its then-pending Bazel qualification is preserved verbatim; the later successful R2 result is recorded separately in bazel_lock_followup. Native, original-owner, provider, scientific and trust gates are not closed by either source-only or module-lock evidence."
+     }
+   },
+   "actionable_remaining_inputs": {
+@@ -2289,8 +2297,7 @@
+     "original_HOSTED_CI_closure_text_unchanged": true,
+     "original_MEM_results_provider_unknown_and_component_native_results_unchanged": true,
+     "historical_pending_wording": "Verbatim v7 component and initial-composition records are historical, not the latest integration CI status.",
+-    "candidate_publication": "FROZEN_LOCAL_REVIEW_CANDIDATE_ROOT_REF_CAS_PENDING",
+-    "refs_changed": false,
++    "candidate_publication": "POSTIMAGE_PREPARED_FOR_ROOT_CAS; PUBLISHED_DRAFT_CHECKPOINT_ACTIVATES_ONLY_AFTER_SUCCESS",
+     "new_host_requests": 0,
+     "new_native_runs": 0,
+     "new_provider_requests": 0,
+@@ -2313,10 +2320,37 @@
+       "scope": "Complete V14 source-preparation, original189 CI, source-only V5 and Bazel R2 evidence; new9bd2 MEM/Architecture native results remain separate."
+     },
+     "final_draft_preimage": {
+-      "bytes": 117684,
+-      "sha256": "74d5289555ed7a81b4211da816864f9e6d95f919bfe79f21e327c7b16e028225",
+-      "git_blob": "6fcbfc5518c0b1cde352f4141f730d8931a261ae"
+-    },
+-    "finalization_scope": "Bind the actually published V14 evidence and the observed current-source pre-checkout Fence failure; keep all ten adoption gates open and new native counts separate."
++      "bytes": 122483,
++      "sha256": "150c62961fd06940f13b047e81a41fa90e210e2935e8cf19d7460b4c6fe74b31",
++      "git_blob": "cab6d5d0e7a0083ddd167bd7c0dca4cd5508a95d"
++    },
++    "finalization_scope": "Bind the exact published V14 audit bytes, preserve its historical remaining list, and prepare owner publication metadata that activates only on root successful CAS. All ten adoption gates remain open.",
++    "candidate_preparation_refs_changed": false,
++    "source_audit_reference_correction": {
++      "superseded_unpublished_candidate_audit_identity": {
++        "path": "qualification/memory-cell-mem8-ci-followup/v14/ROOT_SOURCE_CI_V5_AUDIT.json",
++        "bytes": 3131,
++        "sha256": "d118359fac0231474cd8bb9797746db74261c0a575e6c5bd077a4f64389f36bb",
++        "git_blob": "7a0f63ae2dceaa7264fb7531046453112a3564fa",
++        "root_complete_original_archive_audit": true
++      },
++      "superseded_local_rerun_verified_at": "2026-11-11T12:18:05.185071+00:00",
++      "published_audit_identity": {
++        "bytes": 3131,
++        "sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
++        "git_blob": "75f47d1f0e8bb3cb8d38afc1751e6da4a09195c1"
++      },
++      "reason": "The draft used the later local re-verification timestamp and hash while naming the published V14 path. This postimage now embeds and hashes the exact published document; the underlying source-run findings are unchanged.",
++      "earlier_candidate_was_not_published": true
++    }
++  },
++  "publication": {
++    "scope": "Owner PR5897 draft checkpoint after root expected-head CAS from immutable v7.",
++    "activation": "ROOT_EXPECTED_HEAD_CAS_SUCCESS_ONLY",
++    "expected_previous_head": "cb54f618f0408c314b1c367a5256ea185165c354",
++    "owner_pr": 5897,
++    "draft": true,
++    "refs_changed": true,
++    "actual_new_head": "Recorded in the separate root publication receipt after CAS; no self-referential commit ID is invented here."
+   }
+ }

@@ -248,6 +248,67 @@ impl DurableLedger {
         }
     }
 
+    #[cfg(feature = "qualification-legacy-write")]
+    pub(crate) fn qualification_file_bytes(
+        &mut self,
+        maximum_bytes: u64,
+    ) -> Result<Vec<u8>, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let bytes = self.file.qualification_bytes(maximum_bytes);
+        if matches!(&bytes, Err(DurableLedgerError::Io(_))) {
+            self.poisoned = true;
+        }
+        bytes
+    }
+
+    /// Authenticate the complete bytes still held by this original writer.
+    /// Replay is read-only, bounded by the original limits, and must equal the
+    /// retained in-memory history. No short tail or changed file is repaired.
+    pub(crate) fn read_current_snapshot(&mut self) -> Result<LedgerSnapshot, DurableLedgerError> {
+        if self.poisoned {
+            return Err(DurableLedgerError::Poisoned);
+        }
+        let position = match self.file.stream_position() {
+            Ok(position) => position,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error.into());
+            }
+        };
+        let checked = (|| {
+            if self.file.metadata()?.len() != self.durable_length {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            let (current, cursor, length) = replay_frames(
+                &mut self.file,
+                self.binding,
+                self.max_records,
+                LedgerRecovery::Unacknowledged,
+            )?;
+            if cursor != length {
+                return Err(DurableLedgerError::IncompleteTail);
+            }
+            if length != self.durable_length
+                || self.file.metadata()?.len() != length
+                || current.snapshot() != self.core.snapshot()
+            {
+                return Err(DurableLedgerError::AnchorMismatch);
+            }
+            Ok(current.snapshot())
+        })();
+        let restored = self.file.seek(SeekFrom::Start(position));
+        let result = match restored {
+            Ok(_) => checked,
+            Err(error) => Err(error.into()),
+        };
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)
@@ -311,15 +372,27 @@ fn replay_frames(
     recovery: LedgerRecovery,
 ) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     let length = file.metadata()?.len();
+    file.seek(SeekFrom::Start(0))?;
+    replay_reader(file, binding, max_records, recovery, length)
+}
+
+// Both the writer and physical reader use exactly this canonical replay.
+// The reader supplies an already bounded immutable image and never repairs it.
+fn replay_reader(
+    reader: &mut dyn Read,
+    binding: Digest32,
+    max_records: usize,
+    recovery: LedgerRecovery,
+    length: u64,
+) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     if length < HEADER as u64 {
         return Err(DurableLedgerError::MissingHeader);
     }
     if length > MAX_BYTES {
         return Err(DurableLedgerError::Capacity);
     }
-    file.seek(SeekFrom::Start(0))?;
     let mut header = [0; HEADER];
-    file.read_exact(&mut header)?;
+    reader.read_exact(&mut header)?;
     if &header[..8] != MAGIC || Digest32::of_bytes(&header[..40]).as_array() != &header[40..] {
         return Err(DurableLedgerError::Corrupt);
     }
@@ -333,7 +406,7 @@ fn replay_frames(
             break;
         }
         let mut prefix = [0; 8];
-        file.read_exact(&mut prefix)?;
+        reader.read_exact(&mut prefix)?;
         let size = u32::from_be_bytes(
             prefix[..4]
                 .try_into()
@@ -356,7 +429,7 @@ fn replay_frames(
         }
         let mut frame = vec![0; total];
         frame[..8].copy_from_slice(&prefix);
-        file.read_exact(&mut frame[8..])?;
+        reader.read_exact(&mut frame[8..])?;
         if Digest32::of_bytes(&frame[..total - 32]).as_array() != &frame[total - 32..] {
             return Err(DurableLedgerError::Corrupt);
         }
@@ -416,3 +489,25 @@ mod tests;
 #[cfg(test)]
 #[path = "inspection_tests.rs"]
 mod inspection_tests;
+
+#[cfg(unix)]
+#[path = "durable_read_only.rs"]
+mod read_only;
+
+#[cfg(unix)]
+pub use read_only::LedgerReadOnlyCutV1;
+#[cfg(unix)]
+pub use read_only::LedgerReadOnlyObservationV1;
+#[cfg(unix)]
+pub use read_only::ReadOnlyLedgerViewV1;
+
+#[cfg(unix)]
+#[path = "durable_read_data.rs"]
+mod read_data;
+#[cfg(unix)]
+pub use read_data::decode_readonly_ledger_data_v1;
+#[cfg(unix)]
+pub use read_data::encode_readonly_ledger_data_v1;
+#[cfg(test)]
+#[path = "durable_current_tests.rs"]
+mod current_tests;

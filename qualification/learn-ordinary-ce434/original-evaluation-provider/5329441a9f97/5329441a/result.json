@@ -1,0 +1,79 @@
+{
+  "before": {
+    "source_sha": "5329441a9f97ca63225fc03de2732f474b98d11a",
+    "tree": "f85ea68a16c4a5020a81c21a2b6945ab067d7949",
+    "dirty": ""
+  },
+  "native_executed": 0,
+  "ordinary_fullchain": 0,
+  "steps": [
+    {
+      "name": "provider-source-guards",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_original_evaluation_provider_source_closure.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.5234527587890625,
+      "bytes": 2038,
+      "sha256": "77d2ac15e8f896c2659a7aaf42bdc7965f6ea0f8f1989108d505861b3ca0eaec"
+    },
+    {
+      "name": "coverage-parser",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.3033177852630615,
+      "bytes": 3123,
+      "sha256": "fab112c4305f233ebbe4e07275d76df7c5ae0aef96b89dce8bde5202a776d9c4"
+    },
+    {
+      "name": "py-compile",
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-c",
+        "import pathlib,py_compile; paths=[\"qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py\",\"scripts/hepta_c_observer_coverage.py\"]; out=pathlib.Path('/workspace/scratch/ce434f960ee9/provider-qualification-5329441a-v1'); [py_compile.compile(p,cfile=str(out/(str(i)+\".pyc\")),doraise=True) for i,p in enumerate(paths)]"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.09501099586486816,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "committed-diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check",
+        "7def806cbf94dead7560ea598c435795cfd7e4d6",
+        "5329441a9f97ca63225fc03de2732f474b98d11a"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.023548603057861328,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "after": {
+    "source_sha": "5329441a9f97ca63225fc03de2732f474b98d11a",
+    "tree": "f85ea68a16c4a5020a81c21a2b6945ab067d7949",
+    "dirty": ""
+  },
+  "source_unchanged": true
+}

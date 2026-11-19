@@ -199,6 +199,13 @@ impl ShellSnapshotCache {
             "{startup}if ! eval \"unset {state_variables}\n{state_expansion}\" >/dev/null; then printf 'failed to restore shell snapshot\\n' >&2; fi\n{}",
             params.argv[2]
         );
+        if shell_type == ShellType::Bash {
+            // Bash also reads .bashrc for a non-interactive remote stdin;
+            // privileged mode only suppresses BASH_ENV and ENV startup files.
+            prepared
+                .command
+                .insert(shell_start + 1, "--norc".to_string());
+        }
 
         Ok(())
     }

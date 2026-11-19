@@ -1,0 +1,387 @@
+{
+  "schema": "hepta.learn.pre-b-policy-and-original-runtime-repair-union.v1",
+  "parents": [
+    "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "05df3a8cb316b482866f955ae43a0a737d547e47"
+  ],
+  "code_and_manifest_identity": {
+    "source": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5",
+    "tree": "23bada5abc6754c73f1e681f476d0afe62e410cc",
+    "parents": [
+      "676eee82e7334face4b63c8aa3b4c0d286098de0",
+      "36a494ae6ce41a536f0ddf79a474a0577e9aa853"
+    ],
+    "paths": 51,
+    "total_utf8_bytes": 3261248,
+    "complete_tree_exact": true,
+    "full_blob_sha_verified": true,
+    "native_pass": false
+  },
+  "policy_source_manifest_review": {
+    "operations": [
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+        "status": "replaced complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+        "status": "replaced complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+        "status": "replaced complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+        "status": "replaced complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_material_config_v2",
+        "status": "added complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_material_create_v2",
+        "status": "added complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_material_recover_v2",
+        "status": "added complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_training_bootstrap_config_v2",
+        "status": "added complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_training_bootstrap_create_v2",
+        "status": "added complete record",
+        "owner": "source"
+      },
+      {
+        "kind": "boundary",
+        "identity": "learning_original_training_bootstrap_recover_v2",
+        "status": "added complete record",
+        "owner": "source"
+      }
+    ],
+    "boundaries": 716,
+    "protected_records": 489,
+    "inventory_ids": 716,
+    "complete_record_multiset_verified": true,
+    "unowned_raw_records_preserved": 1195,
+    "other_top_level_unchanged": true,
+    "actual_blob": "210a143b3bd2cdb96fd359ddf436d6d5c7c8ad23",
+    "rawUnchanged": 1195,
+    "all_other_semantic_fields_exact": true,
+    "originalPython_run": false
+  },
+  "policy_product_manifest_review": {
+    "operations": [
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/product_paired_commitments.rs",
+        "status": "replaced complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+        "status": "replaced complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/lib.rs",
+        "status": "replaced complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs",
+        "status": "replaced complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/closure.rs",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/product_policy.rs",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "protected_file",
+        "identity": "codex-rs/hepta-intelligence-eval/src/product_policy_codec.rs",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_paired_original_plan_freeze",
+        "status": "replaced complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_freeze",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_decode",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_encode",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_digest",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_instantiate",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_pre_b_policy_v2_expected_commitments",
+        "status": "added complete record",
+        "owner": "policy"
+      },
+      {
+        "kind": "boundary",
+        "identity": "product_original_cross_fold_receipt_from_commitments",
+        "status": "added complete record",
+        "owner": "policy"
+      }
+    ],
+    "boundaries": 717,
+    "protected_records": 492,
+    "inventory_ids": 717,
+    "complete_record_multiset_verified": true,
+    "unowned_raw_records_preserved": 1194,
+    "other_top_level_unchanged": true
+  },
+  "product_original_encoder_extraction_review": {
+    "source": "36a494ae6ce41a536f0ddf79a474a0577e9aa853",
+    "baseline": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "checks": [
+      {
+        "name": "original_cross_fold_encoder",
+        "bytes": 1468,
+        "sha256": "e5f6621d827630f274c5dedcbb56ed1cb5264db08e8fc3422aa770eb4215bf4b",
+        "equal": true
+      },
+      {
+        "name": "original_cross_fold_receipt_fields_and_seal",
+        "bytes": 912,
+        "sha256": "c4281541ff39f0812ceecb88f2854ad06bf3bee70343f40f4d428324e4398537",
+        "equal": true
+      },
+      {
+        "name": "original_seal_function",
+        "bytes": 1059,
+        "sha256": "bd36232c546da246f52eaba060951ba4a213f68d6cc1c73c86289cc86c3619a3",
+        "equal": true
+      },
+      {
+        "name": "original_product_frozen_receipt_tail",
+        "bytes": 822,
+        "sha256": "2a13bd9f9649961c32af364606803f150f2962f16d4f67bc327cb2352d401602",
+        "equal": true
+      },
+      {
+        "name": "original_product_normalization_exact_field_mapping",
+        "bytes": 1756,
+        "sha256": "c3e3e7c8256cac4924671463c8d8e57393bbd57f8612a8777950cfe440cacad2",
+        "equal": true
+      },
+      {
+        "name": "original_cross_fold_normalization_exact_borrow_mapping",
+        "bytes": 2266,
+        "sha256": "70eae78a6ba76be876824367ddf6419e2c38c6d02523cba1a4dd0b7e9ac29132",
+        "equal": true
+      },
+      {
+        "name": "original_paired_plan_encoder_exact_field_mapping",
+        "bytes": 1768,
+        "sha256": "1e5bb19c79ded4de1a0148ae2ba329fd669943a971deac70ee229af96a317f15",
+        "equal": true
+      },
+      {
+        "name": "original_paired_estimand_encoder_exact_field_mapping",
+        "bytes": 703,
+        "sha256": "fca950426c6347fab452a935a39a797af156c04da43d6a28d149c41c5979422f",
+        "equal": true
+      },
+      {
+        "name": "original_v2_role_bound_hash_bytes",
+        "bytes": 195,
+        "sha256": "d9c6466f5d2c56245687c81e95bbb253e777938c050225144d020a2e5ef82071",
+        "equal": true
+      }
+    ],
+    "scope": "Exact source substring transformations reviewed independently; no Python/Rust/native execution",
+    "native_vectors_pending": true
+  },
+  "positive_gates": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "function": "pub(super) fn require_stage(",
+      "bytes": 985,
+      "sha256": "41ba69eada8c3a36fc57a4aa8571ee785f8c9dafcfd11860e6f429a6a579db0a",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "e8400d75ebd2822e5477b38cf49e44ce38ad0733",
+      "final_entire_function_equal": true,
+      "verified_source": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>(",
+      "bytes": 1438,
+      "sha256": "65e7dcb3f1ca708c5e7dc8c14a47194f0e3c3efabe012f21ccbb143f1850f518",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "d467d499a6d20e4e77a913889294d05c7159d91f",
+      "final_entire_function_equal": true,
+      "verified_source": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "function": "pub(super) fn verify_checkpoint_evidence(",
+      "bytes": 626,
+      "sha256": "80eebfc50ca8e51447df8031530f8dd9d9be10820b105bebe8674fe10c96acc3",
+      "entire_base_bytes_retained": true,
+      "current_file_blob": "127ebac10af813a04e4844efdb9e7fa2d381fe71",
+      "final_entire_function_equal": true,
+      "verified_source": "03fa1da937ff510f43e7ddb9d8d5e84a929237d5"
+    }
+  ],
+  "exact_nonoverlapping_runtime_overlay": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35fbdac0b826f2de1b780ece31b64d34d29c379e"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-original-admission-fixture-repair-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ce87accb939a6216399216ef0f0a04ff9a1e854d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-original-admission-fixture-repair-20261112/peer-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4da74218156c89823de5a3225ff69dcaa0a79076"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d7643ab7bc964277d9f7672897dbd6d333d4d948"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f8825e69d0a6a558dc9292404c6648e21e53c8d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_operation_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6dbc8d77b0c2a1d76268bf21b8ac9f5828bcebe"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1544fce1d6f863727c69e90a96829926e19ee200"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-source-native-repair-20261112/source-fixture-repair-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4870d3cd07d68b5185d6922d43dab314ce04fc25"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_owner_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4274d202bdd47d261139018bd89b7cb64b0b9670"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_owner_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "835e7b13894b488dbd9ab83bc85621ba47b2ca2d"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-expiry-fixture-repair-20261112/source-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d2a07acd31d2b963a85d023eb43a2cb2e90089af"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/fde-runtime-fixture-repairs-combined-20261112/root-merge-audit.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca4524f67da28ebd46c76a67e80a5a8fe40c2908"
+    }
+  ],
+  "selection": "Full source/tree assembly with original owners and closed gates; no new ordinary authority. Runtime qualification must be run on this or its explicit successor; FDE and e5c evidence is never transferred.",
+  "verification": {
+    "fixed_candidate_python": false,
+    "fixed_candidate_native": false,
+    "full_caller": false,
+    "just_fix": false,
+    "just_fmt": false
+  },
+  "pending_runtime_causes": [
+    "13 original stack-overflow aborts",
+    "Original material 60-second timeout branch",
+    "Third original C evidence-readback failure"
+  ],
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update_or_fallback": 0,
+    "fresh_different_content_C": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "purpose": "diagnostic timing only; not source-exact qualification",
+  "base_head": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+  "base_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+  "deadline_changed": false,
+  "patch_sha256": "7f0511d2e71ba114c33c9bad8b1e80890e0f6af592570914e8bc932eace65d2e",
+  "files": {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "original_sha256": "6cc077a47917da7ff7c261de2b77b61bcddd3caf24c4cec868eb513ffb33c3b4",
+      "instrumented_sha256": "1869a0beaf8172489814f91b94fbb3f042d0451299ee1830c69d80ef61a5560a"
+    },
+    "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs": {
+      "original_sha256": "c17d539e34dc1b6e567424bec31a0a9e5f7840f0ce41c5875de5738ce11dba35",
+      "instrumented_sha256": "9c6be5b56efe0ddc9311686fa9f5e07533e96fed1959bdbdb96b84ef7f3e57f6"
+    }
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-matrix-sdk",
+    "--test",
+    "store_version_migration",
+    "--no-capture",
+    "--retries",
+    "0",
+    "-E",
+    "test(encrypted_state_identity_session_and_queues_survive_restart)"
+  ],
+  "cwd": "/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs"
+}

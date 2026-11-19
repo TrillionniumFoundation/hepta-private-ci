@@ -1,0 +1,68 @@
+{
+  "source": "fb1397873bef0eea81efe0c8aac48c56385ffe55",
+  "junit_sha256": "fa7cb6e2cf03050d9a9e98a3a6c62b895e4631b0b9aee9bb94a016428b70d8cf",
+  "case_count": 1088,
+  "errors": 0,
+  "failures": 0,
+  "new_cases": [
+    {
+      "case": {
+        "name": "action_check::tests::deserialized_original_binding_is_validated_before_assessment",
+        "classname": "codex-hepta-automation",
+        "timestamp": "2026-11-10T15:35:13.380+08:00",
+        "time": "0.004"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "name": "cell_temporal_q24::tests::temporal_q24_prefix_capacity_settles_and_survives_cold_reopen",
+        "classname": "codex-hepta-agentd",
+        "timestamp": "2026-11-10T15:33:40.867+08:00",
+        "time": "0.042"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::retirement_recovery_tests::cold_ack_cleanup_releases_slot_without_contacting_unavailable_learning_owners",
+        "classname": "codex-hepta-agentd",
+        "timestamp": "2026-11-10T15:34:36.666+08:00",
+        "time": "0.164"
+      },
+      "passed": true
+    },
+    {
+      "case": {
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::retirement_recovery_tests::ack_cleanup_refuses_changed_request_owners_and_stale_ack_without_mutation",
+        "classname": "codex-hepta-agentd",
+        "timestamp": "2026-11-10T15:34:36.584+08:00",
+        "time": "0.082"
+      },
+      "passed": true
+    }
+  ],
+  "suites": [
+    {
+      "name": "codex-hepta-agentd",
+      "tests": "798",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation",
+      "tests": "85",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "tests": "205",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    }
+  ]
+}

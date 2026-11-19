@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.initial-consumer-static-review.v2",
+  "reviewer": "runtime_access",
+  "initial_source_manifest": "94103a58371dda99f642e82f5e5f0ccabdc59cca",
+  "status": "NO_REMAINING_STATIC_BLOCKER_IN_REVIEWED_CONSUMER_SLICE",
+  "review_scope": "Original non-root initial connection, stream lifetime, current proxy/store bridge, prepare/recovery ordering and Feature preflight. Root-side sticky enrollment/transport was independently reviewed by hepta_audit and is not claimed as this review.",
+  "final_sources": {
+    "client": "fe0842ef1d474f68cb2b90f577708d66385cb03f",
+    "connect": "c8e7ca02d3e51a113c4ceb628c1cd8612a7a8668",
+    "prepare": "79ebade00dfd7c13edbc580636fd302938c847c7",
+    "feature": "4c0c44d3cfce1a38b51ff367dbac33224f44b050",
+    "store": "cb7dae50f397a58393cdf09a58b4637a8bc827bd",
+    "core": "af4c436ad16a3f51c78fa715699bc47f96bd7fcf",
+    "handoff": "3265ec1562e0ab881eb221739d966a2279b9d97c"
+  },
+  "context_sources": {
+    "session": "ee2236f77bcafd19db32460c381af07aaa97d667",
+    "root_inputs": "ef6db0e392f17e6e6dff2d300e5f0b9e5712c3aa"
+  },
+  "findings": [
+    {
+      "id": "after-preparation-failure",
+      "original": "6e4e2dfe5939d96c9e2032e45f8b3289387757ee",
+      "observation": "Original Root prepare creates durable CURRENT before subsequent store/genesis/observer construction. Those failures were returned as ordinary GenerationFenced.",
+      "resolution": "79ebade00dfd7c13edbc580636fd302938c847c7 wraps the whole suffix in typed RootGenerationInitialUncertain while preserving its original error text; self remains consumed and no retry is introduced.",
+      "status": "addressed_in_final_source"
+    },
+    {
+      "id": "moved-authorities-borrow",
+      "original": "5f121f1f819ef2118dd02e9ad44fc9c0707f7d89",
+      "observation": "The new FnOnce suffix moved authorities while a guard still borrowed authorities.artifacts, creating a likely Rust E0505 borrow conflict.",
+      "resolution": "Final source clones the same original artifacts Arc before taking the same mutex; that separate retained Arc owns the guard borrow. No second owner, unlock/reopen or changed lock is introduced.",
+      "status": "addressed_statically_not_compiled"
+    },
+    {
+      "id": "missing-current-stream-reuse",
+      "original": "bcd60874ead5010533b23bd17ebd483bef3875c0",
+      "observation": "CurrentStore observation returning None reported uncertainty after putting the stream back into its lane.",
+      "resolution": "fe0842ef1d474f68cb2b90f577708d66385cb03f now fences on None from observe_initial_current. Bootstrap Reserve observation still explicitly permits None before preparation.",
+      "status": "addressed_in_final_source"
+    },
+    {
+      "id": "purpose-specific-method-names",
+      "observation": "Generic private names overlapped existing closed caller patterns.",
+      "resolution": "Final unique from_original_initial_stream / prepare_initial_current / observe_initial_current / publish_initial_current / prepare_original_initial / recover_original_initial names are paired with their actual final connect, store and Feature callers.",
+      "status": "consistent_in_reviewed_final_sources"
+    }
+  ],
+  "retained_checks": [
+    {
+      "name": "actual original session",
+      "evidence": "Connect requires actual non-root UID/EUID, sealed original route, complete Root/consumer/registered identity/writer/socket equality, original pidfd and original five-lane live connection before and after observation; the connection is consumed, not cloned."
+    },
+    {
+      "name": "bounded independent purpose",
+      "evidence": "Initial frame has a distinct purpose and exactly two owned rights with CLOEXEC and truncation rejection. Timing retains <=500ms exchange and <=300s lifetime. Observation during async bootstrap creates no CURRENT."
+    },
+    {
+      "name": "wire cancellation and failures",
+      "evidence": "The original stream lane is taken before serialization/exchange and only returned after the exact sequence/profile/mode/head and live-session postchecks. Errors drop it; concurrent acquisition sets the permanent fence. Missing installed CURRENT now also fences."
+    },
+    {
+      "name": "no generic CURRENT CAS",
+      "evidence": "CurrentStore::RootInitial is a separate variant. is_original_host is false; late selection authority accepts only the separate Root variant. Initial client accepts only exact preparation and complete original initial Published shape, refusing forward/update/alternate-target state."
+    },
+    {
+      "name": "real capability ordering",
+      "evidence": "Actual original selected artifact is revalidated under its original mutex; original journal/witness inode/config binding and unwritten state are checked before Root Prepare. Actual original guarded journal/observer verifies the resulting genesis. The same mutex is retained; Root-side read-view does not open a second artifact writer."
+    },
+    {
+      "name": "executable Feature before effects",
+      "evidence": "Original worker/encoder and full model/input checks precede both initial preparation and publication. Task/source/scope and full target manifest pins are checked; original publish still performs actual FinalUse and CURRENT dispatch."
+    },
+    {
+      "name": "recovery boundary",
+      "evidence": "Consumer recovery requires explicit Recover mode, refuses Prepared without redispatch, and delegates to the original retained recovery path with the actual files and original selected artifact. This review did not execute that path."
+    },
+    {
+      "name": "original Host mutation",
+      "evidence": "af4c436ad16a3f51c78fa715699bc47f96bd7fcf requires the original Host store, computes only the exact original initial next head and uses expected-state CAS. Root sticky readbacks surround it in separately reviewed transport; an uncertain CAS acknowledgement alone is not fabricated into a corruption fence."
+    }
+  ],
+  "no_new_wait_cycle_identified": true,
+  "original_capabilities_not_generated": true,
+  "tests_executed": false,
+  "cargo_executed": false,
+  "compiler_executed": false,
+  "official_caller_scan_executed": false,
+  "limitations": [
+    "This is static source review, not evidence of real initial publication, independent C, ordinary training/adoption, or physical restart.",
+    "The full same-source original guard and all actual native/UID0 tests remain the root integrator's responsibility.",
+    "No default Root CLI Initial descriptor worker has been claimed complete by this consumer review.",
+    "Existing B qualification contract is unchanged."
+  ],
+  "ordinary_acceptance": {
+    "complete_chain": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0
+  },
+  "authority_granted": false
+}

@@ -894,6 +894,9 @@ pub struct ThreadQueueAddResponse {
 pub enum ThreadQueueReconcileMode {
     AllowIfAbsent,
     ReconcileOnly,
+    // Preserve a durable cancellation only when this exact input is absent
+    // from both the original queue and rollout. Never deletes queued input.
+    CloseIfAbsent,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]

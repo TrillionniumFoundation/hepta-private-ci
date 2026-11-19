@@ -1,0 +1,49 @@
+{
+  "source": "320533a257a257bbb8c43c3c1cdb6a645e841b53",
+  "job": 131303996403,
+  "bytes": 1861422,
+  "sha256": "57bdbab38e146b08979bb8b6c8042566296705d156c43d95e0c846f42531f36a",
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-00.log",
+      "bytes": 350000,
+      "sha256": "bd2287645929cf43a904f83d9df55fd83ecc83fc78605b3e70c26a2845ca07c4",
+      "git_blob": "6c17f22fc74a8307d1e517519f58e75619e91d04"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-01.log",
+      "bytes": 350000,
+      "sha256": "477825f78b4668115ea29cf05395c4f68464a924e5b774885ead2ace46410d7f",
+      "git_blob": "dad138ad62eb4c8a4896d99082855106a7a0a1db"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-02.log",
+      "bytes": 350000,
+      "sha256": "70ed023136e0a46e8cac1cdaefa48e5bf9d2dc5cfe181b5e80f1f4a51ce50ffd",
+      "git_blob": "4af6f70d62c28dfef1a3ba28c937c50787927af9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-03.log",
+      "bytes": 350000,
+      "sha256": "538b7f13bfb9762080507fa3525e2cb433c8a2d96f48017ca7a8caa7069ca057",
+      "git_blob": "f97c8356600e3acf9b651d64d4519d6eee4a0986"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-04.log",
+      "bytes": 350000,
+      "sha256": "a2310e25b2d105599340906b9a9dbcc54b8d352daacd47bb273e336b1acbc54f",
+      "git_blob": "791635889db07924d86361b75b4c1abf5b245bd9"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/320533-source-closure-failure/native.job.original.part-05.log",
+      "bytes": 111422,
+      "sha256": "84d210799708dc59f5221595ec63fc6b29b03a62744b5f8674656c6db830aa7e",
+      "git_blob": "085f7c76355599c757647e5499a1612dec637f2f"
+    }
+  ],
+  "source_methods": 414,
+  "passed": 403,
+  "errors": 11,
+  "reason": "Required marker sequences must contain at least two markers; the new state_mut helper rule had one.",
+  "rust_started": false
+}

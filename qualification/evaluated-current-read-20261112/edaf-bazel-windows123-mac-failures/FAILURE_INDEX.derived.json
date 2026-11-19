@@ -1,0 +1,1273 @@
+{
+  "schema": "hepta.bazel-failure-index.v1",
+  "source_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "checkout_commit": "0b2238e70dfcbdb47635e454aea0f39ab25d7c0d",
+  "checkout_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "qualification": "ORIGINAL_JOB_FAILURES_NOT_RERUN",
+  "jobs": [
+    {
+      "kind": "windows_shard1",
+      "job_id": 131356685730,
+      "original": {
+        "bytes": 447188,
+        "sha256": "72c0c4539a28a2b5b56a3c66dc872dfd6223c8ff455a5eb4b69be4586930d341",
+        "git_sha1": "afa351d1b4232df2390bc291cffb2d921b2261a2"
+      },
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization.",
+      "index": {
+        "kind": "windows_shard1",
+        "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "bytes": 447188,
+        "sha256": "72c0c4539a28a2b5b56a3c66dc872dfd6223c8ff455a5eb4b69be4586930d341",
+        "git_sha1": "afa351d1b4232df2390bc291cffb2d921b2261a2",
+        "unique_failed_names": [
+          "remote_windows_sandbox_process_accepts_process_write",
+          "agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context"
+        ],
+        "raw_failed_status_occurrences": 3,
+        "summary": [
+          "FAIL: //codex-rs/exec-server:exec-server-exec_process-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/exec-server/exec-server-exec_process-test/test.log)",
+          "test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.67s",
+          "FAIL: //codex-rs/core:core-unit-tests (shard 1 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_1_of_8/test_attempts/attempt_1.log)",
+          "test result: FAILED. 88 passed; 1 failed; 0 ignored; 0 measured; 2266 filtered out; finished in 17.67s",
+          "//codex-rs/exec-server:exec-server-exec_process-test                     FAILED in 1.3s",
+          "Executed 35 out of 144 tests: 92 tests pass, 1 fails locally, and 51 were skipped.",
+          "test result: FAILED. 2 passed; 1 failed; 21 ignored; 0 measured; 0 filtered out; finished in 0.67s"
+        ],
+        "panics": [
+          {
+            "line": 3203,
+            "text": [
+              "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "",
+              "failures:",
+              "    remote_windows_sandbox_process_accepts_process_write"
+            ]
+          },
+          {
+            "line": 3373,
+            "text": [
+              "thread 'agent::control::tests::resume_agent_from_paginated_rollout_loads_model_context' (6820) panicked at core/src\\agent\\control_tests.rs:395:14:",
+              "terminal cleanup should finish before persisting resume context: Elapsed(())",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 3851,
+            "text": [
+              "Error: exec-server rejected request (-32603): legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "",
+              "failures:",
+              "    remote_windows_sandbox_process_accepts_process_write"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "windows_shard2",
+      "job_id": 131356685786,
+      "original": {
+        "bytes": 801721,
+        "sha256": "7b81723cc9f88c4a71f61219b7dfd0ae65e22198dbd54b2bd077cfd66ada81f6",
+        "git_sha1": "ae801ac8f2fe3cc54bac48c1b5336340af7c7da1"
+      },
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization.",
+      "index": {
+        "kind": "windows_shard2",
+        "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "bytes": 801721,
+        "sha256": "7b81723cc9f88c4a71f61219b7dfd0ae65e22198dbd54b2bd077cfd66ada81f6",
+        "git_sha1": "ae801ac8f2fe3cc54bac48c1b5336340af7c7da1",
+        "unique_failed_names": [
+          "desktop::tests::readonly_preserves_private_and_default_desktop_access",
+          "desktop::tests::workspace_private_desktop_checks_the_exact_capability",
+          "spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite",
+          "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+          "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+          "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+          "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+          "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+          "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+          "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+          "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+          "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+          "unified_exec::tests::restricted_token_rejects_managed_network_before_spawn",
+          "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+          "sandbox_fetches_and_enforces_cloud_managed_permission_profile",
+          "suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl",
+          "suite::v2::plugin_list::plugin_list_fetches_workspace_directory_kind_when_remote_plugin_disabled",
+          "suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2",
+          "suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image"
+        ],
+        "raw_failed_status_occurrences": 36,
+        "summary": [
+          "FAIL: //codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log)",
+          "test result: FAILED. 80 passed; 2 failed; 1 ignored; 0 measured; 103 filtered out; finished in 7.59s",
+          "test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 2.27s",
+          "test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.36s",
+          "FAIL: //codex-rs/cli:cli-sandbox_cloud_config-test (Exit 101) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/cli/cli-sandbox_cloud_config-test/test.log)",
+          "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 7 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_7_of_16/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 7 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_7_of_16/test_attempts/attempt_2.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test_attempts/attempt_2.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test_attempts/attempt_2.log)",
+          "test result: FAILED. 67 passed; 1 failed; 0 ignored; 0 measured; 886 filtered out; finished in 63.57s",
+          "test result: FAILED. 67 passed; 1 failed; 0 ignored; 0 measured; 886 filtered out; finished in 48.76s",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 11 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_11_of_16/test.log)",
+          "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 77.26s",
+          "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 59.41s",
+          "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 52.26s",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 2 of 16) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_2_of_16/test.log)",
+          "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 80.80s",
+          "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 74.11s",
+          "test result: FAILED. 56 passed; 1 failed; 1 ignored; 0 measured; 896 filtered out; finished in 69.66s",
+          "//codex-rs/cli:cli-sandbox_cloud_config-test                             FAILED in 1.6s",
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              FAILED in 104.0s",
+          "//codex-rs/app-server:app-server-all-test                                FAILED in 8 out of 22 in 83.7s",
+          "Executed 57 out of 151 tests: 106 tests pass, 3 fail locally, and 42 were skipped.",
+          "test result: FAILED. 60 passed; 1 failed; 1 ignored; 0 measured; 892 filtered out; finished in 52.26s",
+          "test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.35s",
+          "test result: FAILED. 76 passed; 10 failed; 0 ignored; 0 measured; 100 filtered out; finished in 2.27s",
+          "test result: FAILED. 13 passed; 2 failed; 2 ignored; 0 measured; 169 filtered out; finished in 0.36s"
+        ],
+        "panics": [
+          {
+            "line": 3676,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "---- desktop::tests::workspace_private_desktop_checks_the_exact_capability stdout ----",
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              ""
+            ]
+          },
+          {
+            "line": 3679,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "",
+              "failures:",
+              "    desktop::tests::readonly_preserves_private_and_default_desktop_access"
+            ]
+          },
+          {
+            "line": 3781,
+            "text": [
+              "thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (5164) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:",
+              "legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "",
+              "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----"
+            ]
+          },
+          {
+            "line": 3786,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----",
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              ""
+            ]
+          },
+          {
+            "line": 3789,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "---- token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells stdout ----",
+              "delete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpCHCCj9\\\\host\\\\Neither\\\\file\" identity=(2827144292, 2621440, 180430) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]",
+              "delete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpCHCCj9\\\\host\\\\Neither\\\\directory\" identity=(2827144292, 2293760, 180431) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            ]
+          },
+          {
+            "line": 3807,
+            "text": [
+              "thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (7192) panicked at windows-sandbox-rs/src\\token_tests.rs:499:5:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              " ["
+            ]
+          },
+          {
+            "line": 3850,
+            "text": [
+              "thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2556) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              " ("
+            ]
+          },
+          {
+            "line": 3868,
+            "text": [
+              "thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (1648) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 3873,
+            "text": [
+              "thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (2496) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 3878,
+            "text": [
+              "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (8100) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 3883,
+            "text": [
+              "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (8448) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 3888,
+            "text": [
+              "thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (1136) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 3930,
+            "text": [
+              "thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (4248) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:263:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            ]
+          },
+          {
+            "line": 3942,
+            "text": [
+              "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6424) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:777:10:",
+              "spawn legacy delete session: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 4001,
+            "text": [
+              "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (10148) panicked at cli/tests/sandbox_cloud_config.rs:148:5:",
+              "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session",
+              "; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+              "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              ""
+            ]
+          },
+          {
+            "line": 4158,
+            "text": [
+              "Error: expected exactly 1 /ps/plugins/list requests, got 2",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::plugin_list::plugin_list_honors_global_remote_catalog_cache_ttl"
+            ]
+          },
+          {
+            "line": 4257,
+            "text": [
+              "Error: remote catalog cache did not match within the original deadline: expected [\"plugins~Plugin_22222222222222222222222222222222\"], last observed [\"plugins~Plugin_11111111111111111111111111111111\"]",
+              "",
+              "Caused by:",
+              "    deadline has elapsed",
+              ""
+            ]
+          },
+          {
+            "line": 4406,
+            "text": [
+              "Error: deadline has elapsed",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2"
+            ]
+          },
+          {
+            "line": 4546,
+            "text": [
+              "Error: deadline has elapsed",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2"
+            ]
+          },
+          {
+            "line": 4686,
+            "text": [
+              "Error: deadline has elapsed",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2"
+            ]
+          },
+          {
+            "line": 4825,
+            "text": [
+              "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (3636) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+              "Verifications failed:",
+              "- Mock #1.",
+              "\tExpected range of matching incoming requests: == 1",
+              "\tNumber of matched incoming requests: 0"
+            ]
+          },
+          {
+            "line": 5087,
+            "text": [
+              "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (1664) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+              "Verifications failed:",
+              "- Mock #1.",
+              "\tExpected range of matching incoming requests: == 1",
+              "\tNumber of matched incoming requests: 0"
+            ]
+          },
+          {
+            "line": 5349,
+            "text": [
+              "thread 'suite::v2::imagegen_extension::standalone_image_edit_uses_attached_model_visible_image' (2600) panicked at external/rules_rs++crate+crates__wiremock-0.6.5/src\\mock_server\\exposed_server.rs:367:17:",
+              "Verifications failed:",
+              "- Mock #1.",
+              "\tExpected range of matching incoming requests: == 1",
+              "\tNumber of matched incoming requests: 0"
+            ]
+          },
+          {
+            "line": 5888,
+            "text": [
+              "Error: deadline has elapsed",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::turn_start::turn_start_file_change_approval_accept_for_session_persists_v2"
+            ]
+          },
+          {
+            "line": 5908,
+            "text": [
+              "thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (10148) panicked at cli/tests/sandbox_cloud_config.rs:148:5:",
+              "cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session",
+              "; cloud bundle requests=[\"/backend-api/wham/config/bundle\"]",
+              "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              ""
+            ]
+          },
+          {
+            "line": 5950,
+            "text": [
+              "thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (5164) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:",
+              "legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "",
+              "---- token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes stdout ----"
+            ]
+          },
+          {
+            "line": 5955,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "---- token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces stdout ----",
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              ""
+            ]
+          },
+          {
+            "line": 5958,
+            "text": [
+              "Error: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "---- token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells stdout ----",
+              "delete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpCHCCj9\\\\host\\\\Neither\\\\file\" identity=(2827144292, 2621440, 180430) directory=0 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]",
+              "delete_matrix ordinary-host path=\"D:\\\\tmp\\\\.tmpCHCCj9\\\\host\\\\Neither\\\\directory\" identity=(2827144292, 2293760, 180431) directory=1 pending=1 links=0 acl=[02, 00, 30, 00, 02, 00, 00, 00, 01, 00, 14, 00, 00, 00, 01, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00, 00, 00, 14, 00, ff, 01, 1e, 00, 01, 01, 00, 00, 00, 00, 00, 01, 00, 00, 00, 00]"
+            ]
+          },
+          {
+            "line": 5976,
+            "text": [
+              "thread 'token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells' (7192) panicked at windows-sandbox-rs/src\\token_tests.rs:499:5:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              " ["
+            ]
+          },
+          {
+            "line": 6019,
+            "text": [
+              "thread 'unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn' (2556) panicked at windows-sandbox-rs/src\\unified_exec\\acl_setup_tests.rs:346:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              " ("
+            ]
+          },
+          {
+            "line": 6037,
+            "text": [
+              "thread 'unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn' (1648) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6042,
+            "text": [
+              "thread 'unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells' (2496) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6047,
+            "text": [
+              "thread 'unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit' (8100) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::legacy_non_tty_cmd_emits_output stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6052,
+            "text": [
+              "thread 'unified_exec::tests::legacy_non_tty_cmd_emits_output' (8448) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "---- unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6057,
+            "text": [
+              "thread 'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides' (1136) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:62:10:",
+              "legacy Windows sandbox process test lock poisoned: PoisonError { .. }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 6099,
+            "text": [
+              "thread 'unified_exec::tests::restricted_token_rejects_managed_network_before_spawn' (4248) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:263:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy"
+            ]
+          },
+          {
+            "line": 6111,
+            "text": [
+              "thread 'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots' (6424) panicked at windows-sandbox-rs/src\\unified_exec\\tests.rs:777:10:",
+              "spawn legacy delete session: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "",
+              "",
+              "failures:"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "windows_shard3",
+      "job_id": 131356686486,
+      "original": {
+        "bytes": 788801,
+        "sha256": "0a635c34ca6a9f78a10fcc22ddcb3af9d827e60297e2b3c5fa4792945c874301",
+        "git_sha1": "36985b5ba225121c19f91650bbc8e09165ddee93"
+      },
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization.",
+      "index": {
+        "kind": "windows_shard3",
+        "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "bytes": 788801,
+        "sha256": "0a635c34ca6a9f78a10fcc22ddcb3af9d827e60297e2b3c5fa4792945c874301",
+        "git_sha1": "36985b5ba225121c19f91650bbc8e09165ddee93",
+        "unique_failed_names": [
+          "cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work",
+          "cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes",
+          "tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery",
+          "neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model",
+          "neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback",
+          "neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation",
+          "neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner",
+          "neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent",
+          "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again",
+          "neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends",
+          "neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation",
+          "neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome",
+          "neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen",
+          "neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost",
+          "neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending"
+        ],
+        "raw_failed_status_occurrences": 18,
+        "summary": [
+          "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test_attempts/attempt_2.log)",
+          "FAIL: //codex-rs/hepta-neuron:hepta-neuron-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-neuron/hepta-neuron-unit-tests/test.log)",
+          "test result: FAILED. 66 passed; 2 failed; 0 ignored; 0 measured; 136 filtered out; finished in 49.14s",
+          "FAIL: //codex-rs/tui:tui-unit-tests (shard 3 of 8) (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/tui/tui-unit-tests/shard_3_of_8/test.log)",
+          "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 14.75s",
+          "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 7.93s",
+          "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 4.57s",
+          "FAIL: //codex-rs/hepta-agentd:hepta-agentd-unit-tests (Exit 1) (see D:/o/execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/test.log)",
+          "test result: FAILED. 54 passed; 12 failed; 0 ignored; 0 measured; 286 filtered out; finished in 22.70s",
+          "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                          FAILED in 121.5s",
+          "//codex-rs/hepta-neuron:hepta-neuron-unit-tests                          FAILED in 67.8s",
+          "//codex-rs/tui:tui-unit-tests                                            FAILED in 3 out of 10 in 99.2s",
+          "Executed 41 out of 147 tests: 99 tests pass, 3 fail locally, and 45 were skipped.",
+          "test result: FAILED. 54 passed; 12 failed; 0 ignored; 0 measured; 286 filtered out; finished in 22.70s",
+          "test result: FAILED. 66 passed; 2 failed; 0 ignored; 0 measured; 136 filtered out; finished in 49.14s",
+          "test result: FAILED. 87 passed; 1 failed; 0 ignored; 0 measured; 3693 filtered out; finished in 4.57s"
+        ],
+        "panics": [
+          {
+            "line": 3515,
+            "text": [
+              "thread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (2488) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:",
+              "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 3520,
+            "text": [
+              "thread 'cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes' (1156) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:",
+              "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 4235,
+            "text": [
+              "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (7232) panicked at tui/src/lib.rs:3265:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<\"D:\\\\tmp\\\\.tmpaFJx3y\\\\sqlite-home\\\\logs_2.sqlite\""
+            ]
+          },
+          {
+            "line": 4798,
+            "text": [
+              "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (1280) panicked at tui/src/lib.rs:3265:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<\"D:\\\\tmp\\\\.tmpohkyBJ\\\\sqlite-home\\\\logs_2.sqlite\""
+            ]
+          },
+          {
+            "line": 5361,
+            "text": [
+              "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (2516) panicked at tui/src/lib.rs:3265:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<\"D:\\\\tmp\\\\.tmpL7lKvL\\\\sqlite-home\\\\logs_2.sqlite\""
+            ]
+          },
+          {
+            "line": 5615,
+            "text": [
+              "thread 'neuron_generation::tests::expiration_during_admission_settles_known_no_contact_without_calling_model' (5232) panicked at hepta-agentd/src\\neuron_generation_tests.rs:21:23:",
+              "fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "",
+              "---- neuron_generation_runtime::tests::control::pending_typed_operation_with_same_derived_id_rejects_control_intent_without_readback stdout ----"
+            ]
+          },
+          {
+            "line": 5620,
+            "text": [
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::control::private_socket_pages_acknowledges_and_reopens_exact_original_operation stdout ----",
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              ""
+            ]
+          },
+          {
+            "line": 5623,
+            "text": [
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::control::stale_generation_changed_content_and_oversized_input_do_not_mutate_owner stdout ----",
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              ""
+            ]
+          },
+          {
+            "line": 5626,
+            "text": [
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::control::typed_operation_with_same_derived_id_cannot_impersonate_control_intent stdout ----",
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              ""
+            ]
+          },
+          {
+            "line": 5629,
+            "text": [
+              "Error: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again stdout ----",
+              "",
+              "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (6372) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:"
+            ]
+          },
+          {
+            "line": 5633,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_recovers_partial_commit_without_executing_again' (6372) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5638,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::episode::credit::actor_terminal_credit_rejects_stale_owner_cut_before_both_appends' (1208) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5643,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::episode::fresh_actor_cut_rejects_old_signed_support_without_a_ledger_mutation' (5628) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5648,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::episode::real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome' (2768) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5653,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (5976) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5658,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (2832) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 5663,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (9960) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 6082,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::contacted_unknown_worker_remains_unresolved_through_drain_and_reopen' (5976) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6087,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::fleet_drain_after_admission_settles_without_contact_and_cold_replays_exact_cost' (2832) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6092,
+            "text": [
+              "thread 'neuron_generation_runtime::tests::no_contact::fenced_live_stack_and_cold_missing_control_record_remain_pending' (9960) panicked at hepta-agentd/src\\neuron_generation_runtime_test_support.rs:39:23:",
+              "generation service fixture: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 6321,
+            "text": [
+              "thread 'cell_generation_current::tests::feature_journal::published_feature_revoked_admission_does_not_create_pending_work' (2488) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:",
+              "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "---- cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes stdout ----",
+              ""
+            ]
+          },
+          {
+            "line": 6326,
+            "text": [
+              "thread 'cell_generation_current::tests::feature_journal::published_feature_commit_revoked_after_fsync_is_uncertain_and_recovers_exact_bytes' (1156) panicked at hepta-neuron/src\\cell_generation_current_tests.rs:65:42:",
+              "called `Result::unwrap()` on an `Err` value: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "",
+              "",
+              "failures:"
+            ]
+          },
+          {
+            "line": 6670,
+            "text": [
+              "thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (2516) panicked at tui/src/lib.rs:3265:9:",
+              "assertion failed: `(left == right)`",
+              "",
+              "Diff < left / right > :",
+              "<\"D:\\\\tmp\\\\.tmpL7lKvL\\\\sqlite-home\\\\logs_2.sqlite\""
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "mac_intel",
+      "job_id": 131356685650,
+      "original": {
+        "bytes": 1273163,
+        "sha256": "22d16281d9dc9c5bcd75f0ecc0dcc4b8eff0659fc4bf35e40d3eb922fd8866c9",
+        "git_sha1": "f65d2a0f371a304a454ab2f999da423f9a61ca9a"
+      },
+      "concat_rule": "Concatenate raw part bytes in the listed order, with no separator or normalization.",
+      "index": {
+        "kind": "mac_intel",
+        "source_sha": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+        "bytes": 1273163,
+        "sha256": "22d16281d9dc9c5bcd75f0ecc0dcc4b8eff0659fc4bf35e40d3eb922fd8866c9",
+        "git_sha1": "f65d2a0f371a304a454ab2f999da423f9a61ca9a",
+        "unique_failed_names": [
+          "encrypted_state_identity_session_and_queues_survive_restart",
+          "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+          "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference"
+        ],
+        "raw_failed_status_occurrences": 9,
+        "summary": [
+          "FAIL: //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-matrix-sdk/hepta-matrix-sdk-store_version_migration-test/test.log)",
+          "test result: FAILED. 0 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 51.46s",
+          "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:83:10: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (907 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin) ",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error: aborting due to 6 previous errors; 3 warnings emitted",
+          "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:22:17: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin) ",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error: aborting due to 6 previous errors; 3 warnings emitted",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 15 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_15_of_16/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 6 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_6_of_16/test_attempts/attempt_1.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 15 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_15_of_16/test_attempts/attempt_2.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 6 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_6_of_16/test_attempts/attempt_2.log)",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 15 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_15_of_16/test.log)",
+          "test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 73.18s",
+          "test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 75.70s",
+          "test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 71.96s",
+          "FAIL: //codex-rs/app-server:app-server-all-test (shard 6 of 16) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/app-server/app-server-all-test/shard_6_of_16/test.log)",
+          "test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 87.71s",
+          "test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 80.20s",
+          "test result: FAILED. 72 passed; 1 failed; 0 ignored; 0 measured; 948 filtered out; finished in 86.18s",
+          "ERROR: Build did NOT complete successfully",
+          "//codex-rs/app-server:app-server-all-test                 (14/20 cached) FAILED in 6 out of 20 in 124.4s",
+          "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test FAILED TO BUILD",
+          "//codex-rs/hepta-agentd:hepta-agentd-unit-tests                 FAILED TO BUILD",
+          "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test FAILED in 52.2s",
+          "Executed 9 out of 584 tests: 408 tests pass, 2 fail to build, 2 fail locally, and 172 were skipped.",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:83:10: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (907 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin) ",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error: aborting due to 6 previous errors; 3 warnings emitted",
+          "ERROR: /Users/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd/BUILD.bazel:22:17: Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (903 files) failed: (Exit 1): process_wrapper failed: error executing Rustc command (from rust_test rule target //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin) ",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+          "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+          "error: aborting due to 6 previous errors; 3 warnings emitted",
+          "test result: FAILED. 65 passed; 1 failed; 0 ignored; 0 measured; 955 filtered out; finished in 71.96s",
+          "test result: FAILED. 0 passed; 1 failed; 2 ignored; 0 measured; 0 filtered out; finished in 51.46s"
+        ],
+        "panics": [
+          {
+            "line": 8024,
+            "text": [
+              "Error: Initialization { stage: \"login_or_restore.build.timeout\", source: Some(Elapsed(())) }",
+              "",
+              "",
+              "failures:",
+              "    encrypted_state_identity_session_and_queues_survive_restart"
+            ]
+          },
+          {
+            "line": 8795,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32",
+              "    |",
+              "192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8809,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19",
+              "    |",
+              "193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8823,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32",
+              "    |",
+              "202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8837,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19",
+              "    |",
+              "208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8851,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32",
+              "    |",
+              "342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8865,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:349:32",
+              "    |",
+              "349 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8938,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32",
+              "    |",
+              "192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8952,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19",
+              "    |",
+              "193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8966,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32",
+              "    |",
+              "202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8980,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19",
+              "    |",
+              "208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 8994,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32",
+              "    |",
+              "342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 9008,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:349:32",
+              "    |",
+              "349 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 9195,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted"
+            ]
+          },
+          {
+            "line": 9312,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted"
+            ]
+          },
+          {
+            "line": 9429,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted"
+            ]
+          },
+          {
+            "line": 9564,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference"
+            ]
+          },
+          {
+            "line": 9686,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference"
+            ]
+          },
+          {
+            "line": 9808,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference"
+            ]
+          },
+          {
+            "line": 10843,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32",
+              "    |",
+              "192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10857,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19",
+              "    |",
+              "193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10871,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32",
+              "    |",
+              "202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10885,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19",
+              "    |",
+              "208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10899,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32",
+              "    |",
+              "342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10916,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32",
+              "    |",
+              "192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10930,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19",
+              "    |",
+              "193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10944,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32",
+              "    |",
+              "202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10958,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19",
+              "    |",
+              "208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10972,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32",
+              "    |",
+              "342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 10986,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:349:32",
+              "    |",
+              "349 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11024,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:192:32",
+              "    |",
+              "192 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11038,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:193:19",
+              "    |",
+              "193 |         Ok(crate::OriginalCircuitRetainedArtifactCheckpointV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11052,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:202:32",
+              "    |",
+              "202 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11066,
+            "text": [
+              "error[E0422]: cannot find struct, variant or union type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_artifacts.rs:208:19",
+              "    |",
+              "208 |         Ok(crate::OriginalCircuitRetainedPublicationSelectionV1 {",
+              "    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11080,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedPublicationSelectionV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:342:32",
+              "    |",
+              "342 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedPublicationSelectionV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11094,
+            "text": [
+              "error[E0425]: cannot find type `OriginalCircuitRetainedArtifactCheckpointV1` in the crate root",
+              "   --> hepta-agentd/src/neuron_generation_update_test_support.rs:349:32",
+              "    |",
+              "349 |     ) -> anyhow::Result<crate::OriginalCircuitRetainedArtifactCheckpointV1> {",
+              "    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ not found in the crate root"
+            ]
+          },
+          {
+            "line": 11241,
+            "text": [
+              "Error: expected ident at line 1 column 3",
+              "",
+              "",
+              "failures:",
+              "    suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted"
+            ]
+          },
+          {
+            "line": 11264,
+            "text": [
+              "Error: Initialization { stage: \"login_or_restore.build.timeout\", source: Some(Elapsed(())) }",
+              "",
+              "",
+              "failures:",
+              "    encrypted_state_identity_session_and_queues_survive_restart"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "Repeated retries and summary reprints are not counted as distinct test identities.",
+    "Mac compiler errors repeated across two target invocations are identified separately from test failures.",
+    "Windows sandbox isolation refusals are retained; no isolation bypass is proposed.",
+    "None of these job failures is reclassified using another head's success."
+  ]
+}

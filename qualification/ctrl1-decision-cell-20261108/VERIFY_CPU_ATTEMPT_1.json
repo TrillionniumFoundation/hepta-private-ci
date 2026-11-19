@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.ctrl1.failed-retention-verification.v1",
+  "status": "REJECTED_INCOMPLETE_ORIGINALS",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/audit_cpu.py",
+    "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108/cpu_allowance"
+  ],
+  "returncode": 1,
+  "stdout": "{\"status\": \"FAIL\", \"error_type\": \"ValueError\", \"error\": \"Worker retained parameters_sha256: original-file binding mismatch\"}\n",
+  "stderr": "",
+  "auditor_sha256": "ffcbb133a291ed6c9bd2ba5a20e647bceeb40c119370f17ab847ea6b764dc945",
+  "auditor_stage": "pre-format structural rejection; final formatted auditor will audit subsequent whole repeat",
+  "elapsed_wall_seconds": 0.7318382899975404,
+  "reported_workers": 72,
+  "reported_rows": 576,
+  "retained_rows": 460,
+  "expected_events": 144,
+  "retained_events": 116,
+  "files": {
+    "REPORT.json": {
+      "bytes": 8445,
+      "sha256": "bbdaad5490d1243190e604534002af59faf8a9eea4ddb27ea4a4824012318ce6",
+      "mtime_ns": 1794138438467991254,
+      "ctime_ns": 1794138438467991254
+    },
+    "ARTIFACTS.json": {
+      "bytes": 53577,
+      "sha256": "17d69ffe6699eb9871a3c07b302fa465d237a91991bf2210576a0fffd8ad405c",
+      "mtime_ns": 1794138438504486883,
+      "ctime_ns": 1794138438504486883
+    },
+    "RECEIPTS.json": {
+      "bytes": 147315,
+      "sha256": "a9f7b995e1cb3f402fc92c67268f5fb9c2ea9fe2d7a54ec3c6a593e03a03c6ac",
+      "mtime_ns": 1794138438466526132,
+      "ctime_ns": 1794138438466526132
+    },
+    "attempts.jsonl": {
+      "bytes": 11023,
+      "sha256": "5dd9da8213e3c339bec10cfcfbff00f551b9502efb4bfcb85c8f228463bf39d9",
+      "mtime_ns": 1794138397014335360,
+      "ctime_ns": 1794138398316228419
+    },
+    "results-6d077dda5bd1.jsonl": {
+      "bytes": 40440,
+      "sha256": "e2eb5369f453501da4507074a6edc4ece1f9fc60d2de83350075a5a4de350837",
+      "mtime_ns": 1794138397057837770,
+      "ctime_ns": 1794138398316228419
+    }
+  },
+  "observed_utc": "2026-11-08T11:55:32.050025+00:00",
+  "action": "Preserve original attempt unchanged. Entire fresh72-worker run with sameplan/sources/seeds, no checkpoint or result reconstruction; not new independent seeds."
+}

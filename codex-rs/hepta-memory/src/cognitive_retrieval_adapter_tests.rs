@@ -2,6 +2,7 @@ use super::*;
 
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_memory_retrieval::ContradictionPolarityV1;
 use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
 use codex_hepta_memory_retrieval::EngramSnapshotV1;
 use codex_hepta_memory_retrieval::RetrievalGeneratorOwnerV1;
@@ -306,11 +307,11 @@ async fn typed_kg_relations_route_to_exact_owner_channels_without_generic_relabe
             batch.receipt.generator == RetrievalGeneratorOwnerV1::KnowledgeGraphContradiction
         })
         .expect("contradiction generator");
-    assert!(
-        contradiction.candidates[0]
-            .contradiction_group_digest
-            .is_some()
-    );
+    let evidence = contradiction.candidates[0]
+        .contradiction_evidence
+        .expect("contradiction evidence");
+    assert_eq!(evidence.polarity, ContradictionPolarityV1::Opposes);
+    assert!(!evidence.proposition_digest.is_zero());
 }
 
 #[tokio::test]

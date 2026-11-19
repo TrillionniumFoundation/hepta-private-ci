@@ -18,6 +18,18 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[cfg(any(unix, windows))]
+#[path = "sqlite_recovery_io.rs"]
+mod descriptor_io;
+
+#[cfg(windows)]
+#[path = "sqlite_recovery_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::RetainedObject;
+#[cfg(windows)]
+use windows::RetainedOptionalObject;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]
@@ -80,12 +92,14 @@ pub struct ExistingSqliteRecoveryGuard {
 #[derive(Debug)]
 struct RecoveryGuardInner {
     database_path: PathBuf,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     parent: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     database: RetainedObject,
-    #[cfg(unix)]
+    #[cfg(any(unix, windows))]
     sidecars: [RetainedOptionalObject; 3],
+    #[cfg(windows)]
+    ancestors: Vec<std::fs::File>,
 }
 
 impl SqliteConfig {
@@ -168,7 +182,12 @@ impl ExistingSqliteRecoveryGuard {
         Ok(guard)
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
+        windows::bind(database_path)
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn bind(database_path: &Path) -> Result<Self, SqliteRecoveryError> {
         let _ = database_path;
         Err(SqliteRecoveryError::Indeterminate)
@@ -198,7 +217,12 @@ impl ExistingSqliteRecoveryGuard {
         Ok(())
     }
 
-    #[cfg(not(unix))]
+    #[cfg(windows)]
+    fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
+        windows::revalidate(&self.inner)
+    }
+
+    #[cfg(not(any(unix, windows)))]
     fn revalidate(&self) -> Result<(), SqliteRecoveryError> {
         Err(SqliteRecoveryError::Indeterminate)
     }
@@ -390,14 +414,14 @@ fn openat_read_only(parent: &File, file_name: &OsStr) -> Result<File, SqliteReco
     Ok(unsafe { File::from_raw_fd(descriptor) })
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
     let mut path = database_path.as_os_str().to_os_string();
     path.push(suffix);
     PathBuf::from(path)
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, windows))]
 fn indeterminate(_: std::io::Error) -> SqliteRecoveryError {
     SqliteRecoveryError::Indeterminate
 }

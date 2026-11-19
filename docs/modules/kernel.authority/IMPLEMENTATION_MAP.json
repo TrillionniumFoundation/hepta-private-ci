@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+    "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -34,7 +34,8 @@
       "sourcePathExists": true,
       "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
     },
     {
       "operation": "store",
@@ -48,7 +49,8 @@
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d014fce0c1396b094d4497c58ef905c53e80669f"
     },
     {
       "operation": "authority_lease_registry",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "924e4552472038934f665f6acf7a95438294893f"
     },
     {
       "operation": "final_use_approval_verifier",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "final_use_revocation_feed_verifier",
@@ -90,7 +94,8 @@
       "sourcePathExists": true,
       "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "authority_external_trust",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "trusted_time_and_external_anti_rollback_frontier",
       "mappingClass": "owner_native_interface",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "043ffd75a20c42935959a98d37f40e3d7229c407"
     },
     {
       "operation": "final_use_revocation_convergence",
@@ -119,7 +125,8 @@
       "sourcePathExists": true,
       "designOperation": "verify_enrolled_node_revocation_convergence",
       "mappingClass": "owner_native_verifier",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "operation": "verified_use_witness_v1",
@@ -134,7 +141,8 @@
       "sourcePathExists": true,
       "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     },
     {
       "operation": "verified_use_token_witness_v1",
@@ -148,7 +156,8 @@
       "sourcePathExists": true,
       "designOperation": "decision_and_audit_projection",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "bb5847d7f1beabab6e179f0beba349e3278efbf3"
     }
   ],
   "repositoryControlledGaps": [
@@ -234,11 +243,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "38bbb2a2befdd2eeb5968ae8a2bfc6849a608623"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
+      "object": "924e4552472038934f665f6acf7a95438294893f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
@@ -246,19 +255,19 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "e6e40ac106c6d1c07f8bfc17da1a0c5c763224cd"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
+      "object": "41b1d83586fdab55b143471dab85679c3efebbe8"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+      "object": "d014fce0c1396b094d4497c58ef905c53e80669f"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
+      "object": "0ac7b948a66a47fbac688dfd6cb6d4666ade5e6e"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -270,7 +279,7 @@
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
+      "object": "13fe1b3def1e894ba9fbd755662f9da4a23204e9"
     },
     {
       "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
@@ -280,5 +289,15 @@
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
       "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
+    "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-contracts"
   ]
 }

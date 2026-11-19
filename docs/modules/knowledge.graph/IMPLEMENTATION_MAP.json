@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -40,7 +40,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "canonical_generation_from_projection"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "apply_incremental_delta",
@@ -55,7 +56,8 @@
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "publish_generation",
@@ -84,7 +86,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "refresh_scope_projection_tx"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "query_relations",
@@ -115,7 +118,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "build_prompt_factor_projection_v1",
@@ -143,7 +147,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "7b2b4468dc1095a257d2d910569d12c9d282d420"
     }
   ],
   "repositoryControlledGaps": [
@@ -204,8 +209,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -256,7 +261,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "object": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+      "object": "b9996dc339646cf95fad5fbbff0b360b5765c085"
     },
     {
       "path": "codex-rs/hepta-kg",
@@ -296,7 +301,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "5660be5c1e6f8fecc1b7ff47f471901cf5150b2b"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
@@ -318,5 +323,12 @@
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
       "object": "2e65ace60cd8f19c28b3b77605d7d5cbf7c75fbd"
     }
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "knowledge.graph",
+    "previousMapBlob": "6f19021fa142d34f0bac40f1a8874766fba01c4e",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

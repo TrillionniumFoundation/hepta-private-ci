@@ -1,0 +1,215 @@
+{
+  "actual_conflicts": [],
+  "actual_merge_base": "020deba43088f3da255e04ce0690d06eed4ed3f4",
+  "after_qa_clean": true,
+  "all_original_inputs_ancestors": true,
+  "before_qa_clean": true,
+  "branch": "codex/learn-ordinary-all-owners-ce434-20261111-v1",
+  "coverage_parent": "e81533335c68ea49ccfce37e5db8e865bedb49c9",
+  "current_phase": "coverage-v2-final-diff-check",
+  "finished_at": 1794415579.3295798,
+  "format_changes": [],
+  "formatter_tools": {
+    "just": "/home/qian-qi/.cargo/bin/just",
+    "python3": "/home/qian-qi/hepta-learn-ce434-tools/uv-venv/bin/python3",
+    "rustfmt": "/home/qian-qi/.cargo/bin/rustfmt",
+    "uv": "/home/qian-qi/hepta-learn-ce434-tools/uv-venv/bin/uv"
+  },
+  "full_caller_proof_invoked": false,
+  "parents": [
+    "9897b9ab2301ce892822cd819ba07babe01dc926",
+    "e81533335c68ea49ccfce37e5db8e865bedb49c9"
+  ],
+  "parser_controls": 12,
+  "phases": [
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "--version"
+      ],
+      "bytes": 12,
+      "exit_code": 0,
+      "label": "coverage-v2-just-version",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-just-version.log",
+      "seconds": 0.003821134567260742,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "791360d73ef301b74aea5ef25e71551c1f4a0953"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-just-fmt",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-just-fmt.log",
+      "seconds": 1.3682398796081543,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-format-diff",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-format-diff.log",
+      "seconds": 0.016771554946899414,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-diff-check",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-diff-check.log",
+      "seconds": 0.016271114349365234,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-cached-diff-check",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-cached-diff-check.log",
+      "seconds": 0.016152381896972656,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "add",
+        "--",
+        ".github/workflows/hepta-daemon-learning-native.yml",
+        "scripts/hepta_c_observer_coverage.py",
+        "scripts/test_hepta_c_observer_coverage.py"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-stage",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-stage.log",
+      "seconds": 0.06463861465454102,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "git",
+        "commit",
+        "--file",
+        "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-merge-message.txt"
+      ],
+      "bytes": 122,
+      "exit_code": 0,
+      "label": "coverage-v2-commit",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-commit.log",
+      "seconds": 0.06485700607299805,
+      "sha256": "3d4e4d6eeec9e74ceb7550ef322648b015211602f3794b7d4bb3d4f65c9a8dd7"
+    },
+    {
+      "argv": [
+        "git",
+        "push",
+        "--force-with-lease=refs/heads/codex/learn-ordinary-all-owners-ce434-20261111-v1:9897b9ab2301ce892822cd819ba07babe01dc926",
+        "origin",
+        "HEAD:refs/heads/codex/learn-ordinary-all-owners-ce434-20261111-v1"
+      ],
+      "bytes": 443,
+      "exit_code": 0,
+      "label": "coverage-v2-push",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-push.log",
+      "seconds": 7.637181520462036,
+      "sha256": "ac12a46542cdbfdffcb918271aaaf15abf02ca82af7fd30cf21bb81955900378"
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--exit-code",
+        "--heads",
+        "origin",
+        "refs/heads/codex/learn-ordinary-all-owners-ce434-20261111-v1"
+      ],
+      "bytes": 102,
+      "exit_code": 0,
+      "label": "coverage-v2-remote-readback",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-remote-readback.log",
+      "seconds": 4.5277464389801025,
+      "sha256": "40c616b266abd5ef223e12e5ed5ee05b1c1c57ca74d3abaa45cc2769d8ff1f39"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "*source_closure.py",
+        "-v"
+      ],
+      "bytes": 28706,
+      "exit_code": 0,
+      "label": "coverage-v2-source-closure",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-source-closure.log",
+      "seconds": 43.73486948013306,
+      "sha256": "c44dab5dfd08cac5f25d5f0c979ed4c10de32d259b145aaa4c5c6115c4901743"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_c_observer_coverage.py",
+        "-v"
+      ],
+      "bytes": 2327,
+      "exit_code": 0,
+      "label": "coverage-v2-parser-controls",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-parser-controls.log",
+      "seconds": 0.21490144729614258,
+      "sha256": "6d428e1525da299ae8403cd14ffb2806f5dc48a7a6ed7fe4525917ee1498130b"
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "bytes": 0,
+      "exit_code": 0,
+      "label": "coverage-v2-final-diff-check",
+      "log": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/all-owners-integration-v1/coverage-v2-final-diff-check.log",
+      "seconds": 0.016828536987304688,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "predecessor": "9897b9ab2301ce892822cd819ba07babe01dc926",
+  "published": true,
+  "python_formatter_ast_equal": true,
+  "resumed_original_merge": true,
+  "rust_tests_executed": 0,
+  "source_closure_tests": 131,
+  "source_commit": "c7788fcb70e90ee887410df5abc4e840664ba088",
+  "source_tree": "d71f3ac45d14879b65962c3b4c6065c20a6a9df5",
+  "started_at": 1794415521.3951502,
+  "status": "passed-source-and-parser-qualification",
+  "worktree": "/home/qian-qi/hepta-learn-all-owners-ce434-20261111-v1"
+}

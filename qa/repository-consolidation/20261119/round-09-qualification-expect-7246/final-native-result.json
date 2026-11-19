@@ -1,0 +1,68 @@
+{
+  "status": "PASS",
+  "source_base_commit": "f8c5a4dd99564525a6ce139560f82139501508aa",
+  "preceding_five_file_commit": "6ecaf4f7bab96ae936c2b192df2acb2d0bb7c43a",
+  "baseline_manifest_sha256": "e37523e64baf4de3a58252b4f80ca6b310927a43ea9446ef1bfe4650242a8ee6",
+  "changed_path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+  "final_sha256": "c112c681a81c332a8cd18417ac2315ceeff571d12b825753ca7341868f7f366d",
+  "first_durable_job": "1a1f532fd9f-ffbe-12a0",
+  "first_job_exit": 1,
+  "first_job_failure": "Final source attestation expected the pre-format bytes; original tests, scoped fix and final fmt all exited zero.",
+  "formatter_review": "Exactly one match arm became a block containing the unchanged case_evidence tail expression; no extra statements or semicolon. All other bytes in the changed file are identical.",
+  "original_tests": {
+    "passed": 3,
+    "skipped": 0,
+    "names": [
+      "executable_negative_matrix_qualifies_without_authority",
+      "executable_receipt_is_deterministic",
+      "case_evidence_binds_the_observed_typed_error"
+    ]
+  },
+  "started_at": 1795115530.050983,
+  "post_fix_fmt_tests_run": false,
+  "other_package_lint_qualification_claim": false,
+  "verified_files_before_lint": 4718,
+  "strict_clippy_argv": [
+    "/home/qian-qi/.cargo/bin/cargo",
+    "clippy",
+    "-p",
+    "codex-hepta-authbus-p1-3-qualification",
+    "--offline",
+    "--locked",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "env": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "TMPDIR": "/dev/shm/hepta-qualification-expect-7246-ci-audit/tmp",
+    "TMP": "/dev/shm/hepta-qualification-expect-7246-ci-audit/tmp",
+    "TEMP": "/dev/shm/hepta-qualification-expect-7246-ci-audit/tmp",
+    "CARGO_HOME": "/home/qian-qi/hepta-supervisor-expect-7246-ci-audit/cargo-home",
+    "CARGO_CACHE_AUTO_CLEAN_FREQUENCY": "never",
+    "CARGO_TARGET_DIR": "/dev/shm/hepta-qualification-expect-7246-ci-audit/cargo-target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TERM_COLOR": "never",
+    "CARGO_NET_OFFLINE": "true"
+  },
+  "strict_clippy_exit": 0,
+  "strict_clippy_elapsed_seconds": 21.116984128952026,
+  "logs": {
+    "strict-clippy.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "strict-clippy.stderr": {
+      "bytes": 15758,
+      "sha256": "1cecd89eb3fb96e01a340b1878a7132c7ef72f0397832eed0ffa8d77de664520"
+    }
+  },
+  "verified_files_after_lint": 4718,
+  "strict_clippy_selected_package_passed": true,
+  "source_mutations_during_lint": [],
+  "finished_at": 1795115551.3263578
+}

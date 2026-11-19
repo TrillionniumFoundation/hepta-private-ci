@@ -1,0 +1,218 @@
+{
+  "schema": "hepta-current-neural-control-cpu-revalidation-v1",
+  "request_id": "hcsn-neural-current-original-four-75cf-v1",
+  "source_freeze_tree": "c3995fc4c03db4a139fc0a71525085f47092a683",
+  "source_current": "41d193cbd34571fb67a047c206a97734a677e21c",
+  "source_incoming": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "source_freeze_sha256": "0dd9e4b23ceb8a452a3b108c1cc1c48862d6d1eb754956f0cae6ea1326b924f8",
+  "source_manifest": [
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "git_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "mode": "100644",
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/__init__.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "git_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "mode": "100644",
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/contract.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "git_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "mode": "100644",
+      "bytes": 25096,
+      "sha256": "3db9a92fffc0d465343e598ec725db631e676dee096a2f999593c7a40038e734",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/operator.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/regenerative.py",
+      "git_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "mode": "100644",
+      "bytes": 10216,
+      "sha256": "3c3df0f5fa28796fd3fd18b468a63ed8e66a7984c0ebc133b76d6ec2cc00f863",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/regenerative.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/finite_renewal.py",
+      "git_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "mode": "100644",
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/finite_renewal.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "git_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "mode": "100644",
+      "bytes": 5817,
+      "sha256": "60bf3cc067f75a05f83f0f29978c7939fa91a7815858b5cc2becf0e62428dc3f",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "git_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "mode": "100644",
+      "bytes": 9911,
+      "sha256": "99aeeecfcf38a139dac4235f38fee02e33cfb23d43974809194e02b65fe98f44",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control_study.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "git_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "mode": "100644",
+      "bytes": 2126,
+      "sha256": "ccc234f23bb8d5bde82eb4f999b12842d1808d8ede9c83c6ef54de38e8180b47",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/tests/test_neural_control.py"
+    }
+  ],
+  "command": [
+    "/Users/qianqi/AI/noct-q/.venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "qualification.hcsn_differentiable.tests.test_neural_control"
+  ],
+  "cwd": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source",
+  "device_requested": "cpu",
+  "expected_test_names": [
+    "test_independent_optimum_and_learning",
+    "test_optimal_value_parameter_gradient",
+    "test_reject_unsupported_optimum_and_reward_domain",
+    "test_shared_first_passage_reset_and_refractory_contract"
+  ],
+  "exact_original_test_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+  "operator_blob_tested": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+  "old_receipt_operator_blob": "4f68cbd2b9b620e48a1aa85a9a6d04ff2313ace3",
+  "full_repository_ci_claimed": false,
+  "exact_workflow_pinned_environment_claimed": false,
+  "source_scope": "exact eight frozen source blobs; unrelated merge conflicts excluded",
+  "tests_executed": true,
+  "runtime": {
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "platform": "darwin",
+    "versions": {
+      "torch": "2.15.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "safetensors": "0.8.0"
+    },
+    "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+    "torch_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/torch/__init__.py",
+    "numpy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/numpy/__init__.py",
+    "scipy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/scipy/__init__.py",
+    "default_tensor_device": "cpu",
+    "cuda_build": null,
+    "torch_threads": 1
+  },
+  "preflight_loaded_source_paths": {
+    "qualification.hcsn_differentiable": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/__init__.py",
+    "qualification.hcsn_differentiable.contract": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/contract.py",
+    "qualification.hcsn_differentiable.operator": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/operator.py",
+    "qualification.hcsn_differentiable.regenerative": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/regenerative.py",
+    "qualification.hcsn_differentiable.finite_renewal": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/finite_renewal.py",
+    "qualification.hcsn_differentiable.neural_control": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control.py",
+    "qualification.hcsn_differentiable.neural_control_study": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control_study.py",
+    "qualification.hcsn_differentiable.tests.test_neural_control": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/tests/test_neural_control.py"
+  },
+  "exit_code": 0,
+  "tests_run": 4,
+  "test_wall_seconds": 0.726,
+  "test_names": [
+    "test_independent_optimum_and_learning",
+    "test_optimal_value_parameter_gradient",
+    "test_reject_unsupported_optimum_and_reward_domain",
+    "test_shared_first_passage_reset_and_refractory_contract"
+  ],
+  "failures_count": 0,
+  "errors_count": 0,
+  "skipped_count": 0,
+  "passed": true,
+  "test_log": "test_independent_optimum_and_learning (qualification.hcsn_differentiable.tests.test_neural_control.NeuralControlTests.test_independent_optimum_and_learning) ... ok\ntest_optimal_value_parameter_gradient (qualification.hcsn_differentiable.tests.test_neural_control.NeuralControlTests.test_optimal_value_parameter_gradient) ... ok\ntest_reject_unsupported_optimum_and_reward_domain (qualification.hcsn_differentiable.tests.test_neural_control.NeuralControlTests.test_reject_unsupported_optimum_and_reward_domain) ... ok\ntest_shared_first_passage_reset_and_refractory_contract (qualification.hcsn_differentiable.tests.test_neural_control.NeuralControlTests.test_shared_first_passage_reset_and_refractory_contract) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.726s\n\nOK\n",
+  "source_after": [
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "git_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "mode": "100644",
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/__init__.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "git_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "mode": "100644",
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/contract.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "git_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "mode": "100644",
+      "bytes": 25096,
+      "sha256": "3db9a92fffc0d465343e598ec725db631e676dee096a2f999593c7a40038e734",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/operator.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/regenerative.py",
+      "git_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "mode": "100644",
+      "bytes": 10216,
+      "sha256": "3c3df0f5fa28796fd3fd18b468a63ed8e66a7984c0ebc133b76d6ec2cc00f863",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/regenerative.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/finite_renewal.py",
+      "git_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "mode": "100644",
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/finite_renewal.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "git_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "mode": "100644",
+      "bytes": 5817,
+      "sha256": "60bf3cc067f75a05f83f0f29978c7939fa91a7815858b5cc2becf0e62428dc3f",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "git_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "mode": "100644",
+      "bytes": 9911,
+      "sha256": "99aeeecfcf38a139dac4235f38fee02e33cfb23d43974809194e02b65fe98f44",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/neural_control_study.py"
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "git_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "mode": "100644",
+      "bytes": 2126,
+      "sha256": "ccc234f23bb8d5bde82eb4f999b12842d1808d8ede9c83c6ef54de38e8180b47",
+      "native_path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/source/qualification/hcsn_differentiable/tests/test_neural_control.py"
+    }
+  ],
+  "all_sources_unchanged": true,
+  "wall_seconds": 1.9100953330053017,
+  "logs": {
+    "tests.stdout.log": {
+      "path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests.stderr.log": {
+      "path": "/Users/qianqi/ci-hcsn-neural-20261119-75cf/tests.stderr.log",
+      "bytes": 814,
+      "sha256": "59a243ac6340b3ed28f52eadb072192a2a67d07b66556fa51e593922b784492f"
+    }
+  }
+}

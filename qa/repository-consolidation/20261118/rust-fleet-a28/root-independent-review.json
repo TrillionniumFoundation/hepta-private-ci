@@ -1,0 +1,26 @@
+{
+  "result": "ACCEPT",
+  "reviewer": "/root",
+  "base": "770179d123b879355b53db1d75f8f9f301280d3e",
+  "incoming": "0e378dd351e0fca99d32f67613639b37c85605da",
+  "complete_patches_read": [
+    "777e741d25b73d6a52048be34be63fab3fc6d79e",
+    "0e378dd351e0fca99d32f67613639b37c85605da"
+  ],
+  "current_sources_read": [
+    "authority_port.rs: ledger and both affected tests",
+    "registry_tests.rs: complete workspace subset oracle",
+    "model.rs: WorkspaceBinding constructor"
+  ],
+  "decisions": [
+    "All fallible authority setup calls still fail the test on error.",
+    "The exact revoked-lease rejection and every witness, receipt, scope and payload assertion survive.",
+    "Current canonicalize()? supplies the same canonical PathBuf value as the incoming borrowed value.",
+    "The canonical path contract and all 256 subsets in both identity orders survive.",
+    "Five authority conflicts, one registry conflict and six automatic return-type edits were individually reviewed.",
+    "Retain the current source representation and record original parents through a true merge."
+  ],
+  "archive_regular_members_verified": 51,
+  "source_change_expected": false,
+  "fresh_native_claim": false
+}

@@ -1,0 +1,883 @@
+{
+  "schema": "hepta.cell-common.qualification-current.v1",
+  "recorded_at_utc": "2026-11-09T13:01:33.280900+00:00",
+  "status": "COMMON_CANDIDATE_COMPONENTS_EXECUTED_P0_NOT_ESTABLISHED_SCIENCE_HOLD",
+  "report_state": "FROZEN_SOURCE_BOUND_REPORT_WITH_RETAINED_CI_SNAPSHOT",
+  "runtime_candidate": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "engineering/cell-common-20261109-e1c98",
+    "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+    "source_inputs": {
+      "m6": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+      "stem_routes": "4cc753af511bf7c406608caa9da0795d7691bd23",
+      "representation_and_ordinary_consumer": "5530f84e1305c4c86b8be19c4c8765c4340e51db",
+      "maintained_scoped_learning": "342fb02346fb1a2f97d684fb1a3ef9042737401b",
+      "root_bootstrap": "b443fe0cd7642316d016d78d6d3fbaa3e9dfc341"
+    },
+    "source_manifest": "INPUTS.json",
+    "graph": "fixed",
+    "shared_base_update": false,
+    "organization_search": false,
+    "improver_inheritance": false,
+    "tested_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "tested_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+    "maintenance_commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+    "maintenance_tree": "19e7619d7b4df0f1ba645151ffb5844a53ad97d3",
+    "source_identity_rule": "Native suites, actual model and actual Root evidence bind f070. The later dde maintenance source has separate fix/fmt/strict-Clippy evidence and was not tested again; subsequent evidence commits do not transfer f070 results to a new runtime tree.",
+    "maintenance_evidence": "maintenance/SUMMARY.json"
+  },
+  "source_repairs": [
+    {
+      "commit": "c687c0e1f0675d6fc3587c2aabdd5fbf7494a3cb",
+      "change": "Recheck frozen request/owner scope on authenticated readback and ordinary delivery enrollment; revalidate every retained Training observation."
+    },
+    {
+      "commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "change": "Preserve frozen binding across original registered checkpoint adapters and explicit Root transport schema 2; refuse profile substitution."
+    },
+    {
+      "commit": "66929d29facbb9d3aae32639d03522a68694b28e",
+      "change": "Merge fixed b443fe0c original Root registration, sealed FD handoff, retained serving and ordinary startup stack."
+    },
+    {
+      "commit": "a9c05cf352dac5a96f8f72248c25f34f80f7a5b3",
+      "change": "Carry explicit Cell/Organ scope, update rule and binding from Root0600 profile through registered CAS, sealed bootstrap, client and scoped runtime."
+    },
+    {
+      "commit": "f1548649c9e0a88fcd6e14d0a10e730f09de8f93",
+      "change": "Fix missing legacy scope initializer observed by native 84b compilation; preserve legacy registration JSON when no frozen binding exists."
+    },
+    {
+      "commit": "715500647308eed0c7d0058c333e43c79de1f2b2",
+      "change": "Freeze distinct source/successor prompt mapping in the real-model research driver and Rust task requests; retain research custody boundaries."
+    },
+    {
+      "commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "change": "Report new scoped checkpoint test worker panics without unwrap; runtime behavior unchanged."
+    },
+    {
+      "commit": "ca584b236a3086bff2db8160e0cf967c5bf78416",
+      "change": "Fix the 47959b native compile failure: move two added result fields outside the json! macro and insert them afterward, retaining the configured macro recursion bound."
+    },
+    {
+      "commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "change": "Optimize only matrix-sdk-store-encryption in the development profile, retaining the 5-second deadline, KDF parameters and tests. Controlled CPU diagnostic preceded the formal 8857 Matrix component pass."
+    },
+    {
+      "commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "change": "Fix E0063 found by native 8857: pin the original Root synthetic RequestV1 fixture to digest(\"evaluation\"), matching the shared generation-learning fixture. All seven request literals inspected; no default or weaker profile introduced."
+    }
+  ],
+  "executions": {
+    "exact_candidate_native": {
+      "status": "PASS_CONFIGURED_NATIVE_GATES",
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "host": "ai395",
+      "job_id": "1a1c03ab679-5e21-975",
+      "controller_record_state": "completed",
+      "durable_process_state": "succeeded",
+      "exit_code": 0,
+      "source_clean_and_unchanged_for_all_commands": true,
+      "result": {
+        "helper_build_exit_code": 0,
+        "eight_libraries": {
+          "passed": 1486,
+          "skipped": 70,
+          "slow": 1,
+          "nextest_test_seconds": 120.036,
+          "command_wall_seconds": 156.84691761317663
+        },
+        "matrix_sdk": {
+          "passed": 30,
+          "skipped": 2,
+          "nextest_test_seconds": 6.071,
+          "command_wall_seconds": 11.73312961612828,
+          "encrypted_restart_case_seconds": 5.123
+        },
+        "agentd_binaries_check_exit_code": 0
+      },
+      "report": "native-validation/README.md",
+      "summary": "native-validation/SUMMARY.json",
+      "manifest": "native-validation/MANIFEST.json",
+      "full_workspace_or_all_platform_CI_passed": false,
+      "actual_model_execution_claimed": false,
+      "actual_root_ignored_test_execution_claimed": false,
+      "ordinary_P0_proved": false,
+      "scientific_samples": 0
+    },
+    "earlier_84b_native_compile": {
+      "status": "FAILED_COMPILE",
+      "source_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "source_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "observed_error": "E0063: LearningIterationCheckpointOwnerV1 initializer missing scope in learning_iteration_checkpoint_ports_tests.rs",
+      "fix_commit": "f1548649c9e0a88fcd6e14d0a10e730f09de8f93",
+      "fix_recompiled_and_passed": true,
+      "fix_validation_source": "f070113bb61cda492d2668b3afbbcda13e11fa52"
+    },
+    "source_caller_closure": {
+      "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+      "source_commit": "a9c05cf352dac5a96f8f72248c25f34f80f7a5b3",
+      "source_tree": "136e9e44969734521270857708a9de211c7eae03",
+      "rust_files": 6166,
+      "boundaries": 181,
+      "protected_files": 164,
+      "authority_granted": false,
+      "receipt": "source-closure/receipt.json",
+      "manifest": "source-closure/MANIFEST.json",
+      "receipt_sha256": "23830ab35f24ceef5a1bb2bf5895a125b80a20b0ba80b302a0f04e704b97151f"
+    },
+    "targeted_source_guards": {
+      "source_commit": "f1548649c9e0a88fcd6e14d0a10e730f09de8f93",
+      "status": "PASS",
+      "root_learning_bootstrap_tests": 10,
+      "learning_checkpoint_tests": 6,
+      "evidence_scope": "Observed local unittest exits were 0; these are source-guard mutation tests, not native runtime or model executions."
+    },
+    "development_four_arm_comparison": {
+      "status": "DEVELOPMENT_TERMINAL_COMPARISON_COMPLETED_SCIENCE_HOLD",
+      "record": "development-comparison/CURRENT.json",
+      "report": "development-comparison/README.zh-CN.md",
+      "driver_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "driver_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "task_source_commit": "693a013b254d07779f6f2b2a78d0ee31481f4ea9",
+      "task_source_tree": "f06389aa4f5caf0af5fec419da6473e198796b24",
+      "arms": {
+        "no_update": {
+          "terminal": "proved",
+          "selected_document": "native-clippy-borrow",
+          "native_passed": 33,
+          "native_skipped": 0,
+          "training_updates_consumed": 0,
+          "wall_seconds": 40.60246179299429
+        },
+        "bm25": {
+          "terminal": "proved",
+          "selected_document": "native-clippy-borrow",
+          "native_passed": 33,
+          "native_skipped": 0,
+          "training_updates_consumed": 0,
+          "wall_seconds": 4.049970875028521
+        },
+        "fixed_expert": {
+          "terminal": "proved",
+          "selected_document": "native-clippy-borrow",
+          "native_passed": 33,
+          "native_skipped": 0,
+          "training_updates_consumed": 0,
+          "wall_seconds": 3.7638164800591767
+        },
+        "candidate": {
+          "terminal": "proved",
+          "selected_document": "native-clippy-borrow",
+          "native_passed": 33,
+          "native_skipped": 0,
+          "training_updates_consumed": 0,
+          "wall_seconds": 4.14436262997333
+        }
+      },
+      "independent_confirmation_tasks": 0,
+      "historical_source_families": 1,
+      "new_training_updates": 0,
+      "learning_gain_established": false,
+      "complete_cost_established": false,
+      "not_a_latency_comparison": true,
+      "production_adopted": false
+    },
+    "distinct_prompt_real_model_reexecution": {
+      "status": "PASS_REAL_MODEL_RESEARCH_COMPONENT_NO_UPDATE",
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "prompt_fix_commit": "715500647308eed0c7d0058c333e43c79de1f2b2",
+      "job_id": "1a1c0435e71-5e21-994",
+      "exit_code": 0,
+      "selected_passed": 1,
+      "selected_failed": 0,
+      "selected_skipped": 0,
+      "archive_filtered_skipped": 1555,
+      "nextest_test_seconds": 45.388,
+      "report": "actual-model-no-update/README.md",
+      "summary": "actual-model-no-update/SUMMARY.json",
+      "manifest": "actual-model-no-update/MANIFEST.json",
+      "native_result_sha256": "a93e720cceb5ee0a90d33c458627c7e7eb69b880262f4647caaf6c674e0e8a6b",
+      "actual_model_execution_attempts": 1,
+      "failed_preparation_before_execution": {
+        "operation": "001",
+        "reason": "nextest extract-to destination did not exist; archive creation completed but listing stopped before model execution",
+        "model_executed": false
+      },
+      "successful_preparation_operation": "002",
+      "frozen_prompt_profile": "distinct-source-next-v2",
+      "legacy_profile": "shared-next-prompt-v1 remains supported but does not qualify distinct source/next inputs",
+      "source_task": {
+        "comparison": "135 > 134",
+        "actual_output": "no",
+        "correct": false,
+        "actual_forward_calls": 1,
+        "input_sha256": "0e6247037b2885c4f09298b41ce7b4b5af7159b6cbd670155a978031664f7d9e"
+      },
+      "next_task": {
+        "comparison": "8517 > 8516",
+        "actual_output": "yes",
+        "correct": true,
+        "actual_forward_calls": 1,
+        "input_sha256": "bae2909d9687659d1c5f55865ab93c9f9bc4699c24fa90798c45d258fd38486d"
+      },
+      "task_prompt_content_distinct": true,
+      "evaluation": {
+        "actual_forward_calls": 8,
+        "parent_correct": 3,
+        "candidate_correct": 1,
+        "tasks_per_version": 4,
+        "independent_hidden_scientific_tasks": 0
+      },
+      "decision": "NoUpdate",
+      "real_new_candidate_adoption": false,
+      "selected_adapter": "e1a9ce940c9d4b04bb827490708604178d4e2391e7afd81a3ca63008389d1e53",
+      "selected_and_retained_artifact_sha256": "a946c2cd7073092e607fb5ee3fd9b2dc78053ba5dc3d357a0a27c273ebbf95e2",
+      "training": {
+        "recorded_train_events": 1,
+        "actual_optimizer_steps": 10,
+        "lora_tensors": 120,
+        "q_v_modules": 60,
+        "rank": 4,
+        "trainable_parameters": 230400,
+        "independent_training_invocations_before_after_counter": null,
+        "training_counter_note": "The complete journal contains one train action; the actual training receipt records ten optimizer steps. There is no independent before/after training-invocation counter; do not claim one.",
+        "base_freeze_evidence": [
+          "Pinned inherited runtime child inserts LoRA into candidate and trains candidate.",
+          "requires_grad selects only LoRA and AdamW filters trainable parameters.",
+          "Post-training in-memory backbone descriptor root is required to equal the original index_root.",
+          "All 67 observed source/model/config material pins are unchanged before and after execution."
+        ],
+        "direct_weight_edit_allowed_patch_targets": 2,
+        "direct_weight_edit_scope_note": "These two allowed_patch_targets belong to another training=false direct weight-edit worker port whose export requires zero gradient/optimizer steps. They are not a two-tensor mask for the LoRA training child.",
+        "native_cell_v2_tensor_mask": false,
+        "native_cell_v2_scope_note": "NativeCellV2 checks component and update-rule digests, not a tensor mask. This run establishes neither two-tensor learning nor parameter-V3 qualification, and the two direct-edit targets do not establish that the LoRA trainer violated its scope.",
+        "retained_only_external_owner": null,
+        "original_parameter_v3_qualified": false
+      },
+      "cold_recovery": {
+        "learning_owner_reopened": true,
+        "generation_owner_reopened": true,
+        "worker_process_restarted": true,
+        "native_fleet_lifecycle_recreated": true,
+        "native_daemon_os_restart": false,
+        "retained_output": "yes",
+        "worker_forward_calls_before": 1,
+        "worker_forward_calls_after": 1,
+        "worker_forward_call_delta": 0,
+        "reexecuted_after_recovery": false
+      },
+      "ordinary_objective_start_chain_proved": false,
+      "independent_actor_custody_proved": false,
+      "research_keys_and_custody": true,
+      "production_root_capability": false,
+      "production_activation": false,
+      "production_final_use": false,
+      "product_ope_qualified": false,
+      "note": "One operator controls the research role keys. This is actual model I/O through original native components under cfg(test), not ordinary product startup, independent evaluation custody, or useful-learning qualification. Prior shared-prompt runs are not retroactively upgraded.",
+      "input_bindings": "actual-model-no-update/INPUT_BINDINGS.json",
+      "scope_review": "actual-model-no-update/SCOPE_REVIEW.json",
+      "costs": "actual-model-no-update/COSTS.json",
+      "model_binding": {
+        "repository": "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+        "base_file_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+        "manifest_sha256": "6e6a76d478f28906566c1cc8db9ef767922b7a215c9f795da8d845e965c59f0c"
+      },
+      "config_binding": {
+        "sha256": "5538ff90dd712a270a59635f3e97b0fa155d5f9c46fc98a1ca7e736c238b4080",
+        "frozen_sha256": "be8cae248750cc7e1fcab83e371d09c154354b0c87bfaf24144a88acf3d0f5e0",
+        "evaluation_profile": "c6586b333d03aa5168e030083ade7659ff7e4c84c255b08c0784c768968e02f2",
+        "profile": "distinct-source-next-v2"
+      },
+      "data_binding": {
+        "training_rows": 4,
+        "evaluation_rows_per_version": 4,
+        "all_prior_tasks_and_outcomes_exposed": true,
+        "training_sha256": "37941edc1981a90fa95039fdbb9e01fff0017708c0bd88f21dc4d432f5e06c21",
+        "independent_evaluation": false
+      },
+      "state_protocol": {
+        "checkpoint_magic": "HEPLCP02",
+        "checkpoint_profile": 2,
+        "scope": "Cell",
+        "scope_binding": "1082284f9636576fa69fb2beb4b6299f31ca25b1c8062ee8db152c5489532fca",
+        "update_rule": "8a3bc0bc16e2cee85db9af67154f82316d587731486256678142e1dab9bc866f",
+        "initial_learning_head": "c561171d9f4e0a97e67440d92aecbab6fb522e9a58810e51cd502152022cd4c8",
+        "completed_learning_head": "69a6029fa1ab589ad5acd070f4f9add5f4c392ea931622e11c833d2837243a9c",
+        "selected_generation": 1
+      },
+      "outer_model_cost_observation": {
+        "wall_seconds": 46.179696910083294,
+        "child_cpu_seconds": 53.625113,
+        "child_peak_rss_kib": 3018300,
+        "training_and_test_costs_are_nested": true,
+        "energy_joules": null,
+        "money": null,
+        "simultaneous_process_tree_peak_rss": null,
+        "whole_workflow_cost_qualified": false
+      },
+      "prediction_mode": "conditional_binary",
+      "prediction_scope": "Actual forward with conditional logits for fixed yes/no labels; no free-form generation or cross-task-family transfer qualification."
+    },
+    "previous_47959b_native_compile": {
+      "status": "FAILED_COMPILE",
+      "source_commit": "47959b409c7d672fa0be1a17afb7c034bc87bed0",
+      "source_tree": "f07883603839fcabdc20f114c4ee0800e266fcb6",
+      "host": "ai395",
+      "materialization": "source-fresh",
+      "helper_build": "succeeded",
+      "observed_error": "json! macro recursion limit in neuron_generation_real_learning_tests.rs:1209",
+      "tests_executed": false,
+      "fix_commit": "ca584b236a3086bff2db8160e0cf967c5bf78416",
+      "fix_recompiled_and_passed": true,
+      "fix_validation_source": "f070113bb61cda492d2668b3afbbcda13e11fa52"
+    },
+    "combined_python_validation": {
+      "status": "PASS",
+      "source_commit": "8c1cf773d2e96c7f98ac3e09b544c5dbedb11a7e",
+      "source_tree": "93eda171c94d6d6cc738cffb70acb26137206461",
+      "tests_passed": 128,
+      "test_seconds": 7.529,
+      "wall_seconds": 7.7623192249993735,
+      "exit_code": 0,
+      "runtime_qa_scripts_unchanged_before_after": true,
+      "scientific_samples": 0,
+      "evidence": "python-validation/RESULT.json",
+      "note": "Includes development, stem-route, V8, joint config, Root/checkpoint source-closure and distinct task-input controls; not Rust native or actual-model execution."
+    },
+    "previous_8857_native": {
+      "status": "PARTIAL_FAILURE",
+      "source_commit": "8857d0f0b149a1aec7546c71803453c93a4aabb5",
+      "source_tree": "965c462e0b31f04d54d0905c43456eacbd74186b",
+      "host": "ai395",
+      "job_id": "1a1c024c77f-5e21-925",
+      "controller_exit_code": 1,
+      "helper_build": "succeeded",
+      "libraries": {
+        "exit_code": 101,
+        "status": "TEST_COMPILE_FAILED",
+        "tests_executed": false,
+        "observed_error": "E0063: authority_host_learning_test_support.rs LearningIterationRequestV1 literal missing evaluation_profile",
+        "fix_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+        "fix_validation_source": "f070113bb61cda492d2668b3afbbcda13e11fa52"
+      },
+      "matrix_sdk": {
+        "exit_code": 0,
+        "passed": 30,
+        "skipped": 2,
+        "nextest_test_seconds": 5.865,
+        "encrypted_restart_seconds": 4.906
+      },
+      "agentd_binaries": {
+        "exit_code": 101,
+        "status": "COMMAND_PATH_REJECTED_BEFORE_COMPILE",
+        "observed_error": "V8 wrapper changes cwd to codex-rs; --manifest-path codex-rs/Cargo.toml did not exist there.",
+        "tests_or_model_executed": false
+      },
+      "report": "native-validation/README.md",
+      "summary": "native-validation/SUMMARY.json",
+      "manifest": "native-validation/MANIFEST.json"
+    },
+    "actual_root_scoped_handoff": {
+      "status": "PASS_ACTUAL_ROOT_COMPONENT_ONLY",
+      "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "source_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "job_id": "1a1c04825b9-5e21-9aa",
+      "exit_code": 0,
+      "actual_euid": 0,
+      "selected_passed": 2,
+      "selected_failed": 0,
+      "selected_skipped": 0,
+      "archive_filtered_skipped": 852,
+      "archive_filtered_binaries": 7,
+      "nextest_test_seconds": 0.042,
+      "report": "actual-root-handoff/README.md",
+      "summary": "actual-root-handoff/SUMMARY.json",
+      "manifest": "actual-root-handoff/MANIFEST.json",
+      "same_root_process_storage_and_transport": true,
+      "fixture_metadata": true,
+      "independent_actor_custody": false,
+      "deployed_non_root_consumer": false,
+      "daemon_os_restart": false,
+      "ordinary_P0_proved": false
+    },
+    "terminal_maintenance": {
+      "status": "SCOPED_FIX_FORMAT_AND_STRICT_LINT_PASS",
+      "tested_runtime_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "tested_runtime_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "maintenance_commit": "dde0c36ef2b90af37f5cdafe7dca0c7572585b09",
+      "maintenance_tree": "19e7619d7b4df0f1ba645151ffb5844a53ad97d3",
+      "maintenance_patch_sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b",
+      "changed_files": 22,
+      "rust_files": 16,
+      "python_files": 6,
+      "python_ast_equivalent_to_f070": true,
+      "just_fix_exit_code": 0,
+      "just_fmt_exit_code": 0,
+      "strict_seven_package_clippy_exit_code": 0,
+      "post_maintenance_tests_run": false,
+      "report": "maintenance/README.md",
+      "summary": "maintenance/SUMMARY.json",
+      "application": "maintenance/APPLICATION.json",
+      "manifest": "maintenance/MANIFEST.json",
+      "scope_note": "Native, model and Root outcomes remain bound to clean f070. Maintenance was performed on a documented worktree delta and all 22 resulting file hashes match the local dde commit; strict lint is not test execution or a full remote CI result."
+    }
+  },
+  "original_m6_ci": {
+    "source_commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "source_tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "overall_green": false,
+    "blocking_ci": {
+      "run": 42565769736,
+      "conclusion": "cancelled",
+      "required_job": 129023003466,
+      "required_status": "failure",
+      "reported_needs": {
+        "bazel": "failure",
+        "repo_checks": "cancelled"
+      }
+    },
+    "cell_attempt_2": {
+      "run": 42565757710,
+      "conclusion": "failure",
+      "composition_job": 129013941011,
+      "scoped_passed": 7879,
+      "scoped_skipped": 104,
+      "workspace_passed": 20498,
+      "workspace_failed": 1,
+      "workspace_skipped": 134,
+      "failure": "codex-hepta-matrix-sdk::store_version_migration::encrypted_state_identity_session_and_queues_survive_restart: Initialization"
+    },
+    "architecture_original": {
+      "run": 42565769715,
+      "job": 128991823205,
+      "conclusion": "failure",
+      "cause": "HTTP 504 obtaining V8 before architecture native tests executed"
+    },
+    "architecture_one_targeted_retry": {
+      "attempt": 2,
+      "source_head_job": 129124162512,
+      "status_at_last_retained_observation": "COMPLETED_SOURCE_HEAD_AND_REQUIRED_GATE_SUCCESS",
+      "overall_pass_established": true,
+      "not_common_candidate_validation": true,
+      "source_head_conclusion": "success",
+      "base_merge_job": 129124164629,
+      "base_merge_conclusion": "success",
+      "base_merge_native_skipped": true,
+      "required_job": 129139973803,
+      "required_conclusion": "success",
+      "scope_note": "This establishes the original M6 Architecture retry only; original blocking CI and Cell full workspace remain non-green, and this is not final common-candidate validation."
+    },
+    "failure_classes": {
+      "artifact_environment": [
+        "V8 urllib HTTP 504",
+        "macOS ARM DotSlash HTTP 504",
+        "GNU hermetic dependency HTTP 504, with lock drift not established",
+        "Windows shard 1 bazel-lib HTTP 504 before smoke-header native execution"
+      ],
+      "source_or_fixture": [
+        "MUSL prompt actor StateLocked",
+        "macOS Circuit TempDir noncanonical fixture Invalid",
+        "Matrix encrypted restart Initialization"
+      ],
+      "other_unresolved": [
+        "Windows legacy sandbox FILE_DELETE_CHILD isolation refusal",
+        "Additional app-server/core/TUI/neuron/code-mode failures and cancelled repository checks"
+      ]
+    },
+    "narrow_repairs": [
+      {
+        "commit": "2cd2c890cad9b0912eb9f1e202042e2d39a8f04b",
+        "change": "Explicit prompt owner-drop unlock with retained-descriptor/successor-lock regression. Both agentd and prompt-registry owner-drop regressions passed and were checked in the original f070 JUnit; no post-maintenance test run is claimed for dde."
+      },
+      {
+        "commit": "cfae11bba5588740be9cfadb02631f18b1f4828c",
+        "change": "Canonicalize six fixture construction sites in five automation test modules; production canonical-path check retained."
+      },
+      {
+        "commit": "d301b2a387ff60c1f81c5ddd0e3e985e7f099aec",
+        "change": "At most three GET attempts for HTTP 502/503/504; 1/2-second backoff; other error, SHA256 and export checks retained.",
+        "local_python_tests_passed": 15
+      }
+    ],
+    "references": [
+      "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769736",
+      "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565757710",
+      "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42565769715/job/128991823205"
+    ],
+    "matrix_diagnostic": {
+      "status": "CONTROLLED_RESOURCE_AB_OBSERVED_NOT_COMMON_CANDIDATE_QUALIFICATION",
+      "base_commit": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+      "base_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+      "diagnostic_overlays_applied": true,
+      "matched_cpu_max": "50000 100000",
+      "original_debug": {
+        "outcome": "FAIL",
+        "test_seconds": 14.244,
+        "consumer_builder_milliseconds": 6236,
+        "observed_error": "Elapsed -> Initialization"
+      },
+      "store_encryption_opt3_only": {
+        "outcome": "PASS_DIAGNOSTIC_ONLY",
+        "test_seconds": 9.912,
+        "consumer_builder_milliseconds": 3861
+      },
+      "kdf_deadline_and_assertions_unchanged": true,
+      "optimized_diagnostic_raw_log_sha256": "243f92b84a8af8d8c8c74597c1eed072c579e36367dbbc3a755a2b547f257e85",
+      "optimized_diagnostic_raw_log_bytes": 15163,
+      "exact_common_candidate_qualification": false
+    },
+    "evidence_report": "ci-forensics/README.md",
+    "evidence_manifest": "ci-forensics/MANIFEST.json",
+    "matrix_component_qualified_on_8857": true,
+    "matrix_fix_qualification_scope": "Formal Matrix SDK suite passed on both 8857 and f070 (30 passed / 2 skipped each). The configured four common-source native gates passed on f070. Original M6 CI and full workspace/all-platform gates are separate.",
+    "matrix_fix_qualified_on_common_native": true
+  },
+  "full_P0": {
+    "status": "NOT_ESTABLISHED",
+    "required_chain": "Ordinary authenticated task -> actual result -> learning or protocol NoUpdate -> different ordinary task consumes the selected version -> original-owner cold recovery confirms the same history.",
+    "code_gaps": [
+      "Concrete non-test ordinary invocation/input provider and actual Feature V1 inference control/readback assembly.",
+      "Concrete ordinary LearningIterationStageOwnerPortsV1 assembly with original stage observations, trust and recovery.",
+      "Original selection/CURRENT publication and distinct ordinary NextUse assembly."
+    ],
+    "material_gaps": [
+      "Original deployed Root writer/protected checkpoint capability and valid process lifetime; the newly created Root test store is synthetic qualification custody, not that deployment.",
+      "Actual ordinary AuthBus trust/replay checkpoint/objective profile, original task/source frontier, fixed model material and selected CURRENT for the intended task family.",
+      "Original authorized stage signer/readback owners and authentic generator/evaluator/selector/observer controller mapping; ResearchTrust is controlled by one operator.",
+      "Original selection/FinalUse and rollback-independent witness material for the intended CURRENT and next task; a public profile, digest or copied research receipt cannot create it."
+    ],
+    "material_check_scope": "Read-only inspection of already observed SmolLM preparation/current and original config, environment, test admission, model manifest and frozen plan. No deployed learning trust/owner descriptor was supplied; no private keys were inspected or printed.",
+    "fail_closed_preserved": [
+      "Original Root checkpoint capability without concrete stage owners refuses startup.",
+      "Claimed operation with missing/partial checkpoint is readback-only; absence is not proof of no effect and cannot authorize automatic replay.",
+      "Protocol NoUpdate retains training/evaluation/selection/NextUse requirements and actor separation.",
+      "Same-operator research role keys cannot be promoted to independent production authority."
+    ],
+    "legitimate_future_order": "Complete the ordinary source task first. Freeze/register its exact actual completed-task receipt with the original owner, then recover the durable outbox from original Objective and Automation journals. Do not predict a future completion hash or rerun the source task.",
+    "code_handoff": [
+      {
+        "area": "Ordinary ObjectiveStart invocation and result publication",
+        "existing": [
+          {
+            "file": "codex-rs/hepta-agentd/src/state_circuit_task.rs",
+            "symbol": "AgentdCircuitTaskInvocationProviderV1::{build,publish_result}; AgentdState::execute_circuit_task_record",
+            "kind": "production trait and ingress implementation"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/config_circuit_task.rs",
+            "symbol": "AgentdConfig::with_circuit_task_bootstrap",
+            "kind": "production embedding seam"
+          }
+        ],
+        "test_only": [
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+            "symbol": "Invocation",
+            "kind": "the only concrete in-repository invocation provider"
+          }
+        ],
+        "missing_product_work": "Implement the host-owned stable task mapping and idempotent durable result publisher, then supply the real owner/bootstrap at ordinary startup. The repository ordinary binary never calls with_circuit_task_bootstrap."
+      },
+      {
+        "area": "Durable semantic input and actual Circuit inference",
+        "existing": [
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_task.rs",
+            "symbol": "CircuitTaskInputProviderV1::resolve",
+            "kind": "production trait with Prepare/Readback contract"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_task_runtime.rs",
+            "symbol": "circuit_task_channel_v1",
+            "kind": "requires actual NeuronInferenceControlPort + CellInferenceReadbackPortV1, CellInputEncoderV1 and original CellStateOwnerV1"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_cell_representation_encoder.rs",
+            "symbol": "CircuitCellRepresentationEncoderV1",
+            "kind": "non-test encoder already exists"
+          }
+        ],
+        "test_only": [
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_task_ingress_tests.rs",
+            "symbol": "Inputs",
+            "kind": "fixture input provider"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+            "symbol": "Inputs",
+            "kind": "fixture input provider"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/circuit_cell_test_support.rs",
+            "symbol": "Encoder; Model",
+            "kind": "fixed Q24 vectors and constructed receipts"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_process.rs",
+            "symbol": "ProcessControl: CellGenerationControlPortV2",
+            "kind": "actual research model I/O, under cfg(test), interface differs from Circuit Feature V1"
+          }
+        ],
+        "missing_product_work": "Bind actual task bytes/frontier/clock/masks before dispatch, reopen the original input record on retry, and assemble actual Feature V1 execution plus durable inference readback. Do not replace those ports with fixed fixture outputs or pretend the Generation V2 research port is interchangeable."
+      },
+      {
+        "area": "Original learning stage owner assembly",
+        "existing": [
+          {
+            "file": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+            "symbol": "LearningIterationStageOwnerPortsV1::{validate_recovery,execute_stage,prepare_proposal,receipt_attestation}",
+            "kind": "production owner obligations"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports.rs",
+            "symbol": "CheckpointedIterationPorts; with_stage_owners",
+            "kind": "production protected checkpoint adapter"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+            "symbol": "AgentdConfig::with_root_learning_stage_owners",
+            "kind": "production Root capability + owner + verifier seam"
+          }
+        ],
+        "test_only": [
+          {
+            "file": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+            "symbol": "StageOwners",
+            "kind": "the only concrete in-repository StageOwnerPorts implementation"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+            "symbol": "ResearchPorts: LearningIterationOwnerPortsV1",
+            "kind": "research-only full-port assembly, not production StageOwnerPorts"
+          }
+        ],
+        "missing_product_work": "Implement the non-test original stage owners for experience/dataset/training/evaluation/proposal/selection/next-use, real attestation and read-only recovery. Assemble them with the received Root checkpoint and pinned evidence trust; no product caller of with_root_learning_stage_owners exists."
+      },
+      {
+        "area": "Original CURRENT publication and different ordinary next-task consumption",
+        "existing": [
+          {
+            "file": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+            "symbol": "prepare_agentd_generation_same_model_task_v1; PreparedAgentdGenerationUpdateV1::publish",
+            "kind": "non-test guarded publication APIs exist"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/neuron_generation_update_learning.rs",
+            "symbol": "ReadyAgentdGenerationUpdateV1::{read_learning_selection,read_learning_next_use}",
+            "kind": "non-test observations from the original published owner exist"
+          }
+        ],
+        "test_only": [
+          {
+            "file": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+            "symbol": "ResearchPorts::observe Selection/NextUse and cold_reopen",
+            "kind": "actual-model research composition consumes these original APIs"
+          }
+        ],
+        "missing_product_work": "Provide the production caller that binds the actual learning decision and signed selection to original CURRENT, schedules a content-distinct ordinary task through its admitted owner, and returns original committed NextUse receipts. Existing publication/readback APIs do not themselves install that ordinary composition."
+      },
+      {
+        "area": "Normal binary assembly and startup refusal",
+        "existing": [
+          {
+            "file": "codex-rs/hepta-agentd/src/main.rs",
+            "symbol": "main -> AgentdProductionStartup::receive -> AgentdProductionLaunch::run",
+            "kind": "ordinary binary sequence"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/production_launcher.rs",
+            "symbol": "AgentdProductionStartup::receive; AgentdProductionLaunch::run",
+            "kind": "retains original Root learning inputs, then requires complete assembly"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+            "symbol": "AgentdConfig::require_root_learning_assembled",
+            "kind": "refuses retained Root capability without actual stage owners"
+          },
+          {
+            "file": "codex-rs/hepta-agentd/src/runtime.rs",
+            "symbol": "run_with_shutdown",
+            "kind": "also requires complete Root learning assembly, governed plasticity owner, and Circuit task profile"
+          }
+        ],
+        "test_only": [],
+        "missing_product_work": "Add the explicit admitted host composition/factory before launch.run to supply the ordinary task bootstrap, actual stage owners and verifier. The current shipped main has no such caller, so providing a learning handoff alone reaches the fail-closed startup error."
+      }
+    ],
+    "code_inspection_scope": "In-repository ordinary binary and Rust implementations inspected at f070; later maintenance changes fixtures/lint/formatting and adds no product composition. External downstream embeddings are not inferred.",
+    "claim_window_status": "Existing deliver/reconcile worker preserves a durable claim as readback-only. Missing/partial backend checkpoint remains CommitUncertain, not proof of no work. A future resumable admission protocol needs original-owner durable admission/fencing or verifiable not-started evidence; this was not implemented by changing replay behavior."
+  },
+  "scientific_qualification": {
+    "P1": {
+      "status": "HOLD",
+      "prior_pred_seeds": 16,
+      "prior_pred_fits": 114,
+      "prior_pred_net_gain": 0.01093896,
+      "required_gain": 0.02,
+      "one_sided_p": 0.08126831,
+      "alpha": 0.05,
+      "prior_confirmation_rerun": false,
+      "new_independent_confirmation_tasks": 0,
+      "new_research_model_outcome": "One actual LoRA train event / ten optimizer steps; candidate 1/4 vs parent 3/4, protocol NoUpdate. Same-operator exposed research tasks, not independent scientific confirmation."
+    },
+    "P2": {
+      "status": "HOLD",
+      "required_attribution": [
+        "Cell differentiation versus monolith/fixed experts",
+        "NDU versus fixed/greedy/MPC/trained router",
+        "HCSN versus GRU/CfC/SSM/attention"
+      ],
+      "matched_data_training_search_inference_and_resource_budgets_established": false
+    },
+    "P3": {
+      "status": "HOLD",
+      "historical_fixed_score_per_operation": "33/33",
+      "historical_dynamic_score_per_operation": "33/33",
+      "historical_training_steps": 0,
+      "organization_advantage_established": false,
+      "complete_search_migration_drain_cold_start_retraining_failure_rollback_cost_established": false
+    },
+    "P4": {
+      "status": "HOLD",
+      "historical_lineages": 3,
+      "historical_runs": 12,
+      "historical_attempts": 72,
+      "qualified": 0,
+      "unresolved": 12,
+      "unresolved_is_algorithm_failure_count": false,
+      "successor_advantage_established": false
+    },
+    "review": "development-comparison/P1_P4_REVIEW.json",
+    "confirmation_admitted": false,
+    "organization_evolution_admitted": false,
+    "improver_evolution_admitted": false,
+    "production_adopted": false
+  },
+  "common_candidate_ci": {
+    "source_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "cell_native": {
+      "run_id": 42615233826,
+      "status": "STRICT_LINT_FAILED_BEFORE_NATIVE_SUITES",
+      "mechanisms_job": 129153342070,
+      "composition_job": 129153342282,
+      "affected_native_suites_executed": false,
+      "actor_recovery_job": 129153342283,
+      "actor_recovery_conclusion": "success",
+      "mechanisms_failure": "clippy::type_complexity in outcome_credit_preflight_tests.rs",
+      "composition_failure": "clippy::duplicate_mod for learning_iteration_checkpoint_test_support.rs"
+    },
+    "architecture": {
+      "run_id": 42615372442,
+      "status_at_last_observation": "SOURCE_HEAD_IN_PROGRESS_BASE_MERGE_SUCCESS",
+      "terminal_result_recorded": false,
+      "source_head_step": "Compiled service lifecycle and actual process restart",
+      "base_merge_conclusion": "success",
+      "source_head_job": 129153810392,
+      "base_merge_job": 129153810121
+    },
+    "blocking_ci": {
+      "run_id": 42615372714,
+      "status_at_last_observation": "KNOWN_FAILED_JOBS_OTHER_JOBS_NOT_FULLY_TERMINAL",
+      "terminal_result_recorded": false,
+      "known_failed_jobs": [
+        {
+          "job": 129159652068,
+          "name": "build-test",
+          "observed_step": "formatting",
+          "conclusion": "failure",
+          "cause_classification": "Six Python formatting paths and 72 Rust hunks across 11 Rust files; all covered by dde in retained read-only diff review, not a remote rerun."
+        },
+        {
+          "job": 129159652206,
+          "name": "cargo-deny",
+          "observed_step": "Run cargo-deny",
+          "conclusion": "failure",
+          "actual_failure_cause_observed": false,
+          "cause_classification": "UNKNOWN. Original job failure is observed; log retrieval did not yield its body. Connector retrieval failure and bounded GET timeout do not establish the CI failure cause."
+        },
+        {
+          "job": 129159652631,
+          "name": "Windows Bazel shard 3/4",
+          "conclusion": "failure",
+          "actual_native_tests_executed": true,
+          "v8_failure": false,
+          "failed_targets": [
+            "hepta-agentd",
+            "hepta-neuron",
+            "tui"
+          ],
+          "bazel_target_counts": {
+            "passed": 99,
+            "failed": 3,
+            "skipped": 45,
+            "executed": 46,
+            "total": 147
+          },
+          "distinct_failed_cases": 27,
+          "also_failed_in_original_m6_same_shard": 25,
+          "other_two_new_credit_cases": "Both stop at unchanged service-fixture construction with the same Windows lock code 33. This does not establish a new runtime regression.",
+          "cause_classification": [
+            "Windows file-lock code 33",
+            "Circuit fixtures Invalid/PermissionDenied",
+            "Perception fixture contains CR byte 13",
+            "TUI extended path-prefix assertion"
+          ]
+        },
+        {
+          "job": 129159652726,
+          "name": "Windows Bazel shard 1/4",
+          "conclusion": "failure",
+          "actual_native_tests_executed": true,
+          "v8_failure": false,
+          "failed_targets": [
+            "exec-server"
+          ],
+          "bazel_target_counts": {
+            "passed": 92,
+            "failed": 1,
+            "skipped": 51,
+            "executed": 40,
+            "total": 144
+          },
+          "cause_classification": "Legacy Windows sandbox refuses ambient parent FILE_DELETE_CHILD deletion boundary; same error observed in original M6. core resume-context cleanup timeout was finally recorded FLAKY, not an additional failed target."
+        }
+      ],
+      "observed_build_test_and_windows_checkout_commit": "9498ada2adfa88f5562d9e91acab3dad480fcb3d",
+      "synthetic_merge_parents_description": "Merge f070113bb61cda492d2668b3afbbcda13e11fa52 into original M6 885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+      "checkout_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+      "synthetic_merge_tree_equals_pr_head_tree": true
+    },
+    "all_ci_green": false,
+    "scope_note": "Local clean-f070 native/model/Root runs are separate. Blocking synthetic merge 9498 has the same tree as f070. Later dde maintenance addresses retained lint/format diagnostics with local strict lint, but no post-maintenance test or remote CI outcome is claimed. Known Windows native failures and unknown cargo-deny cause remain recorded.",
+    "evidence": "maintenance/SUMMARY.json",
+    "windows_private": {
+      "run_id": 42615372441,
+      "conclusion": "failure",
+      "cause_classification": "Same 72 Rust formatter hunks as build-test; retained dde postimages match them. No remote rerun claimed.",
+      "observed_checkout_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+      "job": 129153808326,
+      "failed_step": "Enforce source-level Rust formatting for durable owners",
+      "native_suite_executed": false
+    },
+    "source_role": "Pull request head; observed blocking jobs checkout the separately recorded GitHub synthetic merge.",
+    "latest_retained_snapshot_recorded_at_utc": "2026-11-09T12:59:43.396949+00:00",
+    "latest_observation_report": "ci-observation-f070-20261109/README.md",
+    "latest_observation_summary": "ci-observation-f070-20261109/SUMMARY.json",
+    "latest_observation_manifest": "ci-observation-f070-20261109/MANIFEST.json"
+  },
+  "evidence_commits": {
+    "native_source_closure_and_python_records": "186d936d349a7d59b7d3493cb31fcebbf5ba00af",
+    "python_original_logs": "bf46dbd4178fef3b5e2c571477b214528f129bbd",
+    "actual_root": "5776843360db475aee67e44a46defa251da1546b",
+    "maintenance_records": "40adc9474e1f8366839ee45fd93391c164e21a7a",
+    "actual_model": "899db004b26503c7e4ea0fa1434b5beb0bc128f6",
+    "latest_ci_observation": "a597680c74e0676ff10d35cbf628200fd79d8029"
+  },
+  "last_evidence_commit_before_report": "a597680c74e0676ff10d35cbf628200fd79d8029"
+}

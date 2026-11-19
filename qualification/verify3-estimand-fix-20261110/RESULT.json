@@ -1,0 +1,57 @@
+{
+  "base_commit": "a5694833dee37aeebf44f2d8c2053b10b649bf52",
+  "expected_regression_failures_before": 2,
+  "full_repository_checks_complete": false,
+  "new_real_task_trials": 0,
+  "new_regressions": 2,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "production_authority": "NONE",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "python_ast_equivalence": true,
+  "records": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "experiments.verification_cell_verify1.test_matched_qualification",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/40a1a085876c/matched-fix/baseline",
+      "elapsed_seconds": 0.07875553399935598,
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "log_sha256": "3a1c97c91437a42f9f7efd28eb93362325293d43cd484f07233365bca4ac253f",
+      "name": "before-regressions",
+      "started_at_utc": "2026-11-10T06:49:59.724616+00:00"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "experiments/verification_cell_verify1",
+        "-t",
+        ".",
+        "-v"
+      ],
+      "cwd": "/workspace/scratch/40a1a085876c/matched-fix",
+      "elapsed_seconds": 7.08566561599946,
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "log_sha256": "0afff41413f6e468a1cbdc66db1ec4bd894fb0d658c78a420a93ec9684218f7b",
+      "name": "after-full-package",
+      "started_at_utc": "2026-11-10T06:49:59.803415+00:00"
+    }
+  ],
+  "schema": "hepta.verify.matched-estimand-fix.v1",
+  "scientific_admission": "HOLD",
+  "tests_passed_after": 169,
+  "tests_rerun_after_formatting": false,
+  "tests_run_before": 11,
+  "tests_skipped_after": 0
+}

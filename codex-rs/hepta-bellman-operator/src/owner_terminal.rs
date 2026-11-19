@@ -40,6 +40,20 @@ pub struct TerminalCellProfileV1 {
     pub minimum_samples_per_action: usize,
 }
 
+/// Fits only explicitly supported actions while retaining the complete
+/// admitted candidate grammar. Every observed decision must select a fitted
+/// action; this profile never drops inconvenient observed outcomes.
+#[derive(Clone, Debug)]
+pub struct TerminalSupportedCellProfileV1 {
+    pub cells: TerminalCellProfileV1,
+    pub candidate_ids: Vec<StableId>,
+}
+
+enum CandidateCoverage {
+    Complete,
+    ObservedSubset(Vec<StableId>),
+}
+
 #[derive(Clone, Debug)]
 pub struct FrozenTerminalCellV1 {
     plan: TabularOperatorPlanV1,
@@ -76,7 +90,34 @@ impl From<ProductionLedgerError> for TerminalCellError {
 pub fn freeze_terminal_cell_from_owner_v1(
     owner: &LedgerWriter,
     dataset: &DatasetSnapshotReceiptV3,
+    profile: TerminalCellProfileV1,
+    now: u64,
+) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    freeze_terminal_cells(owner, dataset, profile, CandidateCoverage::Complete, now)
+}
+
+/// An unobserved candidate (including reserved abstain) receives no cell and
+/// no prediction. The original V1 entry point keeps its full-coverage contract.
+pub fn freeze_supported_terminal_cells_from_owner_v1(
+    owner: &LedgerWriter,
+    dataset: &DatasetSnapshotReceiptV3,
+    profile: TerminalSupportedCellProfileV1,
+    now: u64,
+) -> Result<FrozenTerminalCellV1, TerminalCellError> {
+    freeze_terminal_cells(
+        owner,
+        dataset,
+        profile.cells,
+        CandidateCoverage::ObservedSubset(profile.candidate_ids),
+        now,
+    )
+}
+
+fn freeze_terminal_cells(
+    owner: &LedgerWriter,
+    dataset: &DatasetSnapshotReceiptV3,
     mut profile: TerminalCellProfileV1,
+    coverage: CandidateCoverage,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
     owner.revalidate_dataset_snapshot(dataset, now)?;
@@ -95,6 +136,25 @@ pub fn freeze_terminal_cell_from_owner_v1(
     profile.action_ids.sort();
     if profile.action_ids.windows(2).any(|pair| pair[0] == pair[1]) {
         return Err(TerminalCellError::Unsupported("duplicate action"));
+    }
+    let supported_subset = matches!(coverage, CandidateCoverage::ObservedSubset(_));
+    let mut candidate_ids = match coverage {
+        CandidateCoverage::Complete => profile.action_ids.clone(),
+        CandidateCoverage::ObservedSubset(ids) => ids,
+    };
+    candidate_ids.sort();
+    if candidate_ids.is_empty()
+        || candidate_ids.len() > 128
+        || candidate_ids.windows(2).any(|pair| pair[0] == pair[1])
+        || !candidate_ids.iter().any(|id| id.as_str() == "abstain")
+        || !profile
+            .action_ids
+            .iter()
+            .all(|id| candidate_ids.contains(id))
+    {
+        return Err(TerminalCellError::Unsupported(
+            "candidate grammar/fitted subset",
+        ));
     }
     let frozen: BTreeSet<_> = dataset
         .snapshot
@@ -116,7 +176,8 @@ pub fn freeze_terminal_cell_from_owner_v1(
                 actions.sort();
                 if value.objective_digest != profile.objective_digest
                     || value.run_snapshot_digest != profile.run_snapshot_digest
-                    || actions != profile.action_ids
+                    || actions != candidate_ids
+                    || !profile.action_ids.contains(&value.selected_candidate_id)
                 {
                     return Err(TerminalCellError::Unsupported(
                         "heterogeneous state/objective/action set",
@@ -174,7 +235,31 @@ pub fn freeze_terminal_cell_from_owner_v1(
             evidence_digest,
         });
     }
-    let mut bytes = b"hepta.terminal-cell.profile.v1\0".to_vec();
+    if supported_subset {
+        for action in &profile.action_ids {
+            if samples
+                .iter()
+                .filter(|sample| &sample.action_id == action)
+                .count()
+                < profile.minimum_samples_per_action
+            {
+                return Err(TerminalCellError::Unsupported(
+                    "insufficient owner action support",
+                ));
+            }
+        }
+    }
+    let mut bytes = if supported_subset {
+        let mut bytes = b"hepta.terminal-cell.supported-profile.v1\0".to_vec();
+        bytes.extend_from_slice(&(candidate_ids.len() as u64).to_be_bytes());
+        for id in &candidate_ids {
+            bytes.extend_from_slice(&(id.as_str().len() as u64).to_be_bytes());
+            bytes.extend_from_slice(id.as_str().as_bytes());
+        }
+        bytes
+    } else {
+        b"hepta.terminal-cell.profile.v1\0".to_vec()
+    };
     bytes.extend_from_slice(profile.run_snapshot_digest.as_array());
     bytes.extend_from_slice(profile.unit_profile_digest.as_array());
     bytes.extend_from_slice(&(profile.minimum_samples_per_action as u64).to_be_bytes());

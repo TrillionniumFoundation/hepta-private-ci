@@ -11,6 +11,7 @@ use codex_protocol::mcp::ResourceTemplate as McpResourceTemplate;
 use codex_protocol::mcp::Tool as McpTool;
 use serde::Deserialize;
 use serde::Serialize;
+use serde_json::Number as JsonNumber;
 use serde_json::Value as JsonValue;
 use std::collections::BTreeMap;
 
@@ -449,6 +450,7 @@ where
     if let Some(object) = value.as_object_mut() {
         for key in ["minimum", "maximum", "default"] {
             if let Some(value) = object.get_mut(key)
+                && value.is_f64()
                 && let Some(number) = value.as_f64()
                 && number.fract() == 0.0
                 && number >= i64::MIN as f64
@@ -519,14 +521,14 @@ pub struct McpElicitationNumberSchema {
     #[ts(optional)]
     pub description: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub minimum: Option<f64>,
+    #[ts(optional, type = "number")]
+    pub minimum: Option<JsonNumber>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub maximum: Option<f64>,
+    #[ts(optional, type = "number")]
+    pub maximum: Option<JsonNumber>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub default: Option<f64>,
+    #[ts(optional, type = "number")]
+    pub default: Option<JsonNumber>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, JsonSchema, TS)]
@@ -846,3 +848,7 @@ impl From<rmcp::model::ElicitResult> for McpServerElicitationRequestResponse {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "mcp_integer_tests.rs"]
+mod mcp_integer_tests;

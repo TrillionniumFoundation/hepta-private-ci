@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.p0.E.delivery-manifest.v1",
+  "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "run_id": 42937198717,
+  "run_attempt": 1,
+  "job_id": 130250073525,
+  "artifact_id": 13821310445,
+  "maximum_blob_bytes": 512000,
+  "files": {
+    "API_CAPTURE.json.gz": {
+      "bytes": 3339,
+      "sha256": "52a1536acd6388d78b7b709f4b40ecfea45c4ee7f7c231d9aff013d8b2c52fa5"
+    },
+    "ARTIFACT_INDEX.json": {
+      "bytes": 22128,
+      "sha256": "7cdf74646c2ae6621ab4541bc498cb33de91beac8bb27f24db164fc62de339f4"
+    },
+    "CI_EVIDENCE.json": {
+      "bytes": 24221,
+      "sha256": "cf8bd8cc9a13cd8513c54a839aa5d9de08ccac1e05d9270dd4afc7a0b91e1337"
+    },
+    "RAW_ARTIFACT_RECORDS.zip": {
+      "bytes": 290392,
+      "sha256": "24e0645b2635d820c8cae5448e2fe4bed05914e7a912fd72c2a9acb74df00409"
+    },
+    "RESULTS.md": {
+      "bytes": 8263,
+      "sha256": "97042c2ebcac7579efd1983aa65708df01732c8e13e250a349322d4968d84306"
+    },
+    "job-130250073525.log.gz": {
+      "bytes": 402156,
+      "sha256": "17b98578644814d8b6e9571dd1e6de1b077dfc4cb29510445fe8b0465f87c844"
+    },
+    "verify_archive.py": {
+      "bytes": 7198,
+      "sha256": "16da30d0a8f1a4a101bb3822a7f6a00ab222caed62c5b2952947bbd62c6ed554"
+    }
+  },
+  "self_hash": "Excluded from its own file hash map to avoid a circular hash; supplied in the handoff.",
+  "original_artifact_included": false,
+  "original_artifact_retained_path": "/workspace/scratch/f7c0ded86bcc/p0-ci-audit/daemon-6ecfa504-native-13821310445.zip",
+  "original_artifact_bytes": 6952389,
+  "original_artifact_sha256": "c6563259135e25853ae98f7a45a25d5d06abf6204dd1a6206bdf23e9f1edc947",
+  "intentionally_omitted_members": [
+    "checkout.files.json.gz",
+    "before-tests.files.json.gz",
+    "after-tests.files.json.gz",
+    "after-maintenance.files.json.gz",
+    "after-bins.files.json.gz",
+    "final.files.json.gz"
+  ],
+  "omitted_inventories_actually_full_decompressed_and_byte_compared": true,
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0
+}

@@ -1,0 +1,146 @@
+{
+  "schema": "root-consolidation-checkpoint-proof-v3",
+  "source_anchor": "7b718db56f941d779f53d94cb9177fe8b0eae090",
+  "source_tree": "46b6d43c409bdd6aa46e49282f98c2fa6495e5b0",
+  "published_base": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+  "retained_original_heads": 1796,
+  "pending_original_heads": 5434,
+  "protected_snapshot": "2026-11-16T18:09:40.087789Z",
+  "protected_head_count": 87,
+  "main_unchanged": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "archive": {
+    "bytes": 754262,
+    "sha256": "68a7839ae8d127cc8436eacbce33c0079b16fd1921c394a1fd60452b035c5ed4",
+    "git_blob": "6726c1e57c405c6ccf546b19e99df32fd5866684"
+  },
+  "parts": [
+    {
+      "path": "root-records.tar.gz.part-0000",
+      "offset": 0,
+      "bytes": 480000,
+      "sha256": "5f8ed67e4fe112d8848a47de7b104c61b3b9fed7521a7bac8fee05f03c239606",
+      "git_blob": "67175d225d7f1197b46bab6d7b973b1a12e39444"
+    },
+    {
+      "path": "root-records.tar.gz.part-0001",
+      "offset": 480000,
+      "bytes": 274262,
+      "sha256": "eb79caeb40601c92b9ed270328cc9b576fca9b0a77c2c9c7bdbdcce70e1062fc",
+      "git_blob": "a47d0cd6191f4cc096c51e6d4a5758dc104a783b"
+    }
+  ],
+  "members": [
+    {
+      "path": "audit/root-checkpoint-20261116T1745-v1/server-chain-and-resolution.json",
+      "bytes": 18393,
+      "sha256": "71d62b3fa512e28c42b8e157e2cbd95d6e3536fbaa4bf70a2758c29f8ed95db3",
+      "git_blob": "80f1968ff7a608e80ccb00b44676b8984c076792"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1745-v1/CURRENT.draft-v1.md",
+      "bytes": 12318,
+      "sha256": "d93e49d10dd6ca13f7036da5cf811873b98a85b6eaefbedad2e416263552429a",
+      "git_blob": "1cffcd2211805ae3dadb99581ea2ab3e28e2c34d"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/CURRENT.draft-v2.md",
+      "bytes": 15089,
+      "sha256": "fa02fe2e8b8e035e3230b98c4078e37e5d581fc9462f89afdd6e28def206b3ef",
+      "git_blob": "986eaf79f8ddb5818bf8c471dd6311f9d8a5a0d3"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/metadata.draft-v2.json",
+      "bytes": 51375,
+      "sha256": "44aade7b488f4dc3d14b088d0c1dd4a424f77040d2853d2a0b129f1f9a6a1fa6",
+      "git_blob": "f2075584ec88d26a3ab4f15e32eac8246dc85c78"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/CURRENT.draft-v3.md",
+      "bytes": 16894,
+      "sha256": "3c11f112aa1d2bff7922010235ebadc3ae964dea206d69ade482467561d11a56",
+      "git_blob": "94028a26d2b560ccb9ea2b37e4db6a6f326c5935"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/metadata.draft-v3.json",
+      "bytes": 84801,
+      "sha256": "4588e5e2835beac048da5d65cc298440d768ec0831201d74821aee3e69456675",
+      "git_blob": "4e6cf306d4beefab3d2da0ecdb2cef9bf871d017"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/local-tree-verifier.py",
+      "bytes": 2758,
+      "sha256": "c87650eb73ac436c837ec58979fc45cc75733ee804d8db87223a7894afe8db46",
+      "git_blob": "b4d8acccb73deff3acb59ea04f414768f9c7769c"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/controls/check_blob_size.py",
+      "bytes": 7356,
+      "sha256": "604555c77b0af6e267d0b50408e48b8c2e8a55eba8edb219d9562661edea5979",
+      "git_blob": "1627511aaf298126141f96517e2a243908174351"
+    },
+    {
+      "path": "audit/root-checkpoint-20261116T1825-v2/controls/blob-size-allowlist.txt",
+      "bytes": 54567,
+      "sha256": "878652af7fc8ac66308b787a931cdb2840525a3248d60a8a9e850bbf3104b33e",
+      "git_blob": "dd0524aa0d704a9231d6db0ba38fc4d8a50e7736"
+    },
+    {
+      "path": "audit/root-ownedfd-current-merge-v1/root-resolution-proof.json",
+      "bytes": 4209,
+      "sha256": "734ffeff041ec8c371038dc4a35d2bd6481b6918419f17ff75d905b7eb947323",
+      "git_blob": "b471e32578fa287e6da99b3765a5f3e6a6305525"
+    },
+    {
+      "path": "audit/root-reviewed-evidence-63-v1/verified-tree-plan.json",
+      "bytes": 24804,
+      "sha256": "241795f2436d15c1633d502f700e10ce4a628d60b11a807c59a96912012d79c4",
+      "git_blob": "c901e3a824f26149696bbf769ee3ec4d7de85715"
+    },
+    {
+      "path": "audit/root-fresh1809-evidence-tree-v1/verified-tree-plan.json",
+      "bytes": 7498,
+      "sha256": "c6d85f6fdae4eabe955379f6c0623126279785bc1adeb90242341ebf389fb30c",
+      "git_blob": "5432001ebb65f81b4ddcff62b0169539cd337a23"
+    },
+    {
+      "path": "audit/root-matrix-v3-source-tree-v1/verified-tree-plan.json",
+      "bytes": 4737,
+      "sha256": "3cc35560bfa6e9834c3c957874d87df4c345277df46c5e071778a9648adcd561",
+      "git_blob": "46b8f59e94a4c277ae137b4faa452eebdcad8006"
+    },
+    {
+      "path": "audit/root-darwin4-source-tree-v1/verified-tree-plan.json",
+      "bytes": 2151,
+      "sha256": "8044ade1221ff1a18a6e4979c927de7fe45a2bfaccce0a9c22ba524e63ade321",
+      "git_blob": "a6c007afac9df27d0bfe68b6969819edbf4b5f41"
+    },
+    {
+      "path": "audit/root-cache-recovery-20261116T1803/receipt.json",
+      "bytes": 716,
+      "sha256": "06030ba6fd1bab8ed1aed741e1075aadf059b6b2ba598fcbc272fb8f73201366",
+      "git_blob": "e7616c017d3a6ca5242230622cdca0fc69c9f2cb"
+    },
+    {
+      "path": "audit/root-cache-recovery-20261116T1803/inventory.json.gz",
+      "bytes": 672549,
+      "sha256": "61c5cd53317cbfcce0e83501cd50b44d30c040f44d7866b4f30447bb74da71ce",
+      "git_blob": "534504652cdbd55a8c4d5203be407768d47d50fd"
+    }
+  ],
+  "previous_current": {
+    "compressed": {
+      "bytes": 3963,
+      "sha256": "1c36eface21d180c27a29d2dcc62acfa60d5bf2a08bceffe26748dc23aae3884",
+      "git_blob": "7e4480e46b0432a5dd24abe413a12a317fad3a5c"
+    },
+    "original": {
+      "bytes": 10180,
+      "sha256": "cb69a95be2cb17771316cd26c6a415fe1a7a3d5309cb782da2a8e73ce83bba4f",
+      "git_blob": "6fa858417caf99639a892dc640bd56c5342ca22a"
+    }
+  },
+  "all_member_bytes_round_trip_verified": true,
+  "source_or_remote_refs_modified_by_packaging": false,
+  "gate_state": "This receipt records the exact package bytes. Final combined-tree policy checks and the ref publication result are recorded after execution.",
+  "restore": "Verify each part, concatenate by offset, verify the complete gzip archive, decompress in memory, and verify every listed member before any optional create-only restoration outside the checkout. Archived programs need not execute."
+}

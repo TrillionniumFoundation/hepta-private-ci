@@ -1,0 +1,110 @@
+{
+  "base": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "incoming": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "status": "EXACT_POSTIMAGES_REVIEWED_PENDING_GENUINE_MERGE_TREE",
+  "files": [
+    {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "current_git_blob": "2ae870a73cd03b31d4cca27f8cb9cdf53bd1c956",
+      "resolved_git_blob": "dc5376c16cb822ed961e1207628142b1f438edcb",
+      "bytes": 22097,
+      "sha256": "09b3e231890649dc6254ab61198d19ce0149b7ca5d9c1ddb053b4f8fa288ba5e",
+      "reason": "Preserve every current path trigger, source/event lane, gate, evidence manifest and required outcome; add incoming SciPy runtime and independent neural study; repair install-2.8/assert-2.10 contradiction to exact installed 2.8."
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "current_git_blob": "7aed12ad2f7a28e7ae25d742c285893baba1e0e2",
+      "resolved_git_blob": "43101886f21b9b5a032c98c0a550f59b70e96f3d",
+      "bytes": 54143,
+      "sha256": "2cb3dd544f6d7c150dcb2e7fdb6d25ea56323907567a7221bcb62c94f6f765b6",
+      "reason": "Preserve current reviewed source PINS and canonical lock fingerprint, original negative observations and production refusal gates; update only exact child_trace.py hash for LOCALAPPDATA fix."
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.py",
+      "current_git_blob": "3d543f15c82ee2dc04e9cd5d2e09e2ea5cadf1a5",
+      "resolved_git_blob": "de4c48119ac204dbafc729aeeceb66503f5c17a7",
+      "bytes": 14936,
+      "sha256": "f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8",
+      "reason": "Accept incoming explicit nonempty absolute NUL-free LOCALAPPDATA in diagnostic child environment; no ACL or admission change; remove unused sys import."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "current_git_blob": "0f7d7c373e5e9012c9ca763ff56d5bc473996861",
+      "resolved_git_blob": "7e165401a2dcffb9d310c6543f0337e99c5bb202",
+      "bytes": 16746,
+      "sha256": "685df7f06c962b7eb08443323544f5473969af4d192038b704a09a71ad87d0d9",
+      "reason": "Accept new three-variant inherited request deadline mutation regression; current manifest already protects all three exact source guards."
+    }
+  ],
+  "static_checks": [
+    {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "yaml_parsed": true,
+      "only_allowed_step_bodies_changed": true,
+      "changed_steps": [
+        {
+          "job": "cpu-qualification",
+          "step": "runtime"
+        },
+        {
+          "job": "cpu-qualification",
+          "step": "qvi"
+        }
+      ]
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "yaml_parsed": true,
+      "only_allowed_step_bodies_changed": true,
+      "changed_steps": [
+        {
+          "job": "appcontainer-mechanism",
+          "step": "Trace actual primary-token Win32 errors in separate owned fixtures"
+        }
+      ]
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.py",
+      "python_ast_parse": true
+    },
+    {
+      "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "python_ast_parse": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "python_ast_parse": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "python_ast_parse": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "python_ast_parse": true
+    }
+  ],
+  "diagnostic_source_pins": [
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/probe.py",
+      "sha256": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
+      "matches": true
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/win32_api.py",
+      "sha256": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+      "matches": true
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.c",
+      "sha256": "717521474cef3d5f49cb6170bfb9ab6cc6fd96430cccbf69263bed0f59bc22a8",
+      "matches": true
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.py",
+      "sha256": "f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8",
+      "matches": true
+    }
+  ],
+  "all_other_incoming_paths_require_genuine_merge_preview": true
+}

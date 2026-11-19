@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "amends": "65d53858d81cf9280d4e9d46477338325fbaa798",
+  "kind": "exact_registry_semantics_correction",
+  "source_changes": [],
+  "checker_changes": [],
+  "reason": "The unchanged official _verify_boundary excludes the entire definition_path from product_callers. Both new capability methods are called by real convenience wrappers in their own definition file. Those calls remain source-protected by the exact required_function_order entries, and are not listed as external product callers.",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "checker_condition": "if relative == boundary.definition_path or _is_ignored(relative, ignored_fragments): continue",
+  "boundary_amendments": [
+    {
+      "id": "production_retained_q24_capability_receive",
+      "old_section": "[[boundary]]\nid = \"production_retained_q24_capability_receive\"\nsymbol = \"AgentdProductionStartup::receive_q24_learning_with_retained_capability\"\nreceiver_type = \"AgentdProductionStartup\"\ndefinition_path = \"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"\ndefinition_markers = [\"fn receive_q24_learning_with_retained_capability(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"]\ncaller_markers = []\n",
+      "new_section": "[[boundary]]\nid = \"production_retained_q24_capability_receive\"\nsymbol = \"AgentdProductionStartup::receive_q24_learning_with_retained_capability\"\nreceiver_type = \"AgentdProductionStartup\"\ndefinition_path = \"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"\ndefinition_markers = [\"fn receive_q24_learning_with_retained_capability(\"]\nproduct_callers = []\ncaller_markers = []\n"
+    },
+    {
+      "id": "production_retained_q24_capability_assemble",
+      "old_section": "[[boundary]]\nid = \"production_retained_q24_capability_assemble\"\nsymbol = \"AgentdProductionLaunch::assemble_q24_learning_with_retained_capability\"\nreceiver_type = \"AgentdProductionLaunch\"\ndefinition_path = \"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"\ndefinition_markers = [\"fn assemble_q24_learning_with_retained_capability(\"]\nproduct_callers = [\"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"]\ncaller_markers = []\n",
+      "new_section": "[[boundary]]\nid = \"production_retained_q24_capability_assemble\"\nsymbol = \"AgentdProductionLaunch::assemble_q24_learning_with_retained_capability\"\nreceiver_type = \"AgentdProductionLaunch\"\ndefinition_path = \"codex-rs/hepta-agentd/src/production_q24_retained_learning.rs\"\ndefinition_markers = [\"fn assemble_q24_learning_with_retained_capability(\"]\nproduct_callers = []\ncaller_markers = []\n"
+    }
+  ],
+  "scope": "Only the two newly added rows are corrected. All production calls, ownership checks, drop(producer), and within-function guards remain unchanged.",
+  "qualified": false
+}

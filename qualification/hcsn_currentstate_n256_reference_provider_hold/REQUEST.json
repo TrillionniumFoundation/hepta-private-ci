@@ -1,0 +1,46 @@
+{
+  "schema": "hcsn-n256-reference-provider-feasibility-hold-v1",
+  "identity": "hcsn-n256-reference-provider-feasibility-20261114-c06d-001",
+  "base_commit": "78bd463156f40a1853d8bedbc2d00e1e2d6ee539",
+  "parent_draft": 6313,
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2",
+  "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+  "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+  "comparator_source_sha256": "d20bfd4ae57e783d506a571e9a9ecb1deed836a8abbafa6e870f2879595972cf",
+  "reference_interface_source_sha256": "2c870cf7b530726a525f32ebee6a3efd0894ca24f7ce958238a0527d35a03783",
+  "coordinate_denominator": 18225028,
+  "capsules": 14,
+  "lane_capsules": {
+    "warm": 8,
+    "coarse": 3,
+    "cold": 3
+  },
+  "method_status": "NOT_SCIENTIFICALLY_ADMITTED",
+  "existing_lanes_share_scipy_expm_multiply": true,
+  "reference_provider_source_sha256": null,
+  "reference_provider_admission_sha256": null,
+  "numerical_execution_allowed": false,
+  "numerical_idempotency_key": null,
+  "scientific_blockers": [
+    "candidate and frozen oracle both use scipy.sparse.linalg.expm_multiply",
+    "no independently reviewed generator and packet reconstruction exists",
+    "no certified Poisson-tail or equivalent error bound exists for signed content",
+    "no stiffness bound covers every published roster operator and segment",
+    "no independent proof covers permanent upper escape, deterministic delay, reset, discounted hit, and occupation",
+    "no safe cost, allocation, calendar, runtime, host, or ancestor-cgroup envelope exists"
+  ],
+  "preserved_history": {
+    "red_6295": true,
+    "red_unknown_6302": true,
+    "red_joint_hold_6303": true
+  },
+  "forbidden_in_this_source_attempt": [
+    "reference-provider, candidate, oracle, serializer, dynamic, or matrix-exponential numerical call",
+    "numerical idempotency-key allocation or use",
+    "threshold change, Torch, backward, optimizer, training, or production adoption"
+  ],
+  "largegrid_qualification": false,
+  "global_HOLD": true,
+  "all_closed": false
+}

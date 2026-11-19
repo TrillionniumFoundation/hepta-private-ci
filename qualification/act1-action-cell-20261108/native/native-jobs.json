@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.act1.native-job-links.v1",
+  "host": "rog",
+  "jobs": [
+    {
+      "job_id": "1a1baaf9318-12894-1c84",
+      "idempotency_key": "act1-not-found-red-gate-20261108-r1",
+      "receipt": "staging-preflight.json"
+    },
+    {
+      "job_id": "1a1bab200e5-12894-1c99",
+      "idempotency_key": "act1-not-found-red-gate-20261108-r2",
+      "receipt": "red-not-found/receipt.json"
+    },
+    {
+      "job_id": "1a1bab584d0-12894-1cbd",
+      "idempotency_key": "act1-native-green-20261108-r1",
+      "receipt": "green-r1/receipt.json"
+    },
+    {
+      "job_id": "1a1bab74ee9-12894-1ccc",
+      "idempotency_key": "act1-native-green-20261108-r2",
+      "receipt": "green-r2/receipt.json"
+    },
+    {
+      "job_id": "1a1babed035-12894-1ce6",
+      "idempotency_key": "act1-native-green-20261108-r3",
+      "receipt": "green-r3/receipt.json"
+    },
+    {
+      "job_id": "1a1bac9d7b9-12894-1d47",
+      "idempotency_key": "act1-native-green-20261108-r4",
+      "receipt": "green-r4/receipt.json"
+    },
+    {
+      "job_id": "1a1babfa099-12894-1cec",
+      "idempotency_key": "act1-native-maintenance-20261108-r1",
+      "receipt": "maintenance-r1/receipt.json"
+    },
+    {
+      "job_id": "1a1bac3702d-12894-1d08",
+      "idempotency_key": "act1-native-format-collect-20261108-r2",
+      "receipt": "format-r2/receipt.json"
+    },
+    {
+      "job_id": "1a1bacaeb3d-12894-1d4e",
+      "idempotency_key": "act1-native-maintenance-20261108-r2",
+      "receipt": "maintenance-r2/receipt.json"
+    }
+  ]
+}

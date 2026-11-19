@@ -14,7 +14,7 @@ changing the map. Hand-written sections below explain semantics but do not
 override these machine status facts.
 
 - Product caller: `agentd_process_bootstrap_and_named_learning_producer_source_composed_self_iteration_trigger_not_product_composed_or_target_host_qualified`
-- Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_plus_final_use_runtime_topology_executor_source_implemented_target_host_unproved`
+- Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_public_runtime_topology_DENY_ALL_pending_single_durable_control_lifecycle_owner`
 - Production implementation: `false`
 - Product execution proved: `false`
 - Independent acceptance: `false`
@@ -29,6 +29,8 @@ override these machine status facts.
 | `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
 | `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
+| `plan_cell_split_v1` | `source_implemented_proposal_only_independent_roles_and_fail_closed_guardrails` | `codex-rs/hepta-plasticity/src/cell_split.rs` | 5 |
+| `verify_cell_split_v1` | `source_implemented_deterministic_reconstruction_and_deny_all_validation` | `codex-rs/hepta-plasticity/src/cell_split.rs` | 1 |
 | `durableproposalregistry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 2 |
 | `authenticated_product_composition` | `adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 6 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
@@ -47,25 +49,61 @@ override these machine status facts.
 | `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
 | `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 | `authenticated_structural_canary_observation` | `source_implemented_observer_signature_binds_exact_plan_and_observation_no_topology_apply_authority` | `codex-rs/hepta-intelligence/src/topology_canary_product.rs` | 1 |
-| `runtime_topology_execution` | `source_implemented_external_final_use_exact_handoff_migration_owner_and_live_cns_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 3 |
-| `runtime_topology_recovery` | `source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
-| `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_with_migration_forced_stopped_host_fault_distinct_recovery_final_use_with_migration_rollforward_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `runtime_topology_execution` | `source_implemented_public_DENY_ALL_before_grant_consumption_or_callbacks_pending_control_lifecycle_owner` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `runtime_topology_recovery` | `source_implemented_public_DENY_ALL_before_grant_consumption_or_callbacks_pending_control_lifecycle_owner` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `runtime_private_topology_execution` | `private_process_local_final_use_exact_handoff_migration_and_cns_replacement_no_public_lifecycle_admission` | `codex-rs/hepta-runtime/src/organs.rs` | 3 |
+| `runtime_private_topology_recovery` | `private_process_local_final_use_exact_handoff_and_stopped_host_forward_recovery_no_public_lifecycle_admission` | `codex-rs/hepta-runtime/src/organs.rs` | 1 |
+| `runtime_structural_canary_fault_rollback` | `private_process_local_canary_with_signed_observer_fixture_public_lifecycle_DENY_ALL_no_target_host_qualification` | `codex-rs/hepta-runtime/src/organs.rs` | 1 |
 
 ### Repository-controlled gaps
 
+- Implement the single durable Control Cell lifecycle owner with mandatory phase capabilities, durable CNS CAS/readback, generation fences, independently retained revocation/recovery floors and native receipts before enabling public topology apply or recovery; current public admission remains DENY_ALL.
 - Compose a real non-test control.engineering/self-iteration coordinator that submits frozen, independently evaluated next-generation parameter/topology requests through AgentdLearningPlasticityProducerV1; the repository now has process bootstrap, the named producer and lifetime E2E, but IterationEnvelopeV1 still has no production caller.
-- Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification and the live-runtime structural-canary regression for this final source/document head.
-- Execute exact unified-candidate descriptor recovery, proposal lifetime and independent live-topology canary tests.
+- Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification, Lane F qualification, public lifecycle refusal regressions and private process-local structural-canary controls for this final source/document head.
+- Execute exact unified-candidate descriptor recovery and proposal lifetime tests; run independent target-host topology canaries only after the mandatory Control lifecycle owner is implemented and qualified.
 
 ### External evidence gates
 
 - independent semantic and security review
 - target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry
 - operator acceptance and incident-recovery exercise
-- target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary; the repository now contains a live-runtime source qualification but not deployment evidence
+- target-host topology application with production telemetry and a forced-fault rollback/reconciliation canary after mandatory Control lifecycle admission is implemented; private process-local source controls are not deployment evidence
 - promotion, activation and release
 
 <!-- END GENERATED IMPLEMENTATION STATUS -->
+
+## Cell framework source candidate, 2026-11-05
+
+The refactor adds a non-test, explicitly bootstrapped Agentd iteration worker in
+`hepta-agentd/src/learning_iteration*.rs`. It consumes `IterationEnvelopeV1`,
+checks the frozen principal/agent/cell/run scope, verifies complete owner
+observations with the existing pinned learning-evidence verifier, and submits
+qualified proposals through `AgentdLearningPlasticityProducerV1`. Candidate
+selection and next-task use are observations of their existing owners. A next-use
+receipt must identify a different run in the same principal/agent/cell and bind
+the selected bundle, committed state, step and state-cutover receipts.
+
+A separate `terminal_learning_channel_v1` profile now directly calls the real
+ledger dataset-freeze and terminal-value fit owners after current Memory Replay
+permission checks. It returns actual tabular payload and source lineage. Its
+bounded job cache is limited to one owner lifetime; it neither supplies a generic
+model-bundle conversion nor proves cross-restart exactly-once or adoption.
+
+This is an opt-in source composition. It does not supply a generic production
+dataset/trainer/selector adapter, durable iteration checkpoint owner, ordinary
+task completion trigger, or production activation. Mandatory host ports remain
+explicit and must not be replaced by in-memory qualification fixtures. The
+generated status above retains the broader unclosed production-composition gate;
+it is not a native verification receipt for this source addition.
+
+The immutable compatibility bundle and sealed state-cutover plan are in
+`hepta-learning-artifacts/src/cell_bundle.rs`. State preservation, explicit reset
+and migration are distinct operations. Parameter/component lineage and the exact
+principal/agent/cell/run partition are bound to owner readback. Public structural
+lifecycle admission remains held while its physical owner and independent
+observation chain are unqualified. See
+[the candidate qualification boundary](../../../qualification/cell-framework-20261105/README.md).
+
 
 ## Status matrix
 
@@ -98,10 +136,12 @@ override these machine status facts.
 | Named Agentd topology submission | **Implemented through the same state-held producer/long-lived owner; target-host execution still unproved** | `AgentdLearningPlasticityProducerV1::submit_topology` → `AgentdState::submit_topology_plasticity_v1` |
 | Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Authenticated structural-canary observation | **Implemented source boundary; every safety/lineage/rollback/health assertion is Observer-signed before state transition** | `observe_authenticated_structural_canary_v1` in `hepta-intelligence` |
-| Topology application / migration / writer handoff execution | **Implemented in the external runtime owner; plasticity itself remains proposal-only** | `codex-hepta-runtime::HeptaRuntime::apply_governed_topology` requires exact governed handoff + plan-bound `RuntimeTopologyMigrationOwnerV1` + single-use `FinalUseAuthority` |
+| Public topology application / migration / writer handoff entry | **DENY_ALL pending the single durable Control lifecycle owner** | `HeptaRuntime::apply_governed_topology` returns `CellLifecycleAdmissionUnavailable` before grant consumption or migration-owner callbacks |
+| Public topology recovery entry | **DENY_ALL under the same mandatory admission** | `HeptaRuntime::recover_governed_topology` refuses before grant consumption or recovery callbacks, including a stopped current host |
+| Private topology apply / recovery mechanics | **Implemented process-local controls; no public lifecycle activation** | private `RuntimeOrgans` validates the governed handoff, exact migration plan and FinalUse binding before CNS replacement or forward recovery |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
-| Live-runtime forced-fault rollback canary | **Repository source qualification implemented; target-host evidence still external** | actual CNS cutover → forced stopped-host fault → separately authorized recovery generation → Observer-signed canary receipt |
+| Private runtime forced-fault rollback canary | **Process-local regression fixture; no public or target-host lifecycle qualification** | private `RuntimeOrgans` cutover → stopped-host fault → separately authorized forward recovery → Observer-signed fixture receipt |
 | Host deployment qualification and canary | **External evidence required** | no source-only claim |
 
 ## Dependency placement
@@ -118,6 +158,7 @@ proposal crate, and that distinction is intentional and now explicit:
 | selected self-iteration coordinator | **Not product-composed yet.** A future non-test `control.engineering`/self-iteration caller must submit already frozen and independently evaluated next-generation requests through `AgentdLearningPlasticityProducerV1`; turn/automation paths must not synthesize this trigger |
 | selected host / learning owner | `AgentdLearningPlasticityProducerV1` exposes the bounded parameter/topology submission boundary; the long-lived owner MUST read current `learning.artifacts` and qualification/evidence frontiers, resolve every dataset/update/modulator/eligibility/mutation-policy/per-parameter evidence digest through `PlasticityOwnerEvidenceResolverV1`, and verify short-lived trusted Observer/Evaluator evidence before durable append |
 | selected host rollback domain | MUST implement `PlasticityAnchorCommitterV1` and monotonic writer-fence issuance outside the registry rollback domain |
+| Control Cell lifecycle owner | **Not implemented as the complete mandatory durable owner.** Public topology apply and recovery remain DENY_ALL; the Agentd proposal owner and private runtime mechanics do not supply this execution authority |
 
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
 host is now a long-lived `PlasticityRuntimeOwnerV1` supervised by the real Agentd
@@ -240,9 +281,32 @@ Topology V2 creates typed Add/Remove/Replace/Split/Merge/Rewire/Retire proposals
 change carries migration, rollback, writer-handoff and evidence digests and is emitted
 as one bounded structural update candidate plus the no-change candidate. The
 `codex-hepta-plasticity` crate itself remains proposal-only and has no apply authority.
-The external `codex-hepta-runtime` owner now exposes FinalUse-gated healthy apply and
-separately authorized stopped/quarantined recovery transitions that revalidate the exact
-governed handoff/migration plan before replacing the live CNS generation.
+Both public `HeptaRuntime::apply_governed_topology` and
+`HeptaRuntime::recover_governed_topology` first call
+`require_control_lifecycle_admission_v1`. The shared admission currently returns
+`CellLifecycleAdmissionUnavailable` unconditionally. Public execution therefore remains
+**DENY_ALL**, including recovery of a stopped host, before consuming a FinalUse grant,
+reading the state adapter or invoking migration-owner snapshot, migration or rollback
+callbacks. A valid grant, signed proposal or caller-provided Control role label cannot
+enable the missing lifecycle owner. Read-only topology snapshots remain available.
+
+The private `RuntimeOrgans` implementation retains its process-local apply and recovery
+mechanics. It still validates the exact governed handoff and migration plan, claims the
+bound FinalUse grant and enters migration through `with_verified_use` before replacing
+the CNS generation. Its containing module and `HeptaRuntime` field are private; the
+crate-private methods are not an alternative public lifecycle entry. Internal positive,
+revocation and handoff tests exercise these controls separately from public refusal.
+The missing admission in the earlier diagnostic candidate was a lifecycle refusal gap,
+not evidence that arbitrary callers could bypass these underlying authorization checks.
+
+The implementation map records the public refusal tests and private controls as separate
+operations. Source test identities are not passing test receipts. Its source-navigation
+anchor is code commit `43e79c9965816e43a6c339a3a291ab97153a92b8`, tree
+`e90cd3495c47033d6fab7f5dc9de8b5e1e735f7b`; `sourceObjects` binds the mapped paths to
+that composition. The retained `sourceObservationRebind` record is historical. Prior
+qualification, including the records at
+[`7ed5734a7545e2809f9c8e3014bd14f0eafdd80c`](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/7ed5734a7545e2809f9c8e3014bd14f0eafdd80c/qualification/cell-owner-20261105),
+keeps its original source identity and does not establish a pass for this composition.
 
 The structural-canary source controller is constructed through a durable-bound builder that
 reads the governed proposal and original append receipt from `DurableTopologyProposalRegistryV1`
@@ -261,20 +325,28 @@ digest plus sequence, health/evidence digests, regression count, safety violatio
 lineage mismatch and rollback-verification result. The host-owned
 `LearningEvidenceVerifierV1` must authenticate an `Observer` before the observation is
 forwarded to the controller. This removes caller-authored booleans from the plasticity product trust boundary. The
-repository qualification now composes this Observer-authenticated receipt with the
-external runtime owner for a source-level live cutover, forced stopped-host fault and
-separately authorized recovery generation. That proves repository composition only;
-target-host telemetry, rollback-domain independence and operator evidence remain external.
+private runtime canary fixture composes this Observer-authenticated receipt with
+`RuntimeOrgans` for a process-local CNS cutover, forced stopped-host fault and separately
+authorized recovery generation. It does not enter the public lifecycle methods or
+satisfy their mandatory admission. Its source and historical results establish no
+current public or physical lifecycle qualification; target-host telemetry,
+rollback-domain independence and operator evidence remain required.
 
 ## Remaining external and composition gates
 
-The named `AgentdLearningPlasticityProducerV1` now drives both `AgentdState::submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` in source, the lifetime E2E enters through that producer for both durable proposal classes, and the Agentd binary can reconstruct its owner from an explicit process bootstrap descriptor. This closes the Agentd-side caller/owner seam, but it does **not** close the upstream product trigger: `IterationEnvelopeV1` and the current `control.engineering` implementation still have no non-test production coordinator that invokes this producer after frozen independent evaluation. The repository now contains a long-lived Agentd plasticity owner that calls the
+The named `AgentdLearningPlasticityProducerV1` now drives both `AgentdState::submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` in source, the lifetime E2E enters through that producer for both durable proposal classes, and the Agentd binary can reconstruct its owner from an explicit process bootstrap descriptor. This closes the Agentd-side caller/owner seam. The new explicit iteration worker can invoke that producer after frozen, authenticated independent evaluation, but the ordinary `control.engineering` task trigger and generic production provider/checkpoint composition remain unclosed. The optional worker does not turn source availability into production execution evidence. The repository now contains a long-lived Agentd plasticity owner that calls the
 parameter/topology host entrypoints, supplies current owner frontiers and retains
 independent anchor/fence seams. Dataset and immutable Policy owner adapters are concrete; NDU owns current modulator projections, neuron.runtime owns eligibility checkpoints, broadcast policy binds the low-dimensional mapping, and exact ParameterSignal evidence recomputes the consumed numeric values. These source adapters still require the selected target host to open the corresponding authoritative owner stores. The registry/anchor fault fixtures prove that a retained
 external acknowledgement rejects a rolled-back proposal file, but only a target host
 can prove that the journal and registry are physically placed in independent rollback
-domains. Remaining gates are deployment/execution evidence rather than permission to
-weaken those boundaries:
+domains. The single durable Control Cell lifecycle owner remains a repository-controlled
+implementation gap. It must bind mandatory phase capabilities to durable CNS CAS/readback,
+generation fences, independently retained recovery/revocation floors and native receipts;
+unknown outcomes must remain unresolved across restart instead of admitting another
+effect. Cognitive remains read-only, Learning proposes candidates, Control owns
+authorization and commit, and Evidence appends receipts and supplies independent verdicts.
+The current public refusal cannot be removed on the strength of process-local fixtures.
+After that implementation is composed, deployment and execution still require
 independent semantic/security review, target-host qualification, operator recovery
 exercise, target-host structural-canary execution with production telemetry and operator evidence, activation, promotion and release. Those
 states must stay false until their own evidence exists. CI receipts must refer to the

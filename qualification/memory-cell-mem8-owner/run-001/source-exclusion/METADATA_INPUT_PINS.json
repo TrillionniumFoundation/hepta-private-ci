@@ -1,0 +1,166 @@
+{
+  "external_archives": {
+    "mem5": {
+      "bytes": 151823,
+      "git_blob": "bcc64c39e6a39a2a61c9f46e4f90fec3d332f8c1",
+      "recovery": "Original fetched bytes were rehashed in JavaScript after environment loss; only PLAN.json and REQUEST.json were inflated and matched their prior SHA256.",
+      "ref": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "repository_path": "qualification/memory-cell-mem5-selection/run-001/audit-core-5fa0d0e.zip",
+      "sha256": "86f6969925d6471f7f580586d26621f23c81d7429b7aa483d4a67a526b2d5782"
+    },
+    "mem6": {
+      "archive_commit": "b66d74d4a61b15f3d9e1eb3b5ddfa251777ee4c1",
+      "bytes": 61412948,
+      "file": "mem6-cas-001.tar.xz",
+      "manifest_bytes": 2508400,
+      "manifest_sha256": "3c7799846836a18b6a5470e03cda92919ede2fcf76c8ee9ede20ae0e945ce336",
+      "sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+      "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+      "verification_before_environment_loss": "Full local archive SHA and selected CAS metadata bytes were verified; optional audit --mem6-archive repeats that check."
+    }
+  },
+  "files": [
+    {
+      "bytes": 58248,
+      "git_blob": "e7c94c3558d3a17bc9c8fbb42cf955de3ce0b207",
+      "path": "HOST_INVENTORY.stdout.json",
+      "sha256": "e7c0e282168dc4ad02b3f4ed49b8d25393cf98b285039d8b3daf19d83d9a6ae5"
+    },
+    {
+      "bytes": 9940,
+      "git_blob": "b62b89584dd61ff47cdb15cd6a67a83b2deaabda",
+      "path": "HOST_START.json",
+      "sha256": "a598aec98c326b7acca5bf1395c10b73676122c534dafacafbb76d51778ea7e6"
+    },
+    {
+      "bytes": 734,
+      "git_blob": "989720becaa30541ebdd3d0a04c7c1e3031ffe21",
+      "path": "HOST_STATUS.json",
+      "sha256": "ff772b90642e5cc820169f6945ed35789d4ca2177a557cd1fd0f17f1a2a31400"
+    },
+    {
+      "bytes": 180901,
+      "git_blob": "2c2a31e552ab160e00d2bde969b550aea9b604bd",
+      "path": "HOST_READ_RANGES.json",
+      "sha256": "1f77ae39ca5fa0aa3199a12e499ff9a4226910e8102c19bcea9da7f40742a804"
+    },
+    {
+      "bytes": 8459,
+      "git_blob": "f70d86af23e8114682d2291078208d9e127cd103",
+      "path": "read_pinned_source_inventory.py",
+      "sha256": "70f8c5644a2020d2c59c2558d9de338d63806c72c9390798c2dd6748e53c7056"
+    },
+    {
+      "bytes": 215053,
+      "git_blob": "544c4efdaeea1787031f86f00334e2f322b74917",
+      "path": "inputs/mem5/PLAN.json",
+      "sha256": "e33050d4b01484f8b820730117ed57659476e9e1e922ffdd43673dee7a081f9d"
+    },
+    {
+      "bytes": 16563,
+      "git_blob": "54c6c5661a72e0e4f3b62882c839307adb4d4e2d",
+      "path": "inputs/mem5/REQUEST.json",
+      "sha256": "cdedbb2f6703be222db1996f6ac76d89e7c6d539dcbb479486f91261d0e875ce"
+    },
+    {
+      "bytes": 1894,
+      "git_blob": "03bcc89d7388f57d45fdd3264bf4bde454925526",
+      "path": "inputs/MODEL.json",
+      "sha256": "af6472c557e63404548c3291635dc9a10229da63971a160986839f4b09f57f9f"
+    },
+    {
+      "bytes": 2831,
+      "git_blob": "178c260235c7f1de781f67f51b11e4e788c86846",
+      "path": "inputs/PREPARE_RECEIPT.json",
+      "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+    },
+    {
+      "bytes": 8788,
+      "git_blob": "9960cbf41a4f53781fc34862191250e43f37dbf3",
+      "path": "inputs/launch.py",
+      "sha256": "35a5906b50e1371d82272468fbc184b06cb24d46e87b15cb81266fe36e1850de"
+    },
+    {
+      "bytes": 18908,
+      "git_blob": "0c75fdd642fc7eab4b41fa0daf4024cfc5965847",
+      "path": "inputs/cell-causal/selected-sources.json",
+      "sha256": "0a8054ceb0a5874caa89d6b871083752e61688be5da0f47fc513bed2dd965f2b"
+    },
+    {
+      "bytes": 20647,
+      "git_blob": "5cceaffc6bf23aae3f148b05a64ebe40d4ae2778",
+      "path": "inputs/cell-causal/PILOT_PLAN.json",
+      "sha256": "0c8622ac6cac3d3b0257bdae84f363c215fc8511a02b74677133584f4ef8eff7"
+    },
+    {
+      "bytes": 1478,
+      "git_blob": "a403f0b9866d9d5ac9689b4f85686b2e05978ab8",
+      "path": "inputs/cell-causal/EVALUATION_RESULT.json",
+      "sha256": "a85da401d28ea6a97ff63d5104ad522166a82203a97f058fcde63a5d8c6d5fd1"
+    },
+    {
+      "bytes": 9401,
+      "git_blob": "bb5d35b3efd69c283bdc22cdfb50bd7b415a81b2",
+      "path": "inputs/cell-causal/COLLECTION_DESIGN.json",
+      "sha256": "aba4b57a562131f719a650bbf185440490afe6a5227f3bbe9a77fb99617a88dc"
+    },
+    {
+      "bytes": 7952,
+      "git_blob": "f04af2740a3c779cfd49aa194eb38b5b22537e55",
+      "path": "inputs/protocol/ACCEPTANCE.json",
+      "sha256": "d77624e729b02213eec9bc808b94ee27c839a66883d63ede3455a3ca4f6f14ea"
+    },
+    {
+      "bytes": 13112,
+      "git_blob": "e62dc1cb7898915d1add9492110eb50e72edb51c",
+      "path": "inputs/protocol/PROTOCOL.md",
+      "sha256": "8744514f3bfb1e1117ecfa8f13f5850a64aa350c831b382114a5ba6982abff92"
+    },
+    {
+      "bytes": 30353,
+      "git_blob": "c63f0fab1d44ab02324e9396c8cda0ff129e3246",
+      "path": "inputs/protocol/run_candidate_retention.py",
+      "sha256": "df1c96861f8ae0c28be0ec28339ca21d8ffcfade411753ae50c58aae14a5e6ef"
+    }
+  ],
+  "mem6_logical_metadata": [
+    {
+      "bytes": 329633,
+      "path": "freeze-retention/PLAN.json",
+      "sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53"
+    },
+    {
+      "bytes": 217644,
+      "path": "freeze-selector/PLAN.json",
+      "sha256": "0ddd9e67a302e57bb2b565f978230b1413bcd1c56f6cc21365f106552b592194"
+    },
+    {
+      "bytes": 18346,
+      "path": "retention-request.json",
+      "sha256": "93ceb3d22077f4c7b10dc8d8850b868d8a70c8b226346a919287cd7c85bfc107"
+    },
+    {
+      "bytes": 18446,
+      "path": "selector-request.json",
+      "sha256": "0fbef1b6847fc7a91444f7cccc6a8fa54ea6361471b287b8f3226d23e17f4a53"
+    },
+    {
+      "bytes": 1306,
+      "path": "reserved-retention-exposure.json",
+      "sha256": "cf4424f2276bbe22080d48d5df0741087636915bc1bdd7e82401f730dd42dce2"
+    },
+    {
+      "bytes": 1894,
+      "path": "freeze-retention/MODEL.json",
+      "sha256": "af6472c557e63404548c3291635dc9a10229da63971a160986839f4b09f57f9f"
+    },
+    {
+      "bytes": 2831,
+      "path": "PREPARE_RECEIPT.json",
+      "sha256": "26ae274469988dcd6f5df8deb6477dc3f47c795a021594123ef3d7f96d30275c"
+    }
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "research_metadata_ref": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+  "schema": "hepta.mem.next-source-input-pins.v2"
+}

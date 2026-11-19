@@ -1,0 +1,22 @@
+--- a/libs/vulkan/makepad-half/Cargo.toml
++++ b/libs/vulkan/makepad-half/Cargo.toml
+@@ -86,7 +86,7 @@
+ version = "1.0.0"
+ 
+ [dependencies.num-traits]
+-path = "../num-traits"
++path = "../../rapier/vendor/num-traits"
+ version = "0.2.16"
+ features = ["std"]
+ optional = true
+--- a/libs/vulkan/naga/Cargo.toml
++++ b/libs/vulkan/naga/Cargo.toml
+@@ -136,7 +136,7 @@
+ version = "1.0.0"
+ 
+ [dependencies.num-traits]
+-path = "../num-traits"
++path = "../../rapier/vendor/num-traits"
+ version = "0.2.16"
+ default-features = false
+ 

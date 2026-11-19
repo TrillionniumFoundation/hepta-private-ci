@@ -1,0 +1,101 @@
+
+/data/hepta-learn-ce434-runtime-20261112-v2/target/debug/deps/codex_hepta_agentd-0bb720b95785b5fd:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000005a0e620 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE>:
+ 5a0e620:	sub    $0x698,%rsp
+ 5a0e627:	mov    %rsi,0x20(%rsp)
+ 5a0e62c:	mov    %rdi,0x28(%rsp)
+ 5a0e631:	mov    %rdi,0x30(%rsp)
+ 5a0e636:	mov    (%rsi),%rsi
+ 5a0e639:	lea    0x98(%rsp),%rdi
+ 5a0e641:	call   443e200 <_ZN18codex_hepta_agentd22neuron_cell_evaluation5tests24original_model_selection17EvaluationFixture7request17h0bed32dff1b40717E>
+ 5a0e646:	lea    0x68(%rsp),%rdi
+ 5a0e64b:	lea    0x98(%rsp),%rsi
+ 5a0e653:	call   64029d0 <_ZN79_$LT$core..result..Result$LT$T$C$E$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h0902d117128c8d79E>
+ 5a0e658:	mov    0x68(%rsp),%rdx
+ 5a0e65d:	xor    %eax,%eax
+ 5a0e65f:	mov    $0x1,%ecx
+ 5a0e664:	cmp    $0x0,%rdx
+ 5a0e668:	cmove  %rcx,%rax
+ 5a0e66c:	test   $0x1,%rax
+ 5a0e672:	je     5a0e68f <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE+0x6f>
+ 5a0e674:	mov    0x28(%rsp),%rdi
+ 5a0e679:	mov    0x70(%rsp),%rsi
+ 5a0e67e:	lea    0x589385b(%rip),%rdx        # b2a1ee0 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0xf4e18>
+ 5a0e685:	call   622b390 <_ZN153_$LT$core..result..Result$LT$T$C$F$GT$$u20$as$u20$core..ops..try_trait..FromResidual$LT$core..result..Result$LT$core..convert..Infallible$C$E$GT$$GT$$GT$13from_residual17hbdc905dc24c532a0E>
+ 5a0e68a:	jmp    5a0e823 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE+0x203>
+ 5a0e68f:	lea    0xc8(%rsp),%rdi
+ 5a0e697:	lea    0x68(%rsp),%rsi
+ 5a0e69c:	mov    $0x30,%edx
+ 5a0e6a1:	call   b1aac60 <memcpy@plt>
+ 5a0e6a6:	lea    0x38(%rsp),%rdi
+ 5a0e6ab:	lea    0xc8(%rsp),%rsi
+ 5a0e6b3:	mov    $0x30,%edx
+ 5a0e6b8:	call   b1aac60 <memcpy@plt>
+ 5a0e6bd:	mov    0x20(%rsp),%rax
+ 5a0e6c2:	mov    0x8(%rax),%rcx
+ 5a0e6c6:	mov    %rcx,0x10(%rsp)
+ 5a0e6cb:	mov    0x10(%rax),%rcx
+ 5a0e6cf:	mov    %rcx,0x18(%rsp)
+ 5a0e6d4:	mov    0x18(%rax),%rcx
+ 5a0e6d8:	mov    %rcx,(%rsp)
+ 5a0e6dc:	mov    0x20(%rax),%rcx
+ 5a0e6e0:	mov    %rcx,0x8(%rsp)
+ 5a0e6e5:	mov    (%rax),%rdi
+ 5a0e6e8:	call   443e1f0 <_ZN18codex_hepta_agentd22neuron_cell_evaluation5tests24original_model_selection17EvaluationFixture6runner17h19ca1b6193109307E>
+ 5a0e6ed:	mov    (%rsp),%r9
+ 5a0e6f1:	mov    0x8(%rsp),%r8
+ 5a0e6f6:	mov    0x10(%rsp),%rsi
+ 5a0e6fb:	mov    0x18(%rsp),%rdx
+ 5a0e700:	mov    %rax,%rdi
+ 5a0e703:	mov    0x20(%rsp),%rax
+ 5a0e708:	mov    (%rax),%rcx
+ 5a0e70b:	add    $0x5fb8,%rcx
+ 5a0e712:	mov    (%rax),%rax
+ 5a0e715:	add    $0x7530,%rax
+ 5a0e71b:	mov    %r9,0x3f8(%rsp)
+ 5a0e723:	mov    %r8,0x400(%rsp)
+ 5a0e72b:	mov    %rdi,0x408(%rsp)
+ 5a0e733:	mov    %rcx,0x410(%rsp)
+ 5a0e73b:	mov    %rax,0x418(%rsp)
+ 5a0e743:	lea    0x38(%rsp),%rax
+ 5a0e748:	mov    %rax,0x420(%rsp)
+ 5a0e750:	lea    0x278(%rsp),%rdi
+ 5a0e758:	lea    0x3f8(%rsp),%rcx
+ 5a0e760:	call   3436240 <_ZN18codex_hepta_agentd31cell_q24_training_receipt_owner5stage12source_bound48SourceBoundCellQ24TrainingStageV1$LT$TW$C$RW$GT$24commit_model_or_readback17hdf5ae7214dc733bfE>
+ 5a0e765:	lea    0xf8(%rsp),%rdi
+ 5a0e76d:	lea    0x278(%rsp),%rsi
+ 5a0e775:	call   6438180 <_ZN79_$LT$core..result..Result$LT$T$C$E$GT$$u20$as$u20$core..ops..try_trait..Try$GT$6branch17h5e7afcd1ac3a3ccaE>
+ 5a0e77a:	movabs $0x8000000000000000,%rdx
+ 5a0e784:	xor    %eax,%eax
+ 5a0e786:	mov    $0x1,%ecx
+ 5a0e78b:	cmp    %rdx,0xf8(%rsp)
+ 5a0e793:	cmove  %rcx,%rax
+ 5a0e797:	test   $0x1,%rax
+ 5a0e79d:	je     5a0e7f2 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE+0x1d2>
+ 5a0e79f:	lea    0xf8(%rsp),%rsi
+ 5a0e7a7:	add    $0x8,%rsi
+ 5a0e7ab:	lea    0x428(%rsp),%rdi
+ 5a0e7b3:	mov    $0x78,%edx
+ 5a0e7b8:	call   b1aac60 <memcpy@plt>
+ 5a0e7bd:	lea    0x620(%rsp),%rdi
+ 5a0e7c5:	lea    0x428(%rsp),%rsi
+ 5a0e7cd:	mov    $0x78,%edx
+ 5a0e7d2:	call   b1aac60 <memcpy@plt>
+ 5a0e7d7:	mov    0x28(%rsp),%rdi
+ 5a0e7dc:	lea    0x620(%rsp),%rsi
+ 5a0e7e4:	lea    0x58936dd(%rip),%rdx        # b2a1ec8 <_ZN8starlark6values5types8ellipsis1_6__CTOR17h831d15bf5f0de9b2E+0xf4e00>
+ 5a0e7eb:	call   621cf80 <_ZN153_$LT$core..result..Result$LT$T$C$F$GT$$u20$as$u20$core..ops..try_trait..FromResidual$LT$core..result..Result$LT$core..convert..Infallible$C$E$GT$$GT$$GT$13from_residual17h868ac06703d7db8eE>
+ 5a0e7f0:	jmp    5a0e823 <_ZN18codex_hepta_agentd7runtime5tests20circuit_task_ingress9q24_tests21model_selection_owner8original15PositiveFixture20ready_with_admission28_$u7b$$u7b$closure$u7d$$u7d$28_$u7b$$u7b$closure$u7d$$u7d$17h15019330eec7fa8eE+0x203>
+ 5a0e7f2:	lea    0x4a0(%rsp),%rdi
+ 5a0e7fa:	lea    0xf8(%rsp),%rsi
+ 5a0e802:	mov    $0x180,%edx
+ 5a0e807:	call   b1aac60 <memcpy@plt>
+ 5a0e80c:	mov    0x28(%rsp),%rdi
+ 5a0e811:	lea    0x4a0(%rsp),%rsi
+ 5a0e819:	mov    $0x180,%edx
+ 5a0e81e:	.byte 0xe8
+ 5a0e81f:	.byte 0x3d

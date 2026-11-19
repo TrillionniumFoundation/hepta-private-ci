@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "status": "Minimal cfg(test) indirection hypothesis; pending the original final-source native run.",
+  "base_commit": "48a07807cfba2e91725c5ec8c0fb4d0325d755a6",
+  "base_tree": "14adf3d284e5036c1634b2408c02d079ef697bd4",
+  "production_base": "a7571fe7ca197de52cd071741b85b14a237d6bd5",
+  "change": {
+    "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+    "sha": "a3d0236846992a2115fadad63fadbfb0d1f54c6b",
+    "before": "528524868a98207dd2b6c10904251d6db68969ca",
+    "bytes": 8750,
+    "sha256": "309e2e6e253b3ba83d22bba8f3e4a5cbfc22d04931e160ef8d2b47a65260d87b"
+  },
+  "exact_edit": {
+    "before": "let (original, mut primary_b, mut retention_b, registration) = preregistered().await?;",
+    "after": "let (original, mut primary_b, mut retention_b, registration) = Box::pin(preregistered()).await?;"
+  },
+  "original_failure": {
+    "commit": "543542dcc8ff4e7c2d8c888ca836d749c52b7091",
+    "source": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "execution_blob": "a63c88170a768f85e4e5fcec1eea76ec118c9691",
+    "execution_sha256": "f87a4f1c5dfd62abbdebeac47a2a87a187f0cc45ce43e3b7a854f2878e78c63b",
+    "observed_abort_count": 13,
+    "exact_stack_lines": [
+      {
+        "line": 2497,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute' (1101201) has overflowed its stack"
+      },
+      {
+        "line": 2508,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest' (1101258) has overflowed its stack"
+      },
+      {
+        "line": 2519,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression' (1101277) has overflowed its stack"
+      },
+      {
+        "line": 2530,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect' (1101306) has overflowed its stack"
+      },
+      {
+        "line": 2568,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature' (1101352) has overflowed its stack"
+      },
+      {
+        "line": 2579,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence' (1101395) has overflowed its stack"
+      },
+      {
+        "line": 2590,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry' (1101406) has overflowed its stack"
+      },
+      {
+        "line": 2601,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export' (1101434) has overflowed its stack"
+      },
+      {
+        "line": 2612,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection' (1101453) has overflowed its stack"
+      },
+      {
+        "line": 2623,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel' (1101477) has overflowed its stack"
+      },
+      {
+        "line": 2634,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures' (1101520) has overflowed its stack"
+      },
+      {
+        "line": 2645,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures' (1101559) has overflowed its stack"
+      },
+      {
+        "line": 2656,
+        "text": "    thread 'runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback' (1101578) has overflowed its stack"
+      }
+    ],
+    "thread_scope": "The recorded overflowing threads have the full Rust test names. These logs do not establish a Tokio worker stack size, recursion, or a measured peak-stack allocation."
+  },
+  "actual_layout_diagnostic": {
+    "commit": "19d65ba6e4b974ecacd128dbc6f4aa7c3b284747",
+    "source": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+    "execution_blob": "b47f12c4658e9e73a4b9e53c9aae581409a0fbba",
+    "execution_sha256": "3f3344f5fd7918d7be34cfca0a806c9d911cf72eebf572c9ac19ae719fb9a276",
+    "junit_blob": "41e774895bc17164cacc0b8aaead71d335224758",
+    "layout_case_result": "PASS",
+    "layout_case_seconds": 0.019,
+    "bytes": {
+      "panel_fixture": 212040,
+      "positive_fixture": 88760,
+      "b_fixture": 3552,
+      "panel_member": 38368,
+      "panel_owner": 39432,
+      "preregistered_future": 232144,
+      "positive_future": 208816,
+      "panel_future": 328176
+    },
+    "qualification": "Type size_of observations at e5c only. The diagnostic future_bytes(FnOnce) does not call its closure, construct the future or poll it. These measurements neither measure peak stack nor prove the cause of an 8 MiB overflow. Current a757 includes the same-admission provider/support repair and the V2 metadata candidate; do not copy these numbers onto a757 or this child."
+  },
+  "common_path": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "site": "All three direct Panel tests await PanelFixture::completed. It first awaits preregistered, then retention completion, then primary completion, then constructs the same original Panel owner."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs",
+      "blob": "4afd556d729875e5e9e1a415535118ce26714266",
+      "site": "HostFixture::new uses the same PanelFixture::completed; Host, Material and TrainingOperation tests enter through this original fixture."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+      "blob": "35fbdac0b826f2de1b780ece31b64d34d29c379e",
+      "site": "preregistered creates one original admission, two explicit B fixtures, their original panel registration, and the PositiveFixture from that same admission."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_owner_support_tests.rs",
+      "blob": "bb390bf3008fb1ef9f1e1e8d5fb00b864546cd4a",
+      "site": "Current same-admission PositiveFixture construction is preserved; not the older e5c preimage."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs",
+      "blob": "5cb29191378daab7890e2024e7837cca66dbd3eb",
+      "site": "All original member completion, bytes, signatures and cleanup stay unchanged."
+    }
+  ],
+  "rationale": "Introduce one owned Pin<Box<_>> at the common nested preregistered await. The child future is then polled through a pointer rather than being stored inline in the parent future. This is the narrowest shared fixture boundary selected after the actual layout diagnostic and an independent static peer review.",
+  "limits": [
+    "Box::pin first receives the constructed future and then moves it into a Box; a construction temporary can still occupy stack.",
+    "No claim is made that peak stack falls by the future's static size or that this alone fixes all 13 failures.",
+    "PanelFixture::completed subsequently awaits two completed_member futures while retaining original and completed member values. If another state variant determines its maximum layout, boxing only the first preregistered await may not reduce the outer future size at all.",
+    "This does not rewrite a recursive algorithm, change any production owner, or create another runtime/thread/task.",
+    "Only the original same future is awaited once. Its output tuple, locals, order, error propagation, cancellation and drop responsibility remain the same.",
+    "The integrated V2 metadata and original fixes must be verified together at one final source."
+  ],
+  "preserved": {
+    "exact_inverse_restores_original_file": true,
+    "other_functions_byte_identical": 7,
+    "existing_direct_panel_test_names": [
+      "original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "original_panel_refuses_valid_renewed_training_without_replacing_member_signatures"
+    ],
+    "all_native_inventory": "201 cases / 43 groups unchanged",
+    "source_qa_inventory": "No QA script, manifest, complete protected record or boundary modified.",
+    "stack_bytes": 8388608,
+    "nextest_per_case_seconds": 60,
+    "production_logic": "unchanged",
+    "assertions": "Every existing assertion, full original evidence comparison, bytes check, retained Ineligible behavior and cleanup remains byte-identical.",
+    "diagnostic_cases": "No new layout or timing case added to the final inventory."
+  },
+  "independent_static_review": {
+    "agent": "learn_readonly_bootstrap",
+    "conclusion": "Agreed this one await is a minimal cfg(test) candidate; no direct safety counterexample found. Construction-temporary, alternate-variant maximum and source-version limitations are explicit.",
+    "executed": false
+  },
+  "validation": {
+    "source_only": true,
+    "full_blob_readback": true,
+    "exact_single_replacement": true,
+    "compiled": false,
+    "original_python": false,
+    "native": false,
+    "ordinary_acceptance": 0
+  },
+  "patch_sha256": "890f34c48688075ba7f9386f71b703ef4bf232c418b3995a7eff61f952136985"
+}

@@ -1,0 +1,264 @@
+{
+  "schema": "hepta.mem8.v6.existing-ci-concurrency-static-review.v1",
+  "reviewed_at": "2026-11-11T13:49:10.417227+00:00",
+  "status": "NO_CONCURRENCY_KEY_COLLISION_FOR_DISTINCT_BRANCH_AND_NEW_PR_IN_REVIEWED_WORKFLOW_CLOSURE",
+  "read_source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "read_source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "v6_pure_source_head": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+  "v6_pure_source_tree": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+  "source_comparison": "All 13 workflow full bytes independently match exact c777 full-tree Git blobs and are unchanged by the frozen 109-path V6 overlay.",
+  "old_pr": 5935,
+  "old_branch": "codex/mem8-integrated-source-20261111-ed353817",
+  "required_new_event_conditions": [
+    "Different new head branch, compared case-insensitively, without moving old PR5935 head ref.",
+    "A newly created PR with a number different from 5935.",
+    "This is an independent source-head qualification; old run evidence and failure accounting remain attached to original 9bd2."
+  ],
+  "workflow_sources": [
+    {
+      "path": ".github/workflows/bazel.yml",
+      "bytes": 21878,
+      "sha256": "11d5ced3d41620e82e3aa57e842d219dfbd7cc6ddb4027266472987aff99ad89",
+      "git_blob": "73e70ae2300bf6013d69914662d546d8e1b83569",
+      "name": "Bazel",
+      "workflow_concurrency": {
+        "group": "concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}",
+        "cancel-in-progress": "${{ github.ref_name != 'main' }}"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/blob-size-policy.yml",
+      "bytes": 1809,
+      "sha256": "8740d3752737705d7257c3711d5e4b3df3cd2eadacf050f8dabb1c9e6f17cb0c",
+      "git_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+      "name": "blob-size-policy",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "bytes": 9188,
+      "sha256": "57d5955ed2134ba79030215236e95076f7df3e7cda1523494def0805d525eaa2",
+      "git_blob": "ee0a3f9dfa81a84be93f46a3d0fe92daf48df043",
+      "name": "blocking-ci",
+      "workflow_concurrency": {
+        "group": "blocking-ci-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {
+        "hepta-contract-gate": "./.github/workflows/hepta-contract-gate.yml",
+        "bazel": "./.github/workflows/bazel.yml",
+        "blob-size-policy": "./.github/workflows/blob-size-policy.yml",
+        "cargo-deny": "./.github/workflows/cargo-deny.yml",
+        "codespell": "./.github/workflows/codespell.yml",
+        "repo-checks": "./.github/workflows/repo-checks.yml",
+        "rust-ci": "./.github/workflows/rust-ci.yml",
+        "sdk": "./.github/workflows/sdk.yml"
+      },
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/cargo-deny.yml",
+      "bytes": 1141,
+      "sha256": "154dcb6a5e631b9ed762533c7a4d2f606a22b817e8279b99112a7c3ca431e141",
+      "git_blob": "db7cad815476abfe22502ee9aa71617606d76a10",
+      "name": "cargo-deny",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/codespell.yml",
+      "bytes": 1118,
+      "sha256": "602fcfb939e2b79e3f41757a163da7d22353f4f246bf075b734939b2295aae92",
+      "git_blob": "caf88a02d2644b8e61df0859629d44c77ac9a0fb",
+      "name": "Codespell",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "bytes": 21212,
+      "sha256": "f716b0941f6e47aa72b94d97f80d157e24273c38652d45eb9c1eb3ff1e39b6ac",
+      "git_blob": "c1490cedf609e35ab0b2115f5e01c5987583c353",
+      "name": "Hepta architecture convergence",
+      "workflow_concurrency": {
+        "group": "hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}",
+        "cancel-in-progress": "true"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/hepta-contract-gate.yml",
+      "bytes": 2493,
+      "sha256": "61faff97c373308ded3cde266cad512c3f8795db2646f1a77779a7c8b46aa7f9",
+      "git_blob": "0eb3d84801cc456b34fa1e33957400c1a00dcb68",
+      "name": "Hepta contract gate",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "bytes": 23608,
+      "sha256": "e0e94ceaf14e373a7df7b7cf00ac1bab337e694eb90411ff6bab3e3aeb1c77ad",
+      "git_blob": "f6926400461f7fefa503df46299a91c2795e1999",
+      "name": "Hepta MEM candidate and replay controls",
+      "workflow_concurrency": {
+        "group": "hepta-mem-python-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/hepta-windows-current-ci.yml",
+      "bytes": 2749,
+      "sha256": "cd649ec9a1786c20531c6757ad07743f5a16ecc698d25ad59be8cf2dfd15a794",
+      "git_blob": "d9dc4986a86a6d29e51203e34b7cc3e4f08c536b",
+      "name": "Windows original CI regressions (declared scope only)",
+      "workflow_concurrency": {
+        "group": "hepta-windows-current-ci-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "bytes": 11296,
+      "sha256": "f0b337396749986f1dcbc4284f65c7e3afab434e70989cc903f28596d3b9c245",
+      "git_blob": "db54c8ce847d135a0213bd2e4a0a8858a32b2a51",
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "workflow_concurrency": {
+        "group": "hepta-windows-private-state-${{ github.event.pull_request.number || github.ref }}",
+        "cancel-in-progress": "true"
+      },
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "bytes": 4263,
+      "sha256": "be712fbe289f42c91b6b0480cf035b95a8dab4119950b164d0cfc3752401888b",
+      "git_blob": "d58e39c0d951005a03f6e36899266739703103b7",
+      "name": "repo-checks",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "bytes": 12575,
+      "sha256": "fff175d957a2de7c7a4976d066ac95098c7bc5ef30d3196131375e10a06b17d3",
+      "git_blob": "dfadf84c51c8ed2a021982ee78379dd67c737cdf",
+      "name": "rust-ci",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    },
+    {
+      "path": ".github/workflows/sdk.yml",
+      "bytes": 7367,
+      "sha256": "f2741231c0b7f499d038f64de83077a16f9c715cd131c74072a788fd0462463e",
+      "git_blob": "0b1d6bc33ac14c7a036ec6fe0da0cc0d8a900093",
+      "name": "sdk",
+      "workflow_concurrency": null,
+      "job_concurrency": {},
+      "reusable_workflow_calls": {},
+      "same_bytes_in_v6": true
+    }
+  ],
+  "evaluated_symbolic_keys": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "old_pr5935_key": "blocking-ci-codex/mem8-integrated-source-20261111-ed353817",
+      "new_key": "blocking-ci-<DIFFERENT_NEW_HEAD_BRANCH>",
+      "isolation": "pull_request.head.ref"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "old_pr5935_key": "concurrency-group::<same caller github.workflow>::pr-5935",
+      "new_key": "concurrency-group::<same caller github.workflow>::pr-<DIFFERENT_NEW_PR_NUMBER>",
+      "isolation": "pull_request.number; called workflow github context remains tied to caller event"
+    },
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "old_pr5935_key": "hepta-mem-python-5935",
+      "new_key": "hepta-mem-python-<DIFFERENT_NEW_PR_NUMBER>",
+      "isolation": "pull_request.number"
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "old_pr5935_key": "hepta-architecture-convergence-codex/mem8-integrated-source-20261111-ed353817",
+      "new_key": "hepta-architecture-convergence-<DIFFERENT_NEW_HEAD_BRANCH>",
+      "isolation": "pull_request.head.ref"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-current-ci.yml",
+      "old_pr5935_key": "hepta-windows-current-ci-5935",
+      "new_key": "hepta-windows-current-ci-<DIFFERENT_NEW_PR_NUMBER>",
+      "isolation": "pull_request.number"
+    },
+    {
+      "path": ".github/workflows/hepta-windows-private-state-native.yml",
+      "old_pr5935_key": "hepta-windows-private-state-5935",
+      "new_key": "hepta-windows-private-state-<DIFFERENT_NEW_PR_NUMBER>",
+      "isolation": "pull_request.number"
+    }
+  ],
+  "blocking_reusable_closure": [
+    ".github/workflows/hepta-contract-gate.yml",
+    ".github/workflows/bazel.yml",
+    ".github/workflows/blob-size-policy.yml",
+    ".github/workflows/cargo-deny.yml",
+    ".github/workflows/codespell.yml",
+    ".github/workflows/repo-checks.yml",
+    ".github/workflows/rust-ci.yml",
+    ".github/workflows/sdk.yml"
+  ],
+  "nested_reusable_calls_in_children": 0,
+  "job_level_concurrency_declarations": 0,
+  "no_concurrency_child_workflows": [
+    ".github/workflows/hepta-contract-gate.yml",
+    ".github/workflows/blob-size-policy.yml",
+    ".github/workflows/cargo-deny.yml",
+    ".github/workflows/codespell.yml",
+    ".github/workflows/repo-checks.yml",
+    ".github/workflows/rust-ci.yml",
+    ".github/workflows/sdk.yml"
+  ],
+  "interpretation": [
+    "The enclosing blocking-ci key isolates the head branch. Its called Bazel key separately isolates PR number, including its macOS Intel matrix job.",
+    "A new PR against the same common base does not itself change the old PR key. Base commit equality does not enter these group expressions.",
+    "The Bazel main-only run_id suffix is irrelevant for these PR events.",
+    "Push fallback uses the distinct branch/ref; this review does not dispatch a workflow or create a second run manually.",
+    "Resource contention or runner availability can still delay both jobs. Key isolation does not promise immediate scheduling or terminal success.",
+    "This report establishes the requested blocking/Bazel, MEM/Architecture and Windows workflow closure; it does not assert a new repository-wide CI result."
+  ],
+  "mutations": {
+    "refs": 0,
+    "dispatches": 0,
+    "reruns": 0,
+    "cancellations": 0,
+    "native_executions": 0,
+    "model_requests": 0
+  }
+}

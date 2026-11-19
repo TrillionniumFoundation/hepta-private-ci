@@ -1,0 +1,826 @@
+{
+  "schema": "hepta.mem8.root.native.readback.v1",
+  "host_archives": [
+    {
+      "archive": "v5-diagnostic.tar.xz",
+      "bytes": 125956,
+      "sha256": "c49b559d95fced764de9b82ea5484b3dd12e586e56cec5d72a6f13fc7c6909f3",
+      "git_blob": "e98e174f20a966365462f6de2da80f9b5b6dfc69",
+      "regular_members_verified": 47,
+      "manifest_complete": true,
+      "source_before_after": {
+        "head": "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a",
+        "status": "",
+        "tree": "05fdde0c70e67449fd2986bdd2394f07040172f8"
+      },
+      "terminal": {
+        "base_sha": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+        "completed": [
+          "format",
+          "v8-inputs"
+        ],
+        "failure": {
+          "message": "agentd-diagnostic failed exact-source command gate with exit 100",
+          "type": "RuntimeError"
+        },
+        "finished_at": "2026-11-11T03:23:47.368439+00:00",
+        "original_after": {
+          "head": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "status": "",
+          "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+        },
+        "run_id": "mem8-native-4d1186-diag-ai395-20261111-ed353-v5",
+        "scope": "single existing drain-case startup diagnosis with explicit fixtures; no memory/protocol/fix claim",
+        "source_after": {
+          "head": "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a",
+          "status": "",
+          "tree": "05fdde0c70e67449fd2986bdd2394f07040172f8"
+        },
+        "source_sha": "4d1186a4c7f63a0b1f4f64c7bc35a0049688d59a",
+        "source_tree": "05fdde0c70e67449fd2986bdd2394f07040172f8",
+        "status": "failed"
+      },
+      "phases": [
+        {
+          "receipt": "records/agentd-diagnostic.json",
+          "status": "failed",
+          "log_bytes": 42325,
+          "log_sha256": "87252e0a86441b2556def95678f7fe3c8c1609159c952aa6072a39243f4e20f3"
+        },
+        {
+          "receipt": "records/format.json",
+          "status": "passed",
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "receipt": "records/v8-inputs.json",
+          "status": "passed",
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "archive": "v6-missing-dotslash.tar.xz",
+      "bytes": 129316,
+      "sha256": "6fd878829d8fd4d511228071f3ddb7f5363e26af0c458a3ec3d1c5a36df27409",
+      "git_blob": "fbc4b7bb444bde8acb5ebe2beb28cdd1b32535b8",
+      "regular_members_verified": 35,
+      "manifest_complete": true,
+      "source_before_after": {
+        "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "status": "",
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "terminal": {
+        "base_sha": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+        "binary_after": null,
+        "completed": [],
+        "failure": {
+          "message": "format failed exact-source command gate with exit 1",
+          "type": "RuntimeError"
+        },
+        "finished_at": "2026-11-11T03:45:44.221427+00:00",
+        "original_after": {
+          "head": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "status": "",
+          "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+        },
+        "run_id": "mem8-native-66f570-ai395-20261111-ed353-v6",
+        "scope": "fresh full native qualification with source/owner fixtures and real exact-source Codex CLI; not original production recovery",
+        "source_after": {
+          "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+          "status": "",
+          "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+        },
+        "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "source_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+        "status": "failed"
+      },
+      "phases": [
+        {
+          "receipt": "records/format.json",
+          "status": "failed",
+          "log_bytes": 329,
+          "log_sha256": "b2449b204b6c42ae78d360f1fe52b1589f7c28b7684f25aa0584f18631881700"
+        }
+      ]
+    },
+    {
+      "archive": "v7.tar.xz",
+      "bytes": 156176,
+      "sha256": "7a2f8bc2a4b3ebd8530f1cee179d6b815b5329a5f1c3076f244439042873eab6",
+      "git_blob": "c08c54c653f9602e1f40953a16689e3a6e7994e2",
+      "regular_members_verified": 89,
+      "manifest_complete": true,
+      "source_before_after": {
+        "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "status": "",
+        "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+      },
+      "terminal": {
+        "base_sha": "ad5a4ed6d40a2eceac189afaced5d93137724a52",
+        "binary_after": {
+          "bytes": 559365840,
+          "matches_initial": true,
+          "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target/debug/codex",
+          "sha256": "2dc4165feb9cf8289b70b39c239b145d5976ec3142445cb6d15abf30bd91c8e2",
+          "source": {
+            "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+            "status": "",
+            "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+          },
+          "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867"
+        },
+        "completed": [
+          "format",
+          "v8-inputs",
+          "codex-cli-build",
+          "memory-tests",
+          "agentd-tests",
+          "protocol-tests",
+          "fix-codex-hepta-memory",
+          "fix-codex-hepta-agentd",
+          "fix-codex-hepta-agent-protocol"
+        ],
+        "failure": null,
+        "finished_at": "2026-11-11T04:07:00.734005+00:00",
+        "original_after": {
+          "head": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "status": "",
+          "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+        },
+        "run_id": "mem8-native-66f570-tools-ai395-20261111-ed353-v7",
+        "scope": "fresh full native qualification with source/owner fixtures and real exact-source Codex CLI; not original production recovery",
+        "source_after": {
+          "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+          "status": "",
+          "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179"
+        },
+        "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+        "source_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+        "status": "passed"
+      },
+      "phases": [
+        {
+          "receipt": "records/agentd-tests.json",
+          "status": "passed",
+          "log_bytes": 46207,
+          "log_sha256": "e1dea1b6db629864d44b294b409a66339beb0629954f68821d6eb8c203423a29"
+        },
+        {
+          "receipt": "records/codex-cli-build.json",
+          "status": "passed",
+          "log_bytes": 54974,
+          "log_sha256": "834080b486cf8705d6dae8992d5937bfcbb6913825cdb65e592d4fa871c717ae"
+        },
+        {
+          "receipt": "records/fix-codex-hepta-agent-protocol.json",
+          "status": "passed",
+          "log_bytes": 782,
+          "log_sha256": "d4c6e270311859ef57ce84241ea6e9181edb008da984b181d6a91cf4a9c85459"
+        },
+        {
+          "receipt": "records/fix-codex-hepta-agentd.json",
+          "status": "passed",
+          "log_bytes": 39248,
+          "log_sha256": "77e24423278a99d43b43a0437debbb087217676d7c8ff619e8ce79b4681fca56"
+        },
+        {
+          "receipt": "records/fix-codex-hepta-memory.json",
+          "status": "passed",
+          "log_bytes": 19632,
+          "log_sha256": "43c34827d41f3a9292bedb0a8ba7c23c787a178869cdd9ea484b14b275ba3d92"
+        },
+        {
+          "receipt": "records/format.json",
+          "status": "passed",
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "receipt": "records/memory-tests.json",
+          "status": "passed",
+          "log_bytes": 23419,
+          "log_sha256": "70def9a26c87dcbe3e885ab1ea84902142b0f3a76165616c7c311801d93d0265"
+        },
+        {
+          "receipt": "records/protocol-tests.json",
+          "status": "passed",
+          "log_bytes": 14059,
+          "log_sha256": "c4f626f21e986edc57151f1c94da205c3a956856bb30142486feded1126eb3bb"
+        },
+        {
+          "receipt": "records/v8-inputs.json",
+          "status": "passed",
+          "log_bytes": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "tests": {
+        "memory-tests": {
+          "passed": 11,
+          "failed": 0,
+          "unique_case_ids": [
+            [
+              "codex-hepta-memory",
+              "episodic_source::tests::final_source_check_detects_changed_observation_metadata"
+            ],
+            [
+              "codex-hepta-memory",
+              "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations"
+            ],
+            [
+              "codex-hepta-memory",
+              "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission"
+            ],
+            [
+              "codex-hepta-memory",
+              "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+            ],
+            [
+              "codex-hepta-memory",
+              "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads"
+            ]
+          ],
+          "summary": "     Summary [   0.233s] 11 tests run: 11 passed, 420 skipped",
+          "observed_retry_rows": 0
+        },
+        "agentd-tests": {
+          "passed": 5,
+          "failed": 0,
+          "unique_case_ids": [
+            [
+              "codex-hepta-agentd",
+              "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order"
+            ],
+            [
+              "codex-hepta-agentd",
+              "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+            ],
+            [
+              "codex-hepta-agentd",
+              "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer"
+            ],
+            [
+              "codex-hepta-agentd",
+              "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+            ],
+            [
+              "codex-hepta-agentd",
+              "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+            ]
+          ],
+          "summary": "     Summary [   2.059s] 5 tests run: 5 passed, 781 skipped",
+          "observed_retry_rows": 0
+        },
+        "protocol-tests": {
+          "passed": 16,
+          "failed": 0,
+          "unique_case_ids": [
+            [
+              "codex-hepta-agent-protocol",
+              "capabilities::tests::negotiation_is_intersection_with_minor_downgrade"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "capabilities::tests::duplicate_and_invalid_ids_are_rejected"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "generation::tests::generation_wire_rejects_unknown_fields_and_unbounded_byte_values"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "objective_tests::objective_start_outcomes_are_strict_wire_types"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::automation_wire_round_trip_is_strict_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "generation::tests::maximum_generation_pages_and_inputs_roundtrip_within_existing_frame"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::health_wire_round_trip_is_strict_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::memory_federation_control_is_typed_strict_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::capabilities_endpoint_is_additive_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::automation_effect_wire_round_trip_is_strict_and_bounded"
+            ],
+            [
+              "codex-hepta-agent-protocol",
+              "tests::host_turn_authority_binding_is_strict_and_fail_closed"
+            ]
+          ],
+          "summary": "     Summary [   0.017s] 16 tests run: 16 passed, 0 skipped",
+          "observed_retry_rows": 0
+        }
+      },
+      "actual_child_markers": [
+        "commit",
+        "revoke",
+        "panic"
+      ],
+      "exact_binary": {
+        "bytes": 559365840,
+        "sha256": "2dc4165feb9cf8289b70b39c239b145d5976ec3142445cb6d15abf30bd91c8e2",
+        "before_after_match": true
+      },
+      "exact_changed_source_postimages": 28
+    }
+  ],
+  "github_official_artifact": {
+    "run_id": 42953532462,
+    "job_id": 130303174020,
+    "artifact_id": 13827244275,
+    "archive_bytes": 200988,
+    "archive_sha256": "b67b035fa133050c389ba7f79d81d01cc8726dabc813fecb01e4afe1311ae135",
+    "archive_git_blob": "1b37445010bd24a9076087619e58d522c90ff214",
+    "receipts": [
+      {
+        "receipt": "agentd-tests.json",
+        "raw_bytes": 49170,
+        "raw_sha256": "ac8cdb3d3bb3b435b24646815fda7044c78c24745efe67ee3ee7d5ed281f7bd3"
+      },
+      {
+        "receipt": "codex-build.json",
+        "raw_bytes": 68572,
+        "raw_sha256": "82c74943e422af4c557f46b0510777cc4d882cc1f0f8480696dc65765bb64d03"
+      },
+      {
+        "receipt": "fix-codex-hepta-agent-protocol.json",
+        "raw_bytes": 828,
+        "raw_sha256": "fd928456534f9fce1995bc28ee4370cb5eee162cfe5e08f453b245537f3aaaaf"
+      },
+      {
+        "receipt": "fix-codex-hepta-agentd.json",
+        "raw_bytes": 43460,
+        "raw_sha256": "33b4f28bde34e38b927b6901ff8fa4f4a7acd1ec404a803e698b54f27de60f09"
+      },
+      {
+        "receipt": "fix-codex-hepta-memory.json",
+        "raw_bytes": 25286,
+        "raw_sha256": "e99d29e0d0b02fbef22c43ab80951d4908024c228d8731bf3ad80581c45dde11"
+      },
+      {
+        "receipt": "format.json",
+        "raw_bytes": 0,
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "receipt": "memory-tests.json",
+        "raw_bytes": 71795,
+        "raw_sha256": "0061dae4e66001b175e36eaa18d9cf4b803a339ede11e2d37d37840dd0912669"
+      },
+      {
+        "receipt": "protocol-tests.json",
+        "raw_bytes": 15678,
+        "raw_sha256": "814c592f0c8f3c203fead1307d34a42c6bbf01e00b560c2495290e7d3bcf4b32"
+      },
+      {
+        "receipt": "v8-inputs.json",
+        "raw_bytes": 0,
+        "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "tests": {
+      "agentd-tests.json": {
+        "passed": 5,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-agentd",
+            "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+          ]
+        ],
+        "summary": "     Summary [   4.624s] 5 tests run: 5 passed, 781 skipped",
+        "observed_retry_rows": 0
+      },
+      "memory-tests.json": {
+        "passed": 11,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-memory",
+            "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations"
+          ],
+          [
+            "codex-hepta-memory",
+            "episodic_source::tests::final_source_check_detects_changed_observation_metadata"
+          ],
+          [
+            "codex-hepta-memory",
+            "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission"
+          ],
+          [
+            "codex-hepta-memory",
+            "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source"
+          ],
+          [
+            "codex-hepta-memory",
+            "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+          ]
+        ],
+        "summary": "     Summary [   1.506s] 11 tests run: 11 passed, 420 skipped",
+        "observed_retry_rows": 0
+      },
+      "protocol-tests.json": {
+        "passed": 16,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-agent-protocol",
+            "capabilities::tests::duplicate_and_invalid_ids_are_rejected"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "capabilities::tests::negotiation_is_intersection_with_minor_downgrade"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "generation::tests::generation_wire_rejects_unknown_fields_and_unbounded_byte_values"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "objective_tests::objective_start_outcomes_are_strict_wire_types"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::automation_effect_wire_round_trip_is_strict_and_bounded"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "generation::tests::maximum_generation_pages_and_inputs_roundtrip_within_existing_frame"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::automation_wire_round_trip_is_strict_and_bounded"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::capabilities_endpoint_is_additive_and_bounded"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::host_turn_authority_binding_is_strict_and_fail_closed"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::health_wire_round_trip_is_strict_and_bounded"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::memory_federation_control_is_typed_strict_and_bounded"
+          ],
+          [
+            "codex-hepta-agent-protocol",
+            "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+          ]
+        ],
+        "summary": "     Summary [   0.037s] 16 tests run: 16 passed, 0 skipped",
+        "observed_retry_rows": 0
+      }
+    },
+    "actual_child_markers": [
+      "commit",
+      "revoke",
+      "panic"
+    ],
+    "exact_binary": {
+      "source_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "source_tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+      "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex",
+      "bytes": 559366336,
+      "sha256": "901a4e3246a1396e6dca772d1756f3f610065b4c19c9c4c9317f2060718cdd80"
+    },
+    "exact_changed_source_postimages": 28
+  },
+  "f2_focused_native": {
+    "source": {
+      "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "status": "",
+      "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+    },
+    "terminal": {
+      "base_sha": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "binary_after": {
+        "bytes": 559365856,
+        "matches_initial": true,
+        "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target/debug/codex",
+        "sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+        "source": {
+          "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+          "status": "",
+          "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+        },
+        "source_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9"
+      },
+      "completed": [
+        "format",
+        "v8-inputs",
+        "codex-cli-build",
+        "config-manager-tests",
+        "agentd-tests",
+        "qualification-profile-test",
+        "memory-extension-control",
+        "native-empty-router",
+        "fix-codex-app-server",
+        "fix-codex-hepta-agentd"
+      ],
+      "failure": null,
+      "finished_at": "2026-11-11T04:26:35.315394+00:00",
+      "original_after": {
+        "head": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+        "status": "",
+        "tree": "1277666f3285cdf006d36478e6f74ddec38e1fe0"
+      },
+      "run_id": "mem8-native-f2-0c32926-ai395-20261111-ed353-v1",
+      "scope": "F focused native qualification: app-server config, Agentd episodic and qualification profile, extension and native tool gate; not production recovery or actor benefit",
+      "source_after": {
+        "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "status": "",
+        "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+      },
+      "source_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "source_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+      "status": "passed"
+    },
+    "archive_git_blob": "4985c0223c650faf9b0c5ab8732314c1ceb3b834",
+    "archive_sha256": "9bc850cac9f4777281f4898a7e89c7bee0f96d611043522eeca546002a2ddfca",
+    "archive_bytes": 48028,
+    "original_files_verified": 88,
+    "tests": {
+      "config-manager-tests": {
+        "passed": 2,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-app-server",
+            "config_manager::feature_constraints_tests::required_explicit_context_features_remove_memory_prompt_after_request_override"
+          ],
+          [
+            "codex-app-server",
+            "config_manager::feature_constraints_tests::required_token_budget_off_removes_resolved_history_notes_after_request_and_reload"
+          ]
+        ],
+        "summary": "     Summary [   0.056s] 2 tests run: 2 passed, 323 skipped",
+        "observed_retry_rows": 0
+      },
+      "agentd-tests": {
+        "passed": 6,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-agentd",
+            "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+          ],
+          [
+            "codex-hepta-agentd",
+            "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context"
+          ],
+          [
+            "codex-hepta-agentd",
+            "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+          ]
+        ],
+        "summary": "     Summary [   2.165s] 6 tests run: 6 passed, 781 skipped",
+        "observed_retry_rows": 0
+      },
+      "qualification-profile-test": {
+        "passed": 1,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-agentd",
+            "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+          ]
+        ],
+        "summary": "     Summary [   0.060s] 1 test run: 1 passed, 789 skipped",
+        "observed_retry_rows": 0
+      },
+      "memory-extension-control": {
+        "passed": 1,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-hepta-memory-extension",
+            "extension::tests::disabled_or_missing_host_identity_never_queries_state"
+          ]
+        ],
+        "summary": "     Summary [   0.004s] 1 test run: 1 passed, 99 skipped",
+        "observed_retry_rows": 0
+      },
+      "native-empty-router": {
+        "passed": 1,
+        "failed": 0,
+        "unique_case_ids": [
+          [
+            "codex-core",
+            "tools::spec_plan::tests::hepta_native_inference_client_has_no_model_visible_or_registered_tools"
+          ]
+        ],
+        "summary": "     Summary [   0.035s] 1 test run: 1 passed, 2446 skipped",
+        "observed_retry_rows": 0
+      }
+    },
+    "receipts": [
+      {
+        "phase": "format",
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "v8-inputs",
+        "log_bytes": 0,
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "phase": "codex-cli-build",
+        "log_bytes": 25283,
+        "log_sha256": "ea19138b766fd248feff3fae4a58abde44730a0631979d6b2a407b491ef80d50"
+      },
+      {
+        "phase": "config-manager-tests",
+        "log_bytes": 35354,
+        "log_sha256": "0dc54b18dd695e39c6907db87041a812d226e2d4e2adea210315c060743a9593"
+      },
+      {
+        "phase": "agentd-tests",
+        "log_bytes": 28393,
+        "log_sha256": "a8e0298c6fd0e1e288b84165d9c6a8deb14ba03f1eccf8074d2630f81004eb0f"
+      },
+      {
+        "phase": "qualification-profile-test",
+        "log_bytes": 17470,
+        "log_sha256": "55f92b2ea09e4a252fded68a9255afdedac90f199e8acc54b5375b0293d7cfab"
+      },
+      {
+        "phase": "memory-extension-control",
+        "log_bytes": 29727,
+        "log_sha256": "9bf637fb533fdd607bc35e50d5ce1b7b65b48e667157ab29be95462a33e94568"
+      },
+      {
+        "phase": "native-empty-router",
+        "log_bytes": 28721,
+        "log_sha256": "ab8c3f877ff73e84bb0ade3dfb1eb3c50d3d34182e219a8ba551225fe4f949dd"
+      },
+      {
+        "phase": "fix-codex-app-server",
+        "log_bytes": 21303,
+        "log_sha256": "d6ae55cb37e87214862ca94e7e763ed19f6630d4045a65920b782eae22e9fa85"
+      },
+      {
+        "phase": "fix-codex-hepta-agentd",
+        "log_bytes": 10621,
+        "log_sha256": "b45c3d8466e608a5eed8b67ba168e75ae396d502e22cfe8438ce9dea11317b5a"
+      }
+    ],
+    "actual_child_markers": [
+      "commit",
+      "revoke",
+      "panic"
+    ],
+    "test_execution_observations": 11,
+    "distinct_case_ids_across_feature_variants": 10,
+    "exact_binary": {
+      "bytes": 559365856,
+      "sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+      "before_after_match": true
+    },
+    "exact_source_postimages": {
+      "codex-rs/app-server/src/config_manager.rs": "c4a8bf615541c48a405d08e59c643e96bdf7437a",
+      "codex-rs/app-server/src/config_manager_feature_constraints_tests.rs": "6c289f8f4b9ee0f1d76a18958387c5d4f3665824",
+      "codex-rs/hepta-agentd/src/app_runtime.rs": "1576de268c6da2b4b9a803d46a1244a0010b4949",
+      "codex-rs/hepta-agentd/src/runtime.rs": "127d953ec345cc7cf2cfda0d6aef8b7550eb4991",
+      "codex-rs/hepta-agentd/src/config_episodic.rs": "8c0a68c6041283c3fe04ab8c6f17320e6a2b85ef",
+      "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs": "54026297a309ef228053ce697855f5181c3b9f2c"
+    },
+    "scope": "Five groups have 11 executions and 10 distinct test IDs; one profile case also runs under qualification-cognitive-write. These are fixture/path tests, not actor tasks. Unchanged memory/protocol packages were not rerun on F2."
+  },
+  "scope": "Root independently read complete connector-returned archive bytes and official artifact, verified all member/receipt/raw-log bindings, exact source, unique test IDs and observed markers. This verifies software qualification with fixtures; it does not authenticate the original deployed owner or demonstrate memory benefit.",
+  "new_actor_episodes": 0
+}

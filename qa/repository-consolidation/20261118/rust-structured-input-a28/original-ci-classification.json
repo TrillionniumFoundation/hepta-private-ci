@@ -1,0 +1,40 @@
+{
+  "source": "/workspace/scratch/a28fa6a6513a/audit/ci/job-134743268288.log",
+  "source_sha256": "8feda255c721afac928fc6ff33ef5c39c82e3c7d719c85029eb1ca7d6a0a5abf",
+  "job_id": 134743268288,
+  "run_id": 44287117820,
+  "run_attempt": 1,
+  "platform": "Bazel darwin_x86_64",
+  "target": "//codex-rs/core:core-unit-tests",
+  "shard": "3 of 8",
+  "attempt_log": "shard_3_of_8/test_attempts/attempt_1.log",
+  "final_classification": "FLAKY retry-recovered",
+  "failed_target_runs": 1,
+  "total_target_shard_runs": 9,
+  "interpretation": "Eight shards plus one additional attempt; this is not nine executions of the individual case. Successful retry case-level stdout is not emitted in this job log.",
+  "original_failure": "5-second wait for ItemCompleted(UserMessage) elapsed",
+  "original_failed_shard_summary": "285 passed; 1 failed; 2189 filtered; 59.17s",
+  "final_hard_failed_target": "//codex-rs/utils/pty:pty-unit-tests",
+  "excerpts": [
+    {
+      "first_line": 13705,
+      "last_line": 13705,
+      "text": "2026-11-18T11:39:19.7080690Z FAIL: //codex-rs/core:core-unit-tests (shard 3 of 8) (Exit 101) (see /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_3_of_8/test_attempts/attempt_1.log)\n"
+    },
+    {
+      "first_line": 13746,
+      "last_line": 13751,
+      "text": "2026-11-18T11:50:57.6894330Z FLAKY: //codex-rs/core:core-unit-tests (Summary)\n2026-11-18T11:50:57.6898780Z       /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_3_of_8/test_attempts/attempt_1.log\n2026-11-18T11:50:57.7062610Z INFO: From Testing //codex-rs/core:core-unit-tests (shard 3 of 8):\n2026-11-18T11:50:57.7104390Z ==================== Test output for //codex-rs/core:core-unit-tests (shard 3 of 8):\n2026-11-18T11:50:57.7106250Z \n2026-11-18T11:50:57.7106780Z running 286 tests\n"
+    },
+    {
+      "first_line": 14036,
+      "last_line": 14051,
+      "text": "2026-11-18T11:50:57.7771520Z test tools::handlers::multi_agents::tests::send_input_accepts_structured_items ... FAILED\n2026-11-18T11:50:57.7773320Z test agent::control::tests::spawn_agent_full_fork_legacy_compaction_rebuilds_child_instructions_once ... ok\n2026-11-18T11:50:57.7774550Z \n2026-11-18T11:50:57.7774780Z failures:\n2026-11-18T11:50:57.7775070Z \n2026-11-18T11:50:57.7775790Z ---- tools::handlers::multi_agents::tests::send_input_accepts_structured_items stdout ----\n2026-11-18T11:50:57.7776930Z \n2026-11-18T11:50:57.7778490Z thread 'tools::handlers::multi_agents::tests::send_input_accepts_structured_items' (344565) panicked at core/src/tools/handlers/multi_agents_tests.rs:128:6:\n2026-11-18T11:50:57.7780880Z timed out waiting for recorded user input: Elapsed(())\n2026-11-18T11:50:57.7782310Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n2026-11-18T11:50:57.7783320Z \n2026-11-18T11:50:57.7783330Z \n2026-11-18T11:50:57.7783580Z failures:\n2026-11-18T11:50:57.7784700Z     tools::handlers::multi_agents::tests::send_input_accepts_structured_items\n2026-11-18T11:50:57.7785680Z \n2026-11-18T11:50:57.7786510Z test result: FAILED. 285 passed; 1 failed; 0 ignored; 0 measured; 2189 filtered out; finished in 59.17s\n"
+    },
+    {
+      "first_line": 15136,
+      "last_line": 15150,
+      "text": "2026-11-18T11:51:20.0967520Z //codex-rs/utils/pty:pty-unit-tests                                      FAILED in 5.6s\n2026-11-18T11:51:20.0969680Z   /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/utils/pty/pty-unit-tests/test.log\n2026-11-18T11:51:20.0974190Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                          PASSED in 67.2s\n2026-11-18T11:51:20.0975890Z   Stats over 4 runs: max = 67.2s, min = 44.2s, avg = 52.7s, dev = 8.7s\n2026-11-18T11:51:20.0977540Z //codex-rs/core:core-unit-tests                                           FLAKY, failed in 1 out of 9 in 71.0s\n2026-11-18T11:51:20.0979830Z   Stats over 9 runs: max = 71.0s, min = 33.4s, avg = 50.2s, dev = 13.3s\n2026-11-18T11:51:20.0985200Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (65.3s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"moderate\" or size=\"medium\".\n2026-11-18T11:51:20.0989230Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (34.2s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"short\" or size=\"small\".\n2026-11-18T11:51:20.0993980Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (59.5s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"moderate\" or size=\"medium\".\n2026-11-18T11:51:20.0997810Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (48.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"moderate\" or size=\"medium\".\n2026-11-18T11:51:20.1001710Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (33.4s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"short\" or size=\"small\".\n2026-11-18T11:51:20.1010920Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (59.7s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"moderate\" or size=\"medium\".\n2026-11-18T11:51:20.1028690Z   WARNING: //codex-rs/core:core-unit-tests: Test execution time (38.9s excluding execution overhead) outside of range for LONG tests. Consider setting timeout=\"short\" or size=\"small\".\n2026-11-18T11:51:20.1032530Z   /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/core/core-unit-tests/shard_3_of_8/test_attempts/attempt_1.log\n2026-11-18T11:51:20.1042990Z //codex-rs/app-server:app-server-all-test                                PASSED in 102.7s\n"
+    }
+  ]
+}

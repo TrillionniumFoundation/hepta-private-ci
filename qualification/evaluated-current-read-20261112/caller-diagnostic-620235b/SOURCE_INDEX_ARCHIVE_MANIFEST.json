@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "diagnostic_job_id": "1a1cf87d54c-2564-1a51",
+  "export_job_id": "1a1cfa47752-2564-1a78",
+  "qualification_gate": false,
+  "original": {
+    "bytes": 1353660,
+    "ctime_ns": "1794483158288088073",
+    "inode": "76589296",
+    "mtime_ns": "1794483158288088073",
+    "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-caller-diagnostic-v1/source-index.json",
+    "sha256": "6d89df794cea9667a3fb77bf4af72d3e96ab554ecbfdbbe61adbf4c96e82a8f3"
+  },
+  "archive": {
+    "bytes": 511095,
+    "decoded_bytes_equal_original": true,
+    "encoding": "gzip compresslevel=9 mtime=0",
+    "generated_for_transfer": true,
+    "path": "source-index.original.json.gz",
+    "sha256": "782a8b83b3fbbaf9d0c67ddd296caecc2a45c9cb988e0d263cfaea92c013b320"
+  },
+  "decoder": {
+    "source_git_blob_sha": "8cbc12a06a2a2e8d31e163fe1df4f48a1278b539",
+    "source_sha256": "1fa56b4f28a23d5f70f510e1e706bcd667ebc5871eeaf1085e73906dc2e96d85",
+    "crc32": 382440562,
+    "deflate_blocks": 23,
+    "original_bytes_sha256_verified": true,
+    "indexed_source_files": 6597,
+    "all_13_independently_fetched_offending_source_pins_match": true
+  },
+  "parts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/source-index.original.json.gz.part000",
+      "offset": 0,
+      "bytes": 350000,
+      "sha256": "60cd5fd724632d44b1eeafdadcef18c09c6e02d274323e9f590d48f37af2a115",
+      "git_blob_sha": "d3debdd161735efbc446f592aa774a6a70365d02"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/source-index.original.json.gz.part001",
+      "offset": 350000,
+      "bytes": 161095,
+      "sha256": "f8022fc7a2c4b1d2c88d3fcf8d3860ea422528f657d43957bd27728abd455642",
+      "git_blob_sha": "135b5361f2d72d5cac832396b35076a16970a383"
+    }
+  ]
+}

@@ -1,0 +1,879 @@
+{
+  "schema": "hepta.mem8.g-complete-evidence-index.v1",
+  "created_at": "2026-11-11T05:45:44.901Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "status": "zero_model_native_and_evidence_complete_provider_case_not_executed",
+  "source": {
+    "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "parent": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "parent_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "branch": "codex/mem8-native-context-smoke-20261111-ed353817",
+    "base_branch": "codex/mem8-explicit-context-20261111-ed353817",
+    "changed_files": 4,
+    "additions": 618,
+    "deletions": 1,
+    "source_postimages": [
+      {
+        "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+        "mode": "100644",
+        "preimage_git_blob": "ba41f5a812d08c7384a6f322401c785d8b3acd4e",
+        "postimage_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+        "postimage_sha256": "79e9d1632809346cca719f3c6c15f46493bf412067925bc8d14c7f346f78b128",
+        "postimage_bytes": 11660,
+        "formatter_input_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+        "formatter_changed": false
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+        "mode": "100644",
+        "preimage_git_blob": "54026297a309ef228053ce697855f5181c3b9f2c",
+        "postimage_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+        "postimage_sha256": "212a5970a9996352f20fa4b065c0f97563b1195a78ca40ace20ad8743d409271",
+        "postimage_bytes": 14168,
+        "formatter_input_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+        "formatter_changed": false
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+        "mode": "100644",
+        "preimage_git_blob": null,
+        "postimage_git_blob": "a9444c7ed750ff4d8d47260470d445cfd49ab118",
+        "postimage_sha256": "bd895bc3556db5a22d957dd23be6a9c8a769a57b417fdae4fb1861322663abdc",
+        "postimage_bytes": 5238,
+        "formatter_input_git_blob": "b093cc62a40978da2747fe19986856a872f83af1",
+        "formatter_changed": true
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+        "mode": "100644",
+        "preimage_git_blob": null,
+        "postimage_git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
+        "postimage_sha256": "0e18d2aabe9cef603a2cad8768c6d34903c3c3162ef8b7ef1ae0dfa04e1df085",
+        "postimage_bytes": 19820,
+        "formatter_input_git_blob": "1ede7a330812937290d0b4afa47e8c98864f56c1",
+        "formatter_changed": true
+      }
+    ],
+    "source_patch": {
+      "bytes": 27457,
+      "sha256": "6476fb569f74dfbcaa222cbf2b012ad267779c2306e47e023ee507db7f394dbe"
+    }
+  },
+  "publication": {
+    "pr_number": 5926,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5926",
+    "draft": true,
+    "state": "open",
+    "merged": false,
+    "head_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "base_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "title": "test(mem): add retained native context provider fixture",
+    "updated_at": "2026-11-11T05:35:05Z",
+    "body": "## Problem\n\nThe existing F2 regressions qualify the original episodic writer, source freshness and explicit-context restrictions. They do not yet join that fixture to a real provider through the actual durable native driver. This draft makes one narrow, opt-in path observation reviewable without enabling it in ordinary test runs.\n\n## Change\n\nAdd one ignored Linux-only case under the existing private production-composition fixture. It imports one freshly generated private fact through the original retained writer and source verifier, starts the F2 ExplicitContextOnly App Server, and calls the real AppServerModelDriver with a DurableInferenceControl journal and one explicitly fixture-only Unix final-use claim.\n\nThe nonce is absent from prompts, query values, filenames, config and expected-answer files before dispatch. Success requires the real returned value, two source checks before the claim and two after, the original durable thread/turn terminal and context/authority correlation, an unchanged canonical owner cut and no original fixture outbox dispatch. The existing native client identity retains its deny-only empty tool router.\n\nKeep the original 0700 fixture directory and native journal before any provider start. Record actual outcomes before success checks; unknown acknowledgements retain their original identity and never cause a fresh request retry. Only this case's own tasks are stopped. The fixture signer uses an existing public test-key pattern and is not a deployment credential or independent source owner.\n\n## Source and native validation\n\n- Parent: `0c32926cfec58d986477fc72ba3a4787ab75fde9`; new source: `9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27`; tree: `07192603a5164f4b5d4da24e37595be2a0a04777`.\n- Exactly four test-only paths, +618/-1. No Cargo dependency or production authority API change.\n- Actual repository `just fmt` with Rust 1.96.0 / rustfmt 1.9.0 / just 1.51.0 completed in a separate clone of clean F2. Only the two new files were formatted; no out-of-scope source changed; the donor remained clean.\n- Complete original formatter archive: 41,624 bytes, SHA256 `d2fee84f30985c162ef778c9956c033c74f252bef8be5a7c03ae84c290056c14`. All 43 members, 34 artifact hashes and 26 raw step logs were independently read back; the final patch replays to all four exact postimages.\n- All four published source blobs were fully read back and match those actual formatter postimages. Independent final static review found no must-fix; it is not a compile result.\n- Independent zero-model native run `mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1` passed on this exact source/tree. It started at 2026-11-11 05:18:34.833360 UTC and finished at 05:26:34.961045 UTC, before its separately fixed 06:03:34.833360 UTC deadline.\n- Actual nextest result: **6 passed, 0 failed, 782 skipped**. All six fully qualified names match the predeclared existing F2 control set; the actual commit, revoke and panic child markers are present. The ignored real-provider case was not selected or executed; its enabling provider/context/source-SHA variables were removed. No result from the old F campaign was imported.\n- A fresh `cargo build --locked -p codex-cli --bin codex` on this G checkout bound the real executable via `CARGO_BIN_EXE_codex`. Observed binary: 559,365,856 bytes, SHA256 `49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976`, identical before/after the tests and fix. Its bytes also match F2 because this patch changes only test code; the new build/source receipts were independently recorded.\n- Repository `just fmt --base 0c32926cfec58d986477fc72ba3a4787ab75fde9`, V8 input resolution, the CLI build, six controls and `just fix --locked -p codex-hepta-agentd` all completed on clean exact G HEAD/tree. Source and index rewrite patches are both empty; the four source-file bytes match the published formatter postimages; the F2 donor remained clean.\n- Complete original native archive: **67 files, 49,292 bytes**, SHA256 `3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75`, Git blob `887bd1823ce74a0e579dac39deae6bd9a77fae8c`. The complete archive/receipts/log hashes, six named passes, three actual markers, source bytes and binary metadata were independently read back. Audit blob: `712f89d3b78a32bc101a2b8fcca3947611f7794e`; exact source-tar audit: `f09151dd7f4e6826e7c3d8dd8d48c9ca8108869b`.\n- This qualifies compilation and the six existing controls on G. It does not execute the new provider-memory path, adjudicate every repository CI gate, or permit merging this draft.\n\n## Boundaries\n\nNo G provider request has been issued. The existing ordinary provider smoke's unresolved original turn must be reconciled separately; this new fixture must not replay or replace it. No provider call is authorized by this draft or its zero-model regression phase.\n\nEven a later successful opt-in case would establish only one synthetic fresh-thread context path. The physical provider payload/request count, remote model identity, unseen-source benefit, complete original deployment recovery and independent trust/effect owners remain unverified. Scientific acceptance stays HOLD. F2 and its completed campaign are unchanged.",
+    "body_utf8_bytes": 5180,
+    "body_sha256": "5510908c64b84159fef288b9169ce8a869aaaba7589f80c361e9b69393975716",
+    "body_git_blob_sha": "dc8e557380abc9a10a0795efc0a06414e9a196db"
+  },
+  "current_source_inventory": {
+    "name": "CURRENT_SOURCES_G.json",
+    "intended_local_path": "/workspace/scratch/ed3538174819/mem-native-g-9d9bdfb-ai395/CURRENT_SOURCES_G.json",
+    "bytes": 24806,
+    "sha256": "96c3090369cf2739c0cb2c89a178b813e96d6da093866af036b42c5f8bee0082",
+    "git_blob_sha": "7117afdc5735c361eb0b441340cf8e24d131500e",
+    "paths": 38,
+    "local_save_confirmed": false,
+    "local_save_note": "The requested local write lost the execution transport. The exact immutable blob was then created and completely read back; parent accepted this durable fallback.",
+    "composition": {
+      "base_inventory_paths": 35,
+      "g_overlay_paths": 4,
+      "overlap_paths": [
+        "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs"
+      ],
+      "new_inventory_paths": [
+        "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+        "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+        "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+      ],
+      "unchanged_inventory_paths": 34,
+      "final_paths": 38,
+      "new_repository_files": [
+        "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+        "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+      ],
+      "note": "production_composition_fixture.rs already existed in the F2 repository but was absent from the v6 source inventory. Three inventory additions therefore correspond to two new repository files."
+    }
+  },
+  "formatter": {
+    "run_id": "mem8-g-format-0c32926-ai395-20261111-ed353-v1",
+    "host": "ai395",
+    "run_directory": "/home/qq/mem8-g-format-0c32926-ed353817-20261111-v1",
+    "pty_session_id": "dpty-de77f46bfc411599a6e0fc7f8b71674dce85f06448d345cc97b7e39687e3f894",
+    "source_base": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+    "source_base_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+    "rustc_version": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+    "rustfmt_version": "rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)",
+    "just_version": "just 1.51.0",
+    "changed_paths": [
+      "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+      "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs"
+    ],
+    "outside_candidate": [],
+    "donor_before_after_clean": true,
+    "model_calls": 0,
+    "tests_executed": 0
+  },
+  "native": {
+    "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+    "host": "ai395",
+    "run_directory": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-g-9d9bdfb-20261111-v1",
+    "pty_session_id": "dpty-7ba810bd0597b9b1bef2683e50160fdca14743e1b8e880447dc98f57f9e49b0a",
+    "started_at": "2026-11-11T05:18:34.833360+00:00",
+    "finished_at": "2026-11-11T05:26:34.961045+00:00",
+    "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+    "status": "passed",
+    "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+    "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+    "phases": [
+      {
+        "phase": "format",
+        "receipt_sha256": "1a5ab08fb071954df149f381a25738fbeebac23f3ba4be47d6bc6cad2a90d46e",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log_bytes": 0,
+        "command": [
+          "just",
+          "fmt",
+          "--base",
+          "0c32926cfec58d986477fc72ba3a4787ab75fde9"
+        ],
+        "started_at": "2026-11-11T05:19:16.649490+00:00",
+        "finished_at": "2026-11-11T05:19:17.368027+00:00"
+      },
+      {
+        "phase": "v8-inputs",
+        "receipt_sha256": "05d6bf5c5b6aa56028afc9e7ef13a7c4a1a0ed45de9c81eaf3893c2c3554a7e5",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log_bytes": 0,
+        "command": [
+          "python3",
+          "scripts/hepta_ci_v8.py"
+        ],
+        "started_at": "2026-11-11T05:19:17.420634+00:00",
+        "finished_at": "2026-11-11T05:19:21.535675+00:00"
+      },
+      {
+        "phase": "codex-cli-build",
+        "receipt_sha256": "ee7e4f2c7be3dc97326568d1800a52764621dac8f3ba0fbecabefd74c2fb24eb",
+        "log_sha256": "3887025fe6f0f324a26376ab3435a0f10c9cd242426bdb1a038d8e420767e56f",
+        "log_bytes": 25599,
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "codex-cli",
+          "--bin",
+          "codex"
+        ],
+        "started_at": "2026-11-11T05:19:21.642354+00:00",
+        "finished_at": "2026-11-11T05:21:55.430104+00:00"
+      },
+      {
+        "phase": "agentd-tests",
+        "receipt_sha256": "f0497a0e3784a4e2227429cf54078f839aace5b4e40aeaf6e6be91cb63b522f0",
+        "log_sha256": "3ce5210b8df628a28d1c9a4fbf0c1b7fe9f795e04e4a27c003f1215500c7f4ae",
+        "log_bytes": 41272,
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths) | test(=episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order) | test(=production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement) | test(=production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer) | test(=production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context) | test(=production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads",
+          "1"
+        ],
+        "started_at": "2026-11-11T05:21:55.828112+00:00",
+        "finished_at": "2026-11-11T05:24:49.705240+00:00"
+      },
+      {
+        "phase": "fix-codex-hepta-agentd",
+        "receipt_sha256": "7c98d0c34a3d7f7948f399b846e36a93deb59db94f9f290952e7926e065afebc",
+        "log_sha256": "044135be2fdd0b7de44fec2b34696cbb6fa7e7e7253523c2f4169f735552aaae",
+        "log_bytes": 25331,
+        "command": [
+          "just",
+          "fix",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd"
+        ],
+        "started_at": "2026-11-11T05:24:50.157562+00:00",
+        "finished_at": "2026-11-11T05:26:33.672810+00:00"
+      }
+    ],
+    "passed_cases": [
+      "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+      "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+      "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+      "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+      "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+      "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+    ],
+    "failed_cases": [],
+    "observed_summary_lines": [
+      "     Summary [   2.110s] 6 tests run: 6 passed, 782 skipped"
+    ],
+    "actual_drain_markers": [
+      "commit",
+      "revoke",
+      "panic"
+    ],
+    "source_before_after": {
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "status": ""
+    },
+    "donor_before_after": {
+      "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+      "status": ""
+    },
+    "binary_before_after": {
+      "binding": "CARGO_BIN_EXE_codex; current run child environment only",
+      "build_receipt": "codex-cli-build.json",
+      "bytes": 559365856,
+      "ctime_ns": 1794374515335084000,
+      "device": 66306,
+      "inode": 52215355,
+      "mode": 33216,
+      "mtime_ns": 1794374515172089900,
+      "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target/debug/codex",
+      "sha256": "49bfbb583bc08a549f8f023880875d2541473f5ec9b3ddd613298855fdf3e976",
+      "source_after_build": {
+        "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "status": "",
+        "tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
+      },
+      "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777"
+    },
+    "source_rewrite_bytes": 0,
+    "index_rewrite_bytes": 0,
+    "ignored_provider_case_executions": 0,
+    "shared_cargo_target_released": true
+  },
+  "execution_entry": {
+    "original_input": {
+      "path": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-g-9d9bdfb-20261111-v1/INPUT.json",
+      "version": "66306:48411052:5796:1794374315047196419:1794374315047196419",
+      "bytes": 5796,
+      "sha256": "207c3f7969198cb6564113aaf6fccdb1a5f028c34cdb90bd8e85866576aca9e2",
+      "git_blob_sha": "1d4e2db84aa63079f44f35fbca3c16ec6509e9ad",
+      "source": "Complete one-chunk original-host read bound to FILE_MANIFEST.json entry and GitHub full blob readback",
+      "json": {
+        "base_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "base_tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+        "bindgen_system_include": "/usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "donor": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-f2-0c32926-20261111/source",
+        "dotslash": {
+          "asset_bytes": 777657,
+          "asset_id": 392789328,
+          "asset_name": "dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz",
+          "asset_sha256": "ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691",
+          "asset_url": "https://github.com/meta/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz",
+          "binary_bytes": 1642752,
+          "binary_path": "/home/qq/mem8-owner-20261111-ed353817/dotslash-bootstrap-20261111/installation-v2/bin/dotslash",
+          "binary_sha256": "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936",
+          "github_asset_digest": "sha256:ba6b6908c69db8264efdb8ee32f4906284ea3b77247c611339b5f60160cc5691",
+          "release_id": 307315086,
+          "release_tag": "v0.5.9",
+          "scope": "task directory only; original repository and global tools unchanged",
+          "source_action_commit": "1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "source_action_sha256": "adbd82111bafe09ab5baff9fa7ec55445f05b5379b27905e1888dfdb693c44c6",
+          "status": "installed",
+          "utc": "2026-11-11T03:52:49.191618+00:00",
+          "version_output": "DotSlash 0.5.9\n"
+        },
+        "expected_source_files": [
+          {
+            "formatter_changed": false,
+            "formatter_input_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/production_composition_fixture.rs",
+            "postimage_bytes": 11660,
+            "postimage_git_blob": "af775eb84932c102cb00eb301e4edacd2e3cc6bc",
+            "postimage_sha256": "79e9d1632809346cca719f3c6c15f46493bf412067925bc8d14c7f346f78b128",
+            "preimage_git_blob": "ba41f5a812d08c7384a6f322401c785d8b3acd4e"
+          },
+          {
+            "formatter_changed": false,
+            "formatter_input_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/production_episodic_control_tests.rs",
+            "postimage_bytes": 14168,
+            "postimage_git_blob": "1a2f49b93b9c562b9817874652184f06297615a7",
+            "postimage_sha256": "212a5970a9996352f20fa4b065c0f97563b1195a78ca40ace20ad8743d409271",
+            "preimage_git_blob": "54026297a309ef228053ce697855f5181c3b9f2c"
+          },
+          {
+            "formatter_changed": true,
+            "formatter_input_git_blob": "b093cc62a40978da2747fe19986856a872f83af1",
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs",
+            "postimage_bytes": 5238,
+            "postimage_git_blob": "a9444c7ed750ff4d8d47260470d445cfd49ab118",
+            "postimage_sha256": "bd895bc3556db5a22d957dd23be6a9c8a769a57b417fdae4fb1861322663abdc",
+            "preimage_git_blob": null
+          },
+          {
+            "formatter_changed": true,
+            "formatter_input_git_blob": "1ede7a330812937290d0b4afa47e8c98864f56c1",
+            "mode": "100644",
+            "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+            "postimage_bytes": 19820,
+            "postimage_git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7",
+            "postimage_sha256": "0e18d2aabe9cef603a2cad8768c6d34903c3c3162ef8b7ef1ae0dfa04e1df085",
+            "preimage_git_blob": null
+          }
+        ],
+        "notes": [
+          "Independent new G phase, not an extension of the completed F campaign.",
+          "Exactly six existing controls compile the new ignored provider case without executing it.",
+          "Required provider/context/SHA environment variables removed; no --run-ignored argument.",
+          "Original donor/qualified refs unchanged; one shared Cargo target owner only."
+        ],
+        "phase_budget_seconds": 2700,
+        "provider_requests_authorized": false,
+        "provider_test_selected": false,
+        "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+        "run_name": "native-fresh-g-9d9bdfb-20261111-v1",
+        "schema": "hepta.mem8.g-zero-model-native-input.v1",
+        "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+        "target_dir": "/home/qq/mem8-owner-20261111-ed353817/native-fresh-81889-gcc-20261111/target",
+        "tests": [
+          {
+            "expected_cases": [
+              "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+              "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+              "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+              "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+              "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+              "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+            ],
+            "filter_expression": "test(=app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths) | test(=episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order) | test(=production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement) | test(=production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer) | test(=production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context) | test(=production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner)",
+            "label": "agentd-tests",
+            "package": "codex-hepta-agentd"
+          }
+        ]
+      }
+    },
+    "original_start": {
+      "name": "START.json",
+      "bytes": 942,
+      "sha256": "47fcc37ccb934a5eb294e5c74b0d43e71be79b21f3665bde7dbf5f93ef7018b6",
+      "git_blob_sha": "8967e209c4848a39bc7dd6f1f0bc37ef1f0eb537",
+      "version": "66306:48411053:942:1794374315048409911:1794374315048409911",
+      "json": {
+        "base_sha": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+        "deadline_seconds": 2700,
+        "deadline_utc": "2026-11-11T06:03:34.833360+00:00",
+        "driver_sha256": "b7f8d1c69320779f2011a129b2f22517fd72384e294f65994f14ebe9e7686e28",
+        "existing_agentd_controls_expected": 6,
+        "host": "ai395",
+        "ignored_provider_case_selected": false,
+        "memory_package_tests_this_run": false,
+        "not_production_owner_recovery": true,
+        "original_before": {
+          "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+          "status": "",
+          "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e"
+        },
+        "pid": 1538800,
+        "provider_requests_authorized": false,
+        "purpose": "G zero-model compile and six existing episodic regressions",
+        "run_id": "mem8-native-g-9d9bdfb-ai395-20261111-ed353-v1",
+        "source_sha": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+        "source_tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+        "started_at": "2026-11-11T05:18:34.833360+00:00"
+      }
+    },
+    "driver": {
+      "archive_member": "DRIVER.py",
+      "bytes": 21400,
+      "sha256": "b7f8d1c69320779f2011a129b2f22517fd72384e294f65994f14ebe9e7686e28"
+    },
+    "authorization_state": "Completed zero-model run only. No native rerun or provider/model invocation is authorized by this evidence index."
+  },
+  "archive_member_manifest": {
+    "name": "FILE_MANIFEST.json",
+    "bytes": 10519,
+    "sha256": "f5721978e96b1898a552e170f2798f187e33a9cfc7fe468eece3e94d782ccac2",
+    "git_blob_sha": "5bd6f3184ed64974712832456a689b34c6d5cff1",
+    "version": "66306:48411118:10519:1794374794963921520:1794374794963921520",
+    "entries": [
+      {
+        "bytes": 21400,
+        "path": "DRIVER.py",
+        "sha256": "b7f8d1c69320779f2011a129b2f22517fd72384e294f65994f14ebe9e7686e28"
+      },
+      {
+        "bytes": 5796,
+        "path": "INPUT.json",
+        "sha256": "207c3f7969198cb6564113aaf6fccdb1a5f028c34cdb90bd8e85866576aca9e2"
+      },
+      {
+        "bytes": 1599,
+        "path": "NATIVE_RESULT.json",
+        "sha256": "bea1c364948f77f3d2548f36976656b5f1628bae7bf4688fd0ca237e84798217"
+      },
+      {
+        "bytes": 942,
+        "path": "START.json",
+        "sha256": "47fcc37ccb934a5eb294e5c74b0d43e71be79b21f3665bde7dbf5f93ef7018b6"
+      },
+      {
+        "bytes": 2633,
+        "path": "records/agentd-tests.case-audit.json",
+        "sha256": "77e6e6180a441426cd842bbc45867f40687d48f0fda610ee2b7fb9e7096fe8de"
+      },
+      {
+        "bytes": 1578,
+        "path": "records/agentd-tests.invocation.json",
+        "sha256": "ea8ff7ac71d26f7cc522d14ac311facd3baa4b394e99ef68b05ee728e76350b1"
+      },
+      {
+        "bytes": 43393,
+        "path": "records/agentd-tests.invocation.log",
+        "sha256": "81c05def248490789838f4b2f6d9c966b6e24e67d5449e11880cee719498b5ee"
+      },
+      {
+        "bytes": 2297,
+        "path": "records/agentd-tests.json",
+        "sha256": "f0497a0e3784a4e2227429cf54078f839aace5b4e40aeaf6e6be91cb63b522f0"
+      },
+      {
+        "bytes": 41272,
+        "path": "records/agentd-tests.json.2cc44c503728472aa8588eabbd7871fe.log",
+        "sha256": "3ce5210b8df628a28d1c9a4fbf0c1b7fe9f795e04e4a27c003f1215500c7f4ae"
+      },
+      {
+        "bytes": 462,
+        "path": "records/bindgen-include.json",
+        "sha256": "2d279356529a1df660efe9856b5a4ad04f72b9d0a47d841cd84de7584bcbccdf"
+      },
+      {
+        "bytes": 3,
+        "path": "records/changed-source-after.json",
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      {
+        "bytes": 108,
+        "path": "records/changed-source-after.tar.xz",
+        "sha256": "5ca1b6c461fc194055d52b181f57c63dc1d34c19d041f6395e6f6abc039692bb"
+      },
+      {
+        "bytes": 997,
+        "path": "records/changed-source-before.json",
+        "sha256": "687a33831ee2572d3c4570ec6a90d108dbf37e871233e1c6fbda51b214e4c653"
+      },
+      {
+        "bytes": 11936,
+        "path": "records/changed-source-before.tar.xz",
+        "sha256": "b00ba139d738d02d1d34006f51a57b7b4ef7cf7b98f8288c48712975b29c5edc"
+      },
+      {
+        "bytes": 457,
+        "path": "records/checkout-exact-source.invocation.json",
+        "sha256": "a2af3d43ba9dd7c68bbce87d896c558d23e1fd7fb7dbd3928d2b4c16c7c7e509"
+      },
+      {
+        "bytes": 181,
+        "path": "records/checkout-exact-source.invocation.log",
+        "sha256": "b33c0236ebc9cab80e58a81ced7101dfd1bbd49f1807aee3728aac5a49cf554f"
+      },
+      {
+        "bytes": 590,
+        "path": "records/clone-private-source.invocation.json",
+        "sha256": "af5efe803762bf7a82282fe32492d5f7243ef246e0df71f7aba182ba567ef605"
+      },
+      {
+        "bytes": 98,
+        "path": "records/clone-private-source.invocation.log",
+        "sha256": "e3102768644110bae4f755ef58ff1b53a4f56f85c812beb2b6ac714c25736177"
+      },
+      {
+        "bytes": 442,
+        "path": "records/codex-binary-after.json",
+        "sha256": "c7c209060e36765c10770a632e3cf8e2bb69eb25062346f0c8c21d10b5be5f49"
+      },
+      {
+        "bytes": 730,
+        "path": "records/codex-binary.json",
+        "sha256": "2f5416d8552c01a0d26fa924a37c09cc3decbebbecd3be00720fa35d7e11bc90"
+      },
+      {
+        "bytes": 235,
+        "path": "records/codex-cli-build.case-audit.json",
+        "sha256": "4216f5580e1747738b8382025e25fb2ae7cfff8b93829dcc1c4d4ed41488b035"
+      },
+      {
+        "bytes": 797,
+        "path": "records/codex-cli-build.invocation.json",
+        "sha256": "e12a34a9458912df7e1ab603cde30c694f45e939dba0301427ce906b3d0685e6"
+      },
+      {
+        "bytes": 26959,
+        "path": "records/codex-cli-build.invocation.log",
+        "sha256": "7b53fde47a054c44af12f39049dde6b1ff74634f42b20f40038f4819d7fedb67"
+      },
+      {
+        "bytes": 1512,
+        "path": "records/codex-cli-build.json",
+        "sha256": "ee7e4f2c7be3dc97326568d1800a52764621dac8f3ba0fbecabefd74c2fb24eb"
+      },
+      {
+        "bytes": 25599,
+        "path": "records/codex-cli-build.json.252b04d5827d44cc9888f581f872666a.log",
+        "sha256": "3887025fe6f0f324a26376ab3435a0f10c9cd242426bdb1a038d8e420767e56f"
+      },
+      {
+        "bytes": 1059,
+        "path": "records/dotslash-input.json",
+        "sha256": "b756e947afaed29e250d3a7d0bafc6bc3c6e16d425c2298068c96a36aafe68f8"
+      },
+      {
+        "bytes": 491,
+        "path": "records/dotslash-version.invocation.json",
+        "sha256": "6773392e292e7f86a9902d5690c6423fb0b78e8635613064171745dad40ed2df"
+      },
+      {
+        "bytes": 15,
+        "path": "records/dotslash-version.invocation.log",
+        "sha256": "d62e4d46227f770dbc76773a911ac0e35137a848c99a2fca4f7ed70124319ff7"
+      },
+      {
+        "bytes": 366,
+        "path": "records/drain-markers.json",
+        "sha256": "6df55dd08a660909e939c4e054a7eff32d75252bf693232bd60ac542b203ae62"
+      },
+      {
+        "bytes": 657,
+        "path": "records/environment-controls.json",
+        "sha256": "6f1702a9627dd17ec159f9fdb14a8746de85772a6efff7a71b978161ef7f6a78"
+      },
+      {
+        "bytes": 626,
+        "path": "records/fetch-exact-source.invocation.json",
+        "sha256": "b2aef5b4dca431bf5ae920f3c0e25d281136107fdc40e9ecdfb918eca5312ca0"
+      },
+      {
+        "bytes": 220,
+        "path": "records/fetch-exact-source.invocation.log",
+        "sha256": "b37752e68585729054e5695d356c6107c50fa561d113c88a3d2beb7978eb1d27"
+      },
+      {
+        "bytes": 235,
+        "path": "records/fix-codex-hepta-agentd.case-audit.json",
+        "sha256": "2affa6fba0efa8400ed2d4e74ebb3b2ff92870a3a1341de791982ec89119cb40"
+      },
+      {
+        "bytes": 782,
+        "path": "records/fix-codex-hepta-agentd.invocation.json",
+        "sha256": "1557ac3d62f3ca57bcfc005a6375f371f96e99bd5cd18b2bad59b040bc2c71b1"
+      },
+      {
+        "bytes": 26678,
+        "path": "records/fix-codex-hepta-agentd.invocation.log",
+        "sha256": "a1290a5461a0824209f2784c0bcc3c82adb207b244e6a2caf6548661dc54a680"
+      },
+      {
+        "bytes": 1491,
+        "path": "records/fix-codex-hepta-agentd.json",
+        "sha256": "7c98d0c34a3d7f7948f399b846e36a93deb59db94f9f290952e7926e065afebc"
+      },
+      {
+        "bytes": 25331,
+        "path": "records/fix-codex-hepta-agentd.json.77f3b26c30ed4f209b014ff95e35fb78.log",
+        "sha256": "044135be2fdd0b7de44fec2b34696cbb6fa7e7e7253523c2f4169f735552aaae"
+      },
+      {
+        "bytes": 235,
+        "path": "records/format.case-audit.json",
+        "sha256": "48d43949a8f451e1603df9ca9e8ecad5fc62bb7f5610105e64fe43f4ffa62642"
+      },
+      {
+        "bytes": 759,
+        "path": "records/format.invocation.json",
+        "sha256": "b7a708182e92c6c0e849275bca806993b42dd16d04c793a77cf6079f222b3870"
+      },
+      {
+        "bytes": 1341,
+        "path": "records/format.invocation.log",
+        "sha256": "cbaf27d60a539a195a4618faec62606527f75bada1c317e5265b83f73facd4f5"
+      },
+      {
+        "bytes": 1481,
+        "path": "records/format.json",
+        "sha256": "1a5ab08fb071954df149f381a25738fbeebac23f3ba4be47d6bc6cad2a90d46e"
+      },
+      {
+        "bytes": 0,
+        "path": "records/format.json.1b4b15fa978243339340fff7fd05e3d3.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 0,
+        "path": "records/index-rewrites.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 396,
+        "path": "records/just-version.invocation.json",
+        "sha256": "e5befa7b608ecebfff2018bbd761703e229df534ef8eb321a1ec89484d419f7a"
+      },
+      {
+        "bytes": 12,
+        "path": "records/just-version.invocation.log",
+        "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87"
+      },
+      {
+        "bytes": 415,
+        "path": "records/nextest-version.invocation.json",
+        "sha256": "28fd50382a89b0ecbdd077ae4e1954660f205a036aeef195e2b631a6a4dbcd64"
+      },
+      {
+        "bytes": 171,
+        "path": "records/nextest-version.invocation.log",
+        "sha256": "0525f6ec293e727519a57ddc6b879d5d5eafc896911f2ea5fccadf24033a78f7"
+      },
+      {
+        "bytes": 27465,
+        "path": "records/proposed.patch",
+        "sha256": "50b9a1233522d5c066c28e7b1ac7fe352d08df05490012ab3c1ba845446946d0"
+      },
+      {
+        "bytes": 404,
+        "path": "records/repo-rules.invocation.json",
+        "sha256": "79d65fe10acd25c3049c14bc16097e8947e06348f735f5c6f79a240879b5106f"
+      },
+      {
+        "bytes": 22519,
+        "path": "records/repo-rules.invocation.log",
+        "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      },
+      {
+        "bytes": 415,
+        "path": "records/rustc-version.invocation.json",
+        "sha256": "a4d6baff5f83c887fe6c159aeb49584e0a9a425db7026a7daaf821b20e1d4ad9"
+      },
+      {
+        "bytes": 196,
+        "path": "records/rustc-version.invocation.log",
+        "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+      },
+      {
+        "bytes": 402,
+        "path": "records/rustfmt-version.invocation.json",
+        "sha256": "9199361dbaa33f3a9920c3e928722cf5e8fe1b981fbdaa049477a87f3184eb17"
+      },
+      {
+        "bytes": 45,
+        "path": "records/rustfmt-version.invocation.log",
+        "sha256": "58e77f09cbe97eb2d0ab9174e5523494d03814f2879c8e187ed66370320abc7c"
+      },
+      {
+        "bytes": 127,
+        "path": "records/source-after.json",
+        "sha256": "91776d592280642cf1abcadcc956f83d8e572d7280e8c0f22f945da7104e01cd"
+      },
+      {
+        "bytes": 127,
+        "path": "records/source-before.json",
+        "sha256": "91776d592280642cf1abcadcc956f83d8e572d7280e8c0f22f945da7104e01cd"
+      },
+      {
+        "bytes": 0,
+        "path": "records/source-rewrites.patch",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 581,
+        "path": "records/v8-artifacts.json",
+        "sha256": "fe287b3a103983918df67ac49db2499f5751ecd02cff8e908db1f9cbfbf3bee6"
+      },
+      {
+        "bytes": 295,
+        "path": "records/v8-environment.txt",
+        "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+      },
+      {
+        "bytes": 235,
+        "path": "records/v8-inputs.case-audit.json",
+        "sha256": "48d43949a8f451e1603df9ca9e8ecad5fc62bb7f5610105e64fe43f4ffa62642"
+      },
+      {
+        "bytes": 724,
+        "path": "records/v8-inputs.invocation.json",
+        "sha256": "8397b380c20607a27697df8c83be5131b8eed53ae22505657aaae6e5274776cc"
+      },
+      {
+        "bytes": 1310,
+        "path": "records/v8-inputs.invocation.log",
+        "sha256": "d511f38e70b2fee6558bb4d98a63f203e3cb2ceb2196bd9959e5572dfccd6723"
+      },
+      {
+        "bytes": 1442,
+        "path": "records/v8-inputs.json",
+        "sha256": "05d6bf5c5b6aa56028afc9e7ef13a7c4a1a0ed45de9c81eaf3893c2c3554a7e5"
+      },
+      {
+        "bytes": 0,
+        "path": "records/v8-inputs.json.0641f554657341e8b423af4dbfb4b29f.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "bytes": 512,
+        "path": "records/verify-base-ancestry.invocation.json",
+        "sha256": "f35099316397ac95491f0c837aa940720ddcff206e83c80dc7136e3dfd2ae533"
+      },
+      {
+        "bytes": 0,
+        "path": "records/verify-base-ancestry.invocation.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "additional_archive_member": "FILE_MANIFEST.json",
+    "total_archive_members": 67
+  },
+  "artifacts": [
+    {
+      "name": "CURRENT_SOURCES_G.json",
+      "role": "current_source_inventory",
+      "git_blob_sha": "7117afdc5735c361eb0b441340cf8e24d131500e",
+      "bytes": 24806,
+      "sha256": "96c3090369cf2739c0cb2c89a178b813e96d6da093866af036b42c5f8bee0082",
+      "full_readback_verified": true
+    },
+    {
+      "name": "SOURCE_CAPSULE.json",
+      "role": "four_actual_formatter_source_postimages_and_preimages",
+      "git_blob_sha": "920deb0dc6a0a49a47cd9291eddf1e04522c35bc",
+      "bytes": 56702,
+      "sha256": "5cb33e3183ba2e5175751f57f6b115021ced43a6f9c3b545f8f3b795c9c6f964",
+      "historical_status": "actual_rustfmt_postimages_native_compile_pending",
+      "full_readback_verified": true
+    },
+    {
+      "name": "G_FORMATTER_EVIDENCE.tar.xz",
+      "role": "complete_original_formatter_archive",
+      "git_blob_sha": "82b44ef97739e5e1afb1fb993d16de1545517a4e",
+      "bytes": 41624,
+      "sha256": "d2fee84f30985c162ef778c9956c033c74f252bef8be5a7c03ae84c290056c14",
+      "members": 43,
+      "full_readback_verified": true
+    },
+    {
+      "name": "G_FORMATTER_EVIDENCE.envelope.json",
+      "role": "utf8_base64_transport_of_complete_original_formatter_archive",
+      "git_blob_sha": "ef905c90e86d01ad53e7444de773bfdd78e4dbe4",
+      "bytes": 55776,
+      "sha256": "ede732418a9110159d9cd781c3515d074c8ce3f0d099e2f73b3e3dec19b389fc",
+      "full_readback_verified": true
+    },
+    {
+      "name": "G_NATIVE_EVIDENCE.tar.xz",
+      "role": "complete_original_zero_model_native_archive",
+      "git_blob_sha": "887bd1823ce74a0e579dac39deae6bd9a77fae8c",
+      "bytes": 49292,
+      "sha256": "3babe551f6a029803467dbc89f5ea949c88b93916bb20c3638bb5ba276b50a75",
+      "members": 67,
+      "full_readback_verified": true
+    },
+    {
+      "name": "G_NATIVE_EVIDENCE.envelope.json",
+      "role": "utf8_base64_transport_of_complete_original_zero_model_native_archive",
+      "git_blob_sha": "12b29e78cfe9304469ece71112a33546f55cd0e2",
+      "bytes": 65997,
+      "sha256": "6d11e9ab51cd344dbb91523d11e20cd4ba8a808fc468c6ab3c5b584c088cbec1",
+      "full_readback_verified": true
+    },
+    {
+      "name": "NATIVE_AUDIT.json",
+      "role": "full_native_archive_independent_audit",
+      "git_blob_sha": "712f89d3b78a32bc101a2b8fcca3947611f7794e",
+      "bytes": 6608,
+      "sha256": "69ca626e0dd472a899a480d16720888790bf52db1f98861664222237c9f717d6",
+      "full_readback_verified": true
+    },
+    {
+      "name": "RAW_SOURCE_AUDIT.json",
+      "role": "nested_raw_source_archive_independent_audit",
+      "git_blob_sha": "f09151dd7f4e6826e7c3d8dd8d48c9ca8108869b",
+      "bytes": 1540,
+      "sha256": "34ad5ca51b0c00e268ddb30439518caa1ac34a73b752c36e4a38de6a043932b5",
+      "full_readback_verified": true
+    },
+    {
+      "name": "INPUT.json",
+      "role": "original_native_archive_member_and_execution_entry",
+      "git_blob_sha": "1d4e2db84aa63079f44f35fbca3c16ec6509e9ad",
+      "bytes": 5796,
+      "sha256": "207c3f7969198cb6564113aaf6fccdb1a5f028c34cdb90bd8e85866576aca9e2",
+      "full_readback_verified": true,
+      "host_original_version": "66306:48411052:5796:1794374315047196419:1794374315047196419",
+      "archive_manifest_matches": true
+    },
+    {
+      "name": "G_REVIEW_README.md",
+      "role": "historical_review_and_future_guarded_entry_instructions_not_provider_authorization",
+      "git_blob_sha": "7cd49e50db0cd4436d8ee4c3edfd2ee6483a2d9f",
+      "bytes": 11561,
+      "sha256": "6b8e875f66f02a9c4150b4b5d7300b9bdd17e8999773ba37c6c22bf6ec54c390",
+      "full_readback_verified": true
+    },
+    {
+      "name": "SUCCESSOR_ROUTE_REVIEW.md",
+      "role": "read_only_gap_review_not_benefit_result_or_fresh_source_roster",
+      "git_blob_sha": "247baaf50e0a0fe954d4bfaeec74f2d9a9f5ddbc",
+      "bytes": 17200,
+      "sha256": "a37d6557b08308d054050b55995ad0851239ffd6b52b9724c9a438eb2f5ce23d",
+      "full_readback_verified": true
+    }
+  ],
+  "qualification_binding": {
+    "complete_owner": {
+      "head": "66f570a77c60aac8d33e6cbeac8dfd120ef1d867",
+      "tree": "8eaee893e1e6e43423f288fc654e05c3c95f6179",
+      "scope": "Original complete memory/Agentd/protocol native suite; not rerun on G."
+    },
+    "f2": {
+      "head": "0c32926cfec58d986477fc72ba3a4787ab75fde9",
+      "tree": "0d5aa1544aad103f9099c7c8347d8075d6ecc76e",
+      "scope": "Five test groups, 11 executions, 10 distinct case names; not all rerun on G."
+    },
+    "g": {
+      "head": "9d9bdfbaeeec3c618f3fc80e2f663a29c13f4b27",
+      "tree": "07192603a5164f4b5d4da24e37595be2a0a04777",
+      "scope": "New ignored source compiled, six existing Agentd controls executed, format and scoped fix clean."
+    },
+    "cross_head_result_transfer_allowed": false
+  },
+  "boundaries": {
+    "ignored_provider_test_name": "production_composition::tests::episodic_control::provider::episodic_real_provider_fresh_context_smoke",
+    "ignored_provider_case_executions": 0,
+    "real_memory_provider_consumption": "NOT_EVALUATED",
+    "unseen_successor_benefit": "NOT_EVALUATED",
+    "original_production_owner_recovery": "NOT_ESTABLISHED",
+    "fixture_final_use_issuer_is_independent_production_issuer": false,
+    "prior_ordinary_provider_intent_reconciled_by_g": false,
+    "source_exposure_union_owner": "mem_remote_audit; not inferred from G synthetic nonce",
+    "no_new_test_or_model_started_while_building_this_index": true
+  }
+}

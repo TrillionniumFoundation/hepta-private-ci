@@ -1,0 +1,63 @@
+name: HCSN stdlib controller ledger faults
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_controller_ledger_faults/**
+      - qualification/hcsn_adjoint_adam_resume/native_probe.py
+      - .github/workflows/hcsn-controller-ledger-faults.yml
+permissions:
+  contents: read
+jobs:
+  controller-ledger-faults:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Bind the current fixture and unchanged selected controller AST
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          package=Path('qualification/hcsn_controller_ledger_faults')
+          request=json.loads((package/'REQUEST.json').read_text())
+          historical_bytes=(package/'SOURCE.json').read_bytes()
+          historical=json.loads(historical_bytes)
+          inventory_bytes=(package/'CURRENT_SOURCE.json').read_bytes()
+          inventory=json.loads(inventory_bytes)
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+          require(inventory['identity']=='hcsn-controller-ledger-faults-20261115-current-integration-v1' and inventory['fixture_identity']==request['identity'] and inventory['candidate_numerical_qualification'] is False, 'current fixture regression identity differs')
+          require(hashlib.sha256(historical_bytes).hexdigest()==inventory['historical_source_sha256']=='eed349e79d2b9500c142825c7bc9d394a7f3bb72100a3a0f318e9617c78f8b03', 'historical fixture inventory differs')
+          require(hashlib.sha256((package/'REQUEST.json').read_bytes()).hexdigest()==inventory['historical_request_sha256']=='fdbb31bdcfe248eca99328fb2388b8aae6bbd6544e8707ae16e5410ad3af415d', 'historical fixture request differs')
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          require(head==os.environ['CANDIDATE_COMMIT'], 'current fixture head differs')
+          require(set(inventory['source_sha256'])==set(request['source_paths'])|{str(package/'SOURCE.json')}, 'current fixture source census differs')
+          hashes={name:hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in inventory['source_sha256']}
+          require(hashes==inventory['source_sha256'], 'current fixture source bytes differ')
+          require(request['selected_AST_sha256']==inventory['selected_AST_sha256']==historical['selected_AST_sha256'], 'selected original controller AST differs')
+          source=dict(identity=request['identity'],current_regression_identity=inventory['identity'],source_commit=head,source_sha256=hashes,selected_AST_sha256=request['selected_AST_sha256'],source_inventory_sha256=hashlib.sha256(inventory_bytes).hexdigest())
+          Path(os.environ['RUNNER_TEMP'],'ledger-fixture-source.json').write_text(json.dumps(source,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(source,sort_keys=True))
+          PY
+      - name: Execute the sole pure-stdlib fault fixture
+        run: |
+          python -B -m qualification.hcsn_controller_ledger_faults.probe --source "$RUNNER_TEMP/ledger-fixture-source.json" --output "$RUNNER_TEMP/ledger-fixture"
+      - run: git diff --exit-code && git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stdlib-controller-ledger-fault-originals
+          path: |
+            ${{ runner.temp }}/ledger-fixture
+            ${{ runner.temp }}/ledger-fixture-source.json
+          if-no-files-found: error

@@ -1,0 +1,165 @@
+{
+  "schema": "hepta.mem6.ci-readback.v1",
+  "observed_at_utc": "2026-11-10 13:56:30 UTC",
+  "source_commit": "8cf848babdd897e9f38642d5faf3ba0f72a1303c",
+  "read_only": true,
+  "final_single_snapshot": true,
+  "scope": [
+    "MEM",
+    "architecture",
+    "blocking"
+  ],
+  "runs": [
+    {
+      "run_id": 42822523591,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 129851376338,
+              "name": "Frozen candidate and coverage contracts",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 42822523591,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    },
+    {
+      "run_id": 42822523547,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 129851375818,
+              "name": "Architecture convergence (base-merge)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 42822523547,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 129851376251,
+              "name": "Architecture convergence (source-head)",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 42822523547,
+              "logs_url": null,
+              "steps": null
+            }
+          ]
+        },
+        "isError": false
+      }
+    },
+    {
+      "run_id": 42822524017,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "jobs": [
+            {
+              "id": 129851378284,
+              "name": "Select blocking CI scope",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 42822524017,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 129851378540,
+              "name": "Blob size policy / Blob size policy",
+              "status": "queued",
+              "conclusion": null,
+              "run_id": 42822524017,
+              "logs_url": null,
+              "steps": null
+            },
+            {
+              "id": 129851378864,
+              "name": "Codespell / Check for spelling errors",
+              "status": "completed",
+              "conclusion": "success",
+              "run_id": 42822524017,
+              "logs_url": null,
+              "steps": [
+                {
+                  "name": "Set up job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 1
+                },
+                {
+                  "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 2
+                },
+                {
+                  "name": "Checkout",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 3
+                },
+                {
+                  "name": "Annotate locations with typos",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 4
+                },
+                {
+                  "name": "Codespell",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 5
+                },
+                {
+                  "name": "Check for a clean worktree",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 6
+                },
+                {
+                  "name": "Post Checkout",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 12
+                },
+                {
+                  "name": "Complete job",
+                  "status": "completed",
+                  "conclusion": "success",
+                  "number": 13
+                }
+              ]
+            }
+          ]
+        },
+        "isError": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+test_interrupted_child_uses_only_remaining_hard_deadline (__main__.DeadlineTests.test_interrupted_child_uses_only_remaining_hard_deadline) ... ok
+test_unknown_terminal_cannot_write_qualified_receipt (__main__.DeadlineTests.test_unknown_terminal_cannot_write_qualified_receipt) ... {"mode": "build", "status": "failed-not-qualified", "evidence": "/tmp/rbe-helper-terminal-zoihcdwb"}
+ok
+test_literal_parent_location_is_rejected_before_put (__main__.LocationTests.test_literal_parent_location_is_rejected_before_put) ... ok
+test_valid_absolute_and_root_relative_upload_locations (__main__.LocationTests.test_valid_absolute_and_root_relative_upload_locations) ... ok
+test_file_or_symlink_ancestor_hides_lower_receipts (__main__.OverlayTests.test_file_or_symlink_ancestor_hides_lower_receipts) ... ok
+test_individual_whiteout_still_rejects_missing_receipt (__main__.OverlayTests.test_individual_whiteout_still_rejects_missing_receipt) ... ok
+test_opaque_whiteout_does_not_hide_same_layer_replacements (__main__.OverlayTests.test_opaque_whiteout_does_not_hide_same_layer_replacements) ... ok
+test_regular_replacement_remains_valid (__main__.OverlayTests.test_regular_replacement_remains_valid) ... ok
+test_root_opaque_hides_all_lower_receipts (__main__.OverlayTests.test_root_opaque_hides_all_lower_receipts) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.008s
+
+OK
+test_existing_file_symlink_and_hardlink_are_never_overwritten (__main__.CreationTests.test_existing_file_symlink_and_hardlink_are_never_overwritten) ... ok
+test_new_file_preserves_bytes_mode_and_single_object (__main__.CreationTests.test_new_file_preserves_bytes_mode_and_single_object) ... ok
+test_parent_alias_or_world_writable_directory_is_rejected (__main__.CreationTests.test_parent_alias_or_world_writable_directory_is_rejected) ... ok
+test_complete_existing_dependency_paths_are_retained (__main__.DependencyTests.test_complete_existing_dependency_paths_are_retained) ... ok
+test_missing_unknown_duplicate_and_unprotected_dependencies_are_rejected (__main__.DependencyTests.test_missing_unknown_duplicate_and_unprotected_dependencies_are_rejected) ... ok
+test_duplicate_tool_and_concatenated_archives_are_rejected (__main__.SelectionTests.test_duplicate_tool_and_concatenated_archives_are_rejected) ... ok
+test_exact_member_bytes_are_preserved_on_both_architectures (__main__.SelectionTests.test_exact_member_bytes_are_preserved_on_both_architectures) ... ok
+test_missing_truncated_and_oversized_inputs_are_rejected (__main__.SelectionTests.test_missing_truncated_and_oversized_inputs_are_rejected) ... ok
+test_noncanonical_and_replaced_ancestor_paths_are_rejected (__main__.SelectionTests.test_noncanonical_and_replaced_ancestor_paths_are_rejected) ... ok
+test_owner_write_and_setid_changes_are_rejected (__main__.SelectionTests.test_owner_write_and_setid_changes_are_rejected) ... ok
+test_standard_end_blocks_and_zero_padding_are_preserved (__main__.SelectionTests.test_standard_end_blocks_and_zero_padding_are_preserved) ... ok
+test_symlink_hardlink_and_special_tool_members_are_rejected (__main__.SelectionTests.test_symlink_hardlink_and_special_tool_members_are_rejected) ... ok
+test_wrong_architecture_class_endian_and_non_elf_are_rejected (__main__.SelectionTests.test_wrong_architecture_class_endian_and_non_elf_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.027s
+
+OK
+test_image_substitution_refuses_even_when_build_is_successful (test_qualify_rbe_openssh.BuildBindingTests.test_image_substitution_refuses_even_when_build_is_successful) ... ok
+test_missing_or_wrong_platform_material_cannot_establish_base (test_qualify_rbe_openssh.BuildBindingTests.test_missing_or_wrong_platform_material_cannot_establish_base) ... ok
+test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest (test_qualify_rbe_openssh.BuildBindingTests.test_observed_base_and_tested_local_image_stay_distinct_from_registry_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK

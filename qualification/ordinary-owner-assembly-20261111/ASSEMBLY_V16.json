@@ -1,0 +1,97 @@
+{
+  "schema": "hepta.ordinary-owner-assembly.current-checkpoint.v16",
+  "parent": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "parent_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "status": "unqualified-source-with-source-bound-diagnostics",
+  "registry": {
+    "sections": {
+      "boundary": 492,
+      "protected_file": 358
+    },
+    "git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "bytes": 649761,
+    "sha256": "ba5227700100722f935b710674225c0880a6a771dec418ad6a72c62100065e72",
+    "original_checker": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "original_typed_helper": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+    "checkers_modified": false
+  },
+  "source_correction_manifests": [
+    "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775",
+    "c024d30cebddbb90992a183786a8ca86910b1534",
+    "d4049ab85d0e15d05a0d4dc8edc8783fb9b59d78",
+    "b6fd6b8ffdfa8d74deece06d704b414dbb582798",
+    "242c5cd0d4265c4f2f598fe296b9dd4670851ec0",
+    "beb179eed1f9d7f3b24f6c2970e94bfaf5d8f663",
+    "4b80f5be8633f484013c6bfc7c52a95b317bde13",
+    "1c2ebd0e055285a944a3e10abd8968600c849d7d",
+    "eaa3d5747aade5f3ae123e42ad5118c961ba0bd8"
+  ],
+  "qa_expected_caller_delta": "3696e5d553b5aa6a08c5a78272d749de83d11097",
+  "root_error_observability": {
+    "initial": "0cc7b64069463c6de870df2c4b110955dcc1fd6f",
+    "initial_review": "e54462683747b252c43188069e85af4460752e8f",
+    "publication": "4dd431632aa1e07d004ed1fac30958f912557100",
+    "publication_review": "7205987ce354b02f30ff6ef6e3b7dc1c5a7532dc",
+    "production_protocol_change": false,
+    "native_execution_of_diagnostic_patch": false,
+    "underlying_eagain_cause": "not yet established; preserve original service and child errors"
+  },
+  "full_harness_metadata_delta": "1886d562fa6f09166478638d38bd82b34c04014d",
+  "full_harness_script": "90994f511820596ecceeb2ecc5ca4ecdafa8c653",
+  "root_diagnostic_script": "d109e6d532f1cce69d9afd03483b374d19092ed9",
+  "source_bound_prior_evidence": {
+    "root_715_v2": {
+      "status": "failed",
+      "source": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+      "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+      "executed": 17,
+      "passed": 15,
+      "failed": 2,
+      "skipped_in_selected_junit": 0,
+      "actual_uid": 0,
+      "actual_euid": 0,
+      "timed_out": false,
+      "output_truncated": false,
+      "source_before_after_clean": true,
+      "all_nine_cleanup_checks_passed": true,
+      "original_progress_blob": "4b1feada21104edd44c27a0634da2cc715cb7ed4",
+      "evidence_directory": "root17-diagnostic-715-v2",
+      "qualification_inherited": false
+    },
+    "receiver_diagnostic_198947": {
+      "status": "diagnostic-completed-with-findings",
+      "original_full_index_rust_files": 6470,
+      "failed_boundary_rows_diagnosed": 11,
+      "eligible_files_per_row": 4360,
+      "file_exceptions": 11,
+      "driver_errors": 0,
+      "uncovered_rows": 0,
+      "source_clean_before_after": true,
+      "official_full_verifier": false,
+      "original_result_blob": "5d260233a32de13ca6f3aaa1b7fbfd27c39711be"
+    },
+    "protected_packet": {
+      "input_sha256": "6654eb9d7116e1e47b1373c7a4d7671327a82a78fbeb70fa7b7bafe007ed57ed",
+      "covered_rows": 118,
+      "failures": 0,
+      "uncovered_rows": 240,
+      "classification": "partial packet before Root error context changes; not current full-source qualification",
+      "result_blob": "5781a29e5e5726926358038c4939ff78276887c1"
+    }
+  },
+  "business_acceptance": {
+    "ordinary_complete_chains": 0,
+    "positive_adoption_chains": 0,
+    "ordinary_no_update_rollback_chains": 0,
+    "independent_consumer_accepted": false,
+    "daemon_and_root_os_restart_accepted": false
+  },
+  "remaining_code_and_protocol_gaps": [
+    "Original in-memory retained A cannot survive the actual retirement required for a new Starting incarnation; no authorized reconstruction/rebinding path is assembled.",
+    "Current B contract still requires actual selected-parent provenance, equal cumulative budgets and complete authenticated costs.",
+    "No ordinary product caller connects the late-writer adapter.",
+    "Successor durable source still defaults to NonLearning; ordinary C-to-A experience feedback is not connected."
+  ],
+  "no_main_merge": true,
+  "no_qualification_inheritance": true
+}

@@ -1,0 +1,469 @@
+{
+  "schema": "hcsn-draft-assets-control-ledger-v1",
+  "scope": "Control acknowledgements and complete terminal PTY observations; no credentials or payload base64 included.",
+  "three_assets_v1": {
+    "source": {
+      "bytes": 15950,
+      "sha256": "d39717f4f8992a445069cd7b14ee3852116c3afdbee4ebe14ae8a28a85b22f5b"
+    },
+    "write": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"d39717f4f8992a445069cd7b14ee3852116c3afdbee4ebe14ae8a28a85b22f5b\",\"size\":15950,\"version\":\"2050:53670870:15950:1794329349980460555:1794329349993969644\",\"written\":15950}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "request": {
+      "host": "desktop",
+      "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "args": [
+        "-B",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/reconcile_remaining_draft_assets_v1.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+      "idempotency_key": "hcsn-draft-three-assets-reconcile-c385-v1",
+      "rows": 30,
+      "cols": 180
+    },
+    "start_utc": "2026-11-10T16:49:20.994Z",
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-524e533aebc21e023f12aa6ffcf736e4a9553953b2500be067f90e7b4b7a1bdd\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794329369862,\"output_complete\":false,\"owner_pid\":1723755,\"pid\":1723762,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "terminal": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-524e533aebc21e023f12aa6ffcf736e4a9553953b2500be067f90e7b4b7a1bdd/output.log\",\"available_end\":641,\"bytes_hex\":\"7b226173736574223a20226863736e2d776964746831362d76362d61756469742d32303236313131302e7a6970222c2022737461747573223a202266756c6c5f62797465735f6372635f616e645f616e6f6e796d6f75735f69736f6c6174696f6e5f7665726966696564222c202275706c6f61645f617474656d70746564223a2066616c73657d0d0a7b226173736574223a20226f6666696369616c2d6c6f63616c697a6174696f6e2d636c6f75642e7a6970222c2022737461747573223a20226661696c65645f6f725f756e6b6e6f776e5f6e6f5f7265747279222c202275706c6f61645f617474656d70746564223a2066616c73657d0d0a7b22737461747573223a2022636f6d706c657465645f776974685f6661696c65645f6f725f756e6b6e6f776e5f617373657473222c202272656365697074223a20222f686f6d652f7169616e2d71692f68657074612d6863736e2d636f72652d73747564792d32303236313131302d633338352d747261696e696e672f64726166742d74687265652d6173736574732d7265636f6e63696c652d76312f726563656970742e6a736f6e222c202276657269666965645f617373657473223a20322c20226472697665725f77616c6c5f7365636f6e64735f61667465725f696d706f727473223a203131312e39393536313334323539373030387d0d0a\",\"chunk_sha256\":\"f271d6a3f2c79e7a1ef66bf3035e909be36a86a8ead58d9f07f78b69d60902b7\",\"host\":\"desktop\",\"next_offset\":641,\"offset\":139,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-524e533aebc21e023f12aa6ffcf736e4a9553953b2500be067f90e7b4b7a1bdd\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":641,\"bytes_stored\":641,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794329369862,\"exit_code\":2,\"output_complete\":true,\"owner_pid\":1723755,\"pid\":1723762,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"asset\\\": \\\"hcsn-width16-v6-audit-20261110.zip\\\", \\\"status\\\": \\\"full_bytes_crc_and_anonymous_isolation_verified\\\", \\\"upload_attempted\\\": false}\\r\\n{\\\"asset\\\": \\\"official-localization-cloud.zip\\\", \\\"status\\\": \\\"failed_or_unknown_no_retry\\\", \\\"upload_attempted\\\": false}\\r\\n{\\\"status\\\": \\\"completed_with_failed_or_unknown_assets\\\", \\\"receipt\\\": \\\"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1/receipt.json\\\", \\\"verified_assets\\\": 2, \\\"driver_wall_seconds_after_imports\\\": 111.99561342597008}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "official_v2": {
+    "source": {
+      "bytes": 16201,
+      "sha256": "767633a79d94acbd79704d14c8d62213b2b315be2b7929866f85459879fed151"
+    },
+    "write": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"767633a79d94acbd79704d14c8d62213b2b315be2b7929866f85459879fed151\",\"size\":16201,\"version\":\"2050:53670875:16201:1794329635873439203:1794329635875428139\",\"written\":16201}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "request": {
+      "host": "desktop",
+      "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "args": [
+        "-B",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/archive_official_data_draft_v2.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+      "idempotency_key": "hcsn-official-data-draft-c385-v2",
+      "rows": 30,
+      "cols": 180
+    },
+    "start_utc": "2026-11-10T16:53:59.143Z",
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-e7b593ed3f8be0d4519f32d5b52186c6813c0d9b031eddc18debfd1d109f550b\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794329640517,\"output_complete\":false,\"owner_pid\":1735342,\"pid\":1735343,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "terminal": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-e7b593ed3f8be0d4519f32d5b52186c6813c0d9b031eddc18debfd1d109f550b/output.log\",\"available_end\":355,\"bytes_hex\":\"7b226173736574223a20226f6666696369616c2d6c6f63616c697a6174696f6e2d636c6f75642e7a6970222c2022737461747573223a20226661696c65645f6f725f756e6b6e6f776e5f6e6f5f7265747279222c202275706c6f61645f617474656d70746564223a2066616c73657d0d0a7b22737461747573223a2022636f6d706c657465645f776974685f6661696c65645f6f725f756e6b6e6f776e5f617373657473222c202272656365697074223a20222f686f6d652f7169616e2d71692f68657074612d6863736e2d636f72652d73747564792d32303236313131302d633338352d747261696e696e672f6f6666696369616c2d646174612d64726166742d76322f726563656970742e6a736f6e222c202276657269666965645f617373657473223a20302c20226472697665725f77616c6c5f7365636f6e64735f61667465725f696d706f727473223a2033362e35393230363936313838363935377d0d0a\",\"chunk_sha256\":\"4277bc20f51b164b4453d381f158917c881e616dd434d84867e2db5b9c88138a\",\"host\":\"desktop\",\"next_offset\":355,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-e7b593ed3f8be0d4519f32d5b52186c6813c0d9b031eddc18debfd1d109f550b\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":355,\"bytes_stored\":355,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794329640517,\"exit_code\":2,\"output_complete\":true,\"owner_pid\":1735342,\"pid\":1735343,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"asset\\\": \\\"official-localization-cloud.zip\\\", \\\"status\\\": \\\"failed_or_unknown_no_retry\\\", \\\"upload_attempted\\\": false}\\r\\n{\\\"status\\\": \\\"completed_with_failed_or_unknown_assets\\\", \\\"receipt\\\": \\\"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official-data-draft-v2/receipt.json\\\", \\\"verified_assets\\\": 0, \\\"driver_wall_seconds_after_imports\\\": 36.59206961886957}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "main_v3": {
+    "source": {
+      "bytes": 9260,
+      "sha256": "92fab28f985b1accaa82d980e3a55a097931a8850054d78d69b4ec85dc1fe044"
+    },
+    "write": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"92fab28f985b1accaa82d980e3a55a097931a8850054d78d69b4ec85dc1fe044\",\"size\":9260,\"version\":\"16777233:600575990:9260:1794330479828503758:1794330479828883388\",\"written\":9260}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "request": {
+      "host": "main",
+      "executable": "/opt/homebrew/bin/python3",
+      "args": [
+        "-B",
+        "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official_data_main_upload_v3.py"
+      ],
+      "cwd": "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery",
+      "idempotency_key": "hcsn-official-data-main-upload-c385-v3",
+      "rows": 30,
+      "cols": 180
+    },
+    "start_utc": "2026-11-10T17:08:02.606Z",
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"main\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-a9bef93b36c0dc9cebf6bbc14ebe4e611ceec7314edc93782aa09e78e16a3fbd\",\"status\":{\"boot\":\"{ sec = 1791114158, usec = 137869 } Sun Oct  4 19:42:38 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794330505308,\"output_complete\":false,\"owner_pid\":30057,\"pid\":30058,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "main_v5": {
+    "source": {
+      "bytes": 9249,
+      "sha256": "2f16122d67a30a2fb2a20da574310b89f6e3ab162df528ee45e2ba8fa03a6b8b"
+    },
+    "write": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"2f16122d67a30a2fb2a20da574310b89f6e3ab162df528ee45e2ba8fa03a6b8b\",\"size\":9249,\"version\":\"16777233:600577003:9249:1794330697276480905:1794330697277056585\",\"written\":9249}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "request": {
+      "host": "main",
+      "executable": "/opt/homebrew/bin/python3",
+      "args": [
+        "-B",
+        "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official_data_main_upload_v5.py"
+      ],
+      "cwd": "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery",
+      "idempotency_key": "hcsn-official-data-main-upload-c385-v5",
+      "rows": 30,
+      "cols": 180
+    },
+    "start_utc": "2026-11-10T17:11:38.380Z",
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"main\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-e5740d6a91e6d01147725998d8bcbe1f8d35579d79d42bfd83de0733c9847ae9\",\"status\":{\"boot\":\"{ sec = 1791114158, usec = 137869 } Sun Oct  4 19:42:38 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794330700345,\"output_complete\":false,\"owner_pid\":31033,\"pid\":31034,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "desktop_v4": {
+    "source": {
+      "bytes": 14110,
+      "sha256": "11f2d2fdba2b10047ade499d9a2a00b3520c4b7a9d896e76ba6b1ca7ee5fdac8"
+    },
+    "write": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"mode\":384,\"sha256\":\"11f2d2fdba2b10047ade499d9a2a00b3520c4b7a9d896e76ba6b1ca7ee5fdac8\",\"size\":14110,\"version\":\"2050:53670888:14110:1794331285697001470:1794331285703474244\",\"written\":14110}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "request": {
+      "host": "desktop",
+      "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+      "args": [
+        "-B",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official_data_desktop_readback_v4.py"
+      ],
+      "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+      "idempotency_key": "hcsn-official-data-readback-c385-v4",
+      "rows": 30,
+      "cols": 180
+    },
+    "start_utc": "2026-11-10T17:21:26.028Z",
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-6fdc867496946af3e1b02d4dec0533c91bd21bd2f5e933048ef2ecf6dfd54538\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794331300119,\"output_complete\":false,\"owner_pid\":1786434,\"pid\":1786442,\"state\":\"running\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "archives": {
+    "desktop": {
+      "request": {
+        "host": "desktop",
+        "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "args": [
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/archive_asset_reconciliation_receipts_v1.py",
+          "--root",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-three-assets-reconcile-v1",
+          "--root",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official-data-draft-v2",
+          "--root",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official-data-draft-v4-desktop",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/reconcile_remaining_draft_assets_v1.py",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/archive_official_data_draft_v2.py",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official_data_desktop_readback_v4.py",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-assets-desktop-receipts-c385-v1.zip"
+        ],
+        "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+        "idempotency_key": "hcsn-draft-assets-desktop-receipts-c385-v1",
+        "cols": 180,
+        "rows": 30
+      },
+      "write": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"b3c88f6336ad8454380059604d45e1956726515ec8ef400fab7a822641333e66\",\"size\":4337,\"version\":\"2050:53670893:4337:1794331485996245391:1794331486076375301\",\"written\":4337}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-baae34734d7220f472c2f31a11b4f58147ab1bb2f1afb61c9554a636b6688d8f\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794331492526,\"output_complete\":false,\"owner_pid\":1793269,\"pid\":1793270,\"state\":\"running\"}}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "terminal": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-baae34734d7220f472c2f31a11b4f58147ab1bb2f1afb61c9554a636b6688d8f/output.log\",\"available_end\":464,\"bytes_hex\":\"7b2270617468223a20222f686f6d652f7169616e2d71692f68657074612d6863736e2d636f72652d73747564792d32303236313131302d633338352d747261696e696e672f64726166742d6173736574732d6465736b746f702d72656365697074732d633338352d76312e7a6970222c20226279746573223a203131333535382c2022736861323536223a202263313563306137353365323839313937636235313765663164356131313661393861356666356236396138623235636566393363313637393938393735313532222c20226d656d62657273223a2039362c20226578636c756465645f7061796c6f616473223a20352c20226f726967696e616c735f756e6368616e676564223a20747275652c2022617263686976655f6372635f616e645f616c6c5f696e636c756465645f62797465735f7665726966696564223a20747275652c202277616c6c5f7365636f6e64735f61667465725f696d706f727473223a20302e323935343530393134383833393836312c202270726f636573735f6370755f7365636f6e64735f73696e63655f70726f636573735f7374617274223a20302e3332353031303339362c2022736369656e74696669635f637265646974223a2066616c73657d0d0a\",\"chunk_sha256\":\"7118e516012befacb5a630441fd47372fad0a0265080d7d279ba27acf6de0c64\",\"host\":\"desktop\",\"next_offset\":464,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-baae34734d7220f472c2f31a11b4f58147ab1bb2f1afb61c9554a636b6688d8f\",\"status\":{\"boot\":\"14f92beb-43c6-4786-839e-b57307ae8048\",\"bytes_seen\":464,\"bytes_stored\":464,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794331492526,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":1793269,\"pid\":1793270,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"path\\\": \\\"/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/draft-assets-desktop-receipts-c385-v1.zip\\\", \\\"bytes\\\": 113558, \\\"sha256\\\": \\\"c15c0a753e289197cb517ef1d5a116a98a5ff5b69a8b25cef93c167998975152\\\", \\\"members\\\": 96, \\\"excluded_payloads\\\": 5, \\\"originals_unchanged\\\": true, \\\"archive_crc_and_all_included_bytes_verified\\\": true, \\\"wall_seconds_after_imports\\\": 0.2954509148839861, \\\"process_cpu_seconds_since_process_start\\\": 0.325010396, \\\"scientific_credit\\\": false}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "exact_pretty_receipt_read": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    "main": {
+      "request": {
+        "host": "main",
+        "executable": "/opt/homebrew/bin/python3",
+        "args": [
+          "-B",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/archive_asset_reconciliation_receipts_v1.py",
+          "--root",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/cloud-p2-draft-upload-v1",
+          "--root",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official-data-draft-v3-main",
+          "--root",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official-data-draft-v5-main",
+          "--source",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/cloud_p2_draft_upload.py",
+          "--source",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official_data_main_upload_v3.py",
+          "--source",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/official_data_main_upload_v5.py",
+          "--output",
+          "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/draft-assets-main-receipts-c385-v1.zip"
+        ],
+        "cwd": "/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery",
+        "idempotency_key": "hcsn-draft-assets-main-receipts-c385-v1",
+        "cols": 180,
+        "rows": 30
+      },
+      "write": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"mode\":384,\"sha256\":\"b3c88f6336ad8454380059604d45e1956726515ec8ef400fab7a822641333e66\",\"size\":4337,\"version\":\"16777233:600582569:4337:1794331501110585603:1794331501110986940\",\"written\":4337}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "start": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"main\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-be205e938b9835c224ff2ae716d12de2b204675b8840630563002abd517f9534\",\"status\":{\"boot\":\"{ sec = 1791114158, usec = 137869 } Sun Oct  4 19:42:38 2026\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1794331502920,\"output_complete\":false,\"owner_pid\":35035,\"pid\":35036,\"state\":\"running\"}}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "terminal": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"archive_path\":\"/Users/qianqi/.local/state/hepta-runtime-mac-worker/terminals/dpty-be205e938b9835c224ff2ae716d12de2b204675b8840630563002abd517f9534/output.log\",\"available_end\":452,\"bytes_hex\":\"7b2270617468223a20222f55736572732f7169616e71692f68657074612d6863736e2d703070352d32303236313131302d633338352f7265636f766572792f64726166742d6173736574732d6d61696e2d72656365697074732d633338352d76312e7a6970222c20226279746573223a2034353734312c2022736861323536223a202234343766326435333731393030356261316666383230303961306563376432313937636565633335316461356434346365376361623365316566343432623032222c20226d656d62657273223a2034342c20226578636c756465645f7061796c6f616473223a20312c20226f726967696e616c735f756e6368616e676564223a20747275652c2022617263686976655f6372635f616e645f616c6c5f696e636c756465645f62797465735f7665726966696564223a20747275652c202277616c6c5f7365636f6e64735f61667465725f696d706f727473223a20302e30323730323238333330303435393338352c202270726f636573735f6370755f7365636f6e64735f73696e63655f70726f636573735f7374617274223a20302e3034313537392c2022736369656e74696669635f637265646974223a2066616c73657d0d0a\",\"chunk_sha256\":\"d3afaa70214de6d8045ea6f0e80a1cc795d03d1181b259f135b7316a0b8df55b\",\"host\":\"main\",\"next_offset\":452,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-be205e938b9835c224ff2ae716d12de2b204675b8840630563002abd517f9534\",\"status\":{\"boot\":\"{ sec = 1791114158, usec = 137869 } Sun Oct  4 19:42:38 2026\",\"bytes_seen\":452,\"bytes_stored\":452,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794331502920,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":35035,\"pid\":35036,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"path\\\": \\\"/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/draft-assets-main-receipts-c385-v1.zip\\\", \\\"bytes\\\": 45741, \\\"sha256\\\": \\\"447f2d53719005ba1ff82009a0ec7d2197ceec351da5d44ce7cab3e1ef442b02\\\", \\\"members\\\": 44, \\\"excluded_payloads\\\": 1, \\\"originals_unchanged\\\": true, \\\"archive_crc_and_all_included_bytes_verified\\\": true, \\\"wall_seconds_after_imports\\\": 0.02702283300459385, \\\"process_cpu_seconds_since_process_start\\\": 0.041579, \\\"scientific_credit\\\": false}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "exact_pretty_receipt_read": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/draft-assets-main-receipts-c385-v1.zip.receipt.json\",\"sha256\":\"218d35c3d91c7855d3e8c166b51cc2875a5c28c86b4e2315b83e79f443d2f2f2\",\"size\":473,\"text\":\"{\\n  \\\"archive_crc_and_all_included_bytes_verified\\\": true,\\n  \\\"bytes\\\": 45741,\\n  \\\"excluded_payloads\\\": 1,\\n  \\\"members\\\": 44,\\n  \\\"originals_unchanged\\\": true,\\n  \\\"path\\\": \\\"/Users/qianqi/hepta-hcsn-p0p5-20261110-c385/recovery/draft-assets-main-receipts-c385-v1.zip\\\",\\n  \\\"process_cpu_seconds_since_process_start\\\": 0.041579,\\n  \\\"scientific_credit\\\": false,\\n  \\\"sha256\\\": \\\"447f2d53719005ba1ff82009a0ec7d2197ceec351da5d44ce7cab3e1ef442b02\\\",\\n  \\\"wall_seconds_after_imports\\\": 0.02702283300459385\\n}\\n\",\"version\":\"16777233:600582599:473:1794331502997344980:1794331502997344980\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "initial_read_failures": {
+    "width16_receipt": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      }
+    },
+    "width16_prior_pty": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/h.pty_read`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    }
+  },
+  "source_file_transfer": {
+    "schema": "hcsn-official-data-native-transfer-v3",
+    "host": "desktop",
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/official-localization-cloud-transfer-v3.zip",
+    "upload_id": "hcsn-official-localization-transfer-c385-v3",
+    "expected_version": "absent",
+    "size": 6290730,
+    "sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+    "offset": 196608,
+    "source": {
+      "path": "/workspace/scratch/c385a7439f8e/official-localization-cloud.zip",
+      "bytes": 6290730,
+      "sha256": "6660124b4d1fd98963c56a6804bbb0ca0c5ee12edc9b772c8a867148af20d0da",
+      "zip_crc_passed": true
+    },
+    "started_utc": "2026-11-10T16:59:37.939Z",
+    "chunks": [
+      {
+        "offset": 0,
+        "bytes": 196608,
+        "sha256": "596a926469785933678b57c665e82fe22b8b3817b3b9946b2627a4c6d70e2ed2",
+        "started_utc": "2026-11-10T16:59:45.421Z",
+        "tool_elapsed_seconds": 21.827,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"next_offset\":196608,\"upload_id\":\"hcsn-official-localization-transfer-c385-v3\",\"visible\":false}"
+            }
+          ],
+          "structuredContent": null,
+          "isError": false
+        }
+      },
+      {
+        "offset": 196608,
+        "bytes": 524288,
+        "pieces": [
+          {
+            "offset": 196608,
+            "bytes": 196608,
+            "sha256": "6b0d212ceb2054b630a287b7986df14e22c1fc5862b43c0a7e97bf0a13f65b47"
+          },
+          {
+            "offset": 393216,
+            "bytes": 196608,
+            "sha256": "badba124b4d119c24da3a5aa247e88cea83c4a66621a90322e4a1f1a9ee64b31"
+          },
+          {
+            "offset": 589824,
+            "bytes": 131072,
+            "sha256": "85a3e2c8329fde4b9efda55589f17231a190cebca7de325ff60c7d7ff141fda9"
+          }
+        ],
+        "tool_elapsed_seconds": 120.509,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.binary_upload`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      },
+      {
+        "offset": 196608,
+        "bytes": 524288,
+        "reconciles_prior_attempt": true,
+        "tool_elapsed_seconds": 120.421,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/h.binary_upload`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      }
+    ],
+    "status": "paused_uncommitted_stage_outcome_unknown",
+    "pending_reconciliation": {
+      "offset": 196608,
+      "bytes": 524288,
+      "started_utc": "2026-11-10T17:03:42.340Z"
+    },
+    "stopped_utc": "2026-11-10T17:09:15.767Z",
+    "source_not_published_by_this_transfer": true
+  }
+}

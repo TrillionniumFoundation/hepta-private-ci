@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.lane-e-unwired-objective-format-context.v1",
+  "state": "SOURCE_ONLY_HOLD",
+  "sourceCommit": "03ec884b593e870e8c07f53815e62a387bd50170",
+  "purpose": "Preserve the original formatter edition, configuration and pinned toolchain without changing the custody source bytes.",
+  "originalSourceManifest": "MANIFEST.json",
+  "files": [
+    {
+      "originalPath": "codex-rs/Cargo.toml",
+      "custodyPath": "library-recovery/lane-e-unwired-objective-03ec/codex-rs/Cargo.toml",
+      "gitMode": "100644",
+      "gitBlob": "1bd955411bc0da131f669f87a67173c32c5175bb",
+      "bytes": 23684,
+      "sha256": "89de080ee62ab8d32cd09d197e6bd6cc1abb93c5af5b5d371f828820267aa064"
+    },
+    {
+      "originalPath": "codex-rs/hepta-agentd/Cargo.toml",
+      "custodyPath": "library-recovery/lane-e-unwired-objective-03ec/codex-rs/hepta-agentd/Cargo.toml",
+      "gitMode": "100644",
+      "gitBlob": "a32f7eb893fd529692fd2005ca02ac9e8f853b95",
+      "bytes": 4905,
+      "sha256": "3641050d95ed757d30d0848ed7b04584f8bafdbf664341fbc462f0b44966c417"
+    },
+    {
+      "originalPath": "codex-rs/rustfmt.toml",
+      "custodyPath": "library-recovery/lane-e-unwired-objective-03ec/codex-rs/rustfmt.toml",
+      "gitMode": "100644",
+      "gitBlob": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+      "bytes": 164,
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    },
+    {
+      "originalPath": "codex-rs/rust-toolchain.toml",
+      "custodyPath": "library-recovery/lane-e-unwired-objective-03ec/codex-rs/rust-toolchain.toml",
+      "gitMode": "100644",
+      "gitBlob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "bytes": 78,
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    }
+  ],
+  "workspaceComplete": false,
+  "buildOrExecutionApproved": false,
+  "qualificationClaim": false
+}

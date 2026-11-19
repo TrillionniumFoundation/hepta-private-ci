@@ -1,0 +1,60 @@
+{
+  "phase": "root_native_transport_in_progress",
+  "frozen_qualification_root": "/workspace/scratch/839e1cbe28dd/hepta-private-ci/qualification/ctrl1-decision-cell-20261108",
+  "sealed_package": "/workspace/scratch/839e1cbe28dd/ctrl1-evidence-package.json",
+  "package_sha256": "2fa9254ac0ef2d2ec8959850ecc5940a3a459fabafc0018b660bbb866a128e9b",
+  "qualification_manifest_sha256": "6b27ddef46a6102b4621de3440babdfff64dea847dec4f8ca1d8b8fc015b7f62",
+  "archive_sha256": "2768986ac57e3dcb5e120487ffb4abcdb1011157ca5aa532b8241b843828b421",
+  "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "native_repo": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+  "native_expected_head": "368ef32be4388d47f3faddf0ac78806e33d680cd",
+  "native_expected_tree": "69a0af67501f43d637e840ddbc6f223f1547f6c9",
+  "native_writer": "root ONLY; ctrl1_native_channel stopped Mac mutations and is writing scratch helper only",
+  "transport_strategy": "h_shell_start fixed keys, immutable chunks, SHA checked before/after exclusive atomic publication; binary_write/file_info/host_health MCP timed out",
+  "transport_command_directory": "/workspace/scratch/839e1cbe28dd/ctrl1-native-transport-commands",
+  "transport_command_count": 54,
+  "active_functions_cell": "10",
+  "active_cell_scope": "4 concurrent workers launching indices4..53; do not launch same work with new keys; notify outputs contain job IDs; final functions store ctrl1_root_transport_jobs available after cell completes",
+  "first_four_jobs": [
+    {
+      "index": 0,
+      "job_id": "1a1bb33e377-13c47-119"
+    },
+    {
+      "index": 1,
+      "job_id": "1a1bb34a330-13c47-11e"
+    },
+    {
+      "index": 2,
+      "job_id": "1a1bb3503e4-13c47-120"
+    },
+    {
+      "index": 3,
+      "job_id": "1a1bb345880-13c47-11b"
+    }
+  ],
+  "first_four_result": "all EOF,stderr empty, exact target size/SHA published",
+  "native_reconcile_job": "1a1bb215514-13c47-c0",
+  "core_code_commit": "472c825a87220574acc5338afe59558e1ad2038f",
+  "base_head": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "branch": "research/ctrl1-decision-cell-20261108",
+  "base_branch": "research/ndu-generation-v4-20261108-986c",
+  "parent_pr": 5336,
+  "new_pr": null,
+  "publication_permission": "Already authorized; no repeat permission. Root creates sole dependent draftPR after native remote SHA verification. No merge/review request.",
+  "next": [
+    "Finish transport cell10, retain job IDs, reassemble 5parts from 32768-byte chunks using sealed manifest and verify allSHAs",
+    "Review scratch native-evidence-import.py from ctrl1_native_channel then transmit compressed helper and run via root h_shell_start; it creates4evidence commits only",
+    "Try normal nativegitpush with bounded timeout; if blocked use scratch ctrl1-native-api-publish.py via existing nativegh; preserve exactGitSHAs; noforce",
+    "Root GitHubconnector createDraftPR, verifyremotehead/manifest/checks, finalChinese findings."
+  ],
+  "api_helper": "/workspace/scratch/839e1cbe28dd/ctrl1-native-api-publish.py",
+  "api_helper_sha256": "d3417c09e23ada34fbf3058cf146bd545eab04ce8f24a9f8d6c548009ebf77fe",
+  "do_not_edit": [
+    "sealed qualification files",
+    "core scripts/ndu_ctrl1",
+    "two auditor files",
+    "raw first attempts or accepted repeats"
+  ],
+  "scientific_status": "All qualified replay passed:96dev864exact13824trajectories; CPU72workers576exact144events. 61native tests. ScientificpromotionHOLD/productionnone. Both first attempts rejected and preserved."
+}

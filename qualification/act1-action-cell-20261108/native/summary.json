@@ -1,0 +1,93 @@
+{
+  "baselines": {
+    "deterministic_durable_workflow": {
+      "actual_full_goal": 5,
+      "dispatches": 10,
+      "duplicate_effects": 0,
+      "false_success": 0,
+      "max_dispatches_per_row": 1,
+      "max_queries_per_row": 2,
+      "recovery_queries": 14,
+      "reported_success": 4,
+      "rows": 10,
+      "unknown": 6,
+      "unknown_with_any_effect": 3,
+      "unknown_with_full_goal_satisfied": 1,
+      "unknown_with_partial_effects": 2,
+      "unknown_with_zero_effects": 3
+    },
+    "flat_skill_library": {
+      "actual_full_goal": 5,
+      "dispatches": 10,
+      "duplicate_effects": 0,
+      "false_success": 0,
+      "max_dispatches_per_row": 1,
+      "max_queries_per_row": 2,
+      "recovery_queries": 14,
+      "reported_success": 4,
+      "rows": 10,
+      "unknown": 6,
+      "unknown_with_any_effect": 3,
+      "unknown_with_full_goal_satisfied": 1,
+      "unknown_with_partial_effects": 2,
+      "unknown_with_zero_effects": 3
+    },
+    "handwritten_dsl_macro": {
+      "actual_full_goal": 5,
+      "dispatches": 10,
+      "duplicate_effects": 0,
+      "false_success": 0,
+      "max_dispatches_per_row": 1,
+      "max_queries_per_row": 2,
+      "recovery_queries": 14,
+      "reported_success": 4,
+      "rows": 10,
+      "unknown": 6,
+      "unknown_with_any_effect": 3,
+      "unknown_with_full_goal_satisfied": 1,
+      "unknown_with_partial_effects": 2,
+      "unknown_with_zero_effects": 3
+    }
+  },
+  "clippy_warnings": 0,
+  "cross_restart_global_budget_implemented": false,
+  "evaluation": "single_effect_conformance",
+  "formatted_tree": "74fad34ae160c07c5844450ac2dbe9c23a1214c3",
+  "formatting_changed_paths": [
+    "codex-rs/hepta-automation/tests/action_skill_support/destination.rs"
+  ],
+  "generalization_measured": false,
+  "learned_hierarchy_benefit_proved": false,
+  "matrix": {
+    "actual_full_goal": 15,
+    "dispatches": 30,
+    "duplicate_effects": 0,
+    "false_success": 0,
+    "max_dispatches_per_row": 1,
+    "max_queries_per_row": 2,
+    "recovery_queries": 42,
+    "reported_success": 12,
+    "rows": 30,
+    "unknown": 18,
+    "unknown_with_any_effect": 9,
+    "unknown_with_full_goal_satisfied": 3,
+    "unknown_with_partial_effects": 6,
+    "unknown_with_zero_effects": 9
+  },
+  "native_junit_sha256": "3ac8e1599e37182708e51314c2b4024370aeb399af775448f653c822ab7cc43a",
+  "native_log_sha256": "ee3fad77f0c0b5d24a1f217eeab9946d28e5fe7cc23855e160a26826cef7d249",
+  "native_test_receipt_sha256": "a670fc2280ebfe14b9d970e5b86a0ef12be9e30b925568e65952967b603e76a5",
+  "positive_rejection_in_matrix": false,
+  "production_qualified": false,
+  "run": "green-r4",
+  "schema": "hepta.act1.qualification-summary.v1",
+  "test_tree": "aa2afbb8eaa8b0c4d9e5c3c93abf03fa7cba4951",
+  "tests": {
+    "failed": 0,
+    "new_integration_tests": 9,
+    "new_unit_tests": 3,
+    "passed": 150,
+    "top_level_ignored_helpers": 2
+  },
+  "universal_exactly_once_claim": false
+}

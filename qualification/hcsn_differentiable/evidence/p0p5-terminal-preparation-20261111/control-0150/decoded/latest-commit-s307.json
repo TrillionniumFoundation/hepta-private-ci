@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450616,
+    "sha256": "6d7ce8ee073c51a11a49d043ea15d9e82291a0bca949cd716aafad15e35c1cc2"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/checkpoints/epoch-0103.pt",
+  "checkpoint": {
+    "bytes": 450552,
+    "sha256": "a2c5cb4c42fb64854338c3d5a688e3fdd88da447bd48b80cd59fc12975c9a1f8"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/checkpoints/epoch-0105.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 31073.909521705238,
+    "development": {
+      "accuracy": 0.6567663995993991,
+      "balanced_accuracy_present_classes": 0.3242495108135829,
+      "brier_half_sum": 0.25067980070375073,
+      "brier_mean_classes": 0.04557814558250013,
+      "confusion_matrix": [
+        [
+          5770,
+          4,
+          52,
+          1,
+          0,
+          490,
+          32,
+          0,
+          118,
+          0,
+          142
+        ],
+        [
+          110,
+          1,
+          0,
+          29,
+          0,
+          278,
+          24,
+          0,
+          183,
+          0,
+          6
+        ],
+        [
+          363,
+          0,
+          533,
+          39,
+          0,
+          168,
+          6,
+          0,
+          3,
+          0,
+          28
+        ],
+        [
+          1,
+          2,
+          351,
+          9952,
+          0,
+          98,
+          679,
+          237,
+          116,
+          0,
+          64
+        ],
+        [
+          201,
+          0,
+          0,
+          0,
+          0,
+          93,
+          2,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          1302,
+          0,
+          10,
+          1,
+          0,
+          3663,
+          14,
+          1,
+          0,
+          0,
+          0
+        ],
+        [
+          160,
+          0,
+          446,
+          1274,
+          0,
+          155,
+          742,
+          21,
+          0,
+          0,
+          456
+        ],
+        [
+          3,
+          11,
+          134,
+          201,
+          0,
+          63,
+          357,
+          251,
+          6,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          0,
+          470,
+          0,
+          229,
+          1039,
+          0,
+          22,
+          0,
+          181
+        ],
+        [
+          95,
+          0,
+          0,
+          0,
+          0,
+          102,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          38,
+          0,
+          0,
+          6,
+          0,
+          16,
+          250,
+          0,
+          0,
+          0,
+          51
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.1302032503421667,
+      "events": 31952,
+      "macro_f1_11_classes": 0.30933467969249456,
+      "macro_f1_present_classes": 0.30933467969249456,
+      "nll": 1.2209923973311712
+    },
+    "epoch": 105,
+    "events": 89216,
+    "phase_process_cpu_seconds": 16689.753103094,
+    "phase_process_wall_seconds": 16698.36501536914,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 1.1559506031055147,
+    "training_weighted_loss_numerator": 54346.64092487514
+  },
+  "logical_main_updates": 1260,
+  "previous_commit": {
+    "bytes": 3902,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/commits/epoch-0104.json",
+    "sha256": "11884df83b109729eb6e4c8f55177666318b3ceac722e6581ec64208b3d05ddd"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.319200972102104,
+    "best_epoch": 103,
+    "plateau_anchor": 0.319200972102104,
+    "stale_epochs": 2
+  }
+}

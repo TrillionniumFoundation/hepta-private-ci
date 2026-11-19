@@ -1,0 +1,26 @@
+{
+  "tip": "6dd0621bb0f8d9c29b71fdc1da77c9b818195347",
+  "prior": "da03f99788223198ba65ee8d05e92827968174ed",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "8d0b3c63fbdd99b3258f33a10f5a4d2d7dc3fbf7",
+  "fixed_automatic_tree": "a28a45dd3f941940d00f7ee062e1f48f0fa09f4f",
+  "actual_automatic_tree": "2bfc5bb4012b7d4e795cc1de1e732292d595ec62",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    "qa/ndu-grounded-generation/cohort_firewall.py",
+    "qa/ndu-grounded-generation/test_cohort_firewall.py"
+  ],
+  "resolution_paths": [
+    "qa/ndu-grounded-generation/cohort_firewall.py",
+    "qa/ndu-grounded-generation/test_cohort_firewall.py"
+  ],
+  "changes_from_review_base": [
+    "qa/ndu-grounded-generation/V2_GATES.md",
+    "qa/ndu-grounded-generation/test_cohort_firewall.py"
+  ],
+  "resolved_tree": "a07baaae83eaea15a52e74220fbf2ad79db651c5",
+  "expected_composed_tree": "a07baaae83eaea15a52e74220fbf2ad79db651c5",
+  "commit": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+  "reason": "The runtime validation is already present. Preserve it and retain the incoming documentation and fixture explanation. Twelve original scoped tests pass against the reviewed files."
+}

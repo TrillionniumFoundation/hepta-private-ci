@@ -1,0 +1,530 @@
+{
+  "schema": "hepta.rust-consolidation.proof-publication-manifest.v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Previously completed unmodified full CLI, equivalent unchanged-function parallel proof, and final full b4 gate in authority-review, for the exact input closure recorded in parallel-caller-proof-inputs.json and the final b4 receipt. These are not a new run for subsequent root native-v5 overlays.",
+  "compression_implementation": {
+    "python": "3.12.3",
+    "zlib": "1.3"
+  },
+  "limit": {
+    "existing_git_blob_cap": 512000,
+    "asserted_compressed_maximum": 500000
+  },
+  "original_index": {
+    "path": "audit/rust_review/reviewed_proof_checkpoint_index.json",
+    "sha256": "a43dd75ac1bad302b861f8bacfe7f8c1ffa8b5ce1acf26e8c54de28b3e6d3163"
+  },
+  "source_closure": {
+    "path": "audit/rust_review/parallel-caller-proof-inputs.json",
+    "field": "rust_files",
+    "entries": 7504,
+    "boundary_ids": 1645,
+    "privileged_inventory": 1645,
+    "protected_paths": 819,
+    "manifest_sha256": "e85c1782b94bd6cf1dd0ff3c10490eacc674b6148530ad9741e027e48d56477f",
+    "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896"
+  },
+  "proof_count": 10,
+  "review_count": 4,
+  "entries": [
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/combined-full-caller-proof.receipt.json",
+      "original_name": "combined-full-caller-proof.receipt.json",
+      "original_size": 643,
+      "original_sha256": "0e387a8c8fdf1700d3221b1e5ade9f2c092a1b8f9772cc0eb19a933bf387deab",
+      "original_git_blob_sha": "2a11b1f03fc8859c9ccef427a0b26973308166e0",
+      "compressed_path": "audit/rust_review/proof-publication/combined-full-caller-proof.receipt.json.gz",
+      "publication_name": "combined-full-caller-proof.receipt.json.gz",
+      "compressed_size": 387,
+      "compressed_sha256": "e2d3f987748cc68c258ed2b0c7585c98f80e9999993d859298e28747acc09464",
+      "compressed_git_blob_sha": "f1b2ae6366e13798f191808d650b249cb76bfde3",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "combined-full-caller-proof.receipt.json.gz",
+          "git_blob_sha": "f1b2ae6366e13798f191808d650b249cb76bfde3",
+          "github_size": 387,
+          "compressed_sha256": "e2d3f987748cc68c258ed2b0c7585c98f80e9999993d859298e28747acc09464",
+          "original_size": 643,
+          "original_sha256": "0e387a8c8fdf1700d3221b1e5ade9f2c092a1b8f9772cc0eb19a933bf387deab",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/combined-full-caller-proof.log",
+      "original_name": "combined-full-caller-proof.log",
+      "original_size": 766890,
+      "original_sha256": "0fbb4dea0a9db04dc2364e68fe274027c0788fcc51dd770af9bbc8de2ae73804",
+      "original_git_blob_sha": "186308f6c058505ef6ddcfa4f20c4c8256dc65a2",
+      "compressed_path": "audit/rust_review/proof-publication/combined-full-caller-proof.log.gz",
+      "publication_name": "combined-full-caller-proof.log.gz",
+      "compressed_size": 59136,
+      "compressed_sha256": "62a2f6066e4b5258ff1637f21c7a0e7b071774d4a522dd8f957a6bf37eae5229",
+      "compressed_git_blob_sha": "a69ba29384d96fef8dc520ea65ed136b78ba4cdd",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "combined-full-caller-proof.log.gz",
+          "git_blob_sha": "a69ba29384d96fef8dc520ea65ed136b78ba4cdd",
+          "github_size": 59136,
+          "compressed_sha256": "62a2f6066e4b5258ff1637f21c7a0e7b071774d4a522dd8f957a6bf37eae5229",
+          "original_size": 766890,
+          "original_sha256": "0fbb4dea0a9db04dc2364e68fe274027c0788fcc51dd770af9bbc8de2ae73804",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/parallel-caller-proof-inputs.json",
+      "original_name": "parallel-caller-proof-inputs.json",
+      "original_size": 1178534,
+      "original_sha256": "55792c324932933cd975417715361788667b41831f9f12122e7287cc6963220f",
+      "original_git_blob_sha": "b73e8d310be8f3060760e4ab51a2c42002cc8316",
+      "compressed_path": "audit/rust_review/proof-publication/parallel-caller-proof-inputs.json.gz",
+      "publication_name": "parallel-caller-proof-inputs.json.gz",
+      "compressed_size": 379590,
+      "compressed_sha256": "59f956f1a52ef41b7f85577151a3e8d34df87589e9c465a17a81bf2b94a0e118",
+      "compressed_git_blob_sha": "8d96eb7294c37625da112f476a4f7036edd5571a",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "parallel-caller-proof-inputs.json.gz",
+          "git_blob_sha": "8d96eb7294c37625da112f476a4f7036edd5571a",
+          "github_size": 379590,
+          "compressed_sha256": "59f956f1a52ef41b7f85577151a3e8d34df87589e9c465a17a81bf2b94a0e118",
+          "original_size": 1178534,
+          "original_sha256": "55792c324932933cd975417715361788667b41831f9f12122e7287cc6963220f",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/parallel-caller-proof-boundaries.jsonl",
+      "original_name": "parallel-caller-proof-boundaries.jsonl",
+      "original_size": 715914,
+      "original_sha256": "15304fd3412f74ec148ae0ec4a19f79ff20eee205fab28692ea3e28289a655da",
+      "original_git_blob_sha": "6ba2f66ba2a7c5d989945d0d3e7b56e1fa0940b2",
+      "compressed_path": "audit/rust_review/proof-publication/parallel-caller-proof-boundaries.jsonl.gz",
+      "publication_name": "parallel-caller-proof-boundaries.jsonl.gz",
+      "compressed_size": 78127,
+      "compressed_sha256": "803f6519ce1f8f1b1363d42f29aa7e632cdc11affa6bb307d28b7eafdc52c5e9",
+      "compressed_git_blob_sha": "6b538638fdb91d62bb85b5a813e6c74797f550b1",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "parallel-caller-proof-boundaries.jsonl.gz",
+          "git_blob_sha": "6b538638fdb91d62bb85b5a813e6c74797f550b1",
+          "github_size": 78127,
+          "compressed_sha256": "803f6519ce1f8f1b1363d42f29aa7e632cdc11affa6bb307d28b7eafdc52c5e9",
+          "original_size": 715914,
+          "original_sha256": "15304fd3412f74ec148ae0ec4a19f79ff20eee205fab28692ea3e28289a655da",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/parallel-full-caller-proof.receipt.json",
+      "original_name": "parallel-full-caller-proof.receipt.json",
+      "original_size": 890,
+      "original_sha256": "7c901ee5c7b6a56d35f1c1d4d01be5842d4f5cbe0b9e718a9912f810e40f1685",
+      "original_git_blob_sha": "c92eadeb9089b6bb5b6de64e01f766eaac1b1511",
+      "compressed_path": "audit/rust_review/proof-publication/parallel-full-caller-proof.receipt.json.gz",
+      "publication_name": "parallel-full-caller-proof.receipt.json.gz",
+      "compressed_size": 537,
+      "compressed_sha256": "94783ca061771bf5acfa77041fbc215198ce2898349f8fef9cbdff2523bf5aa4",
+      "compressed_git_blob_sha": "fa7484535eeb654b7b7e74525d0cc939d9b645d0",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "parallel-full-caller-proof.receipt.json.gz",
+          "git_blob_sha": "fa7484535eeb654b7b7e74525d0cc939d9b645d0",
+          "github_size": 537,
+          "compressed_sha256": "94783ca061771bf5acfa77041fbc215198ce2898349f8fef9cbdff2523bf5aa4",
+          "original_size": 890,
+          "original_sha256": "7c901ee5c7b6a56d35f1c1d4d01be5842d4f5cbe0b9e718a9912f810e40f1685",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/parallel-full-caller-proof.json",
+      "original_name": "parallel-full-caller-proof.json",
+      "original_size": 766890,
+      "original_sha256": "3c40218e1134ab84502894aa552f5b2cfd7034697e4049de16b2537da66be6d2",
+      "original_git_blob_sha": "376451dc730d1393ed80dd40b8f2c5a97aa3e646",
+      "compressed_path": "audit/rust_review/proof-publication/parallel-full-caller-proof.json.gz",
+      "publication_name": "parallel-full-caller-proof.json.gz",
+      "compressed_size": 59709,
+      "compressed_sha256": "09221655ac57b0bf49ff4f053e2fdfecbe6679e3b0454998528403ca0defc405",
+      "compressed_git_blob_sha": "5061af50694d9d2a14ec9cc50e4ca860aee1da3a",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "parallel-full-caller-proof.json.gz",
+          "git_blob_sha": "5061af50694d9d2a14ec9cc50e4ca860aee1da3a",
+          "github_size": 59709,
+          "compressed_sha256": "09221655ac57b0bf49ff4f053e2fdfecbe6679e3b0454998528403ca0defc405",
+          "original_size": 766890,
+          "original_sha256": "3c40218e1134ab84502894aa552f5b2cfd7034697e4049de16b2537da66be6d2",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/caller-proof-equivalence.json",
+      "original_name": "caller-proof-equivalence.json",
+      "original_size": 517,
+      "original_sha256": "919f18afbac6eaf436d260e4fa7e0a7064d30c7b6ae1ce58afcce60aaa52ce9b",
+      "original_git_blob_sha": "c27c1e86a49a057be0cdb6ac2b42ff6af563e99c",
+      "compressed_path": "audit/rust_review/proof-publication/caller-proof-equivalence.json.gz",
+      "publication_name": "caller-proof-equivalence.json.gz",
+      "compressed_size": 338,
+      "compressed_sha256": "afaccb69ca6b39b919ec37b36010c908c2074daaf8d4f3507c2fa7338b0f5e8b",
+      "compressed_git_blob_sha": "303f15bfe93a1e556bad296efa8bb909a25171d5",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "caller-proof-equivalence.json.gz",
+          "git_blob_sha": "303f15bfe93a1e556bad296efa8bb909a25171d5",
+          "github_size": 338,
+          "compressed_sha256": "afaccb69ca6b39b919ec37b36010c908c2074daaf8d4f3507c2fa7338b0f5e8b",
+          "original_size": 517,
+          "original_sha256": "919f18afbac6eaf436d260e4fa7e0a7064d30c7b6ae1ce58afcce60aaa52ce9b",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/run_parallel_full_caller_proof.py",
+      "original_name": "run_parallel_full_caller_proof.py",
+      "original_size": 7827,
+      "original_sha256": "d405d91f887e23dec217ee4a981d0e3e5a1a7c888be1931b505bd004e9e99ac7",
+      "original_git_blob_sha": "385028a260b2fdf67dc83a7a9cc6be35b2245013",
+      "compressed_path": "audit/rust_review/proof-publication/run_parallel_full_caller_proof.py.gz",
+      "publication_name": "run_parallel_full_caller_proof.py.gz",
+      "compressed_size": 2559,
+      "compressed_sha256": "01557d1bbf87542135c39bcadbcadaf9f86d1a0d8d6cc5afc6fbbca3cccb13b5",
+      "compressed_git_blob_sha": "619a207f9f9b045e4fa483a6f64e30bcc374e74c",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "run_parallel_full_caller_proof.py.gz",
+          "git_blob_sha": "619a207f9f9b045e4fa483a6f64e30bcc374e74c",
+          "github_size": 2559,
+          "compressed_sha256": "01557d1bbf87542135c39bcadbcadaf9f86d1a0d8d6cc5afc6fbbca3cccb13b5",
+          "original_size": 7827,
+          "original_sha256": "d405d91f887e23dec217ee4a981d0e3e5a1a7c888be1931b505bd004e9e99ac7",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/final-full-b4-no-bypass.receipt.json",
+      "original_name": "final-full-b4-no-bypass.receipt.json",
+      "original_size": 1562,
+      "original_sha256": "c14410f8bfcf61f8f09ceb1c25054ce79e2c2797646cb43f16a99ec9a782c93b",
+      "original_git_blob_sha": "08623cced5fbb2c7203424b874e8fada433b3e22",
+      "compressed_path": "audit/rust_review/proof-publication/final-full-b4-no-bypass.receipt.json.gz",
+      "publication_name": "final-full-b4-no-bypass.receipt.json.gz",
+      "compressed_size": 748,
+      "compressed_sha256": "a6e770d3acf8cbbb63bce9fa8960b551f75d2630360facea4cfa5d02b56b7274",
+      "compressed_git_blob_sha": "0071fcd9a2c35a0d14c063e3608f2ac478982c2e",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "final-full-b4-no-bypass.receipt.json.gz",
+          "git_blob_sha": "0071fcd9a2c35a0d14c063e3608f2ac478982c2e",
+          "github_size": 748,
+          "compressed_sha256": "a6e770d3acf8cbbb63bce9fa8960b551f75d2630360facea4cfa5d02b56b7274",
+          "original_size": 1562,
+          "original_sha256": "c14410f8bfcf61f8f09ceb1c25054ce79e2c2797646cb43f16a99ec9a782c93b",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "proof",
+      "original_path": "audit/rust_review/final-full-b4-no-bypass.log",
+      "original_name": "final-full-b4-no-bypass.log",
+      "original_size": 1418,
+      "original_sha256": "7f19619ac7791bd889f835c64a4a9b4a94e65a3de573dd5567110e2c18a69324",
+      "original_git_blob_sha": "2eab5f4090ffe3c405afc09745320862c2af9227",
+      "compressed_path": "audit/rust_review/proof-publication/final-full-b4-no-bypass.log.gz",
+      "publication_name": "final-full-b4-no-bypass.log.gz",
+      "compressed_size": 68,
+      "compressed_sha256": "dd22cb0aabe89f31ac939d3009514cab2f8e4c9d509492f8378f92c2c18f7c2a",
+      "compressed_git_blob_sha": "f7bc7fec44600fbe4fa126c36739f1a159e2c390",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": true,
+      "github": {
+        "created_or_identical_exists": true,
+        "readback": {
+          "publication_name": "final-full-b4-no-bypass.log.gz",
+          "git_blob_sha": "f7bc7fec44600fbe4fa126c36739f1a159e2c390",
+          "github_size": 68,
+          "compressed_sha256": "dd22cb0aabe89f31ac939d3009514cab2f8e4c9d509492f8378f92c2c18f7c2a",
+          "original_size": 1418,
+          "original_sha256": "7f19619ac7791bd889f835c64a4a9b4a94e65a3de573dd5567110e2c18a69324",
+          "github_bytes_equal_local": true,
+          "decoded_original_bytes_equal": true,
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "kind": "review",
+      "original_path": "audit/rust_review/windows_four_admission_contract_review.json",
+      "original_name": "windows_four_admission_contract_review.json",
+      "original_size": 12280,
+      "original_sha256": "5be0111d020d868075ec21200a7673efff6ddbce940c8c672780f339c6d7fa88",
+      "original_git_blob_sha": "6045b7fab693034f0b89d4c4dda44c2fd570467a",
+      "compressed_path": "audit/rust_review/proof-publication/windows_four_admission_contract_review.json.gz",
+      "publication_name": "windows_four_admission_contract_review.json.gz",
+      "compressed_size": 4484,
+      "compressed_sha256": "9d425663bcd076a20213c574174c8ee4f54ea91d51654ffb1e73915048dc3bab",
+      "compressed_git_blob_sha": "f53f45a058e55cfc586a18290ec673f866a56549",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": false,
+      "github": {
+        "created_by_this_agent": false,
+        "status": "PREPARED_FOR_PARENT_PUBLICATION_ONLY"
+      }
+    },
+    {
+      "kind": "review",
+      "original_path": "audit/rust_review/windows_isolation_parent_deny_review_v2.json",
+      "original_name": "windows_isolation_parent_deny_review_v2.json",
+      "original_size": 23703,
+      "original_sha256": "e017ff45318d206e3a6dcdcf7da90f969e13285a8078713debdc6e2a79494386",
+      "original_git_blob_sha": "876f6dee051e774fbc098638f9123f2f8b30f127",
+      "compressed_path": "audit/rust_review/proof-publication/windows_isolation_parent_deny_review_v2.json.gz",
+      "publication_name": "windows_isolation_parent_deny_review_v2.json.gz",
+      "compressed_size": 8740,
+      "compressed_sha256": "ab26eab95cc9ae23616faacdfc47f4be956aa9db9961a376e9b0c63f70560a0f",
+      "compressed_git_blob_sha": "ba8d1fae2920bb8087b9175f75ca4028fda2cd18",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": false,
+      "github": {
+        "created_by_this_agent": false,
+        "status": "PREPARED_FOR_PARENT_PUBLICATION_ONLY"
+      }
+    },
+    {
+      "kind": "review",
+      "original_path": "audit/rust_review/material_stack_box_review.json",
+      "original_name": "material_stack_box_review.json",
+      "original_size": 8685,
+      "original_sha256": "343a48f46852f1af43819c60a7f74bd79e8e6b8d0d4e60818703d1995224651c",
+      "original_git_blob_sha": "7045c9ca86d67b8ea5412df368c6cc4280795c83",
+      "compressed_path": "audit/rust_review/proof-publication/material_stack_box_review.json.gz",
+      "publication_name": "material_stack_box_review.json.gz",
+      "compressed_size": 3505,
+      "compressed_sha256": "34bb501efcc50b66686ab20f75f3fb5adb4277dd72b98a36b38b87dd9711f133",
+      "compressed_git_blob_sha": "366aa3211582f2fc56b6abe2797b29bb23ad1d70",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": false,
+      "github": {
+        "created_by_this_agent": false,
+        "status": "PREPARED_FOR_PARENT_PUBLICATION_ONLY"
+      }
+    },
+    {
+      "kind": "review",
+      "original_path": "audit/rust_review/material_stack_old_prologues.json",
+      "original_name": "material_stack_old_prologues.json",
+      "original_size": 29563,
+      "original_sha256": "68c6c63864731f0d4dbf612d8d4083b89464903ea78da64dfe14746230d03e49",
+      "original_git_blob_sha": "93e42ca3b7364baa0cc8a958b02b33a586a93e71",
+      "compressed_path": "audit/rust_review/proof-publication/material_stack_old_prologues.json.gz",
+      "publication_name": "material_stack_old_prologues.json.gz",
+      "compressed_size": 5226,
+      "compressed_sha256": "2d201289f631ec8f485710f10698162aea23be1d5716e6df0b9da2b9354b0115",
+      "compressed_git_blob_sha": "0e0fa98b562a7db24952da740ffb463763712686",
+      "compression": {
+        "format": "gzip",
+        "level": 9,
+        "mtime": 0,
+        "embedded_filename": "",
+        "os_byte": 255
+      },
+      "round_trip_identical": true,
+      "deterministic_recompression": true,
+      "under500000": true,
+      "github_create_authorized": false,
+      "github": {
+        "created_by_this_agent": false,
+        "status": "PREPARED_FOR_PARENT_PUBLICATION_ONLY"
+      }
+    }
+  ],
+  "github_publication_status": {
+    "proof_blobs_created_and_readback_verified": 10,
+    "review_blobs_prepared_only": 4,
+    "trees_written": 0,
+    "commits_written": 0,
+    "refs_written": 0
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.ctrl1.historical-diagnostics.v1",
+  "scope": "Train-only timing calibration before final source freeze. Not part of primary/CPU confirmation denominators; do not relabel as execution of final source. Native dependency/cleanup failures are infrastructure diagnostics, not experiment failures.",
+  "calibration_archive": "historical-train-only-cpu-calibration.tar.gz",
+  "archive_sha256": "1954f0e9cbceb96c038c3871a0a929b597c4ebcfea704e7ac90741953b77032f",
+  "files": {
+    "CALIBRATION.json": {
+      "sha256": "c7197d8001c6657254f999cac9015dacbe152c1b5d99e5b2aa843bf7c2dffe48",
+      "bytes": 3694
+    },
+    "actor_critic-1/CHECKPOINT.json": {
+      "sha256": "72e8c7479560789902a47dc3ad6081f180f612b9739d6166bc75507e838dc3e7",
+      "bytes": 5565
+    },
+    "actor_critic-1/LIMITS.json": {
+      "sha256": "41f4bd353fd7f203bd073adf1009360fa6b08345f0f686d073236c17e1d573e7",
+      "bytes": 36
+    },
+    "actor_critic-1/PLAN.json": {
+      "sha256": "bab246bba1f17b91dad2cef7a63c6527e037d057f7b9cc5b3782f9d6947bcd81",
+      "bytes": 2689
+    },
+    "actor_critic-1/RECEIPT.json": {
+      "sha256": "2077790f92369ac77b45beb524e9ada98d07525ad6fc1fe460e8e366972a4d71",
+      "bytes": 1608
+    },
+    "actor_critic-1/WORKER.json": {
+      "sha256": "3285cb2be6d6228c92d9649cf9a62b938379181c55c9296515098ede5c6fd244",
+      "bytes": 382
+    },
+    "actor_critic-2/CHECKPOINT.json": {
+      "sha256": "d0ab440bb957580fda5d7d9a42963ddb14ad76f7f751dde64fa57dac2ff7a371",
+      "bytes": 5557
+    },
+    "actor_critic-2/LIMITS.json": {
+      "sha256": "f181b805fd974e33f1d94429e1dd882d366ad9b90335512847bd9c3dd38680b4",
+      "bytes": 36
+    },
+    "actor_critic-2/PLAN.json": {
+      "sha256": "91ac2f4392c45d4218425a131798cfdef7873f50ee4e4579d6dcc19fa283b4bc",
+      "bytes": 2689
+    },
+    "actor_critic-2/RECEIPT.json": {
+      "sha256": "2a77d09c4ccf4a4c477ee698afb4107d35c9ce4bfa247e26b60e3d9fbcff74fa",
+      "bytes": 1633
+    },
+    "actor_critic-2/WORKER.json": {
+      "sha256": "8c145b83fe7509ddccef21196c82af635862d3d7f737ff926b3d079b428e99f6",
+      "bytes": 385
+    },
+    "actor_critic-4/CHECKPOINT.json": {
+      "sha256": "6a6eba5844f8df602f710131354da2f77fa9c987557bfa77338b6b663a2e3e3c",
+      "bytes": 5569
+    },
+    "actor_critic-4/LIMITS.json": {
+      "sha256": "ab49d9b8ecec84827afd0e17f1d3c0c09b6f86a4084c7cc51f427e784f8bb021",
+      "bytes": 37
+    },
+    "actor_critic-4/PLAN.json": {
+      "sha256": "1875b95f1f3ab5d8e01dec6c76b697d99720055d74723493be3ab91b1af9f934",
+      "bytes": 2690
+    },
+    "actor_critic-4/RECEIPT.json": {
+      "sha256": "2ecf3a02551fa7f5268b1e9785a69bd301016fbfc4592c2d14f9555b3a4a1a79",
+      "bytes": 1624
+    },
+    "actor_critic-4/WORKER.json": {
+      "sha256": "08b42f4c84eca60e3dc0d353b627589e849ebaf2c16cf9e6d02668e6497c0b88",
+      "bytes": 387
+    },
+    "distillation-1/CHECKPOINT.json": {
+      "sha256": "9754906642082d6ee6dc6651ff84e1ce9c73dd78312d976f817cb74782cc9334",
+      "bytes": 13729
+    },
+    "distillation-1/LIMITS.json": {
+      "sha256": "41f4bd353fd7f203bd073adf1009360fa6b08345f0f686d073236c17e1d573e7",
+      "bytes": 36
+    },
+    "distillation-1/PLAN.json": {
+      "sha256": "80b982597cc30cb60a23e3ee906765ee1796e39cb1d5321b62841507d31467b5",
+      "bytes": 2689
+    },
+    "distillation-1/RECEIPT.json": {
+      "sha256": "80db20c53dc5c3d41dbd29e304d2060a6428fe5d2558c229e2ffd932299e9d8f",
+      "bytes": 1592
+    },
+    "distillation-1/WORKER.json": {
+      "sha256": "97ecf18d3544eaa332a0398449b8382d22f7d927cae28c8bc0b7e7a5562fbbb6",
+      "bytes": 363
+    },
+    "distillation-2/CHECKPOINT.json": {
+      "sha256": "9c759f7078ee93e40b701b5ea87f995d068766fbc88d542e8f6dc883f0f0c7b1",
+      "bytes": 13714
+    },
+    "distillation-2/LIMITS.json": {
+      "sha256": "f181b805fd974e33f1d94429e1dd882d366ad9b90335512847bd9c3dd38680b4",
+      "bytes": 36
+    },
+    "distillation-2/PLAN.json": {
+      "sha256": "9ffcd84a90e43dee9f12f1786af25cb22dcf348d7ffdce9807c6c3abb6a2edaa",
+      "bytes": 2689
+    },
+    "distillation-2/RECEIPT.json": {
+      "sha256": "6d8456d3ee46a3f244fc3a64ade0af795d6aeef14966613d19a1fb91e4f0f8ef",
+      "bytes": 1589
+    },
+    "distillation-2/WORKER.json": {
+      "sha256": "be9abdc69b33aeb70bd76f874e504cc595be5daa54dbede5b9fb16a82d8e7b03",
+      "bytes": 363
+    },
+    "distillation-4/CHECKPOINT.json": {
+      "sha256": "28753d2628ef76572354f7089b42e1375219c4b014de8878256579c7c37eb375",
+      "bytes": 13695
+    },
+    "distillation-4/LIMITS.json": {
+      "sha256": "ab49d9b8ecec84827afd0e17f1d3c0c09b6f86a4084c7cc51f427e784f8bb021",
+      "bytes": 37
+    },
+    "distillation-4/PLAN.json": {
+      "sha256": "eeddc937281195a3bf857d29d14262f5fe084caea1f91c2315d3b4651c691868",
+      "bytes": 2690
+    },
+    "distillation-4/RECEIPT.json": {
+      "sha256": "c23f3813dcccdc7f419f711e439d2e087a003cf961cf99edcd6dadbb184b5eaa",
+      "bytes": 1594
+    },
+    "distillation-4/WORKER.json": {
+      "sha256": "c4697829f9a6bd706435ecac80f8ee7c2fc173826fef81937890e9856bfb4c26",
+      "bytes": 347
+    }
+  }
+}

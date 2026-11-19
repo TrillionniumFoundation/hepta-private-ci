@@ -1,0 +1,173 @@
+{
+  "schema": "hepta.mem12.native-continuation-recovery-manifest.v1",
+  "archive": {
+    "file": "continuation-recovery.tar.xz",
+    "bytes": 49512,
+    "sha256": "05207753a6fad0ebc8a14eba24913462ef15bc9925b67f792e67dd99bf126cde",
+    "members": 14,
+    "all_member_hashes_verified": true
+  },
+  "files": {
+    "continuation-recovery/CONTINUATION_01_JUNIT_READBACK.json": {
+      "bytes": 80206,
+      "sha256": "b6247ecfb483ca0774d732e1f888ba461f5111bfab2b25e04d02caeac69ee9e8"
+    },
+    "continuation-recovery/CONTINUATION_01_READBACK_COMPLETE.json": {
+      "bytes": 39416,
+      "sha256": "772cb373d9aa89b5b9c6f04cb0beb010e48175c26ca0d5a2d38a3ad3a54d912d"
+    },
+    "continuation-recovery/continuation-01/JUNIT_COLLECTION_CORRECTION.json": {
+      "bytes": 2353,
+      "sha256": "00ef992ca769054155d457886247fefdeed353651edf189e9264ae371b162c21"
+    },
+    "continuation-recovery/continuation-01/RESULT.json": {
+      "bytes": 20059,
+      "sha256": "056a621308278d52bc2c20561a64e85c680770ff33c4447bdbb8a5ab018fc1f0"
+    },
+    "continuation-recovery/continuation-01/TERMINAL.json": {
+      "bytes": 727,
+      "sha256": "9211fb7be4ee20b858567ae558798882a4934e29f6e519727dabb6d2e6357ad3"
+    },
+    "continuation-recovery/continuation-01/junit.original-sdk-payload.json": {
+      "bytes": 56732,
+      "sha256": "186dd0b13a786f5b8e914d937eb2505200bcd7b3b1de49c20b348db793bda132"
+    },
+    "continuation-recovery/continuation-01/junit.xml": {
+      "bytes": 2717,
+      "sha256": "6c3e2fbc6551df44daa77d4b74349eee80afcf0d3237318759f7f2d03ea02af2"
+    },
+    "continuation-recovery/continuation-01/memory-episodic.receipt.json": {
+      "bytes": 1554,
+      "sha256": "d6c3187fe627111f64038ef41920010fdb5e261c5d80696560c175a532df0740"
+    },
+    "continuation-recovery/continuation-01/memory-episodic.receipt.json.aeee353cc57242a9ac4e2eef8f29f0c6.log": {
+      "bytes": 48444,
+      "sha256": "64255bd54c11375511782219f0c36f0d0c2af1d8b178f410213a9e3e9fc80b93"
+    },
+    "continuation-recovery/continuation-01/result.original-sdk-payload.json": {
+      "bytes": 24958,
+      "sha256": "92680b9727a83bfcf7ef9ed4bbe70fe866590e274852b1413bf0660c2fe2ef12"
+    },
+    "continuation-recovery/continuation-01/terminal.original-sdk-payload.json": {
+      "bytes": 905,
+      "sha256": "9ce53afae42b08824b4f73dc34c9a138b8c418033ced0bedb5935423b17674d1"
+    },
+    "continuation-recovery/continuation-02/RECONCILE.json": {
+      "bytes": 25334,
+      "sha256": "7649c6d5d666b9fc8296492ee64411a978799cfc5905d78a1de62bf5be40329a"
+    },
+    "continuation-recovery/continuation-02/SUBMISSION.json": {
+      "bytes": 22104,
+      "sha256": "d0624aaab93673bc379fc1879440e02c923852e1d8022401a3b9606c33d2f543"
+    },
+    "continuation-recovery/continuation-02/continue_native_811e0e27_02.py": {
+      "bytes": 20240,
+      "sha256": "38dcba3805a83ddf980d27d53c4263fcc261b209b2630c4991cf0142839bd0b7"
+    }
+  },
+  "continuation_01_verification": {
+    "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "source_tree": "2043cbf11fd00662cc23562123c27ae4e6f72580",
+    "source_clean_and_unchanged": true,
+    "postimages_equal_original_attempt": true,
+    "command_exit_code": 0,
+    "supervisor_status": "passed",
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "junit_run_uuid": "372c4563-0ab7-41df-ac66-f2a8d9c87bb8",
+    "uuid_matches_original_log": true,
+    "all_case_timestamps_within_original_receipt": true,
+    "case_names": [
+      "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission",
+      "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations",
+      "episodic_source::tests::final_source_check_detects_changed_observation_metadata",
+      "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission",
+      "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+      "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+      "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay",
+      "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+      "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+      "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+      "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+    ],
+    "junit": {
+      "bytes": 2717,
+      "sha256": "6c3e2fbc6551df44daa77d4b74349eee80afcf0d3237318759f7f2d03ea02af2"
+    },
+    "log": {
+      "bytes": 48444,
+      "sha256": "64255bd54c11375511782219f0c36f0d0c2af1d8b178f410213a9e3e9fc80b93"
+    },
+    "receipt": {
+      "bytes": 1554,
+      "sha256": "d6c3187fe627111f64038ef41920010fdb5e261c5d80696560c175a532df0740"
+    },
+    "result": {
+      "bytes": 20059,
+      "sha256": "056a621308278d52bc2c20561a64e85c680770ff33c4447bdbb8a5ab018fc1f0"
+    },
+    "terminal_sdk": {
+      "bytes": 905,
+      "sha256": "9ce53afae42b08824b4f73dc34c9a138b8c418033ced0bedb5935423b17674d1"
+    },
+    "terminal_json_representation": "original SDK text plus final newline; original SDK payload retained byte-for-byte",
+    "sdk_readbacks": [
+      {
+        "operation_id": "ebafd9cfe122c0b613da17733a55e98ee73cf562f7eb154dc3af45c8d1a24e5f",
+        "sdk_payload_bytes": 24958,
+        "sdk_payload_sha256": "92680b9727a83bfcf7ef9ed4bbe70fe866590e274852b1413bf0660c2fe2ef12",
+        "page_count": 2,
+        "complete": true
+      },
+      {
+        "operation_id": "373cc2d987c6e81f3d6b4dde830e8f8295eb8d764e3292500a56018625e73cf6",
+        "sdk_payload_bytes": 905,
+        "sdk_payload_sha256": "9ce53afae42b08824b4f73dc34c9a138b8c418033ced0bedb5935423b17674d1",
+        "page_count": 1,
+        "complete": true
+      },
+      {
+        "operation_id": "f4e438c6fda09fc7f27854f50f7392bff0f294f766853c0db41d0c2c096d0230",
+        "sdk_payload_bytes": 56732,
+        "sdk_payload_sha256": "186dd0b13a786f5b8e914d937eb2505200bcd7b3b1de49c20b348db793bda132",
+        "page_count": 4,
+        "complete": true
+      }
+    ],
+    "original_runner_status_preserved": "failed",
+    "original_runner_selection_error_preserved": "missing fresh JUnit",
+    "terminal_state_preserved": "failed",
+    "terminal_exit_code_preserved": 1,
+    "test_rerun": false,
+    "strict_isolation_rerun": false,
+    "new_real_model_calls": 0,
+    "scored_memory_benefit_episodes": 0,
+    "adoption_decision": "HOLD"
+  },
+  "continuation_02_handoff": {
+    "submitted_script": {
+      "path": "continuation-recovery/continuation-02/continue_native_811e0e27_02.py",
+      "bytes": 20240,
+      "sha256": "38dcba3805a83ddf980d27d53c4263fcc261b209b2630c4991cf0142839bd0b7"
+    },
+    "idempotency_key": "mem12-native-unexecuted-continuation02-811e0e27-20261112-ef0c-v1",
+    "source_commit": "811e0e27190066e81a23eebed8ad559ae67d228e",
+    "acknowledgement": "initial UNKNOWN; subsequent exact same-key reconciliation returned original running job",
+    "job_id": "1a1cedb0568-2564-18ae",
+    "result": "not established",
+    "scope": "submitted script and durable original-job reconciliation only; intended to skip prior strict8/memory11; no later test execution outcome is claimed",
+    "initial_unknown_record_preserved": true,
+    "observed_state": "running",
+    "reused": true,
+    "retried_launch": false,
+    "submission": {
+      "bytes": 22104,
+      "sha256": "d0624aaab93673bc379fc1879440e02c923852e1d8022401a3b9606c33d2f543"
+    },
+    "reconciliation": {
+      "bytes": 25334,
+      "sha256": "7649c6d5d666b9fc8296492ee64411a978799cfc5905d78a1de62bf5be40329a"
+    }
+  }
+}

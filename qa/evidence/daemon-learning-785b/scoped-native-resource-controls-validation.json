@@ -1,0 +1,26 @@
+{
+  "path": ".github/workflows/blocking-ci.yml",
+  "git_blob": "d111ea649f54f536a6ce4065dd22090b01193f66",
+  "sha256": "7ebf6d9a749178f560347a6757065dd3abb63aa01ee0e4159fafabe8468c0bf0",
+  "yaml_parser": "PyYAML BaseLoader",
+  "job_env": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "only_expected_four_lines_added": true,
+  "all_other_workflow_values_unchanged": true,
+  "dependency_selection_steps_unchanged": true,
+  "permissions_and_gates_unchanged": true,
+  "scope_for_workflow_change": {
+    "effects": true,
+    "inference": true,
+    "learning": true,
+    "lifecycle": true,
+    "objective": true,
+    "native": true,
+    "derived": true,
+    "full_repo": true
+  },
+  "native_execution_performed": false
+}

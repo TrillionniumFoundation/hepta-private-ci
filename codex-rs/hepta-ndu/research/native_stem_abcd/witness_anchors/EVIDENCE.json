@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.ndu.r25.delivery.v1",
+  "parent": "aa1a1b3c1ebe5477ef3109db49065453c6459642",
+  "protocol_pushed_before_proofs": "0a69ed9bde3cbcd19aef6629eaa457501a40bfcc",
+  "archive": {
+    "filename": "hepta_native_ndu_witness_anchors_round25_20261015.zip",
+    "bytes": 14125189,
+    "sha256": "871664d25ee01b66fccf2b589f0315e7c5d2b0a3e0d8ee672dd1b7e8c237d271",
+    "verified_content_files": 41,
+    "manifest_members": 1,
+    "original_R21_zip_included": true
+  },
+  "original_R21": {
+    "archive_sha256": "75b7f84db4fa749c48b502c4ff1fe23af02e8b7fa5fd045f99c487e80c1f1d99",
+    "weight_csv_sha256": "cb548fed6aa074b8494cc47d4860d6f18ba82c40810f4279429d8936559148c5",
+    "w3_historical_sha256": "3b93b227b433cd15a8c622a3eed07886dbff3b009aac8667cabf2e4fe987f5c9",
+    "w4_historical_sha256": "1fe54d7dc88fd92f3dcd86a9f8784481b5584fc183f3e2fe58e8f11cbb8fa47e"
+  },
+  "fixed_gate": "global regret<=1/100; <=4000 outer B&B splits per trial",
+  "three_proofs": [
+    {
+      "name": "w3_repair",
+      "parameter_count": 3,
+      "splits": 2509,
+      "regret_upper": "0.00998814459643494",
+      "passed": true,
+      "cpu_sec": 71.151927849
+    },
+    {
+      "name": "w4_anchor",
+      "parameter_count": 4,
+      "splits": 4000,
+      "regret_upper": "0.12821241439664868",
+      "passed": false,
+      "cpu_sec": 140.879182356
+    },
+    {
+      "name": "w4_witness_anchor",
+      "parameter_count": 4,
+      "splits": 4000,
+      "regret_upper": "0.1220723449894614",
+      "passed": false,
+      "cpu_sec": 141.434558138
+    }
+  ],
+  "audit": {
+    "total_splits": 10509,
+    "all_box_geometry_and_prunes_checked": true,
+    "exact_sampled_parent_bounds": 314,
+    "exact_sampled_child_bounds": 628,
+    "all_expensive_bounds_recomputed": false,
+    "cpu_seconds": 15.162988247
+  },
+  "tests": {
+    "distinct_passed": 59,
+    "skipped": 0,
+    "original_development_failure_retained": true,
+    "original_tamper_assertion_failure_retained": true
+  },
+  "executed_local_source_sha256": {
+    "core.py": "b1bd7a8aa524a852c39656851f0a4e486f7067ba908ea4d5d233be7bb4f68465",
+    "run.py": "4bbd4d65cf35f51521f8fd44ffd37cb8c83f37612e6934507b7cd5f650af1d2f",
+    "audit.py": "c324b93ee741b00f58adb22588db376afc99632820c5475eb9544d0b5a8b387e",
+    "test_math.py": "1abb16e51d4ba53e2458046ff92ba1f4caf6b0dbc2b8c78d2e48807ba65bc9f5",
+    "test_tamper.py": "3b8be8d9a78f479d6435aefd72b022578189fe69c1e8be490935bbe5001cf4c4"
+  },
+  "full_FLOPs": null,
+  "energy": null,
+  "GPU": null,
+  "production_authorized": false,
+  "ci_claim": "GitHub portable source-only math smoke; the complete proof archive is not checked into Git",
+  "executed_source_byte_identity_to_transcribed_git_not_assumed": true
+}

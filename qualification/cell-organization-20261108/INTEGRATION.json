@@ -1,0 +1,38 @@
+{
+  "adoption_authorized": false,
+  "historical_original_archives_changed": false,
+  "initial_head_hosted_ci": {
+    "conclusion": "success",
+    "run_id": 42505865838,
+    "source_sha": "76840eb918c256f343aa0dd95cb20b597051172d"
+  },
+  "original_candidate": "76840eb918c256f343aa0dd95cb20b597051172d",
+  "reason": "Integrate the newly published causal D check that paired arms start from the same actual state, in addition to the same graph.",
+  "schema": "hepta.org1.upstream-integration.v1",
+  "scientific_acceptance": "HOLD",
+  "upstream_code": {
+    "scripts/ndu_real_runtime/causal_topology.py": {
+      "bytes": 16843,
+      "git_blob_sha": "064b2877e4a48e0b3c031b8425bc2bd3a9de8764",
+      "sha256": "65e41055e2d1d5e0681b4c2477c3771af1c7a9737ca081f4b6cf139c4be1a068"
+    },
+    "scripts/ndu_real_runtime/test_causal_topology.py": {
+      "bytes": 12757,
+      "git_blob_sha": "74d653c0bf6db887bcbbc87854ab1bddcdca85c3",
+      "sha256": "262f07de58380da9401ad52508e5790f37eb81acde1e72e46d2142ac0b2ae2f5"
+    }
+  },
+  "upstream_commit": "a55a209e20fe78c59644b5bff0298c36fe61294c",
+  "upstream_tree": "79f49938e18bb5fd5ae80da0b150ce0f8c15bb7e",
+  "validation": {
+    "log_sha256": "23e730c203bd4f3b732dfb6c0d7c37e840ba0150999910d3569b6351c7bfbcd8",
+    "new_org1_tests": 22,
+    "protocol_tests": 12,
+    "ruff_check": "passed",
+    "ruff_format_check": "6 files already formatted",
+    "tests_failed": 0,
+    "tests_passed": 41,
+    "tests_skipped": 0,
+    "topology_tests": 7
+  }
+}

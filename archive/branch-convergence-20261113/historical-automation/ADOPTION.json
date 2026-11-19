@@ -1,0 +1,959 @@
+{
+  "schema": "hepta.historical-automation.archive-creation.v1",
+  "ordinary_merge_parent": "81dccdb8d7362f092359bc37b9d605f1b27edd3c",
+  "ordinary_merge_tree": "7e2df9d8867c56e0847f4cc0b6d263b954317b4c",
+  "source_commit": "3f40cc95c9fb7843dd1c4100aa42ad290832b498",
+  "frozen_custody_manifest_sha256": "887a9ed08068ec7935de0bd936a35f0a3ed1ad666307e5e67fda68851f0c2a49",
+  "root_review_receipt_sha256": "3d982b7560e6038b28066e0bbb0be2f0c0dc9b5783b827b8d73778cdc18f2e9a",
+  "count": 113,
+  "total_original_bytes": 1508679,
+  "unique_blobs": 113,
+  "modes": {
+    "100644": 110,
+    "100755": 3
+  },
+  "exact_source_and_absent_destinations_verified": true,
+  "retained_helpers": [
+    "qualification/module-execution-dossiers/test_lane_a_foundation.py",
+    "scripts/diagnostics/windows_retained_identity.rs",
+    "scripts/diagnostics/windows_retained_identity_ci.py",
+    "scripts/format.py",
+    "scripts/hcsn/hepta_free_boundary_reference.py",
+    "scripts/hcsn/test_fp32_survival_boundary_diagnostic.py",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta-lane-b-truth.py",
+    "scripts/hepta-lane-d-semantic-conformance.py",
+    "scripts/hepta-lane-e-closure.py",
+    "scripts/hepta-learning-artifacts-qualification.py",
+    "scripts/hepta-module-docs.py",
+    "scripts/hepta-shared-encoder-e0.py",
+    "scripts/hepta-shared-encoder-e1-eval.py",
+    "scripts/hepta-stem-head-shadow.py",
+    "scripts/hepta-stem-public-artifact-audit.py",
+    "scripts/hepta_cells/semantic_training.py",
+    "scripts/hepta_ci_scope.py",
+    "scripts/hepta_ci_v8.py",
+    "scripts/hepta_inference_artifact_acceptor.py",
+    "scripts/hepta_physical_split_qualification.py",
+    "scripts/hepta_scoped_archive.py",
+    "scripts/runtime-codex-target-qualification.py",
+    "scripts/test_hepta_cells_semantic_training.py",
+    "scripts/test_hepta_inference_artifact_acceptor.py",
+    "scripts/test_hepta_scoped_archive.py",
+    "scripts/tests/test_hepta_ci_scope.py",
+    "scripts/tests/test_hepta_shared_encoder_e0.py",
+    "scripts/tests/test_hepta_shared_encoder_e1_eval.py",
+    "scripts/tests/test_hepta_stem_head_shadow.py",
+    "scripts/tests/test_hepta_stem_public_artifact_audit.py",
+    "scripts/verify_lane_a_foundation.py"
+  ],
+  "programs_executed": false,
+  "production_qualification": false,
+  "whole_repository_validation": false,
+  "records": [
+    {
+      "source_path": ".github/authbus-convergence-apply.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/authbus-convergence-apply.py",
+      "git_blob": "dcc6188ea3cc17306217cf0ebe04ee172f208b24",
+      "git_mode": "100644",
+      "sha256": "a2c22ed08ad7e78d5a2169f5c0e900e5ac213e6af51f64bc7b93bb39b2185944",
+      "bytes": 46449
+    },
+    {
+      "source_path": ".github/codex-patches/control-runtime-request-integrity/request-integrity.patch.gz.b64",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/codex-patches/control-runtime-request-integrity/request-integrity.patch.gz.b64",
+      "git_blob": "61340bfca795cd665ef0dee99e3ce382bf241333",
+      "git_mode": "100644",
+      "sha256": "b948d0d23471b123049cf66b0c0f032cd6c189663a6866cc61bd7f91b7cc4de4",
+      "bytes": 18152
+    },
+    {
+      "source_path": ".github/cognitive-boundary.part1",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/cognitive-boundary.part1",
+      "git_blob": "e4e02468ecdaedf32c7ca52e565e4fa6520623a2",
+      "git_mode": "100644",
+      "sha256": "2cbbdd1a3d4f8ac06340ea5a5391c5eeb628250cc43c3a35fdd04d700ee8ea28",
+      "bytes": 9200
+    },
+    {
+      "source_path": ".github/cognitive-boundary.part2",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/cognitive-boundary.part2",
+      "git_blob": "60617e2d0ecff39633d582dedfd207f5dcc79ba4",
+      "git_mode": "100644",
+      "sha256": "0762e819dcdb6a6a35678227125f5e755121b3a0fc47abee24e475dccc3a2c32",
+      "bytes": 9200
+    },
+    {
+      "source_path": ".github/cognitive-boundary.part3",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/cognitive-boundary.part3",
+      "git_blob": "d77b50f81ff71c55ebba2b8dec13ff63ab1296e2",
+      "git_mode": "100644",
+      "sha256": "8325a7ae19417c92fbe687cf6845e776d47cc9bf3c5a0f8561629f99f4e990cb",
+      "bytes": 9200
+    },
+    {
+      "source_path": ".github/control-runtime-bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/control-runtime-bootstrap.py",
+      "git_blob": "6501335c63fc1a78782ed6b61715d522dd12c3f9",
+      "git_mode": "100644",
+      "sha256": "a630d2c3501448e4fdc3dc449e37e0dc47e151fef5bd6bb8e37ab782f8ff7e0f",
+      "bytes": 33369
+    },
+    {
+      "source_path": ".github/patches/intuition-policy-product.b64.part00",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/patches/intuition-policy-product.b64.part00",
+      "git_blob": "38bfdb46b00c9c7ed6265814174d42d4cc728c7a",
+      "git_mode": "100644",
+      "sha256": "c91109501f55f53683e54f3a61a5aaa6540205ad81e44f7ae7b83f4b0b04a9df",
+      "bytes": 3501
+    },
+    {
+      "source_path": ".github/patches/intuition-policy-product.b64.part01",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/patches/intuition-policy-product.b64.part01",
+      "git_blob": "521508a848f81e4e5eee7b950a76a0549512751d",
+      "git_mode": "100644",
+      "sha256": "bda3ec09d842aa96206e76b44a26c7587d7068440bc209fb373244935a7aeee8",
+      "bytes": 3501
+    },
+    {
+      "source_path": ".github/patches/intuition-policy-product.b64.part02",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/patches/intuition-policy-product.b64.part02",
+      "git_blob": "231cc88e8a8080d7ecaa9e5a68a42abdcede8623",
+      "git_mode": "100644",
+      "sha256": "085c567c1130e7ca437829542223b4d22bd9ae8c6164db497b7f00b302ee68cb",
+      "bytes": 3500
+    },
+    {
+      "source_path": ".github/patches/intuition-policy-product.b64.part03",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/patches/intuition-policy-product.b64.part03",
+      "git_blob": "808b88d657b948c65a03743eea6c5aeb4a1fcfb3",
+      "git_mode": "100644",
+      "sha256": "471a72a2995d151669964b08c798eaf661def2cbac53ff7175d25e3ed66a690a",
+      "bytes": 3501
+    },
+    {
+      "source_path": ".github/patches/intuition-policy-product.b64.part04",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/patches/intuition-policy-product.b64.part04",
+      "git_blob": "8a51454eea7a1576abb59e367aa65c0c37936206",
+      "git_mode": "100644",
+      "sha256": "6ebe267788b01d67b67e7a75d1cd74a9f7493fba6f5f67896fd35168f6ec2d71",
+      "bytes": 3501
+    },
+    {
+      "source_path": ".github/scripts/runtime_supervisor_docs.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/scripts/runtime_supervisor_docs.py",
+      "git_blob": "2e34cb4b9afd2f662c5adb0b01af042fd29a2521",
+      "git_mode": "100644",
+      "sha256": "66677f36e61c3cd0683c431dfcd71aa13cd787e1a2098311ed90120e3a2df7dc",
+      "bytes": 17250
+    },
+    {
+      "source_path": ".github/scripts/runtime_supervisor_fixups.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/scripts/runtime_supervisor_fixups.py",
+      "git_blob": "3b3f6f4ffa51e81900e4ffb9d682132224fe4ef6",
+      "git_mode": "100644",
+      "sha256": "769168d6cc2a103f3e7ccfb1384f8f02719b699c3027673aa80e0ed4df30ba0b",
+      "bytes": 13402
+    },
+    {
+      "source_path": ".github/scripts/runtime_supervisor_integration.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/scripts/runtime_supervisor_integration.py",
+      "git_blob": "14fc1a5c4f87ef39c59aba00b73cc4c413d4b721",
+      "git_mode": "100644",
+      "sha256": "3d153c4bdc7677761b05233e53adce9a77f56e3855f142d10268c7eb1ab108bc",
+      "bytes": 38776
+    },
+    {
+      "source_path": ".github/scripts/runtime_supervisor_pre_integration.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/scripts/runtime_supervisor_pre_integration.py",
+      "git_blob": "2ba3c2062837eef81cd53eea942a5626ce0d7a9b",
+      "git_mode": "100644",
+      "sha256": "829063a6352d390ad9a805628576270ce65b769b836ba0c40f94417efd1889de",
+      "bytes": 2575
+    },
+    {
+      "source_path": ".github/scripts/runtime_supervisor_source.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/scripts/runtime_supervisor_source.py",
+      "git_blob": "44f065ea843e05a6971b2f58b957ae93d1418e28",
+      "git_mode": "100644",
+      "sha256": "78d879d7abee3413659c6bcc9a88e13e7d671dcfbc69628ebf1b01540b75e7cb",
+      "bytes": 43025
+    },
+    {
+      "source_path": ".github/workflows/authbus-convergence-run.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/authbus-convergence-run.yml",
+      "git_blob": "23e81ba5a9cb489bd33104cca402b561192c5ccb",
+      "git_mode": "100644",
+      "sha256": "9f6ab1d6c657df72c2635ee75ef3503e6387f32c4581a2c218b78512dfc69eb6",
+      "bytes": 6629
+    },
+    {
+      "source_path": ".github/workflows/bootstrap-runtime-codex-hardening.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/bootstrap-runtime-codex-hardening.yml",
+      "git_blob": "e1d3028392f85677d41a0bcd199751b154eba4cf",
+      "git_mode": "100644",
+      "sha256": "7bb0bb07c8095a23cfa8b6d8a4121b11e763f6bb8e49919f03daf871e0082596",
+      "bytes": 3165
+    },
+    {
+      "source_path": ".github/workflows/codex-control-runtime-apply-and-qualify.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/codex-control-runtime-apply-and-qualify.yml",
+      "git_blob": "d24a9e250a78e7a2a9434910510507d7b8abda53",
+      "git_mode": "100644",
+      "sha256": "49212af219d382b71e2fecf5995c3b46b7f7c906d70a9a38bb8543bf1c9509a1",
+      "bytes": 3712
+    },
+    {
+      "source_path": ".github/workflows/cognitive-read-convergence-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/cognitive-read-convergence-bootstrap.yml",
+      "git_blob": "1bc47d7e293accbda5d751bee6d82f590d181d64",
+      "git_mode": "100644",
+      "sha256": "ef3f46dfb6a273e2511fb1b8f55d678e77be0d4fe2c3b1f10fb77dbb9c914ae9",
+      "bytes": 5110
+    },
+    {
+      "source_path": ".github/workflows/cognitive-store-convergence-apply.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/cognitive-store-convergence-apply.yml",
+      "git_blob": "98c3b95f9cc7cfdbdcae6d6569c955e9f70265ab",
+      "git_mode": "100644",
+      "sha256": "90fb42c6ef1a2fc46051a9b17e7e02281468ca3f9398a6dc468b3aeabf2a4aaf",
+      "bytes": 3039
+    },
+    {
+      "source_path": ".github/workflows/cognitive-types-convergence-apply-v2.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/cognitive-types-convergence-apply-v2.yml",
+      "git_blob": "2c15006906537e86adf43a41748c027258b5ead9",
+      "git_mode": "100644",
+      "sha256": "bd805ee53f78c141f0be94704a254d55537b0d6cc06127c335017d67b8314b62",
+      "bytes": 8310
+    },
+    {
+      "source_path": ".github/workflows/cognitive-types-convergence-apply.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/cognitive-types-convergence-apply.yml",
+      "git_blob": "7e2bfb8f6efc373cdcb81cabed6d4e8c9e8d58d4",
+      "git_mode": "100644",
+      "sha256": "95411a184cf5c02b3807ced9028fc678c428eb0798b60114f3b58d44439d0c92",
+      "bytes": 8058
+    },
+    {
+      "source_path": ".github/workflows/context-compiler-foundation-apply.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-foundation-apply.yml",
+      "git_blob": "7fda73c8badf1d3e407e12ad1d8eb411f81b84ef",
+      "git_mode": "100644",
+      "sha256": "cd72508dde9c189b076fbe9689cbb8ec9f49a1429aae6897859e43c189d6bd39",
+      "bytes": 4038
+    },
+    {
+      "source_path": ".github/workflows/context-compiler-wip-recovery-generic.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-wip-recovery-generic.yml",
+      "git_blob": "2817260f76977acffc6ea585eaa2b390f617bad3",
+      "git_mode": "100644",
+      "sha256": "a21391f4228853937b231b36a1cddccb98a674cc1c719a4a8b325de761aa285d",
+      "bytes": 3732
+    },
+    {
+      "source_path": ".github/workflows/context-compiler-wip-recovery-mac.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-wip-recovery-mac.yml",
+      "git_blob": "4d543b2a589ad3d16e6e4cf6dc0c0f3e3dd2e532",
+      "git_mode": "100644",
+      "sha256": "b3e671937358a87c37453d200bf7e1b704cc9673e7e26eb5a3ccc7ac958be4b9",
+      "bytes": 2391
+    },
+    {
+      "source_path": ".github/workflows/context-compiler-wip-recovery-pocket4.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-wip-recovery-pocket4.yml",
+      "git_blob": "6eda3d2348ac997c65137140d4b0cdc726da9997",
+      "git_mode": "100644",
+      "sha256": "7a1bc0c9f90fa878eab8bcb05159fb667cce7d7a0842dcf1e8df5c95c784609d",
+      "bytes": 2502
+    },
+    {
+      "source_path": ".github/workflows/context-compiler-wip-recovery.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/context-compiler-wip-recovery.yml",
+      "git_blob": "f29fe4398e9eba7f4922105e3b8cdd06c4f798b8",
+      "git_mode": "100644",
+      "sha256": "ade858cf76a01e64e5fe1925ddf55d347c08e9019b3ab2fa1e203a3cdefb9f21",
+      "bytes": 3313
+    },
+    {
+      "source_path": ".github/workflows/control-engineering-postmerge-patch.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/control-engineering-postmerge-patch.yml",
+      "git_blob": "0dc62ec533e81e0c4782fac3e3a0fee9b4c7fc3f",
+      "git_mode": "100644",
+      "sha256": "d22f582055b67625d00ff525596657c23e8202c41c1abda271fbe649d4f0ebc8",
+      "bytes": 12801
+    },
+    {
+      "source_path": ".github/workflows/control-runtime-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/control-runtime-bootstrap.yml",
+      "git_blob": "e7d72f22b3a27ab81384f302c51613e7b37f27e0",
+      "git_mode": "100644",
+      "sha256": "8ca9fb364a4147aec7fb2ffa19e289ae66dce2283409e3ca04f2b9d9b56eefe9",
+      "bytes": 3106
+    },
+    {
+      "source_path": ".github/workflows/control-runtime-convergence-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/control-runtime-convergence-bootstrap.yml",
+      "git_blob": "1e41bc1b546fc5496430dc2d2462bfc47d4819c8",
+      "git_mode": "100644",
+      "sha256": "6bda45b196242d993608c62982670b30a6928ec0ea6b40169307d4b2b00fade7",
+      "bytes": 2128
+    },
+    {
+      "source_path": ".github/workflows/control-runtime-convergence.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/control-runtime-convergence.yml",
+      "git_blob": "e8d8e9035df55bc1988c1a40a4d063fbc88d0b90",
+      "git_mode": "100644",
+      "sha256": "893976eae2500ce47ab268f81c05eec97bf166e56b6be5a8ca6ea255549b3688",
+      "bytes": 2007
+    },
+    {
+      "source_path": ".github/workflows/hepta-intelligence-control-converge.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-intelligence-control-converge.yml",
+      "git_blob": "596d7aad97290f3526b83a546415837c6d753235",
+      "git_mode": "100644",
+      "sha256": "4fcafd8d82ba439055f09ebd64cf69baa648c499b7322b1be0c9e9655339925a",
+      "bytes": 4243
+    },
+    {
+      "source_path": ".github/workflows/hepta-kg-focused-materialize.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-kg-focused-materialize.yml",
+      "git_blob": "b2c280c2acf67053be9981a63e57520e72dbf927",
+      "git_mode": "100644",
+      "sha256": "51a031cd7687c6a0003f71475edb490ab746fd862baf41bbb7b91dcc654b7835",
+      "bytes": 6267
+    },
+    {
+      "source_path": ".github/workflows/hepta-publication-retry-check.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/hepta-publication-retry-check.yml",
+      "git_blob": "1effa8a2c8f1d86bdb7c86c12d2307441d6e9adb",
+      "git_mode": "100644",
+      "sha256": "985006bc69627fa507924b14473b42080f5fe30916aba1f6c5868cb2e558b5ea",
+      "bytes": 9334
+    },
+    {
+      "source_path": ".github/workflows/inference-control-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/inference-control-bootstrap.yml",
+      "git_blob": "10ce2ea1d73d1f1899dc24727bb84b3faad41ae3",
+      "git_mode": "100644",
+      "sha256": "798db6764e20e854b967d26079ee537b8cea8a1fc4053c50bdc62118b8659da7",
+      "bytes": 3379
+    },
+    {
+      "source_path": ".github/workflows/intuition-policy-closure-apply.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/intuition-policy-closure-apply.yml",
+      "git_blob": "c1c85b9d05907724389003a7819070928d9db4b1",
+      "git_mode": "100644",
+      "sha256": "454a514c754ac2196a67158cd7500ca72266f82e36b5401186faea00e3b2cb39",
+      "bytes": 3155
+    },
+    {
+      "source_path": ".github/workflows/intuition-policy-core-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/intuition-policy-core-bootstrap.yml",
+      "git_blob": "ef1e298d6045fdbb9fa9b434b38dc68f36ec8a6f",
+      "git_mode": "100644",
+      "sha256": "d1f612d8d5556ace290e4a673c94a8632dac78295287038785c6b58e44c6dcb3",
+      "bytes": 13094
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-apply-arm64.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-apply-arm64.yml",
+      "git_blob": "91d7374a498d225d10137909d7757639712756b1",
+      "git_mode": "100644",
+      "sha256": "b2e0eb097a292b9f791351d6c0cb4e4efe38f7621052adb35a9ed40d10d07047",
+      "bytes": 2643
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-convergence-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-convergence-bootstrap.yml",
+      "git_blob": "0f0df3a98bf477da4b24870f8fe58e92206e84ef",
+      "git_mode": "100644",
+      "sha256": "0f6c8bcb641d2a68bfaf74102ec53aa838c13899c186f99efb9829245fea6807",
+      "bytes": 6604
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-helper-materialize.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-helper-materialize.yml",
+      "git_blob": "351e8a552fa5097e3ebea6dc5ae1dee72e7f4af7",
+      "git_mode": "100644",
+      "sha256": "5b05f18f65c52e12a543683488ecfe78df653a908e9c16f026a6c375666a11fc",
+      "bytes": 3268
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-materialize-windows.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-materialize-windows.yml",
+      "git_blob": "247e9c178f6f5a07106c023213bddc70994d6b52",
+      "git_mode": "100644",
+      "sha256": "23b7eba769bbe8e73654cce00dd50c1d7869a1266bb14348dba365cb86407947",
+      "bytes": 3230
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-p0-autofix-macos.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-p0-autofix-macos.yml",
+      "git_blob": "a2935160bd0d7349cb91959a65b7f0fa1d833d3e",
+      "git_mode": "100644",
+      "sha256": "203c56eeb0b04748a45b0e145d4e8d9d759007f963923b81c0753e129efdbd3b",
+      "bytes": 4483
+    },
+    {
+      "source_path": ".github/workflows/learning-eval-p0-autofix.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/learning-eval-p0-autofix.yml",
+      "git_blob": "8b3d2a4a7cee6a67769ee02cb5769713ace461c8",
+      "git_mode": "100644",
+      "sha256": "d95e5cb284494a7ed67ef7ae5431eb21005667f7b3e7ba28bcf852f61b19210f",
+      "bytes": 4838
+    },
+    {
+      "source_path": ".github/workflows/memory-federation-closure-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/memory-federation-closure-bootstrap.yml",
+      "git_blob": "07b65ad599fcc99e36ddcdacd4e5c3ddbc848a80",
+      "git_mode": "100644",
+      "sha256": "942e7cfa1a8005f9092cc2abd4af07e66e84b6c5fe0b73babdf882cd043fa7a1",
+      "bytes": 7831
+    },
+    {
+      "source_path": ".github/workflows/memory-retrieval-closure-bootstrap-scheduled.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/memory-retrieval-closure-bootstrap-scheduled.yml",
+      "git_blob": "65a00e43b9014a389cd46659299cab55f9c8f7e9",
+      "git_mode": "100644",
+      "sha256": "dd70e9b808c363f66dc0aee235b6a7aa63fd35f683026237767ba3a7e43812e8",
+      "bytes": 5236
+    },
+    {
+      "source_path": ".github/workflows/memory-retrieval-hardening-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/memory-retrieval-hardening-bootstrap.yml",
+      "git_blob": "d9f4b9b217d598fd1464649e948e7c7ec19d1b68",
+      "git_mode": "100644",
+      "sha256": "1ad31a80ab1e6342b6b843c663b01c51a725673e9d6d0af50397f8e90ac87530",
+      "bytes": 2155
+    },
+    {
+      "source_path": ".github/workflows/memory-retrieval-provider-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/memory-retrieval-provider-bootstrap.yml",
+      "git_blob": "10f9e5e479147a6134d650dee3e17c3b8b7eb35d",
+      "git_mode": "100644",
+      "sha256": "780a3753a75ec0588cdf8256f4c22cccb18c7d183b66257bec0215653b844d9d",
+      "bytes": 1803
+    },
+    {
+      "source_path": ".github/workflows/platform-types-phase-a-once.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/platform-types-phase-a-once.yml",
+      "git_blob": "e0a33a6212256712e05fa965935c944f180f5781",
+      "git_mode": "100644",
+      "sha256": "5edaa52a1aad3dec127abd2ad81835731c3f6127b1e23d4c6a077424c55e5aef",
+      "bytes": 4257
+    },
+    {
+      "source_path": ".github/workflows/prompt-registry-remediation-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/prompt-registry-remediation-bootstrap.yml",
+      "git_blob": "456e29ec399f48c6419692bf7b737af20dd38c3b",
+      "git_mode": "100644",
+      "sha256": "d34cd1f4cb6dc2c3c1661455061485f01716edbb635977c7c5955f36a64d8513",
+      "bytes": 2785
+    },
+    {
+      "source_path": ".github/workflows/prompt-registry-v4-convergence.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/prompt-registry-v4-convergence.yml",
+      "git_blob": "dec50541a94c4dc8450ae1cfdc1d278e4d401c20",
+      "git_mode": "100644",
+      "sha256": "3e39c8c356a795506a32c68b9d2ed04b3977429991eb370e487eb66394cd5620",
+      "bytes": 9550
+    },
+    {
+      "source_path": ".github/workflows/runtime-codex-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-codex-bootstrap.yml",
+      "git_blob": "1482798d05d31a86058f2acefe81361d2e8c1d1a",
+      "git_mode": "100644",
+      "sha256": "2521985e756a71fab5dbd3178637b051687ce1057e54a7287d507c52a42932c6",
+      "bytes": 4720
+    },
+    {
+      "source_path": ".github/workflows/runtime-codex-convergence-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-codex-convergence-bootstrap.yml",
+      "git_blob": "57586386c4ac29b10fff2bbbd0b6483a159fd3d2",
+      "git_mode": "100644",
+      "sha256": "8f460020c7c7e05be6507c70f96f312cd597e6700b09ec3bc414caee782d6a4e",
+      "bytes": 10406
+    },
+    {
+      "source_path": ".github/workflows/runtime-codex-p0-bootstrap.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-codex-p0-bootstrap.yml",
+      "git_blob": "e6e9d58547fb280dc33cefe00cd04ef5fb891ba7",
+      "git_mode": "100644",
+      "sha256": "b446509db904f23b3b3e4c6569a2c432a080460380eb70856ddb2ed151307dec",
+      "bytes": 5948
+    },
+    {
+      "source_path": ".github/workflows/runtime-supervisor-docs.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-supervisor-docs.yml",
+      "git_blob": "feee3a55562eb5295cced877d65f806c2e6d701b",
+      "git_mode": "100644",
+      "sha256": "e87aa45875885ad694c77960a486391c48df7e806b68bfbbc460f4ae934d3d91",
+      "bytes": 2343
+    },
+    {
+      "source_path": ".github/workflows/runtime-supervisor-macos-preflight.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-supervisor-macos-preflight.yml",
+      "git_blob": "de18c9049e479914a9dd9f6fef4da1358083f29e",
+      "git_mode": "100644",
+      "sha256": "f574df49b87c19c0508df5c5a7d87b87a5a97dd4751d410a389dbc44354d7263",
+      "bytes": 1441
+    },
+    {
+      "source_path": ".github/workflows/runtime-supervisor-optimizer.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-supervisor-optimizer.yml",
+      "git_blob": "eb6b4041d8172b53692032698a9497adbdf122b5",
+      "git_mode": "100644",
+      "sha256": "fc16f7e78b7091b8b09a241ffda3ebbf30d571cab2c6e011cd6b6ad4b4c2cef9",
+      "bytes": 5309
+    },
+    {
+      "source_path": ".github/workflows/runtime-supervisor-windows-preflight.yml",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/.github/workflows/runtime-supervisor-windows-preflight.yml",
+      "git_blob": "2853290fba8b904e954573873a759778bcf585e5",
+      "git_mode": "100644",
+      "sha256": "2b3112c43754ca14e3981c12528e05784a0be9b0e3c8c2782bae439ab7e90e64",
+      "bytes": 1278
+    },
+    {
+      "source_path": "qualification/bootstrap/prompt-registry-v4.tar.gz",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/qualification/bootstrap/prompt-registry-v4.tar.gz",
+      "git_blob": "89fa24279b9d9c5ef2454debcc6b8f470b5a6eaf",
+      "git_mode": "100644",
+      "sha256": "242d258bbb4c335d71a57e2d8bf57965713146d882ee13606d4239adfdce926e",
+      "bytes": 7555
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-00",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-00",
+      "git_blob": "b4a7aaf772a560594dabaff636ee9a736ec7432b",
+      "git_mode": "100644",
+      "sha256": "4497b8c8406e081184ddeb1867be6f844b337b55dd7a405034966b493d8e9934",
+      "bytes": 6001
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-01",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-01",
+      "git_blob": "aa6ea24e1fc22225681b5868208b459f36d34f64",
+      "git_mode": "100644",
+      "sha256": "a89fa28a2e61f8804e8c3717b22bc585c864a5f7111a55389f4ba08b113cea16",
+      "bytes": 6000
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-02",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-02",
+      "git_blob": "ece7190b14e5cf734bce6385429c117a7658109d",
+      "git_mode": "100644",
+      "sha256": "b90bc8210314aaf8a1ccf727e944157184a3e4b88fc30263f8c717abf5cc4c58",
+      "bytes": 6000
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-03",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-03",
+      "git_blob": "8da445dbc6d7955887856932ac7e26b0c785b221",
+      "git_mode": "100644",
+      "sha256": "deb52e7bbd8145d209cd140d57658e9c2d16e2fed8970cbad783fb503160a97b",
+      "bytes": 6000
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-04",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-04",
+      "git_blob": "1912a2258acdf7cdfbbc2830652bae23ac58b7be",
+      "git_mode": "100644",
+      "sha256": "401aa2fc1112d241958e8aa4367c26bd89f9ae3da262b28c5475aeccdd08693e",
+      "bytes": 6000
+    },
+    {
+      "source_path": "scripts/.hepta-intelligence-bootstrap/part-05",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-05",
+      "git_blob": "1b170432003a0364ddb2264ee4db2ef53ec4abfe",
+      "git_mode": "100644",
+      "sha256": "05c97bd1119b80a4c7d60de3864d2d87b707b9a2df85fb725e13aed0b793168e",
+      "bytes": 4732
+    },
+    {
+      "source_path": "scripts/.learning-eval-bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.learning-eval-bootstrap.py",
+      "git_blob": "f97dfdff3ed6ed0cc1e9976cae6400f03ed7cb6a",
+      "git_mode": "100644",
+      "sha256": "f62341abf8c7604a50bce1344481a6257e2bd5f762249393ab58a74f83de5e8b",
+      "bytes": 93186
+    },
+    {
+      "source_path": "scripts/.prompt_registry_remediation_bootstrap.py.gz",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/.prompt_registry_remediation_bootstrap.py.gz",
+      "git_blob": "1b2b0d46758bdf27ad3c551dd4cf42f9925c7e3d",
+      "git_mode": "100644",
+      "sha256": "4fdc8d16b411ecaf9d3b432f7baa335244cea3265894157d4a0cd4bc7ba1d53a",
+      "bytes": 11033
+    },
+    {
+      "source_path": "scripts/_memory_federation_closure_0.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/_memory_federation_closure_0.py",
+      "git_blob": "8ed1a76ce46a45e900503ae302dfce57fcad92f7",
+      "git_mode": "100644",
+      "sha256": "f9cf9c7e4f66f9e08f3fc06e1d2fa8250837f3d23397a2f78a68bc56bae68968",
+      "bytes": 5577
+    },
+    {
+      "source_path": "scripts/_memory_federation_closure_1.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/_memory_federation_closure_1.py",
+      "git_blob": "6dc97f31bbce94750bbd14ab523c5842388f4033",
+      "git_mode": "100644",
+      "sha256": "c2b9232ff9bf613aea2c8ed39822ea521e264bdc7bf84347bf396d350f892bb2",
+      "bytes": 33832
+    },
+    {
+      "source_path": "scripts/_memory_federation_closure_2.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/_memory_federation_closure_2.py",
+      "git_blob": "00b5b97751b90c4d5193e526364e035d662f33e4",
+      "git_mode": "100644",
+      "sha256": "39f174961b3f4d80e8ddcd330d9a4c759b916df792810ed5fedef209635e8bd9",
+      "bytes": 35174
+    },
+    {
+      "source_path": "scripts/_memory_federation_closure_3.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/_memory_federation_closure_3.py",
+      "git_blob": "cfe895a275ac32599a76a588257d701c1e14ddbd",
+      "git_mode": "100644",
+      "sha256": "7ffd1ddf05fe6ac9dc67eb4ed19ee53da205563bf0db80e09ca7d76431564391",
+      "bytes": 35666
+    },
+    {
+      "source_path": "scripts/_memory_federation_closure_4.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/_memory_federation_closure_4.py",
+      "git_blob": "6a9fdccc5c975f245eaef1cc8924c3af7cae494a",
+      "git_mode": "100644",
+      "sha256": "7235723dd9b73e2d24a9c82fdbb2a80ed200f08278c86a0041fde205568fffd2",
+      "bytes": 5082
+    },
+    {
+      "source_path": "scripts/apply-cognitive-types-stage1.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-cognitive-types-stage1.py",
+      "git_blob": "ad9098bd3c5ee65ed00f7528baea17561e05da48",
+      "git_mode": "100644",
+      "sha256": "6305b99dee6b36923c89ab62171748a64abb5cddaf110642b193fdff04d49d64",
+      "bytes": 107873
+    },
+    {
+      "source_path": "scripts/apply-context-compiler-foundation.py.gz.b64",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-context-compiler-foundation.py.gz.b64",
+      "git_blob": "15f9ed77a628378c5b21113b5202a107312269eb",
+      "git_mode": "100644",
+      "sha256": "0c33888290de7ce893eed30c6c38839813806b9cf8391c5e9e694f10a9bf2faf",
+      "bytes": 8584
+    },
+    {
+      "source_path": "scripts/apply-intuition-policy-closure.py.gz.b64",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-intuition-policy-closure.py.gz.b64",
+      "git_blob": "50eafb3deea96cec35f4dfd71e38e1727e4c443e",
+      "git_mode": "100644",
+      "sha256": "07df89e07998e7aa0593735652c7eaf8a3d537d61386305acfc7c938f7f907c7",
+      "bytes": 15316
+    },
+    {
+      "source_path": "scripts/apply-learning-eval-closure-fixes.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-learning-eval-closure-fixes.py",
+      "git_blob": "b04ae48a624229b2a4bf3c045bed733e3a94bb7d",
+      "git_mode": "100644",
+      "sha256": "3e29b683665bad2cb6dabf3b500be50b0abb45de99cf5668c1bd490a1c1b1b34",
+      "bytes": 4047
+    },
+    {
+      "source_path": "scripts/apply-learning-eval-p0.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-learning-eval-p0.py",
+      "git_blob": "42c0bdc88100577fab2bc2821cfe5b022e6b5eb3",
+      "git_mode": "100644",
+      "sha256": "31d448a017833f87ef4f368dde3b9fab9522ee237931c9da498d977da42532f4",
+      "bytes": 25668
+    },
+    {
+      "source_path": "scripts/apply-learning-eval-p1-p2.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply-learning-eval-p1-p2.py",
+      "git_blob": "7f8d0a4c8f3127bc69607725729c0cb6c9aa1c78",
+      "git_mode": "100644",
+      "sha256": "26063a3563ed85463b69feba9a556f36c2b6a9893ab3fd7df5b82cf21fedc0ba",
+      "bytes": 78069
+    },
+    {
+      "source_path": "scripts/apply_memory_retrieval_hardening.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply_memory_retrieval_hardening.py",
+      "git_blob": "a4ffded97eec76e1b4ab6dcb442512a0edb960c0",
+      "git_mode": "100755",
+      "sha256": "2bba3daab2016a6ed27b3e157db3939249d1882b734f1c6eab203f7e6a3b79a2",
+      "bytes": 40279
+    },
+    {
+      "source_path": "scripts/apply_memory_retrieval_provider_modes.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply_memory_retrieval_provider_modes.py",
+      "git_blob": "44a10aaaa9dfb4b558c2e7215515d7f0ec02a6e6",
+      "git_mode": "100755",
+      "sha256": "5c854becf0e663475af5f3c5f2d5648cb1bc2b49ed3959e220b1782042a89490",
+      "bytes": 36488
+    },
+    {
+      "source_path": "scripts/apply_runtime_codex_p0.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/apply_runtime_codex_p0.py",
+      "git_blob": "01510ada7215fe0c0812786c87c4a937a6fbe803",
+      "git_mode": "100644",
+      "sha256": "29ee0b3d1c26e89da081f72add2b0ed95d6401a788c6f1091d273c7b7bcaef56",
+      "bytes": 43193
+    },
+    {
+      "source_path": "scripts/bootstrap_runtime_codex_fixups.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/bootstrap_runtime_codex_fixups.py",
+      "git_blob": "373d1ce7607d0a9b7e1a946e11306b6a00785bf8",
+      "git_mode": "100644",
+      "sha256": "f3525e986debc5a3977fd2bbd3359cfc1d6a7739f179578fdaffb1ceb8cdf5c2",
+      "bytes": 4479
+    },
+    {
+      "source_path": "scripts/bootstrap_runtime_codex_hardening.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/bootstrap_runtime_codex_hardening.py",
+      "git_blob": "b750f78e9589738b6e733c024692bb8c1ef3f3a5",
+      "git_mode": "100644",
+      "sha256": "cf90e8c4494730dd57f1837d3286a8668b4c44c066d6c5369ea1e8aeb2c306ae",
+      "bytes": 55095
+    },
+    {
+      "source_path": "scripts/cognitive-read-convergence-phase1-fix.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/cognitive-read-convergence-phase1-fix.py",
+      "git_blob": "e914913bb0dcedb3cb488767899b14f3bbf096cb",
+      "git_mode": "100644",
+      "sha256": "a030a2eaa5c1927f42e97f8c996a626408cd90b5252b9d13a5ff02e0445514aa",
+      "bytes": 2114
+    },
+    {
+      "source_path": "scripts/cognitive-read-convergence-phase1.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/cognitive-read-convergence-phase1.py",
+      "git_blob": "821fa88f3006c0a40d535b02e2f3029f4f4bffa1",
+      "git_mode": "100644",
+      "sha256": "9d47012c5e9c74a075c68962c95ab95463a72dacd23918972ba2f2473ed14472",
+      "bytes": 15796
+    },
+    {
+      "source_path": "scripts/cognitive_store_convergence_apply.py.zlib.b64",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/cognitive_store_convergence_apply.py.zlib.b64",
+      "git_blob": "de38a1b927df5bd71e8d73f61b26a0dc7b9b1092",
+      "git_mode": "100644",
+      "sha256": "c1e53bdb4180bd3c2152adea82e7a03fe583b472e8923421fb25ea7c1f65e3de",
+      "bytes": 20022
+    },
+    {
+      "source_path": "scripts/control_runtime_converge.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/control_runtime_converge.py",
+      "git_blob": "8c58bf5b9eb133ec96b04f52d77c3c6525a3365a",
+      "git_mode": "100644",
+      "sha256": "4109be7bf0bca44c222564ff72d5daaf7d36fdc1b32c86e8b9886b81e9d41b31",
+      "bytes": 1288
+    },
+    {
+      "source_path": "scripts/control_runtime_convergence_body.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/control_runtime_convergence_body.py",
+      "git_blob": "9713bcbaec9b33c4c31d73831bad03b214725cb0",
+      "git_mode": "100644",
+      "sha256": "fed09acf0de76983edf58f6b3f956ede7d230f77d607120febace46a0198246c",
+      "bytes": 22644
+    },
+    {
+      "source_path": "scripts/control_runtime_convergence_bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/control_runtime_convergence_bootstrap.py",
+      "git_blob": "f40a54af91162afb6ddd4e3a486528c054a6ec07",
+      "git_mode": "100644",
+      "sha256": "ce52303088aafd7ae2f5f13f331710828389a402321c759c3b1f6b6f86ab21a0",
+      "bytes": 559
+    },
+    {
+      "source_path": "scripts/control_runtime_stage3_bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/control_runtime_stage3_bootstrap.py",
+      "git_blob": "0a7ccb57db46e8efa99c639478e2d99794821a93",
+      "git_mode": "100644",
+      "sha256": "07a3f4329c2f84091acc92c0c3cf836309a695bfedb02928df893df75ad31fc9",
+      "bytes": 14174
+    },
+    {
+      "source_path": "scripts/fix_memory_retrieval_hardening_bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/fix_memory_retrieval_hardening_bootstrap.py",
+      "git_blob": "b11f25ebe79307a45bb9802a5ee450d04a3cbf7c",
+      "git_mode": "100755",
+      "sha256": "6c0aaa3a5920c9c2801f4eb20987bb78494d5111393e5494c3e9f10e7464e0b6",
+      "bytes": 1596
+    },
+    {
+      "source_path": "scripts/fix_runtime_codex_p0.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/fix_runtime_codex_p0.py",
+      "git_blob": "6ca4f9bba01d80d6e5f4b966bfbf867e5936101a",
+      "git_mode": "100644",
+      "sha256": "7df44841b56048682d067bf298c7298bfc2cf0d8524ca51dbd8ad6d4a4d1bada",
+      "bytes": 16441
+    },
+    {
+      "source_path": "scripts/fix_runtime_codex_p0_round2.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/fix_runtime_codex_p0_round2.py",
+      "git_blob": "002843f0bb8bf8186dfae8c249fe3c1b717acfc2",
+      "git_mode": "100644",
+      "sha256": "e09ac0e3958b3b4e4833c110fad01f8ebe4d18bfa6e6701f1c658886461cd138",
+      "bytes": 3081
+    },
+    {
+      "source_path": "scripts/inference-control-convergence.payload.b64.00",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference-control-convergence.payload.b64.00",
+      "git_blob": "013dd564829d0ff1bad2df8d9d0c3d79f6add687",
+      "git_mode": "100644",
+      "sha256": "b1cdc1c313805be29d1d8a49522990b3a2b80b9849b9b4988f5297021a01106f",
+      "bytes": 4000
+    },
+    {
+      "source_path": "scripts/inference-control-convergence.payload.b64.01",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference-control-convergence.payload.b64.01",
+      "git_blob": "a43a000cd240d305b89f65fe15e3de42ba4cceb1",
+      "git_mode": "100644",
+      "sha256": "f39ee4eded7410a5b8345b8e1a5925e73c3e8ea63600a0ea59be98418e042074",
+      "bytes": 8001
+    },
+    {
+      "source_path": "scripts/inference-control-convergence.payload.b64.02",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference-control-convergence.payload.b64.02",
+      "git_blob": "4bd5b6949279ff2be69869cd49c8c093284530e0",
+      "git_mode": "100644",
+      "sha256": "18480b2fbb98b513b219f423dadef7141865977034ee42537828f82dfe03db67",
+      "bytes": 8000
+    },
+    {
+      "source_path": "scripts/inference-control-convergence.payload.b64.03",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference-control-convergence.payload.b64.03",
+      "git_blob": "b3b055d0f9c7bf54e6faf8f40616920a0fd1fdd1",
+      "git_mode": "100644",
+      "sha256": "685db8f73b1dc6df8e213d37ffbbf5c642eddfb01f2996226c07f7a5bde47462",
+      "bytes": 8000
+    },
+    {
+      "source_path": "scripts/inference-control-convergence.payload.b64.04",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference-control-convergence.payload.b64.04",
+      "git_blob": "152b6d96b08cbec070fde7f8af8574be62e60495",
+      "git_mode": "100644",
+      "sha256": "8a2f6dc2f8a27f81b1c5bdd7226153825019fe2f2bdc6afa9dffefaf9de9252f",
+      "bytes": 4027
+    },
+    {
+      "source_path": "scripts/inference_control_convergence.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/inference_control_convergence.py",
+      "git_blob": "fb289ef971319bf5ba4ab97f8b3170390ec46a4c",
+      "git_mode": "100644",
+      "sha256": "8c5175122934ff63c946202949ffedcb5fa5770d6a13d32418b4207e12e68625",
+      "bytes": 16695
+    },
+    {
+      "source_path": "scripts/platform_types_phase_a.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/platform_types_phase_a.py",
+      "git_blob": "bb8eeff77c06ae9ebca2cf288a89f860ad3e3c51",
+      "git_mode": "100644",
+      "sha256": "30e695673ea4cecc6e8febe1f6c94cef0e969ee1fc2734a6055e5f6305bf660b",
+      "bytes": 24675
+    },
+    {
+      "source_path": "scripts/platform_types_phase_a_bootstrap.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/platform_types_phase_a_bootstrap.py",
+      "git_blob": "4e4bce8b867f2102ff572e0097bdc81c97776faf",
+      "git_mode": "100644",
+      "sha256": "ec9d3350087c9a39758b96d43451fc340066105b6f557f201053a269cd6afc74",
+      "bytes": 5430
+    },
+    {
+      "source_path": "scripts/repair-cognitive-types-stage1.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/repair-cognitive-types-stage1.py",
+      "git_blob": "c8fc0a16cb2114198acfefe3b2d61a5b12142ad1",
+      "git_mode": "100644",
+      "sha256": "5b8678c8a259539fecabb549265f93f9dc132fe851391b2889205109f3bbe30f",
+      "bytes": 2637
+    },
+    {
+      "source_path": "scripts/runtime_codex_compile_fix2.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_compile_fix2.py",
+      "git_blob": "0837d94acf9b1e44f0e03b55739570cb9fb3e7fa",
+      "git_mode": "100644",
+      "sha256": "6e3921da462637664c8aabc523f26fe97fb4c0eef2d03b02d216069db57203be",
+      "bytes": 3334
+    },
+    {
+      "source_path": "scripts/runtime_codex_convergence.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_convergence.py",
+      "git_blob": "132f64670a347cb1b6d7eb822b075bf1233219be",
+      "git_mode": "100644",
+      "sha256": "f3d7c2c1cf16b62dbbca2c0cec97c2abca1b090b2e73dd8a65b15bf3cd2da193",
+      "bytes": 81096
+    },
+    {
+      "source_path": "scripts/runtime_codex_convergence_fix.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_convergence_fix.py",
+      "git_blob": "b38d713bab2fe32ad9dba4442e1f76b2150c187f",
+      "git_mode": "100644",
+      "sha256": "0bd60a2993657b01d57f74f461fe91b072f39f10d22f91adde6b4735d431926f",
+      "bytes": 13348
+    },
+    {
+      "source_path": "scripts/runtime_codex_convergence_preflight.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_convergence_preflight.py",
+      "git_blob": "741fc4e1c23d635c74fcadb5f681fe3fb026207c",
+      "git_mode": "100644",
+      "sha256": "1e8fb7a764e6523fe2db9f880888502b618370f153e7ad1add49aa6ab7b57826",
+      "bytes": 9443
+    },
+    {
+      "source_path": "scripts/runtime_codex_convergence_preflight_cleanup.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_convergence_preflight_cleanup.py",
+      "git_blob": "64fc22d1fbc6966b3bf581300b8963a8f05e69b2",
+      "git_mode": "100644",
+      "sha256": "504d465ae91517a1816aaecc1cbde7afa8c56d7052c694372705ef6e55c88be3",
+      "bytes": 1995
+    },
+    {
+      "source_path": "scripts/runtime_codex_hardening_patches.tgz.b64",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_hardening_patches.tgz.b64",
+      "git_blob": "b545a5afd56fdee78bd63e75dd9f28afb574eac3",
+      "git_mode": "100644",
+      "sha256": "6ece93fec19b05f4b7abfaf64ec9cd8fc0207471b1c5dfabc63bd745f17368d9",
+      "bytes": 10104
+    },
+    {
+      "source_path": "scripts/runtime_codex_patch_1.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_patch_1.py",
+      "git_blob": "8fe3c6ec33ffac60ca8cd5c80dbee585f95f34f5",
+      "git_mode": "100644",
+      "sha256": "4302492cae0864ca06a92ab25033577b55d42205866c53d2a9e8a5de95f3772e",
+      "bytes": 9062
+    },
+    {
+      "source_path": "scripts/runtime_codex_patch_2.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_patch_2.py",
+      "git_blob": "643c13a08b0d3c3740e7bb9d823faf611bb64479",
+      "git_mode": "100644",
+      "sha256": "f644543db7747e1a2a617c0f443b97a444452d96c04f85e3cba92709f92dfb7e",
+      "bytes": 16271
+    },
+    {
+      "source_path": "scripts/runtime_codex_patch_3.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_patch_3.py",
+      "git_blob": "265faae430172ead898a54f3227e33b67bf10729",
+      "git_mode": "100644",
+      "sha256": "bc60c06642e3b2a77ac05e4c90a43d094791dd3a98347ea9bf0df35a76a99d09",
+      "bytes": 19198
+    },
+    {
+      "source_path": "scripts/runtime_codex_patch_4.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_patch_4.py",
+      "git_blob": "695383fc16093156f088bfdaf42c163506f76c9f",
+      "git_mode": "100644",
+      "sha256": "8e2b6a0e29456aa077a509a058e9c3ac7afa0fe694cf45adf0679ba2a61349f9",
+      "bytes": 18134
+    },
+    {
+      "source_path": "scripts/runtime_codex_quarantine_wire_fix.py",
+      "archive_path": "archive/branch-convergence-20261113/historical-automation/originals/scripts/runtime_codex_quarantine_wire_fix.py",
+      "git_blob": "54b031857c5b8c4532723a01188332775df760c8",
+      "git_mode": "100644",
+      "sha256": "bd4287fb78f51354b307d5edfe4743c35b01a48cdfb7f850ebd2fe2401404aaf",
+      "bytes": 4842
+    }
+  ]
+}

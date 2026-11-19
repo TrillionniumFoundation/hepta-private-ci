@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-source-tree-static-branchfix-successor-parent-red-ledger-v1",
+  "records": [
+    {
+      "kind": "desktop_format_argv",
+      "job_id": "1a1d086d1a2-2564-1b95",
+      "exit_code": 2,
+      "retained_status": "RED_STOP_NO_READMISSION",
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0
+    },
+    {
+      "kind": "hosted_missing_source",
+      "run_id": 43263814418,
+      "job_id": 131341874598,
+      "retained_status": "RED_SOURCE_BIND_MISSING_FILE",
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0
+    },
+    {
+      "kind": "hosted_missing_just",
+      "run_id": 43266437592,
+      "job_id": 131351145063,
+      "artifact_id": 13964829231,
+      "artifact_zip_sha256": "2214270393291ca1397b973b5fe0f592a29f922a1e8f48842f841c52dcefe413",
+      "exit_code": 127,
+      "retained_status": "RED_STOP_NO_READMISSION",
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0
+    },
+    {
+      "kind": "hosted_reviewer_branch_assertion",
+      "run_id": 43267676383,
+      "job_id": 131355528404,
+      "artifact_id": 13967056947,
+      "artifact_zip_sha256": "c405a80bb6c67d9ed46f18796f45dea28154496784de004d7d464bcbf0cb0e49",
+      "exit_code": 1,
+      "failure_check": "workflow_push_branch_exact",
+      "retained_status": "RED_STATIC_REVIEW_ASSERTION",
+      "just_version": "just 1.51.0",
+      "just_executable_path": "/home/runner/.cargo/bin/just",
+      "just_executable_sha256": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+      "parent_manifest_files": 27,
+      "successor_manifest_files": 7,
+      "format_clean": true,
+      "candidate_imports": 0,
+      "model_forwards": 0,
+      "adjoints": 0,
+      "optimizer_updates": 0
+    }
+  ],
+  "old_keys_reissued": false,
+  "successor_inherits_qualification": false,
+  "historical_unknowns_unchanged": true
+}

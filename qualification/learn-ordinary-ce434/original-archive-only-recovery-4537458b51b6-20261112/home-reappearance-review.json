@@ -1,0 +1,36 @@
+{
+  "before": {
+    "sha": "1c5cc24a2009a760be528e3f7d2e840e6a9beddc",
+    "bytes": 14959,
+    "sha256": "d70e488d4458a1008829e754615c7af8186e33823f4d8ec2254c82acfb45e740"
+  },
+  "edits": [
+    {
+      "anchor": "    require_absent(archive,\"private archive appeared during download; never overwrite it\")\n",
+      "insert_after": "    require_absent(pinroot/archive_name,\"home archive reappeared; preserve it and reassess original local copy\")\n"
+    },
+    {
+      "anchor": "    report.update(state=\"original-archive-restored-binding-preserved-and-full-hash-verified\"",
+      "insert_before": "    require_absent(pinroot/archive_name,\"home archive reappeared; preserve it and reassess original local copy\")\n"
+    }
+  ],
+  "insertions": 2,
+  "total_home_archive_checks": 3,
+  "all_other_bytes_identical": true,
+  "after": {
+    "sha": "cd5a0242cd76a9c4bd24719469c83ad311cf7017",
+    "bytes": 15185,
+    "sha256": "26fff0bc29d2e89f22fa27f9103ffd8ad31345458200c133302f3239c150da2b"
+  },
+  "original_request": {
+    "sha": "3d192cd51f409dc3d4e86133ea16e7e2644e8078",
+    "bytes": 15920,
+    "sha256": "d6d37158f1340b45e57f2931f0c94092ef9fe5fe71265ad864f4082031a0ca91"
+  },
+  "revised_request": {
+    "sha": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
+    "bytes": 16152,
+    "sha256": "49959defb9bafc8ef49b4de710f67013093f981d16585298fb06401a3cd20416"
+  },
+  "request_only_embedded_script_changed": true
+}

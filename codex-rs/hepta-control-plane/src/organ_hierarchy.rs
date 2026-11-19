@@ -231,6 +231,25 @@ impl CnsHierarchyV1 {
     }
 }
 
+/// Canonical digest of the concrete CNS route identity used by the binding.
+pub fn cns_route_digest_v1(route: &CnsRouteV1) -> Digest32 {
+    let mut bytes = b"hepta.cns.cell-route.v1\0".to_vec();
+    append_id(&mut bytes, &route.cns);
+    bytes.extend_from_slice(&route.generation.get().to_be_bytes());
+    bytes.extend_from_slice(route.hierarchy_digest.as_array());
+    append_id(&mut bytes, &route.source.system);
+    append_id(&mut bytes, &route.source.organ);
+    append_id(&mut bytes, &route.source.driver);
+    bytes.extend_from_slice(&(route.output_port as u64).to_be_bytes());
+    bytes.extend_from_slice(&(route.targets.len() as u64).to_be_bytes());
+    for target in &route.targets {
+        append_id(&mut bytes, &target.system);
+        append_id(&mut bytes, &target.organ);
+        append_id(&mut bytes, &target.driver);
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn append_id(bytes: &mut Vec<u8>, identity: &StableId) {
     let value = identity.as_str().as_bytes();
     bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());

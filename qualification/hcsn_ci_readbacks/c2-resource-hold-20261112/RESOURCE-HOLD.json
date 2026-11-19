@@ -1,0 +1,233 @@
+{
+  "schema": "hcsn-c2-resource-hold-inventory-v1",
+  "status": "RESOURCE_HOLD",
+  "as_of_date": "2026-11-12",
+  "basis": "Pinned retained originals, not a fresh host capacity measurement.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewed_pr_heads": {
+    "6173": "3d2451ebfcaf19912a77a5a888d01c55f7a9dca3",
+    "6199": "afa7415d5a740a59bb436cdb90bb157be6f450bf",
+    "6214": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+    "6222": "f515d4fac88171d93be0cb648dca434a2b926856",
+    "6237": "7d9ea0cbf01da22a53e441cf1cab52e81f183e4c"
+  },
+  "authorization": {
+    "existing_user_authorization_remains_valid": true,
+    "preparation_contract_execution_authorized": false,
+    "bound_original_decision_execution_authorized": true,
+    "decision_blob": "ce6380eea9d27a9efb7315c98198effc2f646ea1",
+    "new_user_permission_requested": false,
+    "reason_for_hold": "Missing concrete new resource/calendar/source/parent/ledger freeze, not missing user authorization."
+  },
+  "full_independent_training_replays": {
+    "completed": 0,
+    "total": 6,
+    "admission": "HOLD_NO_GO"
+  },
+  "original_controller": {
+    "job_id": "1a1c74f3308-be2a-75",
+    "latest_retained_state": "finalizing",
+    "latest_retained_outcome": "unknown",
+    "status_authoritative": false,
+    "terminal_publication_confirmed": false,
+    "restarted_by_this_inventory": false
+  },
+  "completed_continuity_diagnostics": [
+    {
+      "attempt": "4092",
+      "source": "3d2451ebfcaf19912a77a5a888d01c55f7a9dca3",
+      "raw_originals_source": "f515d4fac88171d93be0cb648dca434a2b926856",
+      "job_id": "1a1ce749808-2564-1688",
+      "complete_checkpoint_continuations": 6,
+      "physical_optimizer_calls": 26,
+      "orchestrator_wall_seconds": 908.807066,
+      "requested_aggregate_memory_bytes": 8589934592,
+      "requested_cpu_percent": 200,
+      "requested_nice": 10,
+      "requested_supervisor_seconds": 3600,
+      "maximum_reported_worker_rss_bytes": 3765043200
+    },
+    {
+      "attempt": "d706",
+      "source": "afa7415d5a740a59bb436cdb90bb157be6f450bf",
+      "complete_checkpoint_continuations": 6,
+      "physical_optimizer_calls": 26,
+      "orchestrator_wall_seconds": 905.761361,
+      "gnu_user_seconds": 1474.17,
+      "gnu_system_seconds": 157.19,
+      "maximum_single_process_rss_kib": 3655716,
+      "aggregate_cgroup_cap_recorded_in_wrapper": false
+    }
+  ],
+  "accounting": {
+    "known_completed_diagnostic_optimizer_calls": 52,
+    "cancelled_diagnostic_optimizer_calls": "UNKNOWN",
+    "lifetime_optimizer_total": "UNKNOWN",
+    "continuity_is_not_full_training_replay": true,
+    "worker_rss_peaks_are_not_simultaneous_aggregate_peak": true
+  },
+  "failed_diagnostics": [
+    {
+      "job_id": "1a1ce727d17-2564-167b",
+      "journal_unit_result": "oom-kill",
+      "unit_cpu_seconds": 102.353,
+      "supervisor_lifecycle_seconds": 55.976
+    },
+    {
+      "job_id": "1a1ce768bc3-2564-1695",
+      "journal_unit_result": "oom-kill",
+      "unit_cpu_seconds": 113.177,
+      "supervisor_lifecycle_seconds": 58.558
+    }
+  ],
+  "failed_diagnostic_resource_requests": {
+    "aggregate_memory_max_bytes": 6442450944,
+    "cpu_quota_percent": 200,
+    "nice": 0,
+    "supervisor_timeout_seconds": 1800,
+    "concurrent_workers": 2,
+    "threads_per_worker": 1,
+    "worker_address_space_limit_bytes": 8589934592,
+    "worker_inner_seconds": 300,
+    "worker_outer_seconds": 330
+  },
+  "oom_scope": {
+    "reported_unit_cpu_total_seconds": 215.53,
+    "supervisor_lifecycle_sum_seconds": 114.534,
+    "unknown": [
+      "specific victim",
+      "unit6GiB vs ancestor/global pressure",
+      "exact signal sender and supervisor signal",
+      "cancelled-attempt optimizer counts",
+      "escaped descendant history"
+    ],
+    "does_not_explain_separate_cloud_n128_Killed137": true,
+    "current_process_absence_is_not_historical_descendant_proof": true
+  },
+  "original_full_contract": {
+    "contract_blob": "6c2d82d9a2b4fc8c3bbf9e97d5ec8c1b8794a3a6",
+    "decision_blob": "ce6380eea9d27a9efb7315c98198effc2f646ea1",
+    "original_workers": 6,
+    "threads_per_fit": 1,
+    "per_fit_address_space_bytes": 8589934592,
+    "per_fit_rss_stop_bytes": 6442450944,
+    "cumulative_active_wall_seconds_per_fit": 43200,
+    "finalization_reserve_inside_same_cap_seconds": 600,
+    "maximum_cumulative_epochs": 200,
+    "min_epochs": 30,
+    "patience": 10,
+    "delta": 0.002,
+    "parent_partial_work_refund_seconds": 0,
+    "confirmation_E_access": false,
+    "original_parent_anchor_epochs": [
+      46,
+      47,
+      46,
+      47,
+      46,
+      46
+    ],
+    "late_diagnostic_checkpoint_epochs": [
+      116,
+      76,
+      126,
+      50,
+      127,
+      72
+    ],
+    "original_quality_cuts_unchanged_seconds": [
+      300,
+      900,
+      1800
+    ]
+  },
+  "available_originals": [
+    {
+      "source": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+      "path": "qualification/hcsn_differentiable/replay_v1/artifact/part-000.zip",
+      "git_blob": "2afc4e810f1c75a1ff5b9fb85464f6dda6c43245",
+      "bytes": 11397159,
+      "sha256": "37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75"
+    },
+    {
+      "source": "f515d4fac88171d93be0cb648dca434a2b926856",
+      "path": "qualification/hcsn_differentiable/replay_v1/artifact/diagnostic-4092/originals.tar.xz",
+      "git_blob": "44262f5f9e8a94abe8d70125d874392d2a927089",
+      "bytes": 7070892,
+      "sha256": "f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7",
+      "original_files": 118
+    },
+    {
+      "source": "afa7415d5a740a59bb436cdb90bb157be6f450bf",
+      "path": "qualification/hcsn_differentiable/replay_v1/evidence/native-desktop-20261112-d706/NATIVE_ORIGINALS.zip",
+      "git_blob": "deededd79d8a72d55059e7b7c439f66434a679f0",
+      "bytes": 10976581,
+      "sha256": "d17e71b766631f3789dcb43bdd312dacfbc4ea0ce7e4fc14074587584900a2fe",
+      "members": 128,
+      "all_554_external_input_bytes_in_this_zip": false
+    }
+  ],
+  "safe_without_new_model_execution": [
+    "Rehash retained archives and reconcile exact source/runtime/data/parent manifests.",
+    "Reconcile original start-parent byte identities, prior decoded-state receipts and per-fit remaining-wall ledgers; late recovery checkpoints are not substitutes. A new heavy tensor decode is not assumed resource-safe without allocation.",
+    "Prepare a single coherent new full-campaign source/decision/contract manifest and strict terminal/stopping/cost acceptance checks.",
+    "Read/reconcile existing job and health observations using their retained identities; do not replay uncertain launches.",
+    "Inspect source/manifest/ZIP metadata with bounded read-only tools; do not assume a fresh Torch import is free or presently safe."
+  ],
+  "minimum_missing_prelaunch_originals": [
+    {
+      "name": "TARGET-HOST-RESOURCE-WITNESS",
+      "category": "external current resource evidence",
+      "required": [
+        "timestamp and boot/host identity",
+        "current CPU/memory/swap/disk/load",
+        "effective target and ancestor cgroup memory/cpu/swap limits and current/peak/event counters",
+        "current job ownership/resource overlap including original UNKNOWN identity"
+      ],
+      "not_established_by": [
+        "historical cpu48/disk161.9GB witness",
+        "unknown health query",
+        "requested caps",
+        "ubuntu-latest label"
+      ]
+    },
+    {
+      "name": "ALLOCATION-AND-CONCURRENCY",
+      "category": "external resource allocation evidence",
+      "required": [
+        "verifiable reservation or allocation and effective aggregate unit limits",
+        "chosen concurrency and per-worker AS/RSS/thread/timeout limits",
+        "calendar treatment if changing6workers to1/2 or migrating host/runtime"
+      ],
+      "not_established_by": [
+        "two short26-call successes",
+        "sum of separate worker RSS peaks"
+      ]
+    },
+    {
+      "name": "FULL-C2-FREEZE-AND-BUDGET",
+      "category": "can partly be prepared by read-only work on existing originals; no launch yet",
+      "required": [
+        "one coherent exact model/program/data/runtime source freeze and bound execution decision",
+        "six original start-parent full states and inherited plan/result identities",
+        "per-fit parent-plus-attempt wall ledger and no refunds, preserving unknown historical costs",
+        "all evaluation/capture/finalization charges inside43200s/fit; original stopping/quality cuts unchanged",
+        "explicit new resource/calendar/runtime amendment where changed, and future unique launch identity only after admission"
+      ]
+    }
+  ],
+  "post_execution_gates_still_open": [
+    "six complete independently replayed fit terminals and controller RESULT",
+    "complete-epoch/sample/optimizer/checkpoint/source lineage",
+    "fresh logits plus stopping/best-selection and numerical adequacy verification",
+    "complete attempt/resource accounting with all failures and UNKNOWN retained"
+  ],
+  "no_executable_resource_profile_proposed": true,
+  "no_launch_release_created": true,
+  "new_model_calls": 0,
+  "new_optimizer_calls": 0,
+  "new_native_processes": 0,
+  "new_idempotency_keys": 0,
+  "evidence_only": true,
+  "workflow_dispatches_or_reruns_requested": 0
+}

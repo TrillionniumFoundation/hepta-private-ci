@@ -1,0 +1,853 @@
+{
+  "base": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+  "head": "534a51bf417ab7d144bffd2beb0470c672461823",
+  "tree": "8d2fbec35a0d053f5521558e7cf02ce572f73aec",
+  "normal_merge_count": 6,
+  "mechanical_format_commit_count": 1,
+  "remote_mutations": 0,
+  "branch_deletions": 0,
+  "branch_updates": 0,
+  "merge_strategy": "Default normal three-way git merge --no-ff --no-commit; conflict resolutions individually recorded. No ours strategy or automatic ours preference used.",
+  "commits": [
+    {
+      "commit": "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+      "parents": [
+        "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+        "35edda311360c60aab3ca7454ba036f2896f7392"
+      ],
+      "subject": "merge: retain fail-closed V8 historical-lock canary fallback",
+      "tree": "ee33d8ea1fdc15acf780d9a6faf28f0cfa9ff1cc"
+    },
+    {
+      "commit": "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+      "parents": [
+        "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+        "58691a7ec8a4ae8fc3903e3d3040b09d8fd4401a"
+      ],
+      "subject": "merge: preserve ctutils evidence and durable SQLite fixture successors",
+      "tree": "66e75dda17cd2d4ae6f947e42c7a88ca4b7e8fde"
+    },
+    {
+      "commit": "6899153fe2808688aba56418f583998d34948ebd",
+      "parents": [
+        "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+        "41698ae03b4cbb82979f037e4364617813f5f959"
+      ],
+      "subject": "merge: narrow spelling exclusion to immutable raw transcript parts",
+      "tree": "2b170eae067b03784438f822096c1ab02537e13f"
+    },
+    {
+      "commit": "2baa0210e275e087146e293755612859bffb7b64",
+      "parents": [
+        "6899153fe2808688aba56418f583998d34948ebd",
+        "bd5bc7f39742fdce2f548d490ad6942de6b475e9"
+      ],
+      "subject": "merge: preserve first-passage glossary entry",
+      "tree": "e69e46f38b67b8a22876480c4a413bff92063aa1"
+    },
+    {
+      "commit": "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+      "parents": [
+        "2baa0210e275e087146e293755612859bffb7b64",
+        "276f78a5660b03d837f337dd5c8da1c1040a72d2"
+      ],
+      "subject": "merge: retain historical trained replay evidence and provenance",
+      "tree": "2ed01eb2810a4f5f19b2d2578b1835a139d424df"
+    },
+    {
+      "commit": "587baefcba354832ec44abcbd4ce353e4d25d929",
+      "parents": [
+        "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+        "b5bed98f9db33eede1afe065e2812bffd462ca09"
+      ],
+      "subject": "merge: preserve executed HCSN review and exact inventory custody",
+      "tree": "5b32f35a303302906a6cfaa1b77c565dc734693e"
+    },
+    {
+      "commit": "534a51bf417ab7d144bffd2beb0470c672461823",
+      "parents": [
+        "587baefcba354832ec44abcbd4ce353e4d25d929"
+      ],
+      "subject": "style: format merged canary and spelling regression sources",
+      "tree": "8d2fbec35a0d053f5521558e7cf02ce572f73aec"
+    }
+  ],
+  "covered_initial_ordinary_branch_names": [
+    {
+      "name": "codex/ci-2823-bazel-alias-20261018-1034",
+      "sha": "35edda311360c60aab3ca7454ba036f2896f7392",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "codex/ci-2823-bazel-renamed-dep-alias-20261018-0947",
+      "sha": "35edda311360c60aab3ca7454ba036f2896f7392",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "codex/joint-trained-replay-20261106-e5ae",
+      "sha": "276f78a5660b03d837f337dd5c8da1c1040a72d2",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "codex/2751-clippy-sqlite-shim-verified-20261022",
+      "sha": "0ade699d040792d2c532a114eecc571264ba8122",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "codex/3419-bedrock-routing-matched-base-p0-20261023",
+      "sha": "00b3f410b13ee8731ec8f6b5341c53be176e6a2a",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "codex/3595-ctutils-044-evidence-20261024",
+      "sha": "58691a7ec8a4ae8fc3903e3d3040b09d8fd4401a",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "dot/windows-durable-owner-codespell-20261025",
+      "sha": "41698ae03b4cbb82979f037e4364617813f5f959",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "dot/4159-first-passage-codespell-glossary-20261028",
+      "sha": "bd5bc7f39742fdce2f548d490ad6942de6b475e9",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "fix/v8-canary-unparseable-merge-base-20261018",
+      "sha": "35edda311360c60aab3ca7454ba036f2896f7392",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    },
+    {
+      "name": "research/hcsn-executed-review-20261119-d741",
+      "sha": "b5bed98f9db33eede1afe065e2812bffd462ca09",
+      "reasons": [],
+      "new_hia_root_mask": 0
+    }
+  ],
+  "covered_branch_name_count": 10,
+  "coverage_scope": "Actual distinct new ancestors relative to73019, after root time/protocol successors. Old1bba per-frontier summed plan was11; this final distinct count is authoritative for the batch.",
+  "protected_pin_count": 413,
+  "protected_pins_in_incoming_ancestry": [],
+  "new_protected_ancestors_introduced": [],
+  "exact_preserved_objects": [
+    {
+      "path": "codex-rs",
+      "unchanged_git_object": "7d1c94c100cb32525b052899700365001c3d4dfe"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "unchanged_git_object": "327cd33d87c4a1d2679ae56776281fe8f385b609"
+    },
+    {
+      "path": "tools/branch-consolidation",
+      "unchanged_git_object": "6dd246c58a95f4da1f8c8f4a70a0756681fceb6b"
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe",
+      "unchanged_git_object": "51c4ef5e3caaf4720e1bbf6a2c1928220e39f0b0"
+    }
+  ],
+  "changed_files": [
+    {
+      "status": "M",
+      "path": ".codespellignore",
+      "blob": "e85d6ab07d70f3a57f43bcdf4969e50712776651",
+      "sha256": "48abab15a4ee9d5ee0b62338b162baae4a6193f172ff84c92596b7c8426c6ad0",
+      "bytes": 105
+    },
+    {
+      "status": "M",
+      "path": ".codespellrc",
+      "blob": "ccc5e251120324c2e3dd6f43e202eb6e9c502b38",
+      "sha256": "5bfccdc05f01df2e988212edf7ac7cbf5652c40356ef0917c3ef4448c898a66d",
+      "bytes": 971
+    },
+    {
+      "status": "M",
+      "path": ".github/blob-size-allowlist.txt",
+      "blob": "8b40355cb67a1e08fe581089ef3f94fe03d9bbe4",
+      "sha256": "e1261e5a9f1f2d24161bb3dc66be1dfdc8b181d7694e39c3b9692ff5425854a1",
+      "bytes": 123017
+    },
+    {
+      "status": "M",
+      "path": ".github/scripts/test_v8_canary_changes.py",
+      "blob": "d5bf10704f8d8a872d26143add0aa2bd6379a6d2",
+      "sha256": "776bca8a62b04afaa86c98c0eb7e6305b10d48981ece3f28aa351e4d78cd5712",
+      "bytes": 6135
+    },
+    {
+      "status": "M",
+      "path": ".github/scripts/v8_canary_changes.py",
+      "blob": "486b9801dc58981dc9d956be6278c1f696453037",
+      "sha256": "10a91426bdbc0c37da307dcebb123d3dd01fc4c74d78fc18d5466339b99bde3d",
+      "bytes": 7747
+    },
+    {
+      "status": "A",
+      "path": ".github/workflows/hepta-3595-ctutils-044-evidence.yml",
+      "blob": "a6167e4233378830e7244fda242801a02094a7bd",
+      "sha256": "a9fd5c1745ea8ec7fac7e897c9b622778c478241b92b370b3f6c385d7e1ece53",
+      "bytes": 5452
+    },
+    {
+      "status": "M",
+      "path": ".github/workflows/v8-canary.yml",
+      "blob": "519313ee6efe522f0d2102d4dcd5f84cda7e7f42",
+      "sha256": "a87b7a39f4b1e0a01674788053e4573a4c4cd50324e5edbd50359da29c9b6fcd",
+      "bytes": 17946
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_CONTENT_REVIEW.json",
+      "blob": "4c7bd63ed159f867caab97b0cce8dfcba195f8db",
+      "sha256": "d8b55ef2049bc1bf1b6dd1155269b4d8641f287f0b6cf7d15b1348926b8d6e0e",
+      "bytes": 16321
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA.json",
+      "blob": "7ae9ff142c0fbb25062d157392a90f6dbf78fe74",
+      "sha256": "6787d301170a3e0843247cd9f7873ec0a54cd7a84a7e64aab895d2a13e6e369d",
+      "bytes": 9352
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA_REVIEW.json",
+      "blob": "8e9dd98e153a7085fb5f0f8d0dc82930cab4844e",
+      "sha256": "3e329b501d18a67632b0db0621da4aeb9fe557bacc995cbb5925913e4410ee6c",
+      "bytes": 1260
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/INVENTORY_REVIEW.json",
+      "blob": "ee8d7c062015ba096ca84b42c444504f87527ca1",
+      "sha256": "1db5f7421e053f677f7f70c5c1b46f245c42dc3863fac5824ab41fdd327c667f",
+      "bytes": 830
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/README.md",
+      "blob": "499efcbcd49dc46cee1afa729cf02be5440e011c",
+      "sha256": "bcc27020de56bf4e8c65ace4a2d20a034ba388add64e6ee2b3e7b3cb66433074",
+      "bytes": 42793
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/RESET_CI_METADATA.json",
+      "blob": "a8a1b475fd3a7e8a0b5700ec36b0ed399193dce1",
+      "sha256": "ac17055ee292e4f4bbc2dd295e0722a50cbe1efc0a987675f3288322332ee17a",
+      "bytes": 4163
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/RESET_CI_REVIEW.json",
+      "blob": "20e9dbe6b5c68e9b48180f83db661f522243c3f2",
+      "sha256": "d18c2e7cdd09c404b9c616eec594689b7b51fa2b9869cc9d86cc1030110ec2b4",
+      "bytes": 1944
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/SOURCE_INDEX.json",
+      "blob": "1a2d7fa87e0180d752be968966eb1d0e68fd8693",
+      "sha256": "ea27f6205cf203acac676abbf4dd06d977f77254518117e5b719ed84825340ac",
+      "bytes": 9732
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress-data.json",
+      "blob": "c3f794b99ba8ed6b54009a472e58932021fb82bd",
+      "sha256": "ca1d3d29c7ab5c2b01229d9302e5a103fbcba85e078700513eb345c236df3212",
+      "bytes": 124830
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.png",
+      "blob": "d5639d1bac7a4964fa1f4884ce46fcf0a4ad3d1b",
+      "sha256": "fb544218c7e61155112799f00d6f344f0b12f424f50cbb80fc93c31b2b713a9c",
+      "bytes": 503286
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.svg",
+      "blob": "3f2c5c24ddb90aee62347c0f325f1b76a786d930",
+      "sha256": "2e89b178d6782b10b139c9b6a9043f9f75bf545280126cd51b971d836eddc2f8",
+      "bytes": 260232
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/integration-inventory.json.gz",
+      "blob": "b5eb47873662a534dc478c20df657d52b7b7c1b4",
+      "sha256": "43489b89100191b19e7d1dc828827a003e33f9205e812c346f8bbdeb87c6331c",
+      "bytes": 1155721
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/plot_c2_continuation.py",
+      "blob": "ef3e1eb3cf371fc2a89caa0a587ae9d21288a27f",
+      "sha256": "2bbf325d89469cd494cb895dc0ff645d49e70af80deaa56ae5947c37c85362ba",
+      "bytes": 21410
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/reset-qualification-44481454177.zip",
+      "blob": "4752b704b75a1c2354e2cd5006a6285d2684e516",
+      "sha256": "ed431ff60f5f14bcc1725f2570aca20d4a9e648a8d73a280a58b17e3cdaf3458",
+      "bytes": 3326
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/verify_integration_delta.py",
+      "blob": "e3f3259348c5a1b3b1a12aee295ab9ceefc925ef",
+      "sha256": "78d16423d3866d1ce8587b423a8b1852ee8d0c17eb2062da8919e05fb2bc991c",
+      "bytes": 2666
+    },
+    {
+      "status": "A",
+      "path": "qualification/hcsn_research_review_20261119/verify_inventory.py",
+      "blob": "5193d8681d9ecb45be89a81d6dfab350297a68a6",
+      "sha256": "435152487a87b182c143b13406a224bb702135058961cbad79e38d8d26d76300",
+      "bytes": 3380
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/TRAINED-DESCENDANT.json",
+      "blob": "a590bb352cf13743e76fce54508eb7a263ffbe90",
+      "sha256": "85d09dc3333f4c08d9d9b28c786bea8717992eac5927d8879ceefea6410b4b34",
+      "bytes": 3069
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/TRAINED-REPLAY.md",
+      "blob": "17602d94da5ce04420f72865d29363f42f070109",
+      "sha256": "aee0f1e0c0843a2df872198d9a01d65b55f534d8bb5fbe0b381321c9f45935cf",
+      "bytes": 8719
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/build_replay_helper.py",
+      "blob": "8721a74371a6db55ce2b1edc3465d5f0ea6d4da9",
+      "sha256": "c53c5c54546af3ced0c415132e80f672e34efbe2d232b77279a22b8c97871308",
+      "bytes": 3588
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/HELPER_BUILD.json",
+      "blob": "80f180331b1b831b61bb51c0de6e99f374d6987e",
+      "sha256": "379a857b52b2e19f703ff39e8e18ff0aff8d9c061fdfb0c65175976e2160cba1",
+      "bytes": 3208
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/INDEX.json",
+      "blob": "53fb273cc83168d79b6db5ccf0630d2c194281a4",
+      "sha256": "3c12fe46c446cb40d0488dd0e6db55cdaa8b3f9787fbe3cb0b8b69b6b6287247",
+      "bytes": 2714
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/RESULTS.json",
+      "blob": "801e2e14276ca6954e8e8227b1c591ca6eb27f13",
+      "sha256": "aa3c7e1cf99b5c19ab7b62e6bdd2530f95dc22ad6f505944b4be12639c161334",
+      "bytes": 62143
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/raw-executions.tar.xz",
+      "blob": "26103d19c1c0ccac28ea973bb6c323b34d5991f2",
+      "sha256": "4ec17fd3ba6a66c8a883d24340fe1d5c885ef563f9dc11c07035a632ff4f0601",
+      "bytes": 103852
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/EVIDENCE-INDEX.json",
+      "blob": "06ceb1d65b5ae17062abc8f8064e9f584a8481f8",
+      "sha256": "be34c4903a217877fa6066e55549a877741861bd22c1b1e8d674d48fbe533a60",
+      "bytes": 1531
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/ORACLE.json",
+      "blob": "8529b0c98f65a423b038f73507af4b1cb02ed7f2",
+      "sha256": "a2109df0a2ce44a6e2ec4bbd5b47930c4deb5d45a11e5012193490b0a5b1368a",
+      "bytes": 56656
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/REPORT.md",
+      "blob": "77abd79f1d7ac0fe922fa9a2c47fdd3fb5ca65e0",
+      "sha256": "f9e0f4b3f5fc4bc5260ae28d2cf7a10d26e1b7a3224a2f3d889f5c475f5f1aff",
+      "bytes": 6097
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/RUN-COST.json",
+      "blob": "9559b36865bbe34474278f7c74d3f2bfc113f8a7",
+      "sha256": "231103852a090284f50084da7fade6cdf85f6cb2fd670a38865281df2c77459f",
+      "bytes": 832
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/inspect.rs.txt",
+      "blob": "95613c40aa0c19f90a7ee26af889e14a1b0b2abe",
+      "sha256": "f26273e85dc4a16f6c0390013f95875688aa933232999f5ac0c1a2ad7ccbcd7e",
+      "bytes": 982
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/oracle-evidence.tar.xz",
+      "blob": "e332ea00a5c587333409f07f3d3e0049965155b6",
+      "sha256": "ad423e31493d6fa3f407b92a51b177173ba8d5de57de178db195f8f173b360a8",
+      "bytes": 343692
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/oracle.py",
+      "blob": "0b76bb81b257891e6af3ef30595a16b782ad9314",
+      "sha256": "40fa57590be229eac46c6b994792ca8f03e70e16ed697a42c5e71e83f2b2ae3b",
+      "bytes": 17763
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/EXPORT.json",
+      "blob": "01fbc709055d693a4446a13f5185a9c684b51e34",
+      "sha256": "3dfc0e4912b28ccc52e5300950fec2a84731b79dda75b752b8e212eac9501c71",
+      "bytes": 503
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/RECOVERY.json",
+      "blob": "0545de6dee00354e7052f561b24133cc8a308975",
+      "sha256": "ce5172c61109cb159faf18ae4eed27afb699891e6e160e9dbbbe529e87446a3e",
+      "bytes": 560
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/historical-protocol.json",
+      "blob": "da3415634c0ac06baf30365ddce03f391116399c",
+      "sha256": "c4eaa44e93dba0361210fdfa9782fcade54859a4025bd399451a13fa3d3a30bb",
+      "bytes": 12120
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/historical-report.json",
+      "blob": "687f5f25bd0ceed4b4c1cb6a00ec96856f26e48f",
+      "sha256": "f88b467c8e31d079fa3e95077ac264974933b7bffa39ade2670294c3b93ca51f",
+      "bytes": 6989
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/joint-trained-v1.json",
+      "blob": "91f30a49128972b8f91946ecdfecbf029a3e8872",
+      "sha256": "f2dbd68ab42137d7c604d9026fa60757304fdde4688ba4e17ef6f42fd927e704",
+      "bytes": 5758
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_asset_provenance/recovery-source.py.txt",
+      "blob": "a96745bab7dda65b7d403b19d5eb6493ddfcd9b4",
+      "sha256": "c119336703d4d05afe1e8ca229220e5e477afd384e8f2943da8f011201a5b130",
+      "bytes": 10806
+    },
+    {
+      "status": "A",
+      "path": "qualification/neuron-generation-bridge/trained_replay.py",
+      "blob": "6930569e0baa8ede285d3854614f1778caaa15d1",
+      "sha256": "134bcf4450ec1a09b34beb82c92c2cb3951ba6ed49d8a507fe1a42df5eb07bd4",
+      "bytes": 15704
+    },
+    {
+      "status": "A",
+      "path": "scripts/tests/test_codespell_raw_evidence_scope.py",
+      "blob": "90025d32f28b394076c7061e83e96a86c9c2ec9b",
+      "sha256": "5a4ea72da72bd4698913fa3e6b901a5eccb3d994c02ed31f9b56650a5335e401",
+      "bytes": 2250
+    }
+  ],
+  "verbatim_historical_assets": 37,
+  "validation": {
+    "v8_canary_tests": "10/10 PASS",
+    "codespell_scope_tests": "2/2 PASS",
+    "inventory_original": "32151 paths reconstruct ae6756959590c2281d5460d8f2bab1fb428d8e4b",
+    "inventory_delta": "32186 paths reconstruct 9f5f29637febfbe736602de54e932fbe349e5afa",
+    "formatter": "just fmt applied; all3 Python ASTs unchanged",
+    "blob_policy": "PASS,512000-byte limit unchanged;1 exact path+SHA archive pin",
+    "working_tree": "CLEAN",
+    "rust_validation_scope": "Entire codex-rs tree is byte-identical to base; no new Rust runtime/source behavior or Cargo/Bazel changes in this batch. Root/CI native validation remains separately tracked."
+  },
+  "steps": [
+    {
+      "sequence": 1,
+      "before": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+      "incoming": "35edda311360c60aab3ca7454ba036f2896f7392",
+      "normal_merge_conflicts": [],
+      "reviewed_postimages_exact": [
+        {
+          "path": ".github/scripts/test_v8_canary_changes.py",
+          "blob": "ef87c15eb664b3715c72c19da187e6a59d5caaaf"
+        },
+        {
+          "path": ".github/scripts/v8_canary_changes.py",
+          "blob": "187f42c0f62231736475661b23679e9dcf23e3e2"
+        },
+        {
+          "path": ".github/workflows/v8-canary.yml",
+          "blob": "519313ee6efe522f0d2102d4dcd5f84cda7e7f42"
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "before": "29531a3a96c6dddd94bd47eb66a48ea9b15d6b4d",
+      "incoming": "58691a7ec8a4ae8fc3903e3d3040b09d8fd4401a",
+      "normal_merge_conflicts": [
+        "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_schema_tests.rs"
+      ],
+      "merge_stage_blobs": "100644 36c3dfa70eacefffc7fb4f4f6ea68216bdd72a35 1\tcodex-rs/hepta-automation/src/migration_convergence_tests.rs\n100644 a06d3658ec531ae46ce6135ec5f5f20d26799298 2\tcodex-rs/hepta-automation/src/migration_convergence_tests.rs\n100644 fb261813b5772303fb289e4790baf0999b60a793 3\tcodex-rs/hepta-automation/src/migration_convergence_tests.rs\n100644 a4fc6bb49263bd7b03f4d92810ed182ec32355f9 1\tcodex-rs/hepta-memory/src/cognitive_schema_tests.rs\n100644 a067480aa9109937c89f91bed07d7db01730751a 2\tcodex-rs/hepta-memory/src/cognitive_schema_tests.rs\n100644 53322a02491a50037235f6dab96df6e5fb3aa78e 3\tcodex-rs/hepta-memory/src/cognitive_schema_tests.rs\n",
+      "resolution": "Resolve the two SQLite fixture conflicts to current durable/canonical implementations. Incoming central-shim, distinct on-disk fixtures, TempDir lifetime, restart and migration assertions already survive in current. Current additionally retains WAL/FULL profile, isolation test, first-generation private WAL/SHM permissions and existing-inode preservation tests. The default three-way result adds no Bedrock handler source changes; new branch-only read-only ctutils evidence workflow remains added.",
+      "revert_review": "Both incoming conflicting blobs exactly equal earlier current-ancestry snapshots at470d151a/36ad72d5 and equal the original branch repair0ade699d04. All three later exclusive branch commits touch only Bedrock handlers or the evidence workflow; no later deliberate fixture revert exists. Historical occurrence is supporting evidence; the complete source diffs establish semantic supersession.",
+      "added_path": ".github/workflows/hepta-3595-ctutils-044-evidence.yml",
+      "added_blob": "a6167e4233378830e7244fda242801a02094a7bd",
+      "rust_sources_final_unchanged": true
+    },
+    {
+      "sequence": 3,
+      "before": "48874d7eeaebef5588cf706e0dfb96b3119127fb",
+      "incoming": "41698ae03b4cbb82979f037e4364617813f5f959",
+      "normal_merge_conflicts": [
+        ".codespellrc"
+      ],
+      "merge_stage_blobs": "100644 32ad02b993236edd9c54dbaba1664b8f2d650c00 1\t.codespellrc\n100644 ea97570b094aaabb9b8918847ef2b83153b539fb 2\t.codespellrc\n100644 600296a04850ce65f966e8dd107bf72a165911c1 3\t.codespellrc\n",
+      "resolution": "Replace only the existing entire raw-transcript directory spelling exclusion with the incoming part-*.txt pattern. All20 current files in that directory match the narrower pattern. Keep every unrelated current exclusion; retain new scope regressions unchanged.",
+      "result_paths": [
+        ".codespellrc",
+        "scripts/tests/test_codespell_raw_evidence_scope.py"
+      ],
+      "scope_regression_tests_verbatim": true
+    },
+    {
+      "sequence": 4,
+      "before": "6899153fe2808688aba56418f583998d34948ebd",
+      "incoming": "bd5bc7f39742fdce2f548d490ad6942de6b475e9",
+      "normal_merge_conflicts": [
+        ".codespellignore"
+      ],
+      "merge_stage_blobs": "100644 0da447f000de188776a33e770c2d2d77b37f97ee 1\t.codespellignore\n100644 3e6a1d51f74f4d03aa3d14bdce9bfb911609fa81 2\t.codespellignore\n100644 943979f8868f08c51f0896c3e90883591590e673 3\t.codespellignore\n",
+      "resolution": "The only resulting delta is additive FPT glossary entry. All other incoming39 path changes are already represented by the normal merge preview. Preserve current inout/retuned/get's glossary entries.",
+      "result_paths": [
+        ".codespellignore"
+      ]
+    },
+    {
+      "sequence": 5,
+      "before": "2baa0210e275e087146e293755612859bffb7b64",
+      "incoming": "276f78a5660b03d837f337dd5c8da1c1040a72d2",
+      "normal_merge_conflicts": [
+        ".codespellignore"
+      ],
+      "merge_stage_blobs": "100644 0da447f000de188776a33e770c2d2d77b37f97ee 1\t.codespellignore\n100644 20f29ac28cfff756cfe653e1931d53e126f49d14 2\t.codespellignore\n100644 79f2419ffba1ea5c3de0226545a17b9a7b2005dd 3\t.codespellignore\n",
+      "resolution": "Retain all21 newly added historical trained-replay evidence/provenance/harness files verbatim; append cach/nd glossary entries while retaining current words and priorFPT if merged in this sequence. No runtime Rust or existing evidence file changes.",
+      "prior_FPT_and_all_existing_words_preserved": true,
+      "all_21_historical_postimages_verbatim": true,
+      "result_paths": [
+        {
+          "status": "M",
+          "path": ".codespellignore",
+          "blob": "e85d6ab07d70f3a57f43bcdf4969e50712776651"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/TRAINED-DESCENDANT.json",
+          "blob": "a590bb352cf13743e76fce54508eb7a263ffbe90"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/TRAINED-REPLAY.md",
+          "blob": "17602d94da5ce04420f72865d29363f42f070109"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/build_replay_helper.py",
+          "blob": "8721a74371a6db55ce2b1edc3465d5f0ea6d4da9"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/HELPER_BUILD.json",
+          "blob": "80f180331b1b831b61bb51c0de6e99f374d6987e"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/INDEX.json",
+          "blob": "53fb273cc83168d79b6db5ccf0630d2c194281a4"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/RESULTS.json",
+          "blob": "801e2e14276ca6954e8e8227b1c591ca6eb27f13"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-descendant-20261106/raw-executions.tar.xz",
+          "blob": "26103d19c1c0ccac28ea973bb6c323b34d5991f2"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/EVIDENCE-INDEX.json",
+          "blob": "06ceb1d65b5ae17062abc8f8064e9f584a8481f8"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/ORACLE.json",
+          "blob": "8529b0c98f65a423b038f73507af4b1cb02ed7f2"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/REPORT.md",
+          "blob": "77abd79f1d7ac0fe922fa9a2c47fdd3fb5ca65e0"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/RUN-COST.json",
+          "blob": "9559b36865bbe34474278f7c74d3f2bfc113f8a7"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/inspect.rs.txt",
+          "blob": "95613c40aa0c19f90a7ee26af889e14a1b0b2abe"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/oracle-evidence.tar.xz",
+          "blob": "e332ea00a5c587333409f07f3d3e0049965155b6"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/evidence/trained-oracle-20261106/oracle.py",
+          "blob": "0b76bb81b257891e6af3ef30595a16b782ad9314"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/EXPORT.json",
+          "blob": "01fbc709055d693a4446a13f5185a9c684b51e34"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/RECOVERY.json",
+          "blob": "0545de6dee00354e7052f561b24133cc8a308975"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/historical-protocol.json",
+          "blob": "da3415634c0ac06baf30365ddce03f391116399c"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/historical-report.json",
+          "blob": "687f5f25bd0ceed4b4c1cb6a00ec96856f26e48f"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/joint-trained-v1.json",
+          "blob": "91f30a49128972b8f91946ecdfecbf029a3e8872"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_asset_provenance/recovery-source.py.txt",
+          "blob": "a96745bab7dda65b7d403b19d5eb6493ddfcd9b4"
+        },
+        {
+          "status": "A",
+          "path": "qualification/neuron-generation-bridge/trained_replay.py",
+          "blob": "6930569e0baa8ede285d3854614f1778caaa15d1"
+        }
+      ]
+    },
+    {
+      "sequence": 6,
+      "before": "1ae7211cea2098c850a9fd41d0539e540d2f2c24",
+      "incoming": "b5bed98f9db33eede1afe065e2812bffd462ca09",
+      "normal_merge_conflicts": [],
+      "resolution": "Default normal merge adds only16 dated research report, frozen inventory and independent reconstruction files. No current Rust/CI behavior is replaced. Preserve original evidence bytes and claims scoped to their original heads.",
+      "all_16_historical_postimages_verbatim": true,
+      "result_paths": [
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/INTEGRATION_CONTENT_REVIEW.json",
+          "blob": "4c7bd63ed159f867caab97b0cce8dfcba195f8db"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA.json",
+          "blob": "7ae9ff142c0fbb25062d157392a90f6dbf78fe74"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA_REVIEW.json",
+          "blob": "8e9dd98e153a7085fb5f0f8d0dc82930cab4844e"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/INVENTORY_REVIEW.json",
+          "blob": "ee8d7c062015ba096ca84b42c444504f87527ca1"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/README.md",
+          "blob": "499efcbcd49dc46cee1afa729cf02be5440e011c"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/RESET_CI_METADATA.json",
+          "blob": "a8a1b475fd3a7e8a0b5700ec36b0ed399193dce1"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/RESET_CI_REVIEW.json",
+          "blob": "20e9dbe6b5c68e9b48180f83db661f522243c3f2"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/SOURCE_INDEX.json",
+          "blob": "1a2d7fa87e0180d752be968966eb1d0e68fd8693"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress-data.json",
+          "blob": "c3f794b99ba8ed6b54009a472e58932021fb82bd"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.png",
+          "blob": "d5639d1bac7a4964fa1f4884ce46fcf0a4ad3d1b"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.svg",
+          "blob": "3f2c5c24ddb90aee62347c0f325f1b76a786d930"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/integration-inventory.json.gz",
+          "blob": "b5eb47873662a534dc478c20df657d52b7b7c1b4"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/plot_c2_continuation.py",
+          "blob": "ef3e1eb3cf371fc2a89caa0a587ae9d21288a27f"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/reset-qualification-44481454177.zip",
+          "blob": "4752b704b75a1c2354e2cd5006a6285d2684e516"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/verify_integration_delta.py",
+          "blob": "e3f3259348c5a1b3b1a12aee295ab9ceefc925ef"
+        },
+        {
+          "status": "A",
+          "path": "qualification/hcsn_research_review_20261119/verify_inventory.py",
+          "blob": "5193d8681d9ecb45be89a81d6dfab350297a68a6"
+        }
+      ],
+      "exact_byte_archive_pin": {
+        "path": "qualification/hcsn_research_review_20261119/integration-inventory.json.gz",
+        "bytes": 1155721,
+        "git_blob": "b5eb47873662a534dc478c20df657d52b7b7c1b4",
+        "sha256": "43489b89100191b19e7d1dc828827a003e33f9205e812c346f8bbdeb87c6331c",
+        "reason": "Existing immutable research inventory archive, independently reconstructs its stated tree; exact-byte permission only if retained under current blob policy."
+      },
+      "inventory_validation": {
+        "verify_inventory.py": {
+          "blob_contents_read": 0,
+          "byte_size_scope": "Saved observations only; sizes are not committed by tree hashes; missing sizes remain unknown.",
+          "compressed_bytes": 1155721,
+          "compressed_sha256": "43489b89100191b19e7d1dc828827a003e33f9205e812c346f8bbdeb87c6331c",
+          "cpu_seconds": 0.38621594200000003,
+          "files": 32151,
+          "missing_blob_sizes": 19375,
+          "original_bytes": 7031693,
+          "original_sha256": "8ef132e8d53bd4a13f3b3b9cb2fa12d1ccd7565a2b25d0d353e2bc8247c82b74",
+          "root_entries": 63,
+          "scope": "Complete paths/modes/blob identifiers; not complete blob-content or line-by-line review.",
+          "status": "VERIFIED_COMPLETE_PATH_MODE_BLOB_TREE",
+          "tree_sha": "ae6756959590c2281d5460d8f2bab1fb428d8e4b",
+          "wall_seconds": 0.3863373200001661
+        },
+        "verify_integration_delta.py": {
+          "added_files": 35,
+          "blob_contents_read": 0,
+          "cpu_seconds": 0.71038181,
+          "from_commit": "38351c487b286c86ce5d54e7d20bac364a1819da",
+          "from_tree": "ae6756959590c2281d5460d8f2bab1fb428d8e4b",
+          "missing_blob_sizes": 19375,
+          "model_calls": 0,
+          "new_files": 32186,
+          "old_files": 32151,
+          "root_entries": 63,
+          "scope": "All paths, modes, and blob identities at both heads; not blob-content or line-by-line review.",
+          "source_bindings": {
+            "INTEGRATION_DELTA.json": {
+              "bytes": 9352,
+              "sha256": "6787d301170a3e0843247cd9f7873ec0a54cd7a84a7e64aab895d2a13e6e369d"
+            },
+            "integration-inventory.json.gz": {
+              "bytes": 1155721,
+              "sha256": "43489b89100191b19e7d1dc828827a003e33f9205e812c346f8bbdeb87c6331c"
+            },
+            "verify_integration_delta.py": {
+              "bytes": 2666,
+              "sha256": "78d16423d3866d1ce8587b423a8b1852ee8d0c17eb2062da8919e05fb2bc991c"
+            },
+            "verify_inventory.py": {
+              "bytes": 3380,
+              "sha256": "435152487a87b182c143b13406a224bb702135058961cbad79e38d8d26d76300"
+            }
+          },
+          "status": "VERIFIED_COMPLETE_ADVANCED_PATH_MODE_BLOB_TREE",
+          "to_commit": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+          "to_tree": "9f5f29637febfbe736602de54e932fbe349e5afa",
+          "wall_seconds": 0.7104373410002154
+        }
+      }
+    }
+  ],
+  "formatter_proof": {
+    "base": "73019f40c8ad8029abe3ccf8b735672befe99d3e",
+    "before_format_commit": "587baefcba354832ec44abcbd4ce353e4d25d929",
+    "command": "just fmt --base 73019f40c8ad8029abe3ccf8b735672befe99d3e",
+    "changes": [
+      {
+        "path": ".github/scripts/test_v8_canary_changes.py",
+        "before_sha256": "86eb6e9f407b3084f18bca882282b9c0ffa6579a8b660fbc1a2835dfd704cd18",
+        "after_sha256": "776bca8a62b04afaa86c98c0eb7e6305b10d48981ece3f28aa351e4d78cd5712",
+        "ast_identical": true
+      },
+      {
+        "path": ".github/scripts/v8_canary_changes.py",
+        "before_sha256": "f1239f6eda4eaf5604dd95b803ea5551a8265c44dd115da0f957b09050cff418",
+        "after_sha256": "10a91426bdbc0c37da307dcebb123d3dd01fc4c74d78fc18d5466339b99bde3d",
+        "ast_identical": true
+      },
+      {
+        "path": "scripts/tests/test_codespell_raw_evidence_scope.py",
+        "before_sha256": "33ec1915a78f8277bc8d2925a88369491e26f0f1f8b4fa8db9d43d3370bf50ba",
+        "after_sha256": "5a4ea72da72bd4698913fa3e6b901a5eccb3d994c02ed31f9b56650a5335e401",
+        "ast_identical": true
+      }
+    ],
+    "historical_evidence_files_changed": 0
+  }
+}

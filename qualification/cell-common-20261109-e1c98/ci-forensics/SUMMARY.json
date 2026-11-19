@@ -1,0 +1,116 @@
+{
+  "schema": "hepta.cell-common.ci-forensics.v1",
+  "original_m6": {
+    "head": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+    "tree": "293ece7ffdffa2332ccfdec4fbbc4b7dcb3363cb",
+    "pr": 5433
+  },
+  "architecture": {
+    "run_id": 42565769715,
+    "attempt": 2,
+    "status": "completed",
+    "conclusion": "success",
+    "source_head_job": 129124162512,
+    "required_job": 129139973803,
+    "source_clean_and_unchanged": true,
+    "initial_failure": "V8 artifact HTTP 504 before native checks",
+    "base_merge_native_steps": "skipped"
+  },
+  "blocking_ci": {
+    "run_id": 42565769736,
+    "conclusion": "cancelled",
+    "required_gate": "failure",
+    "dependencies": {
+      "bazel": "failure",
+      "repo_checks": "cancelled"
+    },
+    "repaired_all_platforms": false
+  },
+  "cell_native": {
+    "run_id": 42565757710,
+    "attempt": 2,
+    "conclusion": "failure",
+    "scope_passed": 7879,
+    "scope_skipped": 104,
+    "workspace_passed": 20498,
+    "workspace_failed": 1,
+    "workspace_skipped": 134,
+    "failure": "codex-hepta-matrix-sdk::store_version_migration::encrypted_state_identity_session_and_queues_survive_restart"
+  },
+  "repair_commits": {
+    "owner_unlock": "2cd2c890cad9b0912eb9f1e202042e2d39a8f04b",
+    "canonical_fixtures": "cfae11bba5588740be9cfadb02631f18b1f4828c",
+    "v8_retries": "d301b2a387ff60c1f81c5ddd0e3e985e7f099aec",
+    "matrix_development_crypto_profile": "8857d0f0b149a1aec7546c71803453c93a4aabb5"
+  },
+  "v8_python_tests": {
+    "passed": 15,
+    "failed": 0,
+    "native_common_source_claim": false
+  },
+  "matrix_diagnostic": {
+    "base_head": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+    "base_tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+    "same_sdk_and_migration_test_as_m6": true,
+    "diagnostic_only": true,
+    "original_startup_deadline_seconds": 5,
+    "deadline_changed": false,
+    "kdf_parameters_changed": false,
+    "state_schema_changed": false,
+    "dependency_graph_changed": false,
+    "bazel_result_claimed": false,
+    "old_to_new_migration_claimed": false,
+    "cases": [
+      {
+        "name": "original-debug",
+        "job_id": "1a1c00894a9-5e21-88f",
+        "cpu_max": "unrestricted (no CPU quota requested)",
+        "exit_code": 0,
+        "fixture_builder_ms": 3140,
+        "consumer_builder_ms": 3113,
+        "test_seconds": 7.909,
+        "whole_command_seconds": 67.702209248906,
+        "raw_log_sha256": "9981dfffbb30136baab9917c2c9692826845bffd17544fd2b119285f96140276",
+        "record": "matrix-diagnostic/original-debug.json"
+      },
+      {
+        "name": "original-debug-half-cpu",
+        "job_id": "1a1c00c59ad-5e21-8a2",
+        "cpu_max": "50000 100000",
+        "exit_code": 100,
+        "fixture_builder_ms": 6325,
+        "consumer_builder_ms": 6236,
+        "test_seconds": 14.244,
+        "whole_command_seconds": 85.69438036903739,
+        "raw_log_sha256": "89d07867f38aa5553e9b458a002c1c32dc16d9b35308084d9abc981ade550a2f",
+        "record": "matrix-diagnostic/original-debug-half-cpu.json"
+      },
+      {
+        "name": "encryption-opt3",
+        "job_id": "1a1c01e2a1c-5e21-909",
+        "cpu_max": "unrestricted (no CPU quota requested)",
+        "exit_code": 0,
+        "fixture_builder_ms": 1927,
+        "consumer_builder_ms": 1879,
+        "test_seconds": 4.861,
+        "whole_command_seconds": 32.19223739998415,
+        "raw_log_sha256": "74454a660277213ee5c644d0771c02a09dc4da947db4c9e952a886b9b8bab525",
+        "record": "matrix-diagnostic/encryption-opt3.json"
+      },
+      {
+        "name": "encryption-opt3-half-cpu",
+        "job_id": "1a1c020b09e-5e21-915",
+        "cpu_max": "50000 100000",
+        "exit_code": 0,
+        "fixture_builder_ms": 3921,
+        "consumer_builder_ms": 3861,
+        "test_seconds": 9.912,
+        "whole_command_seconds": 123.30003848392516,
+        "raw_log_sha256": "243f92b84a8af8d8c8c74597c1eed072c579e36367dbbc3a755a2b547f257e85",
+        "record": "matrix-diagnostic/encryption-opt3-half-cpu.json"
+      }
+    ]
+  },
+  "common_frozen_source_native": "recorded separately by root; no claim from diagnostic overlays",
+  "scientific_benefit_claimed": false
+}

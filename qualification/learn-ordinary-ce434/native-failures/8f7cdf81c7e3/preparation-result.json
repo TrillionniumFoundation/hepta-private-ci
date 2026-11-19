@@ -1,0 +1,62 @@
+{
+  "expected_source": "c7788fcb70e90ee887410df5abc4e840664ba088",
+  "repair_source": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "state": "native-completed",
+  "steps": [
+    {
+      "name": "fetch-repair",
+      "exit_code": 0,
+      "seconds": 6.62098138500005,
+      "log_bytes": 144,
+      "log_sha256": "7bf60eca6ff8f522dfe5ee6735c0df364764481975a6dfa7f1761fd233213f93"
+    },
+    {
+      "name": "fast-forward",
+      "exit_code": 0,
+      "seconds": 0.054824738996103406,
+      "log_bytes": 326,
+      "log_sha256": "d3f1ba75cea686bb62d8590dd300a591a927d6ef98e20a4f2cc4ed738dbea286"
+    },
+    {
+      "name": "format",
+      "exit_code": 0,
+      "seconds": 0.5644732159562409,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "diffcheck",
+      "exit_code": 0,
+      "seconds": 0.01136928005144,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "source-closure",
+      "exit_code": 0,
+      "seconds": 43.95060009905137,
+      "log_bytes": 28706,
+      "log_sha256": "2341af70c833c57755aaabeba636227f5a6cdf4964c04be3d5648be48e481562"
+    },
+    {
+      "name": "parser-controls",
+      "exit_code": 0,
+      "seconds": 0.14488036697730422,
+      "log_bytes": 2327,
+      "log_sha256": "067615c20db8cd329d65f34e621fcf1ea2643159b677f5b1bd5e6e88d126d43c"
+    },
+    {
+      "name": "push-candidate",
+      "exit_code": 0,
+      "seconds": 7.295038658892736,
+      "log_bytes": 443,
+      "log_sha256": "3d76aed634667381927c22d2f41e65985768bdc9dfa2dbf45321069094c1086e"
+    }
+  ],
+  "source_sha": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "source_tree": "2f72d462823e5f1ec6bb9f453b64e14f9590d785",
+  "native_output": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/all-owners-8f7cdf81c7e3-v1",
+  "native_exit_code": 1,
+  "source_after": "8f7cdf81c7e3a4a0c8921b63e3b64e73657e19cc",
+  "source_status_after": ""
+}

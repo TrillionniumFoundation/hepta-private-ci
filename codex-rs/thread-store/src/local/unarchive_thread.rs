@@ -144,7 +144,7 @@ pub(super) async fn unarchive_thread(
 
 #[cfg(test)]
 mod tests {
-    use chrono::Utc;
+    use crate::local::test_support::private_home;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
     use codex_utils_absolute_path::test_support::PathExt;
@@ -218,7 +218,7 @@ mod tests {
 
     #[tokio::test]
     async fn unarchive_thread_deduplicates_rollout_paths_and_updates_sqlite_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(204);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");
@@ -246,7 +246,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             selected_archived_path,
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some(config.default_model_provider_id.clone());

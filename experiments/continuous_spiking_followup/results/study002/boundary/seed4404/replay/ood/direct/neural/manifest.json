@@ -1,0 +1,74 @@
+{
+  "arrays": {
+    "elapsed": {
+      "bytes": 8,
+      "dtype": "float64",
+      "sha256": "6c3c396ed6b5c36dcae172271f462051b1266b851e92df3deea8ac65478fd712",
+      "shape": [
+        1
+      ]
+    },
+    "layer_000__adaptation": {
+      "bytes": 96,
+      "dtype": "float32",
+      "sha256": "b85cfd2256c9367106072a638244d0d1955e8d3693b3c3383832ef6bdac7c19b",
+      "shape": [
+        1,
+        24
+      ]
+    },
+    "layer_000__content": {
+      "bytes": 96,
+      "dtype": "float32",
+      "sha256": "8e027680cc793ec9caf7dd092e1ae4987bd1be5857259b979118787a8f286770",
+      "shape": [
+        1,
+        24
+      ]
+    },
+    "layer_000__event": {
+      "bytes": 96,
+      "dtype": "float32",
+      "sha256": "889ac4e19011b73db3a0ccb1fde735b6ac34e5a69c52d84c401caa81de66c5ac",
+      "shape": [
+        1,
+        24
+      ]
+    },
+    "layer_000__voltage": {
+      "bytes": 96,
+      "dtype": "float32",
+      "sha256": "523ee45d2f916cde1e6c03c1a65fa1d269c0b947e9505abe5f6ae66dc675024e",
+      "shape": [
+        1,
+        24
+      ]
+    }
+  },
+  "layer_keys": [
+    [
+      "adaptation",
+      "content",
+      "event",
+      "voltage"
+    ]
+  ],
+  "payload_bytes": 1463,
+  "payload_sha256": "23d64638cd9e8cef8386f6f5dcc51f4e7a037be9b69a7aa1c76b37b64401ede8",
+  "snapshot": {
+    "batch_size": 1,
+    "config": {
+      "architecture": "hcsn",
+      "classes": 2,
+      "depth": 1,
+      "input_dim": 4,
+      "match_cell_budget": false,
+      "seed": 4404,
+      "width": 24
+    },
+    "format": "hcsn-incremental-state-v2",
+    "model_sha256": "4328ab448fdfdf20890972af17114ee0c990bbd327166a739259b48ce3e1a4ea",
+    "processed_rows": 1,
+    "steps": 1
+  }
+}

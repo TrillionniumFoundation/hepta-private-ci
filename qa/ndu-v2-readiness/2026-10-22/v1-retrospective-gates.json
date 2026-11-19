@@ -1,0 +1,151 @@
+{
+  "all_scientific_gates_closed": false,
+  "gates": {
+    "actual_control_horizon": {
+      "facts": {
+        "attempted": 64,
+        "completed": 62,
+        "decisions_histogram": {
+          "0": 2,
+          "2": 47,
+          "3": 15
+        },
+        "max_allowed": 16,
+        "min_required": 8
+      },
+      "reason": "require every completed NDU source to exercise 8-16 actual decisions",
+      "status": "open"
+    },
+    "complete_state_and_continuous_fbsde": {
+      "facts": {
+        "continuous_solved": false,
+        "state_complete": false
+      },
+      "reason": "action-only discrete BSDE with incomplete observed state; no continuous FBSDE convergence",
+      "status": "open"
+    },
+    "confirmatory_frontier_advantage": {
+      "facts": {
+        "empirical_frontier": [
+          "best_of_n:wall_seconds:10.0",
+          "learned_router:wall_seconds:10.0",
+          "mean_only:wall_seconds:10.0"
+        ],
+        "experiment_pass": false,
+        "ndu_nondominated": false
+      },
+      "reason": "descriptive nondominance is not a confirmatory quality-risk-cost gain",
+      "status": "open"
+    },
+    "cost_and_coverage_equivalence": {
+      "facts": {
+        "actual_wall_ratio_minus_one": 0.23947207232702428,
+        "comparator": "best_of_n",
+        "coverage_delta": -0.03125,
+        "matching_pair_fraction": 0.28125,
+        "matching_pairs": 18,
+        "mean_only_diagnostic_not_equivalence": true,
+        "method": "ndu",
+        "paired_comparisons": 64,
+        "required_pair_fraction": 0.95,
+        "wall_tolerance": 0.05
+      },
+      "reason": "paired-design cost matching cannot be inferred from a common wall cap",
+      "status": "open"
+    },
+    "covariance_causal_identification": {
+      "facts": {
+        "changed_jointly_completed": 0,
+        "changed_raw_outputs": 2,
+        "intervention_benefit_unverified": true,
+        "jointly_completed": 62,
+        "paired_ablation_rows": 64,
+        "selected_risk_weight": 0.0
+      },
+      "reason": "nonzero risk weight plus independently controlled, beneficial covariance intervention required",
+      "status": "open"
+    },
+    "frozen_v1_ledger_consistency": {
+      "facts": {
+        "full_episode_rows": 768,
+        "reconciled_metrics": [
+          "episodes",
+          "source_groups",
+          "quality",
+          "wall_seconds",
+          "coverage",
+          "severe",
+          "cvar"
+        ],
+        "source_groups": 64,
+        "task_seed_groups": 64
+      },
+      "reason": "all journal rows reconcile to the original reported aggregates",
+      "status": "pass"
+    },
+    "independent_text_and_pixel_generation": {
+      "facts": {
+        "free_text": false,
+        "pixels": false
+      },
+      "reason": "both modalities must be independently learned and separately evaluated",
+      "status": "open"
+    },
+    "per_cell_counterfactual_attribution": {
+      "facts": {
+        "required_cells": [
+          "semantic",
+          "horizontal",
+          "vertical",
+          "completion"
+        ]
+      },
+      "reason": "v1 has no four one-Cell-at-a-time matched ablation roster",
+      "status": "open"
+    },
+    "repeated_decoding_seeds_and_power": {
+      "facts": {
+        "actual_seeds": [
+          23
+        ],
+        "min_seeds": 3,
+        "min_sources": 128,
+        "unique_sources": 64
+      },
+      "reason": "require >=3 decoder seeds and >=128 distinct held-out sources for v2 preflight (not sufficient for statistical power)",
+      "status": "open"
+    },
+    "untouched_v2_cohort": {
+      "facts": {
+        "historical_test_sources": 64
+      },
+      "reason": "v1 test cannot be recycled as the next confirmatory cohort; requires a separate v2 manifest and cross-history firewall",
+      "status": "open"
+    }
+  },
+  "measurement_receipt_hashes": {
+    "episodes": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+    "protocol": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf",
+    "report": "e854f0603109d64c325667ca01315122e4056a0ce536d85b80c19ddabd3154a7"
+  },
+  "open": [
+    "actual_control_horizon",
+    "covariance_causal_identification",
+    "independent_text_and_pixel_generation",
+    "per_cell_counterfactual_attribution",
+    "cost_and_coverage_equivalence",
+    "repeated_decoding_seeds_and_power",
+    "confirmatory_frontier_advantage",
+    "untouched_v2_cohort",
+    "complete_state_and_continuous_fbsde"
+  ],
+  "passed": [
+    "frozen_v1_ledger_consistency"
+  ],
+  "pinned_v1_evidence_verified": true,
+  "repository_ci_not_included": true,
+  "schema": "hepta.ndu-capability-gates.v2-preflight-1",
+  "scope": "post-hoc eligibility audit of the immutable v1 run, not new v2 experimental outcomes",
+  "v1_engineering_pass": true,
+  "v1_experiment_pass": false
+}

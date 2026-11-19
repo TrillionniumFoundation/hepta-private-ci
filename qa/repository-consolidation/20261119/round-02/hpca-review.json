@@ -1,0 +1,189 @@
+{
+  "status": "PASS",
+  "reviewed_at": "2026-11-19T13:22:03.009396+00:00",
+  "base": "1bba6e39258a86945c83109e869152b23007d3b7",
+  "cause": "The live freegen_contract.py successor adds neutral is_assistant=False. The frozen original CLI positive test incorrectly supplied this successor as the original 4669280 source directory. The strict auditor correctly rejected source drift.",
+  "repair": "Retain all six original source bytes as non-executable .original evidence; reconstruct a private temporary source directory for the original positive control; retain all existing assertions and add current-successor and one-byte-original-mutation CLI refusals in normal and optimized mode.",
+  "changed_files": [
+    {
+      "path": "qualification/hpca-neuroscience-20261110/test_chat_evidence_audit.py",
+      "bytes": 10527,
+      "git_blob": "3f14c8c9a37ec99ddd2d57411e3430a949a5b139",
+      "sha256": "3a1c140cc59d990b85bc9dbc27aadec49c381ce8fbc634021631a05aaa71bfad"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/BASE_OUTPUT_PLAN.json.original",
+      "bytes": 2511,
+      "git_blob": "df77694db392271d30a97bab66ff612c994e2d17",
+      "sha256": "ae4b53e867380d5cd582679612ed0a0970fe89d36eadef19ae7a2b243000b555"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/CHAT_WRAPPER_PLAN.json.original",
+      "bytes": 603,
+      "git_blob": "0c5424595d9b59caa1ceed819afff2bb51517d08",
+      "sha256": "5ab417097980e4f878d77288d932319bbb6ea31605acd1ca3b801227aeb33f95"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/HPCA_V2_OOD_PLAN.json.original",
+      "bytes": 4705,
+      "git_blob": "fc9a27b78f7fef95d8f3b3235f269c3c24cc2c91",
+      "sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/SOURCE_CUSTODY.json",
+      "bytes": 3162,
+      "git_blob": "dc85662ae1766c421275acab9262141121448a16",
+      "sha256": "b68e0bb1154c196a3259aa789802d1a55f1e3747d921ff163e55d4fc16d96a3d"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/chat_wrapper_probe.py.original",
+      "bytes": 9559,
+      "git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "sha256": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/freegen_contract.py.original",
+      "bytes": 4940,
+      "git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "sha256": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b"
+    },
+    {
+      "path": "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/original-sources-4669280/native_lora_ood_probe.py.original",
+      "bytes": 12637,
+      "git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8"
+    }
+  ],
+  "unchanged_frozen_inputs": {
+    "qualification/hpca-neuroscience-20261110/chat_evidence_audit.py": "be749422d54aae0c6672dc15084ff54805bdabf6448b2e6cc55e272a2c24b870",
+    "qualification/hpca-neuroscience-20261110/freegen_contract.py": "268deacf3fa1a01fe6143f0af38fc48fa6845321100ccadaa59c3aa515d5c4f8",
+    "qualification/hcsn_hpca_joint_gate/MANIFEST.json": "a39c9c8fa3548258ac95e4c3c08bec20c2a434d7cd43145d613184b3150ef951",
+    "qualification/hcsn_hpca_joint_gate/MANIFEST.original-20261112.json": "ec51f35c52eb615ba00f5b43d8f4b4c6a99209c14470bbeb35a998992e5b53e8",
+    "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/execution/RESULT.json": "93bb1be598d8f5964ce4de890a34a48bfd606be130c2a383b5b9c962dd6c58de",
+    "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/execution/PREEXECUTION.json": "10a68d75e5608b494977eb8d2d923fe908fa74c18e2e0ebd40cb93f39c839d3e",
+    "qualification/hpca-neuroscience-20261110/chat-native-cpu-evidence-20261112/execution/ROWS.jsonl": "9c4dc311c45b22a179d000edbb7f994b58bd9e3e9c1246a60f26303861a19ef7"
+  },
+  "original_test_count": 18,
+  "new_test_count": 20,
+  "original_assertion_proof": [
+    {
+      "name": "test_complete_original_bytes",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_mixed_run_ids_with_consistent_rehash_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_reordered_events_preserve_legacy_grouped_lists_but_fail_adjacency",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_integer_row_flag_is_not_boolean",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_boolean_summary_is_not_integer_count",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_boolean_token_is_not_token_id",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_negative_or_nonfinite_cost_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_duplicate_nested_keys_and_overflow_are_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_frozen_truth_cannot_be_changed_with_self_consistent_flags",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_self_consistently_rehashed_source_manifest_is_not_origin_binding",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_all_generation_controls_and_runtime_are_frozen",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_missing_terminal_row_and_sequence_alias_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_journal_row_equal_under_python_alias_is_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_frozen_original_archive_receipts_match",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_self_consistent_perfect_output_forgery_is_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_self_consistent_cost_laundering_is_rejected",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_cli_rejects_under_python_optimized_mode",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": true
+    },
+    {
+      "name": "test_cli_original_checks_exact_source_bytes",
+      "all_original_assertions_identical": true,
+      "entire_method_ast_identical": false
+    }
+  ],
+  "validation": [
+    {
+      "command": "python -m unittest test_chat_evidence_audit -v",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "returncode": 0
+    },
+    {
+      "command": "python -O -m unittest test_chat_evidence_audit -v",
+      "tests": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "returncode": 0
+    },
+    {
+      "command": "git diff --check -- [8 scoped HPCA paths]",
+      "returncode": 0
+    },
+    {
+      "command": "PATH=/home/agent/.cargo/bin:$PATH just fmt --base HEAD --check",
+      "returncode": 0,
+      "scope": "Repository formatter reports no changed files owned by configured language formatters; no frozen bytes modified."
+    }
+  ],
+  "new_model_inferences": 0,
+  "root_followup": "Update CURRENT_MANIFEST exact changed test/source pins, add seven evidence source/custody rows, and expected hpca-normal/hpca-optimized counts to20; keep both historical manifests frozen. Root owns final full joint run and commit."
+}

@@ -1,0 +1,93 @@
+{
+  "schema": "hcsn-independent-attention-path-summary-v1",
+  "passed": true,
+  "scientific_admission": "HOLD",
+  "successful_profiles": [
+    "attention-cpu-path-review-v3",
+    "attention-cpu-path-review-v4"
+  ],
+  "preparation_failures_retained": [
+    "attention-cpu-path-review-v1",
+    "attention-cpu-path-review-v2"
+  ],
+  "source_root": "v6-local-validation/source",
+  "torch": "2.8.0+cpu",
+  "dtype": "torch.float64",
+  "device": "cpu",
+  "training_mode": true,
+  "threads": 1,
+  "input_shape": [
+    32,
+    256,
+    25
+  ],
+  "output_shape": [
+    32,
+    256,
+    11
+  ],
+  "valid_events": 8134,
+  "heads": 2,
+  "head_dimension": 8,
+  "dropout": 0,
+  "observed_forward_operator": "aten::_scaled_dot_product_flash_attention_for_cpu",
+  "observed_backward_operator": "aten::_scaled_dot_product_flash_attention_for_cpu_backward",
+  "attention_math_fallback_observed": false,
+  "MKL_verbose_lines": 1812,
+  "oneMKL_DGEMM_calls_observed": 1809,
+  "DGEMM_threads": 1,
+  "BLAS_scope": "oneMKL DGEMM calls directly observed; exact assembly microkernel/ISA per call not identified.",
+  "torch_build_cpu_capability": "AVX512",
+  "model_tensor_sha256": "1b64b2973e91b03e88f9d4402497817d51ab855e177b311e571d10f157e14f3d",
+  "source_unchanged": true,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "artifacts": {
+    "attention-cpu-path-review-v3/RESULT.json": {
+      "bytes": 30962,
+      "sha256": "7bacb086f20c2db4747858c731bcabc52a827a91187215bd28e0ecd6c7bd24ef"
+    },
+    "attention-cpu-path-review-v3/operators.json": {
+      "bytes": 101228,
+      "sha256": "642f9f55cf4f9b167afbeb6fa7fe9b89ba8a27301ba814a9cb983eb8cda81a6b"
+    },
+    "attention-cpu-path-review-v3/trace.json": {
+      "bytes": 363851,
+      "sha256": "03f76db7925b8cf6554736a29ed26c5fc9d855b3e5b97a1899719f82cd61356d"
+    },
+    "attention-cpu-path-review-v3/stdout.log": {
+      "bytes": 230,
+      "sha256": "2abc1d92cf4259f8e7136a77d679596cf73991efadbfcb5c3b1ace9b5851de43"
+    },
+    "attention-cpu-path-review-v3/inspect_attention_operators.py": {
+      "bytes": 7322,
+      "sha256": "c25cdc68c44db16ea807eaa9539ff96d4d00a41b62fbf6f47489ba6da65ba690"
+    },
+    "attention-cpu-path-review-v4/RESULT.json": {
+      "bytes": 31057,
+      "sha256": "cea3b8b06e99399365e702114ab87ab5e75a9e9010e23525eca5d1b08a8dc107"
+    },
+    "attention-cpu-path-review-v4/operators.json": {
+      "bytes": 101222,
+      "sha256": "f8841ae8a44c459249dabd8f910ab936f82067ce8dc061c001490df7bc738de1"
+    },
+    "attention-cpu-path-review-v4/trace.json": {
+      "bytes": 363723,
+      "sha256": "48bffeffda8a83cf6e88590638148dfd3c4b6080d54f96013b8789e1c0d9dcbe"
+    },
+    "attention-cpu-path-review-v4/stdout.log": {
+      "bytes": 281952,
+      "sha256": "dbc4e2d54760423acef0b8f48fab860c149d169a19fd87a7a9ae409a617cfc3f"
+    },
+    "attention-cpu-path-review-v4/inspect_attention_operators.py": {
+      "bytes": 7458,
+      "sha256": "9d621145eb29bd463c90b73a3120ea87dfbf5889c2cbdce805dd202c1b625201"
+    }
+  },
+  "optimized_GPU_baseline_established": false,
+  "speed_or_energy_comparison_established": false,
+  "independent_profile_wall_seconds_including_overhead": [
+    1.370889765999891,
+    1.0403107180000006
+  ],
+  "scope": "Observed CPU FP64 implementation path at the declared full batch shape. This is operator provenance, not comparative throughput, GPU qualification or scientific benefit."
+}

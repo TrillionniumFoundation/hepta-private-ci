@@ -1,0 +1,659 @@
+{
+  "schema": "hepta.frontier-full-source-review.v1",
+  "base_commit": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "original_parent": "fdd12a3aa0b085ded9c5e5df1b4577620227127a",
+  "merge_base": "a70a79dff8ef019834dd0bbaa46887638cb7f81b",
+  "review_status": "all-source-hunks-reviewed-and-composed; full-neuron-native-gate-not-established",
+  "scope": "All 14 base-to-tip paths and every source hunk inspected. Rejected old signed-recovery semantics and CI topology changes are explicit decisions, not blanket ours resolution.",
+  "original_delta_sha256": "9e058f8acad63d2018cafa41e265a192b183bbe520e7cb2e0b0800312b7ea229",
+  "source_paths_reviewed": 14,
+  "source_hunks_reviewed": 26,
+  "reviewed_paths": [
+    {
+      "path": ".github/workflows/hepta-neuron-metrics-alias.yml",
+      "blob_ids": {
+        "common_ancestor": null,
+        "historical_head": "c4729acaa9b0b12ddb95ae1cb6b7d9a8489172aa",
+        "candidate": null,
+        "composed": null
+      },
+      "decision": "retire-duplicate-automatic-workflow",
+      "rationale": [
+        "The new historical workflow checks exact PR source and runs only Linux metrics tests using direct cargo test; it is not a fixed old-SHA checkout.",
+        "The pinned candidate hepta-consolidated-source.yml explicitly assigns automatic PR/main fan-out to two aggregate checks; deep qualifications are workflow_call/workflow_dispatch. Do not silently resurrect a separate automatic trigger.",
+        "The corresponding source changes and alias regression are retained in this union and actually executed through just test. The existing consolidated deep-qualification path computes affected owners and invokes its action=test runner against source-head/base-merge identities.",
+        "This is an explicit CI topology retirement, not a claim that a current automatic metrics job passed or that manual deep qualification runs automatically. Original workflow bytes remain reachable through the original merge parent."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -0,0 +1,56 @@",
+          "sha256": "ce7911d7f04334ec963874b8a1b0f1f42dad56fa9730981269f2837851a89563",
+          "decision": "retire-duplicate-automatic-workflow"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "blob_ids": {
+        "common_ancestor": "8c0b0635664cd77f4313838bbf7618ca2a89f8f5",
+        "historical_head": "d752ee18b6b4a75d7d8d5bae133647845b0b3ad7",
+        "candidate": "525f6bde0c7e6c5e3de052b910d2f0570ae44879",
+        "composed": "525f6bde0c7e6c5e3de052b910d2f0570ae44879"
+      },
+      "decision": "preserve-current-exact-deltas-covered",
+      "rationale": [
+        "All four base-to-head package upgrades are already identical in candidate: rustls 0.23.46, rustls-webpki 0.103.16, webpki-root-certs 1.0.10, webpki-roots 1.0.10, including all four checksums.",
+        "No dependency or lockfile bytes change in this union; unrelated current package resolutions are retained."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -13958,9 +13958,9 @@ dependencies = [",
+          "sha256": "2ea33b1d94febed3700fd50f92c4a94526a864e30830215aac9ad1a6ec0f7629",
+          "decision": "preserve-current-exact-deltas-covered"
+        },
+        {
+          "index": 2,
+          "header": "@@ -14023,9 +14023,9 @@ checksum = \"f87165f0995f63a9fbeea62b64d10b4d9d8e78ec6d7d51fb2125fda7bb36788f\"",
+          "sha256": "ad1e6101d3c49662ce09c6c385e6a78745ee963aec9f3345ba481b1a362e45f8",
+          "decision": "preserve-current-exact-deltas-covered"
+        },
+        {
+          "index": 3,
+          "header": "@@ -17429,18 +17429,18 @@ dependencies = [",
+          "sha256": "9255a749b0f3e52ff0aa37f9cec696e6ae1ce35cd65c7501e0400d0dfaa6bd63",
+          "decision": "preserve-current-exact-deltas-covered"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "blob_ids": {
+        "common_ancestor": "d2703b590935ab17316e6c258657c0ce5ab7412a",
+        "historical_head": "a1fd67b3fc279cb5ec4b08f3132bba6b7d08e97c",
+        "candidate": "e6747d71be508707a49034f37c414bc87ffc91f9",
+        "composed": "e6747d71be508707a49034f37c414bc87ffc91f9"
+      },
+      "decision": "preserve-current-exact-delta-covered",
+      "rationale": [
+        "The sole historical change raises the rustls lower bound to 0.23.46; candidate already has that exact dependency declaration."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -475,7 +475,7 @@ reqwest = { version = \"0.12\", features = [\"cookies\"] }",
+          "sha256": "c4722e9294715b249905a974dea313b7150deb0c658c8cb166b299d7753266d3",
+          "decision": "preserve-current-exact-delta-covered"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/scope_lane_wal.rs",
+      "blob_ids": {
+        "common_ancestor": "23e91d965db5aa697b2f3e6aa64d431b8a27c6a0",
+        "historical_head": "19505675a16bf41d36d7a083c7584077f955a408",
+        "candidate": "0ed62b18e0870689e019ca1b54eb73cb4f56adea",
+        "composed": "0ed62b18e0870689e019ca1b54eb73cb4f56adea"
+      },
+      "decision": "preserve-current-stronger-owner-open",
+      "rationale": [
+        "Historical Windows repair avoids FILE_APPEND_DATA and relies on a locked explicit seek-to-end. Current code already uses cfg(windows) write(true), cfg(not(windows)) append(true), and the same append_frame seek protocol.",
+        "Current additionally preserves explicit truncate(false), Unix O_NOFOLLOW, mode 0600, locked inode nlink==1 rejection, and an honest Windows parent/reparse qualification boundary. Replacing it with the old simpler open would regress these controls."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -296,13 +296,14 @@ pub struct ScopeLaneFileWalV1 {",
+          "sha256": "342722ac93513529dfe6a95017ba282eb8664db4dbe3930f0fa4b3bf550c88ae",
+          "decision": "preserve-current-stronger-owner-open"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs",
+      "blob_ids": {
+        "common_ancestor": "47b1b226659899609826a24ba3bf54b77c1d43be",
+        "historical_head": "245f5ab309f3e54b5a73ec19b5ee399d1d446142",
+        "candidate": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855",
+        "composed": "603ec3caf6c8fc7bed9419d2b6bae46d2bcef855"
+      },
+      "decision": "preserve-current-stronger-cross-platform-regression",
+      "rationale": [
+        "The historical Windows-only complete-length/partial-body recovery test is covered by current torn_tail_recovery_can_append_again_without_overwriting_predecessor, which is not cfg-limited and checks both original and second envelopes after reopen.",
+        "Keep current Unix symlink/hardlink-before-write and owner-only permission regressions. No redundant Windows-only copy is required to recover the original behavior."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -156,6 +156,35 @@ fn file_wal_repairs_incomplete_length_before_new_commits() {",
+          "sha256": "3b3fef3b7f76f9f50513b1872cb16290d67590178ed7276459f26e4e7d6bef4f",
+          "decision": "preserve-current-stronger-cross-platform-regression"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "blob_ids": {
+        "common_ancestor": "15d8fccd8f0e7f6666b670ea83541072e2fd63f7",
+        "historical_head": "193c6e15a5febb1447125d8149f2eb605fb1df29",
+        "candidate": "bec81e610a120727ac749c4e4d75e625f3a0df1f",
+        "composed": "1020ef1aafd45a64b5bad9561ab6dbe57470093d"
+      },
+      "decision": "port-missing-verified-dispatch-clock",
+      "rationale": [
+        "Current issue_with_witness forwarded untrusted caller now_ms into LeaseLedger::issue even after obtaining a verified dispatch witness. Port the original use of witness.verified_at_unix_ms and keep the legacy argument only for API compatibility.",
+        "The branch fixture rewrite from expect to is_ok is already superseded by current pretty_assertions::assert_eq!(admit_host(...), Ok(())). Existing fixture and successful/revoked authority tests are retained.",
+        "Port caller_clock_cannot_backdate_an_expired_allocation into dedicated authority_port_clock_tests.rs without replacing existing tests or adding a public test API. The test retains trusted 9500, grant expiry 9000, and untrusted caller 2000.",
+        "The new regression actually failed on baseline with an Issued receipt. Full fixed Fleet suite then passed 46 tests with no skips."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -48,12 +48,15 @@ impl FleetAuthorityPort {",
+          "sha256": "82b77b926f0bdb3fd15a79f51c6f15fad1a94713b172cae5a88d237a29a1c613",
+          "decision": "port-missing-verified-dispatch-clock"
+        },
+        {
+          "index": 2,
+          "header": "@@ -62,8 +65,8 @@ impl FleetAuthorityPort {",
+          "sha256": "55b59d647e899f793a6a1ca9ef7bca46c7b3648dceb89584b7778f8b07f0ce37",
+          "decision": "port-missing-verified-dispatch-clock"
+        },
+        {
+          "index": 3,
+          "header": "@@ -194,20 +197,23 @@ mod tests {",
+          "sha256": "180920a59b591290410694e9ffa6677ecbe0b9c4221652f8553e667adfab80b9",
+          "decision": "port-missing-verified-dispatch-clock"
+        },
+        {
+          "index": 4,
+          "header": "@@ -268,6 +274,46 @@ mod tests {",
+          "sha256": "71bf5e219d116bdda09c7aea0c137ff6a76acbb7ee8340a276881139856ffee5",
+          "decision": "port-missing-verified-dispatch-clock"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-matrixd/src/control.rs",
+      "blob_ids": {
+        "common_ancestor": "7f4916490a0c9ae3d9bbd5685d4695e2fbf8eac8",
+        "historical_head": "139752d9274aae365928d341b518423f2115298a",
+        "candidate": "dfe2e790d694666990c6bbcfae407ef91cdb81fd",
+        "composed": "dfe2e790d694666990c6bbcfae407ef91cdb81fd"
+      },
+      "decision": "preserve-current-covered-socket-recovery-and-authentication",
+      "rationale": [
+        "Current prepare_socket already checks an absent path before the ConnectionRefused stale-socket branch, retaining the historical Windows absent-rendezvous fix.",
+        "Current retains missing_control_socket_path_is_preparable_without_a_listener and adds explicit non-Unix owner-control refusal when peer-user authentication is unsupported; preserve both authentication refusal and platform tests."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -432,8 +432,10 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {",
+          "sha256": "a3c9ba74c1b478ce9f131e10c336049d84807292fcf6443a580ddf075c325e62",
+          "decision": "preserve-current-covered-socket-recovery-and-authentication"
+        },
+        {
+          "index": 2,
+          "header": "@@ -852,6 +854,17 @@ mod tests {",
+          "sha256": "66312d79fe955f8fca9f203a95b964945b8e19d75dcc46c02be837ce2727a226",
+          "decision": "preserve-current-covered-socket-recovery-and-authentication"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics.rs",
+      "blob_ids": {
+        "common_ancestor": "9276034ccc05b3a405b64498336c4a9fb770d199",
+        "historical_head": "463bae29a34a92b1ebcc15912f3497dc77ec6c7f",
+        "candidate": "ec79cdc5e1a8b531163f5410681891cc7eab85a9",
+        "composed": "b3aed16f2576747eeda19a66010017406bc863f3"
+      },
+      "decision": "compose-both-file-identity-guards",
+      "rationale": [
+        "Port the historical before/after symlink_metadata, regular-file checks, create_new then non-creating existing-file open, and Unix device/inode/prior-identity binding. These additional path checks were not all present in current.",
+        "Retain current Unix O_NOFOLLOW on BOTH exclusive-create and existing-file-open paths, mode 0600, explicit truncate(false) on existing files, the exclusive owner lock, and the lock-time nlink==1 check before header/tail writes.",
+        "Current parent-directory fsync and all WAL replay/durability code remain unchanged. This is a semantic union, not either full-file side of the conflict.",
+        "Historical checks on non-Unix do not establish Windows inode/link identity or hostile parent safety. No Windows or macOS native qualification is inferred from Linux tests."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -120,6 +120,72 @@ impl Drop for LockedMetricFile {",
+          "sha256": "0942719c1857cc6538ce9c001644042a7c1581f7d14e52a2bd5905bd56d5cc0b",
+          "decision": "compose-both-file-identity-guards"
+        },
+        {
+          "index": 2,
+          "header": "@@ -140,11 +206,7 @@ impl NeuronMetricsGroupCommitWriterV1 {",
+          "sha256": "9305bfb36443eb5ed11c484f3036fd7cc1274f076c6fd4adfcbfb6e457c39fd7",
+          "decision": "compose-both-file-identity-guards"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics_tests.rs",
+      "blob_ids": {
+        "common_ancestor": "107fbfeff3e274738debd62c424170fdc6a31e8e",
+        "historical_head": "0a7af8710ba94dc0f854ce0a2463c4ec20d39096",
+        "candidate": "1e14c0441d0d8be338dffb3a7228003cccf6cc7e",
+        "composed": "db2f09714a391ee6921bf95b977e21132dbdb911"
+      },
+      "decision": "union-additional-alias-regression-and-retain-current-tests",
+      "rationale": [
+        "Restore the original nonempty sentinel, symlink, hardlink, and dangling symlink regression; no outside file may be overwritten or created. Adapt only the positional generation literal comments to current lint conventions.",
+        "Current existing empty-sentinel alias regression and exact mode-0600 test remain. They already cover the historical owner-private new-file requirement.",
+        "All six metrics::tests cases passed on the composed source. The full unmodified Neuron baseline exposed eight missing-real-helper-metadata failures, which remain explicitly recorded while the actual helper is prepared."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -136,3 +136,60 @@ fn incomplete_tail_is_repaired_but_complete_corruption_fails() {",
+          "sha256": "35220388231c5716df263602864897078b6bda8bdf2598d64ead13d3a532bdb9",
+          "decision": "union-additional-alias-regression-and-retain-current-tests"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "blob_ids": {
+        "common_ancestor": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778",
+        "historical_head": "15e5832a642b71c7758bf0916da249b384f06e61",
+        "candidate": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404",
+        "composed": "bc38be8d1b3a9e85a42bb92c5279db40b9e0e404"
+      },
+      "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract",
+      "rationale": [
+        "Do not restore read_recovery_directive imports, clean_lease_cut-only authorization, or the auto-Aborted block. An exact digest binds bytes but does not prove Principal, issuer, signer, revocation frontier, or release-state CAS.",
+        "Current resolve_production_recovery uses a verified independently signed ProductionRecoveryDecision and verify_recovery; keep the current unresolved signed-intent quarantine.",
+        "The old same-grant replay-rejection hunk is unnecessary under current stricter admission: any Aborted state is outside Committed|RolledBack and remains rejected. Do not broaden that terminal set to allow unsigned aborts.",
+        "Preserve current Matrix restart-budget restoration and companion adoption before release/signed-intent recovery. No process-free inference from lease deletion or attempted kill is reintroduced."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -38,9 +38,11 @@ use crate::signed_authority::ProductionMutationReceipt;",
+          "sha256": "d5a87dd46e7c44cb8ad7a2c3d2a2cb6623a48db99ee3c7dfebdd2db24fe4d7d5",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        },
+        {
+          "index": 2,
+          "header": "@@ -85,10 +87,21 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "56580935e86d669108cd90cb260ae0f0acf66b7500045c09537eee511e406140",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        },
+        {
+          "index": 3,
+          "header": "@@ -577,10 +590,23 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "1465364f143d52b895afba0992301a3e2e5babdebce85b0e69bf5a997d99b749",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        },
+        {
+          "index": 4,
+          "header": "@@ -686,6 +712,7 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "e0464dff993a8ccddb6b7ab32a9017cc55a9f887a41491ec5b6fce6fca278a26",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        },
+        {
+          "index": 5,
+          "header": "@@ -700,7 +727,9 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "6880e406d4a5f1f5bfefbe714a662eb9e64e5ad81a93f32e8a6b8cbd51257047",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        },
+        {
+          "index": 6,
+          "header": "@@ -772,6 +801,67 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "49d40fbcfa8e0b34b889724809bcd7ecf49fcfe1a3c3e2b92b9a85eba17c2625",
+          "decision": "retire-unsigned-abort-in-favor-of-current-signed-recovery-contract"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "blob_ids": {
+        "common_ancestor": "f33f7ea8141a65a8efbd1ee14fcae49833da6252",
+        "historical_head": "afd4cbb6ac9cf0a4a51a52e7ca12df3e1aa1ed02",
+        "candidate": "fa2fc5798fa4510a30394acb540cbac432436574",
+        "composed": "fa2fc5798fa4510a30394acb540cbac432436574"
+      },
+      "decision": "preserve-current-covered-exhaustion-observation",
+      "rationale": [
+        "Current exhausted branch already sets restart_attempt to restart_max_attempts, emits AutomaticRestartBudgetExhausted with the same attempts value, clears pending/not_before, and preserves the fail-closed fault.",
+        "Current also emits AutomaticRestartQueued carrying the durable attempt identity; retain this additional observation."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -114,6 +114,17 @@ impl<D: ProcessDriver> Supervisor<D> {",
+          "sha256": "3a6d8213dae0f89100538500dfc09fbe37432eb041bd64dc9a2a67471e1068b0",
+          "decision": "preserve-current-covered-exhaustion-observation"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "blob_ids": {
+        "common_ancestor": "455bb9c13c8bf6170952ae85f7a4e11235a72b0a",
+        "historical_head": "5dc8bbd0799adcec9c74e7d3f249a1aedbb42ea5",
+        "candidate": "75431770e05206d9a0334cb100589fd5eafcf6a3",
+        "composed": "75431770e05206d9a0334cb100589fd5eafcf6a3"
+      },
+      "decision": "preserve-current-stronger-durable-budget-regression",
+      "rationale": [
+        "The historical delta only canonicalizes the fault-string assertion formatting. Current test keeps the same exhausted behavior and strengthens it with exact TickReport comparison, persisted budget projections, attempt/backoff observations, and post-exhaustion cold-recovery no-respawn checks."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -308,7 +308,11 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi",
+          "sha256": "20192924259a348333d792ec558ce794f509f9a965373d8a32b44105786a1dc4",
+          "decision": "preserve-current-stronger-durable-budget-regression"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+      "blob_ids": {
+        "common_ancestor": "fe819a589a0e575849186de8b839793670dd1c99",
+        "historical_head": "2a186f468fcac46df5f75a5565136982a3ee6de9",
+        "candidate": "fc05862834a565935c5570431be877e63dd2be5d",
+        "composed": "fc05862834a565935c5570431be877e63dd2be5d"
+      },
+      "decision": "preserve-current-negative-unsigned-abort-contract",
+      "rationale": [
+        "The historical positive exact-digest abort test conflicts with the stronger current production authorization contract; retain unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence.",
+        "The stale-directive case is already retained. Current unsigned_abort_remains_quarantined_across_repeated_cold_recovery additionally verifies repeated recovery preserves both exact unresolved intent and directive without clearing the production fence."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -153,30 +153,103 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE",
+          "sha256": "8be039b82b0d468da8f5f36137dd47a82b2efcdf633671e8fc24c4ab7ebf50d3",
+          "decision": "preserve-current-negative-unsigned-abort-contract"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/v8-poc/BUILD.bazel",
+      "blob_ids": {
+        "common_ancestor": "2eb9c48d5a7fcf8a44e2740d71378ed6e2d494d0",
+        "historical_head": "0caf46d5ac1a1ddcf335f6fbe7a86c609cb53ab7",
+        "candidate": "e7d9c59c5feab97aa004c4e04c5a109834826791",
+        "composed": "e7d9c59c5feab97aa004c4e04c5a109834826791"
+      },
+      "decision": "preserve-current-exact-feature-delta-covered",
+      "rationale": [
+        "Current already uses crate_features = [\"sandbox\"] on all targets and documents agreement with the linked Windows MSVC V8 artifact and MODULE.bazel annotation. Only explanatory comments differ."
+      ],
+      "source_hunks": [
+        {
+          "index": 1,
+          "header": "@@ -2,10 +2,9 @@ load(\"//:defs.bzl\", \"codex_rust_crate\")",
+          "sha256": "786aff1f002362a5e79714b064fa159853f6835b577c8770f74b4a6d7f5ffca8",
+          "decision": "preserve-current-exact-feature-delta-covered"
+        }
+      ]
+    }
+  ],
+  "exact_lock_package_coverage": {
+    "fdd12a3aa0b085ded9c5e5df1b4577620227127a": {
+      "rustls": {
+        "version": "0.23.46",
+        "checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf"
+      },
+      "rustls-webpki": {
+        "version": "0.103.16",
+        "checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
+      },
+      "webpki-root-certs": {
+        "version": "1.0.10",
+        "checksum": "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb"
+      },
+      "webpki-roots": {
+        "version": "1.0.10",
+        "checksum": "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9"
+      }
+    },
+    "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c": {
+      "rustls": {
+        "version": "0.23.46",
+        "checksum": "48e13bd8c0e9365c43cfa5c9e8f9ad49d3c8444926c9aac819e0e4dc503c8fdf"
+      },
+      "rustls-webpki": {
+        "version": "0.103.16",
+        "checksum": "4443b1b6d39d7c663139942cc4558262562d2c84123bb6282ef177009ca8b281"
+      },
+      "webpki-root-certs": {
+        "version": "1.0.10",
+        "checksum": "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb"
+      },
+      "webpki-roots": {
+        "version": "1.0.10",
+        "checksum": "1c1c8e20c8a38fc7d65abfe74eb7280e4aa667e8eec8bc84996d2874810748d9"
+      }
+    }
+  },
+  "ordinary_original_commits_gained": [
+    "2a215fc0906f37c0e9cc58b5aea1cb093e2f53be",
+    "329c819ba57a9c324b4834c3445dc55c42486343",
+    "3bbe47c71747500a95ff4f45b09f16eba092045a",
+    "3d0118a4c8c390f58ed8cf9db90c31ed769c88e1",
+    "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+    "499da5bcb375e52456d365e6848b62a9747454bb",
+    "4cfadbf7d7bc6fbb5e8cf2821864a1e2609fef25",
+    "57e3876ca313780639bcac46317eae73e227db7a",
+    "80b3f746d9183e11c80c9b377e161df7accd3eff",
+    "854eef255c6009bcff58f956bc8bb5552989d2b9",
+    "89398f8d5fb500839f4d82ac925a7bc512085801",
+    "af4ffa4b5d6b5b708f3e5eda5b323bd8c206fcb2",
+    "c4108019d016dc29081ed9770ee22ad2d5577b84",
+    "c62070bd01650b846fd241d2995f7a73278e5c8d",
+    "f22ca46334f2cf4fc811072993275fb5d19f03ed",
+    "fdd12a3aa0b085ded9c5e5df1b4577620227127a"
+  ],
+  "ordinary_name_coverage": [
+    {
+      "name": "automation/neuron-metrics-source-lane-3eefbc2-20261020",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "automation/3084-rustfmt-exact-gate-20261021",
+      "sha": "fdd12a3aa0b085ded9c5e5df1b4577620227127a",
+      "protected": false
+    },
+    {
+      "name": "codex/neuron-metrics-ci-identity-20261020",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "dot/neuron-metrics-wal-fmt-exact-80b3f746-20261018",
+      "sha": "80b3f746d9183e11c80c9b377e161df7accd3eff",
+      "protected": false
+    },
+    {
+      "name": "dot/neuron-metrics-wal-rustfmt-20261018",
+      "sha": "80b3f746d9183e11c80c9b377e161df7accd3eff",
+      "protected": false
+    },
+    {
+      "name": "dot/p0-neuron-metrics-exact-lane-20261020",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "dot/supervisor-rustfmt-exact-3076-20261021",
+      "sha": "3bbe47c71747500a95ff4f45b09f16eba092045a",
+      "protected": false
+    },
+    {
+      "name": "dot/2858-metrics-source-identity-3eef-20261020",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "dot/2858-wal-ci-exact-source-binding-20261021-0744",
+      "sha": "3bbe47c71747500a95ff4f45b09f16eba092045a",
+      "protected": false
+    },
+    {
+      "name": "dot/3076-supervisor-restart-budget-rustfmt-20261021-2128",
+      "sha": "3bbe47c71747500a95ff4f45b09f16eba092045a",
+      "protected": false
+    },
+    {
+      "name": "fix/neuron-metrics-alias-ci-source-identity-20261020-1514",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "fix/neuron-metrics-wal-alias-fence-20261018",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "fix/2858-metrics-ci-identity-20261020-0855",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "fix/2858-metrics-wal-exact-identity-20261020-1355",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c",
+      "protected": false
+    },
+    {
+      "name": "fix/3076-windows-wal-rustfmt-20261021",
+      "sha": "c4108019d016dc29081ed9770ee22ad2d5577b84",
+      "protected": false
+    },
+    {
+      "name": "fix/3077-supervisor-exhaustion-evidence-20261021",
+      "sha": "499da5bcb375e52456d365e6848b62a9747454bb",
+      "protected": false
+    },
+    {
+      "name": "fix/3079-windows-matrixd-v8-native-20261021",
+      "sha": "89398f8d5fb500839f4d82ac925a7bc512085801",
+      "protected": false
+    },
+    {
+      "name": "fix/3080-signed-intent-abort-reconcile-20261021",
+      "sha": "329c819ba57a9c324b4834c3445dc55c42486343",
+      "protected": false
+    },
+    {
+      "name": "fix/3083-rustsec-tls-trust-20261021",
+      "sha": "57e3876ca313780639bcac46317eae73e227db7a",
+      "protected": false
+    }
+  ],
+  "unique_tip_coverage": 9,
+  "protected_ancestry_checks": [
+    {
+      "marker": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+      "is_ancestor_of_proposed_parent": false,
+      "git_exit": 1
+    },
+    {
+      "marker": "3aa1f85ba90c79d220a5cadf2261def176892867",
+      "is_ancestor_of_proposed_parent": false,
+      "git_exit": 1
+    }
+  ],
+  "composed_snapshot": {
+    "purpose": "Isolated local source qualification snapshot, no original branch parent adopted and no remote refs updated.",
+    "base": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+    "commit": "2f72f2f550b89432e2d853774744a88d02f6a532",
+    "tree": "a13f8664679435b53af8b109dcf7a349a1a66e5d",
+    "changed_paths": [
+      "codex-rs/hepta-fleet/src/authority_port.rs",
+      "codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "codex-rs/hepta-neuron/src/metrics.rs",
+      "codex-rs/hepta-neuron/src/metrics_tests.rs"
+    ]
+  },
+  "source_entries": [
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "sha": "1020ef1aafd45a64b5bad9561ab6dbe57470093d",
+      "type": "blob",
+      "mode": "100644",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fdd_union_files/codex-rs/hepta-fleet/src/authority_port.rs",
+      "bytes": 11110,
+      "sha256": "2e130b0e7b13a443a4effce7300af0abe139b8f0d8d79a11c5cc5a9b164db4f4"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "sha": "757c482087b7a871b6a16a5600b26cf24ac4cbd6",
+      "type": "blob",
+      "mode": "100644",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fdd_union_files/codex-rs/hepta-fleet/src/authority_port_clock_tests.rs",
+      "bytes": 3275,
+      "sha256": "81e1640e16c0d3b5e94af2211d3228822cd989a45f2e83a477a17083213f7c4e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics.rs",
+      "sha": "b3aed16f2576747eeda19a66010017406bc863f3",
+      "type": "blob",
+      "mode": "100644",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fdd_union_files/codex-rs/hepta-neuron/src/metrics.rs",
+      "bytes": 17377,
+      "sha256": "2fbee6a117824e58152e86240923d0520b4b98f2b6b55d72307b2cf3c5e337ef"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/metrics_tests.rs",
+      "sha": "db2f09714a391ee6921bf95b977e21132dbdb911",
+      "type": "blob",
+      "mode": "100644",
+      "local_path": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fdd_union_files/codex-rs/hepta-neuron/src/metrics_tests.rs",
+      "bytes": 7947,
+      "sha256": "bdee42ace75e0c9875ee73295ac1e5261b60ca442ac61b6585711c24e2d11287"
+    }
+  ],
+  "test_evidence": {
+    "fleet_baseline_regression": {
+      "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet-baseline-regression.log",
+      "exit_code": 100,
+      "expected_failure": true
+    },
+    "fleet_fixed": {
+      "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/fleet-fixed-tests.log",
+      "exit_code": 0,
+      "passed": 46,
+      "skipped": 0
+    },
+    "neuron_unmodified_baseline": {
+      "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/neuron-baseline-tests.log",
+      "exit_code": 100,
+      "passed": 391,
+      "failed": 8,
+      "failure_reason": "missing actual hepta-joint-propose helper metadata"
+    },
+    "neuron_composed_metrics": {
+      "log": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/neuron-composed-tests.log",
+      "exit_code": 0,
+      "passed": 6,
+      "skipped": 369
+    },
+    "real_helper_preparation": {
+      "receipt": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helper-native-gate-receipt.json",
+      "attempt01_exit_code": 1,
+      "attempt02_exit_code": 1,
+      "attempt02_reason": "codex-core rustc received SIGKILL",
+      "attempt03_reason": "interrupted via original exec session for resource control; not restarted",
+      "verified_helper_produced": false,
+      "attempt03_exec_terminal_exit_code": 130,
+      "attempt03_last_manifest_exit_code": 1,
+      "attempt03_manifest_finalized": false
+    },
+    "native_toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+  },
+  "limits": [
+    "These are isolated Linux x86_64 source checks, not Windows/macOS or current hosted-required-CI qualification.",
+    "Full Neuron native qualification is not established: baseline lacks real-helper metadata, subsequent actual helper build was SIGKILL-terminated, and the final reduced-resource attempt was cancelled at resource-control direction. Relevant six metrics regressions and all 46 Fleet tests passed; no full-suite success is asserted.",
+    "No shared repository worktree/index or remote refs were modified by this agent."
+  ],
+  "remaining_gate": "Run real hepta_cell_test_helpers.py on adequate resources and then the complete Neuron package suite; do not substitute a stub or mark the 8 baseline helper-dependent cases passed."
+}

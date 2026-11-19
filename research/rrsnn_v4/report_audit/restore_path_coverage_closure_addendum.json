@@ -1,0 +1,335 @@
+{
+  "schema": "rrsnn_v4.restore_path_coverage_closure_addendum.v1",
+  "created_at_utc": "2026-10-29T17:37:55.118080+00:00",
+  "status": "original_identified_coverage_gaps_closed",
+  "scope": "Closure of the concrete missing raw evidence, historical source context, pending audit publication and Git-version conflicts identified in the original review only.",
+  "original_review": {
+    "path": "report_audit/restore_path_coverage_review.json",
+    "sha256": "a5f3f960e7ce2babe344ed88c60ac56922e87272e6478b36dc581cbefdaac9b2",
+    "preserved_unchanged": true,
+    "also_present_in_final_verified_git_map": true,
+    "git_blob_sha": "c8b67488707b255556b58e2d3adbca0a1a32a4c0"
+  },
+  "verified_git_map": {
+    "path": "resource_audit/resources_published_paths.json",
+    "sha256": "40ef89fe41df322a866fa95853b320d9d8d15aec8a0c65cb837556c7e131f253",
+    "entries": 176,
+    "commit_sha": "c210500bd975a100c2723b83ac17891c397f4b0c",
+    "remote_verification_provenance": "The parent supplied a remotely verified nontruncated-tree Git-blob map. This addendum independently recomputed local content Git blobs for its targeted files and compared them with that map; it made no new network calls."
+  },
+  "historical_source_publication": {
+    "path": "historical_source_publication.json",
+    "sha256": "cb8a5e6b0ebb0d1d1e120500889e25713152e0e0a76b618657f5629f5010546d",
+    "commit_sha": "8540ba0738a6f3243100958d442b9d0a49e31771",
+    "all_ten_files_agree_with_receipt_and_newer_map": true
+  },
+  "archives": {
+    "core": {
+      "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/RR_SNN_V4_Core_Raw_20261029.zip",
+      "archive_bytes": 77386526,
+      "recorded_archive_sha256": "239e3ba9f786929135a505d001148df5cb82116d0422e8e483f9da37ca272792",
+      "whole_archive_sha256_recomputed_by_this_addendum": false,
+      "archive_hash_source": "Root-provided saved-archive identity agrees with the existing prepared receipt; full archive hashing belongs to the separate restore execution.",
+      "prepared_receipt": "raw_archive_receipts/core_prepared.json",
+      "prepared_receipt_sha256": "5d7117ecb16d716e155abcdc7fdc0684b8549661535c87d35957ef24cfd55d5c",
+      "manifest_sha256": "3a9ff67a82b800e124109d9644c5512e1d638ea8105a5e459484fb7bd2383fd2",
+      "source_commit": "8dc406ac222aea1609d7ee89979ad6d7b9fd1028",
+      "raw_files": 3086,
+      "central_directory_members": 3088,
+      "names_sizes_and_no_duplicates_checked": true
+    },
+    "resources": {
+      "path": "/dev/shm/rrsnn-v4-recovery-g38d3wgp/RR_SNN_V4_Resources_Raw_20261029.zip",
+      "archive_bytes": 1500989,
+      "recorded_archive_sha256": "3a993c1060e2e4ff7ec769513d99bc7773acb0ce0e3a97183d8c6e03d3105e82",
+      "whole_archive_sha256_recomputed_by_this_addendum": false,
+      "archive_hash_source": "Root-provided saved-archive identity agrees with the existing prepared receipt; full archive hashing belongs to the separate restore execution.",
+      "prepared_receipt": "raw_archive_receipts/resources_prepared.json",
+      "prepared_receipt_sha256": "ea8e29eef16c1a66bc16e37570a0a0d0464c6a491a3b5181bf81905df334cf39",
+      "manifest_sha256": "579e09a5f97ccba18bfa25d65a52d4417735f7c7079abc2e757724274c29ca12",
+      "source_commit": "c210500bd975a100c2723b83ac17891c397f4b0c",
+      "raw_files": 143,
+      "central_directory_members": 145,
+      "names_sizes_and_no_duplicates_checked": true
+    }
+  },
+  "original_raw_gaps": {
+    "expected": 8,
+    "verified": 8,
+    "total_small_archive_payload_bytes_read": 337223,
+    "checks": [
+      {
+        "path": "policy_benchmark_sizing.json",
+        "bytes": 45647,
+        "sha256": "6190faa53c091ffe07c312b7c4bf325b4eb0f5f72663c8f551c86a44fe22d81d",
+        "archive_member": "rrsnn_v4/policy_benchmark_sizing.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "policy_benchmark_validation.json",
+        "bytes": 17663,
+        "sha256": "fdcc49d31052e0a62fb3f1678acbadb89927f05be9b350a10eda269e23313ee4",
+        "archive_member": "rrsnn_v4/policy_benchmark_validation.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "policy_benchmark_validation_initial.json",
+        "bytes": 17663,
+        "sha256": "fdcc49d31052e0a62fb3f1678acbadb89927f05be9b350a10eda269e23313ee4",
+        "archive_member": "rrsnn_v4/policy_benchmark_validation_initial.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "results/evaluation_matrix_progress.json",
+        "bytes": 210281,
+        "sha256": "d560378ff8371069c821f8d47a79be32069219e61c159f461008b194b3af1f98",
+        "archive_member": "rrsnn_v4/results/evaluation_matrix_progress.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "results/matrix_progress.json",
+        "bytes": 12825,
+        "sha256": "d2296901fcf2144afdf6cb189f06f2e288f0045cdf276337ef98ae557876662c",
+        "archive_member": "rrsnn_v4/results/matrix_progress.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "results/numerical_matrix_attempt_1793287079571872673.json",
+        "bytes": 2488,
+        "sha256": "ec6031b1d89838700029e2b93dd24d9699f229265b508b10fba2be9dabcf30c1",
+        "archive_member": "rrsnn_v4/results/numerical_matrix_attempt_1793287079571872673.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "hepta/source_publication_verified.json",
+        "bytes": 12816,
+        "sha256": "ddbc6c1f1e33fd092adf6e40ccaef356fa37d8c1d86e2c1929a76237ca1c796c",
+        "archive_member": "rrsnn_v4/hepta/source_publication_verified.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      },
+      {
+        "path": "hepta/reclaimable_cache_inventory.json",
+        "bytes": 17840,
+        "sha256": "70d065558ce66197176a99f9e8f5a1840f724d2176e36006d39eebacf8dae2c4",
+        "archive_member": "rrsnn_v4/hepta/reclaimable_cache_inventory.json",
+        "actual_small_archive_payload_read": true,
+        "matches_manifest_original_review_and_active_file": true
+      }
+    ],
+    "missing": [],
+    "sha_or_size_conflicts": []
+  },
+  "original_git_gaps_and_conflicts": {
+    "expected_historical_source_files": 10,
+    "verified_historical_source_files": 10,
+    "expected_prior_audit_files": 5,
+    "verified_prior_audit_files": 5,
+    "prior_version_conflicts": 3,
+    "version_conflicts_resolved": 3,
+    "checks": [
+      {
+        "group": "historical_source_context",
+        "path": "hepta/bootstrap_runtime_preformat.rs",
+        "bytes": 18942,
+        "sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+        "git_blob_sha": "9304d15bfe16f6e69af0b01b97a9eb110ff314a6",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/upstream-root-justfile.txt",
+        "bytes": 7839,
+        "sha256": "9fe8c410c12c3caacb6b6a531a8c124ae257c7041b2ce78388d49c1562843e1c",
+        "git_blob_sha": "75e69b04c1f700b15e7b91fd1fc5368fa9b924d9",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/upstream_recipes/run-nextest.py",
+        "bytes": 10207,
+        "sha256": "b3080673ca1eef47d9bead823110f13e9c7ccd8310b2827719d5d1111041fa5c",
+        "git_blob_sha": "4243bf6fc8381c04f60af333404fbc5b6d722f12",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/upstream_recipes/nextest.toml",
+        "bytes": 5045,
+        "sha256": "1ec25c048d59621ed75ba2db1c073b38091005d6da97b71d3b77774b3ecbc869",
+        "git_blob_sha": "82d17fb92831a326a8107e731a4ea7a096f2e4c6",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/upstream_recipes/just-shell.py",
+        "bytes": 2031,
+        "sha256": "8c4e5b73a4d5b62553bdfd0f3dfc5ec39919bf3089cd950426a43879b73cff84",
+        "git_blob_sha": "36cf263ba219fa047d8ff2d0e78f1042b3ca3b40",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/upstream_recipes/format.py",
+        "bytes": 16600,
+        "sha256": "3791cbd6b695c49ce2d4e84f250fe07761ec87e60ce1530880a0c7b1ba16e2dd",
+        "git_blob_sha": "617093ed602ebfbfde7cb7c31bc0d38272106de1",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/crate_validation_build/justfile",
+        "bytes": 276,
+        "sha256": "e39a62fae163ea646fcce092dfdeb24910d2eb73a513e33f0ecd7bef7a08173a",
+        "git_blob_sha": "cd641ab452ab049be4e0f707866212032f97db80",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/crate_validation_build/.cargo/config.toml",
+        "bytes": 169,
+        "sha256": "f6f6a07e7939496985c439dc8a9856659089ebb779b9311c383a9256b4dd20ed",
+        "git_blob_sha": "5eb796e7e710c53accb0328a28ca83c079192719",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "results/figures_history/layout_01/make_figures_source.py",
+        "bytes": 35675,
+        "sha256": "82d37f870876c30744239d7cbac5a264a61e319d312e284da5d8e94541595e10",
+        "git_blob_sha": "89c80307000a04f069351843d3c419b354f8eea2",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "historical_source_context",
+        "path": "hepta/patched_upstream/codex-rs/Cargo.lock",
+        "bytes": 5791,
+        "sha256": "a229b4462b64a9567ec2fdaaa8d395cdc789f3341ade9178d9f9d6f3c1f082b0",
+        "git_blob_sha": "01d1941b619cf38fb61f3ef247ebfd7a65b3ef05",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_audits",
+        "path": "report_audit/closeout_raw_verification_extension.json",
+        "bytes": 638,
+        "sha256": "9efeb927633c8077cd542f872676a98db3bc8a93696027362ac404cd6f5e1152",
+        "git_blob_sha": "d74a42f0b9f5e15d5ef3eba88781ee5dba64108a",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_audits",
+        "path": "report_audit/independent_closeout_incremental_review.json",
+        "bytes": 5461,
+        "sha256": "c3c4c7b2f44535960d38510801dae5d187ebd457931a052007d736d656deddd3",
+        "git_blob_sha": "ac109afdb6f9dc553a7f1af07f7a68814cf90d0c",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_audits",
+        "path": "report_audit/inference_scope_reporting_addendum.json",
+        "bytes": 1020,
+        "sha256": "b6c96fd080fafe09383ab1a02bd64ad6586fee958d147dc93991d24533cfd2f7",
+        "git_blob_sha": "1f23fe4a849baa11ed8ace1ff3da0da85fb0b2b7",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_audits",
+        "path": "report_audit/scientific_scope_closeout_addendum.json",
+        "bytes": 4648,
+        "sha256": "f9857ac4ce135245886e76500032218118df68101925b54971f2b7f6ac80bcb6",
+        "git_blob_sha": "6cf361e97a96b43448e9cd766e7a285e9e8cdce5",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_audits",
+        "path": "report_audit/scientific_scope_closeout_review.json",
+        "bytes": 12328,
+        "sha256": "d70200a60e053bc46f24da751da79e8e242484fe1184ead53e06f21f60dedb85",
+        "git_blob_sha": "51ee2462f04a03c1e703aa26fe48853c342898ff",
+        "current_bytes_match_root_verified_map": true,
+        "matches_original_review_sha": true
+      },
+      {
+        "group": "prior_git_version_conflict",
+        "path": "MATHEMATICAL_SCOPE.zh-CN.md",
+        "bytes": 10646,
+        "sha256": "181130078ba4edec6932c25ee234d6b5fac6cb8f8656c28ed0fb6cd180eacb29",
+        "old_map_git_blob_sha": "67a3f7e5fe941fa8feb1e3e84d1207e4dce4d478",
+        "final_map_git_blob_sha": "057da6dcaba9d1ce7fd3f7e01b3a5778616f5aa8",
+        "current_bytes_match_root_verified_map": true,
+        "conflict_closed": true
+      },
+      {
+        "group": "prior_git_version_conflict",
+        "path": "REPORT_TEMPLATE.zh-CN.md",
+        "bytes": 22530,
+        "sha256": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+        "old_map_git_blob_sha": "3504084dce2720ebac89bfb2e5b9bf7d93fd582c",
+        "final_map_git_blob_sha": "2e0fff2ab1f73ea1c80bbf13dad9b7966e07cd7d",
+        "current_bytes_match_root_verified_map": true,
+        "conflict_closed": true
+      },
+      {
+        "group": "prior_git_version_conflict",
+        "path": "build_closeout.py",
+        "bytes": 18731,
+        "sha256": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+        "old_map_git_blob_sha": "ae37712b221b228b0f5cd88433c317e6a820a6f5",
+        "final_map_git_blob_sha": "1aa1d865965e4444987a595e56a315293631d522",
+        "current_bytes_match_root_verified_map": true,
+        "conflict_closed": true
+      }
+    ],
+    "missing": [],
+    "sha_or_blob_conflicts": []
+  },
+  "partition_metadata": {
+    "core_resources_member_path_overlap": [],
+    "core_raw_final_git_path_overlap": [],
+    "resources_raw_final_git_path_overlap": [],
+    "conflicting_restore_paths": [],
+    "basis": "Set comparison of both real ZIP manifests and the 176-entry verified Git map; no broad raw-payload reread."
+  },
+  "prior_import_and_exclusion_scope": {
+    "original_ast_source_modules": 36,
+    "original_resolved_local_import_edges": 55,
+    "original_uncovered_resolved_dependencies": 0,
+    "ast_or_models_rerun": false,
+    "rebuildable_duplicate_and_temporary_exclusions": "The original review remains the record for each of the 73 rebuildable/duplicate exclusions and three temporary staging images. Their native external-source/vendor/toolchain prerequisites remain unchanged."
+  },
+  "closure": {
+    "original_missing_paths_remaining": 0,
+    "original_content_or_git_version_conflicts_remaining": 0,
+    "original_coverage_gaps_closed": true,
+    "full_member_restoration_executed_by_this_audit": false,
+    "full_member_restoration_pass_claimed": false,
+    "whole_archive_hash_reverification_claimed": false,
+    "remaining_delivery_work": "The separately published restore_delivery.py must perform the actual complete restoration and produce its own receipt. This addendum and that restoration receipt are to be included in the final delivery Git stage; they are not represented as already present in the c210500b map."
+  },
+  "limits": [
+    "Only ZIP central directories, both raw manifests and the eight explicitly bounded small JSON payloads were read from the archives. No large raw member was scanned.",
+    "Small local source/audit/receipt files were read for their SHA-256 and Git-blob identities; no Torch import, actor, training, native build or experiment replay was executed.",
+    "Neither ZIP, the original review, frozen source, benchmark evidence nor report result was modified.",
+    "This is archival coverage closure for the original audit findings, not production activation, scientific acceptance, external dependency installation, or an executed end-to-end restoration."
+  ]
+}

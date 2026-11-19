@@ -1,0 +1,902 @@
+{
+  "all_recorded_physical_sources": 192,
+  "all_recorded_train_rows": 3072,
+  "analysis_body_cpu_seconds": 0.107206205,
+  "code_support_recomputation": true,
+  "decoder_support": {
+    "11": {
+      "correct_distance_range": [
+        3.611854123761898e-05,
+        4.8547803889658726e-05
+      ],
+      "decoded_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "maximum_distance": 0.12163033345408764,
+      "negative_is_both_wrong_disagree": true,
+      "negative_reward_range": [
+        -0.29865213338163504,
+        -0.2579433681289994
+      ],
+      "quality_clipping_inactive": true,
+      "wrong_distance_range": [
+        0.019858420322498526,
+        0.12163033345408764
+      ]
+    },
+    "23": {
+      "correct_distance_range": [
+        3.5956481480331434e-05,
+        4.820558652053271e-05
+      ],
+      "decoded_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "maximum_distance": 0.12162495649048403,
+      "negative_is_both_wrong_disagree": true,
+      "negative_reward_range": [
+        -0.2986499825961936,
+        -0.25794479284280214
+      ],
+      "quality_clipping_inactive": true,
+      "wrong_distance_range": [
+        0.0198619821070055,
+        0.12162495649048403
+      ]
+    },
+    "47": {
+      "correct_distance_range": [
+        3.59897196072382e-05,
+        4.834378562771846e-05
+      ],
+      "decoded_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "maximum_distance": 0.12162417804964633,
+      "negative_is_both_wrong_disagree": true,
+      "negative_reward_range": [
+        -0.2986496712198585,
+        -0.25794540340958194
+      ],
+      "quality_clipping_inactive": true,
+      "wrong_distance_range": [
+        0.01986350852395485,
+        0.12162417804964633
+      ]
+    }
+  },
+  "decoder_support_recomputation": "12-code fixed reward support, not recovery of historical per-request probabilities",
+  "missing": [
+    "per-row p/q",
+    "labels/source IDs and row mapping",
+    "per-row reward/entropic normalizer",
+    "per-head correctness/margins",
+    "which greedy statuses changed",
+    "adjacent final-iterate checkpoints"
+  ],
+  "new_physical_source_construction": false,
+  "new_request_predictions": false,
+  "new_training": false,
+  "process_cpu_before_write_seconds": 0.240592309,
+  "samplers": {
+    "iid": [
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.9816352371975814,
+            "both_wrong": 0.002613150366373551,
+            "both_wrong_agree": 0.0025420546857249926,
+            "both_wrong_disagree_negative": 7.109568064855853e-05,
+            "exactly_one_correct": 0.01575161243604506,
+            "greedy_error_count": 10,
+            "image_correct_probability_bounds": [
+              0.9784850632563714,
+              0.9965945038225039
+            ],
+            "text_correct_probability_bounds": [
+              0.9824275830087039,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9790220868312078
+          },
+          "N": {
+            "both_correct": 0.9847327724958713,
+            "both_wrong": 0.0034106747971952567,
+            "both_wrong_agree": 0.003363882443296995,
+            "both_wrong_disagree_negative": 4.679235389826175e-05,
+            "exactly_one_correct": 0.011856552706933421,
+            "greedy_error_count": 15,
+            "image_correct_probability_bounds": [
+              0.9842881746158324,
+              0.997540624362043
+            ],
+            "text_correct_probability_bounds": [
+              0.983781473336633,
+              0.9970339230828437
+            ],
+            "true_head_probability_sum": 1.981322097698676
+          },
+          "N_minus_A": {
+            "both_correct": 0.003097535298289933,
+            "both_wrong": 0.0007975244308217055,
+            "both_wrong_agree": 0.0008218277575720023,
+            "both_wrong_disagree_negative": -2.4303326750296783e-05,
+            "exactly_one_correct": -0.0038950597291116384,
+            "true_head_probability_sum": 0.0023000108674682274
+          },
+          "decomposition_residual": -5.160802341031001e-17,
+          "greedy_changed_status_row_count_bounds": [
+            5,
+            25
+          ],
+          "greedy_net_added_errors": 5,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.003017101887809775,
+          "negative_reward_contribution_delta_bounds": [
+            4.364023008248572e-06,
+            9.163099332709684e-06
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.0013717770695516772,
+            "image_quality": 4.601240985499919e-05,
+            "joint_bonus": 0.0009292605894869798,
+            "true_head_marginals": 0.0006900032602404682
+          },
+          "utility_delta": 0.003037053329134176,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 5,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9224877248781359,
+            "both_wrong": 0.009710240254524272,
+            "both_wrong_agree": 0.008706068445299309,
+            "both_wrong_disagree_negative": 0.001004171809224963,
+            "exactly_one_correct": 0.06780203486733982,
+            "greedy_error_count": 30,
+            "image_correct_probability_bounds": [
+              0.8968505006655912,
+              0.9832850683112395
+            ],
+            "text_correct_probability_bounds": [
+              0.9294924163123721,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9127774846236116
+          },
+          "N": {
+            "both_correct": 0.9315074630673649,
+            "both_wrong": 0.009320576968582128,
+            "both_wrong_agree": 0.008584877573108995,
+            "both_wrong_disagree_negative": 0.0007356993954731328,
+            "exactly_one_correct": 0.059171959964053,
+            "greedy_error_count": 31,
+            "image_correct_probability_bounds": [
+              0.9159322827821149,
+              0.986396100458162
+            ],
+            "text_correct_probability_bounds": [
+              0.9357907856406208,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9221868860987827
+          },
+          "N_minus_A": {
+            "both_correct": 0.009019738189228965,
+            "both_wrong": -0.0003896632859421434,
+            "both_wrong_agree": -0.00012119087219031321,
+            "both_wrong_disagree_negative": -0.0002684724137518302,
+            "exactly_one_correct": -0.008630074903286822,
+            "true_head_probability_sum": 0.009409401475171109
+          },
+          "decomposition_residual": -2.949029909160572e-17,
+          "greedy_changed_status_row_count_bounds": [
+            1,
+            61
+          ],
+          "greedy_net_added_errors": 1,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.012522471991655959,
+          "negative_reward_contribution_delta_bounds": [
+            3.930126466604759e-05,
+            0.00011012927310792282
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.003114491560963528,
+            "image_quality": 0.00015129793745520079,
+            "joint_bonus": 0.0027059214567686893,
+            "true_head_marginals": 0.0028228204425513326
+          },
+          "utility_delta": 0.00879453139773878,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 11
+      },
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.9783649477469577,
+            "both_wrong": 0.0035423490707559013,
+            "both_wrong_agree": 0.003453174492708877,
+            "both_wrong_disagree_negative": 8.917457804702433e-05,
+            "exactly_one_correct": 0.018092703182286396,
+            "greedy_error_count": 12,
+            "image_correct_probability_bounds": [
+              0.9739175145635107,
+              0.9958473728254194
+            ],
+            "text_correct_probability_bounds": [
+              0.9789752258507824,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9748225986762018
+          },
+          "N": {
+            "both_correct": 0.9840015368407687,
+            "both_wrong": 0.0033990541559686394,
+            "both_wrong_agree": 0.003349279002323735,
+            "both_wrong_disagree_negative": 4.977515364490426e-05,
+            "exactly_one_correct": 0.012599409003262618,
+            "greedy_error_count": 13,
+            "image_correct_probability_bounds": [
+              0.9825997457067361,
+              0.9972632203114925
+            ],
+            "text_correct_probability_bounds": [
+              0.9833392623733076,
+              0.998002736978064
+            ],
+            "true_head_probability_sum": 1.9806024826848
+          },
+          "N_minus_A": {
+            "both_correct": 0.00563658909381104,
+            "both_wrong": -0.00014329491478726197,
+            "both_wrong_agree": -0.0001038954903851419,
+            "both_wrong_disagree_negative": -3.9399424402120076e-05,
+            "exactly_one_correct": -0.005493294179023778,
+            "true_head_probability_sum": 0.005779884008598302
+          },
+          "decomposition_residual": 9.80118763926896e-17,
+          "greedy_changed_status_row_count_bounds": [
+            1,
+            25
+          ],
+          "greedy_net_added_errors": 1,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.0025399887823166142,
+          "negative_reward_contribution_delta_bounds": [
+            8.136769291410464e-06,
+            1.3792744486113245e-05
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.001936442761199064,
+            "image_quality": 6.885365485292828e-05,
+            "joint_bonus": 0.0016909767281433118,
+            "true_head_marginals": 0.0017339652025794904
+          },
+          "utility_delta": 0.005430238346774696,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 8,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9200381277185222,
+            "both_wrong": 0.008621471938969116,
+            "both_wrong_agree": 0.007503796190241219,
+            "both_wrong_disagree_negative": 0.0011176757487278977,
+            "exactly_one_correct": 0.07134040034250866,
+            "greedy_error_count": 29,
+            "image_correct_probability_bounds": [
+              0.8912384635200626,
+              0.982364556641457
+            ],
+            "text_correct_probability_bounds": [
+              0.929052099138096,
+              1.0
+            ],
+            "true_head_probability_sum": 1.911416655779553
+          },
+          "N": {
+            "both_correct": 0.9253012077360738,
+            "both_wrong": 0.009805832805982018,
+            "both_wrong_agree": 0.008866840646644114,
+            "both_wrong_disagree_negative": 0.0009389921593379036,
+            "exactly_one_correct": 0.06489295945794415,
+            "greedy_error_count": 28,
+            "image_correct_probability_bounds": [
+              0.9078171162284712,
+              0.985068106382585
+            ],
+            "text_correct_probability_bounds": [
+              0.9304272685475068,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9154953749300918
+          },
+          "N_minus_A": {
+            "both_correct": 0.005263080017551602,
+            "both_wrong": 0.0011843608670129013,
+            "both_wrong_agree": 0.0013630444564028954,
+            "both_wrong_disagree_negative": -0.00017868358938999407,
+            "exactly_one_correct": -0.006447440884564504,
+            "true_head_probability_sum": 0.004078719150538701
+          },
+          "decomposition_residual": -8.673617379884035e-19,
+          "greedy_changed_status_row_count_bounds": [
+            1,
+            57
+          ],
+          "greedy_net_added_errors": -1,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.017434406189485878,
+          "negative_reward_contribution_delta_bounds": [
+            7.868647426814159e-06,
+            9.158570488434323e-05
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.002319143565884074,
+            "image_quality": 0.00013147551737343558,
+            "joint_bonus": 0.0015789240052654808,
+            "true_head_marginals": 0.0012236157451616103
+          },
+          "utility_delta": 0.005253158833684601,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 23
+      },
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.9806294993351158,
+            "both_wrong": 0.002922896862519342,
+            "both_wrong_agree": 0.0028523710371384237,
+            "both_wrong_disagree_negative": 7.052582538091823e-05,
+            "exactly_one_correct": 0.016447603802364874,
+            "greedy_error_count": 12,
+            "image_correct_probability_bounds": [
+              0.9762810061991952,
+              0.9962333408414809
+            ],
+            "text_correct_probability_bounds": [
+              0.9814732616311156,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9777066024725964
+          },
+          "N": {
+            "both_correct": 0.9836055133886971,
+            "both_wrong": 0.0036748199154624794,
+            "both_wrong_agree": 0.0036223097741130417,
+            "both_wrong_disagree_negative": 5.251014134943777e-05,
+            "exactly_one_correct": 0.01271966669584046,
+            "greedy_error_count": 17,
+            "image_correct_probability_bounds": [
+              0.9824475473120755,
+              0.997239027626306
+            ],
+            "text_correct_probability_bounds": [
+              0.9826916658469286,
+              0.9974831461611591
+            ],
+            "true_head_probability_sum": 1.9799306934732346
+          },
+          "N_minus_A": {
+            "both_correct": 0.0029760140535812774,
+            "both_wrong": 0.0007519230529431375,
+            "both_wrong_agree": 0.000769938736974618,
+            "both_wrong_disagree_negative": -1.801568403148046e-05,
+            "exactly_one_correct": -0.003727937106524415,
+            "true_head_probability_sum": 0.00222409100063814
+          },
+          "decomposition_residual": 1.0451708942760263e-16,
+          "greedy_changed_status_row_count_bounds": [
+            5,
+            29
+          ],
+          "greedy_net_added_errors": 5,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.0025745577553692063,
+          "negative_reward_contribution_delta_bounds": [
+            2.509676028956799e-06,
+            7.517764969045488e-06
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.0013110834766945634,
+            "image_quality": 4.8906883949366736e-05,
+            "joint_bonus": 0.0008928042160743832,
+            "true_head_marginals": 0.000667227300191442
+          },
+          "utility_delta": 0.002920021876909651,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 5,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9165668646966226,
+            "both_wrong": 0.010801941620371402,
+            "both_wrong_agree": 0.00960376271042096,
+            "both_wrong_disagree_negative": 0.0011981789099504425,
+            "exactly_one_correct": 0.07263119368300597,
+            "greedy_error_count": 38,
+            "image_correct_probability_bounds": [
+              0.8889249759022227,
+              0.9819866499273556
+            ],
+            "text_correct_probability_bounds": [
+              0.9237782731488956,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9057649230762512
+          },
+          "N": {
+            "both_correct": 0.9240487119296651,
+            "both_wrong": 0.011045280429687554,
+            "both_wrong_agree": 0.010099433582758444,
+            "both_wrong_disagree_negative": 0.0009458468469291104,
+            "exactly_one_correct": 0.06490600764064736,
+            "greedy_error_count": 38,
+            "image_correct_probability_bounds": [
+              0.9063293749298195,
+              0.9848250927074286
+            ],
+            "text_correct_probability_bounds": [
+              0.928178338792549,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9130034314999775
+          },
+          "N_minus_A": {
+            "both_correct": 0.00748184723304246,
+            "both_wrong": 0.00024333880931615148,
+            "both_wrong_agree": 0.0004956708723374836,
+            "both_wrong_disagree_negative": -0.00025233206302133215,
+            "exactly_one_correct": -0.007725186042358612,
+            "true_head_probability_sum": 0.007238508423726309
+          },
+          "decomposition_residual": 1.1362438767648086e-16,
+          "greedy_changed_status_row_count_bounds": [
+            0,
+            76
+          ],
+          "greedy_net_added_errors": 0,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.015498865818679862,
+          "negative_reward_contribution_delta_bounds": [
+            2.6587892424301404e-05,
+            0.00011385889102445766
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.00279213133688298,
+            "image_quality": 0.00013803441959921734,
+            "joint_bonus": 0.002244554169912738,
+            "true_head_marginals": 0.0021715525271178925
+          },
+          "utility_delta": 0.007346272453512714,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 47
+      }
+    ],
+    "stratified": [
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.9828481777458613,
+            "both_wrong": 0.002990627955637759,
+            "both_wrong_agree": 0.0029288304247998553,
+            "both_wrong_disagree_negative": 6.179753083790374e-05,
+            "exactly_one_correct": 0.014161194298500934,
+            "greedy_error_count": 11,
+            "image_correct_probability_bounds": [
+              0.9797340766239808,
+              0.996798138929269
+            ],
+            "text_correct_probability_bounds": [
+              0.9830594108609545,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9798575497902235
+          },
+          "N": {
+            "both_correct": 0.9859512707054051,
+            "both_wrong": 0.0030616124629826436,
+            "both_wrong_agree": 0.003022531054277744,
+            "both_wrong_disagree_negative": 3.908140870489962e-05,
+            "exactly_one_correct": 0.010987116831612243,
+            "greedy_error_count": 12,
+            "image_correct_probability_bounds": [
+              0.9858190269483756,
+              0.9977902095836775
+            ],
+            "text_correct_probability_bounds": [
+              0.985099448658745,
+              0.9970706312940468
+            ],
+            "true_head_probability_sum": 1.9828896582424225
+          },
+          "N_minus_A": {
+            "both_correct": 0.0031030929595438073,
+            "both_wrong": 7.098450734488448e-05,
+            "both_wrong_agree": 9.37006294778886e-05,
+            "both_wrong_disagree_negative": -2.2716122133004113e-05,
+            "exactly_one_correct": -0.0031740774668886917,
+            "true_head_probability_sum": 0.0030321084521989228
+          },
+          "decomposition_residual": 1.3877787807814457e-17,
+          "greedy_changed_status_row_count_bounds": [
+            1,
+            23
+          ],
+          "greedy_net_added_errors": 1,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.0027845912995099497,
+          "negative_reward_contribution_delta_bounds": [
+            4.268517161106718e-06,
+            8.375174229889529e-06
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.0011188777561575935,
+            "image_quality": 4.824708866165435e-05,
+            "joint_bonus": 0.0009309278878631422,
+            "true_head_marginals": 0.0009096325356596768
+          },
+          "utility_delta": 0.003007685268342053,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 2,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9286854723530427,
+            "both_wrong": 0.009526270526179381,
+            "both_wrong_agree": 0.008624352513051492,
+            "both_wrong_disagree_negative": 0.0009019180131278892,
+            "exactly_one_correct": 0.061788257120777956,
+            "greedy_error_count": 35,
+            "image_correct_probability_bounds": [
+              0.9091868260047884,
+              0.985296342964245
+            ],
+            "text_correct_probability_bounds": [
+              0.9338628588626183,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9191592018268633
+          },
+          "N": {
+            "both_correct": 0.9375431292631596,
+            "both_wrong": 0.009509764905658913,
+            "both_wrong_agree": 0.008861339251956202,
+            "both_wrong_disagree_negative": 0.0006484256537027111,
+            "exactly_one_correct": 0.05294710583118145,
+            "greedy_error_count": 35,
+            "image_correct_probability_bounds": [
+              0.9277050360004147,
+              0.9883154921321817
+            ],
+            "text_correct_probability_bounds": [
+              0.939717872225319,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9280333643575007
+          },
+          "N_minus_A": {
+            "both_correct": 0.008857656910116973,
+            "both_wrong": -1.6505620520468334e-05,
+            "both_wrong_agree": 0.00023698673890470978,
+            "both_wrong_disagree_negative": -0.0002534923594251781,
+            "exactly_one_correct": -0.008841151289596505,
+            "true_head_probability_sum": 0.008874162530637442
+          },
+          "decomposition_residual": 3.8163916471489756e-17,
+          "greedy_changed_status_row_count_bounds": [
+            0,
+            70
+          ],
+          "greedy_net_added_errors": 0,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.011804455219816861,
+          "negative_reward_contribution_delta_bounds": [
+            3.899006526472684e-05,
+            0.00010210264165864415
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.0031831252771575887,
+            "image_quality": 0.0001468294187928273,
+            "joint_bonus": 0.0026572970730350917,
+            "true_head_marginals": 0.0026622487591912323
+          },
+          "utility_delta": 0.008649500528176701,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 11
+      },
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.980681355727973,
+            "both_wrong": 0.0019176494049275572,
+            "both_wrong_agree": 0.001842605294977484,
+            "both_wrong_disagree_negative": 7.504410995007316e-05,
+            "exactly_one_correct": 0.01740099486709945,
+            "greedy_error_count": 5,
+            "image_correct_probability_bounds": [
+              0.9773230514323191,
+              0.9964027278643364
+            ],
+            "text_correct_probability_bounds": [
+              0.9823609784587091,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9787637063230454
+          },
+          "N": {
+            "both_correct": 0.9855433113146903,
+            "both_wrong": 0.00230738136021591,
+            "both_wrong_agree": 0.0022608125868460727,
+            "both_wrong_disagree_negative": 4.6568773369837224e-05,
+            "exactly_one_correct": 0.012149307325093783,
+            "greedy_error_count": 7,
+            "image_correct_probability_bounds": [
+              0.9850723926476913,
+              0.9976664451159865
+            ],
+            "text_correct_probability_bounds": [
+              0.9855694848384879,
+              0.9981635373067831
+            ],
+            "true_head_probability_sum": 1.9832359299544744
+          },
+          "N_minus_A": {
+            "both_correct": 0.004861955586717315,
+            "both_wrong": 0.0003897319552883527,
+            "both_wrong_agree": 0.0004182072918685886,
+            "both_wrong_disagree_negative": -2.8475336580235933e-05,
+            "exactly_one_correct": -0.0052516875420056675,
+            "true_head_probability_sum": 0.004472223631428962
+          },
+          "decomposition_residual": -1.1188966420050406e-16,
+          "greedy_changed_status_row_count_bounds": [
+            2,
+            12
+          ],
+          "greedy_net_added_errors": 2,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.0022081243584830567,
+          "negative_reward_contribution_delta_bounds": [
+            5.449474038716119e-06,
+            1.0399749530710122e-05
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.001848057007505066,
+            "image_quality": 6.14554550067643e-05,
+            "joint_bonus": 0.0014585866760151943,
+            "true_head_marginals": 0.0013416670894286886
+          },
+          "utility_delta": 0.004709766227955825,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 2,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9255301411351704,
+            "both_wrong": 0.008326198171505483,
+            "both_wrong_agree": 0.007423178948706699,
+            "both_wrong_disagree_negative": 0.0009030192227987843,
+            "exactly_one_correct": 0.06614366069332411,
+            "greedy_error_count": 22,
+            "image_correct_probability_bounds": [
+              0.9010312949213548,
+              0.9839615143234554
+            ],
+            "text_correct_probability_bounds": [
+              0.9332424286402096,
+              1.0
+            ],
+            "true_head_probability_sum": 1.917203942963665
+          },
+          "N": {
+            "both_correct": 0.9331333838174158,
+            "both_wrong": 0.009231430261243068,
+            "both_wrong_agree": 0.008560492158432909,
+            "both_wrong_disagree_negative": 0.0006709381028101591,
+            "exactly_one_correct": 0.05763518592134109,
+            "greedy_error_count": 34,
+            "image_correct_probability_bounds": [
+              0.9199544232433259,
+              0.9870473874384792
+            ],
+            "text_correct_probability_bounds": [
+              0.9368545661176936,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9239019535561728
+          },
+          "N_minus_A": {
+            "both_correct": 0.007603242682245437,
+            "both_wrong": 0.0009052320897375843,
+            "both_wrong_agree": 0.0011373132097262095,
+            "both_wrong_disagree_negative": -0.00023208111998862524,
+            "exactly_one_correct": -0.008508474771983021,
+            "true_head_probability_sum": 0.006698010592507853
+          },
+          "decomposition_residual": 8.066464163292153e-17,
+          "greedy_changed_status_row_count_bounds": [
+            12,
+            56
+          ],
+          "greedy_net_added_errors": 12,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.012883511979640761,
+          "negative_reward_contribution_delta_bounds": [
+            3.255345363052347e-05,
+            9.662168523317602e-05
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.003059194562190076,
+            "image_quality": 0.00015006817081059952,
+            "joint_bonus": 0.002280972804673631,
+            "true_head_marginals": 0.0020094031777523557
+          },
+          "utility_delta": 0.007499638715426582,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 23
+      },
+      {
+        "final": {
+          "A": {
+            "both_correct": 0.9814679781759285,
+            "both_wrong": 0.003014084691756902,
+            "both_wrong_agree": 0.0029488945593808547,
+            "both_wrong_disagree_negative": 6.519013237604732e-05,
+            "exactly_one_correct": 0.015517937132314641,
+            "greedy_error_count": 14,
+            "image_correct_probability_bounds": [
+              0.9780067417717883,
+              0.9965147870246311
+            ],
+            "text_correct_probability_bounds": [
+              0.9819391064595404,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9784538934841716
+          },
+          "N": {
+            "both_correct": 0.9859258426204373,
+            "both_wrong": 0.0031012563175264463,
+            "both_wrong_agree": 0.003062381631780964,
+            "both_wrong_disagree_negative": 3.8874685745482473e-05,
+            "exactly_one_correct": 0.0109729010620363,
+            "greedy_error_count": 13,
+            "image_correct_probability_bounds": [
+              0.9852336368651509,
+              0.997693404463106
+            ],
+            "text_correct_probability_bounds": [
+              0.9851311818398049,
+              0.9975909494377599
+            ],
+            "true_head_probability_sum": 1.9828245863029108
+          },
+          "N_minus_A": {
+            "both_correct": 0.004457864444508797,
+            "both_wrong": 8.717162576954429e-05,
+            "both_wrong_agree": 0.00011348707240010913,
+            "both_wrong_disagree_negative": -2.6315446630564843e-05,
+            "exactly_one_correct": -0.004545036070278341,
+            "true_head_probability_sum": 0.004370692818739252
+          },
+          "decomposition_residual": -8.239936510889834e-17,
+          "greedy_changed_status_row_count_bounds": [
+            1,
+            27
+          ],
+          "greedy_net_added_errors": -1,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.002192703011233616,
+          "negative_reward_contribution_delta_bounds": [
+            5.2055828773999124e-06,
+            9.441465103846384e-06
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.001599973030918117,
+            "image_quality": 5.7316559344279e-05,
+            "joint_bonus": 0.0013373593333526389,
+            "true_head_marginals": 0.0013112078456217757
+          },
+          "utility_delta": 0.004305856769236893,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "final_N_greedy_net_added_errors_vs_endpointwise_best_A": 1,
+        "matched128": {
+          "A": {
+            "both_correct": 0.9260865145131746,
+            "both_wrong": 0.009467849624800295,
+            "both_wrong_agree": 0.008484587869435956,
+            "both_wrong_disagree_negative": 0.0009832617553643397,
+            "exactly_one_correct": 0.06444563586202512,
+            "greedy_error_count": 36,
+            "image_correct_probability_bounds": [
+              0.9011501142231992,
+              0.9839804191777357
+            ],
+            "text_correct_probability_bounds": [
+              0.9326382457106386,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9166186648883743
+          },
+          "N": {
+            "both_correct": 0.9325211842377005,
+            "both_wrong": 0.01076689938985076,
+            "both_wrong_agree": 0.00999385367095773,
+            "both_wrong_disagree_negative": 0.0007730457188930284,
+            "exactly_one_correct": 0.05671191637244877,
+            "greedy_error_count": 45,
+            "image_correct_probability_bounds": [
+              0.9187987714972405,
+              0.9868586974646248
+            ],
+            "text_correct_probability_bounds": [
+              0.9348955873832249,
+              1.0
+            ],
+            "true_head_probability_sum": 1.9217542848478497
+          },
+          "N_minus_A": {
+            "both_correct": 0.006434669724525888,
+            "both_wrong": 0.001299049765050464,
+            "both_wrong_agree": 0.0015092658015217753,
+            "both_wrong_disagree_negative": -0.00021021603647131126,
+            "exactly_one_correct": -0.007733719489576352,
+            "true_head_probability_sum": 0.005135619959475424
+          },
+          "decomposition_residual": -5.377642775528102e-17,
+          "greedy_changed_status_row_count_bounds": [
+            9,
+            81
+          ],
+          "greedy_net_added_errors": 9,
+          "maximum_negative_tail_share_of_positive_utility_gain": 0.014745858449999446,
+          "negative_reward_contribution_delta_bounds": [
+            2.275800035934618e-05,
+            9.424721014870851e-05
+          ],
+          "utility_components": {
+            "agreement_penalty": 0.002780377434116682,
+            "image_quality": 0.00013997163358901618,
+            "joint_bonus": 0.0019304009173577662,
+            "true_head_marginals": 0.0015406859878426271
+          },
+          "utility_delta": 0.006391435972906145,
+          "warning": "aggregate identities do not identify which requests/sources/heads changed or greedy-error overlap"
+        },
+        "seed": 47
+      }
+    ]
+  },
+  "scope": "existing all-TRAIN aggregates plus saved decoder arrays; zero per-request encoder/head forwards",
+  "source_result_sha256": "bf07b5eb910be705382ded48b5f4417078e38bc70d7bc590a6d098d3ac172ba6"
+}

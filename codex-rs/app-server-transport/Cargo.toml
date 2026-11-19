@@ -52,13 +52,13 @@ tokio = { workspace = true, features = [
     "rt-multi-thread",
 ] }
 tokio-tungstenite = { workspace = true }
-tokio-util = { workspace = true }
+tokio-util = { workspace = true, features = ["rt"] }
 tracing = { workspace = true, features = ["log"] }
 url = { workspace = true }
 uuid = { workspace = true, features = ["serde", "v7"] }
 
 [dev-dependencies]
-chrono = { workspace = true }
+codex-utils-time = { workspace = true }
 codex-config = { workspace = true }
 codex-protocol = { workspace = true }
 pretty_assertions = { workspace = true }

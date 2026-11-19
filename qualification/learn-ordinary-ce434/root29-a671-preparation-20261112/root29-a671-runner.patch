@@ -1,0 +1,219 @@
+diff --git a/root29-fde-runner.py b/root29-a671-runner.py
+--- a/root29-fde-runner.py
++++ b/root29-a671-runner.py
+@@ -1,8 +1,8 @@
+ #!/usr/bin/env python3
+-"""Prepared FDE-only Root29 append. Not dispatched by the preparing agent.
++"""Prepared a671-only Root29 append. Not dispatched by the preparing agent.
+ 
+ Reuse the original CI recorder and just test entry. This script never builds
+-helpers, repeats the 190-case suite, changes HOME, or signals an existing process.
++helpers, repeats the 201-case suite, changes HOME, or signals an existing process.
+ """
+ from collections import Counter
+ import hashlib
+@@ -16,20 +16,22 @@
+ import time
+ import xml.etree.ElementTree as ET
+ 
+-SOURCE = "fde0086022ab2d877ef7d8aae19e07ad17a8593f"
+-TREE = "291c3efcfdfd25cb06a3d5ac60519f8e99bf7e17"
++SOURCE = "a6717d7228045e6cb60532966f06e6e02c4a6abe"
++TREE = "647b9e78151299c1e7de455eae9c530ca93b28c9"
+ REPO = Path("/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1")
+ EVIDENCE = Path("/home/qian-qi/hepta-learn-ce434-evidence-20261111/native")
+-MAIN = EVIDENCE / "live-owners-full-fde0086022ab-v1"
++MAIN = EVIDENCE / "live-owners-full-a6717d722804-v1"
+ HELPERS = MAIN / "helpers"
+-TARGET = Path("/data/hepta-learn-ce434-runtime-20261112-v1/target")
++TARGET = Path("/data/hepta-learn-ce434-runtime-20261112-v2/target")
++TARGET_CREATION = EVIDENCE / "build-root-recovery-e5c7-v2/result.json"
++TARGET_CREATION_SHA256 = "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb"
+ PINS = Path("/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins")
+ RECOVERY = EVIDENCE / "dependency-recovery-441de918-v1/result.json"
+ RECOVERY_SHA256 = "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc"
+ MANIFEST = EVIDENCE / "v8-pinned-150-4-0-v2/manifest.json"
+ MANIFEST_SHA256 = "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5"
+-NATIVE_DRIVER = EVIDENCE / "unified-fde0086022ab-validation-v1/native-runner.py"
+-NATIVE_DRIVER_SHA256 = "9cadb7c661f20f8f196ae31aff42717e6e0b3b8bdf6f96d41e1bdd63eabdd43c"
++NATIVE_DRIVER = EVIDENCE / "unified-a6717d722804-validation-v1/native-runner.py"
++NATIVE_DRIVER_SHA256 = "af38de68a43f583365682eb26497026adbb700fc1689ef72e4fc3bb02df1fae1"
+ PATH_PREFIX = "/home/qian-qi/hepta-learn-ce434-tools/uv-venv/bin:/home/qian-qi/.local/bin:/home/qian-qi/.cargo/bin:"
+ PARENTS = [
+     "authority_host_service::writer::learning_registration::tests::root_learning_registration_reopens_without_replacing_original_history",
+@@ -128,7 +130,7 @@
+         "status": git("status", "--porcelain=v1", "--untracked-files=all"),
+     }
+     require(value == {"head": SOURCE, "tree": TREE, "status": ""},
+-            "Root29 requires the same clean FDE checkout")
++            "Root29 requires the same clean a671 checkout")
+     return value
+ 
+ 
+@@ -169,7 +171,7 @@
+             and checked.get("selected_packages") == ["codex-hepta-infer-worker-host"]
+             and checked.get("source_before") == checked.get("source_after")
+             == {"head": SOURCE, "tree": TREE, "status": ""},
+-            "original helper verifier did not certify this clean FDE source")
++            "original helper verifier did not certify this clean a671 source")
+     return checked
+ 
+ 
+@@ -185,7 +187,8 @@
+             "original V8 source inputs changed")
+     require(recovery["state"] == "original-assets-recovered-and-full-hash-verified"
+             and recovery["source_sha"] == "441de918b863dd15b2faeae920017c1b4b08f59d"
+-            and recovery["environment"]["CARGO_TARGET_DIR"] == str(TARGET)
++            and recovery["environment"]["CARGO_TARGET_DIR"]
++            == "/data/hepta-learn-ce434-runtime-20261112-v1/target"
+             and recovery["uid"] == os.getuid(),
+             "original successful recovery identity differs")
+     require(set(manifest["environment"]) == set(V8_DIGESTS), "V8 pair incomplete")
+@@ -211,12 +214,61 @@
+     return result
+ 
+ 
++def verify_target_v2():
++    # e5c is immutable creation provenance, not this run's tested source.
++    before = TARGET_CREATION.lstat()
++    require(stat.S_ISREG(before.st_mode) and before.st_uid == os.getuid()
++            and before.st_nlink == 1 and before.st_size <= 16_384,
++            "original target-v2 creation record differs")
++    fd = os.open(TARGET_CREATION, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK)
++    with os.fdopen(fd, "rb") as stream:
++        opened = os.fstat(stream.fileno())
++        data = stream.read(16_385)
++        after = os.fstat(stream.fileno())
++    fields = ("st_dev", "st_ino", "st_mode", "st_nlink", "st_uid", "st_size",
++              "st_mtime_ns", "st_ctime_ns")
++    require(len(data) == before.st_size
++            and all(getattr(before, key) == getattr(opened, key) == getattr(after, key)
++                    == getattr(TARGET_CREATION.lstat(), key) for key in fields),
++            "original target-v2 creation record changed while reading")
++    require(digest_bytes(data) == TARGET_CREATION_SHA256,
++            "original target-v2 creation record hash differs")
++    created = json.loads(data)
++    require(created["state"] == "isolated-build-target-created-original-pins-retained"
++            and created["source_sha"] == created["source_after"]
++            == "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4"
++            and created["source_tree"] == "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76"
++            and created["source_status_after"] == ""
++            and created["uid"] == os.getuid()
++            and created["target"] == str(TARGET)
++            and created["runtime_root"] == str(TARGET.parent)
++            and created["original_manifest_sha256"] == MANIFEST_SHA256
++            and created["original_recovery_sha256"] == RECOVERY_SHA256,
++            "original target-v2 creation provenance differs")
++    actual_identities = {}
++    for path, field in ((TARGET.parent, "root_identity"), (TARGET, "target_identity")):
++        actual = path.lstat()
++        original = created[field]
++        require(stat.S_ISDIR(actual.st_mode) and path.resolve(strict=True) == path
++                and actual.st_uid == os.getuid() and stat.S_IMODE(actual.st_mode) == 0o700
++                and (actual.st_dev, actual.st_ino, actual.st_uid, oct(actual.st_mode))
++                == (original["device"], original["inode"], original["uid"], original["mode"]),
++                "original target-v2 directory was replaced")
++        actual_identities[field] = {"device": actual.st_dev, "inode": actual.st_ino,
++                                    "uid": actual.st_uid, "mode": oct(actual.st_mode)}
++    return {"record_path": str(TARGET_CREATION), "record_sha256": digest_bytes(data),
++            "creation_source_sha": created["source_sha"],
++            "creation_source_tree": created["source_tree"],
++            "creation_is_provenance_only": True, "tested_source_sha": SOURCE,
++            "target": str(TARGET), "actual_identities": actual_identities}
++
++
+ ROOT_SETUP = r"""
+ import json, os, subprocess, sys
+ from pathlib import Path
+ assert os.geteuid() == 0
+ p = Path(sys.argv[1])
+-assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-fde0086022ab-")
++assert p.parent == Path("/run") and p.name.startswith("hepta-learn-root29-a6717d722804-")
+ p.mkdir(mode=0o700)
+ for name in ("source", "bind", "checkpoints"):
+     (p / name).mkdir(mode=0o700)
+@@ -258,13 +310,13 @@
+ """
+ 
+ if len(sys.argv) != 2 or re.fullmatch(r"v[1-9][0-9]*", sys.argv[1]) is None:
+-    raise SystemExit("usage: root29-fde-runner.py vN (new, explicitly selected attempt)")
++    raise SystemExit("usage: root29-a671-runner.py vN (new, explicitly selected attempt)")
+ require(os.getuid() == os.geteuid() != 0, "start as the original normal user, never sudo this runner")
+ require(REPO.resolve(strict=True) == REPO, "qualification checkout path differs")
+ require(len(PARENTS) == len(set(PARENTS)) == 29, "original Root29 list differs")
+ attempt = sys.argv[1]
+-out = EVIDENCE / ("root-uid-29-fde0086022ab-" + attempt)
+-root_dir = Path("/run") / ("hepta-learn-root29-fde0086022ab-" + attempt)
++out = EVIDENCE / ("root-uid-29-a6717d722804-" + attempt)
++root_dir = Path("/run") / ("hepta-learn-root29-a6717d722804-" + attempt)
+ require(not out.exists() and not out.is_symlink(), "new exclusive evidence directory required")
+ normal_env = dict(os.environ)
+ normal_env.update(
+@@ -277,19 +329,19 @@
+ sys.dont_write_bytecode = True
+ os.chdir(REPO)
+ initial = identity()
+-require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original FDE native driver differs")
++require(file_hash(NATIVE_DRIVER) == NATIVE_DRIVER_SHA256, "frozen original a671 native driver differs")
+ main_bytes = read_stable(MAIN / "result.json")
+ main = json.loads(main_bytes)
+ require(main.get("source_sha") == SOURCE and main.get("source_tree") == TREE
+         and main.get("state") == "passed"
+-        and main.get("native_tests_executed") == 190
++        and main.get("native_tests_executed") == 201
+         and main.get("owner_coverage", {}).get("exact_selected_cases") is True
+         and not main.get("owner_coverage", {}).get("failed_or_skipped", [])
+         and main.get("original_observer_coverage", {}).get("exact_pass_coverage") is True
+         and main.get("source_after") == SOURCE and main.get("source_status_after") == ""
+         and type(main.get("native_exit_code")) is int and main["native_exit_code"] == 0
+         and type(main.get("collection_exit_code")) is int and main["collection_exit_code"] == 0,
+-        "wait for the original same-SHA full 190-case main run to pass; never overlap its target or JUnit")
++        "wait for the original same-SHA full 201-case main run to pass; never overlap its target or JUnit")
+ steps = {step["name"]: step for step in main.get("steps", [])}
+ require(steps.get("helper-build", {}).get("exit_code") == 0
+         and steps.get("helper-verify", {}).get("exit_code") == 0
+@@ -299,17 +351,19 @@
+ target_stat = TARGET.lstat()
+ require(stat.S_ISDIR(target_stat.st_mode) and TARGET.resolve(strict=True) == TARGET
+         and target_stat.st_uid == os.getuid(), "same original owned target required")
++target_creation = verify_target_v2()
+ for path, blob in CI_PINS.items():
+     require(git("hash-object", path) == blob, "original CI source changed: " + path)
+ out.mkdir(mode=0o700, parents=False, exist_ok=False)
+ report = {
+-    "schema": "hepta.learn.root29-fde-original-ci-append.v1",
++    "schema": "hepta.learn.root29-a671-original-ci-append.v1",
+     "source_sha": SOURCE, "source_tree": TREE, "state": "preparing",
+     "initiating_uid": os.getuid(), "initiating_gid": os.getgid(),
+     "main_terminal_record": {"path": str(MAIN / "result.json"),
+                              "sha256": digest_bytes(main_bytes), "state": main["state"]},
+     "main_native_result_is_not_overridden": True,
+     "helper_directory": str(HELPERS), "target": str(TARGET),
++    "target_initialization": target_creation,
+     "before": initial, "steps": [], "expected_parents": PARENTS,
+     "root_fixture": str(root_dir), "root_command_dispatched": False,
+     "root_wrapper_returned": False, "root_command_returned": False,
+@@ -353,12 +407,12 @@
+     report["root_environment"] = root_env
+     report["root_environment_origins"] = {
+         "allowlist": ".github/workflows/hepta-daemon-learning-native.yml: test(root=True)",
+-        "resource_values_and_path_prefix": "fixed original FDE native-runner.py 22fd228a5e5f2bb829180628466788e43268ff36",
++        "resource_values_and_path_prefix": "fixed original a671 native-runner.py dd7d0f74b62415f23098b2c2bac6a9a3ed756260",
+         "cargo_home": "existing CARGO_HOME" if "CARGO_HOME" in os.environ else "original CI normal-user Path.home()/.cargo fallback",
+         "rustup_home": "existing RUSTUP_HOME" if "RUSTUP_HOME" in os.environ else "original CI normal-user Path.home()/.rustup fallback",
+         "optional_toolchain_clang_ci_fields": "inherited existing values only; never synthesized",
+         "v8": "hash-verified original successful recovery ledger",
+-        "helper": "same-FDE original helper --verify-only and exact env.json",
++        "helper": "same-a671 original helper --verify-only and exact env.json",
+         "fixture_paths": "new invocation-owned isolated /run directory only",
+     }
+     save()
+@@ -521,7 +575,7 @@
+     else:
+         report["cleanup"] = "no certified owned mount receipt; no unmount attempted"
+     report["state"] = "passed" if passed else ("uncertain" if root_started and not original_execution_terminal else "failed")
+-    report["source_identity_claim"] = "same fixed FDE fixture mechanisms only; no ordinary daemon cold-start or adoption claim"
++    report["source_identity_claim"] = "same fixed a671 fixture mechanisms only; no ordinary daemon cold-start or adoption claim"
+     save()
+ print(json.dumps({"state": report["state"], "result": str(out / "result.json"),
+                   "root_native_test_count": report["root_native_test_count"]}), flush=True)

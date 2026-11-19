@@ -1,0 +1,32 @@
+{
+  "schema": "hepta.runtime-codex.archived-source-inspection.v1",
+  "status": "FAIL_ARCHIVE_INTEGRITY",
+  "payloads": [
+    {
+      "path": ".github/runtime_codex_closure.py.gz.b64",
+      "status": "INVALID_ARCHIVE",
+      "expected_encoded_sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+      "source_executed": false,
+      "source_applied": false,
+      "encoded_bytes": 677,
+      "encoded_sha256": "89333cfc9c1cc67782590767015eb8ca5ad80226d28230993d709ff0afd1fdfc",
+      "error_type": "Error",
+      "error": "Excess data after padding"
+    },
+    {
+      "path": ".github/runtime_codex_closure_original.py.gz.b64",
+      "status": "VALID_PYTHON_SOURCE_ONLY",
+      "expected_encoded_sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+      "source_executed": false,
+      "source_applied": false,
+      "encoded_bytes": 17112,
+      "encoded_sha256": "479205b06ab57eeb16121153f9b1a7174d8f02b4c6b6941ccbc7fd3564d08286",
+      "decoded_bytes": 63676,
+      "decoded_sha256": "ad8eebe29a0108d941c032d22bf3d14ec23b7d161479360e9b0695be823b5aa8",
+      "ast_nodes": 873
+    }
+  ],
+  "source_executed": false,
+  "source_applied": false,
+  "qualification": false
+}

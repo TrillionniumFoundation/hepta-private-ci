@@ -1,4 +1,3 @@
-use chrono::Utc;
 use codex_cloud_tasks_client::ApplyOutcome;
 use codex_cloud_tasks_client::ApplyStatus;
 use codex_cloud_tasks_client::AttemptStatus;
@@ -14,6 +13,7 @@ use codex_cloud_tasks_client::TaskStatus;
 use codex_cloud_tasks_client::TaskSummary;
 use codex_cloud_tasks_client::TaskText;
 use codex_cloud_tasks_client::TurnAttempt;
+use codex_utils_time::Timestamp;
 
 #[derive(Clone, Default)]
 pub struct MockClient;
@@ -54,7 +54,7 @@ impl MockClient {
                 id,
                 title: title.to_string(),
                 status,
-                updated_at: Utc::now(),
+                updated_at: Timestamp::now(),
                 environment_id: environment_id.clone(),
                 environment_label: environment_label.clone(),
                 summary: DiffSummary {
@@ -137,7 +137,7 @@ impl MockClient {
             return Ok(vec![TurnAttempt {
                 turn_id: "T-1000-attempt-2".to_string(),
                 attempt_placement: Some(1),
-                created_at: Some(Utc::now()),
+                created_at: Some(Timestamp::now()),
                 status: AttemptStatus::Completed,
                 diff: Some(mock_diff_for(&task)),
                 messages: vec!["Mock alternate attempt".to_string()],
@@ -155,7 +155,7 @@ impl MockClient {
         best_of_n: usize,
     ) -> Result<CreatedTask> {
         let _ = (env_id, prompt, git_ref, qa_mode, best_of_n);
-        let id = format!("task_local_{}", chrono::Utc::now().timestamp_millis());
+        let id = format!("task_local_{}", Timestamp::now().timestamp_millis());
         Ok(CreatedTask { id: TaskId(id) })
     }
 }

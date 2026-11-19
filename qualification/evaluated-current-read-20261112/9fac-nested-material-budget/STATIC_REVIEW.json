@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "kind": "static_recursive_transport_budget_audit",
+  "source": {
+    "commit": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+    "tree": "bc7185c5bc64b80bd9b8389e2e57d7b540f6ba2f"
+  },
+  "status": "OPEN: no new resident or Root batch is qualified by this audit; no execution or cap/deadline change performed.",
+  "fixed_source_pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "bytes": 3137,
+      "sha256": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c",
+      "git_blob_sha": "fae852c8a1d5022347e632787172b99f9d119307"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "bytes": 14395,
+      "sha256": "02acc8cf7be792f4d9ec6030dd0653e9d262a2d77b0961f5d4b1b7fc83baeba1",
+      "git_blob_sha": "692bccc629b4b073d958a5dd3b1d0e48d3ad9fa4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "bytes": 5629,
+      "sha256": "a9bff38e9ce5dda6f4792379402d840427d622cb66733e4535e90d4e664b61e9",
+      "git_blob_sha": "189e494e4b216109bd81ad0a5acaafe907053a80"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "bytes": 17052,
+      "sha256": "29e350fb4365bb1b3cd8c7e1b29a6b97eddfcfd169ef0e3177c3c366ba86b2d2",
+      "git_blob_sha": "bd124d3f287e1e3b5783aec5f51e2d083d8b21d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "bytes": 8073,
+      "sha256": "2759b72edb54f738ccda6fb49f8d45754badf7d467bc7c8a47638787d84ceb6a",
+      "git_blob_sha": "3eeb581ffafbd80957dcf87ad02923f27d8acb29"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "bytes": 5132,
+      "sha256": "b685d9dc142b1447db3b9d9af5389966acc13be51d6e285f2049d13e0cbaadbb",
+      "git_blob_sha": "e61df55e1611d5fa3f9622b464a1e5abb41e9024"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "bytes": 12136,
+      "sha256": "9f86e375f6af5a369cc2d8536e7dcdc381e42ee0f66ff3057d7951d65171f6c4",
+      "git_blob_sha": "9dd91ec0e81aff907a7760cdcee880226945993d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs",
+      "bytes": 9142,
+      "sha256": "ab98b271ff5aa3f991c2b419dff480331883d31c156732ca09be9ffaabe3830d",
+      "git_blob_sha": "9b4db7d83af9ab11710710adc75279461c134fec"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+      "bytes": 13528,
+      "sha256": "a1e0a7120c9666dfc42272b8ed1b52e895db99cf457dd5d5b17152c4ca0eb66b",
+      "git_blob_sha": "b61dc81c7a14eca197fdec9e55c397743b69eac6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs",
+      "bytes": 6298,
+      "sha256": "2f0fc12aca07cf516fbdff8406235fae7bcb5ac4ad0a5cb341940ac412460bfe",
+      "git_blob_sha": "d30794234278ce7e934b78c27a3330db49628d06"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+      "bytes": 14725,
+      "sha256": "d2a00698917406f0fbdfb8a83d3c51d1d7f61c05b90cc766853e1eaeb70b8b4a",
+      "git_blob_sha": "7179071338fb9779017a7e138742ce0b389c086e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "bytes": 9649,
+      "sha256": "e0d831c7043e062d5a0bc0ea795762be18680bf66e3889321498b6ad63c91db5",
+      "git_blob_sha": "826f48120730196081bb7e0bcd6427d30763579e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs",
+      "bytes": 1300,
+      "sha256": "d4a998efe42ebcfb526c54c146b7b7f409c3391fee43bd7e46ac5d5dd330eb75",
+      "git_blob_sha": "be5d6172a7e23571d77f07b7dcff8af71d51c663"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "bytes": 13866,
+      "sha256": "aedb443b6bb07f497960ceedfb4889dac690511556c91452db1c3e3366a413c2",
+      "git_blob_sha": "58afc356fff945a5377c3556fa0ba79139d3fad6"
+    }
+  ],
+  "successful_read_cost": [
+    {
+      "operation": "One current Source capture",
+      "trace": "LiveOwners::current_material reads the original Experience/Dataset evidence before and after, and reads the original material source twice. Each endpoint is the one retained in LiveOwners.",
+      "frames_per_retained_endpoint": {
+        "material_source": 2,
+        "experience": 2,
+        "dataset": 2
+      }
+    },
+    {
+      "operation": "One completed original Training readback",
+      "trace": "original_training_readback_response calls the same SourceBound stage. OriginalCellQ24TrainingStageV1::in_lane brackets its work with require_live_source_if_captured. These two captures therefore consume 4 frames on EACH of the same three retained Material endpoints.",
+      "captures": 2,
+      "frames_per_retained_endpoint": 4
+    },
+    {
+      "operation": "One successful original Candidate material page",
+      "trace": "candidate_material_response calls the same SourceBound read_candidate_material for every page. in_model_lane brackets the work with two live captures, and its work calls require_original_source_capture once more.",
+      "captures": 3,
+      "frames_per_retained_endpoint": 6
+    }
+  ],
+  "identity": "The bootstrap builds one ready SourceBound Stage holding one OriginalCellQ24TrainingSourceV1/LiveOwners. Additional original Training command/readback connections still dereference that same Stage and its existing Material clients. Different top-level sockets do not make the underlying Material endpoints independent.",
+  "formula": {
+    "unit": "successful frames on EACH retained original Material source/Experience/Dataset endpoint",
+    "expression": "4 * N_T + 6 * N_pages + B",
+    "definitions": {
+      "N_T": "completed original Training readbacks reaching this Stage",
+      "N_pages": "actual original Candidate page callbacks reaching this Stage",
+      "B": "additional bootstrap, admission, fit, recovery and other captures; nonnegative, not included in the lower bounds below"
+    }
+  },
+  "previous_proposed_resident_scenario": {
+    "scope": "Conditional substitution into the previous joint static accounting, not a runtime result and not an asserted final implementation.",
+    "assumptions": {
+      "N_T": 106,
+      "candidate_cycles": 32,
+      "minimum_pages_per_cycle": 1,
+      "extra_capture_cost_B_ignored": true
+    },
+    "lower_bound": 616,
+    "arithmetic": "4 * 106 + 6 * (32 * 1) = 424 + 192 = 616",
+    "conclusion": "The proposed per-root-call attestation vector alone cannot qualify this scenario against the existing fixture's 128-frame per-peer cap. Its top-level count below 128 does not address the nested reads.",
+    "other_minimal_obstruction": "Even the earlier zero-additional-recovery accounting of 28 complete Candidate cycles, each at least one page, costs at least 6 * 28 = 168 per retained Material peer before any Training readbacks or setup."
+  },
+  "cap_scope": [
+    {
+      "implementation": "Original Material bootstrap test source/evidence helpers",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_material_ports_tests.rs",
+      "limit": "Both loops are 0..128_u64 and fail on exhaustion.",
+      "status": "128 is a real fixture constraint; keep it and its lower-bound assertions."
+    },
+    {
+      "implementation": "Material command service",
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "limit": "serve_command_channel is 1..=128_u64.",
+      "status": "128 is also a real production command-lane cap."
+    },
+    {
+      "implementation": "Legacy Material read-only evidence/source services",
+      "paths": [
+        "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs"
+      ],
+      "limit": "These original services use a checked monotonically increasing u64 request id, a <=500-ms complete-exchange limit and <=300-s connection lifetime. They do not contain a universal 128-request guard.",
+      "status": "Do not misreport the fixture/command cap as a constant in all production transports. This difference does not prove that the new resident fits the original lifetimes or justify changing its fixture, endpoints or admission."
+    }
+  ],
+  "existing_evidence_boundary": {
+    "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+    "observation": "The existing deep readonly test documents 20 actual Training reads and asserts at least 80 actual Material frames and strictly fewer than 128 on each endpoint. The exact9fac native log records that method PASS; it is a different, smaller path from the new proposed evaluated resident.",
+    "not_inferred": [
+      "No exact total beyond its assertions is inferred.",
+      "No novel resident success or Root lifecycle qualification is inferred from that existing test."
+    ]
+  },
+  "possible_reuse_and_missing_api": {
+    "existing": "OriginalCellQ24MaterialReceiptOwnersV1::readback_material_pair already reads the real original pair coherently. The current Material response carries original Experience/Dataset signatures and full material. SourceBound Stage owns the original current/read/occupied-lane checks.",
+    "missing": "Current require_current_in_lane returns (), Training completion carries only T result/receipt/attestation, and each Candidate page currently re-enters the full lane. There is no existing consumable same-validation-call object that jointly supplies current Source, E/D, T and Candidate proofs without invoking these recursive paths again.",
+    "requirements_for_any_followup": [
+      "Only a bounded same-call read set after actual original owner/Source I/O; no cross-call cached receipt or reusable authorization token.",
+      "Preserve actual before/after physical CURRENT, journals, all original signatures, role separation, clocks, final CAS and fail-closed uncertainty.",
+      "Do not coalesce over Selection/Version publication or other effects that require fresh later observation.",
+      "No new endpoint pool, retry/reconnection, higher cap, larger deadline, omitted check, or duplicate counted evidence."
+    ],
+    "implementation_status": "Not implemented or run by this audit."
+  }
+}

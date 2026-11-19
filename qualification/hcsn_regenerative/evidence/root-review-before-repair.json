@@ -1,0 +1,23 @@
+{
+  "schema": "hcsn-root-peer-review-before-repair.v1",
+  "scope": "Two actually executed counterexamples, not scientific model results",
+  "interval_repr": "{'n': 3, 'mean': inf, 'lower': nan, 'upper': nan}",
+  "warnings": [
+    "overflow encountered in subtract",
+    "invalid value encountered in subtract",
+    "overflow encountered in subtract",
+    "invalid value encountered in subtract",
+    "overflow encountered in add",
+    "invalid value encountered in subtract"
+  ],
+  "query_at_10_before_append": [
+    0.0
+  ],
+  "query_at_10_after_append": [
+    7.0
+  ],
+  "source_sha256": {
+    "qualification/hcsn_causal/event_stream.py": "0d39332959dd95c77388f3531f67c32ef682aa210a2109c298a97c311a02cddb",
+    "qualification/hcsn_causal/comparison.py": "9771eb4fd4179c449256e4ed42ee2568d3de8fbbbf7cdf35a7bde63f41a4749a"
+  }
+}

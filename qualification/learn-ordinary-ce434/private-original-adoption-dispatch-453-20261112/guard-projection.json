@@ -1,0 +1,1138 @@
+{
+  "schema": "hepta.learn.private-adoption-v8-projection.v1",
+  "status": "STATIC V8 PROJECTION ONLY; ORIGINAL PYTHON AND NATIVE NOT RUN",
+  "parent_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "verifier_blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+  "contract": {
+    "baseline": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+        "baseline": true,
+        "functions": 3
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+        "baseline": true,
+        "functions": 1
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "baseline": true,
+        "functions": 16
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "baseline": true,
+        "functions": 7
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "baseline": true,
+        "functions": 6
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "baseline": true,
+        "functions": 7
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+        "baseline": true,
+        "functions": 7
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "baseline": true,
+        "functions": 5
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+        "baseline": true,
+        "functions": 11
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "baseline": true,
+        "functions": 9
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "baseline": true,
+        "functions": 3
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "baseline": true,
+        "functions": 2
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "baseline": true,
+        "functions": 7
+      }
+    ],
+    "mutations": [
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn fixed_model_prefix(",
+        "marker": "signatures.len() + 1 != snapshot.receipts.len()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn fixed_model_prefix( \"signatures.len() + 1 != snapshot.receipts.len()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn fixed_model_prefix(",
+        "marker": "!(5..=7).contains(&snapshot.receipts.len())",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn fixed_model_prefix( \"!(5..=7).contains(&snapshot.receipts.len())\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn fixed_model_prefix(",
+        "marker": "snapshot.training_no_update_v2().is_some()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn fixed_model_prefix( \"snapshot.training_no_update_v2().is_some()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn fixed_model_prefix(",
+        "marker": "prefix.candidate() != complete.candidate()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn fixed_model_prefix( \"prefix.candidate() != complete.candidate()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn fixed_model_prefix(",
+        "marker": "prefix.next_stage() != Some(Stage::Selection)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn fixed_model_prefix( \"prefix.next_stage() != Some(Stage::Selection)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn from_original_readback(",
+        "marker": "let predecessors = &signatures[..4]",
+        "rejected": true,
+        "reason": "Error: top not unique let predecessors"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn from_original_readback(",
+        "marker": "original.snapshot() != &prefix",
+        "rejected": true,
+        "reason": "Error: top not unique if original.snapshot()"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+        "function": "fn from_original_readback(",
+        "marker": "OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(original, predecessors)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs:fn from_original_readback( \"OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(original, predecessors)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "function": "fn verify_non_model_attestations(",
+        "marker": "signatures.len() > 6",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_non_model_attestations( \"signatures.len() > 6\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "function": "fn verify_non_model_attestations(",
+        "marker": "proposal_count == 0 && signatures.len() > 5",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_non_model_attestations( \"proposal_count == 0 && signatures.len() > 5\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "function": "fn verify_non_model_attestations(",
+        "marker": "proposal_count != 1 || snapshot.receipts.len() < 6",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_non_model_attestations( \"proposal_count != 1 || snapshot.receipts.len() < 6\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "function": "fn verify_non_model_attestations(",
+        "marker": "proposal_count != 1 || snapshot.receipts.len() != 7",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_non_model_attestations( \"proposal_count != 1 || snapshot.receipts.len() != 7\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+        "function": "fn verify_non_model_attestations(",
+        "marker": "verify_signed_actor_separation(&previous.1, current, now)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_non_model_attestations( \"verify_signed_actor_separation(&previous.1, current, now)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "function": "fn take_candidate_selection_channels(",
+        "marker": "self.require_candidate_channel_cut(dataset, training)?",
+        "rejected": true,
+        "reason": "Error: top not unique self.require_candidate_channel_cut(dataset, training)?"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "function": "fn take_candidate_selection_channels(",
+        "marker": "self.selector_initial.take().ok_or(Error::CommitUncertain)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs:fn take_candidate_selection_channels( \"self.selector_initial.take().ok_or(Error::CommitUncertain)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "function": "fn take_candidate_selection_channels(",
+        "marker": "self.version_initial.take().ok_or(Error::CommitUncertain)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs:fn take_candidate_selection_channels( \"self.version_initial.take().ok_or(Error::CommitUncertain)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "function": "fn take_candidate_next_use_channels(",
+        "marker": "self.next_use_initial.take().ok_or(Error::CommitUncertain)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs:fn take_candidate_next_use_channels( \"self.next_use_initial.take().ok_or(Error::CommitUncertain)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+        "function": "fn take_candidate_next_use_channels(",
+        "marker": "self.readiness_initial.take().ok_or(Error::CommitUncertain)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs:fn take_candidate_next_use_channels( \"self.readiness_initial.take().ok_or(Error::CommitUncertain)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "operation.require_owner(self)?",
+        "rejected": true,
+        "reason": "Error: top not unique operation.require_owner(self)?"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "lane.failed = true",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:fn read_model_for_adoption( \"lane.failed = true\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "OriginalCellQ24ModelCommandClientV1::begin_original_model_read(",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:fn read_model_for_adoption( \"OriginalCellQ24ModelCommandClientV1::begin_original_model_read(\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "original.finish().await.map_err(|_| Error::CommitUncertain)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:fn read_model_for_adoption( \"original.finish().await.map_err(|_| Error::CommitUncertain)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "completed.model() != &before",
+        "rejected": true,
+        "reason": "Error: top not unique if completed.model()"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+        "function": "fn read_model_for_adoption(",
+        "marker": "super::adoption::publication_context(self, operation, &completed)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs:fn read_model_for_adoption( \"super::adoption::publication_context(self, operation, &completed)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "CandidateOriginalOperation::begin(self, snapshot).await?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let operation = CandidateOriginalOperation::begin(self, snapshot).await?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "self.read_model_for_adoption(&operation).await?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let completed: OriginalCellQ24ModelReadCompletionV1 =\\n            self.read_model_for_adoption(&operation).await?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "OriginalCircuitModelVersionClientV1::publish_original_version(",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let result = OriginalCircuitModelVersionClientV1::publish_original_version(\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "OriginalCircuitModelSelectionCommandClientV1::execute_selection(",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let result = OriginalCircuitModelSelectionCommandClientV1::execute_selection(\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "CandidateOriginalOperation::close(operation).await",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let closed = CandidateOriginalOperation::close(operation).await\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "require_published_selection(publication, &original)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"require_published_selection(publication, &original)?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn original_selection(",
+        "marker": "closed.selection(completed, original.clone(), publication.clone())",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn original_selection( \"let evidence = closed.selection(completed, original.clone(), publication.clone())\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn await_original_candidate_c(",
+        "marker": "for _ in 0..127",
+        "rejected": true,
+        "reason": "Error: required for _ in 0..127"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn await_original_candidate_c(",
+        "marker": "self.require_adoption_effect(snapshot).await?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn await_original_candidate_c( \"self.require_adoption_effect(snapshot).await?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn await_original_candidate_c(",
+        "marker": "OriginalCircuitCandidateCompletionReadinessClientV1::read_current(readiness)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn await_original_candidate_c( \"let actual = OriginalCircuitCandidateCompletionReadinessClientV1::read_current(readiness)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn await_original_candidate_c(",
+        "marker": "context.authenticate_material(completed.material(), auth::now()?, true)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn await_original_candidate_c( \"context.authenticate_material(completed.material(), auth::now()?, true)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "ready.publication_digest() != publication.publication_digest()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"if ready.publication_digest() != publication.publication_digest()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "ready.source_input_digest() != publication.task_digest()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"|| ready.source_input_digest() != publication.task_digest()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "ready.source_publication_digest().is_none()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"|| ready.source_publication_digest().is_none()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "OriginalCircuitCandidateNextUseCommandClientV1::attest_completed_task(",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"let result = OriginalCircuitCandidateNextUseCommandClientV1::attest_completed_task(\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "OriginalCircuitCandidateNextUseCommandClientV1::readback(",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"Action::Readback => OriginalCircuitCandidateNextUseCommandClientV1::readback(\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "ready.observation() != &original.receipt().observation",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"if ready.observation() != &original.receipt().observation {\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "CandidateOriginalOperation::close(operation).await",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"let closed = CandidateOriginalOperation::close(operation).await\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "function": "fn original_next_use(",
+        "marker": "closed.next_use(completed, selection, original.clone(), publication, ready)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs:fn original_next_use( \"let evidence = closed.next_use(completed, selection, original.clone(), publication, ready)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "signatures.len() != 4",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"if signatures.len() != 4 {\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "context.original_predecessors().as_slice() != signatures.as_slice()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| context.original_predecessors().as_slice() != signatures.as_slice()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "context.verifier().scope_digest() != material.verifier.scope_digest()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| context.verifier().scope_digest() != material.verifier.scope_digest()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "selection.snapshot().receipts.len() != 6",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| selection.snapshot().receipts.len() != 6\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "publication.authority() != AuthorityPosture::DENY_ALL",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| publication.authority() != AuthorityPosture::DENY_ALL\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "verify_signed_actor_separation(generator, &selector, now)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"verify_signed_actor_separation(generator, &selector, now).map_err(Error::Evidence)?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "verify_signed_actor_separation(evaluator, &selector, now)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"verify_signed_actor_separation(evaluator, &selector, now).map_err(Error::Evidence)?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "next_use.model() != model",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"if next_use.model() != model\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "next_use.training_attestation() != operation.training.attestation()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| next_use.training_attestation() != operation.training.attestation()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "next_use.selection_attestation() != selection.attestation()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| next_use.selection_attestation() != selection.attestation()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "next_use.snapshot().receipts.len() != 7",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| next_use.snapshot().receipts.len() != 7\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "completed.observation() != &next_use.receipt().observation",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| completed.observation() != &next_use.receipt().observation\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "completed.publication_digest() != publication.publication_digest()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| completed.publication_digest() != publication.publication_digest()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "completed.source_input_digest() != publication.task_digest()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| completed.source_input_digest() != publication.task_digest()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "completed.source_publication_digest().is_none()",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"|| completed.source_publication_digest().is_none()\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "function": "fn authenticate_original_suffix(",
+        "marker": "verify_signed_actor_separation(&selector, &observer, now)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs:fn authenticate_original_suffix( \"verify_signed_actor_separation(&selector, &observer, now).map_err(Error::Evidence)?;\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+        "function": "fn authenticate_result(",
+        "marker": "completed.material().authenticate_current(fresh)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs:fn authenticate_result( \"completed.material().authenticate_current(fresh)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+        "function": "fn authenticate_result(",
+        "marker": "snapshot.receipts.get(..5) != Some(model.snapshot().receipts.as_slice())",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs:fn authenticate_result( \"model.snapshot().request != snapshot.request\\n                || model.snapshot().owners != snapshot.owners\\n                || snapshot.receipts.get(..5) != Some(model.snapshot().receipts.as_slice())\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+        "function": "fn authenticate_result(",
+        "marker": "OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures)",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs:fn authenticate_result( \"OriginalCellQ24ModelCommandReceiptV1::original_record_for_root(model, &signatures)\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs",
+        "function": "fn authenticate_result(",
+        "marker": "self.authenticate_original_suffix(model, &mut signatures, fresh)?",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_operation.rs:fn authenticate_result( \"self.authenticate_original_suffix(model, &mut signatures, fresh)?\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "self.model.require_original_context(",
+        "rejected": true,
+        "reason": "Error: top not unique let current = self.model.require_original_context("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "self.scope().validate_snapshot(decision)?",
+        "rejected": true,
+        "reason": "Error: top not unique self.scope().validate_snapshot(decision)?"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "self.verifier().trust_digest() != decision.owners.evidence_trust_digest",
+        "rejected": true,
+        "reason": "Error: top not unique if self.verifier().trust_digest()"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "self.verifier().objective_digest() != decision.request.envelope.objective_digest",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/circuit_learning_model_context.rs:fn authenticate_at_current( \"self.verifier().objective_digest() != decision.request.envelope.objective_digest\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "self.verifier().scope_digest() != self.material.freeze_evidence.scope_digest",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/circuit_learning_model_context.rs:fn authenticate_at_current( \"self.verifier().scope_digest() != self.material.freeze_evidence.scope_digest\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_learning_model_context.rs",
+        "function": "fn authenticate_at_current(",
+        "marker": "verify_signed_actor_separation(&verified[2], &verified[3], current)?",
+        "rejected": true,
+        "reason": "Error: top not unique verify_signed_actor_separation(&verified[2], &verified[3], current)?"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "function": "fn require_stage(",
+        "marker": "let Self::Candidate(stages) = self else {",
+        "rejected": true,
+        "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage( \"let Self::Candidate(stages) = self else {\""
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+        "function": "fn require_stage(",
+        "marker": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+        "rejected": true,
+        "reason": "Error: required OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn require_original_adoption_stage(",
+        "marker": "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+        "rejected": true,
+        "reason": "Error: top not unique self.require_adoption_cut(snapshot, stage, Action::Execute)?;"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn require_original_adoption_stage(",
+        "marker": "if self.common.root.is_none() {",
+        "rejected": true,
+        "reason": "Error: top not unique if self.common.root.is_none() {"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "function": "fn require_original_adoption_stage(",
+        "marker": "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));",
+        "rejected": true,
+        "reason": "Error: required return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+      }
+    ],
+    "injections": [
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "injection": "\nfn bypass() { UnixStream::connect(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden UnixStream::connect"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "injection": "\nfn bypass() { SigningKey::generate(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden SigningKey"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "injection": "\nfn bypass() { channel.next = 1; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden channel.next = 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs",
+        "injection": "\nfn bypass() { execution_requested = false; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden execution_requested = false"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "injection": "\nfn bypass() { UnixStream::connect(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden UnixStream::connect"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "injection": "\nfn bypass() { SigningKey::generate(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden SigningKey"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "injection": "\nfn bypass() { channel.next = 1; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden channel.next = 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_next_use.rs",
+        "injection": "\nfn bypass() { execution_requested = false; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden execution_requested = false"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "injection": "\nfn bypass() { UnixStream::connect(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden UnixStream::connect"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "injection": "\nfn bypass() { SigningKey::generate(); }\n",
+        "rejected": true,
+        "reason": "Error: forbidden SigningKey"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "injection": "\nfn bypass() { channel.next = 1; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden channel.next = 1"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_suffix.rs",
+        "injection": "\nfn bypass() { execution_requested = false; }\n",
+        "rejected": true,
+        "reason": "Error: forbidden execution_requested = false"
+      }
+    ],
+    "python_executed": false,
+    "native_executed": false
+  },
+  "new_resident_mutations": [
+    {
+      "path": "src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "let Self::Candidate(stages) = self else {",
+      "replacement": "",
+      "label": "STAGES",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage( \"let Self::Candidate(stages) = self else {\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "return Err(Error::WrongScope);",
+      "replacement": "",
+      "label": "STAGES",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage( \"return Err(Error::WrongScope);\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage(",
+      "replacement": "",
+      "label": "STAGES",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: required OriginalCellQ24CandidateStageOwnersV1::require_original_adoption_stage("
+    },
+    {
+      "path": "src/authority_host_learning_resident_stages.rs",
+      "function": "fn require_stage(",
+      "marker": "stages, snapshot, stage,",
+      "replacement": "",
+      "label": "STAGES",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage( \"stages, snapshot, stage\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "self.require_adoption_cut(snapshot, stage, Action::Execute)?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: top not unique self.require_adoption_cut(snapshot, stage, Action::Execute)?;"
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "Action::Execute",
+      "replacement": "Action::Readback",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: top not unique self.require_adoption_cut(snapshot, stage, Action::Execute)?;"
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "if self.common.root.is_none() {",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: top not unique if self.common.root.is_none() {"
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_original_adoption_stage(",
+      "marker": "return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: required return Err(Error::OwnerUnavailable(\"fresh resident continuation\"));"
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "self.require_live_deadline()?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"self.require_live_deadline()?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "model_cut(self, snapshot)?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"model_cut(self, snapshot)?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "(Stage::Selection, Action::Execute) => 5,",
+      "replacement": "(Stage::Selection, Action::Execute) => 6,",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"(Stage::Selection, Action::Execute) => 5,\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "(Stage::NextUse, Action::Execute) => 6,",
+      "replacement": "(Stage::NextUse, Action::Execute) => 5,",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"(Stage::NextUse, Action::Execute) => 6,\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "snapshot.receipts.len() != expected",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"if snapshot.receipts.len() != expected\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "action == Action::Execute",
+      "replacement": "action == Action::Readback",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"|| action == Action::Execute && (\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "self.common.origin != Origin::Fresh",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"self.common.origin != Origin::Fresh\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"|| LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?.next_stage()\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "!= Some(stage)",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"!= Some(stage)\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_cut(",
+      "marker": "_ => return Err(Error::WrongScope),",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_cut( \"_ => return Err(Error::WrongScope),\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "owners.training_prefix(snapshot)?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"owners.training_prefix(snapshot)?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "if !(5..=7).contains(&snapshot.receipts.len()) {",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"if !(5..=7).contains(&snapshot.receipts.len()) {\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "owners.common.material.initial.clone(),",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"owners.common.material.initial.clone(),\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "for receipt in &snapshot.receipts[..5] {",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"for receipt in &snapshot.receipts[..5] {\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "cut.record(receipt.clone(), receipt.observed_unix_seconds)?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"cut.record(receipt.clone(), receipt.observed_unix_seconds)?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "if cut.next_stage() != Some(Stage::Selection) {",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"if cut.next_stage() != Some(Stage::Selection) {\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn model_cut(",
+      "marker": "owners.common.material.scope.validate_snapshot(cut.snapshot())?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn model_cut( \"owners.common.material.scope.validate_snapshot(cut.snapshot())?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>",
+      "marker": "matches!(stage, Stage::Selection | Stage::NextUse)",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs \"matches!(stage, Stage::Selection | Stage::NextUse)\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>",
+      "marker": "snapshot.training_no_update_v2().is_none()",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs \"snapshot.training_no_update_v2().is_none()\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn execute_stage<'a>",
+      "marker": "return Err(Error::OwnerUnavailable(\n                        \"original Candidate Model, Selector, version and FinalUse capabilities are required\",\n                    ));",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs \"LearningIterationStageOwnerPortsV1::execute_stage(&self.common, snapshot, stage).await\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn receipt_attestation<'a>",
+      "marker": "return Err(Error::OwnerUnavailable(\n                        \"original Candidate Model and adoption attestation capabilities are required\",\n                    ));",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs \"Err(Error::OwnerUnavailable(\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn require_live_deadline(",
+      "marker": "Instant::now() >= self.end",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: top not unique if Instant::now() >= self.end"
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_owners.rs",
+      "function": "fn require_live_deadline(",
+      "marker": "return Err(Error::DeadlineExceeded);",
+      "replacement": "",
+      "label": "CANDIDATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs:fn require_live_deadline( \"return Err(Error::DeadlineExceeded)\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_runtime.rs",
+      "function": "fn continue_original(",
+      "marker": "gate.begin(&predecessor, stage).await?",
+      "replacement": "",
+      "label": "RUNTIME",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original( \"gate.begin(&predecessor, stage).await?\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_runtime.rs",
+      "function": "fn continue_original(",
+      "marker": "ResidentOriginalStageOwnersV3::execute_original_stage(",
+      "replacement": "",
+      "label": "RUNTIME",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original( \"ResidentOriginalStageOwnersV3::execute_original_stage(\\n            stages.as_ref(), &predecessor, stage,\\n        )\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_runtime.rs",
+      "function": "fn continue_original(",
+      "marker": "gate.cancellation().cancelled()",
+      "replacement": "",
+      "label": "RUNTIME",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original( \"gate.cancellation().cancelled()\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_runtime.rs",
+      "function": "fn continue_original(",
+      "marker": "RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?",
+      "replacement": "",
+      "label": "RUNTIME",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original( \"RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "!self.inner.active.load(Ordering::Acquire)",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"!self.inner.active.load(Ordering::Acquire)\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "self.inner.cancellation.is_cancelled()",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"predecessor.request != profile.initial.request\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "predecessor.request != profile.initial.request",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"predecessor.request != profile.initial.request\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "predecessor.owners != profile.initial.owners",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"predecessor.owners != profile.initial.owners\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "profile.scope.validate_snapshot(predecessor).is_err()",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"profile.scope.validate_snapshot(predecessor).is_err()\""
+    },
+    {
+      "path": "src/authority_host_learning_resident_gate.rs",
+      "function": "fn local(",
+      "marker": "result.is_err() || self.inner.cancellation.is_cancelled()",
+      "replacement": "",
+      "label": "GATE",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local( \"result.is_err() || self.inner.cancellation.is_cancelled()\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_effect(",
+      "marker": "self.require_live_deadline()?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_effect( \"self.require_live_deadline()?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_effect(",
+      "marker": "self.common.root.as_ref().ok_or(Error::CommitUncertain)?;",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_effect( \"let gate = self.common.root.as_ref().ok_or(Error::CommitUncertain)?;\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_effect(",
+      "marker": "RootResidentLearningEffectGateV3::require_current(",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_effect( \"RootResidentLearningEffectGateV3::require_current(\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "fn require_adoption_effect(",
+      "marker": "gate, snapshot, &self.common.material.scope,",
+      "replacement": "",
+      "label": "ADOPTION",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: order missing codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs:fn require_adoption_effect( \"gate, snapshot, &self.common.material.scope,\""
+    },
+    {
+      "path": "src/cell_q24_candidate_stage_adoption.rs",
+      "function": "whole source unique private function",
+      "marker": "pub(crate) fn require_original_adoption_stage(",
+      "replacement": "pub fn require_original_adoption_stage(",
+      "baseline_pass": true,
+      "rejected": true,
+      "reason": "Error: required pub(crate) fn require_original_adoption_stage("
+    }
+  ],
+  "expected_counts": {
+    "contract_deletions": 74,
+    "private_injections": 12,
+    "resident_controls": 46
+  },
+  "ordinary_acceptance": 0
+}

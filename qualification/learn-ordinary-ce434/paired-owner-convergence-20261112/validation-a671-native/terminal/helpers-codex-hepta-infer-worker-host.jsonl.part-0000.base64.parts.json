@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64",
+  "archive_bytes": 524289,
+  "archive_sha256": "4e36326383cd5048261b003c93134d53fafd0c3f064113c91161a7757ff178e2",
+  "original_repository_path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal/helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64",
+  "original_git_commit": "09408731efbdad70742a2ac9679f23ad4650042e",
+  "original_git_blob": "273118cfb5f3ac46cb08e7bcc9ebb3942157bdcf",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "616af97da1efd182327e7c684a292530d7734677e15cfeb337a45862cf59c4b8"
+    },
+    {
+      "path": "helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64.part001",
+      "offset": 500000,
+      "bytes": 24289,
+      "sha256": "6d2b553c9feaf9f38376ed240391b8da6d434f9eb687a33e5fdac42ac015e190"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-a671-native/terminal",
+    "command": "( set -C; cat helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64.part000 helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64.part001 > helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64 )",
+    "verification_command": "printf '%s  %s\\n' 4e36326383cd5048261b003c93134d53fafd0c3f064113c91161a7757ff178e2 helpers-codex-hepta-infer-worker-host.jsonl.part-0000.base64 | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../../../../learn-evidence-storage-followup-20261115/README.md"
+  },
+  "storage_only": true,
+  "original_bytes_unchanged": true
+}

@@ -1,0 +1,23 @@
+test_duplicate_attempt_consumes_its_allowed_clock_slot (test_review_generation_fence.DuplicateReviewedGenerationTests.test_duplicate_attempt_consumes_its_allowed_clock_slot) ... ok
+test_evidence_denied_can_receive_first_review_when_new_evidence_arrives (test_review_generation_fence.DuplicateReviewedGenerationTests.test_evidence_denied_can_receive_first_review_when_new_evidence_arrives) ... ok
+test_same_generation_across_separate_lineages_remains_independent (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_across_separate_lineages_remains_independent) ... ok
+test_same_generation_cannot_be_reviewed_twice_after_clock_gap (test_review_generation_fence.DuplicateReviewedGenerationTests.test_same_generation_cannot_be_reviewed_twice_after_clock_gap) ... ok
+test_cross_lineage_generations_are_independent (test_cadence_generation.GenerationClockTests.test_cross_lineage_generations_are_independent) ... ok
+test_equal_generation_retry_is_not_auto_promoted (test_cadence_generation.GenerationClockTests.test_equal_generation_retry_is_not_auto_promoted) ... ok
+test_rollback_after_denied_opportunity_cannot_be_replayed (test_cadence_generation.GenerationClockTests.test_rollback_after_denied_opportunity_cannot_be_replayed) ... ok
+test_rollback_after_review_cannot_be_reviewed (test_cadence_generation.GenerationClockTests.test_rollback_after_review_cannot_be_reviewed) ... ok
+test_rollback_on_clock_denied_intermediate_is_still_rejected (test_cadence_generation.GenerationClockTests.test_rollback_on_clock_denied_intermediate_is_still_rejected) ... ok
+test_clock_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_clock_denied_event_still_advances_observed_sequence) ... ok
+test_evidence_denied_event_still_advances_observed_sequence (test_cadence_sequence_frontier.SequenceFrontierTests.test_evidence_denied_event_still_advances_observed_sequence) ... ok
+test_lineage_interleaving_and_equal_sequence_remain_valid (test_cadence_sequence_frontier.SequenceFrontierTests.test_lineage_interleaving_and_equal_sequence_remain_valid) ... ok
+test_empty_feedback_cannot_bypass_invalid_actions (test_sparse_no_feedback.SparseNoFeedbackTests.test_empty_feedback_cannot_bypass_invalid_actions) ... ok
+test_future_receipt_is_forensic_only_not_frozen_causal_feature (test_sparse_no_feedback.SparseNoFeedbackTests.test_future_receipt_is_forensic_only_not_frozen_causal_feature) ... ok
+test_no_feedback_is_valid_missing_not_success_for_all_arms (test_sparse_no_feedback.SparseNoFeedbackTests.test_no_feedback_is_valid_missing_not_success_for_all_arms) ... ok
+test_observed_zero_is_not_absent_feedback (test_sparse_no_feedback.SparseNoFeedbackTests.test_observed_zero_is_not_absent_feedback) ... ok
+test_receipt_without_matching_action_is_not_absence (test_sparse_no_feedback.SparseNoFeedbackTests.test_receipt_without_matching_action_is_not_absence) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.001s
+
+OK
+GREEN_COST wall=0.03 user=0.03 sys=0.00 rss_kb=23836 exit=0

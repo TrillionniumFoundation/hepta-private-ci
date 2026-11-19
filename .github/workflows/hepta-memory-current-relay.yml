@@ -1,0 +1,278 @@
+name: Hepta memory current evidence acknowledgment before withdrawal
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_research:
+        description: Run this bounded research workflow, including its declared compute and downloads
+        type: boolean
+        required: true
+        default: false
+      accept_model_terms:
+        description: "Run the pinned SmolLM2-135M-Instruct separate-runner relay study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: memory-current-relay-${{ github.sha }}-${{ github.run_attempt }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  OPENBLAS_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  source-owner:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.run_research == true
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify source and install registered CPU runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
+          python -m pip check
+      - name: Acquire the pinned source decoder for the requested study
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/base-a" --download
+      - name: Qualify control-plane and live source composition at this source SHA
+        run: |
+          set -euo pipefail
+          export PYTHONPATH="$PWD/scripts/memory_cell_distributed:$PWD/scripts/memory_cell_network:$PWD/scripts/memory_cell_service:$PWD/scripts/memory_cell:$PWD/scripts/memory_cell_system"
+          python -B -m unittest discover -s scripts/memory_cell_distributed -p relay_current_tests.py -v
+          python -B -m unittest discover -s scripts/memory_cell_distributed -p test_relay_contract.py -v
+      - name: Train source-local cell, read controls and fence former placement
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py source-prepare --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a" --secret-file "$RUNNER_TEMP/relay-secrets/source.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        with:
+          name: memory-multihost-offer-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/out-offer/offer.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Serve exact granted evidence while source is current
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py source-evidence --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a" --secret-file "$RUNNER_TEMP/relay-secrets/source.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        with:
+          name: memory-multihost-current-evidence-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/out-current-evidence/current-evidence.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Observe exact target acknowledgment while current, then actually revoke
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py source-ack-withdraw --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a" --secret-file "$RUNNER_TEMP/relay-secrets/source.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        with:
+          name: memory-multihost-withdrawal-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/out-withdrawal/withdrawal.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Evaluate frozen mechanism gates and preserve negative recall results
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py evaluate --root "$RUNNER_TEMP/source-evidence" --model "$RUNNER_TEMP/base-a"
+      - name: Retain source-side evidence and raw failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-source-evidence-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify checkout remained unchanged
+        if: always()
+        run: git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14
+
+  target-worker:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.run_research == true && inputs.accept_model_terms == true
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Install independent base and registered runtime
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt 'cryptography==50.0.2'
+          python -m pip check
+          python -B scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/base-b" --download
+      - name: Import exact checkpoint and read in a fresh decoder process
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_trial.py target-read --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+          python -B scripts/memory_cell_distributed/relay_current.py target-ready --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b" --secret-file "$RUNNER_TEMP/relay-secrets/target.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-ready-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/out-current-ready/ready.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Verify current evidence and acknowledge exact signed bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py target-ack --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b" --secret-file "$RUNNER_TEMP/relay-secrets/target.key"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-current-ack-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/out-current-ack/current-ack.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Observe withdrawal without entering model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py target-withdraw --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+      - name: Fresh owner rejects old signed source cut after restart
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_distributed/relay_current.py target-finish --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b"
+          python -B scripts/memory_cell_distributed/relay_evaluate.py --root "$RUNNER_TEMP/target-evidence" --model "$RUNNER_TEMP/base-b" --inventory-only
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-finished-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/out-current-finished/finished.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain target evidence and raw failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-multihost-target-evidence-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/target-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify checkout remained unchanged
+        if: always()
+        run: git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

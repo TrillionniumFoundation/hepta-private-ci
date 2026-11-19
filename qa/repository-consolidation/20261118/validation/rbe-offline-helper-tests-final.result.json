@@ -1,0 +1,9 @@
+{
+  "workflow_yaml_parsed": true,
+  "existing_jobs_preserved_byte_for_byte": true,
+  "publication_permissions_and_guards_unchanged": true,
+  "exact_workflow_command": "set -euo pipefail\npython3 -B .github/rbe-openssh/helper_regressions.py .github/rbe-openssh -v\npython3 -B .github/rbe-openssh/tool_supply_tests.py .github/rbe-openssh -v\npython3 -B -m unittest discover -s scripts -p test_qualify_rbe_openssh.py -v\n",
+  "command_sha256": "63e43c02b0b7387c889d51998db6be010d5f73b3d233ac3c6ddb8593328b4743",
+  "exit_code": 0,
+  "elapsed_seconds": 0.5240576267242432
+}

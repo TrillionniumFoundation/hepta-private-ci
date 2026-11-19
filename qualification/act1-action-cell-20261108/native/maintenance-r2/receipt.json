@@ -1,0 +1,57 @@
+{
+  "base": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+  "ended_utc": "2026-11-08T10:54:02.929362+00:00",
+  "learned_hierarchy_benefit_proved": false,
+  "maintenance_patch_sha256": "e68bdf88a4d90899a86acc174cd03b7be215315b9db91867a05a5ddc99ea3f03",
+  "nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+  "phase": "maintenance",
+  "production_qualified": false,
+  "rust_version": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "schema": "hepta.act1.native-gate.v1",
+  "source_after": {
+    "head": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "status": "M  codex-rs/hepta-automation/BUILD.bazel\nA  codex-rs/hepta-automation/src/action_skill.rs\nA  codex-rs/hepta-automation/src/action_skill_driver.rs\nA  codex-rs/hepta-automation/src/action_skill_tests.rs\nM  codex-rs/hepta-automation/src/authorized_effect.rs\nM  codex-rs/hepta-automation/src/lib.rs\nA  codex-rs/hepta-automation/tests/action_skill_act1.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/README.md\nA  codex-rs/hepta-automation/tests/action_skill_support/baselines.rs\nAM codex-rs/hepta-automation/tests/action_skill_support/destination.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/harness.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/mod.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/observer.rs\nM  codex-rs/hepta-automation/tests/authorized_effect.rs\nA  qualification/act1-action-cell-20261108/README.md",
+    "tree": "aa2afbb8eaa8b0c4d9e5c3c93abf03fa7cba4951",
+    "unstaged": "codex-rs/hepta-automation/tests/action_skill_support/destination.rs"
+  },
+  "source_before": {
+    "head": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "status": "M  codex-rs/hepta-automation/BUILD.bazel\nA  codex-rs/hepta-automation/src/action_skill.rs\nA  codex-rs/hepta-automation/src/action_skill_driver.rs\nA  codex-rs/hepta-automation/src/action_skill_tests.rs\nM  codex-rs/hepta-automation/src/authorized_effect.rs\nM  codex-rs/hepta-automation/src/lib.rs\nA  codex-rs/hepta-automation/tests/action_skill_act1.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/README.md\nA  codex-rs/hepta-automation/tests/action_skill_support/baselines.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/destination.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/harness.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/mod.rs\nA  codex-rs/hepta-automation/tests/action_skill_support/observer.rs\nM  codex-rs/hepta-automation/tests/authorized_effect.rs\nA  qualification/act1-action-cell-20261108/README.md",
+    "tree": "aa2afbb8eaa8b0c4d9e5c3c93abf03fa7cba4951",
+    "unstaged": ""
+  },
+  "started_utc": "2026-11-08T10:53:53.943510+00:00",
+  "steps": [
+    {
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log_bytes": 234,
+      "log_sha256": "ab1383152f5a94f7723bab683d76c595a03838ac31df93c856ed58fda72228eb",
+      "name": "clippy",
+      "wall_seconds": 8.745437759
+    },
+    {
+      "argv": [
+        "just",
+        "fmt",
+        "--base",
+        "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5"
+      ],
+      "exit_code": 0,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "name": "fmt",
+      "wall_seconds": 0.1767537
+    }
+  ],
+  "success": true
+}

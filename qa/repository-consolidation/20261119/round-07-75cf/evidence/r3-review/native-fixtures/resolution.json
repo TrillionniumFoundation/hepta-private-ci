@@ -1,0 +1,269 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "8d1c0f8603f988dfcef77e808183931f18c4aab8",
+  "merge_base": "8399a2f23eee0bd7c2e84e236394e31c98af799a",
+  "genuine_merge_tree_preview": "81218cdeca48d0647a202b09ddc0748a82929a88",
+  "genuine_merge_exit": 1,
+  "resolved_tree": "60103d01f8b8c852eeb7b321fbd2c07543f7c6de",
+  "same_entire_tree": false,
+  "changed_paths": [
+    "M\tcodex-rs/hepta-fleet/src/registry_tests.rs",
+    "A\tcodex-rs/utils/cargo-bin/tests/cargo_bin.rs",
+    "M\tscripts/hepta_ci_dependencies.py",
+    "M\tscripts/test_hepta_ci_exec.py",
+    "M\tscripts/test_hepta_native_feedback.py"
+  ],
+  "resolutions": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current creates and canonicalizes fleet root before the HeptaFleetRoot guard. Provider PathUri round trip already defines the exact granted workspace digest and physical-send path, and additionally asserts directory existence and canonical equality. Moving the final URI rather than cloning it preserves ownership and values; no later use requires a clone.",
+      "selected_blob": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Incoming changes only test error propagation: Result-returning fixtures and ? versus existing unwrap_or_else(panic with diagnostic). Both fail on the same errors; current admit_host checks exact Ok(()). Exact revoked-error equality, live authority witness fields and mutation-binding assertions remain. Preserve the current verified dispatch-time production clock behavior and its separate regressions.",
+      "selected_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already uses a private TempDir and the durable evidence pool rather than in-memory SQLite. Keep SqliteConfig::new_for_testing to isolate fixtures from ambient configuration; incoming from_sqlite_home would weaken this newer test isolation. Both run compiled migrations and the same independently derived schema/weak-trigger rejection assertions.",
+      "selected_blob": "a067480aa9109937c89f91bed07d7db01730751a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already orders migration versions through the same sorted subquery before group_concat. Retain the accurate canonical migration inventory 1..19; incoming 1..15 is obsolete because migrations 16..19 are in the current tree.",
+      "selected_blob": "d15fdb04f145650e6e0dcbe9ff606d66080b15af"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Both emit legacy RestartQueued plus typed AutomaticRestartQueued with the durably claimed attempt. Both exhausted paths clear restart scheduling, set the max attempt, emit AutomaticRestartBudgetExhausted and return the same RestartBudgetExhausted fault. Conflicting changes are duplicate explanatory comments; keep current code and comments once.",
+      "selected_blob": "fa2fc5798fa4510a30394acb540cbac432436574"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current asserts the exact whole TickReport including the one correct agent and exact formatted RestartBudgetExhausted message, stronger than incoming length/agent/substring assertions; preserve all existing backoff, attempt, event and continued-exhaustion assertions.",
+      "selected_blob": "9a99befc19418c07df42cb06a25dac56175e77fb"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current asserts exact exhausted TickReport after repeated supervisor recovery, covering incoming one-fault/agent/message intent more precisely, and retains persisted budget assertions.",
+      "selected_blob": "292de4246bdcc6d727e33d1d037c175814c51a77"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already removed assert_cmd from production dependencies and has pretty_assertions/tempfile dev dependencies. Adapt the new test to std::process::Command, whose output() is all it uses, so no assert_cmd or dependency-lock change is needed.",
+      "selected_blob": "191a9d561bf0ed2b2b52a522558a454bb5a66477"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current fallible metadata-only lookup supersedes the incoming bounded sibling fallback: it preserves primary/underscore Cargo and Bazel metadata precedence, supports Nextest metadata, rejects invalid explicit paths, and returns NotFound without filesystem guessing. README explicitly documents that contract. Do not regress current behavior to the historical sibling inference; adapt the new scenario to assert its rejection.",
+      "selected_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "decision": "compose current canonical fixture with incoming exact-path assertion",
+      "reason": "Preserve current overlap-oracle intent and add the missing assertion that WorkspaceBinding stores the exact canonical native path. No production overlap or symlink rule changes.",
+      "selected_blob": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/tests/cargo_bin.rs",
+      "decision": "preserve incoming real-process lookup scenarios with current contract",
+      "reason": "All 11 scenario intents retained: undeclared Bazel metadata/sibling, declared primary/underscore, invalid-primary precedence, missing/manifest-only/PATH-only metadata and a subsequent valid helper. Historical cargo sibling success now asserts NotFound to enforce the current documented policy. Check all four Cargo/Nextest env keys and remove all such keys only on child Command; never mutate the parent test process. Use std::process::Command instead of adding assert_cmd. Existing lookup_result.rs retains the separate 10 Nextest/precedence cases.",
+      "selected_blob": "e39ec5d7b2970c40f89192ffec821d90d4fbfe6e"
+    },
+    {
+      "path": "scripts/hepta_ci_dependencies.py",
+      "decision": "preserve clean automatic merge",
+      "reason": "Preserve incoming stricter -D warnings for the actual scoped all-targets Clippy command; no CI suppression, scope reduction, or timeout relaxation.",
+      "selected_blob": "45c63596e1abd3c6f0a9e3b491b9f6eb1b3e9bc6"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "decision": "preserve clean automatic merge",
+      "reason": "Preserve exact command-binding regression requiring -D warnings.",
+      "selected_blob": "5c672aa6b66bbaa480eeece18fcb0d37b9fec79c"
+    },
+    {
+      "path": "scripts/test_hepta_native_feedback.py",
+      "decision": "preserve clean automatic merge and required fixture dependency",
+      "reason": "Preserve updated regression for the real blocking-ci outer pull_request trigger and exact source/base scope invocation; preserve real Git-fixture checks that build inputs select the whole workspace while script-only changes retain their derived checks. The first real test run exposed a missing fixture dependency: the current execution planner imports hepta_ci_module_paths.py, so copy that exact production helper alongside the existing planner in the disposable Git fixture. This restores the real command path without faking or bypassing it.",
+      "selected_blob": "724f3e9651e4f5daa3d0606575731ba8c81223b1"
+    }
+  ],
+  "verification_status": "SCOPED_VERIFIED: 39 Python tests, 3 native tests and two-package all-targets -D warnings Clippy passed. Rust formatting ran without byte changes; the remaining three Python files were formatted successfully by the locked Ruff 0.15.13 in an independent offline environment, with all bytes unchanged. Full combined-candidate CI remains parent-owned.",
+  "validation": {
+    "python_ci_exec": {
+      "passed": 15,
+      "failed": 0,
+      "seconds": 4.49,
+      "log": "python-ci-exec.log"
+    },
+    "python_native_feedback": {
+      "passed": 24,
+      "failed": 0,
+      "seconds": 12.906,
+      "log": "python-native-feedback-run2.log",
+      "initial_failure": "8 fixtures lacked the currently required hepta_ci_module_paths.py; copied the exact production module into fixtures and reran all 24, no suppressed failures"
+    },
+    "native": {
+      "job": "1a1f4a390c4-ffbe-10ba",
+      "nextest_run_id": "fab0dfb1-e2b8-416f-b6af-4fcdd8774b8d",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "filtered_out": 45,
+      "subprocess_scenarios": {
+        "new_optional_lookup": 11,
+        "existing_lookup_nextest_precedence": 10
+      },
+      "actual_original_preimages_equal_base": {
+        "codex-rs/hepta-fleet/src/registry_tests.rs": {
+          "expected_base_sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+          "actual_native_original_sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/Cargo.toml": {
+          "expected_base_sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+          "actual_native_original_sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/BUILD.bazel": {
+          "expected_base_sha256": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+          "actual_native_original_sha256": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/src/lib.rs": {
+          "expected_base_sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+          "actual_native_original_sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/tests/lookup_result.rs": {
+          "expected_base_sha256": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+          "actual_native_original_sha256": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": {
+          "expected_base_sha256": null,
+          "actual_native_original_sha256": null,
+          "exact_match": true
+        }
+      },
+      "postimage_hashes_match_local": true,
+      "original_source_unchanged": true,
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-utils-cargo-bin",
+        "-p",
+        "codex-hepta-fleet",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-j",
+        "4",
+        "-E",
+        "package(codex-utils-cargo-bin) | test(workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths)"
+      ],
+      "native_source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+      "build_seconds": 1.6,
+      "test_seconds": 0.011,
+      "initial_failure": "Compile-only first attempt lacked docs/modules/MODULES.json include_str fixture; supplied exact base blob, then reran unchanged tests"
+    },
+    "clippy": {
+      "job": "1a1f4a6a717-ffbe-10c9",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "codex-utils-cargo-bin",
+        "-p",
+        "codex-hepta-fleet",
+        "--locked",
+        "--all-targets",
+        "--profile",
+        "dev-small",
+        "-j",
+        "4",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 8.68,
+      "whole_job_exit": 1,
+      "whole_job_failure": "After Clippy passed, formatter setup tried to copy absent historical evidence files. Exact base fixtures were supplied in later format-only jobs."
+    },
+    "format": {
+      "job": "1a1f4aaf8f1-ffbe-10e2",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit": 1,
+      "rust_formatter_passed": true,
+      "postimage_bytes_changed": false,
+      "failure": "Python scripts formatter could not launch uv",
+      "tests_not_rerun_after_format": true,
+      "python_formatter_completion": {
+        "evidence": "/workspace/scratch/75cf41417dcc/joint-h3-review/protected-composition/format-offline-result.json",
+        "evidence_sha256": "892c3e462bbbae8d89d5e2091933ff6748265b2e279eed592d3c3d5a54548da9",
+        "exit": 0,
+        "stdout": "3 files left unchanged\n",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--project",
+          "scripts",
+          "ruff",
+          "format",
+          "scripts/hepta_ci_dependencies.py",
+          "scripts/test_hepta_ci_exec.py",
+          "scripts/test_hepta_native_feedback.py"
+        ],
+        "postimage_sha256": {
+          "scripts/hepta_ci_dependencies.py": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+          "scripts/test_hepta_ci_exec.py": "aad462e4bef23dc73804bf576dbe47c178238ba32b7145340a03646c34413aec",
+          "scripts/test_hepta_native_feedback.py": "45110c2364d1e4c3946f1ef6e03d0fac195ada0805ed3a70242b34723c760ecd"
+        },
+        "no_tests_repeated": true
+      }
+    },
+    "git_diff_check": true,
+    "full_combined_candidate_ci": false,
+    "platform_scope": "Native Linux Cargo/Nextest; no new Windows/macOS or Bazel runfiles manifest native qualification claimed."
+  },
+  "evidence_sha256": {
+    "format-status.json": "d4df90220d3c7aef8cfb2390a89db4f029b04a5274a42b040c912c22632ab573",
+    "native-receipt.json": "3f6f52d428ecfefce8d06f359a029b968113ed8d6239435a136ec07d3120a0fd",
+    "native.stdout.log": "354b72d022fa1b3c5aab285f4cb12e3edc2d4674077e391fb814a88b05351385",
+    "format.stdout.log": "05e98b1fd6cac87140525c13d320cf9949d7c88ce0c1d3bdb609a0c8dc02e718",
+    "native-run1.stdout.log": "7b102676b4c25e378cb92a537a7660bcc552d03676a305ce7e93e617667813b9",
+    "python-ci-exec.log": "a4e5e005bfebe21540dd9a3e5a460c9188722990d47bdef1995ccfdca0ce72a4",
+    "format.stderr.log": "a43d0a67cef068dd02e48a179c5f5a09bb4ae355cd21667863d2a8774fa3cded",
+    "native-run1.stderr.log": "eb4794e783633062ae7817f93532b07fb20db70c23231d5187351cf82956b2ac",
+    "python-native-feedback-run2.log": "e00e249ad0d257a40b8b401ee6655ddf2fd70bd8dda476a493cffc4ac2a0fcda",
+    "clippy.stdout.log": "6d17ec744ed5d2dab1cadfa799f991846c8f3fe3d155bc8daff4ef47b6921ec3",
+    "clippy.stderr.log": "abb0852f04e6a763ec46eb929422b7a876d1e754a9a3dc9f6292015f503c3ce1",
+    "maintenance-receipt.json": "d1d6f76628369cf6fc6273444ec78973f55d6a363c2f280b2e86b1becb497df5",
+    "python-native-feedback.log": "ba13e3e80e84006359d2d9f4f75a2de978fc7d93f5181e631e9c42c9be7def62",
+    "native-status.json": "42b792340f8b87309d60acfac6a095993ddf2d88d873d59003568bb9718d1165",
+    "native.stderr.log": "a99ecbc1a1bc7afea3ceab93571a35e388c49e3066403d4a211f6fd2d9d9667b"
+  }
+}

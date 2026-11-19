@@ -1,0 +1,390 @@
+{
+  "capacity": {
+    "known_exclusion_union": 69,
+    "known_exclusions_only_counterfactual": {
+      "extra_pilot_groups_removed": 2,
+      "mem67_union_upper_bound": 18
+    },
+    "legacy_family_complete_upper_bound": 16,
+    "not_in_known_union_upper_bound": 16,
+    "upper_bound_by_original_role": {
+      "development": 7,
+      "retention_validation": 9
+    },
+    "verified_unseen_capacity": null,
+    "verified_unseen_status": "UNKNOWN"
+  },
+  "catalog_pin": {
+    "bytes": 1410133,
+    "path": "/home/qq/ndu-real-materials-20261107-audit-bffe40c2/pilot-catalog.json",
+    "sha256": "8433d0c026b0818f8e60ee2f0ae7e7b57c57ae35cbb72cf212b89895b97d0904",
+    "verified": true,
+    "version": [
+      66306,
+      49309256,
+      1410133,
+      1794055079027838200,
+      1794055079027838200
+    ]
+  },
+  "execution": {
+    "new_actor_executions": 0,
+    "new_model_calls": 0,
+    "new_reference_content_files_opened": 0,
+    "new_source_identities": 0,
+    "production_adoption": false,
+    "roles_reassigned": 0,
+    "scientific_acceptance": "HOLD",
+    "thresholds_lowered": false
+  },
+  "inventory": {
+    "candidate_role_groups": 81,
+    "cases": 2199,
+    "existing_working_state_candidate_roles": [
+      "development",
+      "retention_validation"
+    ],
+    "known_excluded_candidate_role_groups": 65,
+    "known_exclusion_ids_outside_catalog": [
+      "merchant-d93e19ca396d00036f1a51d5"
+    ],
+    "roles": {
+      "development": 54,
+      "retention_validation": 27,
+      "train": 97
+    },
+    "source_groups": 178,
+    "train_role_groups_ineligible_for_existing_released_role_protocol": 97
+  },
+  "observed_at_utc": "2026-11-11T05:32:15.447672+00:00",
+  "protocol_scope": {
+    "episodic_E": {
+      "E_capacity_adequacy": "UNKNOWN_PENDING_SEPARATE_PROTOCOL_AND_COMPLETE_EXPOSURE",
+      "groups_per_role": null,
+      "minimum_source_groups": null,
+      "new_sources_and_new_sessions_required": true,
+      "numeric_minimum_status": "NOT_SPECIFIED_IN_INSPECTED_E_GATE",
+      "old_working_state_minima_transferred": false,
+      "per_contrast_one_sided_alpha": 0.0125,
+      "primary_baseline_contrasts": 4,
+      "separate_pre_execution_protocol_required": true,
+      "source": {
+        "field": "/real_successor_task_gate",
+        "path": "inputs/protocol/ACCEPTANCE.json",
+        "sha256": "d77624e729b02213eec9bc808b94ee27c839a66883d63ede3455a3ca4f6f14ea"
+      }
+    },
+    "historic_mem6_retention_allocation": {
+      "groups_per_role": {
+        "development": 16,
+        "retention_validation": 4
+      },
+      "minimum_additional_development_for_same_16_4_allocation": 9,
+      "retention_validation_cannot_be_relabelled_development": true,
+      "source": {
+        "archive_sha256": "f77acd9feb27fda3f8000b0d089dbdbe258a4adfb7acedcb2e0cd590cc4f361e",
+        "corroborating_launcher": {
+          "field": "prepare(): retention request groups_per_role",
+          "path": "inputs/launch.py",
+          "sha256": "35a5906b50e1371d82272468fbc184b06cb24d46e87b15cb81266fe36e1850de"
+        },
+        "corroborating_plan_sha256": "a8618ffa21985c8e9267d8fd50663bd9737568a14d05904ce05d5c6efea92e53",
+        "field": "/groups_per_role",
+        "path": "retention-request.json",
+        "sha256": "93ceb3d22077f4c7b10dc8d8850b868d8a70c8b226346a919287cd7c85bfc107"
+      }
+    },
+    "working_state": {
+      "minimum_extra_groups_even_if_all_16_unseen": 4,
+      "minimum_groups_each_role": 4,
+      "minimum_source_groups": 20,
+      "optimistic_capacity_can_meet_existing_20_group_gate": false,
+      "primary_contrast": "bounded_minus_current_only",
+      "source": {
+        "field": "/prospective_benefit_gate",
+        "path": "inputs/protocol/ACCEPTANCE.json",
+        "sha256": "d77624e729b02213eec9bc808b94ee27c839a66883d63ede3455a3ca4f6f14ea"
+      },
+      "threshold_kind": "prespecified_engineering_target_not_power_calculation"
+    }
+  },
+  "registry_sha256": "09d5f57c5c4c5f421f16c51febd048b7746d5d52723d825240f8655bf7fbdd07",
+  "remaining_not_known_excluded": [
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-202f6f74f9fec567cfbae596",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-21115e1df794f9b2c1e28d63",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-24ad6a0e21bba91ff8e6c41d",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-4dbbcc32865a7921af181694",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-4e8ef8d74282af470042df7a",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-61e249d2d82805d7885bef63",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-62305f149a91fd62b9194b6a",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-78b0a327e7fd947acb7f2ac5",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-83e3cd2399f8af4d0dadda2f",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-85cb99d0cfd415fd6340fbd0",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-973a6ea29a979e60d77163d3",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 6,
+      "complete_episode_count_for_existing_released_role": 6,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 6,
+      "role": "retention_validation",
+      "source_group_id": "merchant-ac3d668a213b7a560b39fa8f",
+      "task_family_counts": {
+        "text_image_complementary": 6
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-ac7dff025170a6ee898d500b",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-c50192ce31401f599190eac2",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 5,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "development",
+      "source_group_id": "merchant-ca151eda1f416e786fbaf2d1",
+      "task_family_counts": {
+        "continuation_not_worthwhile": 1,
+        "preparation_required": 1,
+        "selective_refinement": 1,
+        "text_image_complementary": 1,
+        "text_sufficient": 1
+      },
+      "verified_unseen": false
+    },
+    {
+      "admitted_to_new_study": false,
+      "case_count": 1,
+      "complete_episode_count_for_existing_released_role": 1,
+      "completeness_scope": "Existing working-state families only; not proof of E predecessor/successor sequence coverage.",
+      "current_exposure_status": "UNKNOWN",
+      "episode_group_count": 1,
+      "role": "retention_validation",
+      "source_group_id": "merchant-ca8421c835a4380f2fcb609f",
+      "task_family_counts": {
+        "text_image_complementary": 1
+      },
+      "verified_unseen": false
+    }
+  ],
+  "required_inputs": [
+    {
+      "id": "complete_current_exposure",
+      "needed": "Pinned source-group event ledger covering training, tuning, collection, prior actor access, evaluations, failed or abandoned requests, reservations and later runs through an explicit cutoff; every relevant host or consumer scope declared, with registry/source identity and revision bindings.",
+      "present": "Only inspected historical pins and this metadata inventory; no current complete-coverage attestation."
+    },
+    {
+      "id": "new_released_inventory_if_W_continues",
+      "needed": "Additional authorized and independently grouped source inventory with original roles and current exposure proof; at least four more total for the existing W minimum under the optimistic bound, or at least nine new development groups to retain the historic 16/4 allocation.",
+      "present": "No additional pinned released inventory in this bounded inspection."
+    },
+    {
+      "id": "E_preregistration",
+      "needed": "Separate real-actor predecessor/successor protocol, source-unit independence/power rationale, fixed source roster and roles, baselines, interventions, budgets, graders and missingness/unknown handling before reference or outcome access.",
+      "present": "Existing E contract requires it; numeric minimum and final roster remain unfrozen."
+    },
+    {
+      "id": "original_owner_bindings",
+      "needed": "Original source verifier custody, production writer identity and current cut, caller/final-use authority and retained effect state remain separate deployment inputs.",
+      "present": "Neither this catalog nor hashes grant those capabilities."
+    }
+  ],
+  "schema": "hepta.mem.source-capacity.v1",
+  "status": "UPPER_BOUND_ONLY_VERIFIED_UNSEEN_CAPACITY_UNKNOWN"
+}

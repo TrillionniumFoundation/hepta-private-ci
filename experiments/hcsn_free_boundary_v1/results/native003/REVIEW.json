@@ -1,0 +1,89 @@
+{
+  "audit_script_sha256": "1267b9791850a4299ae65a411fc2145f8b0209ce907a3b51eb7633904dbf8463",
+  "checks_performed": 12538,
+  "cost_scenario_rows_checked": 252,
+  "counts": {
+    "actual_neural_steps_including_recovery": 7324,
+    "actual_reference_steps": 30720,
+    "deliberate_terminal_rejection_probes": 964,
+    "float_q24_disagreements": 0,
+    "native_episode_records_including_recovery": 1155,
+    "native_owner_ticks": 7324,
+    "native_process_nonzero_exit": 0,
+    "native_processes": 1157,
+    "native_reported_errors": 964,
+    "q24_zero_ties": 0,
+    "reference_episode_records": 1536,
+    "total_native_kernel_calls": 7328,
+    "total_native_ndu_calls": 7326
+  },
+  "failed_checks": [],
+  "first_step_public_price_intervention": {
+    "counts": {
+      "changed_actual_model_step_count": 128,
+      "changed_actual_native_action": 128,
+      "matched_first_step_pairs": 128
+    },
+    "example": {
+      "checkpoint_before": "0000000000000000000000000000000000000000000000000000000000000000",
+      "episode": "mnist:912201:test:512",
+      "high_price_action": "stop",
+      "high_price_reads": 1,
+      "high_price_score": -0.4066440165042877,
+      "low_price_action": "keep",
+      "low_price_reads": 32,
+      "low_price_score": 0.439181387424469,
+      "native_profile_sha256": "e80a2dbf7a066dff632af0b98356ae652c7c35e653312a26cbb91e1d3b1edcbc",
+      "same_nonprice_features": [
+        0.32137882709503174,
+        0.8888636231422424,
+        0.7701965570449829,
+        0.01794116199016571,
+        0.023001931607723236
+      ]
+    },
+    "scope": "Existing matched initial-state receipts only. This proves actual price-responsive execution for this trained head; it does not isolate each latent input channel or establish utility superiority."
+  },
+  "fresh_overlap_counts": {
+    "test": {
+      "episode_ids": 0,
+      "image_source_ids": 0
+    },
+    "train": {
+      "episode_ids": 0,
+      "image_source_ids": 0
+    },
+    "val": {
+      "episode_ids": 0,
+      "image_source_ids": 0
+    }
+  },
+  "main_summary_sha256": "d77d73c891b4a5d0ab1b35008bee61a3d919693dee360bbb0618068f56c918ed",
+  "method": "Rehash frozen inputs and saved selection artifacts; recompute train-only normalization from saved TRAIN traces; compare source/episode IDs; read all actual native/reference result and wait4 receipts; reaggregate guards, action parity, terminal probes, utility and CPU grids. No inference or fitting.",
+  "native003_freeze_files_checked": 54,
+  "native_child_cpu_reaggregated_seconds": 10.318937000000016,
+  "original_freeze_files_checked": 38,
+  "recovery": {
+    "ordinary_mlp": {
+      "actual_recovery_count": 0,
+      "claim": "not exercised: first-step STOP",
+      "new_python_interpreter": false,
+      "trajectory_matches": true
+    },
+    "risk_threshold": {
+      "actual_recovery_count": 1,
+      "claim": "exercised same-interpreter object/native-process restart",
+      "new_python_interpreter": false,
+      "trajectory_matches": true
+    },
+    "value_maxout": {
+      "actual_recovery_count": 1,
+      "claim": "exercised same-interpreter object/native-process restart",
+      "new_python_interpreter": false,
+      "trajectory_matches": true
+    }
+  },
+  "schema": "native003-readonly-receipt-audit.v1",
+  "status": "passed",
+  "training_lock_files_checked": 12
+}

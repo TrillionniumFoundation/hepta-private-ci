@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.learn.official-v8-fixed-asset-api-audit.v1",
+  "checked_at_utc": "2026-11-12 11:22:21 UTC",
+  "status": "official GitHub API metadata and exact fixed repository source read only; no archive or binding or checksum asset bytes downloaded; no H execution",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "441de918b863dd15b2faeae920017c1b4b08f59d",
+    "tree": "c3390ffc8c18c47f7bb4cbaa24ce4b585645fae2",
+    "resolver_path": "scripts/codex_package/v8.py",
+    "resolver_blob": "e8788ec0f308038542807ec6adf014c157d65187",
+    "lock_path": "codex-rs/Cargo.lock",
+    "lock_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+    "resolved_v8_versions": [
+      "150.4.0"
+    ],
+    "target": "x86_64-unknown-linux-gnu",
+    "profile": "ptrcomp_sandbox_release"
+  },
+  "original_pin": {
+    "manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+    "archive_bytes": 29366352,
+    "archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "binding_bytes": 39884,
+    "binding_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "provenance": "Original expected values supplied by Root and retained default-user frozen runner 0761292cddd5d2434960d1a0a215a91d6892d2ef; no claim of a new H manifest/file read."
+  },
+  "api_requests": [
+    "https://api.github.com/repos/openai/codex/releases/tags/rusty-v8-v150.4.0",
+    "https://api.github.com/repos/openai/codex/releases/assets/493388485",
+    "https://api.github.com/repos/openai/codex/releases/assets/493388480",
+    "https://api.github.com/repos/openai/codex/releases/assets/493388476"
+  ],
+  "release": {
+    "id": 361445880,
+    "url": "https://api.github.com/repos/openai/codex/releases/361445880",
+    "html_url": "https://github.com/openai/codex/releases/tag/rusty-v8-v150.4.0",
+    "tag_name": "rusty-v8-v150.4.0",
+    "draft": false,
+    "prerelease": true,
+    "immutable": false,
+    "published_at": "2026-07-29T00:27:49Z",
+    "updated_at": "2026-07-29T00:28:07Z"
+  },
+  "assets": [
+    {
+      "name": "librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "id": 493388485,
+      "url": "https://api.github.com/repos/openai/codex/releases/assets/493388485",
+      "browser_download_url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "state": "uploaded",
+      "size": 29366352,
+      "digest": "sha256:a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "created_at": "2026-07-29T00:28:04Z",
+      "updated_at": "2026-07-29T00:28:06Z",
+      "content_type": "application/gzip"
+    },
+    {
+      "name": "src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "id": 493388480,
+      "url": "https://api.github.com/repos/openai/codex/releases/assets/493388480",
+      "browser_download_url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "state": "uploaded",
+      "size": 39884,
+      "digest": "sha256:7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "created_at": "2026-07-29T00:28:04Z",
+      "updated_at": "2026-07-29T00:28:04Z",
+      "content_type": "application/rls-services+xml"
+    },
+    {
+      "name": "rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "id": 493388476,
+      "url": "https://api.github.com/repos/openai/codex/releases/assets/493388476",
+      "browser_download_url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/rusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.sha256",
+      "state": "uploaded",
+      "size": 262,
+      "digest": "sha256:6774b42c9424c098c72a805c08d4e94be17c591cf02b1dc2633060255a8a61be",
+      "created_at": "2026-07-29T00:28:04Z",
+      "updated_at": "2026-07-29T00:28:04Z",
+      "content_type": "application/octet-stream"
+    }
+  ],
+  "independent_asset_metadata_requests_match_release": true,
+  "checks": {
+    "archive_name_matches_original_resolver": true,
+    "archive_size_matches_original_pin": true,
+    "archive_digest_matches_original_pin": true,
+    "binding_digest_matches_original_pin": true,
+    "all_assets_uploaded": true
+  },
+  "resolver_behavior": [
+    "One resolved Cargo.lock v8 version; fixed current value 150.4.0.",
+    "Official release_url = https://github.com/openai/codex/releases/download/rusty-v8-v{version}.",
+    "Linux archive = librusty_v8_ptrcomp_sandbox_release_{target}.a.gz; binding and .sha256 filenames use the same profile and target.",
+    "load_checksums requires exactly the requested archive/binding two lowercase SHA256 entries and exact name coverage.",
+    "ensure_valid_artifact hashes complete artifact bytes; mismatch fails and is not accepted as a fallback.",
+    "Existing simultaneous archive+binding overrides do not invoke the resolver download path; losing the previously pinned local archive is not automatically repaired merely because the environment still names it."
+  ],
+  "conclusion": "The official exact-version metadata still exposes the original requested archive and its original size/SHA256. A same-asset restoration source is available at the official URL/asset ID without changing version/profile/target/hash. No download reachability, byte-level restoration, local storage recovery, unpacked size, Cargo target recovery, compilation or test result is established by this API-only check.",
+  "h_side_condition": "Any later authorized recovery must independently verify all received bytes against the original fixed 29,366,352-byte / a35c75... pin and retain the existing binding/manifest constraints; API metadata alone must not replace local full-byte validation."
+}

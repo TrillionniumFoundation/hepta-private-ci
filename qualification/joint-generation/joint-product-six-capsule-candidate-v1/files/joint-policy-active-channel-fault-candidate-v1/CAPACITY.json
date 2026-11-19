@@ -1,0 +1,16 @@
+{
+  "normal_fixed_files": 37,
+  "enumeration": {
+    "outer": 5,
+    "chain_nonroot": 23,
+    "namespace": 8,
+    "lock": 1
+  },
+  "conditional_success_bytes_conservative": 6291456,
+  "bound_reason": "Fixed model NPZ<2MiB;8namespace records each<256KiB from pinned wire+ack2prefix bound (2MiB);other diagnostics/inventories/logs/receipt<1MiB;6MiB conservative success bound. terminal16MiB independentlychecked,notlivehardquota.",
+  "terminal_total_bytes": 16777216,
+  "terminal_files": 100,
+  "per_file_limit": 2097152,
+  "fault_record_limit": 65536,
+  "receipt_limit": 65536
+}

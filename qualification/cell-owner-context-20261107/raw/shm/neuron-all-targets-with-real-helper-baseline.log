@@ -1,0 +1,506 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+   Compiling typenum v1.20.1
+   Compiling proc-macro2 v1.0.107
+   Compiling generic-array v0.14.7
+   Compiling quote v1.0.47
+   Compiling serde_core v1.0.229
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling syn v3.0.9
+   Compiling serde_json v1.0.154
+   Compiling serde v1.0.229
+   Compiling sha2 v0.10.9
+   Compiling serde_derive v1.0.229
+   Compiling memchr v2.8.3
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-types)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-neuron)
+    Finished `dev-small` profile [unoptimized] target(s) in 17.51s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 05d6db6e-6715-499f-8f86-ff0e8ec2889e with nextest profile: local
+    Starting 174 tests across 1 binary
+        PASS [   0.005s] codex-hepta-neuron cell::tests::complete_native_path_commits_policy_and_state_only_at_owner_boundary
+        PASS [   0.006s] codex-hepta-neuron cell::tests::batch_dispatch_rechecks_queue_age_and_rejects_clock_rollback_after_admission
+        PASS [   0.006s] codex-hepta-neuron cell::tests::actual_over_budget_inference_is_recorded_and_abstains
+        PASS [   0.006s] codex-hepta-neuron cell::tests::a_request_valid_receipt_must_still_match_the_entire_frozen_runtime_tuple
+        PASS [   0.007s] codex-hepta-neuron cell::tests::batch_error_retains_each_admission_and_does_not_repeat_dispatch
+        PASS [   0.007s] codex-hepta-neuron cell::tests::complete_mask_is_checked_and_masked_maximum_cannot_win
+        PASS [   0.009s] codex-hepta-neuron cell::tests::batch_routing_digest_cannot_relabel_a_receipt_for_another_cell
+        PASS [   0.010s] codex-hepta-neuron cell::tests::competing_prepared_writers_and_frontier_reset_are_fenced
+        PASS [   0.005s] codex-hepta-neuron cell::tests::deadlines_and_changed_bundle_reject_before_backend_dispatch
+        PASS [   0.007s] codex-hepta-neuron cell::tests::shared_inference_ids_are_partitioned_but_do_not_change_with_owner_revision
+        PASS [   0.007s] codex-hepta-neuron cell::tests::inference_control_rejects_receipts_from_a_different_source_or_request
+        PASS [   0.007s] codex-hepta-neuron cell::tests::incomplete_microbatch_cannot_publish_any_state
+        PASS [   0.008s] codex-hepta-neuron cell::tests::entry_replays_before_encoding_and_new_snapshot_cannot_reidentify_an_operation
+        PASS [   0.007s] codex-hepta-neuron cell::tests::shared_microbatch_matches_reordered_outputs_to_isolated_requests
+        PASS [   0.005s] codex-hepta-neuron cell::tests::uncertain_commit_reconciles_exact_persisted_decision_without_new_inference
+        PASS [   0.005s] codex-hepta-neuron cell::tests::updates_are_next_generation_bounded_candidates_and_do_not_mutate_live_state
+        PASS [   0.007s] codex-hepta-neuron cell::tests::state_and_exact_operation_identity_are_partitioned_by_run
+        PASS [   0.016s] codex-hepta-neuron cell_generation_control::tests::actor_loss_closes_the_owner_without_reissuing_an_uncertain_operation
+        PASS [   0.015s] codex-hepta-neuron cell_generation_control::tests::terminal_control_reopen_reads_original_bytes_without_running_another_worker
+        PASS [   0.020s] codex-hepta-neuron cell_generation_control::tests::independent_worker_does_not_block_durable_cancellation_or_exact_readback
+        PASS [   0.019s] codex-hepta-neuron cell_generation_control::tests::unknown_worker_keeps_the_single_pending_slot_across_reopen
+        PASS [   0.030s] codex-hepta-neuron cell_generation_control::tests::invalid_scope_and_invalid_worker_proposals_never_become_terminal_records
+        PASS [   0.015s] codex-hepta-neuron cell_generation_current::tests::preparing_identity_cannot_import_a_nonempty_history
+        PASS [   0.031s] codex-hepta-neuron cell_generation_control::tests::known_no_contact_observations_abort_without_forging_the_admission_clock
+        PASS [   0.018s] codex-hepta-neuron cell_generation_current::tests::retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_changing_bytes
+        PASS [   0.018s] codex-hepta-neuron cell_generation_current::tests::staged_genesis_is_synced_but_cannot_admit_resume_or_expose_active_snapshot
+        PASS [   0.018s] codex-hepta-neuron cell_generation_journal::tests::acknowledged_delivery_rejects_changed_bytes_ack_and_cost_after_reopen
+        PASS [   0.018s] codex-hepta-neuron cell_generation_journal::tests::incomplete_resumable_learning_closure_cannot_reopen_or_reinitialize
+        PASS [   0.028s] codex-hepta-neuron cell_generation_journal::tests::actual_admission_clock_floor_survives_reopen_and_rejects_early_settlement
+        PASS [   0.026s] codex-hepta-neuron cell_generation_journal::tests::cancellation_and_drain_retain_unknown_work_then_settle_without_output
+        PASS [   0.068s] codex-hepta-neuron cell_generation_control::tests::shutdown_timeout_retains_the_real_file_lock_until_the_worker_exits
+        PASS [   0.017s] codex-hepta-neuron cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes
+        PASS [   0.019s] codex-hepta-neuron cell_generation_journal::tests::independent_process_second_writer_cannot_acquire_the_owner_journal
+        PASS [   0.046s] codex-hepta-neuron cell_generation_journal::tests::bounded_journal_reserves_cancellation_drain_settlement_and_delivery_ack
+        PASS [   0.044s] codex-hepta-neuron cell_generation_journal::tests::deadline_and_failed_receipts_preserve_cost_without_fabricating_state
+        PASS [   0.027s] codex-hepta-neuron cell_generation_journal::tests::learning_evolution_scope_and_predecessor_drift_never_reinitialize
+        PASS [   0.084s] codex-hepta-neuron cell_generation_control::tests::lost_rpc_reply_and_queue_capacity_cannot_duplicate_original_dispatch
+        PASS [   0.048s] codex-hepta-neuron cell_generation_journal::tests::full_committed_prefix_still_allows_cancelled_and_expired_cost_settlement
+        PASS [   0.020s] codex-hepta-neuron cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery
+        PASS [   0.015s] codex-hepta-neuron cell_generation_journal::tests::state_prefix_outbox_cost_and_replay_survive_owner_reopen
+        PASS [   0.022s] codex-hepta-neuron cell_generation_journal::tests::reopen_with_lower_capacity_rejects_before_repairing_reserved_pending_history
+        PASS [   0.028s] codex-hepta-neuron cell_generation_journal::tests::precontact_clock_floor_is_durable_and_observation_does_not_allow_redispatch
+        PASS [   0.005s] codex-hepta-neuron cell_inference::tests::crossing_deadline_after_decision_also_forces_abstention_at_commit
+        PASS [   0.009s] codex-hepta-neuron cell_inference::tests::any_backend_error_retains_admission_and_duplicate_prepared_work_cannot_execute
+        PASS [   0.017s] codex-hepta-neuron cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence
+        PASS [   0.007s] codex-hepta-neuron cell_inference::tests::late_recovery_preserves_usage_and_settles_pending_as_abstention
+        PASS [   0.020s] codex-hepta-neuron cell_generation_journal::tests::unobserved_pending_work_never_becomes_fresh_admission_after_reopen
+        PASS [   0.035s] codex-hepta-neuron cell_generation_journal::tests::torn_unwitnessed_commit_tail_restores_exact_pending_admission
+        PASS [   0.007s] codex-hepta-neuron cell_inference::tests::native_stage_clocks_cannot_move_before_admission_or_decision
+        PASS [   0.012s] codex-hepta-neuron cell_inference::tests::missing_and_unsuccessful_readbacks_never_release_the_pending_request
+        PASS [   0.006s] codex-hepta-neuron cell_inference::tests::receipt_capacity_is_checked_before_spending_compute
+        PASS [   0.012s] codex-hepta-neuron cell_inference::tests::output_lost_before_commit_is_recovered_by_reading_the_original_request_only
+        PASS [   0.067s] codex-hepta-neuron cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization
+        PASS [   0.062s] codex-hepta-neuron cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost
+        PASS [   0.004s] codex-hepta-neuron cell_joint_generation::tests::response_parser_binds_exact_digest_checksum_lengths_and_tail
+        PASS [   0.018s] codex-hepta-neuron cell_journal::tests::acknowledged_rollback_is_rejected_before_any_tail_repair
+        PASS [   0.007s] codex-hepta-neuron cell_journal::tests::admission_reserves_room_for_its_eventual_atomic_state_commit
+        PASS [   0.016s] codex-hepta-neuron cell_journal::tests::batch_admission_sync_crossing_deadline_never_dispatches_and_reopens_pending
+        PASS [   0.009s] codex-hepta-neuron cell_journal::tests::batch_dispatch_filters_expired_members_and_counts_durable_admission_queue_time
+        PASS [   0.072s] codex-hepta-neuron cell_joint_generation::tests::rejected_input_finishes_without_process_traffic_and_keeps_measured_validation
+        PASS [   0.012s] codex-hepta-neuron cell_journal::tests::incomplete_unacknowledged_tail_is_trimmed_after_witness_validation
+        PASS [   0.009s] codex-hepta-neuron cell_journal::tests::journal_lock_excludes_a_second_owner_before_it_reads_or_repairs
+        PASS [   0.013s] codex-hepta-neuron cell_journal::tests::lost_witness_ack_fences_new_work_until_original_log_is_read_back
+  TRY 1 FAIL [   0.096s] codex-hepta-neuron cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.09s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output' (587) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:385:5:
+    assertion failed: measured.metrics.communication_bytes.is_some_and(|value| value > 128)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+        PASS [   0.101s] codex-hepta-neuron cell_joint_generation::tests::invalid_clock_at_native_entry_does_not_create_a_terminal_proposal
+        PASS [   0.015s] codex-hepta-neuron cell_journal::tests::pending_dispatch_survives_reopen_and_recovery_only_reads_original_model_result
+        PASS [   0.009s] codex-hepta-neuron cell_journal::tests::persisted_frontier_fence_resets_state_and_rejects_prepared_writer
+  TRY 1 FAIL [   0.112s] codex-hepta-neuron cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.11s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker' (592) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:415:5:
+    assertion failed: proposal.cost.entries()[0].metrics.communication_bytes.is_some_and(|value|
+            value > 128)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+        PASS [   0.013s] codex-hepta-neuron cell_journal::tests::shared_file_recovers_independent_checkpoints_and_exact_policy_receipts
+        PASS [   0.018s] codex-hepta-neuron cell_journal::tests::uncertain_admission_never_dispatches_and_recovery_does_not_assume_no_contact
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::deserialize_does_not_bypass_identity_or_duplicate_validation
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::envelope_rejects_unaccounted_overhead_missing_nested_and_duplicate_members
+        PASS [   0.003s] codex-hepta-neuron cell_task_cost::tests::failed_cancelled_rejected_and_unknown_work_remains_charged
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::inclusive_observation_cannot_fill_unknown_exclusive_energy
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::missing_stage_and_unknown_measurement_are_not_measured_zero
+        PASS [   0.030s] codex-hepta-neuron cell_task_cost::tests::capacity_keeps_replay_available_without_permitting_new_work
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::overflow_refuses_new_charge_without_clamping_or_partial_append
+        PASS [   0.003s] codex-hepta-neuron cell_task_cost::tests::overlapping_envelopes_never_double_charge_parallel_exclusive_work
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::replay_after_serialized_reopen_is_free_but_conflicting_reuse_is_atomic
+        PASS [   0.004s] codex-hepta-neuron cell_task_cost::tests::task_source_and_zero_identity_refusals_preserve_state
+  TRY 2 FAIL [   0.097s] codex-hepta-neuron cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.09s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output' (620) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:385:5:
+    assertion failed: measured.metrics.communication_bytes.is_some_and(|value| value > 128)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.106s] codex-hepta-neuron cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.10s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker' (630) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:415:5:
+    assertion failed: proposal.cost.entries()[0].metrics.communication_bytes.is_some_and(|value|
+            value > 128)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.144s] codex-hepta-neuron cell_journal::tests::mismatched_admission_cannot_write_unreplayable_history
+        PASS [   0.010s] codex-hepta-neuron deletion::tests::deletion_rebuild_is_fresh_generation_and_never_reuses_state
+        PASS [   0.007s] codex-hepta-neuron deletion::tests::deletion_rebuild_rejects_skipped_generation_and_missing_deletion
+        PASS [   0.006s] codex-hepta-neuron inference_control::tests::corrupted_or_indeterminate_control_receipt_fails_closed
+        PASS [   0.006s] codex-hepta-neuron inference_control::tests::inference_control_receipt_maps_to_exact_local_runtime_evidence
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::anchored_reopen_preserves_the_exact_receipt_and_all_bytes
+        PASS [   0.012s] codex-hepta-neuron journal::anchor_tests::earlier_anchor_accepts_later_complete_frames_and_repairs_only_the_tail
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::empty_replacement_is_not_initialized_when_history_was_acknowledged
+        PASS [   0.169s] codex-hepta-neuron journal::anchor_tests::every_partial_acknowledged_frame_is_preserved_as_failure_evidence
+        PASS [   0.014s] codex-hepta-neuron journal::anchor_tests::fully_rehashed_alternate_history_cannot_satisfy_the_trusted_anchor
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::lost_complete_acknowledged_frame_is_rejected_without_repair
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::malformed_anchor_rejects_before_file_mutation
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::matching_anchor_does_not_hide_corruption_in_a_later_full_frame
+        PASS [   0.005s] codex-hepta-neuron journal::anchor_tests::wrong_anchor_does_not_truncate_an_unacknowledged_tail
+  TRY 1 FAIL [   0.506s] codex-hepta-neuron cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.50s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output' (594) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:488:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Failed
+    >DeadlineExceeded
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+        PASS [   0.024s] codex-hepta-neuron journal::segment_tests::missing_acknowledged_successor_frame_is_rejected_without_repair
+        PASS [   0.009s] codex-hepta-neuron journal::segment_tests::plasticity_anchor_queries_preserve_global_sequence_across_rollover
+        PASS [   0.008s] codex-hepta-neuron journal::segment_tests::successor_reopen_requires_exact_predecessor_seed_and_acknowledged_suffix
+        PASS [   0.007s] codex-hepta-neuron journal::segment_tests::successor_segment_preserves_state_and_allows_exact_retry
+        PASS [   0.005s] codex-hepta-neuron journal::tests::changed_retry_and_stale_compare_and_swap_do_not_mutate_file
+        PASS [   0.003s] codex-hepta-neuron journal::tests::child_process_commit_and_exit
+        PASS [   0.008s] codex-hepta-neuron journal::tests::committed_checkpoint_and_receipt_survive_reopen
+        PASS [   0.012s] codex-hepta-neuron journal::tests::complete_corruption_is_rejected_without_truncation
+        PASS [   0.008s] codex-hepta-neuron journal::tests::complete_unacknowledged_frame_is_reconciled_on_reopen
+        PASS [   0.005s] codex-hepta-neuron journal::tests::equal_retry_after_later_commit_does_not_append
+  TRY 1 FAIL [   0.675s] codex-hepta-neuron cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.67s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success' (653) panicked at hepta-neuron/src/cell_v13_process_tests.rs:158:5:
+    assertion failed: overflow.communication_bytes > MAX_PROCESS_RESULT_BYTES as u64
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.641s] codex-hepta-neuron cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.64s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation' (657) panicked at hepta-neuron/src/cell_v13_process_tests.rs:111:5:
+    assertion failed: marker.exists()
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+   RETRY 2/2 [         ] codex-hepta-neuron cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+  TRY 1 FAIL [   0.674s] codex-hepta-neuron cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.67s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions' (654) panicked at hepta-neuron/src/cell_v13_process_tests.rs:81:5:
+    assertion failed: matches!(observed.status, ProcessStatus::Succeeded)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+  TRY 1 FAIL [   0.865s] codex-hepta-neuron cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.86s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities' (600) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:219:9:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <1
+    >5
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-neuron cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+        PASS [   0.311s] codex-hepta-neuron journal::tests::every_partial_frame_boundary_recovers_only_the_predecessor
+        PASS [   0.021s] codex-hepta-neuron journal::tests::failed_recovery_releases_acquired_lock_before_journal_exists
+        PASS [   0.005s] codex-hepta-neuron journal::tests::incomplete_header_and_excess_file_size_are_not_repaired
+        PASS [   0.005s] codex-hepta-neuron journal::tests::independent_writer_is_fenced_and_lock_releases_on_drop
+        PASS [   0.005s] codex-hepta-neuron journal::tests::invalid_tick_and_record_cap_do_not_append
+        PASS [   0.005s] codex-hepta-neuron journal::tests::owner_drop_releases_lock_with_a_transient_duplicate_alive
+        PASS [   0.007s] codex-hepta-neuron journal::tests::process_exit_without_destructors_releases_lock_and_keeps_committed_frame
+        PASS [   0.005s] codex-hepta-neuron journal::tests::valid_frame_checksum_cannot_hide_invalid_checkpoint_chain
+        PASS [   0.005s] codex-hepta-neuron journal::tests::write_error_requires_reopen_and_reconciliation
+        PASS [   0.005s] codex-hepta-neuron journal::tests::wrong_generation_and_scope_do_not_reinitialize_journal
+        PASS [   0.003s] codex-hepta-neuron plasticity::tests::explicit_group_mapping_applies_positive_and_negative_modulation
+        PASS [   0.005s] codex-hepta-neuron plasticity::tests::global_l1_trust_region_projects_without_changing_inputs
+  TRY 2 FAIL [   0.452s] codex-hepta-neuron cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.45s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output' (692) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:488:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Failed
+    >DeadlineExceeded
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.004s] codex-hepta-neuron plasticity::tests::implicit_broadcast_and_overweight_rows_are_rejected
+        PASS [   0.005s] codex-hepta-neuron plasticity::tests::zero_modulator_produces_zero_candidate_delta
+        PASS [   0.003s] codex-hepta-neuron population_v2::tests::distinct_temporal_and_activation_dimensions_use_population_then_global_competition
+        PASS [   0.004s] codex-hepta-neuron population_v2::tests::every_activation_requires_a_registered_temporal_projection
+        PASS [   0.003s] codex-hepta-neuron population_v2::tests::population_partition_must_be_complete_and_non_overlapping
+        PASS [   0.003s] codex-hepta-neuron population_v2::tests::population_profile_is_deterministic_and_supports_recurrent_successors
+        PASS [   0.005s] codex-hepta-neuron protocol::tests::canonical_runtime_config_roundtrip_rejects_unknown_fields
+        PASS [   0.004s] codex-hepta-neuron protocol::tests::canonical_signal_roundtrip_rejects_unknown_fields
+        PASS [   0.004s] codex-hepta-neuron protocol::tests::canonical_tick_input_roundtrip_rejects_unknown_fields
+        PASS [   0.004s] codex-hepta-neuron protocol::tests::canonical_tick_receipt_projects_only_registered_resource_fields
+        PASS [   0.004s] codex-hepta-neuron protocol::tests::checkpoint_is_derived_from_committed_state_and_roundtrips
+        PASS [   0.003s] codex-hepta-neuron protocol::tests::checkpoint_publication_rejects_forged_owner_summary
+        PASS [   0.003s] codex-hepta-neuron qualification::tests::config_ablations_remove_only_the_named_mechanism
+        PASS [   0.014s] codex-hepta-neuron qualification::tests::eligibility_and_modulator_ablations_are_explicit_and_deterministic
+        PASS [   0.015s] codex-hepta-neuron qualification::tests::resource_summary_rejects_mixed_host_profiles
+        PASS [   0.004s] codex-hepta-neuron qualification::tests::supplied_resource_samples_have_deterministic_percentiles_without_claiming_authority
+        PASS [   0.008s] codex-hepta-neuron runtime::tests::canonical_runtime_commits_model_bound_calibrated_signal_and_recovers
+        PASS [   0.007s] codex-hepta-neuron runtime::tests::collapse_or_ood_forces_abstention_without_granting_authority
+        PASS [   0.009s] codex-hepta-neuron runtime::tests::deletion_rebuild_starts_fresh_successor_generation_without_old_state
+        PASS [   0.007s] codex-hepta-neuron runtime::tests::expired_calibration_advances_state_but_forces_fail_closed_abstention
+        PASS [   0.005s] codex-hepta-neuron runtime::tests::model_identity_drift_rejects_before_checkpoint_mutation
+        PASS [   0.005s] codex-hepta-neuron runtime::tests::witness_failure_after_commit_reconciles_without_reinvoking_model
+        PASS [   0.012s] codex-hepta-neuron runtime::tests::runtime_rollover_and_chain_recovery_preserve_latest_witness
+        PASS [   0.004s] codex-hepta-neuron sparse::body_scope_tests::successor_rejects_body_scope_drift
+        PASS [   0.006s] codex-hepta-neuron sparse::body_scope_tests::reopened_checkpoint_retains_body_scope_and_rejects_before_write
+        PASS [   0.005s] codex-hepta-neuron sparse::tests::changed_config_is_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::changed_scope_or_objective_is_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::clock_regression_is_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::damaged_checkpoint_is_rejected
+        PASS [   0.003s] codex-hepta-neuron sparse::tests::duplicate_edges_and_row_norm_overflow_are_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::edge_order_does_not_change_config_or_output
+        PASS [   0.006s] codex-hepta-neuron sparse::tests::invalid_inhibition_is_rejected
+        PASS [   0.010s] codex-hepta-neuron sparse::tests::invalid_dimensions_and_extreme_top_k_fail_without_overflow
+        PASS [   0.005s] codex-hepta-neuron sparse::tests::lateral_inhibition_changes_winner
+        PASS [   0.005s] codex-hepta-neuron sparse::tests::missing_digest_invalid_width_and_unbounded_input_are_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::replay_or_skipped_sequence_is_rejected
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::saturation_and_eligibility_l1_projection_are_counted
+        PASS [   0.003s] codex-hepta-neuron sparse::tests::signed_multiply_rounds_half_to_even
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::silent_input_has_zero_activation_with_nonnegative_thresholds
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::supplied_numeric_values_are_bound_not_just_caller_digest
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::tick_is_replay_deterministic_and_inputs_are_immutable
+        PASS [   0.014s] codex-hepta-neuron sparse::tests::ticks_advance_sequence_without_changing_artifact_generation
+        PASS [   0.004s] codex-hepta-neuron sparse::tests::tie_uses_canonical_unit_and_homeostasis_is_exact
+        PASS [   0.004s] codex-hepta-neuron tests::generation_must_advance
+        PASS [   0.003s] codex-hepta-neuron tests::model_drift_is_rejected
+        PASS [   0.004s] codex-hepta-neuron tests::step_is_deterministic_and_authority_free
+        PASS [   0.004s] codex-hepta-neuron tests::width_drift_is_rejected
+        PASS [   0.006s] codex-hepta-neuron witness::tests::witness_capacity_and_independent_writer_are_bounded
+        PASS [   0.006s] codex-hepta-neuron witness::tests::witness_history_survives_reopen_and_fences_stale_cas
+        PASS [   0.005s] codex-hepta-neuron witness::tests::wrong_scope_generation_and_corruption_never_reinitialize_history
+        PASS [   0.934s] codex-hepta-neuron cell_v13_process::tests::expired_precontact_deadline_and_stalled_clock_wall_limit_are_distinct
+        PASS [   0.218s] codex-hepta-neuron sparse::tests::long_replay_remains_bounded_and_immutable
+  TRY 2 FAIL [   0.523s] codex-hepta-neuron cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.52s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions' (720) panicked at hepta-neuron/src/cell_v13_process_tests.rs:81:5:
+    assertion failed: matches!(observed.status, ProcessStatus::Succeeded)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.578s] codex-hepta-neuron cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.57s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation' (719) panicked at hepta-neuron/src/cell_v13_process_tests.rs:111:5:
+    assertion failed: marker.exists()
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.593s] codex-hepta-neuron cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+  stdout ───
+
+    running 1 test
+    test cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success ... FAILED
+
+    failures:
+
+    failures:
+        cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.59s
+
+  stderr ───
+
+    thread 'cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success' (718) panicked at hepta-neuron/src/cell_v13_process_tests.rs:158:5:
+    assertion failed: overflow.communication_bytes > MAX_PROCESS_RESULT_BYTES as u64
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.822s] codex-hepta-neuron cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+  stdout ───
+
+    running 1 test
+    test cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities ... FAILED
+
+    failures:
+
+    failures:
+        cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 173 filtered out; finished in 0.82s
+
+  stderr ───
+
+    thread 'cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities' (723) panicked at hepta-neuron/src/cell_joint_generation_tests.rs:219:9:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <1
+    >5
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [  16.515s] codex-hepta-neuron cell_generation_journal::tests::task_cost_capacity_is_reserved_before_model_work_and_kept_for_acknowledgement
+────────────
+     Summary [  16.615s] 174 tests run: 167 passed, 7 failed, 0 skipped
+  TRY 2 FAIL [   0.097s] codex-hepta-neuron cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output
+  TRY 2 FAIL [   0.106s] codex-hepta-neuron cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker
+  TRY 2 FAIL [   0.452s] codex-hepta-neuron cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output
+  TRY 2 FAIL [   0.822s] codex-hepta-neuron cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities
+  TRY 2 FAIL [   0.593s] codex-hepta-neuron cell_v13_process::tests::actual_child_overflow_and_clock_regression_cannot_be_success
+  TRY 2 FAIL [   0.523s] codex-hepta-neuron cell_v13_process::tests::actual_transport_preserves_bytes_and_counts_both_pipe_directions
+  TRY 2 FAIL [   0.578s] codex-hepta-neuron cell_v13_process::tests::cancellation_after_actual_child_entry_waits_for_its_terminal_observation
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

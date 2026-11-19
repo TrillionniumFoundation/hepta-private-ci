@@ -1,0 +1,375 @@
+{
+  "audit_conclusion": {
+    "dev_recorded_policy_action_replay_pass": true,
+    "dev_score_parity_pass": true,
+    "production_readiness_established_by_this_receipt": false,
+    "scientific_benefit_established_by_this_receipt": false,
+    "selected_lambda_explicit_covariance_effect_active": false,
+    "train_target_parity_pass": true
+  },
+  "audit_role": "independent checks of an implementation within the same collaborating development team; not an external third-party audit",
+  "auditor": "/root/ndu_eval_audit",
+  "checked_files": {
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/backend.py": {
+      "bytes": 16191,
+      "sha256": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/cells.py": {
+      "bytes": 8624,
+      "sha256": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/cohort.py": {
+      "bytes": 16964,
+      "sha256": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/evaluate.py": {
+      "bytes": 19187,
+      "sha256": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/experiment.py": {
+      "bytes": 17226,
+      "sha256": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/generation.py": {
+      "bytes": 13537,
+      "sha256": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/policies.py": {
+      "bytes": 16856,
+      "sha256": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/protocol.json": {
+      "bytes": 14141,
+      "sha256": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf"
+    },
+    "/workspace/scratch/79ec3697a4ed/hepta-ndu/qa/ndu-grounded-generation/verification.py": {
+      "bytes": 8555,
+      "sha256": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/cohort/dev.observations.jsonl": {
+      "bytes": 16920,
+      "sha256": "df9c4a0e30db9afbb5c9c38ea3a1c68b3f9427e76dfb8995bcf8cf20ef6584cf"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/cohort/dev.references.jsonl": {
+      "bytes": 7728,
+      "sha256": "2f7684b1cd475ef2b22aa2ec4ae475f093fa53ffe33de1de4fbd05268a07bbad"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/cohort/manifest.json": {
+      "bytes": 117045,
+      "sha256": "71168c26fffdd913d71a69d8708cec957f55dc2bece112c9c50153fbf31de75d"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/cohort/train.observations.jsonl": {
+      "bytes": 67780,
+      "sha256": "f32bf2ccff0490c0f4b9d10b221a0f97cd633f1078d29d655347a40d426c7293"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/cohort/train.references.jsonl": {
+      "bytes": 31653,
+      "sha256": "d88178769141c87080662ccad1a792b4451e46245b7970bb9e160613bbfcb572"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/collect.episodes.jsonl": {
+      "bytes": 3712010,
+      "sha256": "379286fcd4d76004cb427716743c3151c4cdf5d09c65b418ccd06f50f6114b7b"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/collect.run.json": {
+      "bytes": 1194,
+      "sha256": "1bc32fc1c8347675c8fca534d08dee8901bcb2d74620ab05e999d2308753e62e"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/selection.episodes.jsonl": {
+      "bytes": 2661336,
+      "sha256": "2fc10b7febec43622cb0113736d9915fdf6fe44eaea64cf141cc05a2637d2e5e"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/selection.json": {
+      "bytes": 1255,
+      "sha256": "f24df6a47c2eb7176f242e5d5118d2e86b4d0d209c1f99a2bd38053919fe2821"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/selection.run.json": {
+      "bytes": 2590,
+      "sha256": "0ac8d21b5f185047b0407ebd7d1dbd26633afda171feee50b222bba356e3af61"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/cell-training.json": {
+      "bytes": 49066,
+      "sha256": "ec47b9d53f56afec757bb043116f0ec3dd8f1cbbdcdec824edbd29d16bf7c380"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/cells.pt": {
+      "bytes": 350471,
+      "sha256": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/policies.pt": {
+      "bytes": 90689,
+      "sha256": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/policy-training.json": {
+      "bytes": 12834,
+      "sha256": "9c89610ff062f484b325d68995fe56fa0c7a11e5997a1787d6ea7eb2a99f520d"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/trajectories.json": {
+      "bytes": 481927,
+      "sha256": "ed963e6035fa0b7ea46942dc91b933f0a486cf473cb0064ec3c343b0fbdb9248"
+    },
+    "/workspace/scratch/79ec3697a4ed/ndu-run/training/verifier.json": {
+      "bytes": 1729,
+      "sha256": "be1cf3dd0adcbaafd3437c0b291e825ce1c58ae936deecb2e534312f4ef231b7"
+    }
+  },
+  "created_utc": "2026-10-22T13:02:13.264186+00:00",
+  "dev": {
+    "action_counts": [
+      10,
+      7,
+      13,
+      15,
+      15,
+      9
+    ],
+    "action_replay": {
+      "action_mismatches": 0,
+      "checkpoints": 69,
+      "maximum_absolute_probability_difference": 0.0,
+      "probability_vector_mismatches": 0
+    },
+    "actual_checkpoint_count_histogram": {
+      "2": 28,
+      "3": 3,
+      "4": 1
+    },
+    "actual_decision_checkpoints": 69,
+    "chosen_policy_episodes": 32,
+    "chosen_risk_weight": 0.0,
+    "completed_receipt_digest_matches": true,
+    "episodes": 160,
+    "episodes_with_any_local_token_argmax_change": 25,
+    "frozen_implementation_hashes_checked": 9,
+    "full_score_mismatches": 0,
+    "implementation_hash_mismatches": 0,
+    "inference_limits": [
+      "At selected inference lambda=0 the explicit risk penalty, including the covariance penalty, is multiplied by zero. This run cannot establish benefit from that explicit penalty.",
+      "The actor/trunk was trained with risk weight 0.5. Risk-trained network weights and covariance-related features may still influence the selected policy.",
+      "The covariance counterfactual holds observed features fixed; it is not evidence that all covariance information is absent.",
+      "Different live runs can have different remaining-budget features, so any observed cross-arm difference at lambda=0 is not automatically caused by covariance.",
+      "The dev observations are used for policy selection and are not a final held-out scientific result.",
+      "Local token argmax changes establish interventions in decoding, not improvements in external quality or risk."
+    ],
+    "journal_sha256": "2fc10b7febec43622cb0113736d9915fdf6fe44eaea64cf141cc05a2637d2e5e",
+    "lambda_zero_covariance_invariance": {
+      "action_mismatches": 0,
+      "baseline_covariance": null,
+      "checkpoints": 69,
+      "counterfactual_covariance": "1000 * identity(4)",
+      "features_and_seeds_held_fixed": true,
+      "maximum_absolute_probability_difference": 0.0,
+      "probability_vector_mismatches": 0
+    },
+    "local_token_argmax_changes": 51,
+    "phase": "selection",
+    "points": [
+      {
+        "cvar": 0.5489583333333333,
+        "method": "base",
+        "quality": 0.8651041666666667,
+        "risk_weight": 0.5,
+        "seconds": 2.694972262156398,
+        "selection_score": 0.590625
+      },
+      {
+        "cvar": 0.5489583333333333,
+        "method": "static_cells",
+        "quality": 0.8765625,
+        "risk_weight": 0.5,
+        "seconds": 2.741596557437788,
+        "selection_score": 0.6020833333333333
+      },
+      {
+        "cvar": 0.4864583333333334,
+        "method": "ndu",
+        "quality": 0.8713541666666667,
+        "risk_weight": 0.0,
+        "seconds": 2.674000729344243,
+        "selection_score": 0.6281249999999999
+      },
+      {
+        "cvar": 0.4864583333333334,
+        "method": "ndu",
+        "quality": 0.8713541666666667,
+        "risk_weight": 0.5,
+        "seconds": 2.8484746107187675,
+        "selection_score": 0.6281249999999999
+      },
+      {
+        "cvar": 0.4864583333333334,
+        "method": "ndu",
+        "quality": 0.8713541666666667,
+        "risk_weight": 1.0,
+        "seconds": 2.7798958855310048,
+        "selection_score": 0.6281249999999999
+      }
+    ],
+    "receipt_schema_version": 2,
+    "risk_grid_per_task_quality_exactly_equal": true,
+    "risk_weight_grid": [
+      0.0,
+      0.5,
+      1.0
+    ],
+    "score_mismatches": [],
+    "selection_criterion": "mean_quality - 0.5 * CVaR_0.9; ties lower risk weight",
+    "sources": 32,
+    "split": "dev"
+  },
+  "hash_checks": {
+    "cohort_manifest_matches_both_receipts": true,
+    "collect_original_implementation_sha256": {
+      "backend.py": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+      "cells.py": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+      "generation.py": "6edb25c2a243cedfba3e85e844d4f19f3f2a1aef4977e930cf5894ee145d4a90",
+      "policies.py": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+      "verification.py": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477"
+    },
+    "current_scorer_sha256": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+    "selection_checkpoints": {
+      "cells.pt": {
+        "actual": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396",
+        "expected": "1508a2f4f633b1fa44e05f2a7b750c642e3a39360cf59224d3d4790f31a04396",
+        "matches": true
+      },
+      "policies.pt": {
+        "actual": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06",
+        "expected": "8d4918001e86c863edad47fb9c99d522aaadf7c1a3cba27482615b06ca2d4a06",
+        "matches": true
+      },
+      "verifier.json": {
+        "actual": "be1cf3dd0adcbaafd3437c0b291e825ce1c58ae936deecb2e534312f4ef231b7",
+        "expected": "be1cf3dd0adcbaafd3437c0b291e825ce1c58ae936deecb2e534312f4ef231b7",
+        "matches": true
+      }
+    },
+    "selection_implementation": {
+      "backend.py": {
+        "actual": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+        "expected": "3fd05ef337b16596c85f95ccf6803ae725de6afefff248395c908b8a683dd1b3",
+        "matches": true
+      },
+      "cells.py": {
+        "actual": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+        "expected": "a28b5875a4fc788e3d36813c53a83965529349226ed6ce6bbe69bc45945d63ff",
+        "matches": true
+      },
+      "cohort.py": {
+        "actual": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06",
+        "expected": "59963dc86f5e687c6c4a56781d11921ae5e7cd6f378175d7b38e33766958eb06",
+        "matches": true
+      },
+      "evaluate.py": {
+        "actual": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+        "expected": "c3e763031e0c367ffd6a6a389157fd191e69967f0ff26588e5a3e366a810a17c",
+        "matches": true
+      },
+      "experiment.py": {
+        "actual": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d",
+        "expected": "d793d6aaa48a382ce3fa04ce1cdefc71429d1019acc47353761a60ea0b393e7d",
+        "matches": true
+      },
+      "generation.py": {
+        "actual": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b",
+        "expected": "f253b31919272cb0fe192f3175478a6e9b6e4650977f2c01e7a3c1fefbdc290b",
+        "matches": true
+      },
+      "policies.py": {
+        "actual": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+        "expected": "1076fdcd89b150862192d72363143cdd2aeae5049f7175c674542e3e9a1fd78f",
+        "matches": true
+      },
+      "protocol.json": {
+        "actual": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf",
+        "expected": "47888294da05a7e0faa4b912b58738fc245f9c6c42d0bd03354284e3a55733cf",
+        "matches": true
+      },
+      "verification.py": {
+        "actual": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+        "expected": "c3cd349fd515d6f6cd6621a22f6d6efc095181c4ea15e296e086f44ebd602477",
+        "matches": true
+      }
+    }
+  },
+  "methods": {
+    "dev_covariance_counterfactual": "For the same recorded features and same seeds at all 69 checkpoints, compare covariance=None against covariance=1000*I at risk_weight=0. This holds features fixed, so it tests the explicit covariance penalty, not removal of covariance-related state features.",
+    "dev_full_score": "For all 160 completed dev journal rows, independently call the same frozen score_episode with dev references and real PNG artifacts; compare complete score dictionaries exactly.",
+    "dev_policy_replay": "Load the frozen policies.pt. For each of 69 actual checkpoint_changed records in 32 NDU lambda=0 episodes, call Policies.action with recorded observed_features, method=ndu, risk_weight=0, covariance=None, and seed=execution_seed*31+checkpoint; compare the action and action_probs with recorded values.",
+    "preservation": "Hash the files read by the train parity audit before and after that audit; also recheck every artifact in checked_files before completing this supplemental receipt. No original file is rewritten.",
+    "train_full_score": "For all 256 journal rows, call the current frozen evaluate.score_episode against its train reference and artifact root; compare the complete returned dictionary to the cached score using exact Python equality, including cost, matching, text, artifact and error fields.",
+    "train_target_parity": "In original journal order, retain nonempty trajectory/actions, copy every trajectory field, attach split=train and task_id, and use independently rescored terminal_quality and terminal_loss. Compare the complete reconstructed list to training/trajectories.json.",
+    "verifier_training_parity": "Recompute visible_features for every generated_for_verifier record, combine its 256-by-12 feature matrix with rescored quality and severe arrays, canonical JSON encode with sort_keys=True, separators=(comma,colon), allow_nan=False, then SHA-256 compare with saved train_digest. Verifier.load also validates artifact integrity."
+  },
+  "original_artifacts_unchanged_during_receipt_assembly": true,
+  "schema": "hepta.ndu.pretest-independent-audit.v1",
+  "scope": {
+    "cpu_heavy_work_during_receipt_assembly": false,
+    "excluded": [
+      "test outcomes or partial test journal",
+      "calibration outcomes",
+      "refitting any model or verifier",
+      "new model generation",
+      "full implementation identity across collect v1 and selection v2",
+      "independent free-form text generation or image synthesis capability",
+      "continuous FBSDE solution or Merton optimality",
+      "statistical significance or production readiness"
+    ],
+    "included": [
+      "completed train collect episodes and saved training targets",
+      "completed dev selection episodes and frozen policy action replay",
+      "current hashes binding the completed audits to their input artifacts and scorer"
+    ],
+    "original_records_modified": false,
+    "receipt_assembly": "This supplemental receipt records audits already performed before this file was created; assembly only rechecks lightweight artifact hashes and stored dev summaries. Policy replay and image scoring were not repeated during receipt assembly.",
+    "test_journal_read_for_this_receipt": false
+  },
+  "train": {
+    "action_counts": [
+      86,
+      104,
+      109,
+      102,
+      82,
+      95
+    ],
+    "artifacts_valid": 256,
+    "complete_trajectory_lists_exactly_equal": true,
+    "completed_receipt_digest_matches": true,
+    "coverage_one_episodes": 256,
+    "episodes": 256,
+    "examined_files_unchanged_during_original_audit": true,
+    "full_score_mismatches": 0,
+    "generation_failures": 0,
+    "journal_sha256": "379286fcd4d76004cb427716743c3151c4cdf5d09c65b418ccd06f50f6114b7b",
+    "original_generation_code_sha256": "6edb25c2a243cedfba3e85e844d4f19f3f2a1aef4977e930cf5894ee145d4a90",
+    "output_error_episodes": 0,
+    "phase": "collect",
+    "policies_checkpoint_hash_matches_training_metadata": true,
+    "receipt_schema_version": "v1 (no schema_version field)",
+    "reconstructed_trajectories": 256,
+    "roster_exact": true,
+    "saved_trajectories": 256,
+    "score_mismatches": [],
+    "scoring_exceptions": 0,
+    "seeds": [
+      23,
+      41
+    ],
+    "sources": 128,
+    "split": "train",
+    "target_parity_conclusion": "All saved policy and verifier training targets remain unchanged under the current frozen scorer. The preserved collect v1 receipt is different from later v2 execution receipts; parity does not assert identical generation code across phases.",
+    "terminal_loss_mismatches": 0,
+    "terminal_quality_mismatches": 0,
+    "training_metadata_counts_match": true,
+    "trajectory_mismatches": 0,
+    "transitions": 578,
+    "validation_error_episodes": 0,
+    "verifier_feature_shape": [
+      256,
+      12
+    ],
+    "verifier_recomputed_training_digest": "dd79d7457d3b11b774897ec50e8128cb1d8cd606c4f59891b5c9bb4b225ae371",
+    "verifier_saved_training_digest": "dd79d7457d3b11b774897ec50e8128cb1d8cd606c4f59891b5c9bb4b225ae371",
+    "verifier_train_count": 256,
+    "verifier_training_digest_matches": true
+  }
+}

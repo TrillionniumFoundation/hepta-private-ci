@@ -1,0 +1,996 @@
+{
+  "schema": "hepta.repository-consolidation.native-v6-addendum/v1",
+  "observed_utc": "2026-11-16T13:37:08.841664+00:00",
+  "source_commit": "d3746789d49ca8a4bb5600e0c6fbe682ef5f1765",
+  "source_tree": "751e50a0172e467176be68a1331519c8ea171307",
+  "execution_base_commit": "285e971b3af3a93a79169b56a42263069e473057",
+  "execution_scope": "The native checkout used the recorded overlay on the baseline. All Agentd inputs match the validated source; six other test files differ, as preserved in the source bridge.",
+  "primary_snapshot": {
+    "report": "ci-validation-audit.json",
+    "frozen_utc": "2026-11-16T13:19:57.669826+00:00",
+    "status_then": "RUNNING_AT_REPORT_FREEZE",
+    "preserved_unchanged": true,
+    "primary_manifest_sha256": "394aa3683a7011b015b334bba52d440fde722510fae34b51d22337b871858516",
+    "primary_delivery_sha256": "c711d1f89a9b00db3b70d103bebb5d35e03d6f08828055991bc40434f3c11420"
+  },
+  "result": {
+    "status": "FAIL",
+    "returncode": 100,
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--lib",
+      "-p",
+      "codex-hepta-agentd",
+      "--test-threads",
+      "4",
+      "--retries",
+      "0",
+      "-E",
+      "test(evaluation_provider) | test(original_control_frame_) | test(source_capture_control_retains_connection_error_without_stopping_other_requests) | test(feature_socket_ack_timeout_recovers_original_completion_without_redispatch) | test(q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources)"
+    ],
+    "command_elapsed_seconds": 1407.174,
+    "test_elapsed_seconds": 289.177,
+    "selected_and_run": 26,
+    "passed": 9,
+    "failed": 1,
+    "timed_out": 16,
+    "skipped_by_selection": 1584,
+    "retries": 0,
+    "test_threads": 4,
+    "stack_bytes": 8388608,
+    "nextest_timeout_seconds": 60,
+    "log_sha256": "bde487fe8413f5b7fd963cdc542a5b788c0c9df225c9571f9978ce5beb4d22ba",
+    "log": "ci-v6-evidence/combined-native-v6-tests.log.gz",
+    "receipt": "ci-v6-evidence/combined-native-v6-result.json.gz",
+    "summary_log_line": 2797
+  },
+  "source_integrity": {
+    "recorded_input_count": 7748,
+    "all_inputs_unchanged_during_execution": true,
+    "inventory_sha256": "dad507ff42decaa40f9c82533242932875805901df4a701343a44544b874a26e",
+    "source_inventory": "ci-v6-evidence/native-v6-input-sources.json.gz",
+    "matching_candidate_inputs": 7742,
+    "different_candidate_paths": [
+      "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "codex-rs/hepta-memory/src/cognitive_store_bootstrap_crash_tests.rs",
+      "codex-rs/hepta-neuron/src/gated_journal_v3_tests.rs",
+      "codex-rs/utils/pty/src/tests.rs",
+      "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs"
+    ],
+    "source_bridge": "ci-v6-evidence/native-v6-candidate-source-bridge.json.gz",
+    "source_gates": "The earlier exact d374 B4 and complete caller proof remain valid for their recorded source scope. This addendum changes no source and does not rerun or broaden those proofs."
+  },
+  "controls": {
+    "matched": 8,
+    "passed": 8,
+    "failed": 0,
+    "timed_out": 0,
+    "cases": [
+      {
+        "status": "PASS",
+        "seconds": 0.032,
+        "completion_index": 1,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_preserves_partial_write_errors_before_shutdown",
+        "log_line": 2546,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 115,
+            "declaration": "async fn original_control_frame_preserves_partial_write_errors_before_shutdown() {"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 0.032,
+        "completion_index": 2,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_preserves_other_shutdown_errors",
+        "log_line": 2547,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 131,
+            "declaration": "async fn original_control_frame_preserves_other_shutdown_errors() {"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 0.037,
+        "completion_index": 3,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_accepts_not_connected_only_after_complete_write",
+        "log_line": 2548,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 105,
+            "declaration": "async fn original_control_frame_accepts_not_connected_only_after_complete_write()"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 0.039,
+        "completion_index": 4,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_rejects_oversize_input_before_admission",
+        "log_line": 2549,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 25,
+            "declaration": "async fn original_control_frame_rejects_oversize_input_before_admission() {"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 2.034,
+        "completion_index": 5,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_bounds_a_nonreading_response_peer",
+        "log_line": 2550,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 43,
+            "declaration": "async fn original_control_frame_bounds_a_nonreading_response_peer() {"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 2.039,
+        "completion_index": 6,
+        "total": 26,
+        "name": "control::frames::tests::original_control_frame_rejects_partial_input_with_unchanged_io_budget",
+        "log_line": 2551,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_frames_tests.rs",
+            "line": 12,
+            "declaration": "async fn original_control_frame_rejects_partial_input_with_unchanged_io_budget() {"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 16.808,
+        "completion_index": 7,
+        "total": 26,
+        "name": "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch",
+        "log_line": 2552,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/circuit_feature_control_completion_tests.rs",
+            "line": 12,
+            "declaration": "async fn feature_socket_ack_timeout_recovers_original_completion_without_redispatch()"
+          }
+        ]
+      },
+      {
+        "status": "PASS",
+        "seconds": 0.273,
+        "completion_index": 23,
+        "total": 26,
+        "name": "runtime::tests::source_capture_tests::source_capture_control_retains_connection_error_without_stopping_other_requests",
+        "log_line": 2770,
+        "locations": [
+          {
+            "path": "codex-rs/hepta-agentd/src/control_source_capture_tests.rs",
+            "line": 93,
+            "declaration": "async fn source_capture_control_retains_connection_error_without_stopping_other_requests() {"
+          }
+        ]
+      }
+    ],
+    "scope": "Linux library tests only. Includes the six frame tests and both specifically requested control completion/error regressions. This is not a full macOS five-agent or Windows qualification."
+  },
+  "other_pass": {
+    "name": "original_panel_fixture_future_layout_diagnostic",
+    "seconds": 0.032,
+    "scope": "Layout diagnostic only; this does not demonstrate functional evaluation completion."
+  },
+  "nonpasses": [
+    {
+      "status": "FAIL",
+      "seconds": 48.641,
+      "completion_index": 8,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::deep_readonly::q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources",
+      "log_line": 2557,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+          "line": 25,
+          "declaration": "async fn q24_deep_original_no_update_selection_c_and_cold_readback_preserve_sources()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2571,
+          "text": "Error: original C Observer completion is uncertain; read the same operation"
+        },
+        {
+          "line": 2575,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anyhow-1.0.104/src/backtrace.rs:10:14"
+        },
+        {
+          "line": 2577,
+          "text": "at /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/result.rs:2189:27"
+        },
+        {
+          "line": 2579,
+          "text": "at ./src/circuit_deep_training_readback_tests.rs:114:17"
+        },
+        {
+          "line": 2581,
+          "text": "at /home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library/core/src/future/future.rs:133:9"
+        },
+        {
+          "line": 2583,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/runtime/park.rs:284:71"
+        },
+        {
+          "line": 2585,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/task/coop/mod.rs:167:5"
+        },
+        {
+          "line": 2587,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/task/coop/mod.rs:133:5"
+        },
+        {
+          "line": 2589,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/runtime/park.rs:284:31"
+        },
+        {
+          "line": 2591,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/runtime/context/blocking.rs:66:14"
+        },
+        {
+          "line": 2593,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/runtime/scheduler/multi_thread/mod.rs:92:22"
+        },
+        {
+          "line": 2595,
+          "text": "at /home/qian-qi/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tokio-1.53.3/src/runtime/context/runtime.rs:65:16"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2557,
+        "end": 2652
+      },
+      "first_observed_cause": "original C Observer completion is uncertain; read the same operation",
+      "first_diagnostic": {
+        "line": 2571,
+        "text": "Error: original C Observer completion is uncertain; read the same operation"
+      },
+      "first_repository_stack_location": {
+        "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+        "line": 114,
+        "column": 17
+      },
+      "diagnosis_owner": "rust_review; no duplicate diagnosis performed here",
+      "classification": "ERROR_RETURN"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.075,
+      "completion_index": 9,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support",
+      "log_line": 2655,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "line": 245,
+          "declaration": "async fn original_evaluation_provider_refuses_missing_outcomes_renewal_and_zero_support()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2660,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2655,
+        "end": 2661
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2660,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 247,
+          "expression": "preregistered().await"
+        },
+        {
+          "line": 253,
+          "expression": "b.populate(&original, mode, /*changed_candidate_action*/ false) .await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.116,
+      "completion_index": 10,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows",
+      "log_line": 2662,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "line": 131,
+          "declaration": "async fn original_evaluation_provider_current_withdrawal_and_corruption_never_release_cached_rows()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2667,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2662,
+        "end": 2668
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2667,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 133,
+          "expression": "preregistered().await"
+        },
+        {
+          "line": 139,
+          "expression": "b.populate( &original, ObservationMode::Complete, /*changed_candidate_action*/ false, ) .await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.044,
+      "completion_index": 11,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption",
+      "log_line": 2670,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_tests.rs",
+          "line": 52,
+          "declaration": "async fn original_evaluation_provider_releases_actual_b_and_retention_only_after_consumption()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2675,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2670,
+        "end": 2676
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2675,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 54,
+          "expression": "preregistered().await"
+        },
+        {
+          "line": 65,
+          "expression": "b.populate( &original, ObservationMode::Complete, /*changed_candidate_action*/ false, ) .await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.048,
+      "completion_index": 12,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+      "log_line": 2682,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+          "line": 226,
+          "declaration": "async fn original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2687,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2682,
+        "end": 2688
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2687,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 229,
+          "expression": "HostFixture::new(pending_claim).await"
+        },
+        {
+          "line": 232,
+          "expression": "fixture .host .as_ref() .unwrap() .fixture_model_material_cancel_queued() .await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.039,
+      "completion_index": 13,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+      "log_line": 2691,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+          "line": 31,
+          "declaration": "async fn original_evaluation_model_material_reads_actual_panel_and_identical_local_digest()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2696,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2691,
+        "end": 2697
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2696,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 33,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 34,
+          "expression": "complete(&fixture).await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.336,
+      "completion_index": 14,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::model_material::original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+      "log_line": 2698,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+          "line": 84,
+          "declaration": "async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_regression()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2703,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2698,
+        "end": 2704
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2703,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 93,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 94,
+          "expression": "complete(&fixture).await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.019,
+      "completion_index": 15,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect",
+      "log_line": 2706,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+          "line": 139,
+          "declaration": "async fn original_evaluation_host_pending_ack_loss_and_cancel_never_repeat_effect()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2711,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2706,
+        "end": 2712
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2711,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 141,
+          "expression": "HostFixture::new(/*pending_claim*/ true).await"
+        },
+        {
+          "line": 165,
+          "expression": "pending.finish().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.202,
+      "completion_index": 16,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_reads_actual_panel_and_cold_original_signature",
+      "log_line": 2718,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+          "line": 21,
+          "declaration": "async fn original_evaluation_host_reads_actual_panel_and_cold_original_signature()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2723,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2718,
+        "end": 2724
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2723,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 23,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 35,
+          "expression": "client.execute_evaluation().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.039,
+      "completion_index": 17,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::original_evaluation_host_refuses_renewed_or_regressed_completed_evidence",
+      "log_line": 2726,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+          "line": 86,
+          "declaration": "async fn original_evaluation_host_refuses_renewed_or_regressed_completed_evidence()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2731,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2726,
+        "end": 2732
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2731,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 88,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 92,
+          "expression": "client.execute_evaluation().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.054,
+      "completion_index": 18,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+      "log_line": 2734,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+          "line": 106,
+          "declaration": "async fn original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2739,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2734,
+        "end": 2740
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2739,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 108,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.039,
+      "completion_index": 20,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+      "log_line": 2743,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+          "line": 29,
+          "declaration": "async fn original_evaluation_operation_reads_two_trainers_per_call_and_whole_export()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2748,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2743,
+        "end": 2749
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2748,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 31,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 38,
+          "expression": "client.execute_evaluation().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.019,
+      "completion_index": 21,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+      "log_line": 2755,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+          "line": 86,
+          "declaration": "async fn original_evaluation_operation_rejects_equal_evidence_on_another_connection()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2760,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2755,
+        "end": 2761
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2760,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 88,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.027,
+      "completion_index": 22,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::training_operation::original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+      "log_line": 2763,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+          "line": 144,
+          "declaration": "async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2768,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2763,
+        "end": 2769
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2768,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 147,
+          "expression": "HostFixture::new(/*pending_claim*/ false).await"
+        },
+        {
+          "line": 163,
+          "expression": "client.execute_evaluation().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.031,
+      "completion_index": 24,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "log_line": 2772,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+          "line": 138,
+          "declaration": "async fn original_panel_reads_actual_b_and_retention_with_full_original_signatures()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2777,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2772,
+        "end": 2778
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2777,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 140,
+          "expression": "PanelFixture::completed(TrainingPeer::Original).await"
+        },
+        {
+          "line": 142,
+          "expression": "fixture.read().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.019,
+      "completion_index": 25,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_refuses_valid_renewed_training_without_replacing_member_signatures",
+      "log_line": 2780,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+          "line": 232,
+          "declaration": "async fn original_panel_refuses_valid_renewed_training_without_replacing_member_signatures()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2785,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2780,
+        "end": 2786
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2785,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 234,
+          "expression": "PanelFixture::completed(TrainingPeer::RenewedRetention).await"
+        },
+        {
+          "line": 250,
+          "expression": "fixture.finish().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    },
+    {
+      "status": "TIMEOUT",
+      "seconds": 60.022,
+      "completion_index": 26,
+      "total": 26,
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback",
+      "log_line": 2789,
+      "locations": [
+        {
+          "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+          "line": 192,
+          "declaration": "async fn original_panel_withdrawal_or_restored_source_bytes_permanently_fences_readback()"
+        }
+      ],
+      "first_diagnostics": [
+        {
+          "line": 2794,
+          "text": "(test timed out)"
+        }
+      ],
+      "failure_block_lines": {
+        "start": 2789,
+        "end": 2797
+      },
+      "first_observed_cause": "Nextest terminated this test at the unchanged 60-second budget; the test printed no error before termination.",
+      "first_diagnostic": {
+        "line": 2794,
+        "text": "(test timed out)"
+      },
+      "precise_stalled_frame": null,
+      "runtime_root_cause_status": "NOT_ESTABLISHED",
+      "entry_waits": [
+        {
+          "line": 195,
+          "expression": "PanelFixture::completed(TrainingPeer::Original).await"
+        },
+        {
+          "line": 196,
+          "expression": "fixture.read().await"
+        }
+      ],
+      "classification": "TIMEOUT"
+    }
+  ],
+  "timeout_family_counts": {
+    "provider": 3,
+    "model material": 3,
+    "evaluation host": 3,
+    "training operation": 4,
+    "panel": 3
+  },
+  "timeout_analysis": {
+    "first_observed_cause": "All 16 timeout blocks contain only running 1 test and test timed out. No assertion, provider-binding error, stack overflow, or suspended frame is recorded in those blocks.",
+    "shared_entry_chain": "HostFixture::new calls PanelFixture::completed; PanelFixture::completed calls preregistered; preregistered calls PositiveFixture::ready_with_admission. Provider tests start at preregistered directly. Panel completion also populates and consumes actual B members. A shared entry chain does not establish where any timeout stalled.",
+    "source_map": "ci-v6-evidence/native-v6-timeout-source-map-reviewed.json.gz",
+    "runtime_root_cause": "UNRESOLVED",
+    "next_diagnostic": "Capture progress or a thread backtrace during one original provider test before its unchanged 60-second deadline. Keep assertions, time budget, and zero retries. The common fixture chain is a navigation lead, not proof of a common stall."
+  },
+  "deep_readonly": {
+    "status": "FAIL",
+    "elapsed_seconds": 48.641,
+    "first_error": "original C Observer completion is uncertain; read the same operation",
+    "path": "codex-rs/hepta-agentd/src/circuit_deep_training_readback_tests.rs",
+    "test_definition_line": 25,
+    "first_repository_stack_line": 114,
+    "first_repository_stack_column": 17,
+    "log_error_line": 2571,
+    "diagnosis_owner": "rust_review"
+  },
+  "remaining_blockers": [
+    "Sixteen provider/panel/host/material/operation tests time out with the precise stalled phase still unknown.",
+    "Deep-readonly returns an Observer completion uncertainty error.",
+    "The primary report's native Windows admission and platform qualification blockers remain unchanged."
+  ],
+  "no_source_edits": true,
+  "no_remote_ref_changes": true,
+  "no_timeout_or_assertion_changes": true
+}

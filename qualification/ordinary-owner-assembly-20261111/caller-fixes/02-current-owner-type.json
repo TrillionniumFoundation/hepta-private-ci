@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "kind": "exact-source-type-disambiguation-followup",
+  "source_commit": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "prior_fix_manifest": "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775",
+  "finding": {
+    "index": 339,
+    "id": "root_generation_current_bound_selection",
+    "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+    "message": "unresolved possible NeuronGenerationCurrentOwnerV1::require_original_root_selection receiver",
+    "observed_progress": {
+      "checked": 350,
+      "total": 491,
+      "failures": 4
+    },
+    "pty_chunk": {
+      "offset": 1703,
+      "next_offset": 2034,
+      "sha256": "0510fd77cf5acf215ff4ad3640809f73515e1eef8bdb33f579f4b9f05505c216"
+    }
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "original_source_blob": "36890c80ebb37e50909dc3ac4e9ea49dec1ed6ce",
+      "preimage_blob": "02afdac18067a6f88b7e3cbfaebb6ff32994da20",
+      "postimage_blob": "c7e97889f1775b5e192cf2efdb38cf9d8c1719c7",
+      "bytes": 14490,
+      "sha256": "6de415c3fb1ea166236c2d70d320ac5c32b8b46baf87daac9f1c1216502613ad",
+      "operations": [
+        {
+          "old": "        let current = handoff.connect(connection, timeout, lifetime).await?;",
+          "new": "        let current: Arc<NeuronGenerationCurrentOwnerV1> =\n            handoff.connect(connection, timeout, lifetime).await?;",
+          "expected_count": 1
+        }
+      ]
+    }
+  ],
+  "rationale": "The actual handoff returns Arc<NeuronGenerationCurrentOwnerV1>. The exact type annotation resolves the original conservative receiver scanner while preserving the original construction, pre/post private OriginalDecision validation, exact selection validation and owner transfer.",
+  "metadata_changes": [],
+  "preserved": [
+    "all registered caller sets",
+    "all original function-order guards",
+    "original handoff.connect expression",
+    "original require_original_root_selection call and arguments",
+    "all authority and lifetime checks"
+  ],
+  "validation": {
+    "native": "not run; parent owns Cargo",
+    "official_full_guard": "original diagnostic still running; not a final qualification",
+    "local_original_resolver": {
+      "source_fragments": [
+        "cell_q24_publication_driver.rs@a221e5fb9eddf7ed8b1a5c2de8bd8431338b0d5e",
+        "cell_q24_publication_root_stage.rs@36890c80ebb37e50909dc3ac4e9ea49dec1ed6ce"
+      ],
+      "checker": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "original": "unresolved possible NeuronGenerationCurrentOwnerV1::require_original_root_selection receiver",
+      "rewritten": "matched=true",
+      "scope": "two actual source fragments; not the complete 6470-file index or official verification"
+    }
+  },
+  "application": "Use the one exact source operation after the prior fix. If the integration file has been formatted, preserve all current postimages and apply only this annotation; do not replace an unmatched full file."
+}

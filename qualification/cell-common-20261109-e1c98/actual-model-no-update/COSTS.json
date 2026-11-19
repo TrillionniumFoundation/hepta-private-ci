@@ -1,0 +1,86 @@
+{
+  "aggregation_rule": "Report outer command windows. Training/test/worker costs are nested inside the model window and must not be added again. No total scientific net utility is computed.",
+  "collection_window": {
+    "child_cpu_seconds": 0.003711,
+    "completed_unix_ns": 1794227571424028489,
+    "energy_joules": null,
+    "provider_cost": null,
+    "self_cpu_seconds": 0.472795,
+    "self_peak_rss_kib": 22524,
+    "started_unix_ns": 1794227570959812234,
+    "wall_seconds": 0.4642167950514704
+  },
+  "command_windows": [
+    {
+      "child_cpu_seconds": 5.426981,
+      "child_peak_rss_kib": 273184,
+      "completed_unix": 1794226810.102151,
+      "cost_scope": "whole subprocess including compile/test and child processes",
+      "exit_code": 1,
+      "label": "failed_preparation_001",
+      "record_archive_path": "command-records/smollm-prepare-f070-v1.json",
+      "record_sha256": "883df9510e2d83365d1ef3db43d1b78fc3c3f1b5dd526d5cb6980fe5bbdf8b25",
+      "started_unix": 1794226799.4174376,
+      "wall_seconds": 10.683565432205796
+    },
+    {
+      "child_cpu_seconds": 6.321698,
+      "child_peak_rss_kib": 273676,
+      "completed_unix": 1794226943.6438963,
+      "cost_scope": "whole subprocess including compile/test and child processes",
+      "exit_code": 0,
+      "label": "successful_preparation_002",
+      "record_archive_path": "command-records/smollm-prepare-f070-v2.json",
+      "record_sha256": "13fc429ef61f2a3036c264755cc861d5a05f3000cbad4896f1733a4258b930c0",
+      "started_unix": 1794226932.521027,
+      "wall_seconds": 11.121715731918812
+    },
+    {
+      "child_cpu_seconds": 53.625113,
+      "child_peak_rss_kib": 3018300,
+      "completed_unix": 1794227049.9832735,
+      "cost_scope": "whole subprocess including compile/test and child processes",
+      "exit_code": 0,
+      "label": "actual_model_attempt",
+      "record_archive_path": "command-records/smollm-execute-f070-v1.json",
+      "record_sha256": "f412c3041477fe97b2ddedbc44c27235a2ec937d335921feec93e2451f4c70c4",
+      "started_unix": 1794227003.8023367,
+      "wall_seconds": 46.179696910083294
+    }
+  ],
+  "nested_training_observation": {
+    "add_to_outer_model_window": false,
+    "process_peak_rss_bytes": 3090739200,
+    "supported_profiler_flops": 291371950920,
+    "train_action_reported_milliseconds": 23476,
+    "training_child_process_wall_ns": 19406630695,
+    "training_stage_wall_ns": 17005017116
+  },
+  "no_cost_benefit_claim": true,
+  "resource_requests": {
+    "model": {
+      "cpu_quota_percent": 400,
+      "memory_max_bytes": 8589934592,
+      "outer_timeout_seconds": 240
+    },
+    "nested_training_supervisor": {
+      "rss_bytes": 17179869184,
+      "wall_seconds": 1800
+    },
+    "original_nextest_watchdog_seconds": 60,
+    "retries": 0,
+    "training_action_deadline_seconds": 90
+  },
+  "schema": "hepta.common.actual-model-costs.v1",
+  "unknown_or_excluded": [
+    "parent/base historical training and model download",
+    "prior failed native compilations and native prerequisite suites (reported elsewhere)",
+    "warm cache preparation and cache effects",
+    "operator/tool and transport elapsed time",
+    "energy",
+    "money/provider cost",
+    "simultaneous full process-tree peak RSS",
+    "runtime cgroup limits/peak cannot be reconstructed from an already removed systemd unit"
+  ],
+  "whole_workflow_cost_qualified": false
+}

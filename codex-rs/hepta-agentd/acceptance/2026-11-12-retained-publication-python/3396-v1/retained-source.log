@@ -1,0 +1,20 @@
+setUpClass (test_retained_publication_source_closure.RetainedPublicationClosureTests) ... ERROR
+
+======================================================================
+ERROR: setUpClass (test_retained_publication_source_closure.RetainedPublicationClosureTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/ce434f960ee9/retained-review/qa/b4-no-bypass/test_retained_publication_source_closure.py", line 43, in setUpClass
+    cls.manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text())
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py", line 119, in loads
+    pos, header = create_list_rule(src, pos, out)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/tomllib/_parser.py", line 316, in create_list_rule
+    raise suffixed_err(src, pos, f"Cannot mutate immutable namespace {key}")
+tomllib.TOMLDecodeError: Cannot mutate immutable namespace ('protected_file', 'required_function_order') (at line 11205, column 41)
+
+----------------------------------------------------------------------
+Ran 0 tests in 0.137s
+
+FAILED (errors=1)

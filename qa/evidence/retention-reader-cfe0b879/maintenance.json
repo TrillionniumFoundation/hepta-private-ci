@@ -1,0 +1,30 @@
+{
+  "after": {
+    "scripts/ndu_real_runtime/candidate_retention_report.py": "9b32a179297ad363c9dd9cb4408688d342dd31da7d27d8ae438e225c86ae71ab",
+    "scripts/ndu_real_runtime/test_candidate_retention_report.py": "cc942e636f135e562b75b26eecbb2a22dac2dd404e53e10beb6e232a595f0d67"
+  },
+  "ast_unchanged": true,
+  "attempts": [
+    {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit_code": 0,
+      "finished_unix": 1794296034.5131829,
+      "offline": true,
+      "started_unix": 1794296030.045223,
+      "stderr": "maintenance-attempt1.stderr.log",
+      "stdout": "maintenance-attempt1.stdout.log",
+      "timed_out": false
+    }
+  ],
+  "before": {
+    "scripts/ndu_real_runtime/candidate_retention_report.py": "9b32a179297ad363c9dd9cb4408688d342dd31da7d27d8ae438e225c86ae71ab",
+    "scripts/ndu_real_runtime/test_candidate_retention_report.py": "85b82fdca021010fd9ce4b98d336b1c7c4f123d0632b6223d37e5f60883d6dcb"
+  },
+  "behavior_tests_after_maintenance": false,
+  "behavior_tests_scope": "13 tests on exact pre-maintenance bytes in TEST_RESULT.json; no new scientific experiment",
+  "exit_code": 0,
+  "schema": "hepta.reader-maintenance.v1"
+}

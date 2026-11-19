@@ -1,0 +1,83 @@
+{
+  "schema": "learn.original-build-root-recovery.v1",
+  "state": "isolated-build-target-created-original-pins-retained",
+  "source_sha": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_tree": "a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76",
+  "uid": 1000,
+  "runtime_root": "/data/hepta-learn-ce434-runtime-20261112-v2",
+  "target": "/data/hepta-learn-ce434-runtime-20261112-v2/target",
+  "data_parent": {
+    "device": 2067,
+    "inode": 2,
+    "mode": "0o40755",
+    "uid": 1000,
+    "nlink": 704
+  },
+  "data_free_bytes_before": 190808453120,
+  "original_manifest_sha256": "9969b385cfffaf8a16071033460b505fd98e7a8b6a7f8fd47762e526d78b5ff5",
+  "original_recovery_sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc",
+  "artifacts": [
+    {
+      "key": "RUSTY_V8_ARCHIVE",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "bytes": 29366352,
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "metadata_before": {
+        "device": 2067,
+        "inode": 40370259,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1
+      },
+      "metadata_after": {
+        "device": 2067,
+        "inode": 40370259,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1
+      }
+    },
+    {
+      "key": "RUSTY_V8_SRC_BINDING_PATH",
+      "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "bytes": 39884,
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "metadata_before": {
+        "device": 2067,
+        "inode": 40370261,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1
+      },
+      "metadata_after": {
+        "device": 2067,
+        "inode": 40370261,
+        "mode": "0o100400",
+        "uid": 1000,
+        "nlink": 1
+      }
+    }
+  ],
+  "downloaded": false,
+  "copied": false,
+  "existing_paths_removed_or_changed": false,
+  "process_signals": false,
+  "native_tests_executed": 0,
+  "root_identity": {
+    "device": 2067,
+    "inode": 26345747,
+    "mode": "0o40700",
+    "uid": 1000,
+    "nlink": 3
+  },
+  "target_identity": {
+    "device": 2067,
+    "inode": 26345748,
+    "mode": "0o40700",
+    "uid": 1000,
+    "nlink": 2
+  },
+  "source_after": "e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4",
+  "source_status_after": "",
+  "finished_unix_ms": 1794489578446
+}

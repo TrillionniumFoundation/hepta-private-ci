@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn-v3-original-bytes-loss-v1",
+  "all_closed": false,
+  "scientific_admission": "HOLD_NO_GO",
+  "record_kind": "observer metadata only",
+  "known_durable_metadata_commit": "bc4cfcefa057c98d9f0d03388e61d24608c043ba",
+  "complete_parent_commit": "fa25828fc4faee625c10db1f70add43f0074ff41",
+  "original_v3_source_published": false,
+  "original_v3_raw_published": false,
+  "recovery_observation": "After executor replacement, the old dense-v3 directory and all its original execution files are absent. The cwd was recreated by another recovery task and does not contain the original files.",
+  "observed_surviving_files": [
+    "joint-gradients-large-recovered/*"
+  ],
+  "missing": [
+    "dense-v3/qualification/hcsn_dense_profile/*",
+    "dense-v3/evidence/*",
+    "dense-v3/CONTROLLED_CORE_ORIGIN.json",
+    "dense-v3/*stdout",
+    "dense-v3/*stderr",
+    "actual-gradient-inputs/*"
+  ],
+  "scientific_status": "Earlier values retained in RECOVERY_PENDING_ORIGINAL_BYTES.json are observed scalar metadata, not retained complete raw evidence. They cannot certify an executed-source publication. The supplemental value-tradeoff exit 1 remains unexplained because its stderr was not read before loss.",
+  "next_identity_policy": "Any reconstructed code and any future numerical execution must carry a new source identity and attempt identity. No recreated file may be attributed to the lost original run.",
+  "qualifications_not_granted": [
+    "new finite-risk gate",
+    "rare relative precision below reference floor",
+    "new profile gradients",
+    "full filtered trajectories",
+    "full training replay",
+    "quality/cost advantage",
+    "production adoption"
+  ],
+  "no_new_model_executions_in_this_record": true
+}

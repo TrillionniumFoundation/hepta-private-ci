@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.paired-on-policy-product-contract.v1",
+  "status": "typed pure-domain interface; pending source/native verification; no runtime inference authority",
+  "mode": {
+    "enum": "ProductComparisonModeV1",
+    "variants": [
+      "SharedBehavior",
+      "PairedOnPolicy(OnPolicyPairingContractV1)"
+    ],
+    "plan_getter": "ProductFrozenEvaluationPlanV1::comparison_mode(&self) -> &ProductComparisonModeV1"
+  },
+  "freeze": "freeze_paired_on_policy_product_evaluation_plan_v1(CrossFoldPlanV1, Vec<MetricRoleContractV2>, Vec<ProductMetricSourceContractV1>, &TemporalEvaluationPlan, &TemporalEvaluationPlan, OnPolicyPairingContractV1) -> Result<ProductFrozenEvaluationPlanV1, ProductEvaluationError>",
+  "provider": "FinalHoldoutProviderV1::release_paired_after_consumption(&mut self, &FinalHoldoutJournalReceiptV1, &OnPolicyPairingContractV1) -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1>; default Rejected",
+  "primitive_encoding": {
+    "id": "u32 big-endian UTF-8 byte length, then StableId UTF-8 bytes",
+    "digest": "32 raw bytes",
+    "count": "u32 big-endian",
+    "q32": "signed i64 big-endian FixedQ32.raw()",
+    "tag": "one byte"
+  },
+  "pair_contract": {
+    "prefix": "hepta.intelligence-eval.on-policy-pair-contract.v1",
+    "fields": [
+      "FreshEmpty tag=0",
+      "pair count u32",
+      "pairs sorted by pair_id"
+    ],
+    "pair_fields": [
+      "pair_id ID",
+      "input_digest Digest32",
+      "protocol_digest Digest32",
+      "candidate tag=0; arm fields",
+      "baseline tag=1; arm fields"
+    ],
+    "arm_fields": [
+      "decision_id ID",
+      "principal_lineage ID",
+      "episode_lineage ID",
+      "behavior_run_id ID",
+      "model_digest Digest32"
+    ]
+  },
+  "product_plan": {
+    "prefix": "hepta.intelligence-eval.product-frozen-paired-on-policy.v1",
+    "fields": [
+      "frozen_plan.plan_digest Digest32",
+      "frozen_plan.metric_contract_digest Digest32",
+      "base_estimand_digest Digest32",
+      "candidate_temporal_plan_digest Digest32",
+      "baseline_temporal_plan_digest Digest32",
+      "pair-contract byte length u32",
+      "canonical pair-contract bytes",
+      "metric contract count u32",
+      "metric contracts sorted by metric_id",
+      "metric role count u32",
+      "metric roles sorted by metric_id",
+      "metric source count u32",
+      "metric sources sorted by metric_id"
+    ],
+    "metric_contract": [
+      "metric_id ID",
+      "direction=0 maximize/1 minimize",
+      "safety flag=0 none/1 present then Q32"
+    ],
+    "metric_role": [
+      "metric_id ID",
+      "tag=0 primary then minimum_improvement Q32 /1 noninferiority then maximum_regression Q32 /2 absolute"
+    ],
+    "metric_source": [
+      "metric_id ID",
+      "source=0 IPS/1 SNIPS/2 DR"
+    ]
+  },
+  "estimand": {
+    "prefix": "hepta.intelligence-eval.product-paired-on-policy-estimand.v1",
+    "fields": [
+      "base_estimand_digest Digest32",
+      "candidate_temporal_plan_digest Digest32",
+      "baseline_temporal_plan_digest Digest32",
+      "pair-contract canonical digest Digest32",
+      "metric source count u32",
+      "sorted source rows: metric_id ID + source tag"
+    ]
+  },
+  "execution": {
+    "inner_magic": "HPEXRP01",
+    "outer_envelope": "existing HPEXEV01; original authenticated owner envelope unchanged",
+    "new_fields": "after new inner magic and original plan receipt seal, one nonzero paired_input_digest; remaining original holdout/temporal/IDs/receipt digest layout retained in separate codec",
+    "plan_domain": "new plan and estimand preimages are independently encoded; never an appended old prefix tail"
+  },
+  "comparability": [
+    "exact frozen pair-to-both-arm bijections; no dropped or renamed actual IDs",
+    "different global decision/episode/run identities for each actual arm record",
+    "same original principal lineage within pair; both arm cluster assignments equal that lineage",
+    "same frozen shared input/protocol digests and supported action set",
+    "every original checkpoint_before equals ZERO, fixed FreshEmpty only",
+    "one fixed nonzero candidate model digest and a different fixed nonzero baseline across all pairs",
+    "source_evidence_digest and execution_evidence_digest bind each arm's actual separate Source publication and Circuit history; no invented duplicate holdout consumption",
+    "each action behavior_probability == evaluation_probability; chosen exact one and all others exact zero",
+    "same frozen estimator/timeline/confidence numeric parameters and assumptions; all original thresholds/alpha/weight caps preserved",
+    "original temporal estimator and metric gate functions unchanged; no pair-difference confidence claim"
+  ],
+  "holdout": "one original fenced consume releases the complete paired cohort; existing durable execution claim, pending behavior, signing, commit and readback remain the sole owner path",
+  "legacy": "SharedBehavior canonical plan/estimand/execution bytes and comparable-observation rule retained unchanged",
+  "authority": "all inputs are metadata whose actual owner/source authenticity is independently established by agentd; pure domain creates no capability, key, grant, role or CURRENT"
+}

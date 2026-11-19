@@ -1,0 +1,62 @@
+{
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "research/neuro4-evaluated-current-read-20261112-862531d",
+  "head": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+  "tree": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+  "parent": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "integrated_base": "1cb195e590f7f5038a38625a943f259badea489a",
+  "actual_commit": {
+    "sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+    "node_id": "C_kwDOTrgxoNoAKGRmZjVjYzI4MmVkMWNiZTAwZDVhYzc1ZWFhNWY1MmE0NTU1ZDk1OWE",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:44:29Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-12T21:44:29Z"
+    },
+    "tree": {
+      "sha": "682b75ad7c7bf0fdf59b1b4fc803f1f61614c427",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/682b75ad7c7bf0fdf59b1b4fc803f1f61614c427"
+    },
+    "message": "style(hepta): replay original formatter hunks and exact guard\n\nApply the eleven original Rustfmt hunks in three member-proof files. Preserve all operations, assertions and limits. Update only the corresponding Bound-arm guard and the sole full CALLERS pin. Original source0a format failure remains recorded; this child requires its own automatic validation.",
+    "parents": [
+      {
+        "sha": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0a5c31b73667b3922d89643cf18f0482fa9a1b87"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "published": true,
+  "all_blockers_closed": false,
+  "owner_decision": null,
+  "caller_blob": "896af04e8934f124d124d21b4bea8f69cb0136af",
+  "allowlist_blob": "72dbd585cd4283c1d8339799fa7262f63ab0bb00",
+  "review_manifest": "906fbfded8dac0a5ec386cbdb68987819d6f9db7",
+  "scope": "5 exact paths; 11 formatter hunks in3 source files plus1 guard marker and1 exact pin",
+  "published_at_utc": "2026-11-12 21:44:32 UTC",
+  "actual_ref": {
+    "ref": "refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "node_id": "REF_kwDOTrgxoNoAQnJlZnMvaGVhZHMvcmVzZWFyY2gvbmV1cm80LWV2YWx1YXRlZC1jdXJyZW50LXJlYWQtMjAyNjExMTItODYyNTMxZA",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/neuro4-evaluated-current-read-20261112-862531d",
+    "object": {
+      "sha": "dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/dff5cc282ed1cbe00d5ac75eaa5f52a4555d959a"
+    }
+  },
+  "execution": "PENDING_OWN_ORIGINAL_AUTOMATIC_CI"
+}

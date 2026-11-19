@@ -1,6 +1,7 @@
 use std::fs;
 use std::io;
 use std::io::Read;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -197,7 +198,15 @@ fn write_json_dump(path: &PathBuf, dump: &impl Serialize) -> io::Result<()> {
     let mut bytes = serde_json::to_vec_pretty(dump)
         .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
     bytes.push(b'\n');
-    fs::write(path, bytes)
+    let mut options = fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(path)?;
+    file.write_all(&bytes)
 }
 
 #[cfg(test)]
@@ -351,6 +360,55 @@ mod tests {
             })
         );
 
+        fs::remove_dir_all(dump_dir).expect("remove test dump dir");
+    }
+
+    #[test]
+    fn dump_does_not_replace_existing_file() {
+        let dump_dir = test_dump_dir();
+        let path = dump_dir.join("existing.json");
+        fs::write(&path, b"original bytes").expect("write original");
+        let error = super::write_json_dump(&path, &serde_json::json!({"changed": true}))
+            .expect_err("existing dump must be refused");
+        assert_eq!(error.kind(), std::io::ErrorKind::AlreadyExists);
+        assert_eq!(fs::read(&path).expect("read original"), b"original bytes");
+        fs::remove_dir_all(dump_dir).expect("remove test dump dir");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn dump_does_not_follow_existing_symlink() {
+        let dump_dir = test_dump_dir();
+        let target = dump_dir.join("target.json");
+        let path = dump_dir.join("link.json");
+        fs::write(&target, b"target bytes").expect("write target");
+        std::os::unix::fs::symlink(&target, &path).expect("create link");
+        let error = super::write_json_dump(&path, &serde_json::json!({"changed": true}))
+            .expect_err("symlink dump must be refused");
+        assert_eq!(error.kind(), std::io::ErrorKind::AlreadyExists);
+        assert_eq!(fs::read(&target).expect("read target"), b"target bytes");
+        assert!(
+            fs::symlink_metadata(&path)
+                .expect("inspect link")
+                .file_type()
+                .is_symlink()
+        );
+        fs::remove_dir_all(dump_dir).expect("remove test dump dir");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn dump_is_not_readable_by_group_or_others() {
+        use std::os::unix::fs::PermissionsExt;
+        let dump_dir = test_dump_dir();
+        let path = dump_dir.join("private.json");
+        super::write_json_dump(&path, &serde_json::json!({"private": true}))
+            .expect("write private dump");
+        let metadata = fs::metadata(&path).expect("inspect permissions");
+        assert_eq!(metadata.permissions().mode() & 0o077, 0);
+        let value: serde_json::Value =
+            serde_json::from_slice(&fs::read(&path).expect("read dump")).expect("parse dump");
+        assert_eq!(value, serde_json::json!({"private": true}));
         fs::remove_dir_all(dump_dir).expect("remove test dump dir");
     }
 

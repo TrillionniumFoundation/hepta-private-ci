@@ -1,0 +1,54 @@
+{
+  "schema": "framework-evaluation-portability-qualification-v1",
+  "observed_source": "98730dda67417a93689835f4961d3e807abf107d",
+  "observed_tree": "68136bb96e319f246d98a46373f8feb8b48f95f2",
+  "github_run_id": 43128124820,
+  "github_job_id": 130885288509,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43128124820/job/130885288509",
+  "actual_checkout_kind": "exact source head",
+  "platform": {
+    "os": "Windows Server 2025",
+    "version": "10.0.26100 Datacenter",
+    "image": "windows-2025-vs2026",
+    "image_version": "20261103.298.1"
+  },
+  "conclusion": "failure",
+  "failing_step": "Validate Agentd Prompt Runtime integration and reopened state",
+  "compiler_errors": {
+    "code": "E0433",
+    "count": 4,
+    "file": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_readback_tests.rs",
+    "lines": [
+      300,
+      302,
+      334,
+      336
+    ],
+    "cause": "Added tests reference original Linux-only Q24 receipt owner and classifier from cross-platform readback tests."
+  },
+  "prompt_runtime_tests_executed": false,
+  "retained_log": {
+    "path": "raw/job-130885288509.log",
+    "sha": "41775e83fe85a678e413ce89b5ec968776f427d9",
+    "utf8_bytes": 235646,
+    "characters": 235452,
+    "representation": "Complete decoded GitHub job log returned by fetch_workflow_job_logs, including timestamps and CRLF; not a command-log reconstruction or artifact digest."
+  },
+  "correction": {
+    "source": "ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6",
+    "tree": "e4081d0b53867dbefbb662190a956c8cca1d7b14",
+    "readback_test_blob": "370e0fbb193203f3a4bc6ffb3c93b89093fe31ca",
+    "typed_error_test_blob": "c6a3092f96b987bffc2688fc23bf04f10bc2e73b",
+    "behavior": "Only added owner-wrapper assertion blocks use target_os=linux. Original cross-platform typed missing/pending, calls, execution anchor and holdout-byte assertions remain.",
+    "long_line_wrap": "manual, not an observed formatter pass",
+    "source_readback_exact": true,
+    "native_qualification": "pending; no correction-source pass claimed"
+  },
+  "common_candidate": {
+    "source": "4f7f0f4ef686e71353a5a3a9725c01f3dbffbc50",
+    "tree": "d9bed510c731b3afa501daf666b55106b8fb6136",
+    "merge": "7643df848e0ee29db2c0e45b4dec01a0ac67af3b",
+    "native_qualification": "pending; no common-source Rust pass claimed"
+  },
+  "elevated_windows_isolation": "Distinct original regression and #6038 containment; this E0433 failure is a new test portability defect, not that sandbox observation."
+}

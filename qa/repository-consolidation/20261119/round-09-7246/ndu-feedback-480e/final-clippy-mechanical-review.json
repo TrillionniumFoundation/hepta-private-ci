@@ -1,0 +1,49 @@
+{
+  "scope": "Five final-use clone removals produced by required scoped just fix; no tests run after final fix/fmt. Existing 318 filtered tests were compiled but are not claimed executed.",
+  "source_before": "83154c9ff185a4c2e6e41de4a23c3ac6acfb62a8",
+  "files": [
+    {
+      "path": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "before_sha256": "0fbba5a0929871f0cc70bcd94b36c5d3b53d538aaac3b8e29002028b9daba58c",
+      "after_sha256": "dc028189e8da2aad97b65f3795eae65e83d6e25295fa5fa2e799be50b134057d",
+      "changes": [
+        {
+          "old": "let mut altered = trace.clone();",
+          "new": "let mut altered = trace;",
+          "reason": "The cloned value is at its last use in this test; subsequent mutation and every assertion remain exact."
+        },
+        {
+          "old": "let mut nearly_exhausted = trace.clone();",
+          "new": "let mut nearly_exhausted = trace;",
+          "reason": "The cloned value is at its last use in this test; subsequent mutation and every assertion remain exact."
+        }
+      ],
+      "all_other_bytes_unchanged": true,
+      "assertion_tokens_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+      "before_sha256": "9a78aaf03a09aaef823df222c3ce3e8589e2ad08a1fd483e62465a748dd38982",
+      "after_sha256": "29de06c7b787e91f46ba9ace7e21f5ccb2cd38634d2d5cfc936cc78f2f387969",
+      "changes": [
+        {
+          "old": "let mut altered_window = receipt.clone();",
+          "new": "let mut altered_window = receipt;",
+          "reason": "The cloned value is at its last use in this test; subsequent mutation and every assertion remain exact."
+        },
+        {
+          "old": "let mut tampered_digest = receipt.clone();",
+          "new": "let mut tampered_digest = receipt;",
+          "reason": "The cloned value is at its last use in this test; subsequent mutation and every assertion remain exact."
+        },
+        {
+          "old": "let mut foreign = canonical.clone();",
+          "new": "let mut foreign = canonical;",
+          "reason": "The cloned value is at its last use in this test; subsequent mutation and every assertion remain exact."
+        }
+      ],
+      "all_other_bytes_unchanged": true,
+      "assertion_tokens_unchanged": true
+    }
+  ]
+}

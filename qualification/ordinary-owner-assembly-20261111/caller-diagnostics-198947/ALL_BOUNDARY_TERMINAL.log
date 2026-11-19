@@ -1,0 +1,115 @@
+{"indexed": 1000, "total": 6470}
+{"indexed": 2000, "total": 6470}
+{"indexed": 3000, "total": 6470}
+{"indexed": 4000, "total": 6470}
+{"indexed": 5000, "total": 6470}
+{"indexed": 6000, "total": 6470}
+{"boundaries_checked": 25, "total": 491, "failures": 0}
+{"boundaries_checked": 50, "total": 491, "failures": 0}
+{"boundaries_checked": 75, "total": 491, "failures": 0}
+{"boundaries_checked": 100, "total": 491, "failures": 0}
+{"boundaries_checked": 125, "total": 491, "failures": 0}
+{"boundaries_checked": 150, "total": 491, "failures": 0}
+{"boundaries_checked": 175, "total": 491, "failures": 0}
+{"boundaries_checked": 200, "total": 491, "failures": 0}
+{"boundaries_checked": 225, "total": 491, "failures": 0}
+{"index": 235, "id": "cell_q24_original_dataset_revalidation", "error": "cell_q24_original_dataset_revalidation: codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs: unresolved possible CellQ24TrainingBatchV1::revalidate_source receiver"}
+{"boundaries_checked": 250, "total": 491, "failures": 1}
+{"index": 259, "id": "learning_original_source_create", "error": "learning_original_source_create: codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs: unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver"}
+{"boundaries_checked": 275, "total": 491, "failures": 2}
+{"index": 287, "id": "learning_original_q24_stage_require_current", "error": "learning_original_q24_stage_require_current: codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs: unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver"}
+{"boundaries_checked": 300, "total": 491, "failures": 3}
+{"boundaries_checked": 325, "total": 491, "failures": 3}
+{"index": 339, "id": "root_generation_current_bound_selection", "error": "root_generation_current_bound_selection: codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs: unresolved possible NeuronGenerationCurrentOwnerV1::require_original_root_selection receiver"}
+{"boundaries_checked": 350, "total": 491, "failures": 4}
+{"index": 370, "id": "q24_task_original_ledger_open", "error": "q24_task_original_ledger_open: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_task_ledger_recovery_support.rs', 'codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs']"}
+{"index": 372, "id": "q24_task_original_ledger_readback", "error": "q24_task_original_ledger_readback: codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs: unresolved possible OriginalCellQ24TaskLedgerProducerV1::readback receiver"}
+{"index": 374, "id": "q24_task_original_dataset_prepare", "error": "q24_task_original_dataset_prepare: caller set mismatch; missing=['codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs'], unexpected=[]"}
+{"boundaries_checked": 375, "total": 491, "failures": 7}
+{"index": 379, "id": "q24_task_original_profile_install", "error": "q24_task_original_profile_install: codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs: unresolved possible AgentdConfig::with_q24_learning_task_profile receiver"}
+{"index": 383, "id": "q24_task_explicit_delivery_sources", "error": "q24_task_explicit_delivery_sources: caller set mismatch; missing=['codex-rs/hepta-agentd/src/runtime.rs'], unexpected=[]"}
+{"index": 394, "id": "q24_training_original_readback_construct", "error": "q24_training_original_readback_construct: caller set mismatch; missing=['codex-rs/hepta-agentd/src/cell_q24_training_readback.rs'], unexpected=[]"}
+{"boundaries_checked": 400, "total": 491, "failures": 10}
+{"index": 400, "id": "evaluation_original_trainer_borrow", "error": "evaluation_original_trainer_borrow: codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs: unresolved possible OriginalCellEvaluationTrainerV1::borrow receiver"}
+{"boundaries_checked": 425, "total": 491, "failures": 11}
+{"boundaries_checked": 450, "total": 491, "failures": 11}
+{"boundaries_checked": 475, "total": 491, "failures": 11}
+{
+  "source_sha": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "status": "completed",
+  "started_at": "2026-11-11T23:02:18.290516+00:00",
+  "diagnostic_only": true,
+  "official_full_verifier_executed": false,
+  "authorityGranted": false,
+  "failures": [
+    {
+      "index": 235,
+      "id": "cell_q24_original_dataset_revalidation",
+      "error": "cell_q24_original_dataset_revalidation: codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs: unresolved possible CellQ24TrainingBatchV1::revalidate_source receiver"
+    },
+    {
+      "index": 259,
+      "id": "learning_original_source_create",
+      "error": "learning_original_source_create: codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs: unresolved possible OriginalCellQ24SourceReceiptOwnerV1::create receiver"
+    },
+    {
+      "index": 287,
+      "id": "learning_original_q24_stage_require_current",
+      "error": "learning_original_q24_stage_require_current: codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs: unresolved possible OriginalCellQ24LearningStageOwnersV1::require_current receiver"
+    },
+    {
+      "index": 339,
+      "id": "root_generation_current_bound_selection",
+      "error": "root_generation_current_bound_selection: codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs: unresolved possible NeuronGenerationCurrentOwnerV1::require_original_root_selection receiver"
+    },
+    {
+      "index": 370,
+      "id": "q24_task_original_ledger_open",
+      "error": "q24_task_original_ledger_open: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_task_ledger_recovery_support.rs', 'codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs']"
+    },
+    {
+      "index": 372,
+      "id": "q24_task_original_ledger_readback",
+      "error": "q24_task_original_ledger_readback: codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs: unresolved possible OriginalCellQ24TaskLedgerProducerV1::readback receiver"
+    },
+    {
+      "index": 374,
+      "id": "q24_task_original_dataset_prepare",
+      "error": "q24_task_original_dataset_prepare: caller set mismatch; missing=['codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs'], unexpected=[]"
+    },
+    {
+      "index": 379,
+      "id": "q24_task_original_profile_install",
+      "error": "q24_task_original_profile_install: codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs: unresolved possible AgentdConfig::with_q24_learning_task_profile receiver"
+    },
+    {
+      "index": 383,
+      "id": "q24_task_explicit_delivery_sources",
+      "error": "q24_task_explicit_delivery_sources: caller set mismatch; missing=['codex-rs/hepta-agentd/src/runtime.rs'], unexpected=[]"
+    },
+    {
+      "index": 394,
+      "id": "q24_training_original_readback_construct",
+      "error": "q24_training_original_readback_construct: caller set mismatch; missing=['codex-rs/hepta-agentd/src/cell_q24_training_readback.rs'], unexpected=[]"
+    },
+    {
+      "index": 400,
+      "id": "evaluation_original_trainer_borrow",
+      "error": "evaluation_original_trainer_borrow: codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs: unresolved possible OriginalCellEvaluationTrainerV1::borrow receiver"
+    }
+  ],
+  "protected_failures": [
+    {
+      "index": 349,
+      "path": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs",
+      "error": "codex-rs/hepta-agentd/src/cell_q24_publication_successor.rs:fn prepare_original_successor(: required_order must contain marker sequences"
+    }
+  ],
+  "finished_at": "2026-11-11T23:40:35.649795+00:00",
+  "boundaries": 491,
+  "inventory": 491,
+  "protected": 355,
+  "rust_count": 6470,
+  "source_clean_before_after": true
+}

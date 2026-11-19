@@ -1,0 +1,31 @@
+======================================================================
+FAIL: test_unbounded_future_suffix_refused_without_resurrecting_memory (test_credit_mem_budget_union.FrozenCreditMemoryBudgetUnionTests.test_unbounded_future_suffix_refused_without_resurrecting_memory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-credit-mem-budget-union-t6-sandbox/test_credit_mem_budget_union.py", line 23, in test_unbounded_future_suffix_refused_without_resurrecting_memory
+    with self.assertRaisesRegex(ContractError, "size limit"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_just_over_budget_after_valid_prefix_fails_closed (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_just_over_budget_after_valid_prefix_fails_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-credit-mem-budget-union-t6-sandbox/test_frozen_credit_raw_budget.py", line 60, in test_just_over_budget_after_valid_prefix_fails_closed
+    with self.assertRaises(ContractError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+======================================================================
+FAIL: test_one_over_raw_limit_is_a_resource_refusal_not_an_adoption (test_frozen_credit_raw_budget.FrozenCreditRawBudgetTests.test_one_over_raw_limit_is_a_resource_refusal_not_an_adoption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qq/work/neuro4-credit-mem-budget-union-t6-sandbox/test_frozen_credit_raw_budget.py", line 43, in test_one_over_raw_limit_is_a_resource_refusal_not_an_adoption
+    with self.assertRaisesRegex(ContractError, "raw feedback exceeds size limit"):
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ContractError not raised
+
+----------------------------------------------------------------------
+Ran 86 tests in 0.032s
+
+FAILED (failures=3)

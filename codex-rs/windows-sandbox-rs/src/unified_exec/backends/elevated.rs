@@ -23,6 +23,9 @@ use codex_utils_pty::SpawnedProcess;
 use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
@@ -128,6 +131,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
+    crate::elevated_admission::require_elevated_filesystem_isolation()?;
     let deny_read_paths_override = deny_read_paths_override
         .iter()
         .map(AbsolutePathBuf::to_path_buf)
@@ -156,6 +160,7 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         proxy_settings_mode,
     )?;
 
+    let root_resolution = elevated.filesystem_roles.root_resolution_context().cloned();
     let sandbox_creds = elevated.sandbox_creds;
     let request = RunnerTransportRequest {
         permissions,
@@ -172,6 +177,12 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
             codex_home: elevated.sandbox_base,
             real_codex_home: codex_home.to_path_buf(),
             cap_sids: elevated.cap_sids,
+            filesystem_roles: Some(
+                elevated
+                    .filesystem_roles
+                    .with_network_route(network_proxy_restricting_sid.clone())?,
+            ),
+            root_resolution,
             network_proxy_restricting_sid,
             timeout_ms,
             tty,
@@ -187,7 +198,8 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
         proxy_settings_mode,
     };
     let transport = spawn_runner_transport_task(sandbox_creds, request).await?;
-    let (pipe_write, pipe_read) = transport.into_files();
+    let (pipe_write, pipe_read, runner_process) = transport.into_parts()?;
+    let cleanup_custody = runner_process.cleanup_custody()?;
 
     let (writer_tx, writer_rx) = mpsc::channel::<Vec<u8>>(128);
     let (stdout_tx, stdout_rx) = broadcast::channel::<Vec<u8>>(256);
@@ -200,9 +212,12 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
 
     let outbound_tx = start_runner_pipe_writer(pipe_write);
     let writer_handle = start_runner_stdin_writer(writer_rx, outbound_tx.clone(), tty, stdin_open);
+    let termination_requested = Arc::new(AtomicBool::new(false));
     let terminator = {
         let outbound_tx = outbound_tx.clone();
+        let termination_requested = Arc::clone(&termination_requested);
         Some(Box::new(move || {
+            termination_requested.store(true, Ordering::SeqCst);
             let _ = outbound_tx.send(FramedMessage {
                 version: IPC_PROTOCOL_VERSION,
                 message: Message::Terminate {
@@ -214,12 +229,14 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
 
     start_runner_stdout_reader(
         pipe_read,
+        runner_process,
+        termination_requested,
         stdout_tx,
         stderr_rx.as_ref().map(|(tx, _rx)| tx.clone()),
         exit_tx,
     );
 
-    Ok(finish_driver_spawn(
+    let spawned = finish_driver_spawn(
         ProcessDriver {
             writer_tx,
             stdout_rx,
@@ -235,7 +252,9 @@ pub(crate) async fn spawn_windows_sandbox_session_elevated_for_permission_profil
             tty,
         },
         stdin_open,
-    ))
+    );
+    spawned.session.retain_cleanup_custody(cleanup_custody)?;
+    Ok(spawned)
 }
 
 #[cfg(test)]

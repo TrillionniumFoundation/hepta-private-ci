@@ -1,0 +1,57 @@
+{
+  "commit": "a385c0fe6fafc513da8539799338182176a1a9f8",
+  "source_files": {
+    "hcsn_boundary_audit/refractory_transport.py": {
+      "git_blob_sha1": "f06253382882042c23f30593afa93357c17725da",
+      "sha256": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22"
+    },
+    "hcsn_boundary_audit/spatial_generator.py": {
+      "git_blob_sha1": "50aae1665910b12373854d80de9aaf7e32db8467",
+      "sha256": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441"
+    },
+    "hcsn_graded/model.py": {
+      "git_blob_sha1": "15ad986e37b012a6053b51d06d3a2206b2cb9510",
+      "sha256": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c"
+    },
+    "hcsn_graded/spatial.py": {
+      "git_blob_sha1": "92481657720544b7972e755e77f5609f492f8fe2",
+      "sha256": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0"
+    },
+    "hcsn_joint_dde/graded_sensitivities.py": {
+      "git_blob_sha1": "1cb72a57521667f8c4da0f44c100c4517a1ad1a6",
+      "sha256": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548"
+    },
+    "hcsn_joint_dde/model.py": {
+      "git_blob_sha1": "53196eb0d4056850d5642be3d7da666c87745a22",
+      "sha256": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+    },
+    "hcsn_joint_dde/native_gradient_probe.py": {
+      "git_blob_sha1": "b5133bf27e6e2edc8f88a54b1bf2a826153f6534",
+      "sha256": "d57919392e4e833a8837e9299e00c235949bb5f0ba7767c300f763c47a649a1e"
+    },
+    "hcsn_joint_dde/sensitivities.py": {
+      "git_blob_sha1": "9562c8c644b00753070bdaba20e7ef78e4df2b7c",
+      "sha256": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a"
+    },
+    "hcsn_joint_dde/torch_physical.py": {
+      "git_blob_sha1": "4c19a72774ac1ab1106f92216dcac62ad6d3a838",
+      "sha256": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"
+    }
+  },
+  "workflow_path_filters": {
+    "graded": {
+      "git_blob_sha1": "f88a20236fea5c61a4090e6e7d9eb50e129e7ea3",
+      "path": ".github/workflows/hcsn-graded-physical.yml",
+      "readback_path_not_matched": true,
+      "same_bytes_as_6206_d4e": true,
+      "sha256": "743ebc0d06ae6227231db7fe796083c8d62e757ceb90b74d358796bd702ce0f5"
+    },
+    "uniform": {
+      "git_blob_sha1": "4357a25c6d120039b2b521625cee83500f1f3c4c",
+      "path": ".github/workflows/hcsn-joint-physical-torch.yml",
+      "readback_path_not_matched": true,
+      "same_bytes_as_6206_d4e": true,
+      "sha256": "42ae4ef77b7a48dc65b50db73666ad7a006d5f9edb4148804b6bda49935c499e"
+    }
+  }
+}

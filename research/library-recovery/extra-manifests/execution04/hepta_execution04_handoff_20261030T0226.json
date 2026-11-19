@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.execution04.prelaunch-handoff.1",
+  "at_utc": "2026-10-30T02:27:07.225475+00:00",
+  "execution_episode": "execution04_durable_20261030",
+  "all_blockers_closed": false,
+  "science_workers_started": 0,
+  "raw_file_count": 0,
+  "endpoint_values_accessed": 0,
+  "cleanup": {
+    "files_removed": 4758,
+    "logical_bytes_removed": 103154374,
+    "receipt": {
+      "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/PYTHON_CACHE_CLEANUP_RESULT.json",
+      "bytes": 1098,
+      "sha256": "00ff28dac33d221dbf349043c7351e34e69d0732590a8cee1ee7f1fba1b9458a"
+    }
+  },
+  "import": {
+    "status": "REAL_IMPORT_CLOSURE_VERIFIED_ONLY",
+    "receipt": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/prelaunch/import_gate/IMPORT_CLOSURE.json",
+      "bytes": 2228,
+      "sha256": "477b5719c790c05b5162199e76c2de2c1711852226ae7fdb2a68b2a5df63b00d"
+    },
+    "remote_readback": {
+      "path": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/import_checkpoint_20261030T0217/REMOTE_READBACK_VERIFIED.json",
+      "bytes": 3969,
+      "sha256": "0d1ce6eb6dcde3f112c95bc5921b2acc4aaf020730f765ffdf18882c3f50b5bd"
+    },
+    "library_file_id": "libfile_e1eeed6290488191853c64a4de4c942f",
+    "science_or_model_memory_qualification": false
+  },
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "research/parameter-field-fullstudy-recovery-20261030",
+    "base_commit": "e38a2311c0fd3eecc7f95be00c29be970a3b7a34",
+    "code_commit": "37b8158fc333f1eac49b7936c8d291546d99e5be",
+    "freeze_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+    "local_head": "e4822698613829fb1f2829ebe3e70fc5b75eb18c",
+    "frozen_source_file_count": 132,
+    "publication_file_count": 37,
+    "local_commit_count_after_base": 12,
+    "inventory": {
+      "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/LOCAL_INVENTORY.json",
+      "bytes": 28281,
+      "sha256": "3da1d1b726bb65db7c14f1ae691fb482f79ab909a6453302278601aca937bdd4"
+    },
+    "bundle": {
+      "path": "/workspace/scratch/178ced6a501f/fullstudy_git/operational/parameter_field_recovery04/publication/LOCAL_EXECUTION04_HISTORY.bundle",
+      "bytes": 131578,
+      "sha256": "96e136232f68b5eba1ec4122ecfb1aee9d263b7fd892091f19d373f37727931e"
+    },
+    "bundle_independent_validation": {
+      "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/bundle_verification/VALIDATION.json",
+      "bytes": 94408,
+      "sha256": "2929d4ce707fceb3f5f86a97fa8527a5d1f829397b4a4a24dbc3e2aeb50906e2"
+    },
+    "publication_complete": false,
+    "last_remote_read": {
+      "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/FINAL_READBACK_OBSERVATION.json",
+      "bytes": 2045,
+      "sha256": "619e6c6993195168000c79d5c853d13ce8821b5099e35484861dbfbd049dd158"
+    },
+    "known_remote_commit_or_ref_mutations": 0
+  },
+  "active_blocker": {
+    "kind": "GITHUB_WRITE_CALLS_NO_RESPONSE",
+    "git_cli": "fatal: could not read Username for https://github.com",
+    "gh_cli_present": false,
+    "connector_read_works": true,
+    "repo_metadata_push_permission": true,
+    "plugin_installed_and_enabled": true,
+    "attempted_immutable_writes": {
+      "create_blob": 2,
+      "create_tree_by_subagent": 1,
+      "create_tree_by_root": 1
+    },
+    "last_tree_and_ref_read_status": 404,
+    "permission_denial_received": false,
+    "automatic_review_rejection_received": false,
+    "remote_write_outcome": "UNCONFIRMED",
+    "pending_confirmation": "Only permission to switch to browser fallback. cua_repl instructions require user approval after a sufficient plugin repeatedly fails; no browser has been initialized. Existing cleanup, target repository, publication content and science authorizations remain valid."
+  },
+  "next_after_browser_fallback_permission": [
+    "Reconcile exact README blob/tree and target branch before mutations.",
+    "Publish the approved manifest to the specified repository and verify actual remote identities; preserve local C1/C2/C3 with the independently restored bundle if web commits use different identities.",
+    "Recheck unchanged 3 x 10-second resource gate and launch the registered measured supervisor once.",
+    "Process the fourteen scientific jobs and real upload/readback ACKs, 26-seal analysis, 30-seal literal restore, then the preregistered supplement.",
+    "Report five scientific priorities with actual endpoints and separated cost evidence; a completed negative result is allowed, missing data is not a negative result."
+  ],
+  "configuration": {
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/registrations/initial/PIPELINE_CONFIG.json",
+    "bytes": 5259,
+    "sha256": "c1a541cd8fca9e43c710cfd5ccf1cb76793a28712d66eed65a238f158de0e57e"
+  },
+  "registered_new_microsteps": 343808,
+  "historical_known_microstep_lower_bound": 182096,
+  "historical_unknown_extra_work_and_cpu_remain_unknown": true,
+  "analysis_drafts_notice": "DECISION_MATRIX_DRAFT records the status supplied at its preparation before the 02:17 UTC import pass. This handoff and the actual import receipt supersede only that operational status; no scientific outcome has been observed. No scientific rule, threshold or source file was changed."
+}

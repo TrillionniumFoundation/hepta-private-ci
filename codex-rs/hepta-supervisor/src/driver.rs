@@ -10,7 +10,8 @@ use crate::ProcessExit;
 use crate::ProcessIdentity;
 use crate::ProcessLog;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct SpawnSpec {
     pub agent_id: AgentId,
     pub generation: u64,

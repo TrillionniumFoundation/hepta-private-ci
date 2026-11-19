@@ -1,0 +1,84 @@
+{
+  "schema": "hepta.native-authority-static-build.v1",
+  "source_head": "5a2d2f88a70797c2d76c213f3a47f73f07744d16",
+  "source_tree": "1fa6e46c9efade41ed4cbe48eb428299bd7f27fd",
+  "commands": [
+    [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "-p",
+      "codex-hepta-agentd",
+      "--bin",
+      "hepta-authority-host",
+      "--example",
+      "authority_host_peer_qualification",
+      "-j2"
+    ],
+    [
+      "/bin/bash",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-clock-window-source/.github/scripts/archive-release-symbols-and-strip-binaries.sh",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "--artifact-name",
+      "hepta-authority-5a2-clock-static-03",
+      "--release-dir",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-static-5a2-clock-03/packaged",
+      "--archive-dir",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-static-5a2-clock-03/symbols-dist",
+      "--binaries",
+      "hepta-authority-host authority_host_peer_qualification"
+    ]
+  ],
+  "target": "/data/asterinas-audit-build.8tdrjboi/native-authority-static-196-target",
+  "temporary": "/data/native-authority-tmp.bfr76nhu",
+  "profile_overridden": false,
+  "features_disabled": false,
+  "fresh_target": false,
+  "cache_reused": "completed original3a50 static1.96 target, exclusive subsequent use; no qualification transferred",
+  "cold_supplier_cache_claimed": false,
+  "v8_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+  "v8_bindings_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTC": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "CARGO_TARGET_DIR": "/data/asterinas-audit-build.8tdrjboi/native-authority-static-196-target",
+    "TMPDIR": "/data/native-authority-tmp.bfr76nhu",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "OPENSSL_STATIC": "1",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C target-feature=+crt-static -C relocation-model=static -C link-arg=-no-pie"
+  },
+  "built": true,
+  "packaged": true,
+  "executed_binary": false,
+  "production_authority": false,
+  "g2_complete": false,
+  "build_exit": 0,
+  "products": {
+    "hepta-authority-host": {
+      "unstripped_bytes": 41039376,
+      "unstripped_sha256": "8f5fbbee2a46eef9363f687d580c93ab06f430a82b41f9ba21b7611fab45efc8",
+      "packaged_bytes": 8119576,
+      "packaged_sha256": "05e2111e823370eee924fec3bbf7079857c15e9ad57afca7668fa6d97bdb7c1b"
+    },
+    "authority_host_peer_qualification": {
+      "unstripped_bytes": 38965760,
+      "unstripped_sha256": "16060c5c21f6937ce583ce3148d181ba8ee2e01a2e36880fc1597e335d410f29",
+      "packaged_bytes": 7734184,
+      "packaged_sha256": "f9a2b703c3f2a267e7b5e2a18e5c5f3a0d540a7e9b370cb37524a821b1a59239"
+    }
+  },
+  "packaging_exit": 0,
+  "source_inputs_unchanged": true,
+  "elapsed_seconds": 2083.135
+}

@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/gh",
+    "api",
+    "user"
+  ],
+  "attempt": 1,
+  "classification": "network_failure_on_replay_safe_read_or_git_object",
+  "input_body_sha256": null,
+  "maximum_attempts": 4,
+  "pull_request_creation_replayed": false,
+  "same_command_and_body_on_retry": true,
+  "stderr": "Get \"https://api.github.com/user\": net/http: TLS handshake timeout\n",
+  "transmission_outcome": "not inferred; correctness uses read idempotence or content-addressed/unique-ref semantics"
+}

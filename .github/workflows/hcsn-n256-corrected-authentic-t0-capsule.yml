@@ -1,0 +1,16 @@
+name: HCSN N256 corrected authentic t0 capsule (consumed)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consumed-execution-key:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "attempt002 completed at source commit 4b6fcf153375fb58e5a77c87c21d27569b3689c0"
+          echo "execution key is consumed; no rerun"

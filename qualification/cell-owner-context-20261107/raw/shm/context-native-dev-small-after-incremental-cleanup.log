@@ -1,0 +1,142 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+   Compiling codex-exec-server v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/exec-server)
+   Compiling codex-state v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/state)
+   Compiling elliptic-curve v0.14.3
+   Compiling codex-agent-identity v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/agent-identity)
+   Compiling object v0.37.3
+   Compiling getrandom v0.3.4
+   Compiling hashbrown v0.15.5
+   Compiling primefield v0.14.0
+   Compiling prost v0.14.4
+   Compiling codex-workload-identity v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/workload-identity)
+   Compiling codex-terminal-detection v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/terminal-detection)
+   Compiling findshlibs v0.10.2
+   Compiling serde_derive_internals v0.30.0
+   Compiling fastrand v2.5.0
+   Compiling fixedbitset v0.5.7
+   Compiling rustc-demangle v0.1.28
+   Compiling xmlparser v0.13.6
+   Compiling aws-smithy-xml v0.62.1
+   Compiling backtrace v0.3.76
+   Compiling petgraph v0.8.3
+   Compiling tempfile v3.27.0
+   Compiling schemars_derive v1.2.3
+   Compiling codex-login v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/login)
+   Compiling prost-types v0.14.4
+   Compiling wnaf v0.14.1
+   Compiling rfc6979 v0.6.0
+   Compiling signature v3.0.0
+   Compiling sentry-contexts v0.46.2
+   Compiling multimap v0.10.1
+   Compiling rmcp v3.1.3
+   Compiling prost-build v0.14.4
+   Compiling ecdsa v0.17.0
+   Compiling primeorder v0.14.0
+   Compiling schemars v1.2.3
+   Compiling sentry-backtrace v0.46.2
+   Compiling aws-smithy-query v0.62.1
+   Compiling oauth2 v5.0.0
+   Compiling process-wrap v9.1.1
+   Compiling sentry v0.46.2
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/output-truncation)
+   Compiling rmcp-macros v3.5.1
+   Compiling reqwest v0.13.5
+   Compiling sse-stream v0.2.6
+   Compiling tonic-build v0.14.6
+   Compiling semver v1.0.28
+   Compiling hostname v0.4.2
+   Compiling uname v0.1.1
+   Compiling protoc-bin-vendored-linux-aarch_64 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_64 v3.3.0
+   Compiling protoc-bin-vendored-win32 v3.3.0
+   Compiling protoc-bin-vendored-linux-x86_32 v3.3.0
+   Compiling protoc-bin-vendored-linux-s390_64 v3.3.0
+   Compiling protoc-bin-vendored-macos-aarch_64 v3.3.0
+   Compiling pastey v0.2.3
+   Compiling protoc-bin-vendored-linux-ppcle_64 v3.3.0
+   Compiling protoc-bin-vendored-macos-x86_64 v3.3.0
+   Compiling protoc-bin-vendored v3.3.0
+   Compiling codex-install-context v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/install-context)
+   Compiling tonic-prost-build v0.14.3
+   Compiling aws-sdk-sts v1.119.0
+   Compiling sentry-panic v0.46.2
+   Compiling sentry-debug-images v0.46.2
+   Compiling p256 v0.14.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/plugins)
+   Compiling aws-sdk-ssooidc v1.116.0
+   Compiling aws-sdk-sso v1.114.0
+   Compiling aws-sdk-signin v1.27.0
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/hepta-types)
+   Compiling aws-config v1.12.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/third_party/aws-config-1.12.0)
+   Compiling codex-plugin v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/plugin)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/collaboration-mode-templates)
+   Compiling codex-models-manager v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/models-manager)
+   Compiling codex-aws-auth v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/aws-auth)
+   Compiling codex-feedback v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/feedback)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/diagnostics)
+   Compiling jsonptr v0.7.1
+   Compiling codex-tools v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/codex-mcp)
+   Compiling symphonia-core v0.6.1
+   Compiling rayon v1.12.0
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/context-fragments)
+   Compiling ignore v0.4.33
+   Compiling libm v0.2.16
+   Compiling codex-file-search v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/file-search)
+   Compiling symphonia-metadata v0.6.1
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling noyalib v0.0.58
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/workspace/scratch/93ddee66e1b3/hepta-cell/codex-rs/rollout)
+rustc-LLVM ERROR: IO failure on output stream: No space left on device
+error: could not compile `codex-mcp` (lib)
+
+Caused by:
+  No space left on device (os error 28)
+
+Caused by:
+  failed to parse process output: `rustc --crate-name codex_mcp --edition=2024 codex-mcp/src/lib.rs --error-format=json --json=diagnostic-rendere

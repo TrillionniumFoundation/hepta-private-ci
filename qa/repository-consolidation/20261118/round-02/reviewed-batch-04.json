@@ -1,0 +1,108 @@
+{
+  "candidate": "6ffe9e1dc8c24cf2b0775b64ac3dfa9565b0dc3c",
+  "heads": [
+    {
+      "sha": "770ad4d2445e5675afe7e6e9d360e392fdf93ef6",
+      "parents": [
+        "a4abafbcb89053bda9a8300adab13ed8a91f9456",
+        "9a5ef60be0076c5e9de97e3a396e94ebe39454da"
+      ],
+      "names": [
+        "research/neuro4-credit-mem-budget-union-20261112-t6"
+      ],
+      "all_parents_candidate_ancestors": true,
+      "all_names_ordinary": true,
+      "protected_name_overlap": [],
+      "protected_marker_ancestors": [],
+      "classification": "preserve_historical_shadow_evidence_and_port_missing_cross_mechanism_tests",
+      "decisions": [
+        "Current study.py already enforces the identical 65,536-row raw feedback limit before cutoff filtering. Preserve this and all later input bounds/causal safeguards; no study.py overwrite.",
+        "The original frozen-credit raw-budget test is already byte-identical. Add the missing two cross-mechanism tests, which assert a 65,537 future-only suffix is refused, a bounded suffix is causally ignored with DENY_ALL authority, post-cutoff feedback cannot alter frozen credit, and logical memory deletion remains sticky across 16 declared seeds even with malformed future memory.",
+        "Preserve the four exact original dated gate/log files as historical shadow-only HOLD_NO_GO evidence. Their original 86-test/HeptaRuntime timing claims are not new candidate CI claims. All three SHA-256 identities stated in that historical gate match retrieved original source/tests.",
+        "No Q24 owner, Agentd, production authorization, dependency, CI allowlist, security rule or gate is changed."
+      ],
+      "patch": "770ad4d2.patch",
+      "validation": [
+        "just fmt pass",
+        "git diff --check pass",
+        "python -m unittest test_credit_mem_budget_union test_frozen_credit_raw_budget: 6 tests passed in 0.031 seconds",
+        "historical study and both test SHA-256 claims verified",
+        "see credit-mem-budget-test.log"
+      ],
+      "files": [
+        {
+          "path": "qualification/neuroscience-20261110/CREDIT_MEM_RAW_BOUND_CONVERGENCE_GATE.md",
+          "historical_final_blob": "98b20c564e9011115ce2c2d9bfe43f75738f5d79",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/CREDIT_MEM_RAW_BOUND_CONVERGENCE_GATE.md",
+          "candidate_blob": null,
+          "resolved_blob": "98b20c564e9011115ce2c2d9bfe43f75738f5d79",
+          "resolved_bytes": 3420,
+          "changed_from_candidate": true
+        },
+        {
+          "path": "qualification/neuroscience-20261110/CREDIT_MEM_UNION_GREEN.log",
+          "historical_final_blob": "e2ecdfcc81578a56fe317abe3e66f5ef976f3dc5",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/CREDIT_MEM_UNION_GREEN.log",
+          "candidate_blob": null,
+          "resolved_blob": "e2ecdfcc81578a56fe317abe3e66f5ef976f3dc5",
+          "resolved_bytes": 98,
+          "changed_from_candidate": true
+        },
+        {
+          "path": "qualification/neuroscience-20261110/CREDIT_MEM_UNION_RED.log",
+          "historical_final_blob": "0bec414533d7f2c8fba6f9519e6f091337cbc984",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/CREDIT_MEM_UNION_RED.log",
+          "candidate_blob": null,
+          "resolved_blob": "0bec414533d7f2c8fba6f9519e6f091337cbc984",
+          "resolved_bytes": 2222,
+          "changed_from_candidate": true
+        },
+        {
+          "path": "qualification/neuroscience-20261110/CREDIT_MEM_UNION_RESOURCE_EXECUTION.log",
+          "historical_final_blob": "6c286d1da74008374825534c0bf506075ea21a79",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/CREDIT_MEM_UNION_RESOURCE_EXECUTION.log",
+          "candidate_blob": null,
+          "resolved_blob": "6c286d1da74008374825534c0bf506075ea21a79",
+          "resolved_bytes": 863,
+          "changed_from_candidate": true
+        },
+        {
+          "path": "qualification/neuroscience-20261110/study.py",
+          "historical_final_blob": "a7f0974a8a6ff6aab66cadd3702e0c2d581123eb",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/study.py",
+          "candidate_blob": "127729e5e29fef60932a1059b2b88b85e9d7f0ce",
+          "resolved_blob": "127729e5e29fef60932a1059b2b88b85e9d7f0ce",
+          "resolved_bytes": 30896,
+          "changed_from_candidate": false
+        },
+        {
+          "path": "qualification/neuroscience-20261110/test_credit_mem_budget_union.py",
+          "historical_final_blob": "780c4570f91a7f31bdbf369a462f60403fc81b06",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/test_credit_mem_budget_union.py",
+          "candidate_blob": null,
+          "resolved_blob": "780c4570f91a7f31bdbf369a462f60403fc81b06",
+          "resolved_bytes": 2421,
+          "changed_from_candidate": true
+        },
+        {
+          "path": "qualification/neuroscience-20261110/test_frozen_credit_raw_budget.py",
+          "historical_final_blob": "20bfbbb7cfe22da4e6f1b840332d2ef7feff38d0",
+          "historical_blob_verified": true,
+          "historical_evidence_path": "evidence/770ad4d2445e5675afe7e6e9d360e392fdf93ef6/qualification/neuroscience-20261110/test_frozen_credit_raw_budget.py",
+          "candidate_blob": "20bfbbb7cfe22da4e6f1b840332d2ef7feff38d0",
+          "resolved_blob": "20bfbbb7cfe22da4e6f1b840332d2ef7feff38d0",
+          "resolved_bytes": 2723,
+          "changed_from_candidate": false
+        }
+      ]
+    }
+  ],
+  "remote_writes": false,
+  "shared_checkout_edits": false
+}

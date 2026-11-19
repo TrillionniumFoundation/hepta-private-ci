@@ -1,0 +1,65 @@
+{
+  "base": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+  "native_base": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs",
+      "before_sha256": "9d13154eb7cc5e44398f3a1fc7527b093ef638cb191bf03401192a8b58f765c4",
+      "decisions": [
+        "Complete incoming LedgerFixture::bytes migration to mutable original locked ledger/witness full physical bytes; remove obsolete uninitialized observer field. All callers already borrow mutable fixtures."
+      ],
+      "after_sha256": "dc40c4aae1b45f92fed2ad11082bd430b299804e14884f9e28aabdababec19c1",
+      "original_assertion_count": 0,
+      "original_assertions_preserved_modulo_physical_read_call": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_credit_signed_tests.rs",
+      "before_sha256": "9634b734b02a84cdcdf0fd5d083467c6799272ea4ec199322e5f53530a35c03e",
+      "decisions": [
+        "Restore exact e344 canonical_directory binding before existing fleet root parse; preserve private temp root ownership and assertions."
+      ],
+      "after_sha256": "b733bf776efc7979f4c6c2317aad1765991d7ce0c2900b43073d90087cff8632",
+      "original_assertion_count": 15,
+      "original_assertions_preserved_modulo_physical_read_call": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_driver_tests.rs",
+      "before_sha256": "2fb518cb63a3d442ee6f35cf54f92a2ebccdff821d2cf3fd1bbc01cd2067da7a",
+      "decisions": [
+        "Restore exact e344 canonical_directory binding before existing fleet root parse; preserve private temp root ownership and assertions."
+      ],
+      "after_sha256": "1123331763ae890f22839fd4b1908f4997f8def989d9409a8c2d2e23c3d20f3e",
+      "original_assertion_count": 23,
+      "original_assertions_preserved_modulo_physical_read_call": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs",
+      "before_sha256": "fdc8c1d74696418b884c07a06bd26ecfb56bcf875988e55dccdb0b0a218c773f",
+      "decisions": [
+        "Complete incoming original-owner source_bytes migration: first four reads use live owner, last two use recovered owner; read helper holds mutex, reads same physical journal through bounded qualification_file_bytes, restores cursor. All complete byte equalities retained."
+      ],
+      "after_sha256": "bc94b48dc78eaac745e696d29761abf04a84f6498018f7948fe7aca27944e094",
+      "original_assertion_count": 60,
+      "original_assertions_preserved_modulo_physical_read_call": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner_tests.rs",
+      "before_sha256": "efe83a34e641955b9ac9279030f1d1c8d6d7f99fe5e7ec303f0206641c9fc56b",
+      "decisions": [
+        "Complete incoming evaluator original locked journal read migration: first three reads from current signer, last two from recovered signer; all actual byte comparisons and execution/no-repeat assertions preserved."
+      ],
+      "after_sha256": "9c204f355393f9b78eabe8a2431d6ddc0735d64d57876bb64d8b8ac8f7ab36f9",
+      "original_assertion_count": 17,
+      "original_assertions_preserved_modulo_physical_read_call": true
+    }
+  ],
+  "original_assertion_count": 115,
+  "protected_rows": [],
+  "patch_sha256": "29ea72f1088c7c6e6b17dd06df0b350d1363712add57a58ab1b91354e0416d1c",
+  "format": "Rust1.96 rustfmt imports_granularity=Item,skip_children=true",
+  "qualification_apis": {
+    "ledger": "existing qualification-legacy-write feature exposes bounded original durable ledger + witness File bytes, exclusive &mut borrow, no cloned/reopened/unlocked handles",
+    "source": "existing source_bytes helper locks exact original owner mutex and physically reads its journal, not logical snapshot",
+    "evaluator": "existing cfg(test) owner.qualification_file_bytes calls require_current then physically reads exact journal, restores cursor; all read/restoration errors fail"
+  }
+}

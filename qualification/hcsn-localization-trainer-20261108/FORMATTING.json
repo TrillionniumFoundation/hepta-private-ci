@@ -1,0 +1,279 @@
+{
+  "all_ast_identical": true,
+  "base_commit": "5f7f55e015dde7fab0c174081fef090ff45501de",
+  "commands": [
+    {
+      "args": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "5f7f55e015dde7fab0c174081fef090ff45501de"
+      ],
+      "cwd": "/home/qian-qi/work/cell-s0s5-20261108-1628/hcsn-source/codex-rs",
+      "exit_code": 0,
+      "label": "official-just-fmt",
+      "stderr": "",
+      "stdout": "",
+      "wall_seconds": 0.20133475499460474
+    },
+    {
+      "args": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/work/cell-s0s5-20261108-1628/hcsn-source",
+      "exit_code": 0,
+      "label": "pinned-ruff-version",
+      "stderr": "warning: Failed to parse `scripts/pyproject.toml` during settings discovery:\n  TOML parse error at line 8, column 17\n    |\n  8 | exclude-newer = \"7 days\"\n    |                 ^^^^^^^^\n  failed to parse year in date \"7 days\": failed to parse \"7 da\" as year (a four digit integer): invalid digit, expected 0-9 but got  \n\n",
+      "stdout": "ruff 0.15.13\n",
+      "wall_seconds": 0.04162079800153151
+    },
+    {
+      "args": [
+        "uv",
+        "run",
+        "--frozen",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "proposals/localization-v2/models.py",
+        "proposals/localization-v2/capacity.py",
+        "proposals/localization-v2/episodes.py",
+        "proposals/localization-v2/train_development.py",
+        "proposals/localization-v2/test_capacity.py",
+        "proposals/localization-v2/test_episodes.py",
+        "proposals/localization-v2/audit_training.py"
+      ],
+      "cwd": "/home/qian-qi/work/cell-s0s5-20261108-1628/hcsn-source",
+      "exit_code": 0,
+      "label": "explicit-proposal-ruff-format",
+      "stderr": "warning: Failed to parse `scripts/pyproject.toml` during settings discovery:\n  TOML parse error at line 8, column 17\n    |\n  8 | exclude-newer = \"7 days\"\n    |                 ^^^^^^^^\n  failed to parse year in date \"7 days\": failed to parse \"7 da\" as year (a four digit integer): invalid digit, expected 0-9 but got  \n\n",
+      "stdout": "7 files reformatted\n",
+      "wall_seconds": 0.010152329981792718
+    }
+  ],
+  "files": [
+    {
+      "after": {
+        "ast_sha256": "f34b11cc4fc1aeebe8849bc74cee9510b98929fe02e49e9e081215f865243f47",
+        "bytes": 6767,
+        "lines": 122,
+        "sha256": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "f34b11cc4fc1aeebe8849bc74cee9510b98929fe02e49e9e081215f865243f47",
+        "bytes": 6767,
+        "lines": 122,
+        "sha256": "0b0676b7ec22cca17b525da25de9c767c2dd06086b177a1de1e201e235952001"
+      },
+      "byte_identical": true,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/data.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "ade00eae4fde8d4d9c7df04c4a8bb4241a6dd3bf0c8b86e833cd4ec1a6b890be",
+        "bytes": 11471,
+        "lines": 332,
+        "sha256": "59ddde881490a1c99572e645f9b6ef31b27b8164175934877de2a87430e8d877"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "ade00eae4fde8d4d9c7df04c4a8bb4241a6dd3bf0c8b86e833cd4ec1a6b890be",
+        "bytes": 10591,
+        "lines": 222,
+        "sha256": "bb05d12c3919c1af9b4262dee8d02c7015a40c7b1bab9f173d4b36eb83478683"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/models.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "166d5982229e0cbba7e33515d77bfb874608894ee9a0462944274c7ae59f3179",
+        "bytes": 16208,
+        "lines": 287,
+        "sha256": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "166d5982229e0cbba7e33515d77bfb874608894ee9a0462944274c7ae59f3179",
+        "bytes": 16208,
+        "lines": 287,
+        "sha256": "dd3f4c109f2f2d23f1b66b8cb21861a5de995f4c632d7286c22d8ff8e24ab684"
+      },
+      "byte_identical": true,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/run_interface.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "03794dedd251d27e9ffdc2b1dbbc4a5fb9bd2f54f788fd00152ba2baecbe3819",
+        "bytes": 7699,
+        "lines": 212,
+        "sha256": "f20dffe0929972ea2f7ca19430be3e86f36c8b258fedcd84ecd89e36c395ec3d"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "03794dedd251d27e9ffdc2b1dbbc4a5fb9bd2f54f788fd00152ba2baecbe3819",
+        "bytes": 6969,
+        "lines": 131,
+        "sha256": "f085fe519c3288c68afae8f064ba08eb056e6a8c6ec15b8828c9de1e3c1d2c74"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/capacity.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "48ea11388d1e966f4041395f9d660b9b0ab509298988743946c32cef03c514d5",
+        "bytes": 9697,
+        "lines": 234,
+        "sha256": "adbb0d370c946c8efa883b19b69507d954da878625455a66678552e0d2e2c95b"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "48ea11388d1e966f4041395f9d660b9b0ab509298988743946c32cef03c514d5",
+        "bytes": 9023,
+        "lines": 164,
+        "sha256": "0a0e4be8ca19801031f4c2ac0b7c53ac032a1fd673349174ebece33dce479409"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/episodes.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "6781b5d004b2609e6b42d7808f72d99055ab7a9f71a5f401236ab66204188d40",
+        "bytes": 17218,
+        "lines": 441,
+        "sha256": "4d081f50a9f11c452990c76adab29610c71d20af8c613fa09ef531c32c8b96e0"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "6781b5d004b2609e6b42d7808f72d99055ab7a9f71a5f401236ab66204188d40",
+        "bytes": 15170,
+        "lines": 272,
+        "sha256": "234cad8cd1f46c9d80a74a2cda1d48d34197289733026a9f8fe7ed39dc52c608"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/train_development.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "50765f9ebe188bbbc617b918e3a5e80a9bfc35a85b283d45f742ab74cfd34f10",
+        "bytes": 3589,
+        "lines": 84,
+        "sha256": "6e09cb95672c961f2804a91624d923d6db6179b2e585aa50ebdf22722806fe6c"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "50765f9ebe188bbbc617b918e3a5e80a9bfc35a85b283d45f742ab74cfd34f10",
+        "bytes": 3223,
+        "lines": 65,
+        "sha256": "cc5dc1699dbdeb834dd44455b834ce2fec260c133986d50d9ad0640738fd1afd"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/test_capacity.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "0cf8fea49ece0f8eb4d3768487f24a081ca71819160383d5eaceacf69ea5cf38",
+        "bytes": 4688,
+        "lines": 123,
+        "sha256": "dc1dc47e854c86c833b6fa497ec29d9642808b307b2a8b3a3736acdaaeeec4c2"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "0cf8fea49ece0f8eb4d3768487f24a081ca71819160383d5eaceacf69ea5cf38",
+        "bytes": 3743,
+        "lines": 67,
+        "sha256": "f8c9fbe93ecd449ef82b5b5aae8180ea18008387467d2ceba920dd02bbf7019b"
+      },
+      "byte_identical": false,
+      "execution_identity": "native training/regression source-v1",
+      "path": "proposals/localization-v2/test_episodes.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "c244dadd389a36c610035b40aa54b2b51f60977cb04d8d6327ec83c12b7c5238",
+        "bytes": 7635,
+        "lines": 177,
+        "sha256": "2a745a7821d65e3b33c0d81a7b383fe2d1924fa8eedc0759fc71c477a835200d"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "c244dadd389a36c610035b40aa54b2b51f60977cb04d8d6327ec83c12b7c5238",
+        "bytes": 7168,
+        "lines": 118,
+        "sha256": "4c563781b61563e5ef0f153b0da8b812f79c9210b09b3ba468d0578622cc6372"
+      },
+      "byte_identical": false,
+      "execution_identity": "separate native retained-state audit",
+      "path": "proposals/localization-v2/audit_training.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "d81e2d377e11a618b4743ff4f1033852a50869e9811bd8b6ee782054cdabd03b",
+        "bytes": 6551,
+        "lines": 231,
+        "sha256": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "d81e2d377e11a618b4743ff4f1033852a50869e9811bd8b6ee782054cdabd03b",
+        "bytes": 6551,
+        "lines": 231,
+        "sha256": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3"
+      },
+      "byte_identical": true,
+      "execution_identity": "scoped 7-test blob policy backport",
+      "path": "scripts/check_blob_size.py"
+    },
+    {
+      "after": {
+        "ast_sha256": "48610c914abd83bb81e2f62af0380fb0144c3045f4743c95e838b302c1c158a3",
+        "bytes": 4951,
+        "lines": 128,
+        "sha256": "f5017bd436f694f25b3d605fd247d34b47d3b4aa73a2c3c3c9539c39e8348231"
+      },
+      "ast_identical": true,
+      "before": {
+        "ast_sha256": "48610c914abd83bb81e2f62af0380fb0144c3045f4743c95e838b302c1c158a3",
+        "bytes": 4951,
+        "lines": 128,
+        "sha256": "f5017bd436f694f25b3d605fd247d34b47d3b4aa73a2c3c3c9539c39e8348231"
+      },
+      "byte_identical": true,
+      "execution_identity": "scoped 7-test blob policy backport",
+      "path": "scripts/tests/test_blob_size_policy.py"
+    }
+  ],
+  "formal_fits_started": 0,
+  "official_owner_scope": "scripts/check_blob_size.py and scripts/tests/test_blob_size_policy.py; proposals/localization-v2 is outside official owner roots",
+  "proposal_scope": [
+    "proposals/localization-v2/models.py",
+    "proposals/localization-v2/capacity.py",
+    "proposals/localization-v2/episodes.py",
+    "proposals/localization-v2/train_development.py",
+    "proposals/localization-v2/test_capacity.py",
+    "proposals/localization-v2/test_episodes.py",
+    "proposals/localization-v2/audit_training.py"
+  ],
+  "python_ast_runtime": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "ruff_lock_sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+  "schema": "hcsn-publishing-format-identity-v1",
+  "scientific_admission": "HOLD",
+  "tests_rerun_after_formatting": false,
+  "training_rerun": false,
+  "unformatted_head": "1970b75cbbac93d0e498bbf41da92dd1febebfa7"
+}

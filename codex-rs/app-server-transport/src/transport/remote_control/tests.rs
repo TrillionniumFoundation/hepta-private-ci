@@ -119,7 +119,7 @@ fn remote_control_auth_dot_json(account_id: Option<&str>) -> AuthDotJson {
             refresh_token: "refresh-token".to_string(),
             account_id: account_id.map(str::to_string),
         }),
-        last_refresh: Some(chrono::Utc::now()),
+        last_refresh: Some(codex_utils_time::Timestamp::now()),
         agent_identity: None,
         personal_access_token: None,
         bedrock_api_key: None,
@@ -1627,6 +1627,7 @@ async fn remote_control_http_mode_enrolls_before_connecting() {
                             codex_home: codex_home.path().abs(),
                             platform_family: "test-family".to_string(),
                             platform_os: "test-os".to_string(),
+                            process_indeterminate: false,
                         },
                     ),
                 ),
@@ -2557,6 +2558,7 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     .expect("remote control should start");
     let mut status_rx = remote_handle.status_receiver();
 
+    eprintln!("waiting for initial remote-control token refresh request");
     let refresh_request = accept_http_request(&listener).await;
     assert_eq!(
         refresh_request.request_line,
@@ -2572,6 +2574,7 @@ async fn remote_control_http_mode_preserves_enrollment_after_generic_websocket_4
     )
     .await;
 
+    eprintln!("waiting for initial remote-control websocket upgrade request");
     let websocket_request = accept_http_request(&listener).await;
     assert_eq!(
         websocket_request.request_line,

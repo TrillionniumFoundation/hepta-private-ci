@@ -1,0 +1,171 @@
+{
+  "base": "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+  "checks": [
+    {
+      "name": "codex-utils-time package tests",
+      "command": "just test --offline --locked -p codex-utils-time",
+      "status": "pass",
+      "passed": 29,
+      "skipped": 0,
+      "log": "utility-tests-attempt05-review-fixes.log",
+      "scope": "Final substantive code, before final fix/fmt",
+      "log_sha256": "e17eff72db537e041c3f93f4bb32d5993a0f69683bb95cb4589980b47e10f8b8",
+      "log_bytes": 4196
+    },
+    {
+      "name": "codex-protocol package tests",
+      "command": "just test --offline --locked -p codex-protocol",
+      "status": "pass",
+      "passed": 301,
+      "skipped": 0,
+      "log": "protocol-tests-attempt02.log",
+      "scope": "Updated protocol caller; precedes final Unix parser-only review fixes",
+      "log_sha256": "71df009f70cf8f5ceeec5513779abe407554c53bb3240253fa271dfc7f31156f",
+      "log_bytes": 48149
+    },
+    {
+      "name": "Windows GNU cross-compile",
+      "command": "cargo check --offline --locked -p codex-utils-time --all-targets --target x86_64-pc-windows-gnu",
+      "status": "pass",
+      "log": "windows-check-attempt01.log",
+      "scope": "Includes Windows OS comparison test; compile only, before final Unix parser review",
+      "log_sha256": "cbc46c8cc0d63ae9d3f7446e438e51048a491df2807f4be36d11b4c8ffd10ca1",
+      "log_bytes": 805
+    },
+    {
+      "name": "wasm32 cross-compile",
+      "command": "cargo check --offline --locked -p codex-utils-time --lib --target wasm32-unknown-unknown",
+      "status": "pass",
+      "log": "wasm-check-attempt01.log",
+      "scope": "JS Date path; compile only, before final Unix parser review",
+      "log_sha256": "7327a76b7180c048da2e79e277c4c65ec8e5e2ffa6dcec9dbe4c5afa503dba49",
+      "log_bytes": 993
+    },
+    {
+      "name": "Android ARM64 cross-compile",
+      "command": "cargo check --offline --locked -p codex-utils-time --lib --target aarch64-linux-android",
+      "status": "pass",
+      "log": "android-check-attempt01.log",
+      "scope": "Mobile database discovery path; compile only, before final Unix parser review",
+      "log_sha256": "e8fff41ef330e454e78c5b58a2c735551b851819455bb233463799f2ec7b2dc9",
+      "log_bytes": 525
+    },
+    {
+      "name": "Strict dependency policy",
+      "command": "cargo deny --all-features --locked check",
+      "status": "pass",
+      "log": "cargo-deny-attempt01.log",
+      "scope": "Exact final dependency graph; source-only review fixes do not change graph",
+      "log_sha256": "e4fefd0d5653011ce634b6534edd164456386fef830c141234db493e6979c733",
+      "log_bytes": 13523442
+    },
+    {
+      "name": "Final scoped lint fix",
+      "command": "just fix --offline --locked -p codex-utils-time -p codex-protocol",
+      "status": "pass",
+      "log": "scoped-fix-attempt02-final.log",
+      "scope": "No warnings and no source modifications",
+      "log_sha256": "df0c5db384d07a012ed29b435bf77eeef58808119930b6630ecd771e768a3ffe",
+      "log_bytes": 345
+    },
+    {
+      "name": "Final formatting",
+      "command": "just fmt",
+      "status": "pass",
+      "log": "fmt-attempt01.log",
+      "scope": "Fifteen planned Rust files reformatted; no tests rerun after final fix/fmt",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_bytes": 0
+    }
+  ],
+  "differentials": [
+    {
+      "name": "Broad local presentation",
+      "cases": 371070,
+      "zones": 18,
+      "formats_per_case": 7,
+      "mismatches": 0,
+      "source": "local-time/validation-final-source/result.json",
+      "scope": "Broad candidate before final parser-only review; compares Chrono 0.4.45 against maintained time 0.3.55 plus tz-rs 0.7.3"
+    },
+    {
+      "name": "TZif indicators/truncation",
+      "cases": 198431,
+      "mismatches": 0,
+      "source": "local-time/indicator-matrix-attempt02.log",
+      "scope": "Finite parser acceptance matrix; original invalid (0,1) retained"
+    },
+    {
+      "name": "Review configuration regression before fix",
+      "cases": 98,
+      "configurations": 14,
+      "mismatches": 63,
+      "source": "local-time/configuration-before/result.json",
+      "scope": "Preserved expected failures proving review findings"
+    },
+    {
+      "name": "Review configuration regression after fix",
+      "cases": 98,
+      "configurations": 14,
+      "mismatches": 0,
+      "source": "local-time/configuration-after/result.json",
+      "scope": "Final substantive source before format; both compiles and all fourteen executions passed"
+    }
+  ],
+  "native_bazel": {
+    "base": "db0757eca20bbeaf7840bf162ebfb6ccb4824e57",
+    "source_union": "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+    "manifest_hashes_verified": 243,
+    "additional_tool_package_inputs_verified": 3,
+    "initial_archive_sha256": "656e45a05e0b085a09e787649147775a77ab3b4ed3d72ef3ce76a59397e60cdf",
+    "result_archive_sha256": "86bc1d7aacf94c0414c989a2385535832fda29708bf1ae526a4ecd1d41a4658e",
+    "commands": [
+      "just bazel-lock-update",
+      "just bazel-lock-check",
+      "bazel cquery //codex-rs/utils/time:all --lockfile_mode=error --config=ci"
+    ],
+    "exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "cquery_targets": 4,
+    "configured_targets": 46312,
+    "scope": "Fresh canonical dependency graph qualification in separate native checkout/caches; cquery did not execute Rust actions; not whole-union native runtime validation"
+  },
+  "cargo_lock_sha256": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+  "module_lock_sha256": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501",
+  "pending": [
+    "Native Windows execution of OS timezone comparison test",
+    "Complete final integration CI and broader affected-package qualification before main merge or branch deletion"
+  ],
+  "preserved_failures": [
+    "Original local-presentation audit and initial legacy-indicator mismatch",
+    "Offline missing tz-rs cache attempt",
+    "Temporary moved-source cache-refactor compile failure (incorrect proposed cache issue was withdrawn)",
+    "Protocol build missing Clang builtin header; resolved by explicit installed GCC standard-header include path, no repository policy change",
+    "First indicator truncation expectation (single-newline empty footer is valid in both parsers)",
+    "First native Bazel sparse checkout omitted tools/argument-comment-lint; complete package restored in independent checkout",
+    "Initial scoped fix reported expect_used diagnostics; final source uses explicit invariant/error branches with unchanged lint policy",
+    "Configuration differential baseline: 63 of 98 mismatches before three reviewed fixes"
+  ],
+  "policy_changes": [],
+  "remote_ref_changes": [],
+  "hia_changes": [],
+  "independent_review": {
+    "status": "approved",
+    "receipt": "review/dependency-independent-review-final.json",
+    "receipt_sha256": "19b0a67463820d4261e802d850fd998358840bc8cee45e6751feaf866bcd7859",
+    "formatting_equivalence": "review/dependency-format-equivalence.json",
+    "tests_repeated_by_reviewer": false
+  },
+  "evidence_archive_sha256": "a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81",
+  "evidence_storage": {
+    "format": "ordered-exact-byte-chunks-v1",
+    "chunks": 5,
+    "max_chunk_bytes": 400000,
+    "manifest": "evidence-index.json",
+    "original_archive_bytes": 1916937,
+    "original_archive_sha256": "a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81"
+  }
+}

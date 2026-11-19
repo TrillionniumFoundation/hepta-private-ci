@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "gate_job": {
+    "id": "1a1cf762917-2564-1a36",
+    "key": "owner6213-ai395-620235b-source-caller-862531d11598-v1",
+    "exit_code": 1,
+    "source_closure": {
+      "passed": 398,
+      "failed": 0
+    },
+    "owner_parser": {
+      "passed": 16,
+      "failed": 0
+    },
+    "caller_self_test": {
+      "exit_code": 0,
+      "test_count_claim": null
+    },
+    "caller_verify": {
+      "exit_code": 1
+    }
+  },
+  "diagnostic_job": {
+    "id": "1a1cf87d54c-2564-1a51",
+    "qualification_gate": false,
+    "exit_code": 1,
+    "boundaries_visited": 537,
+    "boundaries_verified": 525,
+    "boundaries_rejected": 12,
+    "protected_files_visited": 386,
+    "protected_files_rejected": 0,
+    "source_unchanged": true,
+    "metadata_limitation": "The admitted diagnostic's actual_sources extractor had an overescaped regex and yielded empty mappings. Original checker/error records/source-index are unchanged. Exact Git source pins are independently listed here."
+  },
+  "native_build_or_test_started": false,
+  "root_qualification_attempted": false,
+  "full_inventory": {
+    "before_and_after_bytes": 769626,
+    "sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560",
+    "original_files_byte_equal": true,
+    "tracked_files": 14886,
+    "status": "transfer-in-progress; not yet included in this tree",
+    "original_export_manifest": "qualification/evaluated-current-read-20261112/source-caller-620235b/original-byte-export.json"
+  },
+  "diagnostic_source_index": {
+    "bytes": 1353660,
+    "sha256": "6d89df794cea9667a3fb77bf4af72d3e96ab554ecbfdbbe61adbf4c96e82a8f3",
+    "files": 6597,
+    "status": "original remote file retained; not included in this tree"
+  },
+  "sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs",
+      "git_blob_sha": "fae852c8a1d5022347e632787172b99f9d119307",
+      "bytes": 3137,
+      "sha256": "3ebc32a6d3172e4b992c2eab81e5d7efdb04db78b5f32bd7d51423d5c1744f0c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_client.rs",
+      "git_blob_sha": "c050c38ab16e5efb93171a206664cfdcb05cc317",
+      "bytes": 7210,
+      "sha256": "10ecb5252d75d1d31af71f424d4fc7c57ce4e58486062b23953ac9555010c676"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_head_service.rs",
+      "git_blob_sha": "d639eeeed7160cfe4771a0917be4a6e821c6bb6a",
+      "bytes": 4445,
+      "sha256": "439c9edad9175b82fb4298cc3b68feda8298ee16680736a3190f07ebaee6c449"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/artifact_original_registry_source.rs",
+      "git_blob_sha": "b19c282177d0624a8974a2f7177261d6fc14e53c",
+      "bytes": 9325,
+      "sha256": "d0b3994f8186631ea6e88c256e819644072244948922bf219889bf2f2db466ea"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs",
+      "git_blob_sha": "7aa99759a05a3de496ab969bdd5f42c6d2fcd737",
+      "bytes": 4792,
+      "sha256": "bfaae4a0db7decdf2cce5f59406b72ac206ca00a0c6ac0cc63776f5529e10ad8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs",
+      "git_blob_sha": "028a4ceba0738db604bcaf3bc1bf548f8c5dd832",
+      "bytes": 10825,
+      "sha256": "bac94e48e19d052833f1c5ca359988f9ab8b91f015846605e7d798c7e859d6cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs",
+      "git_blob_sha": "5a69cc5f3bbfbb58b4050cc1e51c552cacb7e75f",
+      "bytes": 10679,
+      "sha256": "3351b2bde358bbf965a683d67e25b19b68fee773dd07bad0be87cfc5c49ee2cc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs",
+      "git_blob_sha": "6e849c4d06337f809bab785a8b934aca8f85e019",
+      "bytes": 3773,
+      "sha256": "b5f47358eedae703714b8abf8cdbef073ac9e4f4427683900da3a37395d972a4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs",
+      "git_blob_sha": "4a46b73bb8200bd61a6eb43a6338f3695d80ee04",
+      "bytes": 2169,
+      "sha256": "c1df25ab3c5cd6cbd8f84bc2f76b825bfeaa2e232923dc7268a2f135ddd958cb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",
+      "git_blob_sha": "0418a532daa7460954bec6d421d608c7aa1f16ee",
+      "bytes": 9119,
+      "sha256": "578c7df9e0391209e63151dafcee53ae1d76d00d4ef6e67da51a98633a2687b6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs",
+      "git_blob_sha": "f8cb73a2b9f87e1c866e74771ba10678ef168f90",
+      "bytes": 3072,
+      "sha256": "e882fd75ef43d769b935cce46342880b05b03bee0179349b982a40d046056adc"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs",
+      "git_blob_sha": "6c8e5ae94ff4753a48cb92c6b46b8a7559f00793",
+      "bytes": 3464,
+      "sha256": "1b72670f9f5608c4ac099d38661b4080f42fca517e89bbc375f3a1f4733bec54"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",
+      "git_blob_sha": "8768614e0da009a3ea5deba932c4a62e6694d79b",
+      "bytes": 7347,
+      "sha256": "e2c9a3665d67019763846fa2b9a290bdea0c6bcbace77ddd73f543eef3a3c2db"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-self-test.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-self-test.json",
+        "bytes": 1577,
+        "sha256": "354e8d2bab16f92c032cd4342262804ccba9f68418c676e711a94e99e246b39f",
+        "version": "66306:76589287:1577:1794482108767199271:1794482108767199271"
+      },
+      "blob_sha": "2ea508e22d6a168b1adba0909c807f153a8d2a98",
+      "bytes": 1577,
+      "sha256": "354e8d2bab16f92c032cd4342262804ccba9f68418c676e711a94e99e246b39f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-self-test.json.d9592409f2c14273ac29cf552f5cf2f5.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-self-test.json.d9592409f2c14273ac29cf552f5cf2f5.log",
+        "bytes": 48,
+        "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+        "version": "66306:76589286:48:1794482108733398612:1794482108733398612"
+      },
+      "blob_sha": "b9c1b405207bc8ef4b6100441ba7771493c6f8f2",
+      "bytes": 48,
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-self-test.runner.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-self-test.runner.log",
+        "bytes": 1473,
+        "sha256": "ab38472caf9f4ea5bb2f9df5f3a5c8acc49cea2a1c2a762e67556248c18322e1",
+        "version": "66306:76589282:1473:1794482108767199271:1794482108767199271"
+      },
+      "blob_sha": "bbaf1d009c546aa6a4198a831833b3d24220c9f6",
+      "bytes": 1473,
+      "sha256": "ab38472caf9f4ea5bb2f9df5f3a5c8acc49cea2a1c2a762e67556248c18322e1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/checkout.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/checkout.log",
+        "bytes": 95,
+        "sha256": "854b3f69a93e4481422d9a79641e2ad478b17b7c251385cec070f560a272ceab",
+        "version": "66306:76589275:95:1794482055455232375:1794482055455232375"
+      },
+      "blob_sha": "85a26c024f871ed7adc4c19b1d47186145430b75",
+      "bytes": 95,
+      "sha256": "854b3f69a93e4481422d9a79641e2ad478b17b7c251385cec070f560a272ceab"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/clone.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/clone.log",
+        "bytes": 68,
+        "sha256": "4f396d3e9e6152db3e98505e5693629a500307567200b4a6f174d2ac48363f5b",
+        "version": "66306:76589273:68:1794481991587602964:1794481991587602964"
+      },
+      "blob_sha": "05bb8381868e9011cfbb6401a288216ab6fcb0a1",
+      "bytes": 68,
+      "sha256": "4f396d3e9e6152db3e98505e5693629a500307567200b4a6f174d2ac48363f5b"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/fetch.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/fetch.log",
+        "bytes": 146,
+        "sha256": "0a72ec7605423812bb2a1136bfb13dd85c2d6f66e0e374a2e78500f6981a4671",
+        "version": "66306:76589274:146:1794482054897318287:1794482054897318287"
+      },
+      "blob_sha": "93487854e433fb9eb8ca3dbf82d762b28b609be9",
+      "bytes": 146,
+      "sha256": "0a72ec7605423812bb2a1136bfb13dd85c2d6f66e0e374a2e78500f6981a4671"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/owner-evidence-parser.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/owner-evidence-parser.json",
+        "bytes": 1657,
+        "sha256": "a7e5d45952e087b750d3b0c7e3a5ea7e64d3dc7b1af0a6d621ccd9fd1c361d1e",
+        "version": "66306:76589284:1657:1794482108625522558:1794482108625522558"
+      },
+      "blob_sha": "30c0524ff70c17f9c8f314522f61ca3075f9836b",
+      "bytes": 1657,
+      "sha256": "a7e5d45952e087b750d3b0c7e3a5ea7e64d3dc7b1af0a6d621ccd9fd1c361d1e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/owner-evidence-parser.json.4f535762e9f24929ad9b84f3fa1bf796.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/owner-evidence-parser.json.4f535762e9f24929ad9b84f3fa1bf796.log",
+        "bytes": 3123,
+        "sha256": "45cf88c8ce992e2ad16c3dc2690aa1d26969d6e79554614c23bfadf8e54066f2",
+        "version": "66306:76589283:3123:1794482108589403715:1794482108589403715"
+      },
+      "blob_sha": "0fccacdbd2607ee95827fde5a265c7b14ad75a99",
+      "bytes": 3123,
+      "sha256": "45cf88c8ce992e2ad16c3dc2690aa1d26969d6e79554614c23bfadf8e54066f2"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/owner-evidence-parser.runner.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/owner-evidence-parser.runner.log",
+        "bytes": 4604,
+        "sha256": "2a012fd5d1a9f9390ae234c1b8b1e7a7a9566a370c18058c30a34afada98cdce",
+        "version": "66306:76589279:4604:1794482108625522558:1794482108625522558"
+      },
+      "blob_sha": "07b7a34a29d7936d85b19af818d166c900905357",
+      "bytes": 4604,
+      "sha256": "2a012fd5d1a9f9390ae234c1b8b1e7a7a9566a370c18058c30a34afada98cdce"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-after.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-after.json",
+        "bytes": 376,
+        "sha256": "d79d94588d4009a539afc931268836184827edb38db8f63b3ec6b41fc49a5de1",
+        "version": "66306:76589293:376:1794482455456872152:1794482455456872152"
+      },
+      "blob_sha": "9b9005e51e73db287f0e7af8427113d22812c551",
+      "bytes": 376,
+      "sha256": "d79d94588d4009a539afc931268836184827edb38db8f63b3ec6b41fc49a5de1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-before.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-before.json",
+        "bytes": 376,
+        "sha256": "d79d94588d4009a539afc931268836184827edb38db8f63b3ec6b41fc49a5de1",
+        "version": "66306:76589277:376:1794482056458367439:1794482056458367439"
+      },
+      "blob_sha": "9b9005e51e73db287f0e7af8427113d22812c551",
+      "bytes": 376,
+      "sha256": "d79d94588d4009a539afc931268836184827edb38db8f63b3ec6b41fc49a5de1"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-closure.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-closure.json",
+        "bytes": 1644,
+        "sha256": "020064532a1080a99f8e2d2d3f6056b8da44446fc04bea38caf0262cf5e53d40",
+        "version": "66306:76589281:1644:1794482108401695481:1794482108401695481"
+      },
+      "blob_sha": "64358a6aef610d1cd7336bbb7899cde8c468caa0",
+      "bytes": 1644,
+      "sha256": "020064532a1080a99f8e2d2d3f6056b8da44446fc04bea38caf0262cf5e53d40"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/RESULT.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/RESULT.json",
+        "bytes": 12895,
+        "sha256": "4c95e224242e16c55bd70be437696900123f2100f7ff9285548f4475368a57a3",
+        "version": "66306:76589294:12895:1794482455459599267:1794482455459599267"
+      },
+      "blob_sha": "a63094b0d82258071f0380a7430607a5d3a2997e",
+      "bytes": 12895,
+      "sha256": "4c95e224242e16c55bd70be437696900123f2100f7ff9285548f4475368a57a3"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-verify.json.5972d1deb562477ba346d2a65eb0a4b1.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-verify.json.5972d1deb562477ba346d2a65eb0a4b1.log",
+        "bytes": 192,
+        "sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139",
+        "version": "66306:76589289:192:1794482455069063806:1794482455069063806"
+      },
+      "blob_sha": "e4d0dce9b262a67a469dbfedb74b7ae99e3ae613",
+      "bytes": 192,
+      "sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-verify.json",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-verify.json",
+        "bytes": 1570,
+        "sha256": "7b3fad514ebd3d74f6984164f57520e07a0f0809e91653effd40ee396751853d",
+        "version": "66306:76589292:1570:1794482455092078442:1794482455093062948"
+      },
+      "blob_sha": "0db09d054d1badb112bc74bb2ad5bcc5cfddaa3b",
+      "bytes": 1570,
+      "sha256": "7b3fad514ebd3d74f6984164f57520e07a0f0809e91653effd40ee396751853d"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/caller-verify.runner.log",
+      "kind": "original-file",
+      "original": {
+        "path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/caller-verify.runner.log",
+        "bytes": 1610,
+        "sha256": "83f5db1dcb7e1d975ca18bd40f123b036986ac275458705c39cab3c541742a0f",
+        "version": "66306:76589285:1610:1794482455093062948:1794482455093062948"
+      },
+      "blob_sha": "6d4a0cffe490fbe1241b1d9140973ba5923c587b",
+      "bytes": 1610,
+      "sha256": "83f5db1dcb7e1d975ca18bd40f123b036986ac275458705c39cab3c541742a0f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-closure.json.3a96a4d02a904daca06e9b19c1ec1bfc.log",
+      "kind": "original-file",
+      "original": {
+        "bytes": 89734,
+        "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-closure.json.3a96a4d02a904daca06e9b19c1ec1bfc.log",
+        "original_stat": {
+          "ctime_ns": "1794482108364411689",
+          "inode": "76589280",
+          "mtime_ns": "1794482108364411689",
+          "size": 89734
+        },
+        "path": "source-closure.json.3a96a4d02a904daca06e9b19c1ec1bfc.log",
+        "sha256": "2232459f6538d08f97c153395386848c9e88c53a557af4990cccc08a2f7b55dc"
+      },
+      "blob_sha": "15331b3b4446b0b312aa01d0e8378e05516ded7c",
+      "bytes": 89734,
+      "sha256": "2232459f6538d08f97c153395386848c9e88c53a557af4990cccc08a2f7b55dc"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/source-closure.runner.log",
+      "kind": "original-file",
+      "original": {
+        "bytes": 91202,
+        "original_path": "/home/qq/neuro-owner-evidence-862531d11598/pr6213-620-source-caller/source-closure.runner.log",
+        "original_stat": {
+          "ctime_ns": "1794482108401695481",
+          "inode": "76589278",
+          "mtime_ns": "1794482108401695481",
+          "size": 91202
+        },
+        "path": "source-closure.runner.log",
+        "sha256": "814db80360d34ff4dc0671e476566535b5d1b7cd75113eff241836a2ac95245e"
+      },
+      "blob_sha": "3e90d39ecc9a413cacc6d07a888871f0c1514292",
+      "bytes": 91202,
+      "sha256": "814db80360d34ff4dc0671e476566535b5d1b7cd75113eff241836a2ac95245e"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/stdout.log",
+      "kind": "original-process-output",
+      "blob_sha": "9a36cd6df5ed9d5be91565d16372827a86a4a174",
+      "bytes": 10968,
+      "sha256": "2a8fe4c1336a80508bf5a7be1b79d05980fee822360c4cbf5fd19fa967add267"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/stderr.log",
+      "kind": "original-process-output",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/process-status.observed.json",
+      "kind": "observed-tool-response",
+      "blob_sha": "6d3cc058bd48d2c782d48b08e33c70e895bf73b6",
+      "bytes": 731,
+      "sha256": "893d9285751e076fc155e7c7291616a2b0f83eb9f9e4b77e2da46a8f7e8853bd"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/process-launch.observed.json",
+      "kind": "observed-tool-response",
+      "blob_sha": "b072dc72afc55290bcb98eac0042918a50f5d253",
+      "bytes": 9048,
+      "sha256": "7132122ef3c6cf36a32e00db75d0ec03d63a7d41f41cb098eded9273e34e783f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/execution-request.json",
+      "kind": "exact-admitted-request",
+      "blob_sha": "b80e33656803f2097006e97c542d1c820547e223",
+      "bytes": 8358,
+      "sha256": "27bbe96136f11aa191470b3334649189b8124d1a5512ab1b41649dc8c5602e39"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/execution-runner.py.txt",
+      "kind": "exact-admitted-script",
+      "blob_sha": "03ccc0db8e8876380195b632ca6fb2f089932981",
+      "bytes": 6981,
+      "sha256": "12f3261828782130fad74565a3b19477bb4ef5e87339481d24d0665dda8c431a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/source-caller-620235b/original-byte-export.json",
+      "kind": "original-file",
+      "blob_sha": "6e83c8aac81e76c2b75cd2fc95c641a6da8ffc57",
+      "bytes": 15738,
+      "sha256": "3bc0398635d51300a700959db1886b73d4eeaf44cb2edda1fa4ddf2020d02608"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/DIAGNOSTIC.json",
+      "kind": "original-file",
+      "blob_sha": "675aa78e24d8976594277b9702362cd9304ee7c6",
+      "bytes": 163275,
+      "sha256": "df1b394de7ac19fbaf88815487dafae95276f0372c126de12efea1203d556f67"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/stdout.log",
+      "kind": "original-process-output",
+      "blob_sha": "6bf74af5c2ec9be67a1144a149ca2fe2d954a0f9",
+      "bytes": 14934,
+      "sha256": "79b17051f2d091e4dfcc7c571b3695858eb5e745ed554d6e2239da4a512299b4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/stderr.log",
+      "kind": "original-process-output",
+      "blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/process-status.observed.json",
+      "kind": "observed-tool-response",
+      "blob_sha": "ed4d39d1c05b39a9f18208312a16cd8f65f375a3",
+      "bytes": 731,
+      "sha256": "a18883f36d7ca6b79cf230ca45e19cbe19a2d231d4b6cbf71b20610594076b1f"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/execution-request.json",
+      "kind": "exact-admitted-request",
+      "blob_sha": "08c8552a6e7f88e61153137ebca2152a0d604cf8",
+      "bytes": 6546,
+      "sha256": "34d61208273f38b4cf74e78ebdde2c65c01eb5bb1fb3e42bf3af464e8c5a6b8c"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/diagnostic-runner.py.txt",
+      "kind": "exact-admitted-script",
+      "blob_sha": "eff0774aab307483a7a1fd33fb30b83d1d9e82c5",
+      "bytes": 5538,
+      "sha256": "97004d43c81613465e3eff18c98b265a9763040f790ff695ef193903683b4c9a"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/qa-tuple-proposal.json",
+      "kind": "derived-static-review",
+      "blob_sha": "6ba684022b27dd225a01cd8941e1a8206b0418d3",
+      "bytes": 111388,
+      "sha256": "dd4d0f08a3d77af6be00e51fe3b57b611da34e3d9b082d89f9eb6c5f1845d0f4"
+    },
+    {
+      "path": "qualification/evaluated-current-read-20261112/caller-diagnostic-620235b/original-byte-export.json",
+      "kind": "original-file",
+      "blob_sha": "43b1bb78491c8fd449f2a75e2fd24a3c8ab82c41",
+      "bytes": 3097,
+      "sha256": "4619f840a99ab590fde3658763fcdc07f2d8a8a20268780583f562b90ef9c6f6"
+    }
+  ]
+}

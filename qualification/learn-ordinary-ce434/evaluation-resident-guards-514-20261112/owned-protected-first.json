@@ -1,0 +1,16 @@
+{
+  "source": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "rows": 53,
+  "errors": [
+    {
+      "index": 310,
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "error": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original(: required code order missing: ['continuation: ResidentContinuationV3', 'LearningIterationCoordinatorV1::from_snapshot(profile.initial.clone())?', 'coordinator.next_stage()', 'ResidentOriginalStageOwnersV3::require_stage(stages.as_ref(), stage)?', 'coordinator.snapshot().clone()', 'gate.begin(&predecessor, stage).await?', 'stages.execute_stage(&predecessor, stage)', 'Duration::from_millis(250)', 'maximum_training_milliseconds', 'gate.cancellation().cancelled()', 'tokio::time::sleep_until(training_end)', 'stage == LearningIterationStageV1::Training', 'watchdog.tick()', 'RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?', 'RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?', 'profile.scope.validate_observation(&receipt.observation)?', 'owner.read(gate.cancellation()).await?', 'coordinator.record(receipt, now / 1_000)?', 'authentication::original_attestations(', 'RootResidentLearningEffectGateV3::require_current(gate, &predecessor, &profile.scope).await?', 'owner.read(gate.cancellation()).await?', 'authentication::verify_attestations(', 'fresh / 1_000', 'gate.checkpoint(&predecessor, coordinator.snapshot().clone())\\n            .await?']"
+    },
+    {
+      "index": 347,
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "error": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn exchange(: required code order missing: ['let started_at = now()?', 'self.channel.try_lock()', 'action == wire::Action::Execute', 'channel.execution_requested', 'slot.take().ok_or(Error::Unavailable)?', 'channel.execution_requested = true', 'QueuedCancellation(Arc::new(AtomicBool::new(false)))', 'Arc::clone(&cancellation.0)', 'self.context.authenticate(started_at)?', '!(1..=128).contains(&request_id)', 'request_id.checked_add(1)', 'wire::Request::new(&self.context, self.binding, request_id, action)', 'serde_json::to_vec(&request)?', 'encoded.len() > 16_384', 'tokio::task::spawn_blocking(move ||', 'action == wire::Action::Execute && queued.load(Ordering::Acquire)', 'return Err(Error::CommitUncertain)', 'channel\\n                .peer\\n                .request(&encoded)', 'response.require_request(&request)?', 'channel.peer.check_peer_lifetime()?', 'let current = now()?', 'require_clock(started_at, current)?', 'self.context.authenticate(current)?', 'wire::decode_completed(&self.context, snapshot, original_evidence, current)?', 'retained.as_ref().is_some_and(|saved| saved != &original)', '*retained = Some(original.clone())', 'wire::Outcome::Missing | wire::Outcome::Pending', 'self.retained.try_lock()', 'return Err(Error::CommitUncertain)', 'wire::Outcome::Missing => Err(Error::Missing)', 'wire::Outcome::Pending => Err(Error::Pending)', 'wire::Outcome::PredecessorUnavailable => return Err(Error::PredecessorUnavailable)', 'wire::Outcome::Uncertain => return Err(Error::CommitUncertain)', 'Some(channel)', 'drop(cancellation)', 'result']"
+    }
+  ]
+}

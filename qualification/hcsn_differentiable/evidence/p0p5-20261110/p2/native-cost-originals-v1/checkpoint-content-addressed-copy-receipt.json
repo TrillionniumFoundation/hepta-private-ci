@@ -1,0 +1,20 @@
+{
+  "kind": "content_addressed_materialization",
+  "target": "hcsn-cost-v1/g128-uncached-b1/after.pt",
+  "bytes": 245479,
+  "sha256": "065f744ef6ea1da0f1798017470bc4e8be0cac494d55fa2d34f85d33c33c5c1f",
+  "source": "hcsn-cost-v1/g128-cached-b1/after.pt",
+  "source_verified_by": "checkpoint-binary-receipts/hcsn-cost-v1/g128-cached-b1/after.pt.json",
+  "target_expected_sha256_from": "hcsn-cost-v1/g128-uncached-b1/RESULT.json:artifacts.after.pt",
+  "direct_binary_read_of_target_complete": false,
+  "reason": "Both original RESULT files name the identical checkpoint SHA256. Materialized exact matching bytes from verified cached probe; no pickle loaded or training recomputed.",
+  "latest_remote_file_info_tool_error": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.file_info`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  }
+}

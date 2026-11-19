@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "retention-observation-and-adoption-boundary",
+  "inspected_source": "48844493c046fdd79734ddd2c1866314023a15cb",
+  "pins": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "blob": "a3be9f7b415d4783886b346d273296ae8ecb32e5",
+      "function": "require_observed_panel",
+      "finding": "Rejects InsufficientEvidence and verifies nonempty complete original retention membership. A known Ineligible observation can be read."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs",
+      "blob": "b0ea87b5282a7fa61274ac03bbdcfe671c95d8b7",
+      "function": "verify",
+      "finding": "Authenticates original Product/Qualification/execution evidence, rejects unknown disposition values, and sets each checked member qualified from its original decision."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs",
+      "blob": "c9b8a264cbf51fbf4c405042e1252e931717524a",
+      "function": "material",
+      "finding": "Before this patch, returned Checked.qualified from primary.qualified alone after authenticating retention evidence."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material.rs",
+      "blob": "937aa106c53844ea17c42549ee22414bba89b0a6",
+      "function": "require_original_model_input / require_original_selector_material",
+      "finding": "Before this patch, Model used that primary-only admission flag; Selector authenticated the full body but did not independently require every retention member to be qualified."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "blob": "528524868a98207dd2b6c10904251d6db68969ca",
+      "function": "completed_member / original_panel_reads_actual_b_and_retention_with_full_original_signatures",
+      "finding": "The actual fixture reads real original B/retention owners and preserves Ineligible. It does not establish a positive ordinary profile."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_plan_support_tests.rs",
+      "blob": "0fa5696050c70b84956609ecc415a2a9ea5443bd",
+      "function": "ProviderPlanFixture::for_panel",
+      "finding": "The fixture reuses the original frozen metric roles/sources for primary and retention; it does not supply a distinct noninferiority retention criterion."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_observations.rs",
+      "blob": "95cc2c732e067249f255e2d39b7daf6cec7cbc35",
+      "finding": "Fixture task-success is Maximize with PrimarySuperiority margin zero and DoublyRobust source; no separate NonInferiority role."
+    }
+  ],
+  "old_gap": "Authentication of retention evidence was not the same as satisfaction of its acceptance rule. A primary-qualified result alone could reach positive Model admission even when a retention qualification was Ineligible.",
+  "new_rule": "After full original evidence verification and complete nonempty membership checks, positive admission requires every checked member to be qualified. No unregistered alternative criterion is inferred.",
+  "cases": [
+    {
+      "primary": "Eligible",
+      "retention": "all Eligible",
+      "observation": "original primary verdict unchanged",
+      "model_and_selector": "may proceed only if all remaining original identity, currentness and owner checks also succeed"
+    },
+    {
+      "primary": "Eligible",
+      "retention": "one or more Ineligible",
+      "observation": "authentic complete record remains readable",
+      "model_and_selector": "rejected"
+    },
+    {
+      "primary": "Ineligible",
+      "retention": "known Eligible or Ineligible",
+      "observation": "authentic original NoUpdate remains readable",
+      "model_and_selector": "rejected"
+    },
+    {
+      "primary": "unknown or insufficient",
+      "retention": "any",
+      "observation": "existing original validation rejects; not converted into NoUpdate",
+      "model_and_selector": "rejected"
+    },
+    {
+      "primary": "known",
+      "retention": "missing, duplicate, unregistered, unknown, expired or inconsistent",
+      "observation": "existing original full-panel validation rejects",
+      "model_and_selector": "rejected"
+    }
+  ],
+  "interpretation": [
+    "Ineligible can mean insufficient proof of superiority and does not by itself establish a regression.",
+    "A read-only observation is not adoption, a retained-capability certificate, or a rollback.",
+    "The patch neither re-signs a primary receipt nor changes a frozen metric/threshold or an already persisted Model/Version record.",
+    "Existing fixture credentials, declared Product metadata and future B clock remain explicit mechanisms; they are not ordinary production authorization.",
+    "The all-real positive qualified-E to Model/Version effect chain remains unverified.",
+    "Ordinary acceptance count remains zero."
+  ],
+  "related_evidence": [
+    {
+      "kind": "pure statistical power and retention-role audit",
+      "blob": "3ef3396b871c37324f6d2c8c64138074489b0831",
+      "owner": "learn_model_carrier"
+    },
+    {
+      "kind": "actual evaluator-only capability audit",
+      "commit": "29e6dd78880228931c6cc780f3ecaa0ba5f6b532",
+      "owner": "learn_readonly_bootstrap"
+    },
+    {
+      "kind": "paired input identity admissibility source audit",
+      "blob": "1cfe0b67e74048de00ef2d1d678dc11946deeea8",
+      "owner": "learn_readonly_bootstrap"
+    }
+  ]
+}

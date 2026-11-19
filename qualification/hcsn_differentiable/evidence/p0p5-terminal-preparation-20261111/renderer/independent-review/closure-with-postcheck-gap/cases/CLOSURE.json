@@ -1,0 +1,144 @@
+{
+  "actual_analysis_executed": false,
+  "actual_argv_mismatch_rejected": true,
+  "cases": [
+    {
+      "accepted": true,
+      "case": "positive_control",
+      "error": null,
+      "original_input": {
+        "bytes": 5662,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-review-v1/cases/positive_control-INPUT.json",
+        "sha256": "5d733b71e0d31a3b62513e47bd42fe47474eeea77566e50b434fd3608bbe4731"
+      },
+      "result": {
+        "GNU_CPU_print_comparison_slack_seconds": 0.02,
+        "complete_analysis_child_seconds": 1.0,
+        "core_disjoint_CPU_lower_bound_seconds": 0.15000000000000002,
+        "disjoint_CPU_lower_bound_seconds": 0.35,
+        "metadata_finalization_prefix_seconds": 0.3,
+        "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+        "supervisor_wall_prefix_seconds": 3.0
+      },
+      "scope": "Exact original JSON bytes; same actual envelopes/accounting calls."
+    },
+    {
+      "accepted": false,
+      "case": "finalization_beyond_native_whole",
+      "error": "native whole cannot cover recorded child/finalization prefixes",
+      "original_input": {
+        "bytes": 5663,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-review-v1/cases/finalization_beyond_native_whole-INPUT.json",
+        "sha256": "13f0f283ac9bafc684610abf2ac435996afc77a3767e52b8dae2d9a6ad912493"
+      },
+      "result": null,
+      "scope": "Exact original JSON bytes; same actual envelopes/accounting calls."
+    },
+    {
+      "accepted": false,
+      "case": "worker_CPU_beyond_complete_parent_CPU",
+      "error": "core disjoint CPU exceeds complete OS child CPU",
+      "original_input": {
+        "bytes": 5664,
+        "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-review-v1/cases/worker_CPU_beyond_complete_parent_CPU-INPUT.json",
+        "sha256": "fc7d814b86108103f191189254d3731520ceeffaabcd0a2fd48bd5d0eca72fec"
+      },
+      "result": null,
+      "scope": "Exact original JSON bytes; same actual envelopes/accounting calls."
+    },
+    {
+      "accepted": true,
+      "case": "raw_native_positive_control",
+      "error": null,
+      "original_wrong_argv_value_preserved": false,
+      "result": {
+        "GNU_complete_native_cost": {
+          "conservative_wall_upper_seconds": 4.01,
+          "peak_RSS_bytes": 1024000,
+          "per_field_print_resolution_seconds": 0.01,
+          "printed_CPU_sum_seconds": 0.4,
+          "printed_system_CPU_seconds": 0.1,
+          "printed_user_CPU_seconds": 0.3,
+          "printed_whole_wall_seconds": 4.0,
+          "returncode": 0,
+          "scope": "Whole native direct command, quantized GNU output; not precise wait4."
+        },
+        "analysis_artifacts": {
+          "RESULT": {
+            "bytes": 266,
+            "sha256": "d55b7b56415548fca907b7e1c3b728b8edaa2f89c988bc23455ad1bbf82dba2f"
+          },
+          "ZIP": {
+            "bytes": 62,
+            "sha256": "9d581d2dac99618367cf0ca1e56e3426a29adc5136018716512c7a74611cb842"
+          },
+          "core_receipt": {
+            "bytes": 361,
+            "sha256": "8aecddb10e7f611dc49748262c62deef5dc26c051eb84fc46d26532b3718d7e4"
+          },
+          "os_receipt": {
+            "bytes": 10197,
+            "sha256": "bbb2e2e9bf53e70d31b81212ab8d0aa9884c8de5b9004a625555e1205e47e8c4"
+          }
+        },
+        "native_idempotency_key": "synthetic-only",
+        "native_job_id": "synthetic-job",
+        "nested_accounts": {
+          "GNU_CPU_print_comparison_slack_seconds": 0.02,
+          "complete_analysis_child_seconds": 1.0,
+          "core_disjoint_CPU_lower_bound_seconds": 0.07,
+          "disjoint_CPU_lower_bound_seconds": 0.30000000000000004,
+          "metadata_finalization_prefix_seconds": 0.5,
+          "scope": "GNU is the complete native155 command; supervisor prefix excludes its final receipt and exit. Nested costs are not added again.",
+          "supervisor_wall_prefix_seconds": 3.0
+        },
+        "program_manifest_sha256": "f2d1ce683591a9b8575aab2d0981bf67b9e465bf9686a8da2e87a2246a0ea70e",
+        "qualified_supervisor_sources": {
+          "complete_os_envelope.py": {
+            "bytes": 16554,
+            "sha256": "6e6be1db16c1a05f49806b63f8024111ed25c02bda61510dcde4a9e4e3a39be0"
+          },
+          "os_processes.py": {
+            "bytes": 15037,
+            "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+          }
+        },
+        "raw_log_identities": {
+          "stderr": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stdout": {
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        "reconciled_same_key": false,
+        "request_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "schema": "renderer-native155-admission-v1",
+        "scope": "Metadata/source admission only; no new process, statistics, LR selection, model or E access."
+      },
+      "scope": "Actual raw-native consumer only, using an explicitly attributed owner fixture builder; no unittest methods, full renderer load or plotting run."
+    },
+    {
+      "accepted": false,
+      "case": "raw_native_unrelated_actual_argv",
+      "error": "actual complete OS child command differs from native request",
+      "original_wrong_argv_value_preserved": true,
+      "result": null,
+      "scope": "Actual raw-native consumer only, using an explicitly attributed owner fixture builder; no unittest methods, full renderer load or plotting run."
+    }
+  ],
+  "exact_original_JSON_cases": 3,
+  "original_two_cost_faults_rejected": true,
+  "owner_fixture_only_dependency": {
+    "bytes": 11905,
+    "path": "/workspace/scratch/c385a7439f8e/renderer-native155-independent-closure-v1/candidate-source/test_native155.py",
+    "sha256": "a1b925156920b8ddcd98e7dd80e8ec5d75e70133b803d4fa8ec57db45ede80c7"
+  },
+  "raw_native_consumer_cases": 2,
+  "schema": "renderer-native155-independent-narrow-closure-v1",
+  "scientific_admission": "HOLD",
+  "scope": "5 fixed metadata function calls in one bounded process; no original owner test suite, production renderer, Matplotlib, model, native job, actual C2 or E access.",
+  "status": "passed_prospective_contract_closure"
+}

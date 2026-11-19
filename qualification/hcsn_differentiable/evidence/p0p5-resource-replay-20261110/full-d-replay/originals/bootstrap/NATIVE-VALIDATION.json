@@ -1,0 +1,31 @@
+{
+  "actual_trained_checkpoint_read": false,
+  "argv": [
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/home/qian-qi/hepta-hcsn-best-full-D-replay-program-20261110-c385-v1",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "backward_calls": 0,
+  "child_peak_rss_bytes": 640815104,
+  "observed_tests": 16,
+  "optimizer_steps": 0,
+  "passed": true,
+  "program_after": {
+    "manifest_sha256": "8cd0fdcf94a5af733173d6fc513b2b379df8bdd9f28604116658fe40a7c19e12",
+    "verified_members": 13
+  },
+  "returncode": 0,
+  "stderr_sha256": "59eafa888ddfc56384f12078553bee86b59cd371a5a2717c70c9321b79ca9453",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timed_out": false,
+  "unittest_seconds": 0.199,
+  "waited_child_CPU_seconds": 2.478329,
+  "whole_child_wall_seconds": 2.672905263956636
+}

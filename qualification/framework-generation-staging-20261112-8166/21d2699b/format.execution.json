@@ -1,0 +1,54 @@
+{
+  "after": {
+    "commit": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+    "dirty": false,
+    "parents": [
+      "445a28cb3debceca7d53ddae8e04592242662f8e"
+    ],
+    "tree": "f405f505bbea56e9c19b48f41267c8a75df5207b"
+  },
+  "base_sha": "445a28cb3debceca7d53ddae8e04592242662f8e",
+  "before": {
+    "commit": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+    "dirty": false,
+    "parents": [
+      "445a28cb3debceca7d53ddae8e04592242662f8e"
+    ],
+    "tree": "f405f505bbea56e9c19b48f41267c8a75df5207b"
+  },
+  "command": [
+    "cargo",
+    "fmt",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "--package",
+    "codex-hepta-infer-core",
+    "--package",
+    "codex-hepta-types",
+    "--",
+    "--check"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 1.0316742530000056,
+  "exit_code": 0,
+  "finished_at": "2026-11-12T00:37:31.440339+00:00",
+  "job": "owner-regression",
+  "lane": "source-head",
+  "log_bytes": 318,
+  "log_file": "format.json.86befaf7401a4d0e866723bc5db9967f.log",
+  "log_sha256": "40fb37a0cb48659f9e05e0228f8de81e088ad05b38d0d3ef39f45fdc488dddd6",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "43127681844",
+  "schema_version": 1,
+  "source_sha": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+  "started_at": "2026-11-12T00:37:30.407996+00:00",
+  "status": "passed",
+  "tested_sha": "21d2699b7ac7831f355f5acb9570a90da077dbe3",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

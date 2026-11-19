@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source_sha": "2f72f2f550b89432e2d853774744a88d02f6a532",
+  "source_sha_after": null,
+  "source_status_before": "",
+  "source_status_after": null,
+  "workspace": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/worktree/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/workspace/scratch/ff772bc098e2/frontier_merge_audit/helpers-fdd-attempt03/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": null,
+      "cargo_finished": null,
+      "complete": false
+    }
+  ],
+  "artifacts": {},
+  "complete": false,
+  "exit_code": 1
+}

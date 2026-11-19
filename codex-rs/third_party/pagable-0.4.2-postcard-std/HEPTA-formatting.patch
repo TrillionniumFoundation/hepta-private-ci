@@ -1,0 +1,11 @@
+--- a/src/storage/data.rs
++++ b/src/storage/data.rs
+@@ -35,7 +35,7 @@
+     Copy,
+     Hash,
+     bytemuck::NoUninit,
+-    bytemuck::AnyBitPattern
++    bytemuck::AnyBitPattern,
+ )]
+ #[repr(transparent)]
+ pub struct DataKey(pub u128);

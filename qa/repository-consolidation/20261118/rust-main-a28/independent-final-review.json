@@ -1,0 +1,84 @@
+{
+  "reviewed_at_utc": "2026-11-18T14:32:12.746591+00:00",
+  "status": "PASS",
+  "scope": "Independent read-only archive integrity, original evidence custody, and exact source/ancestry binding. No tests rerun.",
+  "archive": {
+    "bytes": 233380,
+    "sha256": "d7d7abbd7a261bd915e5939548a77525fa555a07a6da8f7b092adbd7a6d1a2fc",
+    "manifest_sha256": "4fe262b8f9fcd2c856ba290f9846f8d896f0cbd8e7e5e44fe51cfac8130563a1",
+    "members_verified": 64,
+    "all_member_sizes_and_hashes_verified": true,
+    "no_links_or_duplicate_members": true
+  },
+  "inventories": {
+    "all_compressed_and_decoded_hashes_verified": 8,
+    "current_protected_refs": 356,
+    "prior_review": "evidence-review.json confirms initial349unchanged and all356tips absent from candidate ancestry"
+  },
+  "native_notes": {
+    "archive_bytes": 101765,
+    "archive_sha256": "f96a927a13c53d9ad0ef84e67c713c522435bce906cbf60599e57a2a5a7aee7c",
+    "members": 22,
+    "indexed_members_verified": 21,
+    "index_bound_by_outer_archive": true,
+    "bundle_verified_and_unbundled_in_independent_database": true,
+    "red_head": "714e67da2b60e3d961a44aca4beb17eb610ed395",
+    "red_changed_files": [
+      "codex-rs/hepta-agentd/src/notes_thread_status_tests.rs"
+    ],
+    "red_implementation_unchanged": true,
+    "red_exit_code": 100,
+    "red_summary": "Summary [   0.045s] 8 tests run: 6 passed, 2 failed, 1694 skipped",
+    "green_head": "195eafed0540025a2ed590fa8b8b2441644bd952",
+    "green_tree": "9e1d394194f71d6b4b7e4386c47ce1c9143a963a",
+    "green_parents": [
+      "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+      "59d05538c9a2be1d1240e328648935832fac7cf4"
+    ],
+    "green_changed_files": [
+      "codex-rs/hepta-agentd/src/notes_thread_status.rs",
+      "codex-rs/hepta-agentd/src/notes_thread_status_tests.rs"
+    ],
+    "green_test_exit_code": 0,
+    "green_summary": "Summary [  10.449s] 126 tests run: 126 passed, 1576 skipped",
+    "outside_filter_not_tested": 1576,
+    "caller_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "caller_rust_files": 7873,
+    "caller_boundaries": 1645,
+    "caller_protected_files": 820,
+    "authority_granted": false,
+    "formatter_exit_code": 0,
+    "formatter_after_tests_and_caller_verification": true,
+    "source_and_manifest_unchanged_after_formatting": true,
+    "source_git_blobs": {
+      "codex-rs/hepta-agentd/src/notes_thread_status.rs": "bd2ceb0ce4c275ca78cf3e85a9aad95e79b0a015",
+      "codex-rs/hepta-agentd/src/notes_thread_status_tests.rs": "8779fc6f308ac974459ac4fa536ea3a9895db840"
+    },
+    "source_sha256": {
+      "codex-rs/hepta-agentd/src/notes_thread_status.rs": "9c0b4e9a0d7ee68fc21963446fc5dd5c329b28e4ef60e1f4d4afca82249a18ff",
+      "codex-rs/hepta-agentd/src/notes_thread_status_tests.rs": "0cefa33d1d44c961201c00bfc0ffb704f4c28ce0b63d83ca33ba95183df499d5"
+    },
+    "current_candidate_bytes_match_native_formatted_source": true,
+    "all_raw_log_bindings_verified": true,
+    "initial_metadata_failure": {
+      "job_id": "1a1eef44e3d-ffbe-39d",
+      "state": "failed",
+      "exit_code": 1,
+      "stderr_bytes": 1352,
+      "stderr_sha256": "c70b90b0ed4fc986def9228b0722400eccc824790afaafe868483a690e1f80dc",
+      "retained_in": "notes-control-notes-control-originals.json"
+    }
+  },
+  "historical_failures_preserved": [
+    "originalsourceclosureerrors",
+    "firstfullB4missingfixtures",
+    "firstandsecondBazelvalidationattempts",
+    "Notesredtwoexpectedfailures",
+    "Notesinitialgreenmetadatafailure"
+  ],
+  "limits": [
+    "126 selected Notes tests are component qualification;1576cases outside the filter are not claimed tested",
+    "Bazel digest/evaluation results do not qualify original500msNextUse",
+    "Core,Windows,macOSPTY and ordinary-history reconciliation retain independent outcomes"
+  ]
+}

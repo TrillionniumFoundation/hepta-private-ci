@@ -1,0 +1,34 @@
+{
+  "schema": "hcsn.offline-audit-tools-archive.v1",
+  "head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "run_id": 42253531173,
+  "archive": {
+    "path": "offline-audit-tools.tgz",
+    "bytes": 6469,
+    "sha256": "3a66d8a4d5ded27ba0327c8345cab38c7ef382c4090521aad1f2a876b2789674"
+  },
+  "members": [
+    {
+      "path": "archive_source.py",
+      "bytes": 7849,
+      "sha256": "9804218a4f2a9a4483cdcfb3acbb321c52d448bd8b0d2e9b69a8719a0f6613d5",
+      "byte_identical_to_scratch_original": true,
+      "tar_type": "regular",
+      "tar_mode": "0o644"
+    },
+    {
+      "path": "audit_source_results.py",
+      "bytes": 14610,
+      "sha256": "2485f55a6c15033f314dae26ee3ba2015e0181b953307e860fc5e96e05aea6b4",
+      "byte_identical_to_scratch_original": true,
+      "tar_type": "regular",
+      "tar_mode": "0o644"
+    }
+  ],
+  "all_members_byte_identical_to_scratch_originals": true,
+  "original_scripts_retained_in_scratch": true,
+  "purpose": "Offline artifact retention and evidence review tools; not runtime qualification source. Only their archive and this manifest are published under qualification evidence to avoid changing the recursive .py source inventory.",
+  "source_inventory_or_scan_rule_changes": false,
+  "artifact_member_changes": false
+}

@@ -1,0 +1,211 @@
+{
+  "schema": "hepta.canonical.checkpoint-service-slice.v1",
+  "final_source_commit": "74e8ef667b7c0b33e292ccee476fe64e6eb4a0d7",
+  "final_source_tree": "517e085c1729285cca68da752d205565f42e9d55",
+  "status": "",
+  "scoped_tests": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 271,
+    "seconds": 26.978,
+    "receipt": "checkpoint-service-scope-tests-03.json"
+  },
+  "stages": {
+    "checkpoint-service-cli-thin-build-03": {
+      "command": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-authority-host",
+        "--example",
+        "authority_host_peer_qualification",
+        "--locked"
+      ],
+      "exit": 0,
+      "seconds": 11.594765404006466,
+      "cache_reused": true,
+      "source_before": {
+        "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+        "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+        "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9333,
+        "live_source_sha256": "c832bc3b0c9bdd162903755f2805b44365c17b5728d804b09423ec8e526c36b0"
+      },
+      "toolchain": "1.96.0"
+    },
+    "checkpoint-service-cli-thin-build-04": {
+      "command": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "-p",
+        "codex-hepta-agentd",
+        "--example",
+        "authority_host_peer_qualification",
+        "--locked"
+      ],
+      "exit": 0,
+      "seconds": 10.660632946062833,
+      "cache_reused": true,
+      "source_before": {
+        "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+        "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+        "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9333,
+        "live_source_sha256": "e095c66ee43a5e98e39c7f1ecb26d22456f959cfb548b438e69afa071b75e252"
+      },
+      "toolchain": "1.96.0"
+    },
+    "checkpoint-service-root-positive-04": {
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-20261023",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/data/hepta-authority-private-os3-20261023",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN=/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+        "HEPTA_SERVICE_WRITER_PROOF=1",
+        "HEPTA_SERVICE_CHECKPOINT=1",
+        "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+        "--exact",
+        "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit": 101,
+      "seconds": 13.94950402493123,
+      "artifacts": {
+        "source": {
+          "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+          "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+          "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+          "index_flags": [
+            "H"
+          ],
+          "files": 9333,
+          "live_source_sha256": "e095c66ee43a5e98e39c7f1ecb26d22456f959cfb548b438e69afa071b75e252"
+        },
+        "test_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+        "test_sha256": "3984b4de0d2adb96a05b15867f649d1b8a87f54177d9b82bfebdc3c0134c55f8",
+        "client_binary": "/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+        "client_sha256": "7add14c7b49fd4cfedac1997de982ead70c3a1e5a7100e643f57e5fcb3a87fbb",
+        "source_counter": 0,
+        "scope": "limited original checkpoint wire and writer expiry; not fresh wholewriter bind or full publication/recovery"
+      }
+    },
+    "checkpoint-service-root-expired-writer-04": {
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-20261023",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/data/hepta-authority-private-os3-20261023",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_CLIENT_BIN=/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+        "HEPTA_SERVICE_WRITER_PROOF=1",
+        "HEPTA_SERVICE_CHECKPOINT=1",
+        "HEPTA_SERVICE_EXPECT_EXPIRED_CHECKPOINT=1",
+        "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+        "--exact",
+        "authority_host_service::tests::root::root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit": 0,
+      "seconds": 6.533576290006749,
+      "artifacts": {
+        "source": {
+          "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+          "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+          "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+          "index_flags": [
+            "H"
+          ],
+          "files": 9333,
+          "live_source_sha256": "e095c66ee43a5e98e39c7f1ecb26d22456f959cfb548b438e69afa071b75e252"
+        },
+        "test_binary": "/data/hepta-root-service-196-target.e3i3hcbg/debug/deps/codex_hepta_agentd-376538b093a2091c",
+        "test_sha256": "3984b4de0d2adb96a05b15867f649d1b8a87f54177d9b82bfebdc3c0134c55f8",
+        "client_binary": "/data/hepta-checkpoint-wire-peer-04.ezpydgmi/authority_host_peer_qualification",
+        "client_sha256": "7add14c7b49fd4cfedac1997de982ead70c3a1e5a7100e643f57e5fcb3a87fbb",
+        "source_counter": 0,
+        "scope": "limited original checkpoint wire and writer expiry; not fresh wholewriter bind or full publication/recovery"
+      },
+      "original_positive_failed": true
+    },
+    "checkpoint-service-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.6319714810233563,
+      "cache_reused": true,
+      "source_before": {
+        "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+        "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+        "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9333,
+        "live_source_sha256": "f4025ed078af3acfb716fa2bc298f39dd25a0bff0fe90a3adc6efe0e13dd419c"
+      },
+      "toolchain": "1.96.0"
+    },
+    "checkpoint-service-fix-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fix",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit": 0,
+      "seconds": 651.6747241059784,
+      "cache_reused": true,
+      "source_before": {
+        "head": "4ba7155cc2239a2333fe3a246a9090f7240697e9",
+        "tree": "3942613e01ef9c4b5ed4a5fac23efe8f7a92cb3a",
+        "status": "M codex-rs/hepta-agentd/HOST_COGNITIVE_CHECKPOINT.md\n M codex-rs/hepta-agentd/examples/authority_host_peer_qualification.rs\n M codex-rs/hepta-agentd/src/authority_host_config.rs\n M codex-rs/hepta-agentd/src/authority_host_runtime.rs\n M codex-rs/hepta-agentd/src/authority_host_service.rs\n M codex-rs/hepta-agentd/src/authority_host_service_root_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_writer.rs\n?? codex-rs/hepta-agentd/examples/authority_host_peer_qualification/checkpoint.rs\n?? codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+        "index_flags": [
+          "H"
+        ],
+        "files": 9333,
+        "live_source_sha256": "f4025ed078af3acfb716fa2bc298f39dd25a0bff0fe90a3adc6efe0e13dd419c"
+      },
+      "toolchain": "1.96.0"
+    },
+    "checkpoint-service-final-fmt-01": {
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt"
+      ],
+      "exit": 0,
+      "seconds": 0.46254628093447536,
+      "tests_after_format": false
+    }
+  },
+  "preserved_failures": [
+    "checkpoint-service-scope-tests-01.json",
+    "checkpoint-service-scope-tests-02.json",
+    "checkpoint-service-root-positive-04.json"
+  ],
+  "diagnostic_only": "checkpoint-service-root-init-trace-04.json",
+  "private_trace_not_for_publication": true,
+  "metadata_only_io_summary": "checkpoint-service-root-io-summary-04.json",
+  "original_clock_horizon_ms": 1000,
+  "feed_freshness_ms": 500,
+  "root_positive_qualified": false,
+  "root_expired_writer_refusal_qualified": true,
+  "fresh_counter": 0,
+  "fresh_wholewriter_client_qualified": false,
+  "production_ready": false,
+  "tests_after_format_or_fix": false,
+  "next_phase": "Import independently qualified fresh counter1 fix, then exact1/3 assertions and independent Root SSD qualification; canonical original consumer two-lane wiring follows."
+}

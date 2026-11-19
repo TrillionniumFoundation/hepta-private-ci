@@ -178,6 +178,18 @@ impl SameOriginRedirectHttpClient {
 }
 
 impl HttpClient for SameOriginRedirectHttpClient {
+    fn supports_single_attempt_requests(&self) -> bool {
+        self.inner.supports_single_attempt_requests()
+    }
+
+    fn http_request_stream_once(
+        &self,
+        params: HttpRequestParams,
+    ) -> BoxFuture<'_, Result<(HttpRequestResponse, HttpResponseBodyStream), ExecServerError>> {
+        // Do not enter execute(): even a same-origin redirect would replay a POST.
+        self.inner.http_request_stream_once(params)
+    }
+
     fn http_request(
         &self,
         mut params: HttpRequestParams,

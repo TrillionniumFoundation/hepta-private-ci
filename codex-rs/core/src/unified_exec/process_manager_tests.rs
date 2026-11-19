@@ -546,12 +546,13 @@ fn pruning_protects_recent_processes_even_if_exited() {
 #[tokio::test]
 async fn pruning_does_not_evict_live_process_while_exited_process_is_finalizing() {
     let exited_process = Arc::new(
-        crate::unified_exec::process_tests::remote_process(
+        crate::unified_exec::process_tests::exited_remote_process(
             codex_exec_server::WriteStatus::Accepted,
             /*terminate_error*/ None,
             codex_sandboxing::SandboxType::None,
         )
-        .await,
+        .await
+        .expect("fixture must observe the actual Exited event"),
     );
     exited_process
         .terminate_confirmed()

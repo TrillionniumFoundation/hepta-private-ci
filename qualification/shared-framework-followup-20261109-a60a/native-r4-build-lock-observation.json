@@ -1,0 +1,69 @@
+{
+  "observed_unix": 1794295938.0543761,
+  "build_locks": [
+    {
+      "path": "/home/qq/hepta-shared-framework-f8e4-20261109/target/.cargo-lock",
+      "error": "[Errno 2] No such file or directory: '/home/qq/hepta-shared-framework-f8e4-20261109/target/.cargo-lock'"
+    },
+    {
+      "path": "/home/qq/hepta-shared-framework-f8e4-20261109/target/debug/.cargo-lock",
+      "identity": "103:02:63220001",
+      "lock_records": [
+        "2: FLOCK  ADVISORY  READ 2946918 103:02:63220001 0 EOF"
+      ]
+    }
+  ],
+  "compiler_processes": [
+    {
+      "pid": 2946877,
+      "command": "cargo-nextest",
+      "cwd": "/home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs",
+      "start_ticks": "132161835",
+      "package_or_crate": [
+        [
+          "-p",
+          "codex-hepta-automation"
+        ],
+        [
+          "-p",
+          "codex-hepta-neuron"
+        ],
+        [
+          "-p",
+          "codex-hepta-agentd"
+        ]
+      ]
+    },
+    {
+      "pid": 2946918,
+      "command": "cargo",
+      "cwd": "/home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs",
+      "start_ticks": "132161901",
+      "package_or_crate": []
+    },
+    {
+      "pid": 2948547,
+      "command": "rustc",
+      "cwd": "/home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs",
+      "start_ticks": "132167786",
+      "package_or_crate": [
+        [
+          "--crate-name",
+          "codex_core"
+        ]
+      ]
+    },
+    {
+      "pid": 2949319,
+      "command": "rustc",
+      "cwd": "/home/qq/hepta-framework-followup-a60a-20261110/source/codex-rs",
+      "start_ticks": "132169574",
+      "package_or_crate": [
+        [
+          "--crate-name",
+          "codex_hepta_automation"
+        ]
+      ]
+    }
+  ]
+}

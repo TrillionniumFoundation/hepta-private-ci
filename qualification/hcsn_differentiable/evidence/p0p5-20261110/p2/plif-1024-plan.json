@@ -1,0 +1,66 @@
+{
+  "class_counts": [
+    15675.0,
+    1417.0,
+    3268.0,
+    30687.0,
+    951.0,
+    15253.0,
+    9468.0,
+    3175.0,
+    6990.0,
+    757.0,
+    1575.0
+  ],
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "driver_sha256": "bd3d3ebb7cf0b30e03405c238a80dde2d5aa3dea3194e1901c9878b5cac5e295",
+  "episode_id": "A01-0",
+  "evaluation_updates": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    768,
+    1024
+  ],
+  "frontend_sha256": "68df3a2f51b027cbb7fc1f74722711a5c254a0de70a64bd33854c4bb14abac70",
+  "frozen_common_frontend_head": true,
+  "host": "managed cloud executor; separate from native raw-output campaign",
+  "learn_core_adapter": true,
+  "learning_rate": 0.003,
+  "optimizer_groups": [
+    {
+      "lr": 0.003,
+      "parameter_names": [
+        "core.input.weight",
+        "core.input.bias",
+        "core.recurrent.weight",
+        "core.node.w",
+        "temporal_adapter.weight",
+        "temporal_adapter.bias"
+      ],
+      "weight_decay": 0.0
+    }
+  ],
+  "peak_rss_bytes": 1610612736,
+  "seed": 101,
+  "source_capsule_sha256": "3c9562e560208f6a291846d79431f5d4e0718d1c695dd98c88c4cbf5dedc9fb5",
+  "updates": 1024,
+  "wall_seconds": 180,
+  "weights": [
+    0.4397234338380125,
+    1.4625087072041483,
+    0.9630356439758475,
+    0.3142723469689148,
+    1.7852256866236864,
+    0.44576477856660957,
+    0.5657886888618727,
+    0.9770381475840008,
+    0.6584833492347979,
+    2.0009463564604015,
+    1.3872128606817071
+  ]
+}

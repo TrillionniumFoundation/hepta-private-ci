@@ -1,0 +1,60 @@
+{
+  "interpretation": "Mathematical/literal gradient qualification only. No training or quality evidence; originalNDU failures remain.",
+  "qualification": {
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 6
+    },
+    "measurements": {
+      "finite_difference_coordinates": 8,
+      "max_FD_error": 5.73196221390071e-11
+    },
+    "model_restores": 0,
+    "objective_key": "706cd4922d400f46031a851174dad348b1a6b091b363e2b6fe10d75ae316396f",
+    "objective_profile": {
+      "anchor": "not included; separately ordinary rowmean",
+      "grouping": "contiguous blocks labelled0..G-1,exact equal K",
+      "mode": "equal-group-input-output-entropic-risk-v1",
+      "rho": 1.5,
+      "row_gradient": "negative mean rowCE incl1/n",
+      "schema": "rgb-grouped-view-risk-objective-v1",
+      "views": 2
+    },
+    "scope": "Literal independent categorical outcome reference and group-chain qualification only; no scientific benefit, grouped minibatch training or new model evaluation.",
+    "source_freeze_sha256": "5250d60a28eea1b1fe1800f12c6b2882741435c77cb6177440ecf748506c68ab",
+    "status": "COMPLETE_PAYLOAD_FREE_GROUPED_VIEW_RISK",
+    "training_updates": 0
+  },
+  "wait4": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 27812,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "15f2757cccb0dbba28affd91257c0f59f4ccc10d859a0a00eb85ba5ca80ad363",
+    "source_freeze_sha256": "5250d60a28eea1b1fe1800f12c6b2882741435c77cb6177440ecf748506c68ab",
+    "status": "COMPLETE_PAYLOAD_FREE_GROUPED_VIEW_RISK",
+    "supervisor_CPU_observed_prefix_seconds": 0.0020965650000000016,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.020458,
+    "timed_out": false,
+    "user_CPU_seconds": 0.123959,
+    "wall_seconds": 0.1653220299995155,
+    "whole_child_CPU_seconds": 0.144417
+  }
+}

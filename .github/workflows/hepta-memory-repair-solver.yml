@@ -1,0 +1,204 @@
+name: Hepta memory repair solver development
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_research:
+        description: Run this bounded research workflow, including its declared compute and downloads
+        type: boolean
+        required: true
+        default: false
+      accept_model_terms:
+        description: "Run the pinned Qwen2.5-Coder-1.5B-Instruct GGUF repair study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  actual-code-repair:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.run_research == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      OMP_NUM_THREADS: "2"
+      CMAKE_BUILD_PARALLEL_LEVEL: "2"
+      CMAKE_ARGS: "-DGGML_NATIVE=OFF -DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 64
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.14"
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.59.0
+      - name: Establish bounded run paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          mkdir "$RUNNER_TEMP/hepta-repair-evidence"
+          echo "REPAIR_EVIDENCE=$RUNNER_TEMP/hepta-repair-evidence" >> "$GITHUB_ENV"
+          echo "REPAIR_RUN=$RUNNER_TEMP/hepta-repair-evidence/run" >> "$GITHUB_ENV"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-repair-evidence/source.txt"
+          uname -a > "$RUNNER_TEMP/hepta-repair-evidence/uname.txt"
+          lscpu > "$RUNNER_TEMP/hepta-repair-evidence/cpu.txt"
+          df -h > "$RUNNER_TEMP/hepta-repair-evidence/filesystem-before.txt"
+      - name: Install actual original-gate tools and pinned CPU solver
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y ffmpeg openssl cmake ninja-build
+          python -m pip install --no-cache-dir 'ruff==0.15.13' 'numpy==1.26.4' 'diskcache==5.6.3' 'jinja2==3.1.6' 'typing-extensions==4.15.0'
+      - name: Install the requested pinned CPU solver
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --no-cache-dir 'https://files.pythonhosted.org/packages/e4/b4/c8cd17629ced0b9644a71d399a91145aedef109c0333443bef015e45b704/llama_cpp_python-0.3.16.tar.gz#sha256=34ed0f9bd9431af045bb63d9324ae620ad0536653740e9bb163a2e1fcb973be6' 2>&1 | tee "$REPAIR_EVIDENCE/solver-install.log"
+          python -m pip freeze > "$REPAIR_EVIDENCE/runtime-freeze.txt"
+      - name: Exact-edit admission regressions before any model query
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B -m unittest discover -s scripts/memory_cell_solver -p 'test_*.py' -v 2>&1 | tee "$REPAIR_EVIDENCE/solver-unit-tests.log"
+      - name: Synthetic receipt binding regressions without model execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s scripts/memory_cell_solver_audit -p 'test_*.py' -v 2>&1 | tee "$REPAIR_EVIDENCE/audit-unit-tests.log"
+      - name: Restore original sources, qualify new runtime profiles, freeze study
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_solver/solver_prepare.py prepare --repo "$GITHUB_WORKSPACE" --output "$REPAIR_RUN" --expected-head "$CANDIDATE_SHA" 2>&1 | tee "$REPAIR_EVIDENCE/preparation.log"
+          python -c 'import hashlib,os,pathlib; p=pathlib.Path(os.environ["REPAIR_RUN"])/"protocol.json"; print("REPAIR_PROTOCOL_SHA="+hashlib.sha256(p.read_bytes()).hexdigest())' >> "$GITHUB_ENV"
+          python -c 'import hashlib,os,pathlib; p=pathlib.Path(os.environ["REPAIR_RUN"])/"model-manifest.json"; print("REPAIR_MODEL_MANIFEST_SHA="+hashlib.sha256(p.read_bytes()).hexdigest())' >> "$GITHUB_ENV"
+      - name: Acquire one immutable official GGUF, outside uploaded evidence
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B scripts/memory_cell_solver/solver_prepare.py acquire --manifest-path "$REPAIR_RUN/model-manifest.json" --expected "$REPAIR_MODEL_MANIFEST_SHA" --model-directory "$RUNNER_TEMP/hepta-repair-model" --receipt "$REPAIR_EVIDENCE/model-acquisition.json" 2>&1 | tee "$REPAIR_EVIDENCE/acquisition.log"
+      - name: Actual code proposals, original gates and bounded feedback loops
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ulimit -c 0
+          test -z "${GITHUB_TOKEN:-}"
+          python -B scripts/memory_cell_solver/solver_execute.py --output "$REPAIR_RUN" --protocol-sha256 "$REPAIR_PROTOCOL_SHA" --model "$RUNNER_TEMP/hepta-repair-model/qwen2.5-coder-1.5b-instruct-q4_k_m.gguf" 2>&1 | tee "$REPAIR_EVIDENCE/execution.log"
+      - name: Final formatting proposal after all tests and model execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 120 https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.x86_64.tar.gz --output "$REPAIR_EVIDENCE/dotslash.tar.gz"
+          echo "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120  $REPAIR_EVIDENCE/dotslash.tar.gz" | sha256sum --check
+          mkdir "$RUNNER_TEMP/hepta-repair-tools"
+          tar -xzf "$REPAIR_EVIDENCE/dotslash.tar.gz" -C "$RUNNER_TEMP/hepta-repair-tools"
+          export PATH="$RUNNER_TEMP/hepta-repair-tools:$PATH"
+          set +e
+          just fmt --base 1823dc1dc82b3c4ad7d980d80863bbc763c36941 2>&1 | tee "$REPAIR_EVIDENCE/final-format.log"
+          format_status=("${PIPESTATUS[@]}")
+          set -e
+          python3 -I -S -B - "$REPAIR_EVIDENCE" "${format_status[0]}" "${format_status[1]}" <<'PY'
+          import hashlib, json, os, sys
+          from pathlib import Path
+          evidence = Path(sys.argv[1])
+          log_path = evidence / "final-format.log"
+          digest = hashlib.sha256()
+          size = 0
+          with log_path.open("rb") as stream:
+              before = os.fstat(stream.fileno())
+              while chunk := stream.read(1024 * 1024):
+                  digest.update(chunk)
+                  size += len(chunk)
+              after = os.fstat(stream.fileno())
+          def identity(stat):
+              return (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+          if identity(before) != identity(after) or size != before.st_size:
+              raise SystemExit("final formatting log changed while reading")
+          receipt = {
+              "schema": "hepta.memory-cell.final-format.v1",
+              "argv": ["just", "fmt", "--base", "1823dc1dc82b3c4ad7d980d80863bbc763c36941"],
+              "command_returncode": int(sys.argv[2]),
+              "log_returncode": int(sys.argv[3]),
+              "log": {"bytes": size, "sha256": digest.hexdigest()},
+          }
+          with (evidence / "final-format-result.json").open("x", encoding="utf-8") as stream:
+              stream.write(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          PY
+          if (( format_status[1] != 0 )); then
+            exit "${format_status[1]}"
+          fi
+          exit "${format_status[0]}"
+      - name: Retain final source state without further tests
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/hepta-repair-evidence"
+          git diff --binary > "$RUNNER_TEMP/hepta-repair-evidence/post-test-format.patch"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-repair-evidence/final-worktree-status.txt"
+          df -h > "$RUNNER_TEMP/hepta-repair-evidence/filesystem-after.txt"
+      - name: Preserve complete success and failure receipts, excluding model weights
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: memory-repair-solver-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-repair-evidence
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

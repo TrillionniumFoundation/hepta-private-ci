@@ -1,0 +1,2358 @@
+2T21:49:06.5704320Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:49:06.5705011Z   138 |       impl.lock();
+2026-11-12T21:49:06.5705312Z       |            ^
+2026-11-12T21:49:06.5706131Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:06.5707033Z   151 |       impl.unlock();
+2026-11-12T21:49:06.5707330Z       |            ^
+2026-11-12T21:49:06.5708761Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock' requested here
+2026-11-12T21:49:06.5710328Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:49:06.5711405Z       |                                                                         ^
+2026-11-12T21:49:06.5712463Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:45:27: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<false>>::~lock_guard' requested here
+2026-11-12T21:49:06.5713530Z    45 |   llvm::sys::ScopedWriter LockGuard(ThreadsLock);
+2026-11-12T21:49:06.5713922Z       |                           ^
+2026-11-12T21:49:06.5714470Z In file included from external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:14:
+2026-11-12T21:49:06.5715298Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/Support/ThreadPool.h:21:
+2026-11-12T21:49:06.5716447Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:06.5717338Z   119 |   }
+2026-11-12T21:49:06.5717574Z       |   ^
+2026-11-12T21:49:06.5719469Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::lock_shared' requested here
+2026-11-12T21:49:06.5720809Z   310 |     __m_->lock_shared();
+2026-11-12T21:49:06.5721103Z       |           ^
+2026-11-12T21:49:06.5722018Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::shared_lock' requested here
+2026-11-12T21:49:06.5723017Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:06.5723566Z       |                           ^
+2026-11-12T21:49:06.5724168Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:49:06.5724835Z   111 |       impl.lock_shared();
+2026-11-12T21:49:06.5725133Z       |            ^
+2026-11-12T21:49:06.5725942Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:06.5726803Z   123 |       impl.unlock_shared();
+2026-11-12T21:49:06.5727118Z       |            ^
+2026-11-12T21:49:06.5745387Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<false>::unlock_shared' requested here
+2026-11-12T21:49:06.5746199Z   332 |       __m_->unlock_shared();
+2026-11-12T21:49:06.5746412Z       |             ^
+2026-11-12T21:49:06.5746990Z external/llvm++llvm+llvm-project/llvm/lib/Support/ThreadPool.cpp:278:27: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<false>>::~shared_lock' requested here
+2026-11-12T21:49:06.5747899Z   278 |   llvm::sys::ScopedReader LockGuard(ThreadsLock);
+2026-11-12T21:49:06.5748270Z       |                           ^
+2026-11-12T21:49:06.5748525Z 4 warnings generated.
+2026-11-12T21:49:06.5748804Z INFO: From Compiling source/common/udata.cpp [for tool]:
+2026-11-12T21:49:06.5749249Z In file included from external/v8++git_repository+icu/source/common/udata.cpp:34:
+2026-11-12T21:49:06.5749793Z In file included from external/v8++git_repository+icu/source/common/mutex.h:27:
+2026-11-12T21:49:06.5750538Z external/v8++git_repository+icu/source/common/umutex.h:233:5: warning: mutex 'm' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:06.5751103Z   233 |     }
+2026-11-12T21:49:06.5751293Z       |     ^
+2026-11-12T21:49:06.5751641Z external/v8++git_repository+icu/source/common/umutex.h:232:12: note: mutex acquired here
+2026-11-12T21:49:06.5752063Z   232 |         m->lock();
+2026-11-12T21:49:06.5752289Z       |            ^
+2026-11-12T21:49:06.5752897Z external/v8++git_repository+icu/source/common/umutex.h:234:61: warning: releasing mutex 'fMutex.load(memory_order_relaxed)' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:06.5754132Z   234 |     void unlock() { fMutex.load(std::memory_order_relaxed)->unlock(); }
+2026-11-12T21:49:06.5754584Z       |                                                             ^
+2026-11-12T21:49:06.5754887Z 2 warnings generated.
+2026-11-12T21:49:06.6243865Z Analyzing: 1296 targets (1399 packages loaded, 213948 targets configured, 1677 aspect applications)
+2026-11-12T21:49:06.6268882Z [29,765 / 38,867] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-command-runner (81 files); 0s remote, remote-cache ... (467 actions, 2 running)
+2026-11-12T21:49:07.3652816Z INFO: From Clippy //codex-rs/rmcp-client:rmcp-client-unit-tests-bin:
+2026-11-12T21:49:07.4116178Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4144149Z  --> rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:07.4144756Z   |
+2026-11-12T21:49:07.4145051Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:07.4145363Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:07.4145648Z   |
+2026-11-12T21:49:07.4145911Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:07.4146161Z 
+2026-11-12T21:49:07.4146475Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4147082Z   --> rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:07.4147454Z    |
+2026-11-12T21:49:07.4147823Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:07.4148161Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:07.4148356Z 
+2026-11-12T21:49:07.4149100Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4149649Z    --> rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:07.4149985Z     |
+2026-11-12T21:49:07.4150206Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:07.4150508Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:07.4150701Z 
+2026-11-12T21:49:07.4150983Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4151358Z  --> rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:07.4151715Z   |
+2026-11-12T21:49:07.4151939Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:07.4152221Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:07.4152388Z 
+2026-11-12T21:49:07.4152662Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4153037Z   --> rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:07.4153287Z    |
+2026-11-12T21:49:07.4153455Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:07.4153767Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:07.4153951Z 
+2026-11-12T21:49:07.4154216Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4154781Z   --> rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:07.4155173Z    |
+2026-11-12T21:49:07.4155648Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:07.4156240Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:07.4156498Z 
+2026-11-12T21:49:07.4156815Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4157431Z   --> rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:07.4157913Z    |
+2026-11-12T21:49:07.4158156Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:07.4158488Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:07.4158684Z 
+2026-11-12T21:49:07.4158940Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4159455Z    --> rmcp-client/src/mrtr_tests.rs:149:9
+2026-11-12T21:49:07.4159746Z     |
+2026-11-12T21:49:07.4159964Z 149 |         ClientInfo::new(
+2026-11-12T21:49:07.4160226Z     |         ^^^^^^^^^^
+2026-11-12T21:49:07.4160595Z 
+2026-11-12T21:49:07.4160869Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:07.4161380Z    --> rmcp-client/src/mrtr_tests.rs:171:13
+2026-11-12T21:49:07.4161692Z     |
+2026-11-12T21:49:07.4161982Z 171 |             ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:07.4162352Z     |             ^^^^^^^^^^
+2026-11-12T21:49:07.4162534Z 
+2026-11-12T21:49:07.4162836Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:07.4163378Z    --> rmcp-client/src/mrtr_tests.rs:228:9
+2026-11-12T21:49:07.4163698Z     |
+2026-11-12T21:49:07.4163990Z 228 |         ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:07.4164350Z     |         ^^^^^^^^^^
+2026-11-12T21:49:07.4164513Z 
+2026-11-12T21:49:07.4164799Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:07.4165309Z    --> rmcp-client/src/mrtr_tests.rs:139:22
+2026-11-12T21:49:07.4165628Z     |
+2026-11-12T21:49:07.4165878Z 139 |     use rmcp::model::ClientInfo;
+2026-11-12T21:49:07.4166214Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:07.4166432Z 
+2026-11-12T21:49:07.4166750Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:07.4167291Z    --> rmcp-client/src/mrtr_tests.rs:144:22
+2026-11-12T21:49:07.4197820Z     |
+2026-11-12T21:49:07.4198312Z 144 |     use rmcp::model::ServerInfo;
+2026-11-12T21:49:07.4198643Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:07.4198861Z 
+2026-11-12T21:49:07.4198981Z warning: 12 warnings emitted
+2026-11-12T21:49:07.4199188Z 
+2026-11-12T21:49:09.1049747Z Analyzing: 1296 targets (1399 packages loaded, 213951 targets configured, 1679 aspect applications)
+2026-11-12T21:49:09.1131958Z [29,858 / 38,881] Compiling Rust bin //codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup (81 files); 2s remote, remote-cache ... (712 actions, 7 running)
+2026-11-12T21:49:09.1329158Z INFO: From Compiling Rust rlib //codex-rs/rmcp-client:rmcp-client (44 files):
+2026-11-12T21:49:09.1387797Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.1459059Z  --> codex-rs/rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:09.1508961Z   |
+2026-11-12T21:49:09.1571237Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.1598589Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.1688644Z   |
+2026-11-12T21:49:09.1789033Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:09.1909299Z 
+2026-11-12T21:49:09.1963314Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.2049884Z   --> codex-rs/rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:09.2168658Z    |
+2026-11-12T21:49:09.2459433Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:09.2540003Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:09.2661280Z 
+2026-11-12T21:49:09.2729253Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.2809116Z    --> codex-rs/rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:09.3058757Z     |
+2026-11-12T21:49:09.3472618Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.3548698Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:09.3751604Z 
+2026-11-12T21:49:09.4092941Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.4233730Z  --> codex-rs/rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:09.4348782Z   |
+2026-11-12T21:49:09.4419625Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.4448347Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.4488030Z 
+2026-11-12T21:49:09.4518873Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.4519848Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:09.4521006Z    |
+2026-11-12T21:49:09.4550966Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:09.4599393Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:09.4649313Z 
+2026-11-12T21:49:09.4723808Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.4788933Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:09.4819353Z    |
+2026-11-12T21:49:09.4878827Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:09.4948890Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:09.5019316Z 
+2026-11-12T21:49:09.5079232Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.5178893Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:09.5217386Z    |
+2026-11-12T21:49:09.5289007Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.5348649Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:09.5388431Z 
+2026-11-12T21:49:09.5448950Z warning: 7 warnings emitted
+2026-11-12T21:49:09.5509017Z 
+2026-11-12T21:49:09.5510117Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp-client-unit-tests-bin (44 files):
+2026-11-12T21:49:09.5569039Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.5627557Z  --> rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:09.5649973Z   |
+2026-11-12T21:49:09.5698904Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.5739408Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.5739989Z   |
+2026-11-12T21:49:09.5769085Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:09.5798298Z 
+2026-11-12T21:49:09.5828696Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.5829841Z   --> rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:09.5859465Z    |
+2026-11-12T21:49:09.5888691Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:09.5918244Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:09.5947926Z 
+2026-11-12T21:49:09.5948694Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.5992806Z    --> rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:09.6018358Z     |
+2026-11-12T21:49:09.6050650Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.6078530Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:09.6108084Z 
+2026-11-12T21:49:09.6108896Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6138453Z  --> rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:09.6168260Z   |
+2026-11-12T21:49:09.6168600Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.6198263Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.6236276Z 
+2026-11-12T21:49:09.6243204Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6244100Z   --> rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:09.6244631Z    |
+2026-11-12T21:49:09.6245012Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:09.6245457Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:09.6245790Z 
+2026-11-12T21:49:09.6246244Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6246979Z   --> rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:09.6247483Z    |
+2026-11-12T21:49:09.6248160Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:09.6248739Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:09.6249052Z 
+2026-11-12T21:49:09.6249421Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6260311Z   --> rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:09.6261385Z    |
+2026-11-12T21:49:09.6261797Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.6262302Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:09.6262665Z 
+2026-11-12T21:49:09.6263134Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6263830Z    --> rmcp-client/src/mrtr_tests.rs:149:9
+2026-11-12T21:49:09.6264285Z     |
+2026-11-12T21:49:09.6264670Z 149 |         ClientInfo::new(
+2026-11-12T21:49:09.6265101Z     |         ^^^^^^^^^^
+2026-11-12T21:49:09.6265414Z 
+2026-11-12T21:49:09.6265860Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:09.6266584Z    --> rmcp-client/src/mrtr_tests.rs:171:13
+2026-11-12T21:49:09.6267051Z     |
+2026-11-12T21:49:09.6267509Z 171 |             ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:09.6268205Z     |             ^^^^^^^^^^
+2026-11-12T21:49:09.6268511Z 
+2026-11-12T21:49:09.6268953Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:09.6269649Z    --> rmcp-client/src/mrtr_tests.rs:228:9
+2026-11-12T21:49:09.6270120Z     |
+2026-11-12T21:49:09.6270540Z 228 |         ServerInfo::new(ServerCapabilities::default())
+2026-11-12T21:49:09.6271063Z     |         ^^^^^^^^^^
+2026-11-12T21:49:09.6271385Z 
+2026-11-12T21:49:09.6271841Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6272520Z    --> rmcp-client/src/mrtr_tests.rs:139:22
+2026-11-12T21:49:09.6272996Z     |
+2026-11-12T21:49:09.6273370Z 139 |     use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.6285516Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:09.6286239Z 
+2026-11-12T21:49:09.6286653Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:09.6287268Z    --> rmcp-client/src/mrtr_tests.rs:144:22
+2026-11-12T21:49:09.6287834Z     |
+2026-11-12T21:49:09.6288204Z 144 |     use rmcp::model::ServerInfo;
+2026-11-12T21:49:09.6288606Z     |                      ^^^^^^^^^^
+2026-11-12T21:49:09.6288906Z 
+2026-11-12T21:49:09.6289138Z warning: 12 warnings emitted
+2026-11-12T21:49:09.6289433Z 
+2026-11-12T21:49:09.6289747Z INFO: From Clippy //codex-rs/rmcp-client:rmcp-client:
+2026-11-12T21:49:09.6290423Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6291184Z  --> codex-rs/rmcp-client/src/elicitation_client_service.rs:4:18
+2026-11-12T21:49:09.6291693Z   |
+2026-11-12T21:49:09.6292028Z 4 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.6292428Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.6292789Z   |
+2026-11-12T21:49:09.6293155Z   = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:09.6293503Z 
+2026-11-12T21:49:09.6293891Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6294561Z   --> codex-rs/rmcp-client/src/elicitation_client_service.rs:55:22
+2026-11-12T21:49:09.6295042Z    |
+2026-11-12T21:49:09.6295386Z 55 |         client_info: ClientInfo,
+2026-11-12T21:49:09.6295774Z    |                      ^^^^^^^^^^
+2026-11-12T21:49:09.6296066Z 
+2026-11-12T21:49:09.6296424Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6297088Z    --> codex-rs/rmcp-client/src/elicitation_client_service.rs:191:27
+2026-11-12T21:49:09.6297569Z     |
+2026-11-12T21:49:09.6298067Z 191 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.6298519Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:09.6298843Z 
+2026-11-12T21:49:09.6299229Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6299913Z  --> codex-rs/rmcp-client/src/logging_client_handler.rs:6:18
+2026-11-12T21:49:09.6300421Z   |
+2026-11-12T21:49:09.6300789Z 6 | use rmcp::model::ClientInfo;
+2026-11-12T21:49:09.6301232Z   |                  ^^^^^^^^^^
+2026-11-12T21:49:09.6301777Z 
+2026-11-12T21:49:09.6302181Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6302953Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:27:18
+2026-11-12T21:49:09.6303449Z    |
+2026-11-12T21:49:09.6303777Z 27 |     client_info: ClientInfo,
+2026-11-12T21:49:09.6304150Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:09.6304429Z 
+2026-11-12T21:49:09.6304797Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6305419Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:32:36
+2026-11-12T21:49:09.6305894Z    |
+2026-11-12T21:49:09.6306464Z 32 |     pub(crate) fn new(client_info: ClientInfo, send_elicitation: SendElicitation) -> Self {
+2026-11-12T21:49:09.6307050Z    |                                    ^^^^^^^^^^
+2026-11-12T21:49:09.6307372Z 
+2026-11-12T21:49:09.6307902Z warning: use of deprecated type alias `rmcp::model::ClientInfo`: use `ClientConfig` instead
+2026-11-12T21:49:09.6308617Z   --> codex-rs/rmcp-client/src/logging_client_handler.rs:94:27
+2026-11-12T21:49:09.6309134Z    |
+2026-11-12T21:49:09.6309525Z 94 |     fn get_info(&self) -> ClientInfo {
+2026-11-12T21:49:09.6309996Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:09.6310352Z 
+2026-11-12T21:49:09.6310591Z warning: 7 warnings emitted
+2026-11-12T21:49:09.6310913Z 
+2026-11-12T21:49:09.9950703Z Analyzing: 1296 targets (1399 packages loaded, 213956 targets configured, 1686 aspect applications)
+2026-11-12T21:49:10.0079422Z [29,950 / 38,881] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-authority-signer (50 files); 2s remote, remote-cache ... (796 actions, 5 running)
+2026-11-12T21:49:10.4500163Z INFO: Analyzed 1296 targets (1399 packages loaded, 213956 targets configured, 1686 aspect applications).
+2026-11-12T21:49:10.9869467Z [30,041 / 38,895] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 3s remote, remote-cache ... (795 actions, 2 running)
+2026-11-12T21:49:11.9930008Z [30,136 / 38,895] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 4s remote, remote-cache ... (796 actions, 2 running)
+2026-11-12T21:49:13.0669318Z [30,234 / 38,908] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisord (50 files); 5s remote, remote-cache ... (796 actions, 2 running)
+2026-11-12T21:49:14.0719327Z [30,359 / 38,908] Compiling Rust bin //codex-rs/hepta-supervisor:hepta-supervisor-intent-recovery (50 files); 4s remote, remote-cache ... (798 actions, 1 running)
+2026-11-12T21:49:15.0816861Z [30,475 / 38,908] [Prepa] Compiling lib/dictBuilder/cover.c [for tool]; 10s ... (797 actions, 0 running)
+2026-11-12T21:49:15.6904082Z INFO: From Clippy //codex-rs/rmcp-client:test_streamable_http_server:
+2026-11-12T21:49:15.6972934Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.6998825Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:49:15.7048509Z    |
+2026-11-12T21:49:15.7060855Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:15.7088702Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:15.7118679Z    |
+2026-11-12T21:49:15.7148713Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:15.7149382Z 
+2026-11-12T21:49:15.7179389Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.7208772Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:49:15.7209508Z     |
+2026-11-12T21:49:15.7238961Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:15.7268703Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:15.7298142Z 
+2026-11-12T21:49:15.7299168Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.7328925Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:49:15.7358577Z     |
+2026-11-12T21:49:15.7388372Z 241 |         ServerInfo::new(
+2026-11-12T21:49:15.7389601Z     |         ^^^^^^^^^^
+2026-11-12T21:49:15.7418140Z 
+2026-11-12T21:49:15.7448840Z warning: 3 warnings emitted
+2026-11-12T21:49:15.7449350Z 
+2026-11-12T21:49:15.8155244Z INFO: From Clippy //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests-bin:
+2026-11-12T21:49:15.8209513Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.8238634Z   --> rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:49:15.8278389Z    |
+2026-11-12T21:49:15.8308532Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:15.8309288Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:15.8368645Z    |
+2026-11-12T21:49:15.8428811Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:15.8478544Z 
+2026-11-12T21:49:15.8528852Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.8598415Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:49:15.8670672Z     |
+2026-11-12T21:49:15.8728869Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:15.8808737Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:15.8931237Z 
+2026-11-12T21:49:15.8998980Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.9118823Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:49:15.9188599Z     |
+2026-11-12T21:49:15.9359065Z 241 |         ServerInfo::new(
+2026-11-12T21:49:15.9589128Z     |         ^^^^^^^^^^
+2026-11-12T21:49:15.9689310Z 
+2026-11-12T21:49:15.9728595Z warning: 3 warnings emitted
+2026-11-12T21:49:15.9748075Z 
+2026-11-12T21:49:15.9769107Z INFO: From Clippy //codex-rs/rmcp-client:test_stdio_server:
+2026-11-12T21:49:15.9841978Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:15.9898740Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:49:15.9971081Z    |
+2026-11-12T21:49:16.0035850Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:16.0038142Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:16.0098659Z    |
+2026-11-12T21:49:16.0148933Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:16.0229775Z 
+2026-11-12T21:49:16.0285081Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.0308642Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:49:16.0367028Z     |
+2026-11-12T21:49:16.0428739Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:16.0440394Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.0524598Z 
+2026-11-12T21:49:16.0558939Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.0623432Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:49:16.0676489Z     |
+2026-11-12T21:49:16.0725825Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:49:16.0748515Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.0803290Z 
+2026-11-12T21:49:16.0868655Z warning: 3 warnings emitted
+2026-11-12T21:49:16.0898067Z 
+2026-11-12T21:49:16.0956810Z [30,630 / 38,908] [Prepa] Compiling clang/lib/Support/RISCVVIntrinsicUtils.cpp [for tool]; 11s ... (739 actions, 0 running)
+2026-11-12T21:49:16.3409455Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:16.3439016Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.3540625Z   --> rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:49:16.3606663Z    |
+2026-11-12T21:49:16.3626868Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:16.3789981Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:16.3942675Z    |
+2026-11-12T21:49:16.4054850Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:16.4201205Z 
+2026-11-12T21:49:16.4231245Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.4273279Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:49:16.4288579Z     |
+2026-11-12T21:49:16.4328505Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:16.4412882Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.4521727Z 
+2026-11-12T21:49:16.4710795Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.4739030Z    --> rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:49:16.4838718Z     |
+2026-11-12T21:49:16.4859223Z 241 |         ServerInfo::new(
+2026-11-12T21:49:16.4888881Z     |         ^^^^^^^^^^
+2026-11-12T21:49:16.4942919Z 
+2026-11-12T21:49:16.4953976Z warning: 3 warnings emitted
+2026-11-12T21:49:16.4954625Z 
+2026-11-12T21:49:16.4955278Z INFO: From Clippy //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests-bin:
+2026-11-12T21:49:16.4956270Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.4957407Z   --> rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:49:16.4958206Z    |
+2026-11-12T21:49:16.4958457Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:16.4958688Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:16.4958887Z    |
+2026-11-12T21:49:16.4959156Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:16.4959370Z 
+2026-11-12T21:49:16.4959655Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.4960170Z    --> rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:49:16.4960498Z     |
+2026-11-12T21:49:16.4961082Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:16.4961392Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.4961593Z 
+2026-11-12T21:49:16.4961874Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.4962390Z    --> rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:49:16.4962726Z     |
+2026-11-12T21:49:16.4963018Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:49:16.4963288Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.4963432Z 
+2026-11-12T21:49:16.4963515Z warning: 3 warnings emitted
+2026-11-12T21:49:16.4963643Z 
+2026-11-12T21:49:16.7493752Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:16.7719821Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.7854163Z   --> rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:49:16.7968702Z    |
+2026-11-12T21:49:16.8029131Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:16.8082331Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:16.8168707Z    |
+2026-11-12T21:49:16.8371997Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:16.8532663Z 
+2026-11-12T21:49:16.8604402Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.8709418Z    --> rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:49:16.8770437Z     |
+2026-11-12T21:49:16.8883721Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:16.8937514Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.8989707Z 
+2026-11-12T21:49:16.9018992Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:16.9090528Z    --> rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:49:16.9148712Z     |
+2026-11-12T21:49:16.9167611Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:49:16.9198578Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:16.9228075Z 
+2026-11-12T21:49:16.9258506Z warning: 3 warnings emitted
+2026-11-12T21:49:16.9268136Z 
+2026-11-12T21:49:17.0200508Z INFO: From Clippy //codex-rs/rmcp-client:rmcp_test_server:
+2026-11-12T21:49:17.0215218Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.0238798Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:49:17.0268522Z    |
+2026-11-12T21:49:17.0298612Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:17.0328491Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:17.0358356Z    |
+2026-11-12T21:49:17.0378836Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:17.0411255Z 
+2026-11-12T21:49:17.0438918Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.0455637Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:49:17.0489899Z    |
+2026-11-12T21:49:17.0498341Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:17.0528765Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:17.0548250Z 
+2026-11-12T21:49:17.0571513Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.0588695Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:49:17.0618491Z    |
+2026-11-12T21:49:17.0638621Z 82 |         ServerInfo::new(
+2026-11-12T21:49:17.0668826Z    |         ^^^^^^^^^^
+2026-11-12T21:49:17.0678117Z 
+2026-11-12T21:49:17.0708525Z warning: 3 warnings emitted
+2026-11-12T21:49:17.0738066Z 
+2026-11-12T21:49:17.0939081Z [30,802 / 38,908] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 12s ... (584 actions, 0 running)
+2026-11-12T21:49:17.4491772Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests-bin (49 files):
+2026-11-12T21:49:17.4579636Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.4661989Z   --> rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:49:17.4718693Z    |
+2026-11-12T21:49:17.4729083Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:17.4768581Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:17.4888754Z    |
+2026-11-12T21:49:17.4968821Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:17.5018470Z 
+2026-11-12T21:49:17.5098365Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.5148668Z   --> rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:49:17.5222449Z    |
+2026-11-12T21:49:17.5255397Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:17.5330929Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:17.5437292Z 
+2026-11-12T21:49:17.5508876Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:17.5536639Z   --> rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:49:17.5593080Z    |
+2026-11-12T21:49:17.5618348Z 82 |         ServerInfo::new(
+2026-11-12T21:49:17.5668406Z    |         ^^^^^^^^^^
+2026-11-12T21:49:17.5768107Z 
+2026-11-12T21:49:17.5838641Z warning: 3 warnings emitted
+2026-11-12T21:49:17.5898270Z 
+2026-11-12T21:49:18.0509142Z INFO: From Clippy //codex-rs/rmcp-client:rmcp_test_server-bin-unit-tests-bin:
+2026-11-12T21:49:18.0528886Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:18.0552186Z   --> rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:49:18.0579811Z    |
+2026-11-12T21:49:18.0599882Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:18.0638454Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:18.0658366Z    |
+2026-11-12T21:49:18.0708483Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:18.0720515Z 
+2026-11-12T21:49:18.0748788Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:18.0770170Z   --> rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:49:18.0799199Z    |
+2026-11-12T21:49:18.0838551Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:18.0839033Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:18.0888033Z 
+2026-11-12T21:49:18.0962660Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:18.1018409Z   --> rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:49:18.1116328Z    |
+2026-11-12T21:49:18.1158513Z 82 |         ServerInfo::new(
+2026-11-12T21:49:18.1230569Z    |         ^^^^^^^^^^
+2026-11-12T21:49:18.1292466Z 
+2026-11-12T21:49:18.1408703Z warning: 3 warnings emitted
+2026-11-12T21:49:18.1438052Z 
+2026-11-12T21:49:18.1549325Z [30,913 / 38,908] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 13s ... (473 actions, 0 running)
+2026-11-12T21:49:19.0759166Z INFO: From Compiling external/+new_local_repository+v8_targets/binding_150_4_0.cc:
+2026-11-12T21:49:19.1004153Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:19.1058916Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:19.1068707Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:19.1228741Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:19.1319250Z external/v8+/include/v8-template.h:800:16: warning: 'ConvertSetter' is deprecated: Use NamedPropertySetterCallbackV2 setter instead [-Wdeprecated-declarations]
+2026-11-12T21:49:19.1378560Z   800 |         setter(ConvertSetter(setter)),
+2026-11-12T21:49:19.1408411Z       |                ^
+2026-11-12T21:49:19.1440979Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1489:35: note: in instantiation of function template specialization 'v8::NamedPropertyHandlerConfiguration::NamedPropertyHandlerConfiguration<v8::Intercepted (*)(v8::Local<v8::Name>, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(v8::Local<v8::Name>, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T21:49:19.1498652Z  1489 |   ptr_to_local(&self)->SetHandler(v8::NamedPropertyHandlerConfiguration(
+2026-11-12T21:49:19.1528655Z       |                                   ^
+2026-11-12T21:49:19.1588824Z external/v8+/include/v8-template.h:759:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T21:49:19.1621063Z   759 |   V8_DEPRECATE_SOON("Use NamedPropertySetterCallbackV2 setter instead")
+2026-11-12T21:49:19.1678747Z       |   ^
+2026-11-12T21:49:19.1728722Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:19.1768188Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:19.1888713Z       |                                       ^
+2026-11-12T21:49:19.1949266Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:19.1978695Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:19.2008447Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:19.2053115Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:19.2159241Z external/v8+/include/v8-template.h:804:17: warning: 'ConvertDefiner' is deprecated: Use NamedPropertyDefinerCallbackV2 definer instead [-Wdeprecated-declarations]
+2026-11-12T21:49:19.2236990Z   804 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:49:19.2298595Z       |                 ^
+2026-11-12T21:49:19.2338847Z external/v8+/include/v8-template.h:772:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:49:19.2380429Z   772 |   V8_DEPRECATE_SOON("Use NamedPropertyDefinerCallbackV2 definer instead")
+2026-11-12T21:49:19.2438335Z       |   ^
+2026-11-12T21:49:19.2468426Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:19.2518400Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:19.2638873Z       |                                       ^
+2026-11-12T21:49:19.2710165Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:19.2778808Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:19.2828423Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:19.2888482Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:19.2898794Z external/v8+/include/v8-template.h:931:16: warning: 'ConvertSetter' is deprecated: Use IndexedPropertySetterCallback setter instead [-Wdeprecated-declarations]
+2026-11-12T21:49:19.2958290Z   931 |         setter(ConvertSetter(setter)),
+2026-11-12T21:49:19.3008276Z       |                ^
+2026-11-12T21:49:19.3050252Z bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:1503:35: note: in instantiation of function template specialization 'v8::IndexedPropertyHandlerConfiguration::IndexedPropertyHandlerConfiguration<v8::Intercepted (*)(unsigned int, v8::Local<v8::Value>, const v8::PropertyCallbackInfo<void> &), v8::Intercepted (*)(unsigned int, const v8::PropertyDescriptor &, const v8::PropertyCallbackInfo<void> &)>' requested here
+2026-11-12T21:49:19.3078432Z  1503 |   ptr_to_local(&self)->SetHandler(v8::IndexedPropertyHandlerConfiguration(
+2026-11-12T21:49:19.3138537Z       |                                   ^
+2026-11-12T21:49:19.3188993Z external/v8+/include/v8-template.h:890:3: note: 'ConvertSetter' has been explicitly marked deprecated here
+2026-11-12T21:49:19.3228708Z   890 |   V8_DEPRECATE_SOON("Use IndexedPropertySetterCallback setter instead")
+2026-11-12T21:49:19.3258521Z       |   ^
+2026-11-12T21:49:19.3319974Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:19.3378770Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:19.3410757Z       |                                       ^
+2026-11-12T21:49:19.3448877Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/binding_150_4_0.cc:15:
+2026-11-12T21:49:19.3498848Z In file included from bazel-out/rbe-fastbuild/bin/external/+new_local_repository+v8_targets/support_150_4_0.h:14:
+2026-11-12T21:49:19.3528783Z In file included from external/v8+/include/v8.h:33:
+2026-11-12T21:49:19.3574577Z In file included from external/v8+/include/v8-function.h:15:
+2026-11-12T21:49:19.3649192Z external/v8+/include/v8-template.h:935:17: warning: 'ConvertDefiner' is deprecated: Use IndexedPropertyDefinerCallback definer instead [-Wdeprecated-declarations]
+2026-11-12T21:49:19.3671263Z   935 |         definer(ConvertDefiner(definer)),
+2026-11-12T21:49:19.3738543Z       |                 ^
+2026-11-12T21:49:19.3816598Z external/v8+/include/v8-template.h:903:3: note: 'ConvertDefiner' has been explicitly marked deprecated here
+2026-11-12T21:49:19.3879349Z   903 |   V8_DEPRECATE_SOON("Use IndexedPropertyDefinerCallback definer instead")
+2026-11-12T21:49:19.3970433Z       |   ^
+2026-11-12T21:49:19.4048785Z external/v8+/include/v8config.h:621:39: note: expanded from macro 'V8_DEPRECATE_SOON'
+2026-11-12T21:49:19.4108739Z   621 | # define V8_DEPRECATE_SOON(message) [[deprecated(message)]]
+2026-11-12T21:49:19.4189311Z       |                                       ^
+2026-11-12T21:49:19.4218517Z 4 warnings generated.
+2026-11-12T21:49:19.4286432Z [31,042 / 38,908] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 14s ... (344 actions, 0 running)
+2026-11-12T21:49:20.1281503Z [31,176 / 38,908] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 15s ... (258 actions, 0 running)
+2026-11-12T21:49:21.1413739Z [31,316 / 38,908] [Prepa] Compiling util/process_wrapper/private/bootstrap_process_wrapper.cc [for tool]; 16s ... (122 actions, 0 running)
+2026-11-12T21:49:21.5204594Z INFO: From Clippy //codex-rs/codex-mcp:codex-mcp-unit-tests-bin:
+2026-11-12T21:49:21.5355787Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5469417Z   --> codex-mcp/src/connection_manager_tests.rs:76:18
+2026-11-12T21:49:21.5518639Z    |
+2026-11-12T21:49:21.5598892Z 76 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:21.5602959Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:21.5658604Z    |
+2026-11-12T21:49:21.5722067Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:21.5836980Z 
+2026-11-12T21:49:21.5839147Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5839837Z    --> codex-mcp/src/connection_manager_tests.rs:254:27
+2026-11-12T21:49:21.5840212Z     |
+2026-11-12T21:49:21.5840509Z 254 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:21.5840824Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:21.5841019Z 
+2026-11-12T21:49:21.5841293Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5841816Z    --> codex-mcp/src/connection_manager_tests.rs:255:9
+2026-11-12T21:49:21.5842167Z     |
+2026-11-12T21:49:21.5842520Z 255 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:21.5842957Z     |         ^^^^^^^^^^
+2026-11-12T21:49:21.5843124Z 
+2026-11-12T21:49:21.5843409Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5843986Z    --> codex-mcp/src/connection_manager_tests.rs:302:27
+2026-11-12T21:49:21.5844302Z     |
+2026-11-12T21:49:21.5844543Z 302 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:21.5844841Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:21.5845041Z 
+2026-11-12T21:49:21.5845824Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5846426Z    --> codex-mcp/src/connection_manager_tests.rs:303:9
+2026-11-12T21:49:21.5846805Z     |
+2026-11-12T21:49:21.5847160Z 303 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:21.5847768Z     |         ^^^^^^^^^^
+2026-11-12T21:49:21.5847924Z 
+2026-11-12T21:49:21.5848178Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5848723Z   --> codex-mcp/src/binding_retained_tests.rs:21:27
+2026-11-12T21:49:21.5849157Z    |
+2026-11-12T21:49:21.5849432Z 21 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:21.5849810Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:21.5850058Z 
+2026-11-12T21:49:21.5850428Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:21.5851069Z   --> codex-mcp/src/binding_retained_tests.rs:22:9
+2026-11-12T21:49:21.5851486Z    |
+2026-11-12T21:49:21.5851877Z 22 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:21.5852407Z    |         ^^^^^^^^^^
+2026-11-12T21:49:21.5852777Z 
+2026-11-12T21:49:21.5852904Z warning: 7 warnings emitted
+2026-11-12T21:49:21.5853121Z 
+2026-11-12T21:49:22.1452465Z [32,250 / 38,908] Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files); 6s remote, remote-cache ... (467 actions, 0 running)
+2026-11-12T21:49:22.5690141Z INFO: From Compiling Rust bin //codex-rs/codex-mcp:codex-mcp-unit-tests-bin (44 files):
+2026-11-12T21:49:22.6024824Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:22.6116361Z   --> codex-mcp/src/connection_manager_tests.rs:76:18
+2026-11-12T21:49:22.6378184Z    |
+2026-11-12T21:49:22.6670011Z 76 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:22.7454519Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:23.1879283Z    |
+2026-11-12T21:49:23.5074674Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:23.6556636Z 
+2026-11-12T21:49:23.8014105Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:23.9458948Z    --> codex-mcp/src/connection_manager_tests.rs:254:27
+2026-11-12T21:49:23.9748780Z     |
+2026-11-12T21:49:23.9962415Z 254 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:24.0038571Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:24.0039198Z 
+2026-11-12T21:49:24.0039876Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:24.0040751Z    --> codex-mcp/src/connection_manager_tests.rs:255:9
+2026-11-12T21:49:24.0041304Z     |
+2026-11-12T21:49:24.0041888Z 255 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:24.0042566Z     |         ^^^^^^^^^^
+2026-11-12T21:49:24.0042967Z 
+2026-11-12T21:49:24.0043495Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:24.0044302Z    --> codex-mcp/src/connection_manager_tests.rs:302:27
+2026-11-12T21:49:24.0044850Z     |
+2026-11-12T21:49:24.0045270Z 302 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:24.0045799Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:24.0046187Z 
+2026-11-12T21:49:24.0046659Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:24.0047444Z    --> codex-mcp/src/connection_manager_tests.rs:303:9
+2026-11-12T21:49:24.0048076Z     |
+2026-11-12T21:49:24.0048587Z 303 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:24.0049188Z     |         ^^^^^^^^^^
+2026-11-12T21:49:24.0049509Z 
+2026-11-12T21:49:24.0050000Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:24.0050774Z   --> codex-mcp/src/binding_retained_tests.rs:21:27
+2026-11-12T21:49:24.0051279Z    |
+2026-11-12T21:49:24.0052087Z 21 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:24.0052551Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:24.0052893Z 
+2026-11-12T21:49:24.0053336Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:24.0054016Z   --> codex-mcp/src/binding_retained_tests.rs:22:9
+2026-11-12T21:49:24.0054505Z    |
+2026-11-12T21:49:24.0055009Z 22 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:24.0055600Z    |         ^^^^^^^^^^
+2026-11-12T21:49:24.0055901Z 
+2026-11-12T21:49:24.0056151Z warning: 7 warnings emitted
+2026-11-12T21:49:24.0056462Z 
+2026-11-12T21:49:24.0057062Z INFO: From Generating Rust bindings for ../rules_rs++crate+crates__aws-lc-sys-0.46.0/include/rust_wrapper.h:
+2026-11-12T21:49:24.0058097Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:24.0058908Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:24.0059741Z clang diag: warning: redefining builtin macro [-Wbuiltin-macro-redefined]
+2026-11-12T21:49:24.0060773Z [32,892 / 38,908] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 0s remote, remote-cache ... (788 actions, 5 running)
+2026-11-12T21:49:24.0061729Z INFO: From Compiling crypto/thread_win.c:
+2026-11-12T21:49:24.0062482Z external/aws-lc+/crypto/thread_win.c:186:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:49:24.0063557Z   186 | #pragma const_seg(".CRT$XLC")
+2026-11-12T21:49:24.0064009Z       |         ^
+2026-11-12T21:49:24.0064596Z external/aws-lc+/crypto/thread_win.c:192:9: warning: unknown pragma ignored [-Wunknown-pragmas]
+2026-11-12T21:49:24.0065294Z   192 | #pragma const_seg()
+2026-11-12T21:49:24.0065751Z       |         ^
+2026-11-12T21:49:24.0066166Z 2 warnings generated.
+2026-11-12T21:49:25.6623888Z [33,022 / 38,908] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 2s remote, remote-cache ... (780 actions, 4 running)
+2026-11-12T21:49:25.6709355Z [33,030 / 38,908] Compiling Rust bin //codex-rs/hooks:write_hooks_schema_fixtures (32 files); 3s remote, remote-cache ... (773 actions, 4 running)
+2026-11-12T21:49:25.7037919Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_stdio_server (49 files):
+2026-11-12T21:49:25.7245944Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:25.7488832Z   --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:31:18
+2026-11-12T21:49:25.7709138Z    |
+2026-11-12T21:49:25.7839338Z 31 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:25.8023966Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:25.8211315Z    |
+2026-11-12T21:49:25.8411666Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:25.8587137Z 
+2026-11-12T21:49:25.8788909Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:25.8909542Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:508:27
+2026-11-12T21:49:25.9090306Z     |
+2026-11-12T21:49:25.9239025Z 508 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:25.9425233Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:25.9588250Z 
+2026-11-12T21:49:25.9749328Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:25.9989910Z    --> codex-rs/rmcp-client/src/bin/test_stdio_server.rs:519:27
+2026-11-12T21:49:26.0199754Z     |
+2026-11-12T21:49:26.0414002Z 519 |         let server_info = ServerInfo::new(capabilities);
+2026-11-12T21:49:26.0607573Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:26.0731346Z 
+2026-11-12T21:49:26.0949325Z warning: 3 warnings emitted
+2026-11-12T21:49:26.1199262Z 
+2026-11-12T21:49:26.1405816Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:test_streamable_http_server (49 files):
+2026-11-12T21:49:26.1532533Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:26.1799467Z   --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:43:18
+2026-11-12T21:49:26.1999128Z    |
+2026-11-12T21:49:26.2153000Z 43 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:26.2264269Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:26.2354934Z    |
+2026-11-12T21:49:26.2388857Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:26.2418153Z 
+2026-11-12T21:49:26.2455448Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:26.2479054Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:240:27
+2026-11-12T21:49:26.2488490Z     |
+2026-11-12T21:49:26.2559011Z 240 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:26.2598683Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:26.2667822Z 
+2026-11-12T21:49:26.2728951Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:26.2746522Z    --> codex-rs/rmcp-client/src/bin/test_streamable_http_server.rs:241:9
+2026-11-12T21:49:26.2788563Z     |
+2026-11-12T21:49:26.2848639Z 241 |         ServerInfo::new(
+2026-11-12T21:49:26.2908666Z     |         ^^^^^^^^^^
+2026-11-12T21:49:26.2991067Z 
+2026-11-12T21:49:26.3109170Z warning: 3 warnings emitted
+2026-11-12T21:49:26.3173493Z 
+2026-11-12T21:49:26.4749005Z [33,223 / 38,908] Compiling Rust bin //codex-rs/apply-patch:apply_patch (10 files); 4s remote, remote-cache ... (798 actions, 3 running)
+2026-11-12T21:49:27.5266703Z [33,332 / 38,908] Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files); 1s remote, remote-cache ... (796 actions, 2 running)
+2026-11-12T21:49:28.5309708Z [33,425 / 38,908] Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files); 2s remote, remote-cache ... (792 actions, 2 running)
+2026-11-12T21:49:29.5039084Z INFO: From Compiling Rust bin //codex-rs/rmcp-client:rmcp_test_server (49 files):
+2026-11-12T21:49:29.5118983Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:29.5178845Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:14:18
+2026-11-12T21:49:29.5212163Z    |
+2026-11-12T21:49:29.5276292Z 14 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:29.5362942Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:29.5386717Z    |
+2026-11-12T21:49:29.5475541Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:29.5556628Z 
+2026-11-12T21:49:29.5649281Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:29.5758871Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:81:27
+2026-11-12T21:49:29.5825286Z    |
+2026-11-12T21:49:29.5943741Z 81 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:29.6068776Z    |                           ^^^^^^^^^^
+2026-11-12T21:49:29.6218901Z 
+2026-11-12T21:49:29.6419574Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:29.6496400Z   --> codex-rs/rmcp-client/src/bin/rmcp_test_server.rs:82:9
+2026-11-12T21:49:29.6608740Z    |
+2026-11-12T21:49:29.6778854Z 82 |         ServerInfo::new(
+2026-11-12T21:49:29.6825987Z    |         ^^^^^^^^^^
+2026-11-12T21:49:29.6977108Z 
+2026-11-12T21:49:29.7137594Z warning: 3 warnings emitted
+2026-11-12T21:49:29.7268619Z 
+2026-11-12T21:49:29.7339684Z [33,516 / 38,908] Compiling Rust bin //codex-rs/rmcp-client:test_mcp_2026_discovery_stdio_server (49 files); 3s remote, remote-cache ... (799 actions, 1 running)
+2026-11-12T21:49:30.5349705Z [33,617 / 38,908] [Prepa] Compiling src/execution/execution.cc [for tool]; 7s ... (798 actions, 0 running)
+2026-11-12T21:49:31.5367452Z [33,709 / 38,908] [Prepa] Compiling src/snapshot/embedded/embedded-file-writer.cc [for tool]; 8s ... (798 actions, 0 running)
+2026-11-12T21:49:32.5454652Z [33,795 / 38,908] [Prepa] Compiling src/snapshot/snapshot-empty.cc [for tool]; 9s ... (795 actions, 0 running)
+2026-11-12T21:49:33.5589156Z [33,893 / 38,908] [Prepa] Compiling src/objects/scope-info.cc [for tool]; 7s ... (795 actions, 0 running)
+2026-11-12T21:49:34.5481953Z [34,011 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 8s ... (799 actions, 0 running)
+2026-11-12T21:49:35.5512574Z [34,125 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 9s ... (794 actions, 0 running)
+2026-11-12T21:49:36.5692498Z [34,227 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 10s ... (770 actions, 0 running)
+2026-11-12T21:49:37.5880995Z [34,342 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 11s ... (655 actions, 0 running)
+2026-11-12T21:49:38.5959150Z [34,455 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 12s ... (542 actions, 0 running)
+2026-11-12T21:49:39.6009159Z [34,593 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 13s ... (405 actions, 0 running)
+2026-11-12T21:49:40.6102149Z [34,730 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__aws-lc-sys-0.46.0//:aws-lc-sys v0.46.0 (39 files); 14s ... (274 actions, 0 running)
+2026-11-12T21:49:41.6216329Z [35,061 / 38,908] Compiling external/v8+/icu/torque-generated/src/builtins/torque-internal-tq.cc [for tool]; 2s remote, remote-cache ... (796 actions, 0 running)
+2026-11-12T21:49:42.4541560Z INFO: From Compiling llvm/lib/IR/PassRegistry.cpp [for tool]:
+2026-11-12T21:49:42.5003628Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:49:42.5268957Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:49:42.5451837Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:119:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:42.5890243Z   119 |   }
+2026-11-12T21:49:42.5977458Z       |   ^
+2026-11-12T21:49:42.6021739Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:310:11: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock_shared' requested here
+2026-11-12T21:49:42.6189631Z   310 |     __m_->lock_shared();
+2026-11-12T21:49:42.6355403Z       |           ^
+2026-11-12T21:49:42.6533027Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::shared_lock' requested here
+2026-11-12T21:49:42.6904533Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:49:42.7198087Z       |                                ^
+2026-11-12T21:49:42.7406551Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:111:12: note: shared_mutex acquired here
+2026-11-12T21:49:42.7542215Z   111 |       impl.lock_shared();
+2026-11-12T21:49:42.7848793Z       |            ^
+2026-11-12T21:49:42.8268308Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:123:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:42.8339384Z   123 |       impl.unlock_shared();
+2026-11-12T21:49:42.8529122Z       |            ^
+2026-11-12T21:49:42.8679237Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/shared_mutex:332:13: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock_shared' requested here
+2026-11-12T21:49:42.8920631Z   332 |       __m_->unlock_shared();
+2026-11-12T21:49:42.9196044Z       |             ^
+2026-11-12T21:49:42.9389691Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:35:32: note: in instantiation of member function 'std::shared_lock<llvm::sys::SmartRWMutex<true>>::~shared_lock' requested here
+2026-11-12T21:49:42.9476314Z    35 |   sys::SmartScopedReader<true> Guard(Lock);
+2026-11-12T21:49:42.9922436Z       |                                ^
+2026-11-12T21:49:43.0129192Z In file included from external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:14:
+2026-11-12T21:49:43.0526689Z In file included from external/llvm++llvm+llvm-project/llvm/include/llvm/PassRegistry.h:23:
+2026-11-12T21:49:43.0756089Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:147:3: warning: shared_mutex 'impl' is still held at the end of function [-Wthread-safety-analysis]
+2026-11-12T21:49:43.0959056Z   147 |   }
+2026-11-12T21:49:43.0969112Z       |   ^
+2026-11-12T21:49:43.0970182Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:32:10: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::lock' requested here
+2026-11-12T21:49:43.0983239Z    32 |     __m_.lock();
+2026-11-12T21:49:43.0983955Z       |          ^
+2026-11-12T21:49:43.0985009Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::lock_guard' requested here
+2026-11-12T21:49:43.0985884Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:49:43.0986292Z       |                                ^
+2026-11-12T21:49:43.0987007Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:138:12: note: shared_mutex acquired here
+2026-11-12T21:49:43.0997498Z   138 |       impl.lock();
+2026-11-12T21:49:43.0997909Z       |            ^
+2026-11-12T21:49:43.0998591Z external/llvm++llvm+llvm-project/llvm/include/llvm/Support/RWMutex.h:151:12: warning: releasing shared_mutex 'impl' that was not held [-Wthread-safety-analysis]
+2026-11-12T21:49:43.0999358Z   151 |       impl.unlock();
+2026-11-12T21:49:43.0999621Z       |            ^
+2026-11-12T21:49:43.1000709Z bazel-out/rbe_platform-fastbuild-exec-ST-04af25446861/bin/external/llvm++llvm+llvm-project/libcxx/libcxx_headers_include_search_directory/__mutex/lock_guard.h:37:73: note: in instantiation of member function 'llvm::sys::SmartRWMutex<true>::unlock' requested here
+2026-11-12T21:49:43.1002062Z    37 |   _LIBCPP_RELEASE_CAPABILITY _LIBCPP_HIDE_FROM_ABI ~lock_guard() { __m_.unlock(); }
+2026-11-12T21:49:43.1002596Z       |                                                                         ^
+2026-11-12T21:49:43.1003991Z external/llvm++llvm+llvm-project/llvm/lib/IR/PassRegistry.cpp:49:32: note: in instantiation of member function 'std::lock_guard<llvm::sys::SmartRWMutex<true>>::~lock_guard' requested here
+2026-11-12T21:49:43.1005025Z    49 |   sys::SmartScopedWriter<true> Guard(Lock);
+2026-11-12T21:49:43.1005401Z       |                                ^
+2026-11-12T21:49:43.1005738Z 4 warnings generated.
+2026-11-12T21:49:43.1006377Z [35,640 / 38,908] Compiling src/runtime/runtime-numbers.cc [for tool]; 2s remote, remote-cache ... (701 actions, 0 running)
+2026-11-12T21:49:43.6199821Z [35,982 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 2s remote, remote-cache ... (791 actions, 0 running)
+2026-11-12T21:49:44.6186701Z [36,259 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 3s remote, remote-cache ... (799 actions, 0 running)
+2026-11-12T21:49:44.9743752Z INFO: From Clippy //codex-rs/app-server:app-server-all-test-bin:
+2026-11-12T21:49:44.9989325Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.0129505Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T21:49:45.0528911Z    |
+2026-11-12T21:49:45.0829159Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.1037491Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.1288772Z    |
+2026-11-12T21:49:45.1498597Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:45.1847184Z 
+2026-11-12T21:49:45.2159453Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.2345448Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T21:49:45.2559613Z     |
+2026-11-12T21:49:45.2719546Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.2919189Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.2988449Z 
+2026-11-12T21:49:45.3173947Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3174937Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T21:49:45.3175480Z     |
+2026-11-12T21:49:45.3176007Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3176657Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3176922Z 
+2026-11-12T21:49:45.3177379Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3178208Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T21:49:45.3178633Z    |
+2026-11-12T21:49:45.3178986Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3179381Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3179631Z 
+2026-11-12T21:49:45.3180019Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3180640Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T21:49:45.3181081Z      |
+2026-11-12T21:49:45.3181408Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3181892Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3187787Z 
+2026-11-12T21:49:45.3188222Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3188903Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T21:49:45.3189703Z      |
+2026-11-12T21:49:45.3190193Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3190810Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3191070Z 
+2026-11-12T21:49:45.3191519Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3192171Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T21:49:45.3192636Z    |
+2026-11-12T21:49:45.3192983Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3193382Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3193701Z 
+2026-11-12T21:49:45.3194434Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3195137Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T21:49:45.3195599Z      |
+2026-11-12T21:49:45.3195962Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3196400Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3196736Z 
+2026-11-12T21:49:45.3197105Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3197925Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T21:49:45.3198413Z      |
+2026-11-12T21:49:45.3198900Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3199527Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3199778Z 
+2026-11-12T21:49:45.3200219Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3200922Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T21:49:45.3201440Z    |
+2026-11-12T21:49:45.3201774Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3202221Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3202502Z 
+2026-11-12T21:49:45.3204336Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3204992Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T21:49:45.3205502Z     |
+2026-11-12T21:49:45.3205864Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3206340Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3206655Z 
+2026-11-12T21:49:45.3207110Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3208146Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T21:49:45.3208665Z     |
+2026-11-12T21:49:45.3209225Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:49:45.3209928Z     |                        ^^^^^^^^^^
+2026-11-12T21:49:45.3210237Z 
+2026-11-12T21:49:45.3210665Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3211397Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T21:49:45.3211930Z    |
+2026-11-12T21:49:45.3212258Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3212698Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3212962Z 
+2026-11-12T21:49:45.3213398Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3214145Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T21:49:45.3214695Z     |
+2026-11-12T21:49:45.3215048Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3215527Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3215828Z 
+2026-11-12T21:49:45.3216268Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3217028Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T21:49:45.3217591Z     |
+2026-11-12T21:49:45.3218207Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3218827Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3219090Z 
+2026-11-12T21:49:45.3219526Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3220239Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T21:49:45.3220755Z    |
+2026-11-12T21:49:45.3221303Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3221966Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3222257Z 
+2026-11-12T21:49:45.3222807Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3223546Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T21:49:45.3224070Z     |
+2026-11-12T21:49:45.3224416Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3225094Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3225413Z 
+2026-11-12T21:49:45.3225851Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3226579Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T21:49:45.3227101Z     |
+2026-11-12T21:49:45.3227797Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:49:45.3228476Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3228748Z 
+2026-11-12T21:49:45.3229180Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3229907Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T21:49:45.3230416Z     |
+2026-11-12T21:49:45.3230758Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3231229Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3231499Z 
+2026-11-12T21:49:45.3231940Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3232592Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T21:49:45.3233099Z     |
+2026-11-12T21:49:45.3233398Z 858 |         ServerInfo::new(
+2026-11-12T21:49:45.3233772Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3234039Z 
+2026-11-12T21:49:45.3234442Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3235070Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T21:49:45.3235536Z    |
+2026-11-12T21:49:45.3235860Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3236252Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3236742Z 
+2026-11-12T21:49:45.3237182Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3237995Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T21:49:45.3238459Z      |
+2026-11-12T21:49:45.3238826Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3239271Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3239567Z 
+2026-11-12T21:49:45.3239947Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3240519Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T21:49:45.3240938Z      |
+2026-11-12T21:49:45.3241354Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3241875Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3242123Z 
+2026-11-12T21:49:45.3242491Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3243191Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T21:49:45.3243691Z    |
+2026-11-12T21:49:45.3243992Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3244398Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3244688Z 
+2026-11-12T21:49:45.3245074Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3245758Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T21:49:45.3246256Z      |
+2026-11-12T21:49:45.3246581Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3247049Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3247333Z 
+2026-11-12T21:49:45.3247863Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3248466Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T21:49:45.3248925Z      |
+2026-11-12T21:49:45.3249370Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3249903Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3250171Z 
+2026-11-12T21:49:45.3250362Z warning: 26 warnings emitted
+2026-11-12T21:49:45.3250603Z 
+2026-11-12T21:49:45.3250989Z INFO: From Compiling Rust bin //codex-rs/app-server:app-server-all-test-bin (1 file):
+2026-11-12T21:49:45.3251873Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3252522Z   --> app-server/tests/suite/v2/app_installed.rs:30:18
+2026-11-12T21:49:45.3252936Z    |
+2026-11-12T21:49:45.3253265Z 30 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3253628Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3253994Z    |
+2026-11-12T21:49:45.3254328Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:45.3254664Z 
+2026-11-12T21:49:45.3255086Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3255776Z    --> app-server/tests/suite/v2/app_installed.rs:250:27
+2026-11-12T21:49:45.3256271Z     |
+2026-11-12T21:49:45.3256590Z 250 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3257028Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3257341Z 
+2026-11-12T21:49:45.3257854Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3258565Z    --> app-server/tests/suite/v2/app_installed.rs:251:9
+2026-11-12T21:49:45.3259074Z     |
+2026-11-12T21:49:45.3259559Z 251 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3260240Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3260529Z 
+2026-11-12T21:49:45.3260947Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3261631Z   --> app-server/tests/suite/v2/app_list.rs:46:18
+2026-11-12T21:49:45.3262114Z    |
+2026-11-12T21:49:45.3262450Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3262892Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3263173Z 
+2026-11-12T21:49:45.3263749Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3264433Z     --> app-server/tests/suite/v2/app_list.rs:1500:27
+2026-11-12T21:49:45.3264932Z      |
+2026-11-12T21:49:45.3265278Z 1500 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3265799Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3266107Z 
+2026-11-12T21:49:45.3266537Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3267220Z     --> app-server/tests/suite/v2/app_list.rs:1501:9
+2026-11-12T21:49:45.3267847Z      |
+2026-11-12T21:49:45.3268387Z 1501 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3268999Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3269259Z 
+2026-11-12T21:49:45.3269744Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3270461Z   --> app-server/tests/suite/v2/executor_mcp.rs:39:18
+2026-11-12T21:49:45.3270963Z    |
+2026-11-12T21:49:45.3271294Z 39 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3271740Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3272018Z 
+2026-11-12T21:49:45.3272448Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3273141Z     --> app-server/tests/suite/v2/executor_mcp.rs:1109:27
+2026-11-12T21:49:45.3273642Z      |
+2026-11-12T21:49:45.3273992Z 1109 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3274467Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3274774Z 
+2026-11-12T21:49:45.3275213Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3275896Z     --> app-server/tests/suite/v2/executor_mcp.rs:1110:9
+2026-11-12T21:49:45.3276395Z      |
+2026-11-12T21:49:45.3276892Z 1110 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3277590Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3277995Z 
+2026-11-12T21:49:45.3278427Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3279113Z   --> app-server/tests/suite/v2/mcp_resource.rs:57:18
+2026-11-12T21:49:45.3279802Z    |
+2026-11-12T21:49:45.3280134Z 57 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3280576Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3280849Z 
+2026-11-12T21:49:45.3281290Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3281975Z    --> app-server/tests/suite/v2/mcp_resource.rs:833:27
+2026-11-12T21:49:45.3282493Z     |
+2026-11-12T21:49:45.3282842Z 833 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3283318Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3283635Z 
+2026-11-12T21:49:45.3284080Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3284784Z    --> app-server/tests/suite/v2/mcp_resource.rs:834:24
+2026-11-12T21:49:45.3285300Z     |
+2026-11-12T21:49:45.3285860Z 834 |         let mut info = ServerInfo::new(ServerCapabilities::builder().enable_resources().build())
+2026-11-12T21:49:45.3286560Z     |                        ^^^^^^^^^^
+2026-11-12T21:49:45.3286871Z 
+2026-11-12T21:49:45.3287307Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3288163Z   --> app-server/tests/suite/v2/mcp_server_elicitation.rs:67:18
+2026-11-12T21:49:45.3288673Z    |
+2026-11-12T21:49:45.3288995Z 67 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3289429Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3289691Z 
+2026-11-12T21:49:45.3290122Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3290841Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:989:27
+2026-11-12T21:49:45.3291348Z     |
+2026-11-12T21:49:45.3291858Z 989 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3292326Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3292636Z 
+2026-11-12T21:49:45.3293033Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3293744Z    --> app-server/tests/suite/v2/mcp_server_elicitation.rs:990:9
+2026-11-12T21:49:45.3294230Z     |
+2026-11-12T21:49:45.3294657Z 990 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3295168Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3295420Z 
+2026-11-12T21:49:45.3295774Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3296391Z   --> app-server/tests/suite/v2/mcp_server_status.rs:45:18
+2026-11-12T21:49:45.3296831Z    |
+2026-11-12T21:49:45.3297112Z 45 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3297459Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3297843Z 
+2026-11-12T21:49:45.3298195Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3298799Z    --> app-server/tests/suite/v2/mcp_server_status.rs:823:27
+2026-11-12T21:49:45.3299258Z     |
+2026-11-12T21:49:45.3299563Z 823 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3299957Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3300267Z 
+2026-11-12T21:49:45.3300619Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3301224Z    --> app-server/tests/suite/v2/mcp_server_status.rs:824:9
+2026-11-12T21:49:45.3301662Z     |
+2026-11-12T21:49:45.3302172Z 824 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build()).with_server_info(
+2026-11-12T21:49:45.3302742Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3303009Z 
+2026-11-12T21:49:45.3303353Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3303967Z    --> app-server/tests/suite/v2/mcp_server_status.rs:857:27
+2026-11-12T21:49:45.3304425Z     |
+2026-11-12T21:49:45.3304751Z 857 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3305126Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3305424Z 
+2026-11-12T21:49:45.3305767Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3306522Z    --> app-server/tests/suite/v2/mcp_server_status.rs:858:9
+2026-11-12T21:49:45.3306975Z     |
+2026-11-12T21:49:45.3307263Z 858 |         ServerInfo::new(
+2026-11-12T21:49:45.3307614Z     |         ^^^^^^^^^^
+2026-11-12T21:49:45.3307991Z 
+2026-11-12T21:49:45.3308333Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3308920Z   --> app-server/tests/suite/v2/mcp_tool.rs:69:18
+2026-11-12T21:49:45.3309353Z    |
+2026-11-12T21:49:45.3309644Z 69 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3310026Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3310296Z 
+2026-11-12T21:49:45.3310641Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3311250Z     --> app-server/tests/suite/v2/mcp_tool.rs:1265:27
+2026-11-12T21:49:45.3311717Z      |
+2026-11-12T21:49:45.3312024Z 1265 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3312422Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3312732Z 
+2026-11-12T21:49:45.3313091Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3313733Z     --> app-server/tests/suite/v2/mcp_tool.rs:1266:9
+2026-11-12T21:49:45.3314184Z      |
+2026-11-12T21:49:45.3314679Z 1266 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3315215Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3315478Z 
+2026-11-12T21:49:45.3315833Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3316576Z   --> app-server/tests/suite/v2/plugin_install.rs:46:18
+2026-11-12T21:49:45.3317028Z    |
+2026-11-12T21:49:45.3317321Z 46 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:45.3317780Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:45.3318091Z 
+2026-11-12T21:49:45.3318480Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3319292Z     --> app-server/tests/suite/v2/plugin_install.rs:2330:27
+2026-11-12T21:49:45.3319792Z      |
+2026-11-12T21:49:45.3320138Z 2330 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:45.3320625Z      |                           ^^^^^^^^^^
+2026-11-12T21:49:45.3320933Z 
+2026-11-12T21:49:45.3321366Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:45.3322061Z     --> app-server/tests/suite/v2/plugin_install.rs:2331:9
+2026-11-12T21:49:45.3322574Z      |
+2026-11-12T21:49:45.3323059Z 2331 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:45.3323692Z      |         ^^^^^^^^^^
+2026-11-12T21:49:45.3323934Z 
+2026-11-12T21:49:45.3324169Z warning: 26 warnings emitted
+2026-11-12T21:49:45.3324439Z 
+2026-11-12T21:49:45.6161547Z [36,551 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 4s remote, remote-cache ... (796 actions, 0 running)
+2026-11-12T21:49:46.6192225Z [36,762 / 38,908] [Prepa] Compiling Rust rlib @@rules_rs++crate+crates__cookie-0.18.2//:cookie v0.18.2 (14 files); 5s ... (795 actions, 0 running)
+2026-11-12T21:49:47.6283242Z [36,984 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 0s remote, remote-cache ... (794 actions, 3 running)
+2026-11-12T21:49:48.6189685Z [37,222 / 38,908] Compiling Rust bin //codex-rs/core:codex-write-config-schema (471 files); 1s remote, remote-cache ... (795 actions, 4 running)
+2026-11-12T21:49:48.8488941Z INFO: From Clippy //codex-rs/tui:tui:
+2026-11-12T21:49:48.8648950Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:48.8889137Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:49:48.8938672Z    |
+2026-11-12T21:49:48.9251225Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:48.9458687Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:48.9677402Z    |
+2026-11-12T21:49:48.9728651Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:48.9760871Z 
+2026-11-12T21:49:48.9763167Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:48.9792109Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:49:48.9820351Z     |
+2026-11-12T21:49:48.9852204Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:48.9876627Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:48.9897388Z 
+2026-11-12T21:49:48.9938610Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:48.9958339Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:49:48.9973279Z     |
+2026-11-12T21:49:48.9998549Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:49.0023620Z     |         ^^^^^^^^^^
+2026-11-12T21:49:49.0049358Z 
+2026-11-12T21:49:49.0058413Z warning: 3 warnings emitted
+2026-11-12T21:49:49.0088186Z 
+2026-11-12T21:49:49.0273102Z INFO: From Clippy //codex-rs/tui:tui-unit-tests-bin:
+2026-11-12T21:49:49.0338823Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:49.0388521Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:49:49.0406781Z    |
+2026-11-12T21:49:49.0458824Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:49.0518867Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:49.0538438Z    |
+2026-11-12T21:49:49.0568675Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:49.0598107Z 
+2026-11-12T21:49:49.0628662Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:49.0629960Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:49:49.0694467Z     |
+2026-11-12T21:49:49.0748687Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:49.0848548Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:49.0916046Z 
+2026-11-12T21:49:49.1002451Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:49.1048650Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:49:49.1119667Z     |
+2026-11-12T21:49:49.1180406Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:49.1217970Z     |         ^^^^^^^^^^
+2026-11-12T21:49:49.1248542Z 
+2026-11-12T21:49:49.1284507Z warning: 3 warnings emitted
+2026-11-12T21:49:49.1351178Z 
+2026-11-12T21:49:49.6403990Z [37,490 / 38,908] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 2s remote, remote-cache ... (618 actions, 3 running)
+2026-11-12T21:49:50.2258971Z INFO: From Compiling Rust rlib //codex-rs/tui:tui (490 files):
+2026-11-12T21:49:50.2331169Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.2338720Z   --> codex-rs/tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:49:50.2398562Z    |
+2026-11-12T21:49:50.2441209Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:50.2488391Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:50.2542571Z    |
+2026-11-12T21:49:50.2761356Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:50.2893420Z 
+2026-11-12T21:49:50.3078349Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.3099251Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:49:50.3099810Z     |
+2026-11-12T21:49:50.3100262Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:50.3100873Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:50.3101142Z 
+2026-11-12T21:49:50.3101530Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.3102167Z    --> codex-rs/tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:49:50.3102645Z     |
+2026-11-12T21:49:50.3103071Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:50.3104311Z     |         ^^^^^^^^^^
+2026-11-12T21:49:50.3104909Z 
+2026-11-12T21:49:50.3105022Z warning: 3 warnings emitted
+2026-11-12T21:49:50.3105199Z 
+2026-11-12T21:49:50.4639052Z INFO: From Compiling Rust bin //codex-rs/tui:tui-unit-tests-bin (490 files):
+2026-11-12T21:49:50.4699182Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.4731289Z   --> tui/src/dynamic_tools_mcp.rs:33:18
+2026-11-12T21:49:50.4758347Z    |
+2026-11-12T21:49:50.4779592Z 33 | use rmcp::model::ServerInfo;
+2026-11-12T21:49:50.4818899Z    |                  ^^^^^^^^^^
+2026-11-12T21:49:50.4839249Z    |
+2026-11-12T21:49:50.4878653Z    = note: `#[warn(deprecated)]` on by default
+2026-11-12T21:49:50.4879049Z 
+2026-11-12T21:49:50.4934285Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.4999409Z    --> tui/src/dynamic_tools_mcp.rs:188:27
+2026-11-12T21:49:50.5010062Z     |
+2026-11-12T21:49:50.5058788Z 188 |     fn get_info(&self) -> ServerInfo {
+2026-11-12T21:49:50.5098575Z     |                           ^^^^^^^^^^
+2026-11-12T21:49:50.5156965Z 
+2026-11-12T21:49:50.5168740Z warning: use of deprecated type alias `rmcp::model::ServerInfo`: use `ServerConfig` instead
+2026-11-12T21:49:50.5212722Z    --> tui/src/dynamic_tools_mcp.rs:189:9
+2026-11-12T21:49:50.5228432Z     |
+2026-11-12T21:49:50.5264800Z 189 |         ServerInfo::new(ServerCapabilities::builder().enable_tools().build())
+2026-11-12T21:49:50.5268420Z     |         ^^^^^^^^^^
+2026-11-12T21:49:50.5317961Z 
+2026-11-12T21:49:50.5319120Z warning: 3 warnings emitted
+2026-11-12T21:49:50.5344561Z 
+2026-11-12T21:49:50.6423368Z [37,742 / 38,908] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 3s remote, remote-cache ... (401 actions, 3 running)
+2026-11-12T21:49:51.6416942Z [37,970 / 38,908] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 4s remote, remote-cache ... (177 actions, 3 running)
+2026-11-12T21:49:52.6857978Z [38,194 / 38,908] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 5s remote, remote-cache ... (92 actions, 3 running)
+2026-11-12T21:49:53.6857468Z [38,559 / 38,908] Compiling Rust bin //codex-rs/mcp-server:codex-mcp-server (13 files); 6s remote, remote-cache ... (32 actions, 11 running)
+2026-11-12T21:49:54.6998290Z [38,617 / 38,908] Compiling Rust bin //codex-rs/thread-manager-sample:codex-thread-manager-sample (1 file); 6s remote, remote-cache ... (18 actions, 15 running)
+2026-11-12T21:49:55.8826253Z [38,635 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 3s remote, remote-cache ... (16 actions, 13 running)
+2026-11-12T21:49:57.5403814Z [38,641 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 4s remote, remote-cache ... (14 actions, 13 running)
+2026-11-12T21:49:58.5405999Z [38,647 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 5s remote, remote-cache ... (14 actions, 13 running)
+2026-11-12T21:50:00.1409770Z [38,650 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 7s remote, remote-cache ... (16 actions, 12 running)
+2026-11-12T21:50:01.5418712Z [38,669 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 8s remote, remote-cache ... (10 actions running)
+2026-11-12T21:50:03.6502255Z [38,670 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 10s remote, remote-cache ... (10 actions, 9 running)
+2026-11-12T21:50:05.5426531Z [38,671 / 38,908] Compiling Rust bin //codex-rs/app-server:codex-app-server (124 files); 12s remote, remote-cache ... (9 actions running)
+2026-11-12T21:50:08.0051591Z [38,672 / 38,908] Compiling Rust bin //codex-rs/cli:hepta (56 files); 14s remote, remote-cache ... (9 actions, 8 running)
+2026-11-12T21:50:09.5431473Z [38,677 / 38,908] Clippy //codex-rs/hepta-agentd:hepta-agentd-test-lib; 15s remote, remote-cache ... (7 actions running)
+2026-11-12T21:50:11.5435883Z [38,760 / 38,908] Clippy //codex-rs/hepta-agentd:hepta-agentd-test-lib; 17s remote, remote-cache ... (6 actions running)
+2026-11-12T21:50:20.9373665Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-lib:
+2026-11-12T21:50:20.9379457Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:50:20.9380194Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:50:20.9380622Z    |
+2026-11-12T21:50:20.9380942Z 22 | pub(super) enum Status {
+2026-11-12T21:50:20.9381272Z    |                 ------ variant in this enum
+2026-11-12T21:50:20.9381600Z ...
+2026-11-12T21:50:20.9381824Z 26 |     Unavailable = 4,
+2026-11-12T21:50:20.9382091Z    |     ^^^^^^^^^^^
+2026-11-12T21:50:20.9382333Z    |
+2026-11-12T21:50:20.9382939Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:50:20.9383709Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:50:20.9384032Z 
+2026-11-12T21:50:20.9384165Z warning: field `estimand` is never read
+2026-11-12T21:50:20.9384674Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:50:20.9385094Z    |
+2026-11-12T21:50:20.9385299Z 19 | pub(super) struct Checked {
+2026-11-12T21:50:20.9385597Z    |                   ------- field in this struct
+2026-11-12T21:50:20.9385894Z ...
+2026-11-12T21:50:20.9386102Z 23 |     pub estimand: Digest32,
+2026-11-12T21:50:20.9386360Z    |         ^^^^^^^^
+2026-11-12T21:50:20.9386489Z 
+2026-11-12T21:50:20.9386599Z warning: method `context` is never used
+2026-11-12T21:50:20.9387008Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:50:20.9387418Z    |
+2026-11-12T21:50:20.9388041Z 30 | impl Request {
+2026-11-12T21:50:20.9388306Z    | ------------ method in this implementation
+2026-11-12T21:50:20.9388596Z ...
+2026-11-12T21:50:20.9388877Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:50:20.9389228Z    |                   ^^^^^^^
+2026-11-12T21:50:20.9389393Z 
+2026-11-12T21:50:20.9389524Z warning: large size difference between variants
+2026-11-12T21:50:20.9390091Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+2026-11-12T21:50:20.9390591Z    |
+2026-11-12T21:50:20.9390851Z 33 | / pub(super) enum ResidentAuthorizationV3 {
+2026-11-12T21:50:20.9391164Z 34 | |     Fresh,
+2026-11-12T21:50:20.9391458Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9391973Z 35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:50:20.9392617Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:50:20.9393107Z 36 | | }
+2026-11-12T21:50:20.9393391Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:50:20.9393731Z    |
+2026-11-12T21:50:20.9394310Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9394949Z    = note: `#[warn(clippy::large_enum_variant)]` on by default
+2026-11-12T21:50:20.9395615Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9396228Z    |
+2026-11-12T21:50:20.9396528Z 35 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:50:20.9397024Z 35 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:50:20.9397428Z    |
+2026-11-12T21:50:20.9397530Z 
+2026-11-12T21:50:20.9398728Z warning: large size difference between variants
+2026-11-12T21:50:20.9399204Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+2026-11-12T21:50:20.9399664Z    |
+2026-11-12T21:50:20.9399955Z 71 | / pub(super) enum ResidentStoreValueV3 {
+2026-11-12T21:50:20.9400357Z 72 | |     Store(ResidentCheckpointV3),
+2026-11-12T21:50:20.9400844Z    | |     --------------------------- the largest variant contains at least 2576 bytes
+2026-11-12T21:50:20.9401346Z 73 | |     Snapshot(ResidentSnapshotV3),
+2026-11-12T21:50:20.9402063Z    | |     ---------------------------- the second-largest variant contains at least 1312 bytes
+2026-11-12T21:50:20.9402638Z 74 | |     Fresh(Option<FreshResidentCheckpointV3>),
+2026-11-12T21:50:20.9403020Z 75 | |     Checked,
+2026-11-12T21:50:20.9403268Z 76 | | }
+2026-11-12T21:50:20.9403542Z    | |_^ the entire enum is at least 2576 bytes
+2026-11-12T21:50:20.9403897Z    |
+2026-11-12T21:50:20.9404500Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9405550Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9406241Z    |
+2026-11-12T21:50:20.9406499Z 72 -     Store(ResidentCheckpointV3),
+2026-11-12T21:50:20.9406868Z 72 +     Store(Box<ResidentCheckpointV3>),
+2026-11-12T21:50:20.9407214Z    |
+2026-11-12T21:50:20.9407336Z 
+2026-11-12T21:50:20.9407495Z warning: large size difference between variants
+2026-11-12T21:50:20.9408132Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:143:1
+2026-11-12T21:50:20.9408591Z     |
+2026-11-12T21:50:20.9408830Z 143 | / enum GateActionV3 {
+2026-11-12T21:50:20.9409134Z 144 | |     Current,
+2026-11-12T21:50:20.9409430Z 145 | |     Begin(LearningIterationStageV1),
+2026-11-12T21:50:20.9409965Z     | |     ------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:50:20.9410601Z 146 | |     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:50:20.9411165Z     | |     --------------------------------------- the largest variant contains at least 1304 bytes
+2026-11-12T21:50:20.9411678Z 147 | | }
+2026-11-12T21:50:20.9412662Z     | |_^ the entire enum is at least 1304 bytes
+2026-11-12T21:50:20.9413034Z     |
+2026-11-12T21:50:20.9413620Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9414461Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9414988Z     |
+2026-11-12T21:50:20.9415265Z 146 -     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:50:20.9415672Z 146 +     Checkpoint(Box<LearningIterationSnapshotV1>),
+2026-11-12T21:50:20.9416021Z     |
+2026-11-12T21:50:20.9416135Z 
+2026-11-12T21:50:20.9416278Z warning: large size difference between variants
+2026-11-12T21:50:20.9416765Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:57:1
+2026-11-12T21:50:20.9417213Z    |
+2026-11-12T21:50:20.9417430Z 57 | / enum ResidentStagesV3 {
+2026-11-12T21:50:20.9417922Z 58 | |     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:50:20.9418437Z    | |     -------------------------------------------------- the largest variant contains at least 3184 bytes
+2026-11-12T21:50:20.9418981Z 59 | |     Installed(Arc<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:50:20.9419490Z    | |     --------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:50:20.9419952Z 60 | | }
+2026-11-12T21:50:20.9420202Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:50:20.9420500Z    |
+2026-11-12T21:50:20.9421042Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9421913Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9422506Z    |
+2026-11-12T21:50:20.9422805Z 58 -     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:50:20.9423316Z 58 +     Uninstalled(Box<Option<ResidentOriginalStageOwnersV3>>),
+2026-11-12T21:50:20.9423719Z    |
+2026-11-12T21:50:20.9423840Z 
+2026-11-12T21:50:20.9423991Z warning: large size difference between variants
+2026-11-12T21:50:20.9424516Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:25:1
+2026-11-12T21:50:20.9425223Z    |
+2026-11-12T21:50:20.9425523Z 25 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+2026-11-12T21:50:20.9425985Z 26 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+2026-11-12T21:50:20.9426579Z    | |     ---------------------------------------------- the second-largest variant contains at least 2920 bytes
+2026-11-12T21:50:20.9427198Z 27 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:50:20.9427899Z    | |     ------------------------------------------------ the largest variant contains at least 3184 bytes
+2026-11-12T21:50:20.9428363Z 28 | | }
+2026-11-12T21:50:20.9428615Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:50:20.9428942Z    |
+2026-11-12T21:50:20.9429491Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9430438Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9431011Z    |
+2026-11-12T21:50:20.9431308Z 27 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:50:20.9431778Z 27 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+2026-11-12T21:50:20.9432151Z    |
+2026-11-12T21:50:20.9432238Z 
+2026-11-12T21:50:20.9432339Z warning: large size difference between variants
+2026-11-12T21:50:20.9432688Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+2026-11-12T21:50:20.9433006Z    |
+2026-11-12T21:50:20.9433176Z 72 | / enum ClientOriginV3 {
+2026-11-12T21:50:20.9433374Z 73 | |     Fresh,
+2026-11-12T21:50:20.9433606Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9434117Z 74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:50:20.9434517Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:50:20.9434862Z 75 | | }
+2026-11-12T21:50:20.9435042Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:50:20.9435267Z    |
+2026-11-12T21:50:20.9435642Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9436239Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9436631Z    |
+2026-11-12T21:50:20.9436864Z 74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:50:20.9437229Z 74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:50:20.9437509Z    |
+2026-11-12T21:50:20.9437604Z 
+2026-11-12T21:50:20.9437942Z warning: large size difference between variants
+2026-11-12T21:50:20.9438303Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+2026-11-12T21:50:20.9438614Z    |
+2026-11-12T21:50:20.9438787Z 77 | / enum ResidentExchangeV3 {
+2026-11-12T21:50:20.9439048Z 78 | |     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:50:20.9439406Z    | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+2026-11-12T21:50:20.9439730Z 79 | |     Refused(Error),
+2026-11-12T21:50:20.9439997Z    | |     -------------- the second-largest variant contains at least 48 bytes
+2026-11-12T21:50:20.9440275Z 80 | | }
+2026-11-12T21:50:20.9440455Z    | |_^ the entire enum is at least 1480 bytes
+2026-11-12T21:50:20.9440679Z    |
+2026-11-12T21:50:20.9441040Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9441642Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9442042Z    |
+2026-11-12T21:50:20.9442237Z 78 -     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:50:20.9442542Z 78 +     Observed(Box<RootResidentLearningObservationV3>),
+2026-11-12T21:50:20.9442794Z    |
+2026-11-12T21:50:20.9443019Z 
+2026-11-12T21:50:20.9443128Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9443479Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+2026-11-12T21:50:20.9443789Z     |
+2026-11-12T21:50:20.9443973Z 131 | /     pub fn recover_original_root_stream(
+2026-11-12T21:50:20.9444219Z 132 | |         stream: UnixStream,
+2026-11-12T21:50:20.9444454Z 133 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:50:20.9444694Z 134 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:50:20.9444914Z ...   |
+2026-11-12T21:50:20.9445080Z 140 | |         lifetime: Duration,
+2026-11-12T21:50:20.9445291Z 141 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9445512Z     | |____________________________^
+2026-11-12T21:50:20.9445711Z     |
+2026-11-12T21:50:20.9446075Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9446547Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:50:20.9446742Z 
+2026-11-12T21:50:20.9446849Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9447195Z    --> codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+2026-11-12T21:50:20.9447507Z     |
+2026-11-12T21:50:20.9447872Z 159 | /     fn bind(
+2026-11-12T21:50:20.9448060Z 160 | |         stream: UnixStream,
+2026-11-12T21:50:20.9448283Z 161 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:50:20.9448525Z 162 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:50:20.9448729Z ...   |
+2026-11-12T21:50:20.9448882Z 168 | |         lifetime: Duration,
+2026-11-12T21:50:20.9449093Z 169 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9449409Z     | |____________________________^
+2026-11-12T21:50:20.9449603Z     |
+2026-11-12T21:50:20.9449956Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9450289Z 
+2026-11-12T21:50:20.9450396Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9450766Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+2026-11-12T21:50:20.9451086Z    |
+2026-11-12T21:50:20.9451279Z 20 | /     pub fn recover_original_model_root_stream(
+2026-11-12T21:50:20.9451535Z 21 | |         stream: UnixStream,
+2026-11-12T21:50:20.9451765Z 22 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:50:20.9452008Z 23 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:50:20.9452223Z ...  |
+2026-11-12T21:50:20.9452387Z 33 | |         lifetime: Duration,
+2026-11-12T21:50:20.9452595Z 34 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9452798Z    | |____________________________^
+2026-11-12T21:50:20.9453002Z    |
+2026-11-12T21:50:20.9453358Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9453702Z 
+2026-11-12T21:50:20.9453804Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9454102Z    --> codex-rs/hepta-agentd/src/cell_q24_dataset.rs:193:5
+2026-11-12T21:50:20.9454349Z     |
+2026-11-12T21:50:20.9454509Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:50:20.9454726Z 194 | |         &mut self,
+2026-11-12T21:50:20.9454944Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:50:20.9455204Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:50:20.9455429Z ...   |
+2026-11-12T21:50:20.9455666Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:50:20.9456019Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:50:20.9456344Z     | |________________________________________________________________^
+2026-11-12T21:50:20.9456603Z     |
+2026-11-12T21:50:20.9456954Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9457291Z 
+2026-11-12T21:50:20.9457392Z warning: large size difference between variants
+2026-11-12T21:50:20.9457974Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_learning_read.rs:30:1
+2026-11-12T21:50:20.9458253Z    |
+2026-11-12T21:50:20.9458416Z 30 | / enum OriginalCut {
+2026-11-12T21:50:20.9458680Z 31 | |     Selection(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:50:20.9459101Z    | |     ----------------------------------------------------- the second-largest variant contains at least 3536 bytes
+2026-11-12T21:50:20.9459511Z 32 | |     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:50:20.9459901Z    | |     --------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:50:20.9460224Z 33 | | }
+2026-11-12T21:50:20.9460405Z    | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:50:20.9460622Z    |
+2026-11-12T21:50:20.9460969Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9461570Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9461962Z    |
+2026-11-12T21:50:20.9462178Z 32 -     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:50:20.9462523Z 32 +     NextUse(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:50:20.9462882Z    |
+2026-11-12T21:50:20.9462967Z 
+2026-11-12T21:50:20.9463071Z warning: large size difference between variants
+2026-11-12T21:50:20.9463375Z   --> codex-rs/hepta-agentd/src/circuit_learning_read_profile.rs:18:1
+2026-11-12T21:50:20.9463649Z    |
+2026-11-12T21:50:20.9463814Z 18 | / pub(super) enum ReadProfile {
+2026-11-12T21:50:20.9464193Z 19 | |     TrainingNoUpdate(OriginalCircuitLearningReadContextV1),
+2026-11-12T21:50:20.9464599Z    | |     ------------------------------------------------------ the second-largest variant contains at least 2496 bytes
+2026-11-12T21:50:20.9465019Z 20 | |     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:50:20.9465428Z    | |     -------------------------------------------------------- the largest variant contains at least 6016 bytes
+2026-11-12T21:50:20.9465756Z 21 | | }
+2026-11-12T21:50:20.9465935Z    | |_^ the entire enum is at least 6016 bytes
+2026-11-12T21:50:20.9466148Z    |
+2026-11-12T21:50:20.9466491Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9467077Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9467461Z    |
+2026-11-12T21:50:20.9467772Z 20 -     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:50:20.9468160Z 20 +     Evaluated(Box<OriginalCircuitEvaluatedLearningReadContextV1>),
+2026-11-12T21:50:20.9468448Z    |
+2026-11-12T21:50:20.9468534Z 
+2026-11-12T21:50:20.9468626Z warning: large size difference between variants
+2026-11-12T21:50:20.9468942Z   --> codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+2026-11-12T21:50:20.9469247Z    |
+2026-11-12T21:50:20.9469409Z 68 | / pub(super) enum Readiness {
+2026-11-12T21:50:20.9469610Z 69 | |     NotReady,
+2026-11-12T21:50:20.9469845Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9470134Z 70 | |     Ready { read: original::OriginalRead },
+2026-11-12T21:50:20.9470460Z    | |     -------------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:50:20.9470764Z 71 | | }
+2026-11-12T21:50:20.9470940Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:50:20.9471156Z    |
+2026-11-12T21:50:20.9471518Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9472115Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9472516Z    |
+2026-11-12T21:50:20.9472698Z 70 -     Ready { read: original::OriginalRead },
+2026-11-12T21:50:20.9473093Z 70 +     Ready { read: Box<original::OriginalRead> },
+2026-11-12T21:50:20.9473324Z    |
+2026-11-12T21:50:20.9473409Z 
+2026-11-12T21:50:20.9473503Z warning: large size difference between variants
+2026-11-12T21:50:20.9473845Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_completion_readiness.rs:82:1
+2026-11-12T21:50:20.9474146Z    |
+2026-11-12T21:50:20.9474312Z 82 | / pub(super) enum Readiness {
+2026-11-12T21:50:20.9474519Z 83 | |     NotReady,
+2026-11-12T21:50:20.9474746Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9475028Z 84 | |     Ready { read: wire::OriginalRead },
+2026-11-12T21:50:20.9475340Z    | |     ---------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:50:20.9475631Z 85 | | }
+2026-11-12T21:50:20.9475804Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:50:20.9476016Z    |
+2026-11-12T21:50:20.9476379Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9476972Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9477359Z    |
+2026-11-12T21:50:20.9477540Z 84 -     Ready { read: wire::OriginalRead },
+2026-11-12T21:50:20.9477878Z 84 +     Ready { read: Box<wire::OriginalRead> },
+2026-11-12T21:50:20.9478099Z    |
+2026-11-12T21:50:20.9478186Z 
+2026-11-12T21:50:20.9478289Z warning: large size difference between variants
+2026-11-12T21:50:20.9478634Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_client.rs:69:1
+2026-11-12T21:50:20.9478907Z    |
+2026-11-12T21:50:20.9479191Z 69 | / enum OriginalVersionValue {
+2026-11-12T21:50:20.9479461Z 70 | |     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:50:20.9479838Z    | |     -------------------------------------------------- the largest variant contains at least 216 bytes
+2026-11-12T21:50:20.9480240Z 71 | |     Progress(OriginalCircuitEvaluatedVersionProgressV1),
+2026-11-12T21:50:20.9480637Z    | |     --------------------------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:50:20.9480976Z 72 | | }
+2026-11-12T21:50:20.9481157Z    | |_^ the entire enum is at least 216 bytes
+2026-11-12T21:50:20.9481389Z    |
+2026-11-12T21:50:20.9481755Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9482350Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9482758Z    |
+2026-11-12T21:50:20.9482984Z 70 -     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:50:20.9483325Z 70 +     Readback(Box<OriginalCircuitRetainedVersionReadbackV1>),
+2026-11-12T21:50:20.9483603Z    |
+2026-11-12T21:50:20.9483684Z 
+2026-11-12T21:50:20.9483800Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9484119Z   --> codex-rs/hepta-agentd/src/circuit_evaluated_version_host.rs:57:5
+2026-11-12T21:50:20.9484401Z    |
+2026-11-12T21:50:20.9484580Z 57 | /     pub fn from_original_evaluated_owners(
+2026-11-12T21:50:20.9484866Z 58 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:50:20.9485179Z 59 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:50:20.9485495Z 60 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:50:20.9485755Z ...  |
+2026-11-12T21:50:20.9485924Z 66 | |         lifetime: Duration,
+2026-11-12T21:50:20.9486145Z 67 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9486363Z    | |____________________________^
+2026-11-12T21:50:20.9486555Z    |
+2026-11-12T21:50:20.9486910Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9487236Z 
+2026-11-12T21:50:20.9487347Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9487875Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_service.rs:76:5
+2026-11-12T21:50:20.9488165Z    |
+2026-11-12T21:50:20.9488348Z 76 | /     pub async fn serve_original_ordinary(
+2026-11-12T21:50:20.9488584Z 77 | |         self: Arc<Self>,
+2026-11-12T21:50:20.9488797Z 78 | |         stream: UnixStream,
+2026-11-12T21:50:20.9489024Z 79 | |         consumer: AgentdRootAuthorityPeer,
+2026-11-12T21:50:20.9489247Z ...  |
+2026-11-12T21:50:20.9489443Z 84 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+2026-11-12T21:50:20.9489695Z 85 | |     ) -> Result<u64, Error> {
+2026-11-12T21:50:20.9489902Z    | |___________________________^
+2026-11-12T21:50:20.9490086Z    |
+2026-11-12T21:50:20.9490444Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9490776Z 
+2026-11-12T21:50:20.9490884Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9491198Z    --> codex-rs/hepta-agentd/src/circuit_retained_version_host.rs:183:5
+2026-11-12T21:50:20.9491487Z     |
+2026-11-12T21:50:20.9491660Z 183 | /     pub fn from_original_owners(
+2026-11-12T21:50:20.9491930Z 184 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:50:20.9492251Z 185 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:50:20.9492567Z 186 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:50:20.9492830Z ...   |
+2026-11-12T21:50:20.9493000Z 191 | |         lifetime: Duration,
+2026-11-12T21:50:20.9493221Z 192 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9493431Z     | |____________________________^
+2026-11-12T21:50:20.9493617Z     |
+2026-11-12T21:50:20.9494084Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9494420Z 
+2026-11-12T21:50:20.9494532Z warning: large size difference between variants
+2026-11-12T21:50:20.9494845Z   --> codex-rs/hepta-agentd/src/circuit_retained_version_profile.rs:21:1
+2026-11-12T21:50:20.9495132Z    |
+2026-11-12T21:50:20.9495299Z 21 | / pub(super) enum VersionCut {
+2026-11-12T21:50:20.9495534Z 22 | |     TrainingNoUpdate(OriginalVersionCut),
+2026-11-12T21:50:20.9495891Z    | |     ------------------------------------ the second-largest variant contains at least 6480 bytes
+2026-11-12T21:50:20.9496247Z 23 | |     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:50:20.9496582Z    | |     -------------------------------------- the largest variant contains at least 7792 bytes
+2026-11-12T21:50:20.9496890Z 24 | | }
+2026-11-12T21:50:20.9497071Z    | |_^ the entire enum is at least 7792 bytes
+2026-11-12T21:50:20.9497290Z    |
+2026-11-12T21:50:20.9497754Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9498372Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9498769Z    |
+2026-11-12T21:50:20.9498950Z 23 -     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:50:20.9499234Z 23 +     Evaluated(Box<OriginalEvaluatedVersionCut>),
+2026-11-12T21:50:20.9499474Z    |
+2026-11-12T21:50:20.9499563Z 
+2026-11-12T21:50:20.9499663Z warning: large size difference between variants
+2026-11-12T21:50:20.9499965Z    --> codex-rs/hepta-agentd/src/circuit_feature_current.rs:134:1
+2026-11-12T21:50:20.9500228Z     |
+2026-11-12T21:50:20.9500390Z 134 | /  enum Publication {
+2026-11-12T21:50:20.9500643Z 135 | |      Initial(PublishedNeuronGenerationInitialV1),
+2026-11-12T21:50:20.9501028Z     | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+2026-11-12T21:50:20.9501355Z 136 | |/     Update {
+2026-11-12T21:50:20.9501580Z 137 | ||         original: PublishedNeuronGenerationUpdateV1,
+2026-11-12T21:50:20.9501903Z 138 | ||         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:50:20.9502162Z 139 | ||     },
+2026-11-12T21:50:20.9502495Z     | ||_____- the largest variant contains at least 2744 bytes
+2026-11-12T21:50:20.9502746Z 140 | |  }
+2026-11-12T21:50:20.9502929Z     | |__^ the entire enum is at least 2744 bytes
+2026-11-12T21:50:20.9503151Z     |
+2026-11-12T21:50:20.9503515Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9504115Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9504504Z     |
+2026-11-12T21:50:20.9504715Z 138 -         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:50:20.9505036Z 138 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+2026-11-12T21:50:20.9505292Z     |
+2026-11-12T21:50:20.9505381Z 
+2026-11-12T21:50:20.9505490Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9505841Z    --> codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+2026-11-12T21:50:20.9506160Z     |
+2026-11-12T21:50:20.9506332Z 143 | /     pub(crate) fn require_original_member(
+2026-11-12T21:50:20.9506570Z 144 | |         &self,
+2026-11-12T21:50:20.9506822Z 145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+2026-11-12T21:50:20.9507146Z 146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+2026-11-12T21:50:20.9507389Z ...   |
+2026-11-12T21:50:20.9507575Z 151 | |         verifier: &LearningEvidenceVerifierV1,
+2026-11-12T21:50:20.9507906Z 152 | |     ) -> Result<(), Error> {
+2026-11-12T21:50:20.9508120Z     | |__________________________^
+2026-11-12T21:50:20.9508312Z     |
+2026-11-12T21:50:20.9508776Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9509119Z 
+2026-11-12T21:50:20.9509228Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9509650Z   --> codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+2026-11-12T21:50:20.9509968Z    |
+2026-11-12T21:50:20.9510141Z 48 | / pub(super) fn assemble(
+2026-11-12T21:50:20.9510416Z 49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:50:20.9510685Z 50 | |     ledger: &LedgerWriter,
+2026-11-12T21:50:20.9510909Z 51 | |     dataset: &DatasetSnapshotReceiptV3,
+2026-11-12T21:50:20.9511137Z ...  |
+2026-11-12T21:50:20.9511297Z 56 | |     current: u64,
+2026-11-12T21:50:20.9511522Z 57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+2026-11-12T21:50:20.9511801Z    | |______________________________________________^
+2026-11-12T21:50:20.9512017Z    |
+2026-11-12T21:50:20.9512385Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9512729Z 
+2026-11-12T21:50:20.9512837Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9513188Z    --> codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+2026-11-12T21:50:20.9513506Z     |
+2026-11-12T21:50:20.9513677Z 227 | /     fn read_episode(
+2026-11-12T21:50:20.9513930Z 228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:50:20.9514202Z 229 | |         ledger: &LedgerWriter,
+2026-11-12T21:50:20.9514467Z 230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+2026-11-12T21:50:20.9514728Z ...   |
+2026-11-12T21:50:20.9514892Z 236 | |         current: u64,
+2026-11-12T21:50:20.9515104Z 237 | |     ) -> Result<Episode<'a>, Error> {
+2026-11-12T21:50:20.9515343Z     | |___________________________________^
+2026-11-12T21:50:20.9515545Z     |
+2026-11-12T21:50:20.9515901Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9516237Z 
+2026-11-12T21:50:20.9516493Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:50:20.9516943Z    --> codex-rs/hepta-agentd/src/circuit_task_source_codec.rs:508:36
+2026-11-12T21:50:20.9517330Z     |
+2026-11-12T21:50:20.9517554Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:50:20.9517974Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:50:20.9518245Z     |
+2026-11-12T21:50:20.9518626Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:50:20.9519165Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:50:20.9519415Z 
+2026-11-12T21:50:20.9519515Z warning: large size difference between variants
+2026-11-12T21:50:20.9519847Z   --> codex-rs/hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+2026-11-12T21:50:20.9520129Z    |
+2026-11-12T21:50:20.9520321Z 17 | / pub(super) enum OriginalCommandEvidenceV1 {
+2026-11-12T21:50:20.9520593Z 18 | |     Training(OriginalTrainingReadbackV1),
+2026-11-12T21:50:20.9520938Z    | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+2026-11-12T21:50:20.9521280Z 19 | |     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:50:20.9521602Z    | |     -------------------------------------- the largest variant contains at least 8776 bytes
+2026-11-12T21:50:20.9521908Z 20 | | }
+2026-11-12T21:50:20.9522090Z    | |_^ the entire enum is at least 8776 bytes
+2026-11-12T21:50:20.9522308Z    |
+2026-11-12T21:50:20.9522673Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9523384Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9523788Z    |
+2026-11-12T21:50:20.9523976Z 19 -     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:50:20.9524247Z 19 +     Selection(Box<OriginalSelectionReadbackV1>),
+2026-11-12T21:50:20.9524478Z    |
+2026-11-12T21:50:20.9524570Z 
+2026-11-12T21:50:20.9524672Z warning: large size difference between variants
+2026-11-12T21:50:20.9524990Z   --> codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+2026-11-12T21:50:20.9525275Z    |
+2026-11-12T21:50:20.9525429Z 41 | / enum Origin {
+2026-11-12T21:50:20.9525608Z 42 | |     Fresh,
+2026-11-12T21:50:20.9525827Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9526188Z 43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:50:20.9526663Z    | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+2026-11-12T21:50:20.9527017Z 44 | | }
+2026-11-12T21:50:20.9527192Z    | |_^ the entire enum is at least 656 bytes
+2026-11-12T21:50:20.9527418Z    |
+2026-11-12T21:50:20.9527859Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9528454Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9528851Z    |
+2026-11-12T21:50:20.9529117Z 43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:50:20.9529558Z 43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+2026-11-12T21:50:20.9529876Z    |
+2026-11-12T21:50:20.9529957Z 
+2026-11-12T21:50:20.9530066Z warning: large size difference between variants
+2026-11-12T21:50:20.9530369Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+2026-11-12T21:50:20.9530645Z    |
+2026-11-12T21:50:20.9530811Z 13 | / pub(super) enum Observed {
+2026-11-12T21:50:20.9531022Z 14 | |     Missing,
+2026-11-12T21:50:20.9531246Z    | |     ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9531509Z 15 | |     Pending,
+2026-11-12T21:50:20.9531711Z 16 | |     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:50:20.9532160Z    | |     ---------------------------------------- the largest variant contains at least 384 bytes
+2026-11-12T21:50:20.9532473Z 17 | | }
+2026-11-12T21:50:20.9532649Z    | |_^ the entire enum is at least 384 bytes
+2026-11-12T21:50:20.9532864Z    |
+2026-11-12T21:50:20.9533221Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9533805Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9534192Z    |
+2026-11-12T21:50:20.9534382Z 16 -     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:50:20.9534668Z 16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+2026-11-12T21:50:20.9534908Z    |
+2026-11-12T21:50:20.9534997Z 
+2026-11-12T21:50:20.9535084Z warning: this `if` has identical blocks
+2026-11-12T21:50:20.9535395Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+2026-11-12T21:50:20.9535694Z     |
+2026-11-12T21:50:20.9535845Z 135 | /         {
+2026-11-12T21:50:20.9536059Z 136 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:50:20.9536443Z 137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:50:20.9536784Z     | |_________^
+2026-11-12T21:50:20.9536960Z     |
+2026-11-12T21:50:20.9537117Z note: same as this
+2026-11-12T21:50:20.9537383Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+2026-11-12T21:50:20.9537768Z     |
+2026-11-12T21:50:20.9538058Z 137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:50:20.9538599Z     |  ____________________________________________________________________________________________________^
+2026-11-12T21:50:20.9538946Z 138 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:50:20.9539193Z 139 | |         } else {
+2026-11-12T21:50:20.9539368Z     | |_________^
+2026-11-12T21:50:20.9539744Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+2026-11-12T21:50:20.9540202Z     = note: `#[warn(clippy::if_same_then_else)]` on by default
+2026-11-12T21:50:20.9540381Z 
+2026-11-12T21:50:20.9540488Z warning: large size difference between variants
+2026-11-12T21:50:20.9540797Z    --> codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+2026-11-12T21:50:20.9541074Z     |
+2026-11-12T21:50:20.9541296Z  96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+2026-11-12T21:50:20.9541646Z  97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:50:20.9542080Z     | |     ----------------------------------------------------------- the largest variant contains at least 22984 bytes
+2026-11-12T21:50:20.9542417Z  98 | |     Starting,
+2026-11-12T21:50:20.9551619Z  99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+2026-11-12T21:50:20.9552130Z     | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:50:20.9552521Z 100 | |     Fenced,
+2026-11-12T21:50:20.9552697Z 101 | | }
+2026-11-12T21:50:20.9552883Z     | |_^ the entire enum is at least 22984 bytes
+2026-11-12T21:50:20.9553123Z     |
+2026-11-12T21:50:20.9553506Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9554118Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9554529Z     |
+2026-11-12T21:50:20.9554783Z  97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:50:20.9555166Z  97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+2026-11-12T21:50:20.9555478Z     |
+2026-11-12T21:50:20.9555569Z 
+2026-11-12T21:50:20.9555679Z warning: large size difference between variants
+2026-11-12T21:50:20.9556175Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+2026-11-12T21:50:20.9556462Z    |
+2026-11-12T21:50:20.9556631Z 26 | / enum Origin {
+2026-11-12T21:50:20.9556818Z 27 | |     Fresh,
+2026-11-12T21:50:20.9557048Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9557385Z 28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:50:20.9557915Z    | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+2026-11-12T21:50:20.9558256Z 29 | | }
+2026-11-12T21:50:20.9558450Z    | |_^ the entire enum is at least 1336 bytes
+2026-11-12T21:50:20.9558669Z    |
+2026-11-12T21:50:20.9559046Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9559663Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9560066Z    |
+2026-11-12T21:50:20.9560295Z 28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:50:20.9560661Z 28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+2026-11-12T21:50:20.9560945Z    |
+2026-11-12T21:50:20.9561033Z 
+2026-11-12T21:50:20.9561141Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9561461Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+2026-11-12T21:50:20.9561741Z    |
+2026-11-12T21:50:20.9561924Z 61 | /     pub fn recover_from_original_stream(
+2026-11-12T21:50:20.9562162Z 62 | |         stream: UnixStream,
+2026-11-12T21:50:20.9562412Z 63 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9562782Z 64 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9562999Z ...  |
+2026-11-12T21:50:20.9563173Z 69 | |         lifetime: Duration,
+2026-11-12T21:50:20.9563385Z 70 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9563599Z    | |____________________________^
+2026-11-12T21:50:20.9563801Z    |
+2026-11-12T21:50:20.9564165Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9564497Z 
+2026-11-12T21:50:20.9564614Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9564930Z   --> codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+2026-11-12T21:50:20.9565214Z    |
+2026-11-12T21:50:20.9565374Z 82 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9565581Z 83 | |         stream: UnixStream,
+2026-11-12T21:50:20.9565819Z 84 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9566185Z 85 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9566408Z ...  |
+2026-11-12T21:50:20.9566580Z 90 | |         origin: Origin,
+2026-11-12T21:50:20.9566782Z 91 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9566988Z    | |____________________________^
+2026-11-12T21:50:20.9567175Z    |
+2026-11-12T21:50:20.9567526Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9567956Z 
+2026-11-12T21:50:20.9568066Z warning: large size difference between variants
+2026-11-12T21:50:20.9568379Z    --> codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+2026-11-12T21:50:20.9568665Z     |
+2026-11-12T21:50:20.9568843Z 141 | /  pub(super) enum CommandResult {
+2026-11-12T21:50:20.9569069Z 142 | |/     Completed {
+2026-11-12T21:50:20.9569271Z 143 | ||         snapshot: String,
+2026-11-12T21:50:20.9569505Z 144 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9569733Z 145 | ||     },
+2026-11-12T21:50:20.9569959Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:50:20.9570211Z 146 | |      Missing,
+2026-11-12T21:50:20.9570445Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9570700Z ...   |
+2026-11-12T21:50:20.9570868Z 152 | |      Unavailable,
+2026-11-12T21:50:20.9571169Z 153 | |  }
+2026-11-12T21:50:20.9571349Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:50:20.9571594Z     |
+2026-11-12T21:50:20.9571953Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9572552Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9572948Z     |
+2026-11-12T21:50:20.9573125Z 144 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9573382Z 144 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:50:20.9573614Z     |
+2026-11-12T21:50:20.9573703Z 
+2026-11-12T21:50:20.9573818Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9574130Z    --> codex-rs/hepta-agentd/src/cell_q24_training_command.rs:234:5
+2026-11-12T21:50:20.9574392Z     |
+2026-11-12T21:50:20.9574564Z 234 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9574778Z 235 | |         stream: UnixStream,
+2026-11-12T21:50:20.9575020Z 236 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9575293Z 237 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9575517Z ...   |
+2026-11-12T21:50:20.9575750Z 242 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:50:20.9576057Z 243 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9576267Z     | |____________________________^
+2026-11-12T21:50:20.9576458Z     |
+2026-11-12T21:50:20.9576819Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9577161Z 
+2026-11-12T21:50:20.9577455Z warning: large size difference between variants
+2026-11-12T21:50:20.9577899Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_command_wire.rs:140:1
+2026-11-12T21:50:20.9578207Z     |
+2026-11-12T21:50:20.9578391Z 140 | /  pub(super) enum CommandResult {
+2026-11-12T21:50:20.9578614Z 141 | |/     Completed {
+2026-11-12T21:50:20.9578826Z 142 | ||         snapshot: String,
+2026-11-12T21:50:20.9579074Z 143 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9579310Z 144 | ||     },
+2026-11-12T21:50:20.9579524Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:50:20.9579787Z 145 | |      Missing,
+2026-11-12T21:50:20.9580018Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9580282Z ...   |
+2026-11-12T21:50:20.9580450Z 151 | |      Unavailable,
+2026-11-12T21:50:20.9580647Z 152 | |  }
+2026-11-12T21:50:20.9580833Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:50:20.9581057Z     |
+2026-11-12T21:50:20.9581440Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9582050Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9582449Z     |
+2026-11-12T21:50:20.9582657Z 143 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9582912Z 143 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:50:20.9583145Z     |
+2026-11-12T21:50:20.9583234Z 
+2026-11-12T21:50:20.9583337Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9583676Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_command.rs:184:5
+2026-11-12T21:50:20.9583969Z     |
+2026-11-12T21:50:20.9584131Z 184 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9584356Z 185 | |         stream: UnixStream,
+2026-11-12T21:50:20.9584601Z 186 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9584865Z 187 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9585089Z ...   |
+2026-11-12T21:50:20.9585329Z 192 | |         retained: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+2026-11-12T21:50:20.9585629Z 193 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9585840Z     | |____________________________^
+2026-11-12T21:50:20.9586158Z     |
+2026-11-12T21:50:20.9586515Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9586854Z 
+2026-11-12T21:50:20.9586957Z warning: large size difference between variants
+2026-11-12T21:50:20.9587270Z    --> codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+2026-11-12T21:50:20.9587550Z     |
+2026-11-12T21:50:20.9587819Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:50:20.9588042Z 137 | |/     Completed {
+2026-11-12T21:50:20.9588239Z 138 | ||         snapshot: String,
+2026-11-12T21:50:20.9588464Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9588691Z 140 | ||     },
+2026-11-12T21:50:20.9588899Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:50:20.9589146Z 141 | |      Missing,
+2026-11-12T21:50:20.9589365Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9589619Z ...   |
+2026-11-12T21:50:20.9589781Z 147 | |      Unavailable,
+2026-11-12T21:50:20.9589956Z 148 | |  }
+2026-11-12T21:50:20.9590139Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:50:20.9590354Z     |
+2026-11-12T21:50:20.9590698Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9591296Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9591684Z     |
+2026-11-12T21:50:20.9591855Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9592105Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:50:20.9592340Z     |
+2026-11-12T21:50:20.9592538Z 
+2026-11-12T21:50:20.9592653Z warning: this function has too many arguments (10/7)
+2026-11-12T21:50:20.9592961Z    --> codex-rs/hepta-agentd/src/circuit_selection_command.rs:272:5
+2026-11-12T21:50:20.9593240Z     |
+2026-11-12T21:50:20.9593409Z 272 | /     pub fn recover_from_original_stream(
+2026-11-12T21:50:20.9593643Z 273 | |         stream: UnixStream,
+2026-11-12T21:50:20.9593881Z 274 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9594137Z 275 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9594354Z ...   |
+2026-11-12T21:50:20.9594518Z 282 | |         lifetime: Duration,
+2026-11-12T21:50:20.9594727Z 283 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9594933Z     | |____________________________^
+2026-11-12T21:50:20.9595123Z     |
+2026-11-12T21:50:20.9595470Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9595793Z 
+2026-11-12T21:50:20.9595909Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9596198Z    --> codex-rs/hepta-agentd/src/circuit_selection_command.rs:307:5
+2026-11-12T21:50:20.9596463Z     |
+2026-11-12T21:50:20.9596624Z 307 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9596830Z 308 | |         stream: UnixStream,
+2026-11-12T21:50:20.9597067Z 309 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9597321Z 310 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9597531Z ...   |
+2026-11-12T21:50:20.9597873Z 315 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+2026-11-12T21:50:20.9598186Z 316 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9598396Z     | |____________________________^
+2026-11-12T21:50:20.9598583Z     |
+2026-11-12T21:50:20.9598926Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9599248Z 
+2026-11-12T21:50:20.9599356Z warning: large size difference between variants
+2026-11-12T21:50:20.9599660Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+2026-11-12T21:50:20.9599941Z     |
+2026-11-12T21:50:20.9600108Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:50:20.9600323Z 137 | |/     Completed {
+2026-11-12T21:50:20.9600650Z 138 | ||         snapshot: String,
+2026-11-12T21:50:20.9600886Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9601117Z 140 | ||     },
+2026-11-12T21:50:20.9601323Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:50:20.9601577Z 141 | |      Missing,
+2026-11-12T21:50:20.9601802Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9602055Z ...   |
+2026-11-12T21:50:20.9602225Z 147 | |      Unavailable,
+2026-11-12T21:50:20.9602404Z 148 | |  }
+2026-11-12T21:50:20.9602579Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:50:20.9602801Z     |
+2026-11-12T21:50:20.9603145Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9603735Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9604131Z     |
+2026-11-12T21:50:20.9604306Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9604557Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:50:20.9604778Z     |
+2026-11-12T21:50:20.9604864Z 
+2026-11-12T21:50:20.9604972Z warning: this function has too many arguments (11/7)
+2026-11-12T21:50:20.9605267Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command.rs:291:5
+2026-11-12T21:50:20.9605527Z     |
+2026-11-12T21:50:20.9605705Z 291 | /     pub fn recover_from_original_stream(
+2026-11-12T21:50:20.9605936Z 292 | |         stream: UnixStream,
+2026-11-12T21:50:20.9606168Z 293 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9606429Z 294 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9606788Z ...   |
+2026-11-12T21:50:20.9606954Z 302 | |         lifetime: Duration,
+2026-11-12T21:50:20.9607158Z 303 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9607365Z     | |____________________________^
+2026-11-12T21:50:20.9607561Z     |
+2026-11-12T21:50:20.9608002Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9608339Z 
+2026-11-12T21:50:20.9608448Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9608744Z    --> codex-rs/hepta-agentd/src/circuit_next_use_command.rs:328:5
+2026-11-12T21:50:20.9609007Z     |
+2026-11-12T21:50:20.9609172Z 328 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9609379Z 329 | |         stream: UnixStream,
+2026-11-12T21:50:20.9609604Z 330 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9609866Z 331 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9610073Z ...   |
+2026-11-12T21:50:20.9610356Z 336 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+2026-11-12T21:50:20.9610645Z 337 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9610858Z     | |____________________________^
+2026-11-12T21:50:20.9611046Z     |
+2026-11-12T21:50:20.9611384Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9612562Z 
+2026-11-12T21:50:20.9612671Z warning: large size difference between variants
+2026-11-12T21:50:20.9613392Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs:142:1
+2026-11-12T21:50:20.9613978Z     |
+2026-11-12T21:50:20.9614156Z 142 | /  pub(super) enum CommandResult {
+2026-11-12T21:50:20.9614484Z 143 | |/     Completed {
+2026-11-12T21:50:20.9614711Z 144 | ||         snapshot: String,
+2026-11-12T21:50:20.9614941Z 145 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9615163Z 146 | ||     },
+2026-11-12T21:50:20.9615372Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:50:20.9615617Z 147 | |      Missing,
+2026-11-12T21:50:20.9615844Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9616098Z ...   |
+2026-11-12T21:50:20.9616254Z 153 | |      Unavailable,
+2026-11-12T21:50:20.9616583Z 154 | |  }
+2026-11-12T21:50:20.9616762Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:50:20.9616976Z     |
+2026-11-12T21:50:20.9617325Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9618023Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9618414Z     |
+2026-11-12T21:50:20.9618596Z 145 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:50:20.9618847Z 145 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:50:20.9619071Z     |
+2026-11-12T21:50:20.9619156Z 
+2026-11-12T21:50:20.9619264Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9619592Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_command.rs:182:5
+2026-11-12T21:50:20.9619878Z     |
+2026-11-12T21:50:20.9620038Z 182 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9620253Z 183 | |         stream: UnixStream,
+2026-11-12T21:50:20.9620489Z 184 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9620738Z 185 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9620957Z ...   |
+2026-11-12T21:50:20.9621189Z 190 | |         retained: Option<OriginalCircuitEvaluatedNextUseReceiptV1>,
+2026-11-12T21:50:20.9621484Z 191 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9621685Z     | |____________________________^
+2026-11-12T21:50:20.9621880Z     |
+2026-11-12T21:50:20.9622220Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9622546Z 
+2026-11-12T21:50:20.9622776Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9623093Z    --> codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+2026-11-12T21:50:20.9623368Z     |
+2026-11-12T21:50:20.9623526Z 119 | /     fn serve_role_commands(
+2026-11-12T21:50:20.9623732Z 120 | |         &self,
+2026-11-12T21:50:20.9623915Z 121 | |         role: Role,
+2026-11-12T21:50:20.9624103Z 122 | |         stream: UnixStream,
+2026-11-12T21:50:20.9624298Z ...   |
+2026-11-12T21:50:20.9624452Z 127 | |         lifetime: Duration,
+2026-11-12T21:50:20.9624655Z 128 | |     ) -> Result<u64, Error> {
+2026-11-12T21:50:20.9624854Z     | |___________________________^
+2026-11-12T21:50:20.9625042Z     |
+2026-11-12T21:50:20.9625375Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9625697Z 
+2026-11-12T21:50:20.9625791Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9626092Z    --> codex-rs/hepta-agentd/src/cell_q24_material_command.rs:236:5
+2026-11-12T21:50:20.9626358Z     |
+2026-11-12T21:50:20.9626513Z 236 | /     fn bind_original_stream(
+2026-11-12T21:50:20.9626722Z 237 | |         stream: UnixStream,
+2026-11-12T21:50:20.9626946Z 238 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9627201Z 239 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9627423Z ...   |
+2026-11-12T21:50:20.9627736Z 245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:50:20.9628033Z 246 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9628245Z     | |____________________________^
+2026-11-12T21:50:20.9628435Z     |
+2026-11-12T21:50:20.9628795Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9629121Z 
+2026-11-12T21:50:20.9629222Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9629684Z   --> codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+2026-11-12T21:50:20.9629976Z    |
+2026-11-12T21:50:20.9630140Z 35 | /     pub fn from_original_stream(
+2026-11-12T21:50:20.9630369Z 36 | |         stream: UnixStream,
+2026-11-12T21:50:20.9630600Z 37 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9630852Z 38 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9631196Z ...  |
+2026-11-12T21:50:20.9631364Z 43 | |         lifetime: Duration,
+2026-11-12T21:50:20.9631567Z 44 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9631776Z    | |____________________________^
+2026-11-12T21:50:20.9631962Z    |
+2026-11-12T21:50:20.9632301Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9632632Z 
+2026-11-12T21:50:20.9632736Z warning: large size difference between variants
+2026-11-12T21:50:20.9633036Z   --> codex-rs/hepta-agentd/src/artifact_original_head_client.rs:31:1
+2026-11-12T21:50:20.9633307Z    |
+2026-11-12T21:50:20.9633457Z 31 | / enum Origin {
+2026-11-12T21:50:20.9633642Z 32 | |     Fresh,
+2026-11-12T21:50:20.9633868Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9634167Z 33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:50:20.9634525Z    | |     --------------------------------------------- the largest variant contains at least 304 bytes
+2026-11-12T21:50:20.9634847Z 34 | | }
+2026-11-12T21:50:20.9635020Z    | |_^ the entire enum is at least 304 bytes
+2026-11-12T21:50:20.9635233Z    |
+2026-11-12T21:50:20.9635570Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9636167Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9636561Z    |
+2026-11-12T21:50:20.9636758Z 33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:50:20.9637065Z 33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+2026-11-12T21:50:20.9637423Z    |
+2026-11-12T21:50:20.9637510Z 
+2026-11-12T21:50:20.9637609Z warning: this function has too many arguments (8/7)
+2026-11-12T21:50:20.9638015Z   --> codex-rs/hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+2026-11-12T21:50:20.9638294Z    |
+2026-11-12T21:50:20.9638540Z 20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+2026-11-12T21:50:20.9638867Z 21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+2026-11-12T21:50:20.9639130Z 22 | |     dataset_cut: &LearningIterationSnapshotV1,
+2026-11-12T21:50:20.9639374Z 23 | |     scope: Digest32,
+2026-11-12T21:50:20.9639570Z ...  |
+2026-11-12T21:50:20.9639721Z 28 | |     now: u64,
+2026-11-12T21:50:20.9639901Z 29 | | ) -> Result<Admission, Error> {
+2026-11-12T21:50:20.9640106Z    | |_____________________________^
+2026-11-12T21:50:20.9640303Z    |
+2026-11-12T21:50:20.9640644Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9640979Z 
+2026-11-12T21:50:20.9641078Z warning: large size difference between variants
+2026-11-12T21:50:20.9641378Z    --> codex-rs/hepta-agentd/src/cell_q24_training_source.rs:146:1
+2026-11-12T21:50:20.9641637Z     |
+2026-11-12T21:50:20.9641800Z 146 | / enum OriginalMaterialSource {
+2026-11-12T21:50:20.9642057Z 147 | |     Local(Box<dyn OriginalMaterialReadback>),
+2026-11-12T21:50:20.9642405Z     | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+2026-11-12T21:50:20.9642781Z 148 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:50:20.9643139Z     | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+2026-11-12T21:50:20.9643446Z 149 | | }
+2026-11-12T21:50:20.9643622Z     | |_^ the entire enum is at least 3056 bytes
+2026-11-12T21:50:20.9643836Z     |
+2026-11-12T21:50:20.9644188Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9644772Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9645156Z     |
+2026-11-12T21:50:20.9645362Z 148 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:50:20.9645787Z 148 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+2026-11-12T21:50:20.9646041Z     |
+2026-11-12T21:50:20.9646133Z 
+2026-11-12T21:50:20.9646240Z warning: large size difference between variants
+2026-11-12T21:50:20.9646560Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:180:1
+2026-11-12T21:50:20.9646853Z     |
+2026-11-12T21:50:20.9647026Z 180 | / pub(super) enum Profile {
+2026-11-12T21:50:20.9647226Z 181 | |     Legacy,
+2026-11-12T21:50:20.9647445Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:50:20.9647906Z 182 | |     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:50:20.9648309Z     | |     ----------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:50:20.9648632Z 183 | | }
+2026-11-12T21:50:20.9648810Z     | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:50:20.9649031Z     |
+2026-11-12T21:50:20.9649374Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9649964Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9650355Z     |
+2026-11-12T21:50:20.9650576Z 182 -     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:50:20.9650931Z 182 +     Evaluated(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:50:20.9651220Z     |
+2026-11-12T21:50:20.9651299Z 
+2026-11-12T21:50:20.9651417Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:50:20.9651742Z    --> codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs:150:1
+2026-11-12T21:50:20.9652131Z     |
+2026-11-12T21:50:20.9652297Z 150 | / enum ObservationLocation {
+2026-11-12T21:50:20.9652513Z 151 | |     LocalOwner,
+2026-11-12T21:50:20.9652699Z 152 | |     RemoteOwner,
+2026-11-12T21:50:20.9652886Z 153 | |     EvaluatedOwner,
+2026-11-12T21:50:20.9653071Z 154 | | }
+2026-11-12T21:50:20.9653231Z     | |_^
+2026-11-12T21:50:20.9653385Z     |
+2026-11-12T21:50:20.9653656Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:50:20.9654167Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:50:20.9654623Z     = note: `#[warn(clippy::enum_variant_names)]` on by default
+2026-11-12T21:50:20.9654805Z 
+2026-11-12T21:50:20.9654912Z warning: large size difference between variants
+2026-11-12T21:50:20.9655232Z    --> codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs:145:1
+2026-11-12T21:50:20.9655528Z     |
+2026-11-12T21:50:20.9655693Z 145 | / pub(super) enum Profile {
+2026-11-12T21:50:20.9655902Z 146 | |     TrainingNoUpdate,
+2026-11-12T21:50:20.9656173Z     | |     ---------------- the second-largest variant carries no data at all
+2026-11-12T21:50:20.9656517Z 147 | |     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:50:20.9656912Z     | |     ----------------------------------------------------- the largest variant contains at least 3536 bytes
+2026-11-12T21:50:20.9657241Z 148 | | }
+2026-11-12T21:50:20.9657416Z     | |_^ the entire enum is at least 3536 bytes
+2026-11-12T21:50:20.9657717Z     |
+2026-11-12T21:50:20.9658059Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9658651Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9659037Z     |
+2026-11-12T21:50:20.9659251Z 147 -     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:50:20.9659618Z 147 +     Evaluated(Box<OriginalCircuitEvaluatedRetentionContextV1>),
+2026-11-12T21:50:20.9659893Z     |
+2026-11-12T21:50:20.9659978Z 
+2026-11-12T21:50:20.9660082Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:50:20.9660404Z    --> codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs:130:1
+2026-11-12T21:50:20.9660808Z     |
+2026-11-12T21:50:20.9660969Z 130 | / enum ObservationLocation {
+2026-11-12T21:50:20.9661184Z 131 | |     LocalOwner,
+2026-11-12T21:50:20.9661364Z 132 | |     RemoteOwner,
+2026-11-12T21:50:20.9661548Z 133 | |     EvaluatedOwner,
+2026-11-12T21:50:20.9661728Z 134 | | }
+2026-11-12T21:50:20.9661880Z     | |_^
+2026-11-12T21:50:20.9662025Z     |
+2026-11-12T21:50:20.9662286Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:50:20.9662801Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:50:20.9663125Z 
+2026-11-12T21:50:20.9663428Z warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+2026-11-12T21:50:20.9663930Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:9
+2026-11-12T21:50:20.9664230Z    |
+2026-11-12T21:50:20.9664385Z 92 |         drop(sources);
+2026-11-12T21:50:20.9664570Z    |         ^^^^^^^^^^^^^
+2026-11-12T21:50:20.9664756Z    |
+2026-11-12T21:50:20.9665166Z note: argument has type `neuron_cell_evaluation_qualification_owner::sources::OriginalCellEvaluationQualificationSourcesV1<'_, C, F, X>`
+2026-11-12T21:50:20.9665701Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:14
+2026-11-12T21:50:20.9665997Z    |
+2026-11-12T21:50:20.9666146Z 92 |         drop(sources);
+2026-11-12T21:50:20.9666324Z    |              ^^^^^^^
+2026-11-12T21:50:20.9666681Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#drop_non_drop
+2026-11-12T21:50:20.9667211Z    = note: `#[warn(clippy::drop_non_drop)]` on by default
+2026-11-12T21:50:20.9667378Z 
+2026-11-12T21:50:20.9667490Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9667888Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+2026-11-12T21:50:20.9668182Z    |
+2026-11-12T21:50:20.9668346Z 51 | /     pub fn from_original_stream(
+2026-11-12T21:50:20.9668564Z 52 | |         stream: UnixStream,
+2026-11-12T21:50:20.9668807Z 53 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9669063Z 54 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9669274Z ...  |
+2026-11-12T21:50:20.9669432Z 60 | |         lifetime: Duration,
+2026-11-12T21:50:20.9669643Z 61 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9669851Z    | |____________________________^
+2026-11-12T21:50:20.9670039Z    |
+2026-11-12T21:50:20.9670393Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9670720Z 
+2026-11-12T21:50:20.9670825Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9671138Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+2026-11-12T21:50:20.9671419Z    |
+2026-11-12T21:50:20.9671596Z 76 | /     pub fn recover_from_original_stream(
+2026-11-12T21:50:20.9671823Z 77 | |         stream: UnixStream,
+2026-11-12T21:50:20.9672053Z 78 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9672298Z 79 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9672507Z ...  |
+2026-11-12T21:50:20.9672662Z 85 | |         lifetime: Duration,
+2026-11-12T21:50:20.9672867Z 86 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9673068Z    | |____________________________^
+2026-11-12T21:50:20.9673256Z    |
+2026-11-12T21:50:20.9673598Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9673918Z 
+2026-11-12T21:50:20.9674036Z warning: this function has too many arguments (10/7)
+2026-11-12T21:50:20.9674359Z    --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+2026-11-12T21:50:20.9674654Z     |
+2026-11-12T21:50:20.9674811Z 101 | /     fn bind_initial(
+2026-11-12T21:50:20.9675120Z 102 | |         stream: UnixStream,
+2026-11-12T21:50:20.9675356Z 103 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9675614Z 104 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9675827Z ...   |
+2026-11-12T21:50:20.9675987Z 111 | |         origin: Origin,
+2026-11-12T21:50:20.9676196Z 112 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9676403Z     | |____________________________^
+2026-11-12T21:50:20.9676592Z     |
+2026-11-12T21:50:20.9676940Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9677265Z 
+2026-11-12T21:50:20.9677372Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9677818Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+2026-11-12T21:50:20.9678157Z    |
+2026-11-12T21:50:20.9678322Z 47 | /     pub fn from_original_stream(
+2026-11-12T21:50:20.9678536Z 48 | |         stream: UnixStream,
+2026-11-12T21:50:20.9678776Z 49 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:50:20.9679029Z 50 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:50:20.9679239Z ...  |
+2026-11-12T21:50:20.9679394Z 56 | |         lifetime: Duration,
+2026-11-12T21:50:20.9679605Z 57 | |     ) -> Result<Self, Error> {
+2026-11-12T21:50:20.9679807Z    | |____________________________^
+2026-11-12T21:50:20.9679993Z    |
+2026-11-12T21:50:20.9680347Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9680672Z 
+2026-11-12T21:50:20.9680776Z warning: this function has too many arguments (9/7)
+2026-11-12T21:50:20.9681221Z    --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+2026-11-12T21:50:20.9681551Z     |
+2026-11-12T21:50:20.9681718Z 300 | / pub(super) fn publication(
+2026-11-12T21:50:20.9681927Z 301 | |     member: &Member,
+2026-11-12T21:50:20.9682130Z 302 | |     context: &Context,
+2026-11-12T21:50:20.9682326Z 303 | |     bundle: &Bundle,
+2026-11-12T21:50:20.9682507Z ...   |
+2026-11-12T21:50:20.9682704Z 309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+2026-11-12T21:50:20.9682958Z 310 | | ) -> Result<(), Error> {
+2026-11-12T21:50:20.9683157Z     | |______________________^
+2026-11-12T21:50:20.9683331Z     |
+2026-11-12T21:50:20.9683686Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:50:20.9684012Z 
+2026-11-12T21:50:20.9684117Z warning: large size difference between variants
+2026-11-12T21:50:20.9684397Z   --> codex-rs/hepta-agentd/src/notes_thread_status.rs:82:1
+2026-11-12T21:50:20.9684655Z    |
+2026-11-12T21:50:20.9684830Z 82 | / pub(super) enum StatusDiscovery {
+2026-11-12T21:50:20.9685078Z 83 | |     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:50:20.9685403Z    | |     ----------------------------------- the largest variant contains at least 224 bytes
+2026-11-12T21:50:20.9685726Z 84 | |     Unknown(StatusUnknownReason),
+2026-11-12T21:50:20.9686031Z    | |     ---------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:50:20.9686321Z 85 | | }
+2026-11-12T21:50:20.9686501Z    | |_^ the entire enum is at least 224 bytes
+2026-11-12T21:50:20.9686714Z    |
+2026-11-12T21:50:20.9687053Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:50:20.9687743Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:50:20.9688138Z    |
+2026-11-12T21:50:20.9688316Z 83 -     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:50:20.9688585Z 83 +     Found(Box<VerifiedNotesThreadOperation>),
+2026-11-12T21:50:20.9688818Z    |
+2026-11-12T21:50:20.9688900Z 
+2026-11-12T21:50:20.9688979Z warning: 65 warnings emitted
+2026-11-12T21:50:20.9689108Z 
+2026-11-12T21:50:21.5450784Z [38,761 / 38,908] Clippy //codex-rs/hepta-agentd:hepta-agentd-test-lib; 27s remote, remote-cache ... (5 actions running)
+2026-11-12T21:50:23.0218540Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd:
+2026-11-12T21:50:23.0222313Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:50:23.0223105Z   --> codex-rs/hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:50:23.0223705Z    |
+2026-11-12T21:50:23.0224184Z 22 | pub(super) enum Status {
+2026-11-12T21:50:23.0224683Z    |                 ------ variant in this enum
+2026-11-12T21:50:23.0225032Z ...
+2026-11-12T21:50:23.0225282Z 26 |     Unavailable = 4,
+2026-11-12T21:50:23.0225575Z    |     ^^^^^^^^^^^
+2026-11-12T21:50:23.0225842Z    |
+2026-11-12T21:50:23.0226495Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:50:23.0227148Z    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:50:23.0227449Z 
+2026-11-12T21:50:23.0227573Z warning: field `estimand` is never read
+2026-11-12T21:50:23.0228256Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:50:23.0228751Z    |
+2026-11-12T21:50:23.0228985Z 19 | pub(super) struct Checked {
+2026-11-12T21:50:23.0229331Z    |                   ------- field in this struct
+2026-11-12T21:50:23.0229668Z ...
+2026-11-12T21:50:23.0229909Z 23 |     pub estimand: Digest32,
+2026-11-12T21:50:23.0230206Z    |         ^^^^^^^^
+2026-11-12T21:50:23.0230361Z 
+2026-11-12T21:50:23.0230495Z warning: method `context` is never used
+2026-11-12T21:50:23.0230990Z   --> codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:50:23.0231468Z    |
+2026-11-12T21:50:23.0231980Z 30 | impl Request {
+2026-11-12T21:50:23.0232272Z    | ------------ method in this implementation
+2026-11-12T21:50:23.0232498Z ...
+2026-11-12T21:50:23.0232722Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:50:23.0232986Z    |                   ^^^^^^^
+2026-11-12T21:50:23.0233164Z 
+2026-11-12T21:50:23.0233300Z warning: large size difference between variants
+2026-11-12T21:50:23.0233823Z   --> codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+2026-11-12T21:50:23.0234132Z    |
+2026-11-12T21:50:23.0234320Z 33 | / pub(super) enum ResidentAuthorizationV3 {
+2026-11-12T21:50:23.0234564Z 34 | |     Fresh,
+2026-11-12T21:50:23.0234788Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:50:23.0235121Z 35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:50:23.0235525Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:50:23.0235872Z 36 | | }
+2026-11-12T21:50:23.0236064Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:50:23.0236289Z    |
+2026-11-12T21:50:23.0236683Z    = help: for furt

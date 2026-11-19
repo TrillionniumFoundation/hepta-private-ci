@@ -1,0 +1,459 @@
+{
+  "schema": "hepta.evaluated-c-case-split.static-scope.v1",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "classification": "STATIC_LITERAL_AND_SOURCE_REVIEW_NOT_TEST_EXECUTION",
+  "exact_source_closure": {
+    "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+    "blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+    "bytes": 33501,
+    "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d",
+    "bound_names": [
+      "evaluated_c_reads_original_t_b_s_and_recovers_exact_baseline_completion",
+      "evaluated_c_recovery_of_missing_receipt_never_claims_or_signs"
+    ],
+    "old_split_name_is_bound": false,
+    "markers": [
+      {
+        "marker": "ProductEvaluationExecutionStoreErrorV1::Missing",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "[26, 26]",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "[12, 12]",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "[7, 6]",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "[7, 7]",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "[8, 8]",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "RetainedModelNextUse",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "require_new_original_receipt",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "assert_eq!(files.bytes()?, untouched)",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "NextUseError::Observation(_)",
+        "base": true,
+        "post": true
+      },
+      {
+        "marker": "NextUseError::Owner(OwnerError::CommitUncertain)",
+        "base": true,
+        "post": true
+      }
+    ],
+    "parent_registration_unchanged": true
+  },
+  "all_qa_peer_scan": {
+    "blob": "9c133311525bf3662e9ca71890ab6c6285c800c3",
+    "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "files": [
+      {
+        "path": "qa/b4-no-bypass/test_artifact_publication_readback_source_closure.py",
+        "sha": "dc325a92cf4c59d4101a5b393d29bbc17f13c9c1",
+        "bytes": 12026,
+        "sha256": "6817fd29ae3ab858f35ace0d8f14cf5bd986d02416f9598f917cf27bb4ea12e6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_generation_physical_current_source_closure.py",
+        "sha": "0e49d7bb154f4bf740870437f18e11ff554d33b3",
+        "bytes": 5796,
+        "sha256": "78f6879458525456006a70130412a68035fa486b9733b8c0b7aaf3c5315110d2"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+        "sha": "271ae3f628e4e75a5f3bc21989b5cde763dfdc5f",
+        "bytes": 11430,
+        "sha256": "d5d3f191d7a510e059325636852173f4e0ff5a80070ef2184c435e1531d23b7e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_circuit_selection_owner_source_closure.py",
+        "sha": "0a4e6b6414c35aac7fdf8230c5494bf2d9552ea2",
+        "bytes": 6214,
+        "sha256": "38e01ac8e6eb696f2c3aba84fa907b540311f043ea7012a34ae388e80a210e61"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+        "sha": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+        "bytes": 16037,
+        "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_next_use_source_closure.py",
+        "sha": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+        "bytes": 33501,
+        "sha256": "d7c324ac68d714371daa6c79e26f32e7a0356945201792d9a135f04ebf9e427d"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_published_read_source_closure.py",
+        "sha": "1a94d6e95dfb5314bfc2fe1e32c19aa71bf0606a",
+        "bytes": 26213,
+        "sha256": "e4b2027353ce1868ad59754a3d604a502ce16856763401381ace15cb3d496697"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_retention_source_closure.py",
+        "sha": "72d1dc1ce3395b420507aaa6d80fe0401356faf3",
+        "bytes": 15488,
+        "sha256": "479d7783609743ee0841fd1f694ac11dea48394a4f1609918af24868a9175346"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_evaluated_selection_source_closure.py",
+        "sha": "776e861fe82c208f6f61af73208a2bff263239ef",
+        "bytes": 22139,
+        "sha256": "2c0ebf4a1e26704f06306d1c951f94487646c1449c6fd406a172f8e23400d4ce"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+        "sha": "d817779c00689c384a24309ae77b488575274db1",
+        "bytes": 7569,
+        "sha256": "e0c90058e69dcf5c33b1c3ee3c5de21ac6c3cc282dce3c4683a7ea8af74293a0"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+        "sha": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+        "bytes": 9571,
+        "sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+        "sha": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+        "bytes": 7652,
+        "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+        "sha": "8d607e733cf950165475cd80b9e3a080b13ed949",
+        "bytes": 8442,
+        "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_material_source_closure.py",
+        "sha": "079d53e9e5e149f108f992417024b20c4a35d183",
+        "bytes": 12042,
+        "sha256": "4bafea87710dff74fc7f371d0794d3944db95c402a42e55753e458143c93338f"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_candidate_stage_source_closure.py",
+        "sha": "2c8ffbe74759b94c37b946434ebe2f17a33bfee5",
+        "bytes": 13996,
+        "sha256": "37fdd13b4c4d61163834f891aa91b060c51de738bd9c36a8129152f84a5e1050"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_experience_v2_source_closure.py",
+        "sha": "430088028179f0c28a5dccdb15d05ad748754da1",
+        "bytes": 10261,
+        "sha256": "6b388d1d74b68cf97f482719d713aa6359e22dd433c6ef86c9fc685ffb7ebeef"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_circuit_observer_source_closure.py",
+        "sha": "2f0f2187964f6ee34383696b2d1d1ff2984fc3d9",
+        "bytes": 10942,
+        "sha256": "c29b2c49d3b83aed785ab4508367284973780f3553ea1ce37e31281e236944f3"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+        "sha": "f54675a31fc4c625991bde34a97f0bd6865964e8",
+        "bytes": 15320,
+        "sha256": "f8a5ab9bca5458a8bafa28fb707c891ac546db9a5cad87f9273c270f14e97c41"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+        "sha": "4da0873c757803beb46256d84e27e63b12991347",
+        "bytes": 12997,
+        "sha256": "5a3a115cd814464248a0b00229d79c5bf65b85f8812fae3689a5134863ffd071"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+        "sha": "6b7e5887b39117398119e58a7aa1f6867c741574",
+        "bytes": 18610,
+        "sha256": "dd6c77b43cce19264c864b1e3701e7bae47fe68c999f2b16b568688593427aed"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+        "sha": "53e51a594b88edc30e020dada9713196bd14ff77",
+        "bytes": 14266,
+        "sha256": "da28fc25682272abe94853b9a1104220f383ab0651117576e5d110bc7e005ee0"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_evidence_source_closure.py",
+        "sha": "8570acac6e5e05410d1f9bec844e8125d900ea44",
+        "bytes": 5026,
+        "sha256": "10d2f265b831802d54455754ddf363885f2dc8ae14c143abba39544a59d06af6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_execution_owner_source_closure.py",
+        "sha": "25c6a315594e997b82cdf36e033f637f1513ebb2",
+        "bytes": 14221,
+        "sha256": "86e693330f9b40f004c8df728673954ed866747b841892db34c65b7d29b7d457"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_holdout_current_source_closure.py",
+        "sha": "ad51db7191f85503e3a4328e55b34fe42f79fcf7",
+        "bytes": 9953,
+        "sha256": "d89d71e16ce768ec6ce7d2d9dafe31088556e348ed1295447d30427027726711"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+        "sha": "ba65f8cebf39277681b28812ea0a34c42c37ea8e",
+        "bytes": 12582,
+        "sha256": "1b9f8b9c9bfdc004521f7007efaf228a7fcb8819059679dd040ac060786af578"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_command_source_closure.py",
+        "sha": "64c3b5db2071a83ba03cb3664eda595c73ce3e2c",
+        "bytes": 16657,
+        "sha256": "360340bebd217ea3332ba6dcb5feec1c7ac54909aa1383bfa922e53bc15ca19a"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_evidence_source_closure.py",
+        "sha": "36727fee41a55abe4f49de717a4e0f2cbc45d0f8",
+        "bytes": 12731,
+        "sha256": "ef1da57fa2a28f69a5ee3bf4dc9a0e6ce80da918711dc75451f71c34f1a6aba8"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_owner_source_closure.py",
+        "sha": "1f1a92602ab82b3b21786f1af8e6da8c11749d5e",
+        "bytes": 8282,
+        "sha256": "043be8d40175770670e890a48bb833dfd7de82ea93357e2438fbf86deea577a9"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_material_source_peer_source_closure.py",
+        "sha": "34a01df7324eb8b6d51d2b4a18cb00a36ae297c9",
+        "bytes": 14851,
+        "sha256": "9abe391407de4bb7958e2bb4cf5066d579d6b3a5adf71016df509fbdf85d7fec"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_root_source_closure.py",
+        "sha": "d6c093a72c22dd46ce03c06631547fbe970c2ceb",
+        "bytes": 25740,
+        "sha256": "08d986508f7f2258557dfde187d8c9071e1c8f46b9dc3b846ad3ef5d6f229d52"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_model_selection_source_closure.py",
+        "sha": "6fc51eed804792d4f009697f76f2d3c20a5c9827",
+        "bytes": 10167,
+        "sha256": "d06d8d50b02fdb1ae5f5913348e6d9337c0e02515f7ad1e64dbdb1bed03e8039"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_next_use_command_source_closure.py",
+        "sha": "3a86576797b1fe036e8178c57526ddf471797a4d",
+        "bytes": 17465,
+        "sha256": "6bde92cfa1677e7f18c868ab193d03e6efb89a67da34a5406edad8cb27ef507e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_no_update_stage_source_closure.py",
+        "sha": "ae43c0ff5efaeff62c03eade72d78cf836abac59",
+        "bytes": 21956,
+        "sha256": "81965a3f67de6f252be4b00156e5d32e3507e98e5f63e18d63dd5d09b34549ff"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_published_read_source_closure.py",
+        "sha": "e6bb60716905a5eca08f54dd8d90d8f6086ad3d2",
+        "bytes": 17403,
+        "sha256": "8bccc0d63999c2b0ebbad62ceaf33e97201a0e6f4b6c3a547dc828f05053724e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+        "sha": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+        "bytes": 12634,
+        "sha256": "e61cb68bafc1b9e2d80f60e8c1800dd4e4dec5d10e5b9ee367da98ad31b45cf4"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_retained_owner_readback_source_closure.py",
+        "sha": "e4795876083d972b5a655a743edcefc42f9bd1f1",
+        "bytes": 10816,
+        "sha256": "255ae04f596f3e4f370416e2165ddb7518ba9b634d60b08db83d180494fbb461"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_selector_command_source_closure.py",
+        "sha": "b7a29f83a4d8f7b3ec30d43ea46edef8fd25af88",
+        "bytes": 16466,
+        "sha256": "2f341a160225413d09823b7d4b4ad8e4e70c7669f1824dc7fe51b538a7b20e43"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_bootstrap_source_closure.py",
+        "sha": "3e679a52d4cd0fe50e6a97fe210eb2aa06380e65",
+        "bytes": 18845,
+        "sha256": "d5c5679c54765f3bb7c7e9df1275c30410ed3a40496d63cb7f34847d06959bb5"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_command_source_closure.py",
+        "sha": "bef990d4bc018f2c5a1707fc297ba4be6699c9e3",
+        "bytes": 14975,
+        "sha256": "d3224f59f3c9e25d6de15daa6f9c016c6a5c5fb4ec027631d5688af0cc087a5b"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_initial_connection_source_closure.py",
+        "sha": "52d1e41149ca5d3b20bf5f827e9db9a896df9b83",
+        "bytes": 14189,
+        "sha256": "0bdaff3fb67c65b4d0e605064f1baf7714bbb51c2bff4fdfa3938b9129710d11"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+        "sha": "c37513f5fe5298ecc4618b3a819234e7d7f57c42",
+        "bytes": 9668,
+        "sha256": "1209dfbbf5ced035dd30e89739ae2b07bb922778b01b665aa5ca362677d3adb6"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_snapshot_source_closure.py",
+        "sha": "424a41420f1ac9b3c8a4d827862daaba5eb33866",
+        "bytes": 4592,
+        "sha256": "b1a9f47f7d4ea72ed181b5128ead580373260c10444948e467e3f5af9810e560"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_training_source_capture_source_closure.py",
+        "sha": "6d0aee2f77f295024fbccb12493f15c77ad67a9a",
+        "bytes": 9898,
+        "sha256": "06248c65a377b1ce3b80e31a9ba00d06240e76d403423ae7fc596842afa07812"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_dataset_source_closure.py",
+        "sha": "fd4d918a4dd06ba0d5fdb1157045f42d38934e3b",
+        "bytes": 8123,
+        "sha256": "1e866661cef9cc36d02e0364be2209e60471cfa3650e9356449bd807c47b036c"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+        "sha": "ea4db2d35de8ec8d4b7ae8a3adec8aef4ea17966",
+        "bytes": 7834,
+        "sha256": "0ea1f68517daef9109c7dc273d55b22a2c6ee0984e0fc21ea868d2fe1b911ec9"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+        "sha": "ad0586ddadce2566d705ae0f57011dc672ec2d6b",
+        "bytes": 7781,
+        "sha256": "cf48a5d7c262e17700258fea6c5d146aaed196b8018a9e3b4b62353596f03ea3"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+        "sha": "bcf2dbb0824b0a99d9acfd8c54afe51356d212a1",
+        "bytes": 9787,
+        "sha256": "9b71b1793c6969fef17488bd221b01e688464b41c04fade74dc1cbb96e4074ef"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_evaluated_retention_source_closure.py",
+        "sha": "5fb67098c33f4ccc055fb3e8ac18486543680eec",
+        "bytes": 13049,
+        "sha256": "547b93c64daf821fbc4b3b75cc7e1c6225799cd0164f7a24853124a5f6a67034"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+        "sha": "f5e1e190546e15ca6802338446a12de414154f49",
+        "bytes": 27663,
+        "sha256": "d334c4528d6f5287ae1bd61e651d7478692768a6eaaf849cd9f3045b8b2d50f5"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_publication_source_closure.py",
+        "sha": "9a842a0ab2f1703fe45648e8db01104cdd8447c3",
+        "bytes": 14463,
+        "sha256": "ed1647a0f6ef13f9022bdc0748fa5071247725732a76658b9b4c07a4ac23eee1"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_retained_version_issuer_source_closure.py",
+        "sha": "946afd64457e848e2674519f61b35fef6ce5af31",
+        "bytes": 11172,
+        "sha256": "a4de81eec657ce22f11518495d325df7f305d3aa8f387c60249ae9ea43261818"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+        "sha": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+        "bytes": 4867,
+        "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+        "sha": "2d0f4bd705fb0159549d9bb1f13d42d3db74afc4",
+        "bytes": 16250,
+        "sha256": "20a6f1d05f29e705e62412bb66b5337edd2ef1f5e322cd45e043b6f82197e25e"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+        "sha": "050bd227cc6ef7c9cf9abdbb04557c330aca82c4",
+        "bytes": 12257,
+        "sha256": "b8566a616b4732e159f82ed7615c189c59adc74b0278b7026e20200f7e658d49"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+        "sha": "9a234c73dc6382cb586aea01722bc071c010e0a5",
+        "bytes": 5533,
+        "sha256": "2b17d2ff155974e152d2fcb3bfd13bfcad5dc2df8ad3d7ab1502b59046919926"
+      },
+      {
+        "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+        "sha": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+        "bytes": 46748,
+        "sha256": "fc879da40eb15575788a310cf2ddbe4dc988bfa192f729d3d842c9a3bf12b787"
+      }
+    ],
+    "exact_old_method_matches": [],
+    "classification": "READ_ONLY_STATIC_LITERAL_SCAN_NOT_TEST_EXECUTION"
+  },
+  "ordinary_workflow": {
+    "path": ".github/workflows/hepta-daemon-learning-native.yml",
+    "blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+    "bytes": 27811,
+    "sha256": "fc00a6056b72ad802d657e62358c0759a6fc9e06473537b65ef7ff5f3a1a7334",
+    "ordinary_call": "test(\"ordinary\", [*packages, \"--lib\", \"--test-threads\", \"2\"])",
+    "packages": [
+      "codex-hepta-agentd",
+      "codex-hepta-learning-ledger",
+      "codex-hepta-learning-artifacts",
+      "codex-hepta-intelligence-eval",
+      "codex-hepta-neuron"
+    ],
+    "retries": 0,
+    "per_method_name_filter": false,
+    "all_three_non_ignored_tokio_methods_discovered": true,
+    "root_ignored_parent_filter_is_separate": true
+  },
+  "observer_inventory": [
+    {
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+      "bytes": 29352,
+      "sha256": "714c24854884dadce4ab731a9d3cf455bcb9efb04981e2ed32499e1d183a0e4b",
+      "exact_old_name_matches": 0,
+      "qualification": "Existing exact Observer subset does not enumerate this evaluated C module. It selects only its declared cases from the ordinary report; three new ordinary-discovered cases do not alter that subset."
+    },
+    {
+      "path": "scripts/test_hepta_c_observer_coverage.py",
+      "blob": "10f56e97ffa8e5bb266f21d89f98e47fed6b87e1",
+      "bytes": 18762,
+      "sha256": "a434f38be7d6c4c62647a6e4e588da2e1472d9a9c8e98adca199c2c2c4f7f211",
+      "exact_old_name_matches": 0,
+      "qualification": "Existing exact Observer subset does not enumerate this evaluated C module. It selects only its declared cases from the ordinary report; three new ordinary-discovered cases do not alter that subset."
+    }
+  ],
+  "source_scope_limits": [
+    "No global GitHub code-search completeness claim.",
+    "A recursive tree metadata query returned Transport closed; it was not used as proof of absence.",
+    "This review did not execute the source checker, native inventory, Rust compiler, rustfmt, or tests."
+  ]
+}

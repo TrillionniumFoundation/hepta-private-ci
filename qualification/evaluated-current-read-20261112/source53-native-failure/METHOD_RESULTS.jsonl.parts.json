@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "METHOD_RESULTS.jsonl",
+  "archive_bytes": 568015,
+  "archive_sha256": "7a7ce751812cd407c1697813e77eabf3fd8790128253056bccfd0b83a20f05fb",
+  "original_repository_path": "qualification/evaluated-current-read-20261112/source53-native-failure/METHOD_RESULTS.jsonl",
+  "original_git_commit": "065fa0dff71a99a9434fa9a47932715d4c2917da",
+  "original_git_blob": "84b852a3e7e5ec2ebec0ef9ae70c6f5454468eeb",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "METHOD_RESULTS.jsonl.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "30a6f37a14f4b66064629dca4c0d059b3f096552a0f912d2d08d2a9ee032026f"
+    },
+    {
+      "path": "METHOD_RESULTS.jsonl.part001",
+      "offset": 500000,
+      "bytes": 68015,
+      "sha256": "59321df29b936837c697c1e9f3c1c2bdc2b2822e6224390e5fc114d4c85b7d6a"
+    }
+  ],
+  "storage_only": true,
+  "original_bytes_unchanged": true,
+  "restoration": {
+    "instructions": "qa/repository-consolidation/20261115/neuro-evidence-storage.md",
+    "no_overwrite": true
+  }
+}

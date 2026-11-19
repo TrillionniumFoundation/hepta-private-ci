@@ -1,9 +1,15 @@
-load("//:defs.bzl", "codex_rust_crate")
+load("//:defs.bzl", "codex_rust_crate", "hepta_dev_rustc_flags")
 
 codex_rust_crate(
     name = "hepta-intelligence-eval",
     crate_name = "codex_hepta_intelligence_eval",
+    integration_compile_data_extra = glob(["examples/memory_cell_lab/**/*.rs"]),
+    rustc_flags_extra = hepta_dev_rustc_flags(1),
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
     },
+    unit_test_features = [
+        "qualification-file-observation",
+        "qualification-owned-file-read",
+    ],
 )

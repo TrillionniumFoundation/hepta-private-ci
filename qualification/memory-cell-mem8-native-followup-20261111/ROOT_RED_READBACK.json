@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.mem.native-followup.root-red-audit.v1",
+  "status": "ORIGINAL_ASSERTION_FAILURE_CONFIRMED",
+  "archive": {
+    "path": "owner-red.tar.xz",
+    "git_blob": "e26a4a211845d44329c63dd38e01e749372065ff",
+    "bytes": 24756,
+    "sha256": "6bf2240b48d8e1e151ba6448871059452de35186f78e1f80617d528480926a8e",
+    "members": 20,
+    "all_member_hashes_verified": true,
+    "unsafe_members_found": false
+  },
+  "github_full_bytes_readback": {
+    "commit": "a4004c957c7e82b15c55ccc6963a2d46e1c20dd6",
+    "path": "qualification/memory-cell-mem8-native-followup-20261111/owner-red.tar.xz",
+    "encoding": "base64"
+  },
+  "base_source": "189711e3563ea13a5328d52e99a286f082045b98",
+  "tested_commit": "98ada254cb89b1d3604ddcdadc74f08482e7fb5c",
+  "tested_tree": "5d1bb704e79421455cf30ddfe49527edbc6007f7",
+  "independently_reconstructed_github_tree": "5d1bb704e79421455cf30ddfe49527edbc6007f7",
+  "only_test_overlay": true,
+  "source_before_after_clean": true,
+  "native_command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=production_composition::tests::episodic_control::native_heads::native_predecessor_forget_closes_episodic_context)",
+    "--no-capture",
+    "--retries",
+    "0"
+  ],
+  "nextest_uuid": "21177552-a38c-448e-8d3e-96dec7a05778",
+  "actual_passed": 0,
+  "actual_failed": 1,
+  "actual_unselected": 788,
+  "retries": 0,
+  "command_exit_code": 100,
+  "timed_out": false,
+  "assertion": "fresh UDS context remained readable after original native owner withdrew the prerequisite; derived route evidence and read_allowed=true were observed",
+  "real_model_calls": 0,
+  "scored_actor_episodes": 0,
+  "root_runtime_status_probe": {
+    "host": "desktop",
+    "job_id": "1a1ca89c499-2564-6a3",
+    "status": "UNAVAILABLE",
+    "error_summary": "Remote helper exit 255: connection closed. This is a later read-only transport observation; native command terminal is retained separately.",
+    "task_replayed": false
+  },
+  "scientific_adoption": "HOLD"
+}

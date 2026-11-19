@@ -1,0 +1,122 @@
+{
+  "schema": "hepta-native-pass-summary-v1",
+  "source_head": "06f32191452df9f03bb5dc21ff8105db6b66d3d6",
+  "source_tree": "d6db19d921be786713a7b1f91aa2a460b2ead8fe",
+  "native_exit_code": 0,
+  "native_started_at": "2026-11-10T14:03:14.350713+00:00",
+  "native_finished_at": "2026-11-10T14:06:28.534391+00:00",
+  "source_unchanged_during_tests": true,
+  "executed": 75,
+  "passed": 75,
+  "failed": 0,
+  "filtered_out_by_nextest": 802,
+  "junit_skipped_case_count": 0,
+  "test_execution_duration": "44.064s",
+  "required_cases": {
+    "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry",
+        "outcome": "passed",
+        "seconds": "6.429"
+      }
+    ],
+    "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io",
+        "outcome": "passed",
+        "seconds": "3.124"
+      }
+    ],
+    "expired_learning_readback_allows_multiple_bounded_original_owner_reads": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads",
+        "outcome": "passed",
+        "seconds": "0.268"
+      }
+    ],
+    "full_learning_actor_leaves_completion_unclaimed_then_delivers_once": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once",
+        "outcome": "passed",
+        "seconds": "2.273"
+      }
+    ],
+    "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint",
+        "outcome": "passed",
+        "seconds": "0.101"
+      }
+    ],
+    "lost_learning_delivery_response_reconciles_without_repeating_stages": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages",
+        "outcome": "passed",
+        "seconds": "2.107"
+      }
+    ],
+    "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing": [
+      {
+        "classname": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing",
+        "outcome": "passed",
+        "seconds": "0.126"
+      }
+    ]
+  },
+  "raw_required_pass_records": {
+    "full_learning_actor_leaves_completion_unclaimed_then_delivers_once": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::full_learning_actor_leaves_completion_unclaimed_then_delivers_once"
+      }
+    ],
+    "lost_learning_delivery_response_reconciles_without_repeating_stages": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::capacity_tests::lost_learning_delivery_response_reconciles_without_repeating_stages"
+      }
+    ],
+    "completed_and_intermediate_histories_read_original_evaluation_after_work_expiry": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::completed_and_intermediate_histories_read_original_evaluation_after_work_expiry"
+      }
+    ],
+    "corrupted_or_replaced_evaluation_history_is_refused_before_owner_io": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "learning_iteration_evidence_client::tests::evaluation::recovery::corrupted_or_replaced_evaluation_history_is_refused_before_owner_io"
+      }
+    ],
+    "expired_learning_readback_allows_multiple_bounded_original_owner_reads": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::expired_learning_readback_allows_multiple_bounded_original_owner_reads"
+      }
+    ],
+    "stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::stalled_learning_readback_exhausts_its_budget_without_repeating_or_writing"
+      }
+    ],
+    "learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint": [
+      {
+        "binary": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::learning_iteration_tests::recovery_tests::delivery_runtime_tests::readback_budget_tests::learning_submit_keeps_its_work_deadline_while_restoring_a_checkpoint"
+      }
+    ]
+  },
+  "junit_sha256": "e390fe7db52460fca225482d2ca3ad97d46ff1b0ce2ebc8631132317e182df76",
+  "junit_mtime_ns": 1794319588513173943,
+  "fresh_junit_qualified": true,
+  "maintenance_status": "pending; source after maintenance must be checked separately",
+  "tests_reexecuted_after_native": false
+}

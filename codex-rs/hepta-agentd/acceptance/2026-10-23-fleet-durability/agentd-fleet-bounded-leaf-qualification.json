@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "leaf_commit": "611f7519dce52afacc63eef127f98d405bcd8398",
+  "parent_product_leaf": "7a166d9b809c98230bb5bbabe2281aaa70e58610",
+  "tested_commit": "0bdd0f7c31c60e93773ffccdeab2f88275afaa51",
+  "durable_job": {
+    "id": "main/1a16a71b454-1b6abb-3d74",
+    "state": "succeeded",
+    "exit_code": 0
+  },
+  "source_comparison": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+      "tested_blob": "2f393698343017447eae644bbd69edbbe338f747",
+      "leaf_blob": "2f393698343017447eae644bbd69edbbe338f747",
+      "equal": true,
+      "base_assertion_count": 31,
+      "final_assertion_count": 31,
+      "duration_expressions_unchanged": true,
+      "after_format_blob": "2f393698343017447eae644bbd69edbbe338f747"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+      "tested_blob": "b9996dc339646cf95fad5fbbff0b360b5765c085",
+      "leaf_blob": "b9996dc339646cf95fad5fbbff0b360b5765c085",
+      "equal": true,
+      "base_assertion_count": 131,
+      "final_assertion_count": 131,
+      "duration_expressions_unchanged": true,
+      "after_format_blob": "b9996dc339646cf95fad5fbbff0b360b5765c085"
+    }
+  ],
+  "tests": [
+    {
+      "test": "six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated",
+      "seconds": 19.046,
+      "state": "passed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-six-agent-peer-v4.log"
+    },
+    {
+      "test": "five_real_agentd_processes_roll_one_agent_without_stopping_peers",
+      "seconds": 20.741,
+      "state": "passed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-five-agent-rolling-v1.log"
+    },
+    {
+      "test": "five_real_agents_survive_one_automation_store_failure_without_peer_stall",
+      "seconds": 12.448,
+      "state": "passed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-five-agent-cognitive-v1.log"
+    },
+    {
+      "test": "five_running_agents_share_only_with_the_explicit_consumer",
+      "seconds": 12.513,
+      "state": "passed",
+      "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-five-agent-cognitive-v1.log"
+    }
+  ],
+  "logs": [
+    {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-six-agent-peer-v4.log",
+      "sha256": "4625af2f316361cdf6638b3ecbc7dab3649df0d9e700f56b482e51e340804db7"
+    },
+    {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-five-agent-rolling-v1.log",
+      "sha256": "984a106d6de3cff7b43704e16868d51d6bcf57f40d813263e24611d517a92d11"
+    },
+    {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-five-agent-cognitive-v1.log",
+      "sha256": "e7f585fa7a8ac07df0fe2cee15211ac6b00309077ac21f28054c20d1342033b2"
+    },
+    {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-peer-scoped-fix-v2.log",
+      "sha256": "5c1da75263b10fb17c572ff1e7babb7b81edaa730fd614ef91386a33da121f29"
+    }
+  ],
+  "fix": {
+    "command": "just fix -p codex-hepta-agentd --profile dev-small",
+    "exit_code": 0,
+    "seconds": 366,
+    "source_changes": false,
+    "warnings": "Existing warnings remain."
+  },
+  "scope": [
+    "Includes initial2c bounded bootstrap changes in both test files plus0bdd peer ThreadStart bounded2; this is new same-source four-case qualification, not qualification transferred to the earlier failing2c run.",
+    "Retains fixture-only timing output; excludes all product slow_diagnostics changes.",
+    "Original ThreadStart parameters, real IDs, input order, cleanup, all assertions, subsequent model SSE and per-test60s limits unchanged.",
+    "Tests execute sequentially withtest_threads1/retries0, not the full1068-test aggregate.",
+    "Productfile and fixturefile blobs are equal to tested versions; excluded product instrumentation makes this a reviewable source assembly requiring the peer final aggregate."
+  ],
+  "unresolved": [
+    "256 writer rotation not yet revalidated",
+    "supervisord original2s client read failure not yet revalidated"
+  ],
+  "format": {
+    "command": "just fmt",
+    "worktree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-agentd-fleet-format",
+    "started_utc": "2026-10-23T20:37:52.341263+00:00",
+    "completed_utc": "2026-10-23T20:37:52.545777+00:00",
+    "exit_code": 0,
+    "status_before": "",
+    "status_after": "",
+    "diff_check_exit_code": 0,
+    "log_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/agentd-fleet-bounded-leaf-fmt.log",
+    "log_sha256": "75666f5e5247fe3a49943b156af2f26e58b1101c33784cee69e80fd8af68ec8e",
+    "note": "Independent clean delivered leaf; no subsequent testing solely for fmt."
+  }
+}

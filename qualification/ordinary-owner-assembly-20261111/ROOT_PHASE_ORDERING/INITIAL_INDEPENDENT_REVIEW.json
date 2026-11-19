@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "title": "Independent static review of original Root observation idle/Drop component coordination",
+  "reviewer": "runtime_access",
+  "author": "hepta_audit",
+  "base_commit": "0c896bdf941f4174797ff45378bc7439075c11e4",
+  "base_tree": "fc41816656e41af926c868e6cc327f88e7ae1001",
+  "status": "No confirmed static blocker found in the exact final source; native execution not performed.",
+  "exact_ops": {
+    "git_blob": "633e22ddad42492df155b8bd1215aed6cc556b61",
+    "bytes": 16786,
+    "sha256": "e08dc491281be9f62ed08abc0e88f6328b439264979319f00bdbed3250c4a9a9"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "preimage": {
+        "git_blob": "c10e077d4dc36f1d6cebf829f24b68164def548a",
+        "bytes": 19872,
+        "sha256": "539c7677c4bfeb2e97d7257692d3565ff0b7c2a00ace34e6461b0f7b43ae8cf0"
+      },
+      "postimage": {
+        "git_blob": "fa1379b2314ca98440ac52bf2aca2219edefeec8",
+        "bytes": 20232,
+        "sha256": "7f01918eb756db281067c87973779120be187fa3a9371a76aa4d49941baafb18"
+      },
+      "exact_operations": 4,
+      "forward_reverse_byte_equal": true,
+      "original_assertion_start_lines_preserved": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session_tests.rs",
+      "preimage": {
+        "git_blob": "33f272ae2035be46d6767b8eba6164fc2b7a5df8",
+        "bytes": 15262,
+        "sha256": "463197ba874c401b172a4c6c60cb4c3168ca70b512c737ea651f2530200b67ad"
+      },
+      "postimage": {
+        "git_blob": "804cb6b0e1c1cda0a8213408918e7fc92ea1f9a6",
+        "bytes": 20216,
+        "sha256": "e9f8aad0f3b89182f35a60962aa538d632dcb7cd3d0364ff10c578082f7c8871"
+      },
+      "exact_operations": 1,
+      "forward_reverse_byte_equal": true,
+      "original_assertion_start_lines_preserved": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "preimage": {
+        "git_blob": "c6ffe2f2404ce7f5ef66fe8212ade93f0ac7399b",
+        "bytes": 10567,
+        "sha256": "be4b4f1d765e7c6659978a82f0f1b20ce8a1297caf09249d6661d0ec97eeb33e"
+      },
+      "postimage": {
+        "git_blob": "7d9dc6d13e7997638b377c7dfc866d2c5f57ee3d",
+        "bytes": 13042,
+        "sha256": "a86ad24d9b80066bdd15da1f8ad852ed437e1f08b130b281ac08e231a4d33fb5"
+      },
+      "exact_operations": 4,
+      "forward_reverse_byte_equal": true,
+      "original_assertion_start_lines_preserved": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "adb691cc4a90f5039e7960c1e39b39e2cb79d337",
+        "bytes": 23511,
+        "sha256": "005c8f5355c1917d065a5c5b929a7f7961448613d9c1405b11392ba7bef136ef"
+      },
+      "postimage": {
+        "git_blob": "9f8eba7e6e82d140fee6408e58dc7a1fee9291d5",
+        "bytes": 24228,
+        "sha256": "23f42d446cc731161c31fb25689f4d3ec831bedd9117ff8f40149cefb956bdcd"
+      },
+      "exact_operations": 3,
+      "forward_reverse_byte_equal": true,
+      "original_assertion_start_lines_preserved": true
+    }
+  ],
+  "superseded": {
+    "tests": "1b75073936211dddbc69ba7a18e683b454a7a567",
+    "ops": "8f5aa09c78bc0f29f6871cfd994d76ceffb39535",
+    "reason": "The optional mirror boolean test was removed; final tests 804cb6 retains all helper/phase code unchanged."
+  },
+  "observation_failure_history": {
+    "cfg_test_only": true,
+    "production_api_or_authority_added": false,
+    "sequence": [
+      "The original serial permit is acquired.",
+      "A test-only RefreshCompletion witness borrows the one sticky refresh_failed flag.",
+      "Only the original final live.current success calls complete.",
+      "On Err, cancellation or unwind the witness sets the flag before the earlier-declared serial permit is released."
+    ],
+    "no_false_recovery": "A helper that later acquires the permit refuses the sticky failure even if the original task has not yet reached its FenceOnDrop/finished state.",
+    "not_a_production_fix": "The original refresh errors, proof/clock/current/consumer behavior and output are unchanged after cfg(test) removal."
+  },
+  "deliberate_drop": {
+    "by_value_original_inputs": true,
+    "checks_before_drop": [
+      "Same actual live Arc and original task AbortHandle are retained.",
+      "Original serial acquired within one total timeout.",
+      "Sticky failure and prior worker completion rejected.",
+      "Original live.current must succeed.",
+      "Original callback must succeed; RetiredSession actually revalidates the same retained task here.",
+      "Failure/worker state checked again."
+    ],
+    "effect": "Only actual drop(inputs) invokes the unchanged AgentdRootAuthoritySession::drop fence/abort. No helper pre-aborts or refreshes the task.",
+    "completion": "The helper waits boundedly for the same AbortHandle to report finished. This is termination after deliberate Drop, not a successful worker-result claim.",
+    "failure": "If the existing feed failed, the callback fails, or termination budget expires, the test fails; no success conversion.",
+    "retained_negative_causality": "In RetiredSession, actual task.require_bundle succeeds immediately before the same live session's Drop, and the unchanged require_bundle.is_err assertion follows Drop. The retained task is released before CLOSED."
+  },
+  "fixture_order": {
+    "normal": "Original STABLE/CHECKED/DONE checks precede STOP. Child performs idle+actualDrop, sends CLOSED and waits PHASE_COMPLETE.",
+    "retired": "Original parent RETIRE_READY/RETIRE coordinates the actual session Drop. Existing task/nonce refusal assertions run before task is released and before CLOSED.",
+    "negatives": "ReserveExisting/Corrupt/Restored and controlled post-CAS lost-ACK branches keep raw teardown and the original expected Err. They do not demand a repaired live session.",
+    "completion": "Parent sends PHASE_COMPLETE only after control worker completion and the unchanged real served.is_err/served? branch. No served error is swallowed or converted to success.",
+    "authority": "No identity, permission, grant, CURRENT CAS, original test assertion or lifetime is weakened."
+  },
+  "publication_wait_dependency": {
+    "append_git_blob": "25e9b2eca14461c8980d9cef36735d5bd7ef73c2",
+    "final_tests_contains_exact_append": true,
+    "semantics": "Under the same original serial permit, actual Device/Notes heads are read before original public session.revocations; any mismatch/error fails. Only one matching older same-epoch head may wait. Exact expected head succeeds. No refresh/update/FinalUse retry.",
+    "timeout": "One outer existing 500ms budget covers the whole acquire/wait, and original lifetime/500ms freshness checks continue to apply."
+  },
+  "callers": {
+    "base_git_blob": "f90e0cf6fe2f024961104821a0f3c1be6256995d",
+    "base_boundaries": 492,
+    "base_protected_files": 358,
+    "session_protected_rows_unchanged": [
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_authority_session.rs\"\nrequired = [\"synchronize_consumers\", \"live.cache.begin_update()\", \"live.cache.end_update()\", \"update_revocations(head.clone())\"]\nforbidden = [\"AllowVerifier\", \"permit_all\"]",
+      "[[protected_file]]\npath = \"codex-rs/hepta-agentd/src/root_authority_session.rs\"\nrequired = [\"self.live.cache.fence()\", \"self.worker.abort()\", \"self.live.consumers.lock()\", \"consumers.clear()\"]\nforbidden = []\nrequired_order = [[\"impl Drop for AgentdRootAuthoritySession\", \"self.live.cache.fence()\", \"self.worker.abort()\", \"self.live.consumers.lock()\", \"consumers.clear()\"]]"
+    ],
+    "requested_changes": [],
+    "original_checker_unchanged": true,
+    "full_guard_executed": false
+  },
+  "scope": {
+    "final_added_test_methods": 0,
+    "root_parent_roster_unchanged": 17,
+    "ordinary_complete": 0,
+    "ordinary_adoption": 0,
+    "ordinary_rollback": 0,
+    "cargo_executed": false,
+    "native_executed": false,
+    "root_executed": false,
+    "actual_remaining_risk": "Rust 1.96 compilation and real timing/termination remain for Root's one fixed-source qualification. This static review predicts no PASS and does not reclassify the V5 15/2 result."
+  }
+}

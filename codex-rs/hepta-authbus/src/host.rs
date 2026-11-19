@@ -1,6 +1,11 @@
 use std::path::Path;
 use std::path::PathBuf;
 
+#[cfg(test)]
+use std::sync::atomic::AtomicBool;
+#[cfg(test)]
+use std::sync::atomic::Ordering;
+
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
@@ -32,7 +37,6 @@ use crate::QuotaSnapshot;
 use crate::QuotaSpec;
 use crate::ReservationRequest;
 use crate::Settlement;
-use crate::SettlementIssuerRegistration;
 use crate::SignedSettlementEvidence;
 use crate::SignedTrustedTimeAttestation;
 use crate::TrustedTimeSample;
@@ -42,9 +46,11 @@ const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 const RECOVERY_BATCH: u32 = 256;
 
-pub struct AuthBusAuthorityHost {
+pub(crate) struct AuthBusAuthorityHost {
     store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
+    #[cfg(test)]
+    fail_after_external_replace: AtomicBool,
 }
 
 impl AuthBusAuthorityHost {
@@ -54,6 +60,24 @@ impl AuthBusAuthorityHost {
         owner_id: &str,
     ) -> Result<Self, AuthBusAuthorityError> {
         let store = AuthBusAuthorityStore::open(database_path).await?;
+        Self::open_store(store, database_path, checkpoint_path, owner_id).await
+    }
+
+    pub async fn open_pq(
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
+        let store = AuthBusAuthorityStore::open_pq(database_path).await?;
+        Self::open_store(store, database_path, checkpoint_path, owner_id).await
+    }
+
+    async fn open_store(
+        store: AuthBusAuthorityStore,
+        database_path: &Path,
+        checkpoint_path: PathBuf,
+        owner_id: &str,
+    ) -> Result<Self, AuthBusAuthorityError> {
         let (checkpoint, external) =
             AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?;
         match store.authority_checkpoint().await? {
@@ -68,7 +92,12 @@ impl AuthBusAuthorityHost {
             }
         }
         while !store.reconcile_after_restart(RECOVERY_BATCH).await? {}
-        let host = Self { store, checkpoint };
+        let host = Self {
+            store,
+            checkpoint,
+            #[cfg(test)]
+            fail_after_external_replace: AtomicBool::new(false),
+        };
         host.sync_checkpoint().await?;
         Ok(host)
     }
@@ -77,11 +106,26 @@ impl AuthBusAuthorityHost {
         let external = self.checkpoint.read()?;
         if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
             self.checkpoint.replace(external, next)?;
+            #[cfg(test)]
+            if self
+                .fail_after_external_replace
+                .swap(false, Ordering::SeqCst)
+            {
+                return Err(AuthBusAuthorityError::Storage(
+                    "injected crash after external checkpoint publication".to_owned(),
+                ));
+            }
             self.store
                 .advance_authority_checkpoint(external.generation, next)
                 .await?;
         }
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fail_after_external_replace_once(&self) {
+        self.fail_after_external_replace
+            .store(true, Ordering::SeqCst);
     }
 
     async fn finish<T>(
@@ -154,20 +198,30 @@ impl AuthBusAuthorityHost {
         self.finish(result).await
     }
 
+    pub async fn trusted_time_challenge(
+        &self,
+    ) -> Result<Option<crate::TrustedTimeChallenge>, AuthBusAuthorityError> {
+        let result = self.store.trusted_time_challenge().await;
+        self.finish(result).await
+    }
+
+    pub async fn issuer_record(
+        &self,
+        purpose: IssuerPurpose,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+    ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        self.store
+            .issuer_record(purpose, issuer_id, key_epoch)
+            .await
+    }
+
     pub async fn message_issuer(
         &self,
         issuer_id: &StableId,
         key_epoch: Generation,
     ) -> Result<IssuerRegistration, AuthBusAuthorityError> {
         self.store.message_issuer(issuer_id, key_epoch).await
-    }
-
-    pub async fn settlement_issuer(
-        &self,
-        issuer_id: &StableId,
-        key_epoch: Generation,
-    ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
-        self.store.settlement_issuer(issuer_id, key_epoch).await
     }
 
     pub async fn create_policy(
@@ -320,11 +374,10 @@ impl AuthBusAuthorityHost {
 
     pub async fn settle(
         &self,
-        issuer: &SettlementIssuerRegistration,
         evidence: &SignedSettlementEvidence,
         time: TrustedTimeSample,
     ) -> Result<Settlement, AuthBusAuthorityError> {
-        let result = self.store.settle(issuer, evidence, time).await;
+        let result = self.store.settle(evidence, time).await;
         self.finish(result).await
     }
 

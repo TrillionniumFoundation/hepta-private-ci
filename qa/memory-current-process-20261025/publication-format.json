@@ -1,0 +1,189 @@
+{
+  "schema": "hepta.native-process.publication-bridge.v1",
+  "qualified_scope": "local development inventory; exact pre-final-tool execution sources retained",
+  "execution_manifest_sha256": "9e080f239e8d931a312ea8e65e572466a99691a4d0c5db135d74d7989c1189f4",
+  "fix": {
+    "command": [
+      "just",
+      "fix",
+      "--locked",
+      "-p",
+      "codex-hepta-memory",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 88.44747844499943,
+    "waited_child_cpu_seconds": 86.91927800000002,
+    "warnings_remain": true,
+    "strict_warning_free_clippy_claim": false,
+    "log_sha256": "565346369e99be0c587e27d9f1e9ed671261ce6d108afb83e36c81cf19141d7b",
+    "owned_change": "One test immediate no-argument closure invocation becomes a block; no return/question-mark/break/await in its body, same Result and lease Drop scope. Independently reviewed. Production implementation not auto-rewritten.",
+    "unrelated_autofix_restored": "Two unused imports in cognitive_store_product_writer.rs restored to exact SHA-verified pre-command bytes; not published."
+  },
+  "format": {
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.14066098100011,
+    "child_cpu_seconds": 1.081829,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "format_scope": "Unscoped just fmt in isolated publication checkout, called from codex-rs; no decision study sources present.",
+  "python_raw_ast_equal_files": [
+    "scripts/memory_cell_native/current/native_process_ci.py",
+    "scripts/memory_cell_native/current/native_process_command.py",
+    "scripts/memory_cell_native/current/native_process_restore.py"
+  ],
+  "rust_ast_identity_asserted": false,
+  "rust_bridge": "Exact executed-to-published patch retained; rustfmt changes plus the independently reviewed test-only Clippy rewrite. No post-format local requalification claim.",
+  "post_final_tool_native_tests_or_models": 0,
+  "published_sources": {
+    ".github/workflows/hepta-memory-native-process.yml": {
+      "executed_sha256": "9c1a5dfeea097ba5012a747668ed5c30a044728d8d8e8baa840efbacc69bbbc1",
+      "publication_sha256": "9c1a5dfeea097ba5012a747668ed5c30a044728d8d8e8baa840efbacc69bbbc1",
+      "publication_lines": 160,
+      "identical": true
+    },
+    "codex-rs/hepta-agentd/src/config.rs": {
+      "executed_sha256": "3bc8aace6162fc8ea61df547ce5c1e7bc27689836e041990116dd3d319556fdb",
+      "publication_sha256": "7403bb8610901d8cc9b9856b90d2ef8836e206e7a507ef45b6165c28a44bb302",
+      "publication_lines": 668,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/lib.rs": {
+      "executed_sha256": "8b1de507d572384dc58d44f8280a21641771e4aac61bc69c9800200f715ad453",
+      "publication_sha256": "64b0b15d76fc87871fd7e7100b26ff3abd334725d6e67651233ded1e8b392a32",
+      "publication_lines": 298,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/main.rs": {
+      "executed_sha256": "c1c53859ab97203bea09eab826bacde1987ba786a552a30a2652cb9bbe457abc",
+      "publication_sha256": "3eefca5ea1adc4a203ff4023251754d540c51de88e7d45d604d63d63fcf751c8",
+      "publication_lines": 247,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_host_bootstrap.rs": {
+      "executed_sha256": "3ae6473555853f327dc489374da5f77fdebb5d927780ccaed1332ec13bcf9b32",
+      "publication_sha256": "2eabaccc3af9a077fae37085f0ff12f0f5e5faf5aea3d4695763f2c8f834469c",
+      "publication_lines": 306,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_host_control.rs": {
+      "executed_sha256": "cfbb21629a5c58a8457952f4b40cea5588458510e9059f9a435d9f3c578d79f7",
+      "publication_sha256": "9dcb325af559e5529bd297af210893d9c861094c3db0cad9c7cad097f1593d33",
+      "publication_lines": 308,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_host_session.rs": {
+      "executed_sha256": "491eb355f516d4b58c57e192c2d8742d6977cf08ee5e432213b58b912b34e31c",
+      "publication_sha256": "a09d07701fca5a07894fd8b9944856907df302cdac55099850bf07998c479d25",
+      "publication_lines": 112,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_host_session_tests.rs": {
+      "executed_sha256": "d753b9c7f65cdbbaee68d2c4d16dd91f28e97d2eb73bf8d3ea0c56f810b833f7",
+      "publication_sha256": "5f58191637801ff9b4516b127d5a87e219cbbf2eadc43a98eb6133046c731c13",
+      "publication_lines": 184,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_process_schema.rs": {
+      "executed_sha256": "f3f81f5f8b1ddcc6d5fbede9f68b48e7f45fbef768eb672dee81a9c6ccb8f5b7",
+      "publication_sha256": "e9ceac85b348d1414abd7bbb4bebe420f49d8a3b9d01b9a970b126bc8d499c80",
+      "publication_lines": 290,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_process_trust.rs": {
+      "executed_sha256": "66e7fb5cd5c8b16fed3bf7799497fa17d7f24f15c74c7d37c8ced1831f09ac51",
+      "publication_sha256": "5eb181c31b7775b36570b6b4db42f19c538b133f7f708c9ea22a1fa232cd9591",
+      "publication_lines": 272,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/native_memory_process_trust_tests.rs": {
+      "executed_sha256": "e2f21883fd7d07b70f7aee2ce06ea8bd72f82c15c533e0de6201805df269b4d7",
+      "publication_sha256": "69ae7283ddd823616c1e658af6e22d953de7b7f013c6df8a02a21d917a018a49",
+      "publication_lines": 146,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/src/runtime.rs": {
+      "executed_sha256": "fb7810fbc3dd5715e2b55616da33c5d7136eb9a0d30ba45f82e885d436ac1d1b",
+      "publication_sha256": "6db31860c03b5255e580bc9369a0e1b881d91a53c986e1f3b86f5c202fba1957",
+      "publication_lines": 597,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/tests/native_memory_process.rs": {
+      "executed_sha256": "3d2be7452fe9dd6c6364dcb626a038232faa43ddf995080a4bbd28810a6689a5",
+      "publication_sha256": "57d32db3d41cfe78cee21d4baca39c0bd0716e95c33f9bc5a367784e909599da",
+      "publication_lines": 398,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/tests/support/native_memory_process_fixture.rs": {
+      "executed_sha256": "b46e0d6dbed18fc56e519b671778803daa1a7a80fb1f5bb356cba18a2f21ad5e",
+      "publication_sha256": "a22b26921e4215ddb9eb1246e47d65316532106b0384014e471b5013c100356c",
+      "publication_lines": 268,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/tests/support/native_memory_process_ndu.rs": {
+      "executed_sha256": "cab7484d2471893b9150126bcbbd18d4729694a5beb44073a7209dcbb8e5f58b",
+      "publication_sha256": "ad23d3a1c64a00e0f05a29f3c29508808ce4b955fef15a4bf614baace006a18b",
+      "publication_lines": 209,
+      "identical": false
+    },
+    "codex-rs/hepta-agentd/tests/support/native_memory_process_objective.rs": {
+      "executed_sha256": "ff791d32cc078d99485641074849d6f0f8fed477c352115826550ccb07e754a7",
+      "publication_sha256": "2fca78da1ae1fc8cbfb6d39798d0d4ec94b6afc71f625d2b6a12b50823e1c8e7",
+      "publication_lines": 173,
+      "identical": false
+    },
+    "codex-rs/hepta-memory/src/lib.rs": {
+      "executed_sha256": "05722abb2583923955889811f75ff1a1161946da7dae6270139062db50ae501a",
+      "publication_sha256": "b09cea53c3addcccd323416c6f0888f0b93ff1b1f73edf59ee96b5860e4c79c3",
+      "publication_lines": 525,
+      "identical": false
+    },
+    "codex-rs/hepta-memory/src/memory_cell_retained.rs": {
+      "executed_sha256": "b313a87febd1e5d11f526284ceb68ed463a57dc12181643a6dbaf5449d3a6805",
+      "publication_sha256": "d5123f30d52928c2a133a6f1735df4050de4aa8c392d5542a78cba170fb96d39",
+      "publication_lines": 252,
+      "identical": false
+    },
+    "codex-rs/hepta-memory/src/memory_cell_retained_tests.rs": {
+      "executed_sha256": "b2cbdd75a59504fafc2fb305890dff84fcf1c75ce228a346d77903057cb55d90",
+      "publication_sha256": "d6c7cc53b016191f15a9d9940962ced5e060e0cc633bbf0797502cdc4d673091",
+      "publication_lines": 75,
+      "identical": false
+    },
+    "codex-rs/hepta-memory/src/production_writer.rs": {
+      "executed_sha256": "772a7829b438608f7e3188a1095f18dd3d404d3b8c4ca9c54743f00680530a65",
+      "publication_sha256": "772a7829b438608f7e3188a1095f18dd3d404d3b8c4ca9c54743f00680530a65",
+      "publication_lines": 3950,
+      "identical": true
+    },
+    "scripts/memory_cell_native/current/native_process_ci.py": {
+      "executed_sha256": "dac293031062da35b4a49cc3b5331fbcaaf55e8b5bef75dcfa485ed14c08cdda",
+      "publication_sha256": "08eaaffbd955b54a8542bad35fd81f772c79f70e3cd37586738e42c1ac5dcda6",
+      "publication_lines": 376,
+      "identical": false,
+      "raw_ast_equal": true
+    },
+    "scripts/memory_cell_native/current/native_process_command.py": {
+      "executed_sha256": "99c5b8ff205a4dc05dd4f9bffff7883a678d4f3715e7baa1045974c5ad6c16ef",
+      "publication_sha256": "2cdbcefa856d8b10bb4dc913a1bbf8577d630a50e0b0bd5dc2d20b68e2899ba0",
+      "publication_lines": 73,
+      "identical": false,
+      "raw_ast_equal": true
+    },
+    "scripts/memory_cell_native/current/native_process_restore.py": {
+      "executed_sha256": "e26ac300640eef5efad441e174143b30a5f60099cfd766372c978c9af4836815",
+      "publication_sha256": "4dc799f3be7fc53b7dd9e1cb0baf08981a71303303573bcf2d0260a5292b097e",
+      "publication_lines": 272,
+      "identical": false,
+      "raw_ast_equal": true
+    }
+  },
+  "full_eight_blockers_closed": false,
+  "future_task_groups": 0,
+  "hosted_result": null
+}

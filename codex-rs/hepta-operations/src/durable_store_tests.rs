@@ -3,6 +3,7 @@ use super::*;
 use std::collections::BTreeSet;
 use std::time::Duration;
 
+use crate::DispatchEffect;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -10,8 +11,15 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[cfg(unix)]
+#[path = "durable_dispatch_tests.rs"]
+mod dispatch_tests;
+
 #[path = "durable_clock_tests.rs"]
 mod clock_tests;
+
+#[path = "durable_renewal_guard_tests.rs"]
+mod renewal_guard_tests;
 
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")

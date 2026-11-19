@@ -1,0 +1,14 @@
+load("//:defs.bzl", "codex_rust_crate")
+
+codex_rust_crate(
+    name = "matrix-sdk-sqlite",
+    compile_data = glob(["migrations/**/*.sql"]),
+    crate_edition = "2024",
+    crate_features = [
+        "crypto-store",
+        "event-cache-store",
+        "media-store",
+        "state-store",
+    ],
+    crate_name = "matrix_sdk_sqlite",
+)

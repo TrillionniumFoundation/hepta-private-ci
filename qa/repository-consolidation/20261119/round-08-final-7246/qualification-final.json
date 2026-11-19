@@ -1,0 +1,238 @@
+{
+  "artifacts": {
+    "local-results.json": {
+      "bytes": 27809,
+      "sha256": "7b8924a0cc0e7cff1ca7af98789726147caa539e661997990f35c6b093f09702"
+    },
+    "memory-qualification-evidence.tar.gz": {
+      "bytes": 40123,
+      "sha256": "bd2f3a8ae8652197acc28a192855002aa5b23b2e3a049316534891d69487cc2a"
+    },
+    "rog-evidence/qualification-002/result.json": {
+      "bytes": 15230,
+      "sha256": "fed023360bfb3b3fb3324a5357477034ca0223793710c766bbe624a94ef4c36c"
+    },
+    "rog-qualification-attempt02-request.json": {
+      "bytes": 671,
+      "sha256": "2b47002f1a8f426a4085a8a610a88ae17aeab1836109897bd14cc1d0cd8ceca9"
+    },
+    "rog-qualification-attempt02-start.json": {
+      "bytes": 1577,
+      "sha256": "a711fb321442e48e070b195c9399db13b15fd20e3eaa1467d3b2476f3f72ff3f"
+    },
+    "rog-qualification-attempt02-terminal-read.json": {
+      "bytes": 15759,
+      "sha256": "18eea8551d124cc57e08a36818dce3745960268a32fe8c529eac1be80541fdbd"
+    },
+    "rog-qualification-attempt02-terminal.json": {
+      "bytes": 955,
+      "sha256": "a01e916a88b7eadbd019acce35639e92b39e83c681ea3f9e72cb1fb48eeac3f7"
+    },
+    "root-current-source-equivalence.json": {
+      "bytes": 354,
+      "sha256": "8b9843a854a4e1f8301aee941702c260659a2700746f2183706937c8a8af6639"
+    },
+    "root95c8-source-equivalence.json": {
+      "bytes": 315,
+      "sha256": "a2a35621993b56d02598c18f622d4c1bfa580d0613c37023b703ab7e78a52186"
+    },
+    "source-before.json": {
+      "bytes": 41344,
+      "sha256": "f99ffa8cc22cdcd203c3cca75c5343fecb6a30ec40ea4a9f51ea8bf43add307f"
+    },
+    "source-manifest.json": {
+      "bytes": 61237,
+      "sha256": "a4961ee3843d7b57b49ddc2aabf656bbf7509037ed84974321eb6074ac35fe0f"
+    }
+  },
+  "equivalent_full_source_commit": "95c8b665afa8a13a34985c4462889c7b16190faa",
+  "equivalent_full_source_tree": "c0adb12087366a038511cd8e69723103aec2cba4",
+  "fixture_materializations": 0,
+  "later_root_comparison": {
+    "all_bytes_equivalent": false,
+    "changed_paths": [
+      ".github/workflows/blocking-ci.yml"
+    ],
+    "checked_paths": 243,
+    "compared_commit": "3b9cfd2647839b150ab4e34f6887adddfaa66cb7",
+    "frozen_source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+    "python_or_requirements_changed": [],
+    "schema": "hepta.memory-root-source-equivalence.v1"
+  },
+  "original_assertions_or_repo_source_changed": false,
+  "pip_check_exit_code": 0,
+  "prior_failed_attempts_preserved": [
+    {
+      "attempt": "local-domain",
+      "errors": 1,
+      "exit_code": 1,
+      "full_log": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/domain/stderr.log",
+      "real_passed_tests": 15,
+      "reason": "Torch absent; original test_domain_controls failed import, leaving 5 original tests unqualified at that attempt.",
+      "unittest_reported_count": 16
+    },
+    {
+      "attempt": "local-network",
+      "errors": 4,
+      "exit_code": 1,
+      "full_log": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/network/stderr.log",
+      "real_passed_tests": 6,
+      "reason": "Torch absent; 3 original test modules failed import and one process test errored. Seven original tests remained unqualified at that attempt.",
+      "unittest_reported_count": 10
+    },
+    {
+      "attempt": "rog-wrapper-preflight-001",
+      "exit_code": 1,
+      "full_result": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/rog-evidence/qualification-001/result.json",
+      "job_id": "1a1f4ec490a-ffbe-11bb",
+      "reason": "Evidence manifest used mode0600; wrapper originally permitted only source0644/0755. Corrected manifest-only metadata acceptance in a new immutable wrapper/key, preserving every source byte and predicate.",
+      "repository_tests_executed": 0
+    }
+  ],
+  "result": "All 72 distinct original tests across four requested suites passed at the recorded source and runtime bindings.",
+  "rog_job": {
+    "exit_code": 0,
+    "host": "rog",
+    "id": "1a1f4ed0f63-ffbe-11be",
+    "idempotency_key": "hepta-memory-7246-ci-audit-qualification-002",
+    "log_truncated": false,
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "stderr_bytes": 0,
+    "stdout_bytes": 4656,
+    "timed_out": false
+  },
+  "runtime": {
+    "prefix": "/home/qian-qi/hepta-memory-7246-ci-audit/python",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "tensor_device": "cpu",
+    "tensor_matmul": [
+      [
+        7.0,
+        10.0
+      ],
+      [
+        15.0,
+        22.0
+      ]
+    ],
+    "torch_cuda_build": null,
+    "versions": {
+      "accelerate": "1.10.1",
+      "huggingface-hub": "0.35.3",
+      "numpy": "1.26.4",
+      "peft": "0.17.1",
+      "safetensors": "0.6.2",
+      "torch": "2.10.0+cpu",
+      "transformers": "4.57.1"
+    }
+  },
+  "schema": "hepta.memory-python-original-qualification-final.v1",
+  "scope_limits": [
+    "This is source-bound local/native CPU repository regression evidence, not required GitHub Actions completion or a whole-repository pass.",
+    "Domain uses the original bounded contract fixtures; no prospective real-incidents or scientific capability claim follows.",
+    "Network uses the original locally created tiny decoder and real independent worker processes; no pretrained model was downloaded. Offline Hugging Face/Transformers mode remained enabled and Torch build is CPU only.",
+    "The native-feedback suite intentionally uses its original command stand-ins to test argument/identity/receipt propagation. It is not native Rust/Cargo compilation evidence.",
+    "No source, test assertion, timeout predicate, production boundary or HIA branch was modified for these runs. No GPU, global package install or other agent environment was used.",
+    "The later workflow-only concurrency delta is listed separately; the 243-member whole-set equality claim applies to a498 and 95c8, not to a later different workflow byte."
+  ],
+  "source_archive_sha256": "a61857ba827d4c31a8329b2db7a415310d003de38be81c312185770772eb27fa",
+  "source_before_and_after_all_243_unchanged": true,
+  "source_manifest_sha256": "a4961ee3843d7b57b49ddc2aabf656bbf7509037ed84974321eb6074ac35fe0f",
+  "source_path_count": 243,
+  "source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+  "suites": {
+    "ci-exec": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_exec.py",
+        "-v"
+      ],
+      "errors": 0,
+      "execution": "local",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 15,
+      "result_path": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/ci-exec/result.json",
+      "runtime": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "skipped": 0,
+      "source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+      "stderr_sha256": "65ee22ccdfe5ea9d6e989b077899936dad66d0d88a645677e28f9a63d05b00cf"
+    },
+    "domain": {
+      "command": [
+        "/home/qian-qi/hepta-memory-7246-ci-audit/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/memory_cell_domain",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "errors": 0,
+      "execution": "rog-native-cpu",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 20,
+      "result_path": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/rog-evidence/qualification-002/domain/result.json",
+      "runtime": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "skipped": 0,
+      "source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+      "stderr_sha256": "d8631943a38af5470c58e9d6a119b6685b887eadbea00fd4442a527db760d0d7",
+      "unittest_seconds": 0.045
+    },
+    "native-feedback": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_native_feedback.py",
+        "-v"
+      ],
+      "errors": 0,
+      "execution": "local",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 24,
+      "result_path": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/native-feedback/result.json",
+      "runtime": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "skipped": 0,
+      "source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+      "stderr_sha256": "065ef103fae058d9267dac4ee44003b198485d5eff261760114baf321b4c6c42"
+    },
+    "network": {
+      "command": [
+        "/bin/bash",
+        "scripts/memory_cell_network/run_tests.sh"
+      ],
+      "errors": 0,
+      "execution": "rog-native-cpu",
+      "exit_code": 0,
+      "failed": 0,
+      "passed": 13,
+      "result_path": "/workspace/scratch/724669789c83/ci-audit/concurrent-ceb-python/rog-evidence/qualification-002/network/result.json",
+      "runtime": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+      "skipped": 0,
+      "source_tree": "a498e119e6214723e4c8aae523892dd73407df68",
+      "stderr_sha256": "c243763fdbd44ae650750c63f1c3e74e0bce486e0e0b8c54c178d7ed57e0a129",
+      "unittest_seconds": 88.157
+    }
+  },
+  "unique_passed_tests": 72
+}

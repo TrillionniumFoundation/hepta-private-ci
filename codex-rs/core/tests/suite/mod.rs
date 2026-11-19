@@ -67,6 +67,7 @@ mod exec_policy;
 #[cfg(not(target_os = "windows"))]
 mod extension_sandbox;
 mod external_auth;
+mod first_party_transport;
 mod fork_thread;
 mod git_enrichment;
 mod guardian_mcp_elicitation;
@@ -87,6 +88,7 @@ mod injected_models_cache;
 mod items;
 mod json_result;
 mod live_cli;
+mod live_thread_materialization;
 mod mcp_auth_elicitation;
 mod mcp_auth_refresh;
 #[cfg(unix)]
@@ -157,6 +159,7 @@ mod sqlite_state;
 mod stream_error_allows_next_turn;
 mod stream_no_completed;
 mod subagent_notifications;
+mod terminal_event_cleanup;
 mod token_budget;
 mod tool_harness;
 mod tool_lifecycle;

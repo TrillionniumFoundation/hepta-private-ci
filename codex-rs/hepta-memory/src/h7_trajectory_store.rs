@@ -427,11 +427,7 @@ pub async fn append_h7_trajectory_event_bound(
     }
     binding.verify_current(lease, executor).await?;
     let store = executor.store();
-    let mut transaction = store
-        .pool
-        .begin_with("BEGIN IMMEDIATE")
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    let mut transaction = store.begin_write_transaction().await?;
     let current = lease
         .verify_current_in_transaction(&mut transaction)
         .await
@@ -675,9 +671,12 @@ pub async fn read_h7_trajectory_bound_for_recovery(
     .await?;
     let lease_expired = match current.lease_expires_at_unix_seconds {
         Some(expiry) => {
-            let now = u64::try_from(now_unix_seconds()?).map_err(|_| {
-                H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string())
-            })?;
+            let now = u64::try_from(
+                store
+                    .local_lease_now_unix_i64()
+                    .map_err(H7TrajectoryStoreError::Clock)?,
+            )
+            .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
             now >= expiry
         }
         None => false,
@@ -726,8 +725,12 @@ pub async fn inspect_expired_terminal_h7(
             "expired H7 recovery requires an explicit lease expiry".to_string(),
         ));
     };
-    let now = u64::try_from(now_unix_seconds()?)
-        .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
+    let now = u64::try_from(
+        store
+            .local_lease_now_unix_i64()
+            .map_err(H7TrajectoryStoreError::Clock)?,
+    )
+    .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
     if now < expiry {
         return Err(H7TrajectoryStoreError::StaleFence(
             "lease has not expired; ordinary lifecycle verification is required".to_string(),
@@ -769,8 +772,12 @@ pub async fn inspect_expired_terminal_h7(
                 "expired H7 recovery head lost its explicit expiry".to_string(),
             )
         })?;
-    let current_now = u64::try_from(now_unix_seconds()?)
-        .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
+    let current_now = u64::try_from(
+        store
+            .local_lease_now_unix_i64()
+            .map_err(H7TrajectoryStoreError::Clock)?,
+    )
+    .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
     if current_now < current_expiry {
         return Err(H7TrajectoryStoreError::StaleFence(
             "lease became live before expired H7 recovery gate".to_string(),

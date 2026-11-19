@@ -15,6 +15,10 @@ on:
 # so `persist-credentials: false` is not an applicable action input.
 permissions: {}
 
+concurrency:
+  group: kernel-authority-readonly-runner-probe
+  cancel-in-progress: true
+
 jobs:
   runner-probe:
     name: Desktop runner probe
@@ -43,5 +47,9 @@ jobs:
         run: |
           set -euo pipefail
           uname -a
+          command -v git
+          command -v python3
+          command -v cargo || true
+          command -v gh || true
           if command -v adb >/dev/null 2>&1; then adb devices -l || true; fi
           if command -v nvidia-smi >/dev/null 2>&1; then nvidia-smi --query-gpu=name --format=csv,noheader || true; fi

@@ -1,0 +1,105 @@
+{
+  "additional_cleanup_or_platform_investigation_after_stop": false,
+  "additional_main_or_conditional_deletion_performed": false,
+  "attribution": "Unresolved. The pinned driver and recorded command restore to the package root, not the staging directory. No matching task-owned writer was observed. These observations do not establish which actor or persistence mechanism made the directory reappear.",
+  "cleanup_persistence": "The cleanup receipt proves the within-process operation and its checks. It does not prove persistent reclamation across exec calls; the later directory reappearance is retained as contrary evidence.",
+  "conditional_job_files_deleted": 0,
+  "disk_interpretation": "f_bavail=0 coexisted with positive f_bfree. Availability alone is not treated as an experimental IO failure. Root reported the new 18-job diagnostic completed without IO failures or retries.",
+  "final_integrity_check": {
+    "all_original_main_members_present_and_size_sha256_match": 6443,
+    "archive.py_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+    "archive_tests.py_sha256": "f7cb0d0f9ac6528fc0c45c5b023a56e42b852dc6831874c1198058e018fa3700",
+    "archive_verification_remains_supported": true,
+    "archives": {
+      "auxiliary_evidence": {
+        "all_part_sizes_and_sha256_match": true,
+        "archive_sha256": "f30f7c22a2de8d37ed4e8f704fb3fd815719e64ec1fcdba6872c07e8ad545259",
+        "manifest_sha256": "d84c5eff167f64a412c4f5c77a10bac393b14c3c8c2f52b37c09c89dfce41193",
+        "members_declared": 14162,
+        "parts_verified": 10
+      },
+      "conditional001_evidence": {
+        "all_part_sizes_and_sha256_match": true,
+        "archive_sha256": "0c1d90c87908ce20ba8c454073609cd61415397db67f62603d428bb33ec26463",
+        "manifest_sha256": "81e8d9a5f2e4e8ecc6a9bda1d9a83311041839b0e15aefc0c7092928e46511ac",
+        "members_declared": 397,
+        "parts_verified": 2
+      },
+      "original_data": {
+        "all_part_sizes_and_sha256_match": true,
+        "archive_sha256": "f4bcd860f74a82210c9ed4489af30a5cc5d5cb52864d0e9b311a5cb183bc8dfd",
+        "manifest_sha256": "5d27742563e7fbf44f49642e21231b24416770489c3f22bbd30a8111ed64e3b0",
+        "members_declared": 605,
+        "parts_verified": 15
+      },
+      "study001_evidence": {
+        "all_part_sizes_and_sha256_match": true,
+        "archive_sha256": "7af65ff5c812bd0ab545c881608b4e4415be04a586ed3bda866bcc9669727d14",
+        "manifest_sha256": "7ec65c21984c53cc755821d4f44ab8240a41bc17b7d1fffaf3d45bc677b107f7",
+        "members_declared": 6443,
+        "parts_verified": 36
+      }
+    },
+    "main_archive_report_sha256": "81f42a056949987ecb84a762feb5d5dd53ebd05f5cd2720bf293ec4fb9e11ece",
+    "main_archived_report_sha256": "fa213f83487703926fb73313ab7ca9ac021f5f8f9f07bac06daa70d31553a40c",
+    "original_frozen_source_files_match": 38
+  },
+  "investigation_completed_before_stop": {
+    "driver_sha256_matches_original_execution_receipt": true,
+    "matching_visible_task_processes": [],
+    "processes_stopped": [],
+    "recorded_restore_destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1",
+    "recorded_restore_target_is_stage": false
+  },
+  "observations_in_order": [
+    {
+      "pack_and_restore_exit_codes": [
+        0,
+        0
+      ],
+      "source": "successful main archive driver receipt",
+      "stage_removal_reported": true
+    },
+    {
+      "regular_stage_files_observed": 3976,
+      "sample_original_inode": 1319942,
+      "sample_stage_inode": 1504859,
+      "sample_stage_nlink": 1,
+      "source": "later independent exec inspection before cleanup",
+      "stage_directory_existed": true
+    },
+    {
+      "deleted_logical_bytes": 239782626,
+      "disk_after": {
+        "available_bytes": 0,
+        "block_bytes": 4096,
+        "raw_free_bytes": 1614618624
+      },
+      "disk_before": {
+        "available_bytes": 0,
+        "block_bytes": 4096,
+        "raw_free_bytes": 1360220160
+      },
+      "independent_inode_count": 3976,
+      "source": "explicit cleanup execution and preserved cleanup receipt",
+      "stage_absent_within_cleanup_process": true,
+      "verified_deleted_files": 3976
+    },
+    {
+      "available_bytes": 0,
+      "directory_contents_not_reenumerated_or_rehashed_in_that_check": true,
+      "raw_free_bytes": 1358245888,
+      "source": "next independent exec output after cleanup",
+      "stage_directory_existed_again": true
+    }
+  ],
+  "original_main_updates_or_checkpoints_deleted": 0,
+  "prior_receipts_preserved": {
+    "archive_verification_sha256": "82332c049c06e1327629d99095d466a6b75b653ede904de2048796676acac2af",
+    "cleanup_receipt_sha256": "51860dcca2df9b80a6e9f56418768368eadcc0b6fc2cb38d40579a3fa040c0cc"
+  },
+  "record_created_utc": "2026-10-29T15:21:24.220133+00:00",
+  "schema": "hcsn-study001-stage-cross-exec-review.v1",
+  "scope": "Follow-up evidence only; no prior operation receipt or scientific result is rewritten. No further deletion or platform diagnosis after the root stop instruction.",
+  "status": "archive_integrity_passed_cleanup_persistence_not_established"
+}

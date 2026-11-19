@@ -1,0 +1,179 @@
+{
+  "schema": "hepta.service-root01.safe-static-token-plan.v3",
+  "status": "prepared_design_only_not_dispatched",
+  "purpose": "Classify a bounded set of literal slots in the same previously observed script against fixed public test/program vocabularies, without executing it, printing unknown values or reading referenced paths.",
+  "prior_evidence": {
+    "shape_commit": "b9ff8db50214587c35a8080a22b3a553a30941e5",
+    "shape_result_blob": "24ea024bbcb7bc8d13ab6b9bd56a3fadc198c91f",
+    "shape_result_bytes": 22348,
+    "prior_inspector_blob": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+    "prior_inspector_contract_blob": "f2704db8cdcaf2ef2b6c80b3e5fa51d7dd2a3ad3",
+    "prior_frozen_request_blob": "ece6b9a4bda6c2a95dc02dfe40146a354c26b91e",
+    "prior_request_key": "learn-ce434-existing-launcher-shape-readonly-v2",
+    "prior_request_unchanged": true
+  },
+  "only_target": {
+    "path": "/data/hepta-service-root-01.py",
+    "sha256": "9919f15ae0ba3c58fa1630345b51adb566fc1ba18914c0d0051e50075246ef77",
+    "size_bytes": 1379,
+    "device": 2067,
+    "inode": 83,
+    "nlink": 1,
+    "mode": "0o664",
+    "mtime_ns_decimal": "1792775306676468050",
+    "ctime_ns_decimal": "1792775306676468050",
+    "max_bytes": 65536,
+    "retained_read_guards": [
+      "No symlink; lstat regular file; nlink 1.",
+      "Open read-only with the previous NOFOLLOW/CLOEXEC/NONBLOCK flags.",
+      "Before/opened/after inode, device, size, mtime, ctime and mode comparison.",
+      "Full exact expected size and SHA-256 before parsing.",
+      "Strict UTF-8 plus warnings-as-errors ast.parse; only fixed failure enums/type and source position, never exception messages/source lines.",
+      "No target import, eval, exec, runpy, subprocess, referenced path access or filesystem traversal."
+    ]
+  },
+  "allowed_ast_scope": {
+    "binary_assignment": {
+      "name": "binary",
+      "line": 7,
+      "shape": "One top-level Assign, one Name target, value pathlib.Path with exactly one str Constant and zero keywords."
+    },
+    "command_assignment": {
+      "name": "cmd",
+      "line": 8,
+      "shape": "One top-level Assign, one Name target, value ast.List of exactly 10 slots, no unpacking."
+    },
+    "command_use": {
+      "line": 10,
+      "shape": "The observed subprocess.run call takes the same syntactic cmd Name as its first positional argument."
+    },
+    "binding_checks": "Only fixed identifiers binary/cmd/pathlib/subprocess/str may be checked for ambiguous or intervening rebinding. No arbitrary symbol names or dataflow values are emitted.",
+    "line7_path_output": "Only static_absolute_literal_omitted, static_relative_literal_omitted or unknown_expression_omitted. No basename, directory, components, length, prefix, hash, exists/resolve/stat/read or inferred owner/service name.",
+    "line8_output": "Exactly 10 ordered entries containing slot index and one fixed classification enum. Known frozen-case matches may add a 1-based case ordinal. Never output source-derived token text.",
+    "other_nodes": "No string-constant values outside the fixed line7 argument and the direct 10 line8 slots are read for this classification. No environment dictionaries, formatting, concatenation, Name resolution or unknown callee arguments are inspected."
+  },
+  "fixed_command_literal_dictionary": {
+    "command_head_only": {
+      "sudo": "head_sudo",
+      "/usr/bin/sudo": "head_absolute_sudo",
+      "env": "head_env",
+      "/usr/bin/env": "head_absolute_env"
+    },
+    "other_known_wrapper_literals": {
+      "sudo": "wrapper_sudo",
+      "/usr/bin/sudo": "wrapper_absolute_sudo",
+      "env": "wrapper_env",
+      "/usr/bin/env": "wrapper_absolute_env"
+    },
+    "flags": {
+      "-n": "flag_noninteractive",
+      "-i": "flag_empty_environment",
+      "--exact": "flag_exact",
+      "--nocapture": "flag_nocapture",
+      "--test-threads=1": "flag_one_test_thread"
+    },
+    "interpretation_limit": "These enum labels identify exact literals only. Position alone does not prove argument parsing, actual binary identity, successful execution or effective privilege."
+  },
+  "frozen_test_dictionary": {
+    "blob": "5553a141941861e63f50204904c1c28bc20def16",
+    "bytes": 5017,
+    "schema": "hepta.original-ci-root-parents.v2",
+    "source_commit": "fde0086022ab2d877ef7d8aae19e07ad17a8593f",
+    "source_workflow": {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "exact_original_parent_count": 29
+    },
+    "count": 29,
+    "comparison": "Exact whole-string equality to the existing parents array; no substring, case folding, normalization, unescaping beyond ordinary ast.Constant parsing, regex, shortened names or fuzzy search.",
+    "output": "root29_case_match plus the original list's stable 1-based ordinal; never an unrecognized argument value.",
+    "source_order_preserved": true
+  },
+  "fixed_expression_dictionary": {
+    "binary_reference": "Only ast.Call(func=Name('str'), args=[Name('binary')], keywords=[]) at a direct cmd slot with the required line7 assignment. Emit pinned_binary_reference_syntax. No evaluation.",
+    "otherwise": "unknown_expression_omitted"
+  },
+  "unknown_literal_policy": {
+    "output": "unknown_literal_omitted",
+    "excluded_outputs": [
+      "Literal value or repr",
+      "Unknown token or environment-variable name",
+      "Path or path components",
+      "Value lengths or fingerprints",
+      "Exception text",
+      "ast.dump or ast.unparse",
+      "String prefixes/suffixes",
+      "Shell/env expansion or interpolated result"
+    ],
+    "env_policy": "Environment assignments are not parsed into names or values and receive the same unknown-literal enum unless they exactly equal one of the predeclared non-environment tokens."
+  },
+  "assessment": {
+    "selector_condition": "One direct pinned_binary_reference_syntax slot precedes exactly one exact original Root29 case match, and a known --exact flag occurs after that binary-reference slot.",
+    "selector_positive": "static_original_root29_selector_declared",
+    "selector_positive_meaning": "This source declares a reference to binary followed by a known original CI test selection. This is bounded syntax evidence for test intent only.",
+    "selector_negative": "unknown_static_purpose",
+    "selector_negative_meaning": "No qualifying frozen selector was found. This does not prove that the file is unrelated, non-fixture, ordinary production, absent or unauthorized.",
+    "full_command_semantics_proven": false,
+    "referenced_binary_identity_proven": false,
+    "original_owner_custody_proven": false,
+    "ordinary_execution_authority_proven": false,
+    "current_runtime_instance_observed": false,
+    "missing_or_ambiguous_shape": "Return fixed shape_mismatch/ambiguous_binding status and unknown purpose; do not broaden the parser or read more files."
+  },
+  "preparation_checks": [
+    "Preserve the seven original safe read/identity helpers and warning-safe parser except only the necessary projection change.",
+    "Assert the exact 29-name list, order and inventory blob while embedding the lookup table.",
+    "Use synthetic in-memory AST inputs only to cover allowed flags/case ordinal/binary-reference shape and unknown token redaction; these are inspector correctness checks, not H execution.",
+    "All expected source identity nanosecond values are copied as decimal strings or original exact Python integers; never use a JavaScript Number round-trip.",
+    "An eventual wrapper/request must use a new evidence path and independent key, after Root freezes it; v2 artifacts remain immutable."
+  ],
+  "static_negative_matrix": [
+    {
+      "input": "A different file hash, inode or before/after identity",
+      "required": "Reject before AST classification."
+    },
+    {
+      "input": "line8 list with 9 or 11 slots; a starred element; dynamic list construction",
+      "required": "Shape mismatch; do not expand."
+    },
+    {
+      "input": "Repeated or ambiguous binary/cmd assignment",
+      "required": "Ambiguous-binding unknown, no runtime inference."
+    },
+    {
+      "input": "Unknown command/path/env/argv literal including a secret-shaped value",
+      "required": "Only unknown_literal_omitted; no value, length, name, prefix or hash."
+    },
+    {
+      "input": "An almost-equal, prefixed, suffixed or shortened Root29 case name",
+      "required": "No Root29 match."
+    },
+    {
+      "input": "A known case literal outside the direct line8 list",
+      "required": "Ignored, no search of arbitrary source strings."
+    },
+    {
+      "input": "A known case and --exact without direct str(binary) linkage",
+      "required": "No declared-selector assessment."
+    },
+    {
+      "input": "An unknown expression using binary indirectly or through formatting/concatenation",
+      "required": "unknown_expression_omitted; no expression evaluation."
+    },
+    {
+      "input": "A syntax warning or parser error",
+      "required": "Warning-as-error path with safe error category/position only."
+    },
+    {
+      "input": "Successful enum match",
+      "required": "No target or referenced-file execution and no authority/runtime/ordinary acceptance claim."
+    }
+  ],
+  "execution": {
+    "h_queries": 0,
+    "h_mutations": 0,
+    "target_reads_by_this_design": 0,
+    "rust_tests": 0,
+    "ordinary_acceptance": 0
+  }
+}

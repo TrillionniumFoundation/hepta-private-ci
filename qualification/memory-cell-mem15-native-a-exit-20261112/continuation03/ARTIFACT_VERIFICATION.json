@@ -1,0 +1,680 @@
+{
+  "schema": "hepta.mem15.continuation03-artifact-verification.v1",
+  "archive": {
+    "file": "capture-bbbcc630-03.tar.xz",
+    "bytes": 83100,
+    "sha256": "147bd82bd791c0df8376fc14678a892313de3403884b54be2c176f112917beac",
+    "version": "66306:46185619:83100:1794479019197178126:1794479019197178126",
+    "complete": true,
+    "chunks": [
+      {
+        "offset": 0,
+        "bytes": 65536,
+        "sha256": "fa1f0707b795c1c9b506d957c751581e962159128213eb560f5cac18f4000899",
+        "version": "66306:46185619:83100:1794479019197178126:1794479019197178126",
+        "eof": false,
+        "original_sdk_response": {
+          "bytes": 87809,
+          "sha256": "ffc0d3af847e0fd6977a1e47bcc2167248ff845dc9d392f5b0c4b5be47f375fc"
+        }
+      },
+      {
+        "offset": 65536,
+        "bytes": 17564,
+        "sha256": "2a6ba20c5420341b72dfd19be55d60f489c1d0828e5d1a68b4f8dc5c2ced5200",
+        "version": "66306:46185619:83100:1794479019197178126:1794479019197178126",
+        "eof": true,
+        "original_sdk_response": {
+          "bytes": 23848,
+          "sha256": "b3b6be967e161c3ebc825680cbee3fb3c5a4297b8178b9f130f98ed63f148916"
+        }
+      }
+    ]
+  },
+  "sdk_basis": "Complete direct h responses retained as returned and serialized locally; all decoded remote file and chunk bytes verified against returned and published hashes.",
+  "tar_safety": {
+    "members": 244,
+    "regular_files": 244,
+    "unsafe_paths": 0,
+    "links": 0,
+    "special_files": 0,
+    "duplicates": 0
+  },
+  "original_member_manifest": {
+    "file": "extracted/MEMBER_MANIFEST.json",
+    "bytes": 31319,
+    "sha256": "0cc210352a0275db21270a6ea696418cf0ef7d64a3364a992f1ff63d5b809581",
+    "entries": 243,
+    "covers_all_other_regular_files": true,
+    "all_hashes_verified": true
+  },
+  "result": {
+    "file": "RESULT.json",
+    "bytes": 47948,
+    "sha256": "e67f4e4220995704db06f27d86743021e4fa4308b6daf4cb6b150312fcffa6ca",
+    "status": "capture_controls_passed",
+    "original_bytes_unchanged": true
+  },
+  "authoritative_job_id": null,
+  "authoritative_terminal": "UNKNOWN_PENDING_SEPARATE_IDENTITY_AND_TERMINAL_READBACK",
+  "source": {
+    "commit": "bbbcc63003a88d0396a9694222dc98dc8c0d59d6",
+    "tree": "fe00b2618f39e942ec6b1a8af2d63ec585e5f892",
+    "codex_rs_tree": "ed240f298fa2cbb104c65054596e64e7d1e9bca8",
+    "before_after_clean": true,
+    "source_unchanged_recorded": true,
+    "rewrite_patch_bytes": 0,
+    "recorded_postimage_pins_match_prior_verified_source_files": 14,
+    "postimage_bytes_not_repeated_in_this_archive": true
+  },
+  "recorded_binaries_unchanged": true,
+  "binary_basis": "Original before/after pins, unchanged from prior attempt; binary files themselves were not downloaded.",
+  "controls": {
+    "reused_prior_passed": 3,
+    "executed_here": 0,
+    "prior_result_terminal_junit_receipt_log_bytes_verified": true
+  },
+  "capture_junit": [
+    {
+      "arm": "attach",
+      "uuid": "5239fd90-a73d-4bb5-a489-fac393ff70c0",
+      "previous_uuid": "9a4f0210-0ea9-4961-b361-91cc0e2ca9cf",
+      "junit": {
+        "bytes": 549,
+        "sha256": "11e95e3912ed2aa75199244e8e38a68dbea9e4bb37f8ba4b1fe2a8bdcadd6b9c"
+      },
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "uuid_in_original_log": true,
+      "case_time_and_duration_within_original_receipt": true,
+      "source_bound_by_receipt": true
+    },
+    {
+      "arm": "reader-off",
+      "uuid": "116f69d5-c803-46d6-aac1-71793af3db4d",
+      "previous_uuid": "5239fd90-a73d-4bb5-a489-fac393ff70c0",
+      "junit": {
+        "bytes": 549,
+        "sha256": "3e62e96e2be44c560c5469794b73e5b9ac4db615ed598e009256470e2d93b050"
+      },
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "uuid_in_original_log": true,
+      "case_time_and_duration_within_original_receipt": true,
+      "source_bound_by_receipt": true
+    },
+    {
+      "arm": "withhold",
+      "uuid": "e00a4469-1213-45e6-8890-389841e2f825",
+      "previous_uuid": "116f69d5-c803-46d6-aac1-71793af3db4d",
+      "junit": {
+        "bytes": 549,
+        "sha256": "90090e9e034640732f143ab26b4f7ff38339294baf1ba55378186507e4f63112"
+      },
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "uuid_in_original_log": true,
+      "case_time_and_duration_within_original_receipt": true,
+      "source_bound_by_receipt": true
+    },
+    {
+      "arm": "tombstone",
+      "uuid": "ad67256e-e81a-4602-987f-0c351dd8363e",
+      "previous_uuid": "e00a4469-1213-45e6-8890-389841e2f825",
+      "junit": {
+        "bytes": 549,
+        "sha256": "6cb6eb43c434a37c2d0782eabe276476fe6ee07faf6f82bd8fa30b503db8d7f8"
+      },
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "uuid_in_original_log": true,
+      "case_time_and_duration_within_original_receipt": true,
+      "source_bound_by_receipt": true
+    }
+  ],
+  "capture_tests_passed": 4,
+  "phase_receipts": [
+    {
+      "phase": "worker-metadata-through-shell",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 2221,
+        "sha256": "7a6c8862a5728e4718a4fe0d61549e71037d7f505b94d4de5b19e73ea1034c8f"
+      },
+      "log": {
+        "bytes": 407,
+        "sha256": "82ec2489b9cfa5b1009760163debbf88a43183daa52493d580b88ad4df975ccd"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "attach-prepare",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1881,
+        "sha256": "de63564e351887a376b164dae10cab8155f33944ef22913b82a512307dc2198a"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "49e11bacb871af53c3376192fe63196089d3b3765ea3c2b9f91cafcba5cd47c5"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "attach-capture",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1704,
+        "sha256": "43f3546404778465afea9ce0e7424467dd6c75205cb37c0c7f0a4b2b0e537c31"
+      },
+      "log": {
+        "bytes": 31710,
+        "sha256": "1b4d97fe9f65be7c424004f53d3dda633d7b18be4e5355dfc927ce04102f9ff4"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "reader-off-prepare",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1893,
+        "sha256": "c46418861a247dc184bb91321b3a30ea24b8e0a2fe01bce25f9e4d3628f50607"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "febb7981b8654680c14ecbbf9961ec246b3ff8fac472cb512f94d59847d80454"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "reader-off-capture",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1708,
+        "sha256": "2db45336d0b6a985f2ca1994d1954c027fb2632c354b5769bef431cf27b8d997"
+      },
+      "log": {
+        "bytes": 31710,
+        "sha256": "774923ec96302e9b0ad5d75e855695ef2ddaab7ac81aee49626491018635a5c3"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "withhold-prepare",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1887,
+        "sha256": "7397fbb7a1bcd0396c48b5454351e04765f668250ae9a9ff1b581e6410fc0c21"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "057500fef74e8596b124bce64d407e18b3163359bbc73590094c6dd85657da90"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "withhold-capture",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1705,
+        "sha256": "019ead92e94211185befb4654fa050060cd2d2a277816b7d4e266bf800c57ab7"
+      },
+      "log": {
+        "bytes": 31710,
+        "sha256": "3ccc38e1e935857ec1e22d4766df73653643ce2e14161e7d5f3b0c32892b45d3"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "tombstone-prepare",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1889,
+        "sha256": "6b18e1e3422b0393f3d2b4bdf6606c878fb98b4601d78287836cc7148a06b26c"
+      },
+      "log": {
+        "bytes": 117,
+        "sha256": "aec725ad462f2862b9a3a488fc6489a6a340fbbe23647225643deb4ad2862b88"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "tombstone-capture",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1707,
+        "sha256": "4211df7a448ff2f4bdc3e8832775b482c3fc01a1531323498e277c4e494c2d0a"
+      },
+      "log": {
+        "bytes": 31710,
+        "sha256": "15fc1c3eda766bf70cd97863ef38caf4af301061ac59bb14b71d0350bd093e32"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "attach-token-only",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1862,
+        "sha256": "640f5196cab28726449a4fe8b09757d485eb5eb994550773b46c2183d717d6e8"
+      },
+      "log": {
+        "bytes": 347,
+        "sha256": "5ffea692ee772360cc1b2e1f6fea655164f6e2149dc73b97855b395f4ba0c745"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "reader-off-token-only",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1874,
+        "sha256": "86dffd72498ec6e868aaa8a92503ab1aca59ef1f564d3c208681ae4f2144e773"
+      },
+      "log": {
+        "bytes": 347,
+        "sha256": "f28108e562f6f7d3fc5633464231aeb08201f3f7811e45266a685a84f7d7ddca"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "withhold-token-only",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1867,
+        "sha256": "e207598a7163cb3369342080a5607b74ae77f3f3d6b0b0cfa677e72aa1f66003"
+      },
+      "log": {
+        "bytes": 347,
+        "sha256": "7deea66af8b11b10e2326c74336066a840218f94f67cd72af82f7b97fff7d164"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "scoped-fix",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1531,
+        "sha256": "13c7611cf35db693431b8f1fafa084cce16a4d730d74b36e52b9d0189049cb69"
+      },
+      "log": {
+        "bytes": 16877,
+        "sha256": "8093ac8a62becafdda7f9d781fa959ffdbe26f83394a73f9bc68c959cff564f0"
+      },
+      "clean_source_binding": true
+    },
+    {
+      "phase": "final-format",
+      "exit_code": 0,
+      "receipt": {
+        "bytes": 1493,
+        "sha256": "66634b8b80a4e61ec4e80d4523b0d465800ab999eadfb8597573fe8aef4258eb"
+      },
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "clean_source_binding": true
+    }
+  ],
+  "arms": [
+    {
+      "arm": "attach",
+      "request_id": "mem15-bbbcc630-attach-ef0c-v1",
+      "source_reads_before": 2,
+      "source_reads_after": 6,
+      "source_read_delta": 4,
+      "nonce": "b72ca65a867b8de1575ef708a20b0681",
+      "native_result": {
+        "bytes": 6298,
+        "sha256": "c63d56342efbdc7265826e81792b5eb6fcd83ac701812dee78a9ff8a2ed51e7f"
+      },
+      "original_native_model_and_provider_counts_remain_null": true,
+      "listener_started": {
+        "pid": 296500,
+        "started_unix_ns": 1794478808584195138
+      },
+      "listener_exit": {
+        "exit_code": 0,
+        "finished_unix_ns": 1794478826338744239,
+        "pid": 296500,
+        "timed_out": false
+      },
+      "listener_window_seconds": 16.431766891,
+      "observer_authenticated": false,
+      "C_namespace_isolated": false,
+      "physical_native_http_count": 1,
+      "capture_side_model_generation_count": 0,
+      "model_zero_basis": "Original OBSERVED.json CAPTURED_WITHOUT_GENERATION with physical_model_calls=0, capture ATTEMPT/PLAN, and retained 409 response.",
+      "nonce_in_http_body": true,
+      "native_http": {
+        "bytes": 28614,
+        "sha256": "f67e0112be20513cb28b3eb087ace1e37372ae0b591e1bf2160b49352dcdf214"
+      },
+      "native_body": {
+        "bytes": 27461,
+        "sha256": "51a259dd5f3b3b310cece42be41ffe460ac2df699b176272a617ab61f10ed65d"
+      },
+      "mapped_request": {
+        "bytes": 28527,
+        "sha256": "121dc2b444656b3707f366f8455b52bcf91ae8d9418062891178507496cf8b0d"
+      },
+      "capture_response": {
+        "bytes": 155,
+        "sha256": "998370e96e7a8c7b8c131a79c79b967d425579f749c9e33bc3b497bf99416dfd"
+      },
+      "mapping_exact_utf8": true,
+      "discarded_fields": [],
+      "native_role_semantics_preserved": false,
+      "body_fields": [
+        "client_metadata",
+        "include",
+        "input",
+        "instructions",
+        "model",
+        "parallel_tool_calls",
+        "prompt_cache_key",
+        "reasoning",
+        "store",
+        "stream",
+        "tool_choice",
+        "tools"
+      ],
+      "observed": {
+        "bytes": 688,
+        "sha256": "40ac393702ef647d9840453c24b881e59c87e49c070237d221059048b38bf2dd"
+      }
+    },
+    {
+      "arm": "reader-off",
+      "request_id": "mem15-bbbcc630-reader-off-ef0c-v1",
+      "source_reads_before": 2,
+      "source_reads_after": 2,
+      "source_read_delta": 0,
+      "nonce": "d6a6c5377cd73841a212fe3f4aeca80e",
+      "native_result": {
+        "bytes": 6244,
+        "sha256": "44aeef5efc3ec92f53551af883ca55e6591c1150426d6f699176b141d226a8be"
+      },
+      "original_native_model_and_provider_counts_remain_null": true,
+      "listener_started": {
+        "pid": 297441,
+        "started_unix_ns": 1794478826512873554
+      },
+      "listener_exit": {
+        "exit_code": 0,
+        "finished_unix_ns": 1794478844097505493,
+        "pid": 297441,
+        "timed_out": false
+      },
+      "listener_window_seconds": 16.268825645,
+      "observer_authenticated": false,
+      "C_namespace_isolated": false,
+      "physical_native_http_count": 1,
+      "capture_side_model_generation_count": 0,
+      "model_zero_basis": "Original OBSERVED.json CAPTURED_WITHOUT_GENERATION with physical_model_calls=0, capture ATTEMPT/PLAN, and retained 409 response.",
+      "nonce_in_http_body": false,
+      "native_http": {
+        "bytes": 27729,
+        "sha256": "7fea9f075bb29077e762f0714196499c3764a1d7a56e84c934d868c632dd99ad"
+      },
+      "native_body": {
+        "bytes": 26576,
+        "sha256": "0caa5271bfbda34be46cfd243ef4c782e6d5440c384a3c32312ef0e8b46b4e84"
+      },
+      "mapped_request": {
+        "bytes": 27544,
+        "sha256": "3c01b1ae74cb5b7bf1e5fd05ff9fa41a92a88124cca94514b5018f858fbb2453"
+      },
+      "capture_response": {
+        "bytes": 155,
+        "sha256": "998370e96e7a8c7b8c131a79c79b967d425579f749c9e33bc3b497bf99416dfd"
+      },
+      "mapping_exact_utf8": true,
+      "discarded_fields": [],
+      "native_role_semantics_preserved": false,
+      "body_fields": [
+        "client_metadata",
+        "include",
+        "input",
+        "instructions",
+        "model",
+        "parallel_tool_calls",
+        "prompt_cache_key",
+        "reasoning",
+        "store",
+        "stream",
+        "tool_choice",
+        "tools"
+      ],
+      "observed": {
+        "bytes": 688,
+        "sha256": "5204a91a315d44a67bf3cf41e8b8e456885876e98dbc25f29509c0f2432ab4a6"
+      }
+    },
+    {
+      "arm": "withhold",
+      "request_id": "mem15-bbbcc630-withhold-ef0c-v1",
+      "source_reads_before": 2,
+      "source_reads_after": 6,
+      "source_read_delta": 4,
+      "nonce": "fd6b92cc8be48f2998df2956a83671d6",
+      "native_result": {
+        "bytes": 6419,
+        "sha256": "1e2dd7b32e2fe5ba7129400c6300f1aee9bba52c6c0e01ddc70004a6ecc92b79"
+      },
+      "original_native_model_and_provider_counts_remain_null": true,
+      "listener_started": {
+        "pid": 297983,
+        "started_unix_ns": 1794478844263339719
+      },
+      "listener_exit": {
+        "exit_code": 0,
+        "finished_unix_ns": 1794478861906842579,
+        "pid": 297983,
+        "timed_out": false
+      },
+      "listener_window_seconds": 16.323056081,
+      "observer_authenticated": false,
+      "C_namespace_isolated": false,
+      "physical_native_http_count": 1,
+      "capture_side_model_generation_count": 0,
+      "model_zero_basis": "Original OBSERVED.json CAPTURED_WITHOUT_GENERATION with physical_model_calls=0, capture ATTEMPT/PLAN, and retained 409 response.",
+      "nonce_in_http_body": false,
+      "native_http": {
+        "bytes": 27729,
+        "sha256": "fd7d4c65b11910df158346b3a374674248d2038fb8ba6445aa15caa030597c4f"
+      },
+      "native_body": {
+        "bytes": 26576,
+        "sha256": "1d2040122f59fc4068d0b17b3193d22f329d4b38e384e047575cbfe27bce3089"
+      },
+      "mapped_request": {
+        "bytes": 27544,
+        "sha256": "e9a79b8a4f7fb979a90b27224d0c52cecc67abf66cb7d1125bc8e429bb4808a0"
+      },
+      "capture_response": {
+        "bytes": 155,
+        "sha256": "998370e96e7a8c7b8c131a79c79b967d425579f749c9e33bc3b497bf99416dfd"
+      },
+      "mapping_exact_utf8": true,
+      "discarded_fields": [],
+      "native_role_semantics_preserved": false,
+      "body_fields": [
+        "client_metadata",
+        "include",
+        "input",
+        "instructions",
+        "model",
+        "parallel_tool_calls",
+        "prompt_cache_key",
+        "reasoning",
+        "store",
+        "stream",
+        "tool_choice",
+        "tools"
+      ],
+      "observed": {
+        "bytes": 688,
+        "sha256": "70760282d1d12753ddcd50933cf688cf00fefd0330298812ba5806b656842153"
+      }
+    },
+    {
+      "arm": "tombstone",
+      "request_id": "mem15-bbbcc630-tombstone-ef0c-v1",
+      "source_reads_before": 4,
+      "source_reads_after": 7,
+      "source_read_delta": 3,
+      "nonce": "e95cfcece563f6c3362672726e4bc717",
+      "native_result": {
+        "bytes": 5713,
+        "sha256": "ec1972401f7ca8799a93e2895f9ac22980676a4ac2ba546b75eb4b6349eb95dc"
+      },
+      "original_native_model_and_provider_counts_remain_null": true,
+      "listener_started": {
+        "pid": 298505,
+        "started_unix_ns": 1794478862071620079
+      },
+      "listener_exit": {
+        "exit_code": 0,
+        "finished_unix_ns": 1794478982228451486,
+        "pid": 298505,
+        "timed_out": false
+      },
+      "listener_window_seconds": 120.093767174,
+      "observer_authenticated": false,
+      "C_namespace_isolated": false,
+      "physical_native_http_count": 0,
+      "capture_side_model_generation_count": 0,
+      "zero_http_basis": "Full >=120-second listener window, native revocation rejection, no ATTEMPT/http/provider-request artifacts; process review checks AbortBeforeEffect journal.",
+      "native_revocation_rejected": true,
+      "nonce_in_http_body": null
+    }
+  ],
+  "reader_off_vs_withhold": {
+    "left": {
+      "bytes": 26576,
+      "sha256": "0caa5271bfbda34be46cfd243ef4c782e6d5440c384a3c32312ef0e8b46b4e84"
+    },
+    "right": {
+      "bytes": 26576,
+      "sha256": "1d2040122f59fc4068d0b17b3193d22f329d4b38e384e047575cbfe27bce3089"
+    },
+    "raw_body_equal": false,
+    "parsed_json_equal": false,
+    "differing_top_level_fields": [
+      "client_metadata",
+      "input",
+      "prompt_cache_key"
+    ],
+    "normalization_or_dynamic_field_removal": false
+  },
+  "token_only_preflight": {
+    "entries": [
+      {
+        "arm": "attach",
+        "original_output": {
+          "bytes": 76400,
+          "sha256": "26159508d5cf382555bd1cebd4da9da84e1fd48e784fdd3f495734ec7e1f7cce"
+        },
+        "request": {
+          "bytes": 28527,
+          "sha256": "121dc2b444656b3707f366f8455b52bcf91ae8d9418062891178507496cf8b0d"
+        },
+        "worker_script": {
+          "bytes": 1376,
+          "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+        },
+        "prompt_tokens": 7565,
+        "input_limit": 1024,
+        "status": "REJECTED_INPUT_TOKEN_BUDGET",
+        "budget_admitted": false,
+        "retained_tensor_lengths_match_count": true,
+        "rendered_user_content_matches_original_mapped_input": true,
+        "truncation": false,
+        "model_weights_loaded": false,
+        "model_generation_count": 0,
+        "interpretation": "Post-capture tokenizer-only preflight; not generation-entry evidence and not a budget pass."
+      },
+      {
+        "arm": "reader-off",
+        "original_output": {
+          "bytes": 72216,
+          "sha256": "486f9c3e59fe198f9d532c54fd03b215a15f221c80555aea64cc3f00f5dc7c30"
+        },
+        "request": {
+          "bytes": 27544,
+          "sha256": "3c01b1ae74cb5b7bf1e5fd05ff9fa41a92a88124cca94514b5018f858fbb2453"
+        },
+        "worker_script": {
+          "bytes": 1376,
+          "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+        },
+        "prompt_tokens": 7007,
+        "input_limit": 1024,
+        "status": "REJECTED_INPUT_TOKEN_BUDGET",
+        "budget_admitted": false,
+        "retained_tensor_lengths_match_count": true,
+        "rendered_user_content_matches_original_mapped_input": true,
+        "truncation": false,
+        "model_weights_loaded": false,
+        "model_generation_count": 0,
+        "interpretation": "Post-capture tokenizer-only preflight; not generation-entry evidence and not a budget pass."
+      },
+      {
+        "arm": "withhold",
+        "original_output": {
+          "bytes": 72284,
+          "sha256": "640ecb259ad68847ddca7ea32541ceeb0ebebfd7fa37ab52411ba3a871d0d798"
+        },
+        "request": {
+          "bytes": 27544,
+          "sha256": "e9a79b8a4f7fb979a90b27224d0c52cecc67abf66cb7d1125bc8e429bb4808a0"
+        },
+        "worker_script": {
+          "bytes": 1376,
+          "sha256": "97a2a0a2a63a5e15cbbc41a95fb1d8adbfbb6abdc8853fb694dfd2d9131a8a4e"
+        },
+        "prompt_tokens": 7029,
+        "input_limit": 1024,
+        "status": "REJECTED_INPUT_TOKEN_BUDGET",
+        "budget_admitted": false,
+        "retained_tensor_lengths_match_count": true,
+        "rendered_user_content_matches_original_mapped_input": true,
+        "truncation": false,
+        "model_weights_loaded": false,
+        "model_generation_count": 0,
+        "interpretation": "Post-capture tokenizer-only preflight; not generation-entry evidence and not a budget pass."
+      }
+    ],
+    "tombstone": "NOT_EXECUTED_NO_MAPPED_REQUEST",
+    "all_three_budget_rejected": true,
+    "original_complete_outputs_and_tensors_preserved": true,
+    "assets_and_runtime_recorded_pins_unchanged": true,
+    "tokenizer_was_not_rerun_by_recovery": true
+  },
+  "model_zero_basis": "Capture OBSERVED records and diagnostic 409 responses for three HTTP arms; full tombstone listener window plus native rejection for zero-HTTP arm. Token-only outputs are not used as generation-entry proof.",
+  "original_native_null_counts_preserved": true,
+  "physical_native_http_count": 3,
+  "capture_side_model_generation_count": 0,
+  "scored_memory_benefit_episodes": 0,
+  "observer_authenticated": false,
+  "C_namespace_isolated": false,
+  "full_memory_off_demonstrated": false,
+  "scientific_acceptance": "HOLD",
+  "scoped_fix_passed": true,
+  "final_format_passed": true,
+  "recovery_actions": {
+    "native_jobs_started": 0,
+    "reconcile_sent": 0,
+    "tests_or_controls_run": 0,
+    "tokenizer_runs": 0,
+    "model_calls_started": 0,
+    "code_changes": 0,
+    "git_publication": false
+  }
+}

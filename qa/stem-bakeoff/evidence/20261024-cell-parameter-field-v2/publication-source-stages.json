@@ -1,0 +1,375 @@
+{
+  "schema": "hepta.cell-retention-publication-source-stages.v2",
+  "stages": [
+    {
+      "stage": "p1",
+      "branch": "research/cell-field-v2-p1-protocol-20261024",
+      "commit": "996f7486cf74527fddc0def3144dd87ccdcbe76d",
+      "tree": "3562f339163e63dc3bb7cc4a54543bd5ebd5bdda"
+    },
+    {
+      "stage": "p2",
+      "branch": "research/cell-field-v2-p2-control-20261024",
+      "commit": "9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+      "tree": "57117b54da0feeedab6b80a3b030a81d0c84eb32"
+    },
+    {
+      "stage": "p3",
+      "branch": "research/cell-field-v2-p3-evaluation-20261024",
+      "commit": "6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+      "tree": "6f6c6d27d94c47cc099fdaf6332e413309fc8f8c"
+    },
+    {
+      "stage": "p4",
+      "branch": "research/cell-field-v2-p4-audit-20261024",
+      "commit": "50c03e1de7959cefe1afc914dc30cfdd526c544f",
+      "tree": "0fac11b238e01459d26c88a124d29407e7348934"
+    },
+    {
+      "stage": "p5",
+      "branch": "research/cell-field-v2-p5-source-recovery-20261024",
+      "commit": "76b318241491df615af47d1b06ee82059ba398d8",
+      "tree": "d28a1107ef87a47882e349570c51280684143924"
+    },
+    {
+      "stage": "p6",
+      "branch": "research/cell-field-v2-p6-runner-20261024",
+      "commit": "21d285b2e8c52662e1e7bb24ced930ccf0144a14",
+      "tree": "7b7c2376941c72d7340a5a961e64eb38b3e9218d"
+    }
+  ],
+  "prs": [
+    {
+      "stage": "p1",
+      "number": 3791,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3791",
+      "head": "research/cell-field-v2-p1-protocol-20261024",
+      "base": "research/cell-field-p7-evidence-20261024",
+      "source_commit": "996f7486cf74527fddc0def3144dd87ccdcbe76d"
+    },
+    {
+      "stage": "p2",
+      "number": 3792,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3792",
+      "head": "research/cell-field-v2-p2-control-20261024",
+      "base": "research/cell-field-v2-p1-protocol-20261024",
+      "source_commit": "9a6d30f8df66414765da612fcd93deaf9f6e5f39"
+    },
+    {
+      "stage": "p3",
+      "number": 3793,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3793",
+      "head": "research/cell-field-v2-p3-evaluation-20261024",
+      "base": "research/cell-field-v2-p2-control-20261024",
+      "source_commit": "6a71e4c8e1e8469c02736bb4adc344014dcd2064"
+    },
+    {
+      "stage": "p4",
+      "number": 3794,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3794",
+      "head": "research/cell-field-v2-p4-audit-20261024",
+      "base": "research/cell-field-v2-p3-evaluation-20261024",
+      "source_commit": "50c03e1de7959cefe1afc914dc30cfdd526c544f"
+    },
+    {
+      "stage": "p5",
+      "number": 3795,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3795",
+      "head": "research/cell-field-v2-p5-source-recovery-20261024",
+      "base": "research/cell-field-v2-p4-audit-20261024",
+      "source_commit": "76b318241491df615af47d1b06ee82059ba398d8"
+    },
+    {
+      "stage": "p6",
+      "number": 3796,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/3796",
+      "head": "research/cell-field-v2-p6-runner-20261024",
+      "base": "research/cell-field-v2-p5-source-recovery-20261024",
+      "source_commit": "21d285b2e8c52662e1e7bb24ced930ccf0144a14"
+    }
+  ],
+  "diffs": [
+    {
+      "stage": "p1",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "ff5baef731f36420370c5bcc049c50a567cda06a",
+      "head": "996f7486cf74527fddc0def3144dd87ccdcbe76d",
+      "status": "ahead",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "too_large": null,
+      "base_commit": {
+        "sha": "ff5baef731f36420370c5bcc049c50a567cda06a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/ff5baef731f36420370c5bcc049c50a567cda06a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ff5baef731f36420370c5bcc049c50a567cda06a"
+      },
+      "merge_base_commit": {
+        "sha": "ff5baef731f36420370c5bcc049c50a567cda06a",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/ff5baef731f36420370c5bcc049c50a567cda06a",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ff5baef731f36420370c5bcc049c50a567cda06a"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_data.py",
+          "status": "added",
+          "additions": 251,
+          "deletions": 0,
+          "changes": 251,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_protocol.json",
+          "status": "added",
+          "additions": 155,
+          "deletions": 0,
+          "changes": 155,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_data.py",
+          "status": "added",
+          "additions": 119,
+          "deletions": 0,
+          "changes": 119,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "stage": "p2",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "996f7486cf74527fddc0def3144dd87ccdcbe76d",
+      "head": "9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+      "status": "ahead",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "too_large": null,
+      "base_commit": {
+        "sha": "996f7486cf74527fddc0def3144dd87ccdcbe76d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/996f7486cf74527fddc0def3144dd87ccdcbe76d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/996f7486cf74527fddc0def3144dd87ccdcbe76d"
+      },
+      "merge_base_commit": {
+        "sha": "996f7486cf74527fddc0def3144dd87ccdcbe76d",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/996f7486cf74527fddc0def3144dd87ccdcbe76d",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/996f7486cf74527fddc0def3144dd87ccdcbe76d"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_control.py",
+          "status": "added",
+          "additions": 372,
+          "deletions": 0,
+          "changes": 372,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_control.py",
+          "status": "added",
+          "additions": 162,
+          "deletions": 0,
+          "changes": 162,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "stage": "p3",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+      "head": "6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+      "status": "ahead",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "too_large": null,
+      "base_commit": {
+        "sha": "9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9a6d30f8df66414765da612fcd93deaf9f6e5f39"
+      },
+      "merge_base_commit": {
+        "sha": "9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/9a6d30f8df66414765da612fcd93deaf9f6e5f39",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9a6d30f8df66414765da612fcd93deaf9f6e5f39"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_evaluate.py",
+          "status": "added",
+          "additions": 212,
+          "deletions": 0,
+          "changes": 212,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_evaluate.py",
+          "status": "added",
+          "additions": 179,
+          "deletions": 0,
+          "changes": 179,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "stage": "p4",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+      "head": "50c03e1de7959cefe1afc914dc30cfdd526c544f",
+      "status": "ahead",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "too_large": null,
+      "base_commit": {
+        "sha": "6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6a71e4c8e1e8469c02736bb4adc344014dcd2064"
+      },
+      "merge_base_commit": {
+        "sha": "6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/6a71e4c8e1e8469c02736bb4adc344014dcd2064",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6a71e4c8e1e8469c02736bb4adc344014dcd2064"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_audit.py",
+          "status": "added",
+          "additions": 270,
+          "deletions": 0,
+          "changes": 270,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_input_audit.py",
+          "status": "added",
+          "additions": 213,
+          "deletions": 0,
+          "changes": 213,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_score_audit.py",
+          "status": "added",
+          "additions": 190,
+          "deletions": 0,
+          "changes": 190,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_audit.py",
+          "status": "added",
+          "additions": 71,
+          "deletions": 0,
+          "changes": 71,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "stage": "p5",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "50c03e1de7959cefe1afc914dc30cfdd526c544f",
+      "head": "76b318241491df615af47d1b06ee82059ba398d8",
+      "status": "ahead",
+      "ahead_by": 1,
+      "behind_by": 0,
+      "total_commits": 1,
+      "too_large": null,
+      "base_commit": {
+        "sha": "50c03e1de7959cefe1afc914dc30cfdd526c544f",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/50c03e1de7959cefe1afc914dc30cfdd526c544f",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/50c03e1de7959cefe1afc914dc30cfdd526c544f"
+      },
+      "merge_base_commit": {
+        "sha": "50c03e1de7959cefe1afc914dc30cfdd526c544f",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/50c03e1de7959cefe1afc914dc30cfdd526c544f",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/50c03e1de7959cefe1afc914dc30cfdd526c544f"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_data.py",
+          "status": "modified",
+          "additions": 46,
+          "deletions": 10,
+          "changes": 56,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/cell_field_source_recovery.py",
+          "status": "added",
+          "additions": 72,
+          "deletions": 0,
+          "changes": 72,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_data.py",
+          "status": "modified",
+          "additions": 72,
+          "deletions": 2,
+          "changes": 74,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_input_audit.py",
+          "status": "added",
+          "additions": 93,
+          "deletions": 0,
+          "changes": 93,
+          "previous_filename": null
+        }
+      ]
+    },
+    {
+      "stage": "p6",
+      "repository_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "base": "76b318241491df615af47d1b06ee82059ba398d8",
+      "head": "21d285b2e8c52662e1e7bb24ced930ccf0144a14",
+      "status": "ahead",
+      "ahead_by": 2,
+      "behind_by": 0,
+      "total_commits": 2,
+      "too_large": null,
+      "base_commit": {
+        "sha": "76b318241491df615af47d1b06ee82059ba398d8",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/76b318241491df615af47d1b06ee82059ba398d8",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/76b318241491df615af47d1b06ee82059ba398d8"
+      },
+      "merge_base_commit": {
+        "sha": "76b318241491df615af47d1b06ee82059ba398d8",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/76b318241491df615af47d1b06ee82059ba398d8",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/76b318241491df615af47d1b06ee82059ba398d8"
+      },
+      "files": [
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_replay.py",
+          "status": "added",
+          "additions": 143,
+          "deletions": 0,
+          "changes": 143,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/cell_field_retention_run.py",
+          "status": "added",
+          "additions": 367,
+          "deletions": 0,
+          "changes": 367,
+          "previous_filename": null
+        },
+        {
+          "filename": "qa/stem-bakeoff/test_cell_field_retention_run.py",
+          "status": "added",
+          "additions": 75,
+          "deletions": 0,
+          "changes": 75,
+          "previous_filename": null
+        }
+      ]
+    }
+  ]
+}

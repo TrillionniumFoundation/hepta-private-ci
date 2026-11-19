@@ -1,7 +1,9 @@
 use codex_exec_server_protocol::JSONRPCErrorError;
+use std::sync::Arc;
 
 use crate::ExecServerRuntimePaths;
 use crate::local_process::LocalProcess;
+use crate::local_process::ProcessCustodyRegistry;
 use crate::protocol::ExecParams;
 use crate::protocol::ExecResponse;
 use crate::protocol::ReadParams;
@@ -25,9 +27,10 @@ impl ProcessHandler {
         notifications: RpcNotificationSender,
         telemetry: ExecServerTelemetry,
         runtime_paths: ExecServerRuntimePaths,
+        custody: Arc<ProcessCustodyRegistry>,
     ) -> Self {
         Self {
-            process: LocalProcess::new(notifications, telemetry, runtime_paths),
+            process: LocalProcess::new(notifications, telemetry, runtime_paths, custody),
         }
     }
 

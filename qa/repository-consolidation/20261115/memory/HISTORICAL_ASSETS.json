@@ -1,0 +1,610 @@
+{
+  "schema": "hepta.historical-git-assets.v1",
+  "git_object_format": "sha1",
+  "description": "Historical archive/receipt bytes are retained in an incoming parent of the ordinary Memory merge; branches can be retired without removing reachable history. Restore explicitly and offline into a new external directory.",
+  "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+  "file_count": 75,
+  "total_bytes": 351656533,
+  "files": [
+    {
+      "original_path": "qa/memory-budget-20261024/memory-budget-evidence-20261024.tar.gz.part-000",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "7c448ccc8c972d4d394a38f96d97b353baa1d1ba",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "9b96158bbe747965db1faf5f4e1809a0ff7fc37e86a7c9dc668d849ed3888891"
+    },
+    {
+      "original_path": "qa/memory-budget-20261024/memory-budget-evidence-20261024.tar.gz.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "ef993eda70262a5291248877dd59e3afc1fa458a",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "8828de7747e583b937321b6c27be26516b0c8d7c165863e79ef7e9133a0cc024"
+    },
+    {
+      "original_path": "qa/memory-budget-20261024/memory-budget-evidence-20261024.tar.gz.part-002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "3a48fba248914d5f059f0bbd0e5d5a75d60d54dd",
+      "mode": "100644",
+      "bytes": 2231658,
+      "sha256": "8c3f95050aa6f3accdadfe4ab172bd66c83d7c33a4c31b7e9c8101ce04eb309e"
+    },
+    {
+      "original_path": "qa/memory-cost-20261025/frozen-protocols.jsonl.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "6ed1ae553788dff3db1d16b6fff19020ebf7d063",
+      "mode": "100644",
+      "bytes": 1910772,
+      "sha256": "a8237ce48ac13b26de367f2208b4b9fafef56faa335c663fb1394a7c5622daaa"
+    },
+    {
+      "original_path": "qa/memory-cost-20261025/storage-inventories.jsonl.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "2bc4b16cb3c34c4174358b2b243f6f7119eb2868",
+      "mode": "100644",
+      "bytes": 2087867,
+      "sha256": "3818112acdafb359ebe232959a9b95eff8d71e229265a48a51ea5b359fca0557"
+    },
+    {
+      "original_path": "qa/memory-current-process-20261025/raw-receipts.jsonl.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "1eee60d682816a6a080d9d129fed50680f22cef9",
+      "mode": "100644",
+      "bytes": 2076050,
+      "sha256": "ebdfa2f275b431110cf2b27975ce5e7ec8be4a6719c15d71577dba5de0a68456"
+    },
+    {
+      "original_path": "qa/memory-retention-screen-20261025/raw-receipts.jsonl.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "a75759a5be883af39463dd397d548553518ad29e",
+      "mode": "100644",
+      "bytes": 757176,
+      "sha256": "425ae39965eab637a2476b1ccfa3b3410aa8f392e7c8875bcfeded5626407c32"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-memory-domain-development/hepta-memory-domain-development-20261023.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "a45e87fc6412d771e8c3abd9edeff2e6d14abf72",
+      "mode": "100644",
+      "bytes": 7585840,
+      "sha256": "36f36915b0781fc2e58c6aba44bfc0d24f8028b39ed2a4debfec84dbcebcaf55"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-00",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f015defa45e93c64256a89a4576eb2a415248408",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "e2a4126f01c96b8f3194b74a7dd309c70e22595dfe72db9469a681f62abc244b"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-01",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "16b1ee2c659ebf14e267bd71480d3347c3de2788",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "60e804a7927caf83e17f9919ed5d34c33ad986f3055fe2e1d7beede41812e1c8"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-02",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "602f873542d1c9a94298b9312a90f0381c94ed08",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "db022b89ea835f6038a27e79b8121c2a1f81fa7afccc30e55d28d3d8762a2572"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-routing-diagnosis/hepta-routing-diagnosis-20261023-v2.tar.gz.part-03",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "56ee310a6a7f6050c65d9f09b2a5c7922ae95784",
+      "mode": "100644",
+      "bytes": 4730244,
+      "sha256": "4a64ae278fb0de94c2b9911f7ee73ee962760226219b4c4d670176cb6be88d36"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "1db188b4d0d169bd475815ab1ebd5218fb2a8740",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "8e68df449ba3d11d9bcbd8bd0981f2bf1dfec201f74cb0827b2e2ddc15450006"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "bcf10dc1ea62e46874a1673a54d7c05f9b0cae79",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "639c721c682e2425e2c74b569f316dd647be73c695770d664c3ce10572784e8e"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-003",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "7405ad9d6529a74829bdd62ad6d58c5a0797bece",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "70e30f7de86ed9d9dfc68e64e56f37d88c961166a715738ef85ef6ddf1129f3e"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261023-typed-cell-lifecycle/hepta-typed-cell-lifecycle-20261023.tar.gz.part-004",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "b17d1a150a4c3fb75e4b81e60a8b1ab621f0c6c8",
+      "mode": "100644",
+      "bytes": 2465365,
+      "sha256": "908662295431042d88dca0e10f96edcee1a78e30d202d5275e60739a229d63d0"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-edge-lifecycle/hepta-memory-edge-lifecycle-20261024.tar.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "b43923e450c1e8570105e3aad9e64feba67e48fe",
+      "mode": "100644",
+      "bytes": 1034424,
+      "sha256": "afed9ed67c691c2e19651598e78d037f3c0e99a6845a31fa5e0bbcd7809dc8ca"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-hosted-relay/hepta-memory-hosted-relay-20261024.tar.gz.part-000",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "814ea5b196832e2df775da26834e219124754ba7",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "3af2f459c56a1ccd622f0ceecf0bc135fdbb8b5cf6584e7df8ad444ccb13b1a5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-hosted-relay/hepta-memory-hosted-relay-20261024.tar.gz.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "de68f3e25f5b2eb9920acf82d0965facc27eebeb",
+      "mode": "100644",
+      "bytes": 4673535,
+      "sha256": "5b2e957f4b202c69cb6dffce63202dc781611da1e9a43b5d999e87eef78bd9e5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-000",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "e56078668309b5eb46f6496afb6e9df2101e6055",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "ce5cb9e550b508883eb1240b92de037724dfab22b0338c73fcfb14089d4327af"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "4691c3b101062cb998728cf78d001e84ffec4d49",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "f969ce0037e4b3f71c8b1e37fb7e38b913419a813e8f7974986f5bdf6f4ade28"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "3e39cc1d9ad6b858df54e543630d12b2509afa3d",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "70798ed630029a8557da95a1707e5ed556a176b654cb6e4b38fde32cf2c9cc03"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-003",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "36b57f688fa49d34104c811201a4fd4256616bd0",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "1381be6bae1ecbf6b754be5eb6a41936467175aca92f2ce1ca334706162267ae"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-004",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "144dd84adcae81cae335cfa5b056c2cd7fe08dad",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "dff218aaf400f4bd5443d1d5bba0f98fbdcead01db2f1d0d41221605a821c071"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-005",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "335342a739ed52821c0be5e7be7c4e9140720873",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "d2583de890754fa73dd1f6baaae1bb54193287423a9ab5a59888e5666d8a14d4"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-006",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "146747c8e155788d7d4d83861edc31434a8c27c4",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "5ac472655fecce80c57d51068f4cc91eac7ce375f9d879a3bbfaeba279c7ec2e"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-007",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "53629e82e10def61cb16af2cb9fc59819c2d916f",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "1a6f19b8eef29fcb6fc190315501d7afced0eb73c65137785a50397364cbd0fe"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-008",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "255b00ea69b31e1e7a598f066983b2287ba247d0",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "4fed001dcdc83c3b7b254bca1da241f87d9321bc53ce8545dbdb3f63c409efd3"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-009",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "1a9352165dfe462494f834b74145f59bb655e914",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "745bd31bd5ac524f5e54c2356c425cf3a490ef67cb2a241fa645eb5791e42da6"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-010",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "417050cbc8cc388c9156b7260510cf3cb6bdfdc2",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "f67ec932f43a100840efb8a0ec5840dd3e92c31da56b0a31e24b577bb03c366b"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-011",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "069899d950931a185b68118d6ba03916ae004e4e",
+      "mode": "100644",
+      "bytes": 6291456,
+      "sha256": "a228fd11b558bab05badcdaa148aa8194804f2b14141ae73b57da35bec39fbde"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-longitudinal/hepta-memory-longitudinal-20261024.tar.gz.part-012",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "613d0b733887795e1606618219eab30477f41efb",
+      "mode": "100644",
+      "bytes": 3918695,
+      "sha256": "c828e871429186f38673262c11ce38cc2433921f7f7b2f5c7dff8994818393c7"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-memory-union-source-qualification/source-qualification.tar.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "11451ff43344756791cc2b93f0ae179c01728120",
+      "mode": "100644",
+      "bytes": 2394767,
+      "sha256": "14f860bf9d9f7d8e7b9c2b9a591859cb8f9003fc823869e1a8edfe6a7fd62e9a"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261024-native-ci-repair/native-ci-failures-and-candidate-20261024.tar.gz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "10b8dded3c8436c2e31f7c41d899e60b1c50cae6",
+      "mode": "100644",
+      "bytes": 539478,
+      "sha256": "0e6585da3edd558b6ba22ee46ed52b8d8aedea1b3bf87cbecc4e2050e7e4748f"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-bootstrap-ci-supplement.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "79ed4bedec291df147055c477b491879deacac7c",
+      "mode": "100644",
+      "bytes": 574264,
+      "sha256": "a6aa0f9b12637972f9fd7129edbc5ecef873cd4879091e15d017b1d9d40e05e1"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "c5060e09047d0c1f53d18ba23299d1cce8f15289",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "849f9c36069d463986ca19ac09f974de76921384d5fa9b93545531c5dd350f0c"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "24418d3e0a7285196aea49d5b64278b609ac7848",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "6846cc9096272413dbf9e4afcabdb42a291b4460162d8d3f857d7891fe7062d0"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-003",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "e869bc17f0ec404ede7bad202a2a8361f1e3e075",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "db21ca14a8d2b1f932b71bf59b70d72d255643df77dbc0fb1c324ae2180e020e"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-004",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "69243c2ded1e054b5a0395129d3cc04bfb0abf4a",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "268ef49f4d30a7491fc2431aaa20f3145ebea9f1bb9a607d8a4d5bad0fdefc5d"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-005",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "398918d63f03b72ce27bd549a693d22d944812e1",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "8e51a213a7bf72c4fb81a68704643f64c103acba6a10106a9a2bf5cdbe94e6b5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-006",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "de6c0da622eb8ddafe4b0ba634a81c9528a46734",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "08a2001c4de39c179878c4ee8620b8740c28495e03a53f7de9a2461bd05e64c2"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-007",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "5e8b56cef9b4c1fe0f5d27a6e45edd97ca8bc3b1",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "43c181938cdb25d739e9b5f7fdaabdce2f6d3446df0b15a24396593216fb74dc"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-008",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "e419ad588ba754921f563f61b3ded481e9087e58",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "715854fd672d559bbff2f1513da732ed2d2878a70b866edcd4baca41d7c3e1c6"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-009",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f9bf1235715682d4e0d073c330238ec20ed4e9a0",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "83fafa81ad5b06f5b2b9f43be65e1af9700aa881566713d75c7983f13d7cf5c5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-010",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "653f8109624408209c2790328b6067f9d5a5f0d3",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "c3ef844b75343ba69141f94fe6691dfdb45741ec79f34c1333e2e6316128e886"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-011",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "6335f6a06f377e7ab0ec4b01f7f9b191dacfe5f2",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "063c12504b12cf7c0ef76b752ee64f378dcb5b45827a5332fbc173003d1a6ebc"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-ci/native-memory-40152367005-1.zip.part-012",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f1583d0652156e1c248eef819e501bdfaca723a1",
+      "mode": "100644",
+      "bytes": 4398075,
+      "sha256": "6750f5edcad292017e1ed51d341845f6a1c01a4912f055d1f43162f3f19624ff"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-bootstrap-recovery/bootstrap-red-green-and-scoped-qualification.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "605691d806bbb61afec53bc2c2a4ca55b5a429bd",
+      "mode": "100644",
+      "bytes": 655332,
+      "sha256": "ae60f6a71dda4a7334e5b92a13f1391f8cac30c8e0fc0f9dec52c79c7652c98a"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "d5e2754eb137582b84de11087d4d5c9f97b5f79b",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "4b64ed8c0159560bfefc9d71b3db21ce3bf7bcb7eaa28109e1614b63a063a1ea"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "d9f09569602db097e67562fbcf5bf3620291e832",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "d570e94990f801e6b08970343f4077b2d4adfd950c1ecc6795191ae5c79fc4a5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part003",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "28336bc7f047d4730ae585ba43e9de4431d1c7bf",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "58f39c31cdab48788f78acea7ab3b980f13fa9175e73e28fa4ae808d7c3364b6"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part004",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "b5bc143f4a93fc6949acc37d7c0d9a4ac295a83f",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "f1a5e977292098a031e4df72e48bbd1b58296a20b02f88d09f90d7dbb24f960f"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part005",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f3d72838ccc274bc0e5904ef6bb825a979d36779",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "d0c37e36ba6e04c5a483565d9a6ce3b98d9dd4e2117d8e575ce245b089380526"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part006",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f12dbe20119244bac1d64d21848b976574b88f47",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "97384fcb4d9df1826ed465edaa5509bc6f97000c8f84360c94937cf77bd3b384"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part007",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f65b7bab9576f1b77f221abc3de86108c71eb153",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "d29e10a3019cfde426f13c246b318e1557dc956f17926536450ee16e329ca937"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part008",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "9bbefac4fdb0ea827ac13d04945c5921c45b36a1",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "5033954ae9d2393f43cc8d91d8423a594534ff28a72ca26c332fee25fe3c43be"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part009",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f413400bc5526f20b65d48332e0e0a774c752d22",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "4d046f07294c14d71cd1bdab6871ce731adaefbf4cb9335fc3c90f4cbf2a0d29"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-controlled-success/successful-native-v1-v2-complete-raw.tar.xz.part010",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "735946a5ce144c7aa0f822350ba11fcdaa026356",
+      "mode": "100644",
+      "bytes": 4736700,
+      "sha256": "93d92a12a8217484206c29b3e4224793c3cec2e30c1424110173401ec15d4c98"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-final-ci-supplement.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "8174180d6a20ba411c6941023beaa1c0c5f89069",
+      "mode": "100644",
+      "bytes": 555800,
+      "sha256": "ecf0ae4fc523ae8614475fd91b48b193de201740bf08bd42bf546eb22ee73378"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-001",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f5a02e678c05102654b5b275cd8619546f2627bc",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "48d6447180af745a3a4a6ca02be9cfd313be491fbe90dfb3452d00102710085c"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-002",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "74d83cce59089995d921a3cde870ba3432084f38",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "2bca934c0305292f34fdc8239470c12668269c48d8b175ed99d4b3dd3693d50c"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-003",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "719c883f857e0b7dac030bd94c64e5478de6b1fb",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "ac6343af9a0b7307556832e6205f8a1c4e0312686b20e3de0bac77eefa98df9c"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-004",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "f033706b1abd5d9c58226655d70993a3d15cf579",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "b35fd779a25aa707d973b3f71e2edc39abb2a891a242efd2b68b20c84da8497e"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-005",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "ee92c1a8b0cb77844f0be401897aa6186eba194e",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "ef59d33d367e74825b4eaa3800fd8de84d496cb4595dd7e139b2cb89cfda10e2"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-006",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "73c7c27401ebcb8e99c9056204989b6269709af6",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "4d1ffa0479e4fcfa2612d8017c41d16931a09c5c4c7f6911eca51bec45b984b8"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-007",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "7ce6e24fb70fc4897a5bf34382d59e2d9560257e",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "fa705cf0259550e525519a665b650a5b0e0093bee5c99293b875b31090ef2dd4"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-008",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "43e269de5f051022caea394a3fcf00859d645c4d",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "dc5c64e32bcb236a02530632a643890829d4d06e28c061e9995876bdbec61fcb"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-009",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "8039cd63d760de53dda60f7ed19d4a9d401eed2c",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "a773f73fca35292ccd861087d4e5a9986c8e0e71a10466d1ff3db3b8235e64c6"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-010",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "c8fd0384118aa95ce31ff6aea5e2340ab6c6ce9d",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "709ce29470fce8ea7c61042a5864b5b884c7e8291b49a0cfd62c412683d8ede2"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-011",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "0d69abdcfa3f9a1f4b99fd81c11aff5a57f69396",
+      "mode": "100644",
+      "bytes": 5242880,
+      "sha256": "6d2c49051402ba4bc6d6fbf58ead2b32e7ba949e3e1a91248734621f2315cf88"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-ci/native-memory-40149732280-1.zip.part-012",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "4e206d5cf58170642b74ce440341f16e79904e42",
+      "mode": "100644",
+      "bytes": 4231171,
+      "sha256": "9fde57524033b78ddc389d03a6bb24e5d4d254f666ad0a20e06be4b22505fd9f"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-final-tools/native-final-tools-complete-raw.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "09ae2a5451ab25358c5499c9a786e78dd47245c5",
+      "mode": "100644",
+      "bytes": 1339240,
+      "sha256": "e8762b3ee13dc49904fb1fb740a7276a83e1eaef966503c54828c2c270bf8ac6"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-predecoder-failure/failed-native-001-complete-raw.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "5c195cf44a66d5d678a1fd6f1c6254107d09b76c",
+      "mode": "100644",
+      "bytes": 2963452,
+      "sha256": "99c1c0e21eaf246812ab20f93ce12db2eac3a5dbf77ac861068b11724dbbcf07"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-qualification-failures/ci-40144148314-local-002-005-raw.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "170179edeeefb6590ab5c885894028828bd1de62",
+      "mode": "100644",
+      "bytes": 629368,
+      "sha256": "f572d5ff53b9971acf84310a9efcc1a64c24cc43f6253e7225dbf97f378536d5"
+    },
+    {
+      "original_path": "qa/stem-bakeoff/evidence/20261025-native-source-qualification-initial/local-qualification-001-20261025.tar.xz",
+      "source_commit": "1657238edcc0793bc353c931f9ca445ef992315c",
+      "blob_oid": "c1a69d76f77de4dfe7f55a6c2aba8cf7ae535778",
+      "mode": "100644",
+      "bytes": 517404,
+      "sha256": "1961117cc071d571779608e850f4caf6647de1f5c3e6c6e1471624fab8913e2e"
+    }
+  ]
+}

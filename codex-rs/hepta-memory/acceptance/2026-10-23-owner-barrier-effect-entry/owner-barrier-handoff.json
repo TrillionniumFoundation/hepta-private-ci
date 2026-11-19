@@ -1,0 +1,103 @@
+{
+  "status": "qualified within stated scope; source clean; ready for integration",
+  "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+  "source_tree": "d5e94594846b29b643a7649a0add372f0ae16339",
+  "source_checkout": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-effect-entry-barrier-fix",
+  "integration_base": "0f7a96752529a7914b7c24d07fadd527c5bd7bce",
+  "commits_after_notes_retirement_base": [
+    {
+      "sha": "40ba30e2acbc24da83bec190fe8be940c54c32de",
+      "subject": "test(memory): expose premature managed HOS2 history retirement"
+    },
+    {
+      "sha": "7ed97ee8b51ed931177e5f21b1ec22060977519c",
+      "subject": "test(memory): use original operation type in HOS2 retirement fixture"
+    },
+    {
+      "sha": "8cf175a3cf23cb335462d3c1e91be5f392f49226",
+      "subject": "fix(memory): retain protected whole-owner barrier through HOS2 history retirement"
+    },
+    {
+      "sha": "bd88e9f34b6e4a612bddd13856b8aaf38dc49f53",
+      "subject": "test(memory): expose effect entry without acknowledged original entered cut"
+    },
+    {
+      "sha": "8e60101a37b2658c25c58c36b01656eea509d90d",
+      "subject": "fix(memory): acknowledge original entered cut before managed effects"
+    },
+    {
+      "sha": "b63adfaaae82129473062630d4ba8412cee8ef5c",
+      "subject": "docs(memory): state synchronous native effect entry boundary"
+    },
+    {
+      "sha": "e1b6898d25163b491555e1a0ab0ab24843f8f701",
+      "subject": "test(memory): bound concurrent independent HOS2 crash recovery cases"
+    },
+    {
+      "sha": "2c9afe2e00efb68cb97bae557c1bc56f13123b44",
+      "subject": "test(memory): retain actual retirement competitor result on failure"
+    },
+    {
+      "sha": "ec7eaf006df98ccd8a3ec5cd09c48da5cb962297",
+      "subject": "fix(memory): hold actual SQLite writer lock for owner publication"
+    },
+    {
+      "sha": "4c958469a05207ff3fffcded158355ab66a19a88",
+      "subject": "fix(memory): use physical owner barrier through synchronous effect entry"
+    },
+    {
+      "sha": "65bc47e35829fd70a434f8b1c8da874f25a3f694",
+      "subject": "fix(state): use SQLx static SQL conversion for owned barrier transaction"
+    },
+    {
+      "sha": "178e2c4aeea69456e2c8ccd4db2fe13af91935ce",
+      "subject": "fix(memory): fence managed owner when serialization capability is absent"
+    },
+    {
+      "sha": "f0c2b2dda9222e60dfc679a21a32e44660788f5a",
+      "subject": "test(memory): verify actual lock through Notes effect entry"
+    },
+    {
+      "sha": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+      "subject": "test(memory): verify safe rejected checkout and fresh admission after entry"
+    }
+  ],
+  "aggregate_receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-final-aggregate.json",
+  "effect_entry_receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/effect-entry-validation.json",
+  "barrier_receipt": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-validation.json",
+  "counterexample": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-barrier-counterexample.json",
+  "current_target_owner": "desktop_architecture",
+  "target": "/data/organ-hepta-integration-target-20261023",
+  "scope": [
+    "same original owner SQLite physical lock through independent publication and synchronous Notes/HOS2 boundary",
+    "ordinary physical read-only polling preserves Current and token",
+    "managed absent capability/lost ACK/cancel rejects and fences without new effect authority",
+    "whole original67 plus7 executed together, no stitched qualification"
+  ],
+  "limitations": [
+    "original SQLite/owner and explicit Root/issuer/native-channel fixtures; installed Root and real devices separately qualified",
+    "arbitrary adapters that defer effect until returned Future is polled are not covered by synchronous entry contract",
+    "cancel-acquisition test does not prove cancellation at every initialization instruction; source closes connection before intermediate awaits"
+  ],
+  "unchanged": [
+    "original lease CAS and signed issuer/proof authority",
+    "original checkpoint/claim/9-kill deadlines",
+    "original ledger/schema; no new effect permit"
+  ],
+  "scoped_fix": {
+    "host": "main",
+    "job_id": "1a16af7be8e-1b6abb-3f19",
+    "state": "succeeded",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+    "log": "work/effect-entry-fix-v2.log",
+    "source_changed": false,
+    "warning_scope": "Existing lib-test unwrap/expect and AsyncFd deprecation warnings retained; not a zero-warning claim"
+  },
+  "format_check": {
+    "command": "just fmt --base 0f7a96752529a7914b7c24d07fadd527c5bd7bce --check",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8"
+  },
+  "target_disposition": "retained by desktop_architecture at parent request for next finite Notes validation; no barrier job remains active"
+}

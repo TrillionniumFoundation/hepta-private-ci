@@ -1,0 +1,91 @@
+{
+  "tree": "9821f01f3e0c25da98acc1016c3e78ed269f0786",
+  "status": "HOLD_SOURCE_GUARD_FAILURE_SUPERSEDED",
+  "projection_manifest": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/projection-manifest.json",
+  "precheck": {
+    "boundary_count": 213,
+    "hash_check": {
+      "checked_files": 6683,
+      "mismatches": []
+    },
+    "missing_required_inputs": [],
+    "protected_file_rows": 215,
+    "required_paths": 210,
+    "tree": "9821f01f3e0c25da98acc1016c3e78ed269f0786"
+  },
+  "postcheck": {
+    "checked_files": 6683,
+    "mismatches": []
+  },
+  "runs": [
+    {
+      "actual_test_count": 133,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "test_cell_learning_evaluation_source_closure",
+        "test_generation_learning_evidence_source_closure",
+        "test_learning_checkpoint_source_closure",
+        "test_learning_evaluation_recovery_source_closure",
+        "test_original_learning_owner_source_closure",
+        "test_q24_training_plan_source_closure",
+        "test_root_learning_bootstrap_source_closure",
+        "test_root_learning_scope_source_closure",
+        "test_training_no_update_source_closure",
+        "test_verify_hepta_callers"
+      ],
+      "cwd": "/workspace/scratch/c2fccbdb195e/source-guard-projection/qa/b4-no-bypass",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      },
+      "exit_code": 1,
+      "individual_failures_or_errors": [
+        "ERROR: test_authentication_cannot_move_after_private_execution_decode (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_authentication_cannot_move_after_private_execution_decode)",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='ProductEvaluationExecutionErrorV1::Pending')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='if previous.is_some()')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='authenticate(request, &signed, &signing_payload(&key, body))?')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='if current.as_ref() != Some(&consumed)')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='restored.execution_evaluator = Some(request.evaluator.clone())')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='let now = (request.clock)()?')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='verified.principal() != request.evaluator')",
+        "ERROR: test_pending_signed_bytes_current_consumption_and_evaluator_are_required (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_pending_signed_bytes_current_consumption_and_evaluator_are_required) (marker='verified.objective_digest() != request.plan.frozen_plan.objective_digest')",
+        "ERROR: test_read_only_recovery_cannot_skip_checks_in_dead_blocks (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_cannot_skip_checks_in_dead_blocks) (path='codex-rs/hepta-intelligence-eval/src/product_execution.rs', function='fn authenticate_completed_execution(')",
+        "ERROR: test_read_only_recovery_keeps_plan_journal_and_original_authentication (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication) (path='codex-rs/hepta-intelligence-eval/src/product_execution.rs', marker='let (key, _) = self.execution_context(request)?')",
+        "ERROR: test_read_only_recovery_keeps_plan_journal_and_original_authentication (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication) (path='codex-rs/hepta-intelligence-eval/src/product_execution.rs', marker='executions.readback(&key)?')",
+        "ERROR: test_read_only_recovery_keeps_plan_journal_and_original_authentication (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication) (path='codex-rs/hepta-intelligence-eval/src/product_execution.rs', marker='return Err(ProductEvaluationExecutionErrorV1::Pending)')",
+        "ERROR: test_read_only_recovery_keeps_plan_journal_and_original_authentication (test_learning_evaluation_recovery_source_closure.LearningEvaluationRecoverySourceClosureTests.test_read_only_recovery_keeps_plan_journal_and_original_authentication) (path='codex-rs/hepta-intelligence-eval/src/product_execution.rs', marker='self.authenticate_completed_execution(request, key, &bytes)')",
+        "FAIL: test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred (test_generation_learning_evidence_source_closure.GenerationLearningEvidenceSourceClosureTests.test_delivery_scope_check_precedes_enrollment_and_cannot_be_deferred) (replacement='if false { self.require_frozen_scope(request); } unchecked()')"
+      ],
+      "name": "source-unittest",
+      "result_line": "FAILED (failures=1, errors=14)",
+      "skipped_case_lines": [],
+      "started_utc": "2026-11-11T00:51:58.000902+00:00",
+      "stderr_log": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/source-unittest.stderr.log",
+      "stdout_log": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/source-unittest.stdout.log",
+      "unittest_reported_seconds": 22.655,
+      "wall_seconds": 23.233985117999964
+    },
+    {
+      "name": "callers-verify",
+      "status": "CANCELLED",
+      "command": [
+        "python",
+        "scripts/verify_hepta_callers.py",
+        "verify"
+      ],
+      "cwd": "/workspace/scratch/c2fccbdb195e/source-guard-projection",
+      "exit_code": null,
+      "session_termination_exit_code": 130,
+      "session_id": 12182,
+      "cancellation_utc": "2026-11-11T00:55:54.483673+00:00",
+      "reason": "Parent explicitly directed termination after the frozen manifest integration defects were established; parent is replacing the baseline with published #5875 plus narrow repairs. This scan yields no PASS or FAIL receipt.",
+      "stdout_log": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/callers-verify.stdout.log",
+      "stderr_log": "/workspace/scratch/c2fccbdb195e/source-guard-evidence/callers-verify.stderr.log"
+    }
+  ],
+  "complete_checkout": false,
+  "native_validation": false,
+  "source_index_modified": false
+}

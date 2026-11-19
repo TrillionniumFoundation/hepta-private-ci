@@ -27,15 +27,74 @@ use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
 
+#[path = "notes_objective_state.rs"]
+mod notes_objective;
+pub use notes_objective::AgentdNotesObjectiveConfig;
+
+#[path = "desktop_objective_state.rs"]
+mod desktop_objective;
+pub use desktop_objective::AgentdDesktopObjectiveConfig;
+
 #[path = "state_control.rs"]
 mod control;
+#[path = "state_current_objective.rs"]
+mod current_objective;
+pub(crate) use current_objective::CurrentObjectiveReadV1;
+
+#[path = "state_episodic.rs"]
+mod episodic;
+
+#[path = "state_circuit_task.rs"]
+mod circuit_task;
+#[cfg(target_os = "linux")]
+#[path = "state_q24_completed_history.rs"]
+mod q24_completed_history;
+#[cfg(target_os = "linux")]
+#[path = "state_q24_outcome.rs"]
+mod q24_outcome;
+#[cfg(target_os = "linux")]
+#[path = "state_retained_learning_source.rs"]
+mod retained_learning_source;
+pub use circuit_task::AgentdCircuitTaskInvocationProviderV1;
+
+#[path = "notes_organ_state.rs"]
+mod notes_organ;
+
+#[path = "state_neuron_generation.rs"]
+pub(crate) mod neuron_generation;
 
 pub(crate) struct AgentdState {
+    #[cfg(target_os = "linux")]
+    pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
+    pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
+    pub(crate) desktop_objective: std::sync::OnceLock<AgentdDesktopObjectiveConfig>,
+    pub(crate) native_memory_cell: std::sync::OnceLock<Arc<crate::AgentdNativeMemoryCell>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
         std::sync::OnceLock<Arc<dyn crate::AgentdIntelligenceInvocationProviderV1>>,
+    pub(crate) circuit_task: std::sync::OnceLock<crate::CircuitTaskHandleV1>,
+    #[cfg(target_os = "linux")]
+    original_q24_outcome_control:
+        std::sync::OnceLock<Arc<crate::OriginalCellQ24TaskLedgerProducerV1>>,
+    #[cfg(target_os = "linux")]
+    original_q24_completed_history: std::sync::OnceLock<
+        Arc<crate::root_completed_learning_history::OriginalCompletedLearningHistoryV1>,
+    >,
+    #[cfg(target_os = "linux")]
+    original_q24_terminal_acceptance: std::sync::OnceLock<
+        crate::root_completed_learning_history::OriginalCompletedLearningAcknowledgementV1,
+    >,
+    pub(crate) circuit_task_invocation:
+        std::sync::OnceLock<Arc<dyn AgentdCircuitTaskInvocationProviderV1>>,
+    circuit_learning_source:
+        std::sync::OnceLock<crate::circuit_task_learning::RegisteredCircuitLearningSourcesV1>,
+    circuit_task_admissions: Arc<std::sync::atomic::AtomicUsize>,
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) episodic_snapshot_import:
+        std::sync::OnceLock<Arc<crate::episodic_import::EpisodicImportIngress>>,
+    episodic_imports: Arc<std::sync::atomic::AtomicUsize>,
+    episodic_import_unresolved: Arc<std::sync::atomic::AtomicBool>,
     pub(crate) cognitive_retrieval_context:
         std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub(crate) cognitive_retrieval_learning:
@@ -51,9 +110,12 @@ pub(crate) struct AgentdState {
     plasticity_runtime: std::sync::OnceLock<
         crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
     >,
+    neuron_generation: Mutex<Option<Arc<neuron_generation::NeuronGenerationProjection>>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
+    #[cfg(target_os = "linux")]
+    app_server_ready_notify: tokio::sync::Notify,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
@@ -66,10 +128,12 @@ struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    notes_organ_ready: bool,
     critical_stores_ready: bool,
     revocation_ready: bool,
     required_ports_ready: bool,
     admission_open: bool,
+    drain_requested: bool,
     fenced: bool,
 }
 
@@ -127,30 +191,53 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            #[cfg(target_os = "linux")]
+            notes_organ_root: std::sync::OnceLock::new(),
+            notes_objective: std::sync::OnceLock::new(),
+            desktop_objective: std::sync::OnceLock::new(),
+            native_memory_cell: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
+            circuit_task: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            original_q24_outcome_control: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            original_q24_completed_history: std::sync::OnceLock::new(),
+            #[cfg(target_os = "linux")]
+            original_q24_terminal_acceptance: std::sync::OnceLock::new(),
+            circuit_task_invocation: std::sync::OnceLock::new(),
+            circuit_learning_source: std::sync::OnceLock::new(),
+            circuit_task_admissions: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
             objective_runtime: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            episodic_snapshot_import: std::sync::OnceLock::new(),
+            episodic_imports: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            episodic_import_unresolved: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             production_operations: std::sync::OnceLock::new(),
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
+            neuron_generation: Mutex::new(None),
             intuition_policy: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                notes_organ_ready: false,
                 critical_stores_ready: false,
                 revocation_ready: false,
                 required_ports_ready: false,
                 admission_open: false,
+                drain_requested: false,
                 fenced: false,
             }),
             identity,
             registry,
+            #[cfg(target_os = "linux")]
+            app_server_ready_notify: tokio::sync::Notify::new(),
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
@@ -309,6 +396,15 @@ impl AgentdState {
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
+        // Retained imports may outlive the response future. Publish their
+        // unresolved owner state through the ordinary readiness/read fence,
+        // even when no caller remains to observe the task's JoinError.
+        if self
+            .episodic_import_unresolved
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
+            self.mark_fenced();
+        }
         // Registration/startup retains fleet-wide validation. Serving an
         // already admitted generation must not scan or depend on peer stores.
         let record = self
@@ -367,13 +463,16 @@ impl AgentdState {
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
                 runtime.app_server_ready = false;
+                runtime.notes_organ_ready = false;
                 runtime.required_ports_ready = false;
+                runtime.drain_requested = true;
             }
             if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.app_server_ready
+                && (runtime.app_server_ready || runtime.notes_organ_ready)
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
+                && !runtime.drain_requested
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -392,6 +491,11 @@ impl AgentdState {
                     .begin_drain(unix_now_ms()?, "supervisor_draining")
                     .map_err(run_error)?;
             }
+        }
+        let draining = runtime.lifecycle == AgentLifecycle::Draining;
+        drop(runtime);
+        if draining {
+            self.close_neuron_generation_admission()?;
         }
         Ok(())
     }
@@ -434,8 +538,13 @@ impl AgentdState {
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.drain_requested {
+            return Ok(());
+        }
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            #[cfg(target_os = "linux")]
+            self.app_server_ready_notify.notify_waiters();
             runtime.required_ports_ready = true;
             if runtime.lifecycle == AgentLifecycle::Running
                 && runtime.critical_stores_ready
@@ -452,9 +561,32 @@ impl AgentdState {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn wait_original_app_server_ready(&self) -> Result<(), AgentdError> {
+        loop {
+            let notified = self.app_server_ready_notify.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            {
+                let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                if runtime.fenced {
+                    return Err(AgentdError::GenerationFenced(
+                        "original App Server was fenced".into(),
+                    ));
+                }
+                if runtime.app_server_ready {
+                    return Ok(());
+                }
+            }
+            notified.await;
+        }
+    }
+
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.drain_requested = true;
         runtime.app_server_ready = false;
+        runtime.notes_organ_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
         self.app_server_drain.request_drain();
@@ -463,6 +595,7 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
         drop(runtime);
+        self.close_neuron_generation_admission()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -494,6 +627,9 @@ impl AgentdState {
             Some(store) => store.drain_blockers().await?,
             None => 1,
         };
+        let automation_blockers = automation_blockers
+            .checked_add(self.circuit_task_drain_blockers().await?)
+            .ok_or_else(|| AgentdError::Protocol("drain blocker count overflow".into()))?;
         self.drain_snapshot(automation_blockers)
     }
 
@@ -502,6 +638,7 @@ impl AgentdState {
         automation_blockers: u32,
     ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
+        let generation_blockers = self.neuron_generation_drain_blockers()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
@@ -515,7 +652,10 @@ impl AgentdState {
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
-                && automation_blockers == 0,
+                && automation_blockers == 0
+                && self.circuit_task_pending_count() == 0
+                && self.episodic_import_drain_clear()
+                && generation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })
@@ -524,6 +664,7 @@ impl AgentdState {
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.notes_organ_ready = false;
             runtime.required_ports_ready = false;
             runtime.admission_open = false;
             runtime.fenced = true;
@@ -586,8 +727,12 @@ impl AgentdState {
             return Ok(None);
         };
 
+        // Recovered records keep their original signed identity. Check the
+        // actual owner before asking any canonical provider to do work.
+        self.require_current_run_start(record)?;
+        let current_generation = self.current_generation()?;
         let invocation = provider.build(&self.identity, record)?;
-        invocation.validate(&self.identity, record)?;
+        invocation.validate(&self.identity, record, current_generation)?;
 
         // Freeze only the small immutable composition while holding the run
         // lock. Owner execution is allowed to block without monopolizing run
@@ -599,7 +744,7 @@ impl AgentdState {
             .composition()
             .clone();
         let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+            .prepare_for_run_start(&composition, record, invocation.request, invocation.inputs)
             .await
             .map_err(|error| {
                 AgentdError::Protocol(format!(
@@ -615,24 +760,17 @@ impl AgentdState {
                 let first_now = self.require_current_run_start(record)?;
                 let second_now = self.require_current_run_start(record)?;
                 let now_ms = first_now.max(second_now);
-                let snapshot = prepared.run_snapshot();
+                prepared
+                    .require_original_run_start(record)
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!(
+                            "canonical RunStart binding changed: {error}"
+                        ))
+                    })?;
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
                 let admitted = runs
-                    .start_run(
-                        now_ms,
-                        crate::RunSnapshot {
-                            run_id: snapshot.run_id,
-                            request_digest: snapshot.request_digest,
-                            objective_digest: snapshot.objective_digest,
-                            body_digest: snapshot.body_digest,
-                            artifact_set_digest: snapshot.artifact_set_digest,
-                            authority_epoch: snapshot.authority_epoch,
-                            generation: snapshot.generation,
-                            fence_digest: snapshot.fence_digest,
-                            deadline_ms: snapshot.deadline_ms,
-                        },
-                    )
+                    .start_revalidated_run_start(now_ms, record)
                     .map_err(run_error)?;
                 let run_receipt = runs
                     .attach_context(
@@ -703,8 +841,11 @@ impl AgentdState {
             .map_err(run_error)
     }
 
-    fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
-        crate::authbus_ingress::require_ready(self)?;
+    pub(crate) fn require_current_run_start(
+        &self,
+        record: &RunStartRecordV1,
+    ) -> Result<u64, AgentdError> {
+        crate::authbus_ingress::require_objective_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self
             .runtime
@@ -738,7 +879,7 @@ impl AgentdState {
                 sequence: authentication.sequence,
                 expires_at_ms: authentication.expires_at_ms,
             },
-            signature: authentication.signature,
+            signature: codex_hepta_authbus::AuthBusSignature::Ed25519(authentication.signature),
         };
         message
             .authenticate(
@@ -820,4 +961,7 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
-mod isolation_tests;
+pub(crate) mod isolation_tests;
+#[cfg(all(test, unix))]
+#[path = "objective_runtime_current_tests.rs"]
+pub(crate) mod objective_current_tests;

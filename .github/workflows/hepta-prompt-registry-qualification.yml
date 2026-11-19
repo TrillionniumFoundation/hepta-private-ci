@@ -1,0 +1,41 @@
+name: Hepta prompt registry qualification
+
+on:
+  push:
+    branches: [codex/prompt-registry-convergence-20260928]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prompt-registry-qualification-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  candidate-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retain exact tracked source and identities
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p "$RUNNER_TEMP/prompt-registry-candidate"
+          git archive --format=tar HEAD | gzip -n > "$RUNNER_TEMP/prompt-registry-candidate/source.tar.gz"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/prompt-registry-candidate/source.ls-tree"
+          git rev-parse HEAD > "$RUNNER_TEMP/prompt-registry-candidate/source.sha"
+          git cat-file commit HEAD > "$RUNNER_TEMP/prompt-registry-candidate/source.commit"
+          sha256sum "$RUNNER_TEMP/prompt-registry-candidate/source.tar.gz"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: prompt-registry-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/prompt-registry-candidate
+          if-no-files-found: error
+          retention-days: 3

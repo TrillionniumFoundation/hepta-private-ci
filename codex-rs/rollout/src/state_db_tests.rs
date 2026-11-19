@@ -3,10 +3,7 @@
 use super::*;
 use crate::RolloutLine;
 use crate::list::parse_cursor;
-use chrono::DateTime;
-use chrono::NaiveDateTime;
-use chrono::Timelike;
-use chrono::Utc;
+use crate::test_support::private_home;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
@@ -23,10 +20,9 @@ fn cursor_to_anchor_normalizes_timestamp_format() {
     let cursor = parse_cursor(ts_str).expect("cursor should parse");
     let anchor = cursor_to_anchor(Some(&cursor)).expect("anchor should parse");
 
-    let naive =
-        NaiveDateTime::parse_from_str(ts_str, "%Y-%m-%dT%H-%M-%S").expect("ts should parse");
-    let expected_ts = DateTime::<Utc>::from_naive_utc_and_offset(naive, Utc)
-        .with_nanosecond(0)
+    let expected_ts = codex_utils_time::Timestamp::parse_filename_timestamp(ts_str)
+        .expect("ts should parse")
+        .with_nanosecond(/*nanoseconds*/ 0)
         .expect("nanosecond");
 
     assert_eq!(anchor.ts, expected_ts);
@@ -65,7 +61,7 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
     let metadata = ThreadMetadataBuilder::new(
         thread_id,
         root.path().join("missing-rollout.jsonl"),
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");
@@ -96,7 +92,7 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
 
 #[tokio::test]
 async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -130,7 +126,7 @@ async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> 
 
 #[tokio::test]
 async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -161,7 +157,7 @@ async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Resu
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path =
         write_rollout_with_user_message(home.path(), thread_id, "Hey", ThreadHistoryMode::Legacy)?;
@@ -202,7 +198,7 @@ async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result
 
 #[tokio::test]
 async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let initial_rollout_path = write_rollout_with_user_message(
         home.path(),
@@ -262,7 +258,7 @@ async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<(
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_paginated_memory_mode() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path = write_rollout_with_user_message(
         home.path(),

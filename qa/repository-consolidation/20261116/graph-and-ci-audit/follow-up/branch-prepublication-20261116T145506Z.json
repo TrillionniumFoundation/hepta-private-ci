@@ -1,0 +1,862 @@
+{
+  "started_utc": "2026-11-16T14:54:44.289554+00:00",
+  "observed_utc": "2026-11-16T14:54:53.309554+00:00",
+  "verified_utc": "2026-11-16T14:55:06.497106+00:00",
+  "head_count": 7315,
+  "protected_count": 84,
+  "main": {
+    "expected": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "observed": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "matches": true
+  },
+  "integration": {
+    "branch": "integration/hepta-single-main-20261113-ab5b",
+    "expected": "285e971b3af3a93a79169b56a42263069e473057",
+    "observed": "285e971b3af3a93a79169b56a42263069e473057",
+    "matches": true
+  },
+  "candidate": "ca414120a713eaa0ecb9d5a75c21b9edf5c922fe",
+  "candidate_protected_collisions": [],
+  "current_protected_vector": [
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-evidence-v1",
+      "observed_sha": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "prior_protected_sha": "d31851402bbdf90162411ec782b85d3a1005eaf1",
+      "original_sha": "37486a3e2f94b6ab66052c3c0734ac3cd10946e8",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s01",
+      "observed_sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+      "prior_protected_sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+      "original_sha": "365a195b82c9cc9be66ec1fc9e937df3475b8e81",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s02",
+      "observed_sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+      "prior_protected_sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+      "original_sha": "6d2cbf19bce1c3901c515f4b794c3e90630d86f5",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s03",
+      "observed_sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+      "prior_protected_sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+      "original_sha": "f5f9e7f64e23173c3c99448c82202629e822add3",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s04",
+      "observed_sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+      "prior_protected_sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+      "original_sha": "9bcc42c7120f449cf256439b1699874219eaa57b",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s05",
+      "observed_sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+      "prior_protected_sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+      "original_sha": "3e4aaebf5f0ca990c730e5d9670f63ece098408e",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s06",
+      "observed_sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+      "prior_protected_sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+      "original_sha": "72da6cfaf091ab55ea0ea4dda4227d409fd926e1",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s07",
+      "observed_sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+      "prior_protected_sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+      "original_sha": "e5486f99fa1f3b801ff12da99c1580885711a1c5",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s08",
+      "observed_sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+      "prior_protected_sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+      "original_sha": "2a9e2a91713e30103b3dd99a07f0f23fa50bedf1",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s09",
+      "observed_sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+      "prior_protected_sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+      "original_sha": "173de531bb5bf2cc8ab8c9605225d1876a265992",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s10",
+      "observed_sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+      "prior_protected_sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+      "original_sha": "6c5b7a788f877077d17c98138a800e3ef465bc60",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s11",
+      "observed_sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+      "prior_protected_sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+      "original_sha": "e780af7581d6cf00f7cf6a91435412a0eba6effe",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-20261116-0c078a-s12",
+      "observed_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+      "prior_protected_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+      "original_sha": "c333ea22eb8f739aeceed429b53c08a556e7ee82",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s01",
+      "observed_sha": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+      "prior_protected_sha": "905f2ff16339ffc3244f080f9bb3364989e78e66",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s02",
+      "observed_sha": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+      "prior_protected_sha": "bc7b0b2257d3ce41dbc9391a72c34c59edd9d86d",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s03",
+      "observed_sha": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+      "prior_protected_sha": "e4fd2f98c06f919a463b35dc3ac892b673799f92",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s04",
+      "observed_sha": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+      "prior_protected_sha": "12400b11a1cdf2b8f59ed0e296793de26d433f01",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s05",
+      "observed_sha": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+      "prior_protected_sha": "05e05051625dfa5871c8315a0c44b58f43db05ac",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s06",
+      "observed_sha": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+      "prior_protected_sha": "d1e41d4b9b592e09cbf34916ad34c1046a3e4c88",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s07",
+      "observed_sha": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+      "prior_protected_sha": "7199e9db5bad9833723a110c1110eb2aa10e1630",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s08",
+      "observed_sha": "c3cf56498c45259493a909548448919afa414a7c",
+      "prior_protected_sha": "c3cf56498c45259493a909548448919afa414a7c",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s09",
+      "observed_sha": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+      "prior_protected_sha": "50600a4ad9b30202ee23cdac7552738ccda0bfb9",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s10",
+      "observed_sha": "e21376decc668982988bdc61641294b366cec5c8",
+      "prior_protected_sha": "e21376decc668982988bdc61641294b366cec5c8",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s11",
+      "observed_sha": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+      "prior_protected_sha": "ac3852c307b8a5ea9606bb4df96e3b1f66796553",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s12",
+      "observed_sha": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+      "prior_protected_sha": "0139252d2d80d35aa7bae1c4395618f9c7c10b4d",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s13",
+      "observed_sha": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+      "prior_protected_sha": "e0f3c51ec7cbfe02361e91e8a3c5cd39adaf9cb3",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s14",
+      "observed_sha": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+      "prior_protected_sha": "4cb0ba3c42b284fa19636757b7ba63c23a9c3706",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s15",
+      "observed_sha": "02dda520dba03f6639005f16bcded2476524068d",
+      "prior_protected_sha": "02dda520dba03f6639005f16bcded2476524068d",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s16",
+      "observed_sha": "2a620b20befadb6e450c4546786685fc716e114a",
+      "prior_protected_sha": "2a620b20befadb6e450c4546786685fc716e114a",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s17",
+      "observed_sha": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "prior_protected_sha": "507f04e20b6b9034d490b38a799eb32577ba5bbb",
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s18",
+      "observed_sha": "1087cecf3bbefc89ea91dd55291fcb00c8ed712c",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s19",
+      "observed_sha": "2486b93845184a9d438d0e0c87ecff5cc880b735",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s20",
+      "observed_sha": "3d00e15073d416d8d5e8d4a72feede23a4c1486d",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s21",
+      "observed_sha": "8dd202989833b96aec94dfe62feb40bf774dc558",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-hia-ci-evidence-20261116-724f",
+      "observed_sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+      "prior_protected_sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+      "original_sha": "2a89089230be1c8b850beeeeda4d5f47943bcad2",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/cell-hia-joint-20261115-724f",
+      "observed_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "prior_protected_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "original_sha": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hepta-doc-map-real-source-20261115-r11",
+      "observed_sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+      "prior_protected_sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+      "original_sha": "97fc55515538d0f661a330da6399c5785eb8eecb",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-allowed-prefixes-20261115-9f0b",
+      "observed_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "prior_protected_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "original_sha": "ae39735ac801c33c2166f043ea1471c3c445460a",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-ci-core-test-binaries-20261115-a90d",
+      "observed_sha": "4895cd93113b662d590f140d38736a30392081fc",
+      "prior_protected_sha": "4895cd93113b662d590f140d38736a30392081fc",
+      "original_sha": "4895cd93113b662d590f140d38736a30392081fc",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-command-dispatch-20261115-9f0b",
+      "observed_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+      "prior_protected_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+      "original_sha": "b762fa3f20ed78f6567b6fca68a2ca0524733fff",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-cross-owner-premerge-guard-20261116-v1",
+      "observed_sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+      "prior_protected_sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+      "original_sha": "5aa8417222b537dea2bf57515383ff95401b1983",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-example-validation-oracle-20261116-9f0b",
+      "observed_sha": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "prior_protected_sha": "df12adc05b31f0d65e0230d44092f36e092d7f73",
+      "original_sha": "c9bb9bdfcd9ebee60b7087f26cf9dd38676d5fe8",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-execpolicy-prefix-20261115-9f0b",
+      "observed_sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+      "prior_protected_sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+      "original_sha": "d7a5044a5be10dcd8f13ad9dab03e2bf9ba3d88f",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-file-update-20261115-9f38",
+      "observed_sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "prior_protected_sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "original_sha": "8b138f979a77baeb78b28b8273febcef960dcb88",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-foundation-contract-20261114-9f38",
+      "observed_sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+      "prior_protected_sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+      "original_sha": "d6690efc44f7ca1d2075f1b6fec81b91100cf61a",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-list-agents-completion-20261115-run11",
+      "observed_sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+      "prior_protected_sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+      "original_sha": "355118ec887d22affe13b33ce3907c697e4360f4",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-macos-code-mode-startup-20261115-a90d",
+      "observed_sha": "bb321262064982217002ae608f484a235c160e85",
+      "prior_protected_sha": "bb321262064982217002ae608f484a235c160e85",
+      "original_sha": "bb321262064982217002ae608f484a235c160e85",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-macos-matrix-cipher-20261115-a90d",
+      "observed_sha": "842a49e96d7e6960267913825e01d53d96aab971",
+      "prior_protected_sha": "842a49e96d7e6960267913825e01d53d96aab971",
+      "original_sha": "842a49e96d7e6960267913825e01d53d96aab971",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-macos-matrix-phase-20261115-a90d",
+      "observed_sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+      "prior_protected_sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+      "original_sha": "a88f75d39308e6f3eddd046277a6e434f16d2b0f",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-macos-owner-20261114-a90d",
+      "observed_sha": "57e489472a03515438df8ed7a0fabec882404f02",
+      "prior_protected_sha": "57e489472a03515438df8ed7a0fabec882404f02",
+      "original_sha": "57e489472a03515438df8ed7a0fabec882404f02",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-native-apparmor-profile-20261114",
+      "observed_sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+      "prior_protected_sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+      "original_sha": "25ede0c3fea700e7ddd4b9199a08c06d1b8138e4",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-native-bwrap-ci-20261114-p9",
+      "observed_sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+      "prior_protected_sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+      "original_sha": "862d66c02f42a7cc56e121691a72e715e40a2ecc",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-native-codex-20261114-a90d",
+      "observed_sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "prior_protected_sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "original_sha": "f75abe3e54ac6a37bf348b9237f0b64c4c40e1fc",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-native-ubuntu2204-sandbox-20261114",
+      "observed_sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+      "prior_protected_sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+      "original_sha": "d5f0e8e7ac6f57a5902b5e07e9fda274cec7a96b",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-network-domains-20261115-9f0b",
+      "observed_sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "prior_protected_sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "original_sha": "b39a8ef9bd4256113874daf721ddf3f12b85dd4b",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-network-host-20261115-9f0b",
+      "observed_sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "prior_protected_sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "original_sha": "74d1c0ebeced1b72a0ee74e375a0ace623762b01",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-application-20261115-9f38",
+      "observed_sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+      "prior_protected_sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+      "original_sha": "cae5db67213f2621910bf39ff048ee60c887317b",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-effects-20261115-9f38",
+      "observed_sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "prior_protected_sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "original_sha": "aeb88f596b83186456caac577080bcb2f253ad32",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-integration-20261115-9f38",
+      "observed_sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+      "prior_protected_sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+      "original_sha": "2ff44b608a202c25e7551edca67a7a5362f34d36",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-output-20261115-9f38",
+      "observed_sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "prior_protected_sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "original_sha": "e23bc0d7ae5d52e70839982c9c5517a3368ae049",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-output-agentd-bridge-20261115-gpt6",
+      "observed_sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+      "prior_protected_sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+      "original_sha": "627de3c55ba106b0533b2281a08090aefd50e5d9",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-parser-20261115-9f38",
+      "observed_sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "prior_protected_sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "original_sha": "168080b72c4be242d14eadd47168f2a9326590f2",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-standalone-20261115-9f38",
+      "observed_sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+      "prior_protected_sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+      "original_sha": "eb439d69f1bb6f9ec5f2fc5158cf198b4d687231",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-patch-standalone-abi-producer-20261115-a11",
+      "observed_sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+      "prior_protected_sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+      "original_sha": "d40247b313fefa03a292fd6cbbc3fb8c2a985d9a",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-plasticity-status-sync-20261115-r11x",
+      "observed_sha": "b34a4670c130111c06e24e070635391fa8694a60",
+      "prior_protected_sha": "b34a4670c130111c06e24e070635391fa8694a60",
+      "original_sha": "b34a4670c130111c06e24e070635391fa8694a60",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-policy-summary-20261115-9f0b",
+      "observed_sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "prior_protected_sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "original_sha": "7b51d6614e494ab62aa20f049c862ffef1808ce1",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-render19-rama-sdk-bridge-20261116-a11",
+      "observed_sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+      "prior_protected_sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+      "original_sha": "1516f5a7bf186946ba4dd68f6d34bf2a5e627ec5",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-retirement-consistency-20261115-turn11",
+      "observed_sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+      "prior_protected_sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+      "original_sha": "086cdfd96c1312ef5cbc31b1cbe9a3a9614a30a3",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-retirement-precheck-20261115-automation11",
+      "observed_sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+      "prior_protected_sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+      "original_sha": "48b58e8ac6237d44585d27260c6f4bd42f445ce5",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-source-file-20261114-9f38",
+      "observed_sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+      "prior_protected_sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+      "original_sha": "2c02acd781586faf7e8fb270bc5a0719a05e46f6",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-source-file-fastpath-20261115-9f38",
+      "observed_sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "prior_protected_sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "original_sha": "550d39c64718c7ad3bd43aa09f68aee29cdbcd8e",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-string-truncate-20261114-9f38",
+      "observed_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+      "prior_protected_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+      "original_sha": "a3f319cfba26b3206d9bfecbdefed2515ce4a19c",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-template-parse-20261115-9f38",
+      "observed_sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+      "prior_protected_sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+      "original_sha": "605832630c0c31742f26eee6c38f10cfa2490d90",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-template-render-20261115-9f38",
+      "observed_sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "prior_protected_sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "original_sha": "d2fb9ecd772da7736e973aaa3d90f14512dedddf",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-token-budget-abi-20261114-9f38",
+      "observed_sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "prior_protected_sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "original_sha": "7fe65ae990187e6ff1130c791f902728b4e50197",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-twelve-integration-20261115-a90d",
+      "observed_sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+      "prior_protected_sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+      "original_sha": "91a1864a9b3aeb53b6ac653adb725a957564e56a",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "observed_sha": "b50f7ea8a95098fee0abf29a74e6e76d1a047894",
+      "prior_protected_sha": "b50f7ea8a95098fee0abf29a74e6e76d1a047894",
+      "original_sha": "827ec2d5b00e9da12d4014314f1e24b08a42f825",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-union29-rama-sdk-20261116-gpt6",
+      "observed_sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+      "prior_protected_sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+      "original_sha": "2536943576e90550bf2d69a8baff37a0cd397eaa",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-uuid-20261115-9f38",
+      "observed_sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "prior_protected_sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "original_sha": "c468f632201c39957d3fecb92f05b37aa650b45e",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-windowed-native-20261114",
+      "observed_sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+      "prior_protected_sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+      "original_sha": "7e920e23b11e8f57891325a2e7805e8969c63551",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/hia-windows-owner-20261114-a90d",
+      "observed_sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+      "prior_protected_sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+      "original_sha": "bba5c1f6f4bef0c8faf58ef402beabea76543f1f",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/sdk-resolver-abi-20261115-9f0b",
+      "observed_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "prior_protected_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "original_sha": "e744466830b5c823b723d81c2b6cab9c95abd60b",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/v8-canary-feature-parity-20261114-p9",
+      "observed_sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+      "prior_protected_sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+      "original_sha": "8ca15b214b56eb800c78849ecae298e7f47eaa1d",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    },
+    {
+      "name": "codex/windows-private-fs-diagnostics-20261115-9f0b",
+      "observed_sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+      "prior_protected_sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+      "original_sha": "3d80582cf7d425df2aec4e3fffec23c7a0c14816",
+      "marker_ancestors": ["f02bb9f3344cdff4e361cca4353540ca0193bd21"],
+      "descends_prior_protected": true,
+      "newly_protected": false
+    }
+  ],
+  "new_protected": [
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s18",
+      "observed_sha": "1087cecf3bbefc89ea91dd55291fcb00c8ed712c",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s19",
+      "observed_sha": "2486b93845184a9d438d0e0c87ecff5cc880b735",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s20",
+      "observed_sha": "3d00e15073d416d8d5e8d4a72feede23a4c1486d",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    },
+    {
+      "name": "codex/cell-experiments-v2-20261116-0c078a-s21",
+      "observed_sha": "8dd202989833b96aec94dfe62feb40bf774dc558",
+      "prior_protected_sha": null,
+      "original_sha": null,
+      "marker_ancestors": ["3aa1f85ba90c79d220a5cadf2261def176892867"],
+      "descends_prior_protected": null,
+      "newly_protected": true
+    }
+  ],
+  "new_non_hia_heads": [],
+  "drift_since_prior_protected_snapshot": [],
+  "refs_raw_bytes": 722634,
+  "refs_raw_sha256": "03ed8f8c2118f9d310324f244caabdf1bfe95e821e03cda4d8dc5e473508b570",
+  "original_added_names": [
+    "codex/cell-experiments-v2-20261116-0c078a-s01",
+    "codex/cell-experiments-v2-20261116-0c078a-s02",
+    "codex/cell-experiments-v2-20261116-0c078a-s03",
+    "codex/cell-experiments-v2-20261116-0c078a-s04",
+    "codex/cell-experiments-v2-20261116-0c078a-s05",
+    "codex/cell-experiments-v2-20261116-0c078a-s06",
+    "codex/cell-experiments-v2-20261116-0c078a-s07",
+    "codex/cell-experiments-v2-20261116-0c078a-s08",
+    "codex/cell-experiments-v2-20261116-0c078a-s09",
+    "codex/cell-experiments-v2-20261116-0c078a-s10",
+    "codex/cell-experiments-v2-20261116-0c078a-s11",
+    "codex/cell-experiments-v2-20261116-0c078a-s12",
+    "codex/cell-experiments-v2-20261116-0c078a-s13",
+    "codex/cell-experiments-v2-20261116-0c078a-s14",
+    "codex/cell-experiments-v2-20261116-0c078a-s15",
+    "codex/cell-experiments-v2-20261116-0c078a-s16",
+    "codex/cell-experiments-v2-20261116-0c078a-s17",
+    "codex/cell-experiments-v2-20261116-0c078a-s18",
+    "codex/cell-experiments-v2-20261116-0c078a-s19",
+    "codex/cell-experiments-v2-20261116-0c078a-s20",
+    "codex/cell-experiments-v2-20261116-0c078a-s21"
+  ],
+  "original_removed_names": [],
+  "remote_ref_mutations": 0,
+  "raw_snapshot_archive": {
+    "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/branch-prepublication-refs-20261116T145506Z.tsv.gz",
+    "compressed_bytes": 268802,
+    "compressed_sha256": "e9b67bb1278599d9d7daa582cb52a76651639b15af2f0b2a9c4d40f538fa5222",
+    "compressed_git_blob": "ab6ee1ef95f9f2c2204dadf616b3b7ff831b0ebb",
+    "raw_bytes": 722634,
+    "raw_sha256": "03ed8f8c2118f9d310324f244caabdf1bfe95e821e03cda4d8dc5e473508b570",
+    "raw_git_blob": "76b3a88be01647b3d6a4809a3ec8d30486da0c49",
+    "lossless_round_trip_verified": true
+  },
+  "original_local_receipt_sha256": "7bd271d1f364d642eb68673f8493fca1601f0f5d72044b722ed95b622260aa8b",
+  "prior_fixed_follow_up_snapshot_unchanged": {
+    "heads": 7311,
+    "protected_hia": 80,
+    "observed_utc": "2026-11-16T14:42:35.038436+00:00"
+  },
+  "publication_rule": "Preserve all 84 protected heads and future descendants of either HIA marker. Root owns the integration ref update. A fresh exact inventory is required before any retirement."
+}

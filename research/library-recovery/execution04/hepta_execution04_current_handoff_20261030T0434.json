@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.execution04.current-nonterminal-handoff.1",
+  "at_utc": "2026-10-30T04:35:40.083925+00:00",
+  "is_primary_completion": false,
+  "all_blockers_closed": false,
+  "current_known_execution_blocker": "Stable shared-cgroup RAM admission below the frozen threshold",
+  "original_supervisor_status": {
+    "admission_consecutive": 0,
+    "awaiting_durable": null,
+    "capacity": {
+      "available_inodes": 3583722,
+      "clean_inactive_file": 302116864,
+      "disk_available": 6331822080,
+      "effective_available": 717225984,
+      "memory_current": 8174825472,
+      "memory_limit": 8589934592,
+      "oom": 4,
+      "oom_kill": 4,
+      "unix": 1793334936.0129285
+    },
+    "children": [],
+    "completed_jobs": [],
+    "durable_acks": 0,
+    "elapsed_seconds": 2085.686085632,
+    "execution_episode": "execution04_durable_20261030",
+    "identity": {
+      "pid": 253742,
+      "process_group": 253742,
+      "session": 253742,
+      "start_ticks": "1206842",
+      "state": "R"
+    },
+    "phase": "initial_capacity_admission",
+    "pid": 253742,
+    "schema": "hepta.fullstudy.execution04-status.1"
+  },
+  "status_source_snapshot": {
+    "path": "/workspace/scratch/178ced6a501f/fullstudy_execution04_ops/STATUS.json",
+    "bytes": 759,
+    "sha256": "51e23e157f51ac021eaf3e0e4ee8a1de01990429dcf4444dd094cb081157005c"
+  },
+  "host_supervisor_identity": {
+    "pid": 253742,
+    "start_ticks": "1206842",
+    "process_group": 253742,
+    "session": 253742,
+    "state": "S"
+  },
+  "host_measuring_parent_identity": {
+    "pid": 253741,
+    "start_ticks": "1206835",
+    "process_group": 253741,
+    "session": 253741,
+    "state": "S"
+  },
+  "raw_empty_verified": true,
+  "scientific_workers_started_in_current_episode_as_of_snapshot": 0,
+  "scientific_completed_jobs": 0,
+  "required_scientific_jobs": 14,
+  "durable_acks": 0,
+  "required_durable_acks": 17,
+  "planned_gradient_microsteps_not_completed_work": 343808,
+  "source_original_freeze_commit": "bf59ac45860884d770dfd437d8a447068c5ef9a9",
+  "native_publication_branch_head": "6b9353d8fd5ba2d05346afb0772dc49daa6038bd",
+  "continuation_public_files_actual_readback": {
+    "path": "/workspace/scratch/178ced6a501f/publication_bridge_20261030/continuation_status_remote_readback_6b9353d8fd5b/REMOTE_BYTES_VERIFIED.json",
+    "bytes": 6625,
+    "sha256": "d44dd6f28aa2f8b09615bd95eee81236e87e83a8fc972f2bc6075a6b587f331e"
+  },
+  "continuation_public_file_count": 3,
+  "continuation_public_bytes": 27267,
+  "standing_authorization_sufficient": true,
+  "current_runtime_has_no_exposed_resize_or_new_instance_tool": true,
+  "do_not_start_a_second_controller": true,
+  "original_registered_supervisor_still_running": true,
+  "original_outer_window_hours": 12,
+  "future_state_or_completion_not_guaranteed_by_this_snapshot": true,
+  "next_allowed_action": "Observe the same supervisor; when its actual awaiting_durable REQUEST appears, perform real official upload/readback and publish exact ACK. If FAILED appears, preserve and inspect it; do not automatically retry science.",
+  "archive_operator": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/root_archive_io/archive_io.py",
+  "archive_operator_sha256": "81d5adafc692013dfe29855c1d1d5e6fcc07527942e23c7b936d3308cc508183",
+  "postseal_runbook": "/workspace/scratch/178ced6a501f/continuation_recovery_20261030/current_readiness_0253/POSTSEAL_ROOT_RUNBOOK.md",
+  "preserved_checkpoints": {
+    "cleanup_publication": "libfile_915629bae4608191bfc722b4b55da3d8",
+    "root_preparation": "libfile_156df735187c8191950956f349be1ef6",
+    "actual_launch": "libfile_4d24e9b78a448191bf3f207f9e5eb573",
+    "owned_cache_diagnostic": "libfile_02df281e95cc819194a00295bd5ff9d8"
+  },
+  "historical_costs": "Old known work remains in the registered ledger; missing historical upper bounds remain unknown. No existing failed or partial attempt was erased."
+}

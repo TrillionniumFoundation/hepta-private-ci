@@ -1,0 +1,21 @@
+test_program_manifest_freeze (unittest.loader._FailedTest.test_program_manifest_freeze) ... ERROR
+
+======================================================================
+ERROR: test_program_manifest_freeze (unittest.loader._FailedTest.test_program_manifest_freeze)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_program_manifest_freeze
+Traceback (most recent call last):
+  File "/usr/lib/python3.12/unittest/loader.py", line 394, in _find_test_path
+    module = self._get_module_from_name(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/unittest/loader.py", line 337, in _get_module_from_name
+    __import__(name)
+  File "/home/qian-qi/hcsn-p0p5-successor-manifest-r8-gh-20261111/qualification/hcsn_differentiable/c2_successor_v1/test_program_manifest_freeze.py", line 10, in <module>
+    from c2_program_freeze import REQUIRED_FILES, collect_manifest, publish_manifest
+ModuleNotFoundError: No module named 'c2_program_freeze'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)

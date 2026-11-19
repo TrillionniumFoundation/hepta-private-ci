@@ -8,6 +8,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_types::FixedQ32;
+use pretty_assertions::assert_eq;
 
 use crate::CrossFoldPartitionV1;
 use crate::CrossFoldPlanV1;
@@ -18,7 +19,83 @@ use crate::HoldoutFenceIssuerV1;
 use crate::MetricContractV1;
 use crate::freeze_cross_fold_plan;
 
+#[path = "fenced_holdout_file_physical_tests.rs"]
+mod physical;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
+
+#[cfg(feature = "qualification-owned-file-read")]
+#[test]
+fn physical_observation_keeps_the_cursor_and_excludes_contenders() {
+    let temp = TempFile::new();
+    let mut store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let position = store.file.stream_position().expect("owner position");
+    let original = store
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .expect("physical owner bytes");
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Busy)
+    );
+    let mut changed = original;
+    changed[0] ^= 1;
+    store
+        .file
+        .rewind()
+        .expect("seek for physical negative control");
+    store
+        .file
+        .write_all(&changed)
+        .expect("same-length physical negative control");
+    store
+        .file
+        .seek(SeekFrom::Start(position))
+        .expect("restore test position");
+    assert_eq!(
+        store
+            .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+            .expect("observe changed physical bytes"),
+        changed
+    );
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert!(store.state.is_none());
+}
+
+#[cfg(feature = "qualification-owned-file-read")]
+#[test]
+fn rejected_observation_preserves_the_cursor_and_never_unpoisons() {
+    let temp = TempFile::new();
+    let mut store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let position = store.file.stream_position().expect("owner position");
+    assert_eq!(
+        store.qualification_file_bytes(/*max_bytes*/ HEADER - 1),
+        Err(LockedFileCasErrorV1::Capacity)
+    );
+    assert_eq!(
+        store.file.stream_position().expect("restored position"),
+        position
+    );
+    assert!(store.poisoned);
+    let bytes = store
+        .qualification_file_bytes(/*max_bytes*/ 1024 * 1024)
+        .expect("physical bytes remain observable for diagnosis");
+    assert_eq!(bytes.len(), HEADER);
+    assert!(store.poisoned);
+}
 
 fn id(value: &str) -> StableId {
     match StableId::new(value) {
@@ -68,6 +145,71 @@ impl TempFile {
 impl Drop for TempFile {
     fn drop(&mut self) {
         let _ = fs::remove_file(&self.path);
+    }
+}
+
+#[test]
+fn retired_store_releases_its_lock_with_a_retained_open_description() {
+    let temp = TempFile::new();
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let inherited = store.file.try_clone().expect("duplicate open description");
+    drop(store);
+    let recovered = LockedFileFinalHoldoutCasStoreV1::recover(
+        temp.open(),
+        digest("binding"),
+        /*minimum*/ None,
+    );
+    drop(inherited);
+    let recovered = recovered.unwrap_or_else(|error| panic!("retired owner lock: {error}"));
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Busy),
+        "closing the old duplicate must not unlock the replacement owner"
+    );
+    drop(recovered);
+}
+
+#[test]
+fn failed_constructors_release_acquired_locks_with_retained_open_descriptions() {
+    enum Attempt {
+        Create,
+        Recover,
+    }
+    for attempt in [Attempt::Create, Attempt::Recover] {
+        let temp = TempFile::new();
+        let mut file = temp.create();
+        let inherited = file.try_clone().expect("duplicate open description");
+        let (rejected, expected) = match attempt {
+            Attempt::Create => {
+                file.write_all(b"occupied").expect("nonempty fixture");
+                (
+                    LockedFileFinalHoldoutCasStoreV1::create(file, digest("binding")),
+                    LockedFileCasErrorV1::AlreadyInitialized,
+                )
+            }
+            Attempt::Recover => (
+                LockedFileFinalHoldoutCasStoreV1::recover(
+                    file,
+                    digest("binding"),
+                    /*minimum*/ None,
+                ),
+                LockedFileCasErrorV1::MissingHeader,
+            ),
+        };
+        assert_eq!(rejected.err(), Some(expected));
+        let next = LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None,
+        );
+        drop(inherited);
+        assert_eq!(next.err(), Some(LockedFileCasErrorV1::MissingHeader));
     }
 }
 
@@ -289,3 +431,6 @@ fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
         Some(LockedFileCasErrorV1::Rollback)
     );
 }
+
+#[path = "fenced_holdout_current_tests.rs"]
+mod physical_current;

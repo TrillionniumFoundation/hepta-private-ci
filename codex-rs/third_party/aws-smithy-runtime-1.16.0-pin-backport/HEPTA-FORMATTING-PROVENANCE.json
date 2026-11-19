@@ -1,0 +1,870 @@
+{
+  "schema": "hepta.vendor.repository-formatting.v1",
+  "package_directory": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport",
+  "formatting_input_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2",
+  "kind": "repository Rust formatting",
+  "source_files": [
+    {
+      "path": "src/client/auth/http.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "8d5edd7b46bc27c762ace7d58966d0a37ed69e6e",
+        "sha256": "81d213f591f9287114a70bf4c416d3afc1841a81544e5386e9280802afeb0a73",
+        "bytes": 12978
+      },
+      "after": {
+        "oid": "937961e793429b74c5244c10a9f32771e46493c0",
+        "sha256": "edf3b3a75fc137d5e5e9b03bd524c304ed5ee692c704b3255ce1a56fec3326a7",
+        "bytes": 13374
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/auth/no_auth.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "dff0b5ec23b372ed74e01746afcf66eefe2531e0",
+        "sha256": "674f36221a84fa88c4106fd4b88ba9b082f175806e476ab0a64e415be7dd3921",
+        "bytes": 7072
+      },
+      "after": {
+        "oid": "199c3bb6fb1ac2db4be3efaa2fe09042dee0152f",
+        "sha256": "b7b5de68bd2f9049b1bcbdad39bbc09ae7b6d4b92f4e0275c587f1b53ee03570",
+        "bytes": 7630
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/config_override.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "07886a9526db21ca94e3ae04f8e923243c19fdbb",
+        "sha256": "80f15259cb626e468596d199293188995e9f3143abb1ec952101a09e74ba86a8",
+        "bytes": 8922
+      },
+      "after": {
+        "oid": "05313e1281de2c23e16740f2af9c8c69a7b159fc",
+        "sha256": "47adc0051f623988afee097916d5580272590e0a9dfc71b75f32ea23ede22183",
+        "bytes": 9083
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/defaults.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "f59c9b8efe727561030f36c346150adc2946870a",
+        "sha256": "4cdde241d5b3995904fe253296fe04ac042adc125dfe4aad80fcf97a82160e4b",
+        "bytes": 36178
+      },
+      "after": {
+        "oid": "33e135355bf919bc5ce21a65174d8abc471e420d",
+        "sha256": "ffc25b343c889c00dd89c35d558f9f272301055d988751cc613b14debf19e477",
+        "bytes": 36440
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/dns.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "9fce779ef412525cb9581827c442639f0023989d",
+        "sha256": "8b78c344dd9853685ad02dcf6220121eb8a9ab6f17cbe08ee3c16114b94f2d45",
+        "bytes": 1603
+      },
+      "after": {
+        "oid": "af1f68cf78dd9a1e289e6c0483647b91f34acaee",
+        "sha256": "188d4097c36361d016e6dc8e5713474506d1fa521281356de46aecba792bac07",
+        "bytes": 1691
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/endpoint.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "634d3773e9ade3b4eb804425617866f16921c7cd",
+        "sha256": "4bcea284877a0b5622414297375071a8832ad617ed15dcbafbeae5127c88b7ba",
+        "bytes": 2469
+      },
+      "after": {
+        "oid": "f109e099c0d74fc3504a3dcfce22eb3a330ffea7",
+        "sha256": "66154bdbe0cc580d03c99df504ccd18d7115e6bdcb6cdcb022246229d1dd8fb5",
+        "bytes": 2513
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b1fdfd791a8fa21ea9e57bea913218af81b897b8",
+        "sha256": "fd13bc31435cf78e8f861f8ac7c63595a1ce07039f75ef8e8c67c7eb48736e87",
+        "bytes": 4577
+      },
+      "after": {
+        "oid": "bb3a9ef335d71f7486c7e2701c6cf6655d0934b7",
+        "sha256": "bf5c509819737d7fddd9050e1310ba6affacdb221aa20bdc448b440180016b00",
+        "bytes": 4729
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/content_length_enforcement.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "5f7896d09ae55214a575d0c233cc2a0c45e2dc7d",
+        "sha256": "36009c7fc2b547dcbeed7654cc629b8e06a10852f99e680673330980c9f4d0fe",
+        "bytes": 10688
+      },
+      "after": {
+        "oid": "dc74c0e6d9e131c39c6b489d4977687ee9408ef5",
+        "sha256": "6f030eead7f04dbac2c1e81d6c18d1e9964354996841b670fcc431bc1386b1ae",
+        "bytes": 11018
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "46c4374f6511fb5998ee0bcd73eb05d60655fda0",
+        "sha256": "f65bb31aa50c61449e4a583ee6468b8ee42f8b48a71a4e7c8c442edb86661ffb",
+        "bytes": 14586
+      },
+      "after": {
+        "oid": "b127b454963c2d0be3100c78abb5c2b0fa956815",
+        "sha256": "4828b08dd649ed0c2f85a9dbf6d5b0a22d6b6b27258b67518aa5c2a342ea7b2e",
+        "bytes": 14863
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/http_body_0_4_x.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "725985024764261c244131563e0e9546b532f429",
+        "sha256": "c2a6630eb3a5628b705bbacb7c65eb04901cdb8ccaf9710a9adc465cb7ca06d0",
+        "bytes": 7293
+      },
+      "after": {
+        "oid": "d2dfaabab08cee7808d58bee17de73106f5740e0",
+        "sha256": "ae7df0a6ed53f6eebbb33766189466b1fe80854ac36be2958726f9f93c875738",
+        "bytes": 7338
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/http_body_1_x.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "1559d9394df1fd837cf06a4e5c25f38b20d4aab3",
+        "sha256": "9ed82d521ed8079a8af2c75ef6ed9eb0df14b7bb30e70c913cf0fc85fafbf2fe",
+        "bytes": 7431
+      },
+      "after": {
+        "oid": "4e5876c99047f9ab724e886a49d2b3103c7d46c2",
+        "sha256": "b2dee606f58b05ee910e58af5cdf66791b22c82c34f6994eefec9fd2342ea432",
+        "bytes": 7476
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/options.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "565b7e187a0518680587da3cb163966ada043228",
+        "sha256": "2d7493ffa49b6a74e1e0156ce13a26c5d96d3073d2030ac63ca414a6971ddb09",
+        "bytes": 6472
+      },
+      "after": {
+        "oid": "4642d15814df8eda87bd370922740bccf7bc58be",
+        "sha256": "ec0f3db0e6b65f1ace8f667c602e46de9d1df996d7430b1e0ee188f42ec65702",
+        "bytes": 6526
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/body/minimum_throughput/throughput.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "97ed2ab62975a529f2529fbe35870c81263d7d20",
+        "sha256": "5be8ef98b0f7c7bbc07e8b21b954c2669365895e31e839ac82c3d059f9c0ed01",
+        "bytes": 22233
+      },
+      "after": {
+        "oid": "d3588f210114d3c2dff90cd9588c384cdb475c86",
+        "sha256": "31edae5e1fb649062f23975f7906adf214ef40abb78ef27229b28abfe3826cec",
+        "bytes": 22246
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/http/connection_poisoning.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "0f2802ade15b658080f65312b61cd59e0a74b711",
+        "sha256": "03662d5f2548070727382aef04a29a4c5e4dd9fbe40c5fe9419d7972847ce211",
+        "bytes": 4556
+      },
+      "after": {
+        "oid": "6ba630391c47ca70f0cb6df8d9958e98d5e01e89",
+        "sha256": "d4d2fba935ed0b9119c20415c7af66e7c9aa220cbed27b816a8098fe2b0ae5e0",
+        "bytes": 4721
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/identity.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "4b38155a8e4b31d69971a021de57d78248f6453c",
+        "sha256": "b8cb3b8545298a3a0d627dd5963555202a5ce60a7b76a70d34ca3d93cf8c66b2",
+        "bytes": 248
+      },
+      "after": {
+        "oid": "01e4868904a4c758d7fe9cfe8761c751c969e2d8",
+        "sha256": "e6841d007a915846f7d90415013380a6c1bd517e99a53409c99065e97230ba84",
+        "bytes": 261
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/identity/cache.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7e349c78ec155f80c40f9357851fe30013b779e3",
+        "sha256": "e3ed8141c502f4a4259db5681e8a53c5b4583bd6e498a34dee1fa7aea747880b",
+        "bytes": 2373
+      },
+      "after": {
+        "oid": "6864814fd840147cc73824da6e64766a802dc3fe",
+        "sha256": "a8fa002b300ff3f38dbad22b44e40f88548d7234807fee9247163426b206eea8",
+        "bytes": 2544
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/identity/cache/lazy.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "e3ca850fa384bf261a439c9239048defd6a8412d",
+        "sha256": "39d2526e269ba5568114eb533c9ac6b5f495d70d0ff9d422a94f313367897958",
+        "bytes": 49039
+      },
+      "after": {
+        "oid": "4aac45a7f839f05aa984e82f4b6a985604085391",
+        "sha256": "21278aba325d881b6a983d30af803a387dc96879934dd934414a67c70da6229f",
+        "bytes": 49472
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/identity/no_auth.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "eb96f57b3efe926b8957ddd166c5e9409ec85d5b",
+        "sha256": "f4c04fce808de34918567dd54ca660403b279b00ac06bb76e7027dc437941318",
+        "bytes": 1173
+      },
+      "after": {
+        "oid": "75066d7bb9678e533ecd8e5964a08f16997a4b9e",
+        "sha256": "ebd23a5dc868dafc81094795ede844bcb700c7233bca0b2283ae026bf0b4f7a8",
+        "bytes": 1263
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/interceptors.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "11a597c83b7dd52c7af41553e472b8756e46f671",
+        "sha256": "dba55f5b9d6646e0018d53e9e4ebf570486cca6608dfaca0b32dc5023d8c0e94",
+        "bytes": 18321
+      },
+      "after": {
+        "oid": "b59c452f45b3b3ae9e2acb96e47df634998e5fa0",
+        "sha256": "1e29e1dbe42589bffb9b0f68ae1d2c11dd8fe72639a5f0f53b65cdcea395d83e",
+        "bytes": 19087
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/metrics.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7f067565e8beeaced8c1d354983287c154fc4153",
+        "sha256": "01448c7634ee8da8f0c947effd361c339a778e891521fa00633bbf9aab2f4960",
+        "bytes": 29923
+      },
+      "after": {
+        "oid": "27651b454187f7d01b40c980c791af5268e3db39",
+        "sha256": "75a84ac619eab105273d5f1865e501380d697f7390cdf1f40b7e55ecf3acefb2",
+        "bytes": 30710
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/orchestrator.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "1f1bb2a5ff5e01217411e8ea55c1ff4ef85106ee",
+        "sha256": "8861ff4a78fcfeda9922f68fc963d0ad41938eda57ccd13f731e7fa345033fb9",
+        "bytes": 61919
+      },
+      "after": {
+        "oid": "8565eea1498e5c4d58bcc28911ecee6b834d920c",
+        "sha256": "712b45cb30d8706580b88a9cbb093a332f2f672d7c7d5611544dac669437f47e",
+        "bytes": 63959
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/orchestrator/auth.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "40620bc7e286eed57d0bfaf296e4dac6008329cb",
+        "sha256": "b7c956a4a32581e3b7c613b690c3727272a3cd892d6c35e78a4181bc467e2eec",
+        "bytes": 47417
+      },
+      "after": {
+        "oid": "7fc464142b8ee7c8c2b167508b2e489fed8d7503",
+        "sha256": "c0735da048fc3168dc14c60ac80be1928d5c07011d9bedeb257b5a0696e14629",
+        "bytes": 48778
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/orchestrator/endpoints.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "a52a6ade2cc51f5570489404028273e4ffbca277",
+        "sha256": "7d7901d9954c498c1a2dd6098c598e058819d71c0c3a476f53d547406a5579d1",
+        "bytes": 6368
+      },
+      "after": {
+        "oid": "409141fbc0f19d85f614d1bd6ec83226a89ae48b",
+        "sha256": "ba356454d7bf2b16144f71bd1135caf0d707caaf06ef412f9d1063916aba344c",
+        "bytes": 6534
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/orchestrator/operation.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "43d88498fd0ce9a8c7b4b8c4a90ca2aa7710af97",
+        "sha256": "617b2c5f3cff3e2ef196e3139c20ef6b8b5bb9dd44f854750fdb0652d627fad7",
+        "bytes": 20834
+      },
+      "after": {
+        "oid": "16a92b70ab60c1141b0c50b8262ffdb681c71c68",
+        "sha256": "534f5e3a548e28a6763bfceb6377061b18187b5deb946697b6d3e53f8641e901",
+        "bytes": 21711
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "ae90153fe96e4ccf27fa6953cc7b891a92ebd6fa",
+        "sha256": "dd4fb0cb6011639d4a06bacb992e82d5a216d252d43022bba89db6cf950ed481",
+        "bytes": 7387
+      },
+      "after": {
+        "oid": "79b960257e81a5fd12cef446187fd4e3d8f6c7df",
+        "sha256": "9142ca922aaa451daea2743483678876aaf056255788ebcb70da81af543985b8",
+        "bytes": 7540
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries/classifiers.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "4f2bc78850e32355cc7a457131f27c17753d5159",
+        "sha256": "dcf73fd736fc49e403f0e9aa9d0da57c2f6200443bd9f4ce248e8a18e54b3a9a",
+        "bytes": 15105
+      },
+      "after": {
+        "oid": "7a194875369cba298186d0043e4dcc2b77b3f0fd",
+        "sha256": "deb242161172e2333c3bd2ea72df8f0b10ff1ab762f26a4866359b5c2934db0d",
+        "bytes": 15635
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries/client_rate_limiter.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "408897a3496db3a919a5baaeee20dca28e378bff",
+        "sha256": "33d8227a7801da48b6fc85d2556596154005d31c9a0e580301b1cc5f7a1deef4",
+        "bytes": 36955
+      },
+      "after": {
+        "oid": "13067a9b9b454227a5bbc9155414acf7b4481475",
+        "sha256": "53227d57529e63c91db9e7f20f991584f7949bee6ee0f936a6941b0ce2c080c9",
+        "bytes": 37013
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries/strategy/never.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7baf4a14265d664f8dc6aea65f6629b1dfd09c24",
+        "sha256": "9ac8dc414d80532e2a8bbe4f0db60e23b133c92e8d3b79cc04dfa5e96c0e9511",
+        "bytes": 1190
+      },
+      "after": {
+        "oid": "d8a379f287c4fb3cd6ae03b2cfa5ba8ae35c588b",
+        "sha256": "50c6778d4d995a402e95c8bdb2cf2f23edf6183908473433290cdc026bf5eab4",
+        "bytes": 1233
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries/strategy/standard.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "c7b3d4f57ed0ed2adc140f1d72808a513d7231d6",
+        "sha256": "decf4bf787ece490da1cd258262c95da3ddc624a07276e7ab697c4baa3060e1e",
+        "bytes": 70467
+      },
+      "after": {
+        "oid": "f1cab9d3eeea5034dc09dcc574f62a03686e07be",
+        "sha256": "6d44b9e39a3f6ab678c11174a13244dbcd2e744fc8ed89499c509734615be30a",
+        "bytes": 71966
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/retries/token_bucket.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "8b6a2c088133edea3b317b8d3f9923cf7338c773",
+        "sha256": "afb67228a79dd3f8063baa6fb9b6f3696a934f6eb0ad30936f478b9e7eaa0a41",
+        "bytes": 38165
+      },
+      "after": {
+        "oid": "85174c5096875f88147a8fd1ba0faa5790ef2ea3",
+        "sha256": "2a2756b0b6a68046e6fa97a45759a948dda1612f95c3aec5b506261156bdb89a",
+        "bytes": 38278
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/sdk_feature.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "70bf42fa7dd3c05f036a4d8462356ebeebc03615",
+        "sha256": "c28d70d755f9b6db3dab3b002928aedd8cc39a81c976295c37ed58d2ff629837",
+        "bytes": 805
+      },
+      "after": {
+        "oid": "7e10a986736eccafbb9831e00b31c5e3ec048f8b",
+        "sha256": "b95a0c36165ac17f4165e983527c10c06d328fbe8fa5dc0565f327509d319851",
+        "bytes": 837
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/stalled_stream_protection.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "3e2ace3f2ac39fa1422a0d9ead1121ff1f900eea",
+        "sha256": "ee8160c58d28299fb994a88fb3a71c35df127730d1ee9918ebef8aa34489b011",
+        "bytes": 5769
+      },
+      "after": {
+        "oid": "c4edcfbf7b4f97d6e80112eae0cbfb464f9a65e9",
+        "sha256": "079788179ef327791bd784bed3a885fc95c12ea4fefbd7fdcd04bfdf6d575450",
+        "bytes": 6007
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/telemetry_bytes.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "097e7349b9bdd18f37e6e88a519e5452840a5b9c",
+        "sha256": "66c6fe4d0ef1c5eaba6761f8f478e8251062b331cb9c7ba3850ee17a50ee7b61",
+        "bytes": 8560
+      },
+      "after": {
+        "oid": "a87648cd342ae7abf41c99a1b0617b726ca1231b",
+        "sha256": "31a7fbe49395e4c6220ab7d8aa9a343c12308f5f2989abb13a7717fd22d973e2",
+        "bytes": 8667
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/test_util/deserializer.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "547fc253193371534a8abe73183c38a4e3390d2f",
+        "sha256": "ae74452b0d4d55b9acfd9c326f74ab9b2cc4cc70a5fbb215fbf25d6064df9dcb",
+        "bytes": 1832
+      },
+      "after": {
+        "oid": "29f2f2b398dc2d64557185d1005ec6ca28c1094a",
+        "sha256": "85e47f988cc3d6dbe2cc013017c2a6194a47b0968e6a5a44ba7cf5260be97a2e",
+        "bytes": 2011
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/test_util/serializer.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b6cf8e737ffd75bd48631b1f8f37482b2d2d89d6",
+        "sha256": "e92ff7e50a174ccc194e6a43b1949dc8e54299711baa35aa3d9c2ed95f9ee9ee",
+        "bytes": 1950
+      },
+      "after": {
+        "oid": "b469d15c0085638f0c84a10b1e68c0fd61dfebc1",
+        "sha256": "a8b95468757361ebff10720bce00e255ff73b3dee6ce73b0b74a4d96b467aa79",
+        "bytes": 2058
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/timeout.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "98c2fd0baed01f3152d51ea56b8cdb169d13e329",
+        "sha256": "c3483aae98653b0b2b3ff0dbfdd374dc5e256d3fa3f0899d6f5f15a1188e1ec8",
+        "bytes": 8429
+      },
+      "after": {
+        "oid": "3379d0f161e19041957f2f24420b36b57f1d6919",
+        "sha256": "1336b566a536330fe87f664d5a043951bc5a9aa3ae520a1f31f4055563e2e9da",
+        "bytes": 8614
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/waiters.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "b5e297c2b5474b3838df8e982bc10ef0a85a138e",
+        "sha256": "a78a7da924e3b178b65b9355b232c951c8dc811edea8f8ae6758cae9bb617774",
+        "bytes": 21009
+      },
+      "after": {
+        "oid": "6d02879b3869a725002ea0e8ae2fb006b0653f15",
+        "sha256": "3256262e78ecbce4db3018b052d08a74bfe678f7f574c593c1a44f1d0afac214",
+        "bytes": 21353
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/client/waiters/backoff.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "80c49b5cc26e580f7907246cf1dc08f7d509cb84",
+        "sha256": "a12ad3b65d298a339e3b0f864c8d980c4d65e97e0754fddbc23ebb45c0ee1c0b",
+        "bytes": 4953
+      },
+      "after": {
+        "oid": "f56a33453b44df147e6ec80649141017be8858d7",
+        "sha256": "dda1278447fda89d4294f55ef01b71f7e84e72c36503e32a9db6652f81d82209",
+        "bytes": 4977
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/expiring_cache.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "eb43af2b3c8ffc1525a0008d5a3c27407440501e",
+        "sha256": "b8160c75325b08b9859fd8909905357ed29f918d5216d4302496bc17d9e78bb8",
+        "bytes": 5679
+      },
+      "after": {
+        "oid": "82c41b09a3582ac5d48efb3953f323ed759b2aff",
+        "sha256": "38a2a0227f9b67a736be881f48fd99738c3ba330a62eb8e051f1e1a4b6c8c9c4",
+        "bytes": 5737
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/static_partition_map.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "fe586b3c21435a155af0aeffb6a2e6d8171ff4fd",
+        "sha256": "69aa6852a8f1cc9f38b2595ab267c89b7db2a97e000aac980c6edfb010640dba",
+        "bytes": 5179
+      },
+      "after": {
+        "oid": "1d112b2dfd6b87d42507907152f97c1b0336d03e",
+        "sha256": "4e44bcae00e70bc965cba1e3259a991f0051ded454c4c6b77cd3bd6c644aceb8",
+        "bytes": 5207
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/test_util/assertions.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7cd8dfac6904e7f72b83cc2b3c1e99c8e7d387fb",
+        "sha256": "e77a0c676705944ca07aa2f687e26681287a27aab79f6ea4f665e7ea2c403839",
+        "bytes": 2003
+      },
+      "after": {
+        "oid": "841c4c3a53b609eb0bbd5aa0baa09654877efb86",
+        "sha256": "c7c5caa95b6b2e5b48226d7af39bc9e2897478fe8f6c43330b45976f66fe9cce",
+        "bytes": 2021
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "src/test_util/capture_test_logs.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "7236b3876cc189b7893ebf54031969f5131a82a2",
+        "sha256": "b364228f0a3a315ec3ce18618a86b4b4d6d6d74a971cec006bf157d70b5b8096",
+        "bytes": 3610
+      },
+      "after": {
+        "oid": "c6f5ab0b5e6f56849954e71906174cc81dcf466b",
+        "sha256": "170965312606f72157f433653b9b6c5bded97abfd93287c2723864f6dca5bc02",
+        "bytes": 3623
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "tests/reconnect_on_transient_error.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "41600db4802d07df40fb017fc8a01111776fdaf8",
+        "sha256": "2cc718b94863a201febb82a801fc929c897612e7c9b8e80f4744e2deda2b8e9e",
+        "bytes": 9407
+      },
+      "after": {
+        "oid": "f4bf72318734e2f423d0adecff968c0c0696cfdc",
+        "sha256": "b3160666e19d55eb077b216b3a071cd297ce2d0d1d3f559ab0193e65766159e2",
+        "bytes": 9718
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "tests/retries.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "4638ca08f921796edef5eaf487f7cc535d7ec00b",
+        "sha256": "243ac441c44d3118a8d2b5e5fd0105a841d0a131facb6c5022b609a63cdd82df",
+        "bytes": 6481
+      },
+      "after": {
+        "oid": "87008755376ac435635d4826ea4c7199f818c9d1",
+        "sha256": "416fe51a544627f653073289d96e39629866a6d4229b7170ced1f1fc811d15e6",
+        "bytes": 6919
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    },
+    {
+      "path": "tests/stalled_stream_performance.rs",
+      "mode": "100644",
+      "before": {
+        "oid": "dcb4d535b1519fc0f23773e8b10f22d92c3db605",
+        "sha256": "65e5ba36361c357e748b8dc267fd1f397fbac7e54ae75f98983680636dc4ca90",
+        "bytes": 4428
+      },
+      "after": {
+        "oid": "a10707a7ccd47b6e650855c56f2d5ba8cbd29c31",
+        "sha256": "21431ba2cc90831cbd9c851be2a06304659729c956b5f2b5ea2776e07548d7ad",
+        "bytes": 4522
+      },
+      "change_categories": [
+        "layout and import regrouping"
+      ]
+    }
+  ],
+  "source_file_count": 45,
+  "original_control_records": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/Cargo.toml",
+      "mode": "100644",
+      "oid": "c7677a575131607e7e0893b296ae4d39b1e51182",
+      "size": 4863,
+      "sha256": "d3c2f4bde65caccfdc2abecb932848e6b34b04123aa162f5f8c0f56c113937af"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/HEPTA-PATCH-PROVENANCE.json",
+      "mode": "100644",
+      "oid": "daca41e0b5f9e32fd9032f50a6949e63ef00b998",
+      "size": 2646,
+      "sha256": "a42b84a2a61fdffacc6a129b07f8bb072cbb6772a7f90e9696d5e7511930c7cb"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/HEPTA-PATCHES.md",
+      "mode": "100644",
+      "oid": "aca45dc34bfd5eac924d8c0bfd3383a1ad634c78",
+      "size": 694,
+      "sha256": "d3985ea039e72f55f37774d26dbde6a3a590644c79930cc501e1d9c1d62ac326"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/HEPTA-PIN-UTILS.patch",
+      "mode": "100644",
+      "oid": "7478f9c3ee09dd245f0aeed2d6fb5d8c991d55d1",
+      "size": 7266,
+      "sha256": "a14497d90100a0ad77d84acbdf1c9b8ce1bc33bf870bb6b78179f1fe2025ac90"
+    },
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/README.md",
+      "mode": "100644",
+      "oid": "b2db1931ee7520607d2d28c1db9e81a228ecc7d3",
+      "size": 352,
+      "sha256": "0c7b69ddc3d0d112f742bbda8768d7a7e4d364d2dc6efad227cf6e440ecd4dc2"
+    }
+  ],
+  "preserved_license_files": [
+    {
+      "path": "codex-rs/third_party/aws-smithy-runtime-1.16.0-pin-backport/LICENSE",
+      "mode": "100644",
+      "oid": "67db8588217f266eb561f75fae738656325deac9",
+      "bytes": 10142,
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+    }
+  ],
+  "formatter": {
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "732e934ba496d90fbe042b8d41d479ef901643e5"
+    ],
+    "original_command_checkout": "fcff463449abc987a8552b29102cd3e196214b99",
+    "input_files_equal_at_c213": true,
+    "rust_toolchain": "1.96.0",
+    "configuration": [
+      {
+        "path": "codex-rs/rustfmt.toml",
+        "oid": "f9686f9732d3d48311c41c4fd06b40781928b8ec",
+        "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+      },
+      {
+        "path": "codex-rs/rust-toolchain.toml",
+        "oid": "917d2492264a35bc9c0feaef41878d8825870866",
+        "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+      },
+      {
+        "path": "scripts/format.py",
+        "oid": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+        "sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3"
+      },
+      {
+        "path": "justfile",
+        "oid": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+        "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+      }
+    ],
+    "original_run_receipt_sha256": "c42cc5dfd146c96d9138dc8ead8e89ece58a849a69f9022389a7122606fc6ec2",
+    "original_changed_path_manifest_sha256": "b362d3ceecdfb901241b0469e078cf462f42db0eb65c49789df97d8e81375046",
+    "original_full_command_exit": 1,
+    "original_full_command_failure": "A separate historical source archive lacked its Rust edition context; this is not a full-repository formatting-pass receipt."
+  },
+  "review": {
+    "import_targets_aliases_visibility_and_attached_attributes_equal": true,
+    "comments_byte_equal": true,
+    "non_import_literals_equal": true,
+    "remaining_changes": "Trailing commas, single-expression closure/match block layout, return semicolons, and same-order adjacent derive grouping as emitted by rustfmt.",
+    "method": "Exact Git/SHA/mode checks and complete normalized changed-token classification; not a compiler AST equivalence proof or a new whole-package functional audit.",
+    "runtime_tests_run_for_this_formatting_change": false,
+    "new_runtime_or_scientific_qualification": false
+  },
+  "dependencies_and_features_changed_by_this_formatting_change": false,
+  "minimal_dependency_patch_files_rewritten": false,
+  "license_or_upstream_readme_files_rewritten": false
+}

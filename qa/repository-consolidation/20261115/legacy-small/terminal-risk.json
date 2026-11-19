@@ -1,0 +1,70 @@
+{
+  "base": "350ee3581143e3d7a0b39c733df46ce032e01954",
+  "incoming": "89c05366c28b9d144e59965605e3cd88699f6874",
+  "preview_tree": "5d694555ab8dbaa890b649beb76088fcec47f8dc",
+  "normal_merge": true,
+  "conflicts": [],
+  "review": "Complete 228-line estimator, 149-line test suite, README and exact-head workflow read. Strict source/seed/arm pairing, missing/overbudget full loss, TRAIN-only fit, source/image-disjoint frozen holdout, immutable per-arm proposal checks and once-per-selected-cell switching cost remain. Weights are an additive surrogate only; DENY_ALL is unconditional. Workflow only runs synthetic contracts.",
+  "tests": {
+    "command": "python3 -B -m unittest discover -s qa/ndu-terminal-portfolio -p test_*.py -v",
+    "exit": 0,
+    "tests": 9,
+    "skips": 0,
+    "numpy_version": "2.3.5",
+    "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "log": "qa/repository-consolidation/20261115/legacy-small/terminal-risk-tests.txt"
+  },
+  "bash_n_blocks": [
+    "Verify exact source identity",
+    "Install pinned numerical dependency",
+    "Execute fail-closed covariance contracts",
+    "Require unchanged source checkout",
+    "Record non-authorizing evidence boundary"
+  ],
+  "real_generation_executed": false,
+  "native_qualification": false,
+  "incoming_file_pins": {
+    ".github/workflows/hepta-ndu-terminal-risk.yml": {
+      "bytes": 2250,
+      "sha256": "28f32c3a727b4e05e231b120f4bd2d1094cc2866076a48f89d153eead724d84f",
+      "git_blob": "b766e5badda2090fb916362dbc75d9ddacbcdb38"
+    },
+    "qa/ndu-terminal-portfolio/README.md": {
+      "bytes": 4944,
+      "sha256": "80c9e5ec03567bbd6e2f36aefa67f0381b8651032ed5d868b0f6ffbfd34234e7",
+      "git_blob": "b40d78dc7124ba106f73eb565f1f0efbe42077db"
+    },
+    "qa/ndu-terminal-portfolio/terminal_risk.py": {
+      "bytes": 13003,
+      "sha256": "cbb5b82b639d4504d591be826380a5a80e3a08eda97e0ad84590e0cce4cab9b9",
+      "git_blob": "3b1b1f63b621bb234411e07660f96434e561194e"
+    },
+    "qa/ndu-terminal-portfolio/test_terminal_risk.py": {
+      "bytes": 6854,
+      "sha256": "fdb8ebc879355eb4268656cc9f2c4fd32d0904a0d7be79a6b91544e9390c22f9",
+      "git_blob": "4ebb04ca946e11452d47e6ac58cab214120bc85b"
+    }
+  },
+  "final_changed_file_pins": {
+    ".github/workflows/hepta-ndu-terminal-risk.yml": {
+      "bytes": 2250,
+      "sha256": "28f32c3a727b4e05e231b120f4bd2d1094cc2866076a48f89d153eead724d84f",
+      "git_blob": "b766e5badda2090fb916362dbc75d9ddacbcdb38"
+    },
+    "qa/ndu-terminal-portfolio/README.md": {
+      "bytes": 4944,
+      "sha256": "80c9e5ec03567bbd6e2f36aefa67f0381b8651032ed5d868b0f6ffbfd34234e7",
+      "git_blob": "b40d78dc7124ba106f73eb565f1f0efbe42077db"
+    },
+    "qa/ndu-terminal-portfolio/terminal_risk.py": {
+      "bytes": 13003,
+      "sha256": "cbb5b82b639d4504d591be826380a5a80e3a08eda97e0ad84590e0cce4cab9b9",
+      "git_blob": "3b1b1f63b621bb234411e07660f96434e561194e"
+    },
+    "qa/ndu-terminal-portfolio/test_terminal_risk.py": {
+      "bytes": 6854,
+      "sha256": "fdb8ebc879355eb4268656cc9f2c4fd32d0904a0d7be79a6b91544e9390c22f9",
+      "git_blob": "4ebb04ca946e11452d47e6ac58cab214120bc85b"
+    }
+  }
+}

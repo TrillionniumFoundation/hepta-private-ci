@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.memory.blocker-evidence-status.v2",
+  "created_at_utc": "2026-10-25T00:57:24.236684+00:00",
+  "report_status": "local controlled v1/v2 completed; final formatted source CI pending",
+  "published_source_head_reported_by_root": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+  "published_source_pr": 3823,
+  "probe_publication_head": "8c624c9c9b159dce668fa2702368fe719bc815c7",
+  "complete_blockers_closed": 0,
+  "complete_blockers_total": 8,
+  "production_accepted": false,
+  "independent_future_task_groups": 0,
+  "future_accuracy": null,
+  "new_shadow_probe_actual_model_calls": 1,
+  "gates": [
+    {
+      "id": "long_term_correction_retention",
+      "title": "长期纠正与保留准确性",
+      "full_closure": false,
+      "status": "failed_frozen_quality_gates",
+      "observed": {"seeds": 3, "seeds_passing_combined_gate": 0, "decoder_optimizer_updates": 5184, "raw_decoder_rows": 558, "immediate_source_overlay_correct": 72, "immediate_source_overlay_total": 72, "dirty_admission_refusals": 204, "dirty_admission_model_callbacks": 0},
+      "interpretation": "source correctness and parameter recall are separate; retention is after fresh-base replay, not pure continuous-adapter forgetting",
+      "required_remaining": ["frozen long natural task stream", "predeclared per-round retention and task gates", "stable correction and retention across independent task groups"],
+      "sources": ["longitudinal"]
+    },
+    {
+      "id": "native_source_query_binding",
+      "title": "真实来源与查询绑定",
+      "full_closure": false,
+      "status": "controlled_native_source_query_qualification_passed_production_acl_open",
+      "observed": {"typed_key_nonce_source_binding_implemented": true, "delivery_revalidation_implemented": true, "external_source_acl_qualification_established": false, "native_backend_dispatches_current_round": 2, "pretrained_training_updates_current_round": 96, "controlled_v1_and_v2_qualification_passed": true},
+      "required_remaining": ["current external source authorization", "authenticated run/subject/current-context binding"],
+      "sources": ["native_hosted_failures", "native_shadow_source", "native_shadow_owner"]
+    },
+    {
+      "id": "future_strong_retrieval",
+      "title": "未来任务优于强检索",
+      "full_closure": false,
+      "status": "no_eligible_independent_future_groups",
+      "observed": {"independent_future_groups": 0, "future_predictions": 0, "future_accuracy": null, "historical_exposed_natural_tasks": 4, "neural_verified_task_successes_per_arm": 0, "task_denominator_per_arm": 4, "neural_admitted_repair_actions": 0, "neural_new_original_gate_executions": 0, "retrieval_baseline_is_complete_strong_agent": false},
+      "required_remaining": ["untouched independent future task groups", "same inputs and actual task execution environment", "strong retrieval plus reasoning/tools baseline", "no tuning from final evaluation results"],
+      "sources": ["budget"]
+    },
+    {
+      "id": "equal_budget_fission",
+      "title": "相同总预算下的分裂收益",
+      "full_closure": false,
+      "status": "no_observed_split_gain_and_incomplete_equal_actual_cost",
+      "observed": {"optimizer_updates": 416, "planned_decoder_requests": 256, "executed_decoder_rows": 210, "input_contract_refusals": 38, "unexecuted_load_requests": 8, "exact_source_scores": {"single": "3/16", "expanded": "3/16", "data_split": "1/16", "random_split": "2/16"}, "lineage_supported_exact_score_each": "1/16", "single_active_parameters": 230400, "other_arm_active_parameters": 460800, "matched_complete_actual_cost": false},
+      "required_remaining": ["five-way common budget comparison including strong retrieval", "fixed capacity and priced growth reported separately", "actual full cost matched or utility-cost frontier reported", "independent multi-seed confirmation"],
+      "sources": ["budget"]
+    },
+    {
+      "id": "learned_edges_autonomy",
+      "title": "学习连边与自治生长",
+      "full_closure": false,
+      "status": "negative_edge_result_with_prescribed_lifecycle",
+      "observed": {"base_kind": "random tiny model, not pretrained", "decoder_optimizer_updates": 1024, "router_updates": 400, "decoder_reads": 75, "exact_scores": {"no_edges": "0/6", "fixed_edges": "1/6", "random_edges": "1/6", "learned_edges": "1/6", "capability_route": "1/6", "direct_parameters": "2/6", "exact_source": "6/6"}, "real_owner_versions": 14, "lifecycle_operations_executed": ["split", "merge", "rollback", "rollback"], "lifecycle_triggered_autonomously": false},
+      "required_remaining": ["useful learned-edge gain over same-cell strong controls", "data-driven split/merge/rollback policy", "net utility after training and routing cost", "holdout and multi-seed validation"],
+      "sources": ["edges"]
+    },
+    {
+      "id": "physical_distribution",
+      "title": "多物理节点与数据本地性",
+      "full_closure": false,
+      "status": "two_runner_asynchronous_relay_only",
+      "observed": {"run_id": 40102776848, "independent_runner_environments": 2, "physical_hardware_attested": false, "main_training_updates": 256, "main_raw_decoder_rows": 44, "main_model_child_receipts": 37, "source_adapter": "3/3", "source_base": "0/3", "source_shuffled": "0/3", "target_fresh_adapter": "3/3", "target_cold_load": "32/32", "target_callbacks_after_read_then_withdrawal_then_replay": [33, 33, 33], "preflight_tests": 16, "additional_preflight_tiny_updates": 12, "additional_preflight_tiny_rows": 14, "preflight_per_call_receipts_retained": false, "current_remote_evidence_positive_executed": false, "cross_host_online_quorum_executed": false},
+      "required_remaining": ["authenticated online multi-host source/evidence access", "partition and restoration semantics", "authority failure and recovery model", "explicit delivered and undelivered withdrawal behavior", "physical identity evidence if claiming physical independence"],
+      "sources": ["relay"]
+    },
+    {
+      "id": "quality_matched_compression",
+      "title": "净压缩和规模成本",
+      "full_closure": false,
+      "status": "quality_not_matched_complete_cost_not_measured",
+      "observed": {"cold_load_queries": 32, "concurrency": 1, "load_wall_seconds": 222.768862488, "p50_lower_middle_seconds": 6.956435145, "p95_nearest_rank_seconds": 7.011685334, "throughput_queries_per_second": 0.143646646, "base_six_file_bytes_per_environment": 271170520, "adapter_tensor_payload_bytes": 1843200, "adapter_safetensors_bytes": 1858776, "workflow_source_json_bytes": 645305, "lossless_lzma_bytes": 81720, "quality_matched_net_compression": null, "complete_system_cost": null, "sustained_scale_sla": null},
+      "required_remaining": ["equal support quality", "base/source/adapter/router/lineage/recovery/runtime inventory", "continuous and transient storage cost", "complete online communication and execution cost", "sustained throughput and latency under varied load"],
+      "sources": ["budget", "relay"]
+    },
+    {
+      "id": "native_production",
+      "title": "原生生产集成",
+      "full_closure": false,
+      "status": "controlled_native_v1_v2_passed_final_ci_and_production_context_open",
+      "observed": {"latest_completed_local_suite": "shadow-tests-006", "local_tests_run": 651, "local_tests_passed": 651, "local_tests_failed": 0, "local_tests_skipped": 13, "previous_fourteen_failed_cases_now_passed": true, "native_training_updates_current_round": 96, "shadow_python_wire_tests_passed": 4, "shadow_python_wire_tests_skipped": 0, "live_objective_owner_exists": true, "authenticated_ndu_primitive_exists": true, "production_ndu_owner_attached_to_agentd": false, "production_context_provider_qualified": false, "default_daemon_shadow_installation_qualified": false, "inference_control_production_routing_qualified": false, "calibration_artifact": null, "local_test_phase_seconds": 54.325, "local_command_seconds": 96.52005306499996, "clean_source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7", "existing_files_byte_mode_verified": 9723, "actual_examples_built": 2, "actual_build_seconds": 2.5850294439997015, "native_training_child_processes_current_round": 1, "native_training_model_forwards_current_round": 96, "native_v1_backend_dispatches_current_round": 1, "native_v2_backend_dispatches_current_round": 1, "native_model_001_exit_code": 1, "local_native_decoder_queries_total": 4, "local_native_feature_forwards_total": 2, "followup_agentd_suite": {"name": "native-prepare-tests-007", "run": 224, "passed": 224, "failed": 0, "skipped": 6, "test_seconds": 45.997, "wall_seconds": 64.44902349600034}},
+      "required_remaining": ["final lint/format and independent exact-commit qualification", "authenticated current Objective/NDU provider", "production daemon and InferenceControl integration", "calibration and production acceptance"],
+      "sources": ["native_hosted_failures", "native_shadow_source", "objective_owner", "ndu_owner", "native_workflow"]
+    }
+  ],
+  "sources": {
+    "longitudinal": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/de196b47a509ccc4cc5f57844c1752271d2cd20d/qa/stem-bakeoff/evidence/20261024-memory-longitudinal/README.md",
+    "budget": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/bfe77f5cdd04935d8bbfba9199a725ffc48b69e7/qa/memory-budget-20261024/README.md",
+    "edges": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/654b3b5b22d62d98704f841832a6fd9430be643a/qa/stem-bakeoff/evidence/20261024-memory-edge-lifecycle/README.md",
+    "relay": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/77817ec5479cec19e14a5946799fe5998168efc8/qa/stem-bakeoff/evidence/20261024-memory-hosted-relay/README.md",
+    "native_hosted_failures": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8a47cdd26574a85cd314fabce65cc395dbe316a8/qa/stem-bakeoff/evidence/20261024-native-ci-repair/README.md",
+    "native_shadow_source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a1431c5879d084bf49b9df67f9792af8f3acbc7/scripts/memory_cell_native/shadow/README.md",
+    "native_shadow_owner": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a1431c5879d084bf49b9df67f9792af8f3acbc7/codex-rs/hepta-agentd/src/native_memory_tick_owner.rs",
+    "objective_owner": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a1431c5879d084bf49b9df67f9792af8f3acbc7/codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "ndu_owner": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a1431c5879d084bf49b9df67f9792af8f3acbc7/codex-rs/hepta-ndu/src/owner.rs",
+    "native_workflow": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/3a1431c5879d084bf49b9df67f9792af8f3acbc7/.github/workflows/hepta-native-memory.yml",
+    "native_local_qualification_failures": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d765b999c0b39b7e0a481d90f5b9ff12dd9eb5dc/qa/stem-bakeoff/evidence/20261025-native-qualification-failures/README.md",
+    "native_predecoder_failure": "https://github.com/TrillionniumFoundation/hepta-private-ci/tree/9f511ed8fd13aab7c6ee56709d46c61a1af05c2c/qa/stem-bakeoff/evidence/20261025-native-predecoder-failure"
+  },
+  "local_evidence_index": "evidence-index.json",
+  "boundaries": ["Negative experiments remain negative; engineering progress does not change their scores.", "No new model or training call was executed to write this report.", "Hash-bound local tests were followed by independent byte/mode alignment to the published commit and a clean-head example build; final post-format complete-stack qualification remains separate.", "No physical erasure, cross-process clock recovery, calibrated signal or production context is inferred from the controlled shadow example."],
+  "published_evidence_head_reported_by_root": "9f511ed8fd13aab7c6ee56709d46c61a1af05c2c",
+  "published_evidence_pr": 3824,
+  "native_model_001": {
+    "source_head": "8a47cdd26574a85cd314fabce65cc395dbe316a8",
+    "wrapper_exit_code": 1,
+    "counts": {"actual_training_child_processes": 1, "actual_training_updates": 96, "actual_training_model_forwards": 96, "actual_training_input_tokens": 7296, "actual_training_supervised_tokens": 192, "actual_native_backend_dispatches": 0, "actual_native_decoder_queries": 0, "actual_control_decoder_queries": 0, "actual_native_feature_forwards": 0, "actual_shadow_backend_dispatches": 0, "actual_shadow_decoder_queries": 0, "parameter_accuracy_denominator": 0, "parameter_accuracy": null},
+    "training_memory": {"trainable_parameters": 460800, "parameter_bytes": 1843200, "gradient_bytes": 1843200, "optimizer_tensor_bytes": 3686880},
+    "cost_seconds": {"wrapper_total_wall": 77.66258329599987, "driver_total_wall": 77.564464907, "training_command_wall": 67.69840356999975, "training_function_wall": 58.64671110299969, "fit_sources_receipt_wall": 56.37101271500069, "acquisition_wall": 8.55904229799944, "daemon_failed_command_wall": 0.0320871799995075},
+    "resume_actual_executed": true,
+    "audit_file": "native-model-001-audit.json"
+  },
+  "local_native_execution_source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+  "original_training_source_head": "8a47cdd26574a85cd314fabce65cc395dbe316a8",
+  "final_formatted_source_ci": {"status": "pending", "source_head": null, "actual_model_calls": null, "qualification_passed": false},
+  "local_native_success": {
+    "audit_file": "native-success-independent-audit-001.json",
+    "checks_passed": 72,
+    "counts": {"training_updates_total": 96, "training_forwards_total": 96, "training_updates_added_by_continuation_and_shadow": 0, "decoder_queries_total": 4, "native_backend_dispatches_total": 2, "control_decoder_queries_total": 2, "explicit_feature_forwards_total": 2, "actual_model_child_processes_total_including_training": 5, "audit_neural_model_calls": 0, "audit_new_training_updates": 0},
+    "raw_observations": {
+      "base": {"raw_text": "The `asymmetric` keyword in C++ is used to indicate that a", "correct": false, "denominator": 1},
+      "shuffled": {"raw_text": "The repair for AssertionError: \"asymmetric\" does not match \"un", "correct": false, "denominator": 1},
+      "v1_native": {"raw_text": "order", "correct": true, "denominator": 1},
+      "v2_shadow": {"raw_text": "order", "correct": true, "denominator": 1}
+    },
+    "frozen_inputs_unchanged": true,
+    "source_head": "3a1431c5879d084bf49b9df67f9792af8f3acbc7",
+    "controlled_context_provider": true,
+    "production_qualified": false,
+    "same_process_recoveries": 2,
+    "context_provider_calls": 9,
+    "nonce_replay_refused": true,
+    "delivery_before_tombstone": true,
+    "delivery_after_tombstone": false,
+    "backend_dispatches_after_tombstone": 1,
+    "journal_witness_sequence": 1,
+    "v2_control_socket_exercised": false,
+    "storage": {
+      "failed": {"files": 83, "directories": 34, "file_bytes": 4954052, "inventory_sha256": "4e92476ba0a3bcfdb9e0e1e768a19e39a5584ad20da7a344e1a1f9465a383440"},
+      "native": {"files": 5611, "directories": 2450, "file_bytes": 93394724, "inventory_sha256": "01b5e40e8f30abb745345e675c25732045a4d3b0d84f3e6d773993a41ed097bc"},
+      "shadow": {"files": 57, "directories": 23, "file_bytes": 6081243, "inventory_sha256": "02c5eb325b7d8aa873356ae82fa2561e809f1c9c5518896292f6d778a9ec4398"},
+      "base": {"files": 6, "directories": 1, "file_bytes": 271170520, "inventory_sha256": "0aa3ee544ae05bfc748def8d108388c0e91b000ab39c21d05ec622621fb8bbde"}
+    },
+    "runtime_parameter_scalars": 134975808,
+    "runtime_fp32_parameter_bytes": 539903232,
+    "v1_peak_rss_bytes": 1131851776,
+    "v2_peak_rss_bytes": 1131753472,
+    "wall_seconds": {
+      "original_failed_driver": 77.564464907,
+      "continuation_driver": 36.77875004799989,
+      "shadow_driver": 14.739987758000098,
+      "wrappers": {"failed": 77.66258329599987, "native": 36.856582231000175, "shadow": 14.816371574999721},
+      "sum_wrappers_including_original_failure_once": 129.33553710199976
+    },
+    "independent_tick_frame_audit_checks_passed": 134,
+    "independent_tick_frame_audit_sha256": "37192006f9460ba09bba69dea09764e79f70b60fddf56f142b764787aed5a191"
+  }
+}

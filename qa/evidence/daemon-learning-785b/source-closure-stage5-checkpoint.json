@@ -1,0 +1,30 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "*learning*source_closure.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/785b7e652ed6/hepta-daemon",
+  "exit_code": 0,
+  "elapsed_seconds": 9.185564517974854,
+  "source_git_blobs_before": {
+    "CALLERS.toml": "cb74c9a5d9bce537f8a2f842a199236e6efc15ad",
+    "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py": "0209c223f81c7731b448d724f02e4577a9b8ffc7",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs": "bcf11906a36dc0a855a5053380ed0a0165448f96"
+  },
+  "source_git_blobs_after": {
+    "CALLERS.toml": "cb74c9a5d9bce537f8a2f842a199236e6efc15ad",
+    "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py": "0209c223f81c7731b448d724f02e4577a9b8ffc7",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs": "bcf11906a36dc0a855a5053380ed0a0165448f96"
+  },
+  "source_unchanged_during_run": true,
+  "log_sha256": "08c2149cb2a33f6b8082d571fad7422f594720cfd6a76275e7a528c765570d1a",
+  "preserved_stage4_log_sha256": "3de4a10d251dfa137b3001f2c72ce599a1823a49d04118e53994167d9c4724db",
+  "stage4_log_unchanged": true
+}

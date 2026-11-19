@@ -1,0 +1,1072 @@
+{
+  "source": "514fe5f53cfdc254477667f8862d652ea756c807",
+  "rows": [
+    {
+      "kind": "boundary",
+      "id": "learning_original_evaluation_panel_member_current"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_binding.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs"
+    },
+    {
+      "kind": "protected_file",
+      "id": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs"
+    }
+  ],
+  "marker_changes": [
+    {
+      "where": "boundary:learning_original_evaluation_panel_member_current:None",
+      "old": "sources.prepare(&self.qualification.config, started_at).await?",
+      "new": "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs:fn admission_binding(",
+      "old": "expected_binding(initial, scope, identity.operation, ResidentPurposeV3::Execute)",
+      "new": "expected_binding(\n            initial,\n            scope,\n            identity.operation,\n            ResidentPurposeV3::Execute,\n        )"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs:fn authorization_binding(",
+      "old": "&signed, &intent.signature, &lease",
+      "new": "&signed,\n        &intent.signature,\n        &lease"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn admit(",
+      "old": "self.store.compare_and_set(&self.owner_id, &current, &next)",
+      "new": "self.store\n            .compare_and_set(&self.owner_id, &current, &next)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn admit(",
+      "old": "self.store.compare_and_set(&self.owner_id, &current, &next)",
+      "new": "self.store\n            .compare_and_set(&self.owner_id, &current, &next)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn begin_dispatch(",
+      "old": "self.store.compare_and_set(&self.owner_id, &token.current, &next)",
+      "new": "self.store\n            .compare_and_set(&self.owner_id, &token.current, &next)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn require_dispatch(",
+      "old": "self.profile.scope.validate_snapshot(predecessor)",
+      "new": "self.profile\n            .scope\n            .validate_snapshot(predecessor)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn checkpoint(",
+      "old": "self.profile.scope.validate_snapshot(next)",
+      "new": "self.profile\n            .scope\n            .validate_snapshot(next)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn checkpoint(",
+      "old": "next.request != predecessor.request || next.owners != predecessor.owners",
+      "new": "next.request != predecessor.request\n            || next.owners != predecessor.owners"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn checkpoint(",
+      "old": "self.store.compare_and_set(&self.owner_id, &token.current, &record)",
+      "new": "self.store\n            .compare_and_set(&self.owner_id, &token.current, &record)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs:fn load(",
+      "old": "self.profile.scope.validate_snapshot(&snapshot)",
+      "new": "self.profile\n            .scope\n            .validate_snapshot(&snapshot)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "ResidentStoreActionV3::Register(_) | ResidentStoreActionV3::Admit(_)",
+      "new": "ResidentStoreActionV3::Register(_)\n                | ResidentStoreActionV3::Admit(_)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "verifier.read_lease(&lease.lease_id)",
+      "new": "verifier\n            .read_lease(&lease.lease_id)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "verifier.verify_use(&lease.lease_id, lease.revision, &binding)",
+      "new": "verifier\n            .verify_use(&lease.lease_id, lease.revision, &binding)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "verifier.with_dispatch_boundary(token, &binding, ||",
+      "new": "verifier\n            .with_dispatch_boundary(token, &binding, ||"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "self.issuer.hold_original_resident_intent_v3(",
+      "new": "self\n                    .issuer\n                    .hold_original_resident_intent_v3("
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "let token = verifier.verify_use(&lease.lease_id, lease.revision, &binding)",
+      "new": "let token = verifier\n            .verify_use(&lease.lease_id, lease.revision, &binding)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn perform(",
+      "old": "verifier.with_dispatch_boundary(token, &binding, ||",
+      "new": "verifier\n            .with_dispatch_boundary(token, &binding, ||"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn require_time(",
+      "old": "now_ms < lease.issued_at_unix_ms || now_ms >= lease.expires_at_unix_ms",
+      "new": "now_ms < lease.issued_at_unix_ms\n        || now_ms >= lease.expires_at_unix_ms"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs:fn require_time(",
+      "old": "matches!(access, ResidentAccessV3::Work) && (now_ms >= deadline_ms",
+      "new": "matches!(access, ResidentAccessV3::Work)\n            && (now_ms >= deadline_ms"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn require_current(",
+      "old": "self.local(GateActionV3::Current, predecessor).await",
+      "new": "self.local(GateActionV3::Current, predecessor)\n            .await"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local_inner(",
+      "old": "inner.owner.authority.perform(operation, &inner.cancellation)",
+      "new": "inner\n                .owner\n                .authority\n                .perform(operation, &inner.cancellation)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn resident_learning_v3(",
+      "old": "self.resident_store_root.as_ref()",
+      "new": "self.resident_store_root\n                .as_ref()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn resident_learning_v3(",
+      "old": "self.root_registry.as_ref()",
+      "new": "self.root_registry\n                .as_ref()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn resident_learning_v3(",
+      "old": "root, Arc::clone(&self.issuer), registry, profile, authorization",
+      "new": "root,\n            Arc::clone(&self.issuer),\n            registry,\n            profile,\n            authorization"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn register_original_root(",
+      "old": "root, issuer, registry, profile, ResidentAuthorizationV3::Fresh)",
+      "new": "root,\n            issuer,\n            registry,\n            profile,\n            ResidentAuthorizationV3::Fresh,\n        )"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn into_runtime(",
+      "old": "self.owner, stages::ResidentOriginalStageOwnersV3::NoUpdate(stages), verifier, capacity",
+      "new": "self.owner,\n            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),\n            verifier,\n            capacity"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident.rs:fn into_candidate_runtime(",
+      "old": "self.owner, stages::ResidentOriginalStageOwnersV3::Candidate(stages), verifier, capacity",
+      "new": "self.owner,\n            stages::ResidentOriginalStageOwnersV3::Candidate(stages),\n            verifier,\n            capacity"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn compose(",
+      "old": "profile.require_verifier(&verifier)",
+      "new": "profile\n        .require_verifier(&verifier)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn compose(",
+      "old": "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)",
+      "new": "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn compose(",
+      "old": "owner.authority.authorization_binding()",
+      "new": "owner\n        .authority\n        .authorization_binding()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(",
+      "old": "&mut stages, Arc::clone(&continuation.gate)",
+      "new": "&mut stages,\n            Arc::clone(&continuation.gate)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn admit(",
+      "old": "snapshot: Some(initial), attestations: Vec::new(), dispatch_pending: false",
+      "new": "snapshot: Some(initial),\n            attestations: Vec::new(),\n            dispatch_pending: false"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs:fn continue_original(",
+      "old": "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?",
+      "new": "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs:fn decode_current(",
+      "old": "STANDARD_NO_PAD.decode(&encoded)",
+      "new": "STANDARD_NO_PAD\n                .decode(&encoded)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs:fn decode_current(",
+      "old": "STANDARD_NO_PAD.decode(&encoded)",
+      "new": "STANDARD_NO_PAD\n                .decode(&encoded)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs:fn require_original_prefix(",
+      "old": "snapshot.request != previous.request || snapshot.owners != previous.owners",
+      "new": "snapshot.request != previous.request\n            || snapshot.owners != previous.owners"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs:fn request(",
+      "old": "Request { schema: 3, operation: OPERATION.into(), request_id: id",
+      "new": "Request {\n        schema: 3,\n        operation: OPERATION.into(),\n        request_id: id"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs:fn request(",
+      "old": "profile: profile.to_string(), authorization: authorization.to_string(), action",
+      "new": "profile: profile.to_string(),\n        authorization: authorization.to_string(),\n        action"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn from_original_root_stream(",
+      "old": "ClientOriginV3::Fresh, None, timeout, lifetime",
+      "new": "ClientOriginV3::Fresh,\n            None,\n            timeout,\n            lifetime"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn recover_original_root_stream(",
+      "old": "ClientOriginV3::Readback(authorization), expected, timeout, lifetime",
+      "new": "ClientOriginV3::Readback(authorization),\n            expected,\n            timeout,\n            lifetime"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn bind(",
+      "old": "profile.require_verifier(&verifier)",
+      "new": "profile\n            .require_verifier(&verifier)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn bind(",
+      "old": "channel.check_peer_lifetime()",
+      "new": "channel\n            .check_peer_lifetime()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn bind(",
+      "old": "execution_requested: readonly, retained: expected",
+      "new": "execution_requested: readonly,\n                retained: expected"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn require_fresh_admission_channel(",
+      "old": "channel.as_ref().is_none_or(|channel| channel.execution_requested)",
+      "new": "channel\n            .as_ref()\n            .is_none_or(|channel| channel.execution_requested)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": "self.channel.try_lock()",
+      "new": "self\n            .channel\n            .try_lock()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": ".take().ok_or(Error::Unavailable)?",
+      "new": ".take()\n            .ok_or(Error::Unavailable)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": "channel.peer.request(&bytes)",
+      "new": "channel\n                .peer\n                .request(&bytes)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": "response.schema != 3 || response.operation != wire::OPERATION",
+      "new": "response.schema != 3\n                || response.operation != wire::OPERATION"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": "response.request_id != id || response.profile != profile.binding.to_string()",
+      "new": "response.request_id != id\n                || response.profile != profile.binding.to_string()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn exchange(",
+      "old": "channel.peer.check_peer_lifetime()",
+      "new": "channel\n                .peer\n                .check_peer_lifetime()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn serve_original_stream(",
+      "old": "consumer_uid, held_consumer_pidfd, timeout, lifetime",
+      "new": "consumer_uid,\n            held_consumer_pidfd,\n            timeout,\n            lifetime"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn serve_original_stream(",
+      "old": "channel.exchange(|bytes|",
+      "new": "channel\n                .exchange(|bytes|"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn serve_original_stream(",
+      "old": "bytes.len() > wire::BOUND || request.schema != 3",
+      "new": "bytes.len() > wire::BOUND\n                        || request.schema != 3"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn serve_original_stream(",
+      "old": "request.operation != wire::OPERATION || request.request_id != next",
+      "new": "request.operation != wire::OPERATION\n                        || request.request_id != next"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn serve_original_stream(",
+      "old": "action: request.action, result",
+      "new": "action: request.action,\n                        result"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn revalidate_original_observation(",
+      "old": "&observed.attestations, current / 1_000",
+      "new": "&observed.attestations,\n            current / 1_000"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn require_window(",
+      "old": "now < intent.grant.not_before_unix_ms || now >= intent.grant.expires_at_unix_ms",
+      "new": "now < intent.grant.not_before_unix_ms\n        || now >= intent.grant.expires_at_unix_ms"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn require_window(",
+      "old": "now < lease.issued_at_unix_ms || now >= lease.expires_at_unix_ms",
+      "new": "now < lease.issued_at_unix_ms\n        || now >= lease.expires_at_unix_ms"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn now(",
+      "old": "SystemTime::now().duration_since(UNIX_EPOCH)",
+      "new": "SystemTime::now()\n        .duration_since(UNIX_EPOCH)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs:fn now(",
+      "old": ".as_millis().try_into()",
+      "new": ".as_millis()\n        .try_into()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:None",
+      "old": "stages, snapshot, receipt, now_unix_seconds",
+      "new": "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:None",
+      "old": "stages, snapshot, receipt, now_unix_seconds",
+      "new": "stages,\n                snapshot,\n                receipt,\n                now_unix_seconds"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage(",
+      "old": "Stage::Experience | Stage::Dataset | Stage::Training",
+      "new": "Stage::Experience\n            | Stage::Dataset\n            | Stage::Training"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs:fn require_stage(",
+      "old": "Stage::Selection | Stage::NextUse => Ok(())",
+      "new": "Stage::Selection\n            | Stage::NextUse => Ok(())"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_binding.rs:fn require_plan(",
+      "old": "original.config.registration.evaluation_profile().into_array()",
+      "new": "original\n                    .config\n                    .registration\n                    .evaluation_profile()\n                    .into_array()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn assemble(",
+      "old": "outcomes.insert",
+      "new": "outcomes\n                    .insert"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "source.original_record().admission.observed_at_unix_micros",
+      "new": "source\n            .original_record()\n            .admission\n            .observed_at_unix_micros"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "outcome.observed_at.ok_or",
+      "new": "outcome\n            .observed_at\n            .ok_or"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "outcome.finalized_at.ok_or",
+      "new": "outcome\n            .finalized_at\n            .ok_or"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "outcome.value.ok_or",
+      "new": "outcome\n            .value\n            .ok_or"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "decision.candidate_ids != policy.entries()",
+      "new": "decision.candidate_ids\n                != policy\n                    .entries()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "training.generator.principal().credential_chain_digest == outcome.observer_credential_chain_digest",
+      "new": "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "training.generator.principal().signing_key_digest == outcome.observer_signing_key_digest",
+      "new": "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn read_episode(",
+      "old": "decision.generator_credential_chain_digest == outcome.observer_credential_chain_digest",
+      "new": "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs:fn require_arm(",
+      "old": "behavior.source.original_record().objective_function_v1_bytes",
+      "new": "behavior\n            .source\n            .original_record()\n            .objective_function_v1_bytes"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs:fn read_original_material(",
+      "old": "before.records().iter().any",
+      "new": "before\n            .records()\n            .iter()\n            .any"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs:fn read_sources(",
+      "old": "observed.insert(original.run_id.clone(), publication).is_some()",
+      "new": "observed\n                    .insert(original.run_id.clone(), publication)\n                    .is_some()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn original_attestations(",
+      "old": "stages.receipt_attestation(snapshot, receipt, now / 1_000).await?",
+      "new": "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_attestations(",
+      "old": "profile.require_verifier(verifier)",
+      "new": "profile\n        .require_verifier(verifier)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_attestations(",
+      "old": "snapshot.request != profile.initial.request || snapshot.owners != profile.initial.owners",
+      "new": "snapshot.request != profile.initial.request\n        || snapshot.owners != profile.initial.owners"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_attestations(",
+      "old": "snapshot.receipts.len() < 4 || snapshot.training_no_update_v2().is_some()",
+      "new": "snapshot.receipts.len() < 4\n                    || snapshot.training_no_update_v2().is_some()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_attestations(",
+      "old": "training.candidate().ok_or(Error::WrongScope)?",
+      "new": "training\n                    .candidate()\n                    .ok_or(Error::WrongScope)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs:fn verify_attestations(",
+      "old": "verifier.verify(role, signature, &payload, now)",
+      "new": "verifier\n            .verify(role, signature, &payload, now)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_original_panel(",
+      "old": "self.retained.as_ref().is_some_and(|original| original != &result)",
+      "new": "self\n            .retained\n            .as_ref()\n            .is_some_and(|original| original != &result)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs:fn read_members(",
+      "old": "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock).await?",
+      "new": "OriginalCellEvaluationPanelMemberOwnersV1::read_original(owner, task, clock)\n                    .await?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:fn read_original(",
+      "old": "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:fn read_original(",
+      "old": "sources.prepare(&self.qualification.config, started_at).await?",
+      "new": "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:fn read_original(",
+      "old": "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:fn read_original(",
+      "old": "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:fn read_original(",
+      "old": "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs:fn validate_original_members(",
+      "old": "first.context.retention_receipt_digests.iter().any(|digest| digest.is_zero())",
+      "new": "first\n                .context\n                .retention_receipt_digests\n                .iter()\n                .any(|digest| digest.is_zero())"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs:fn require_observed_panel(",
+      "old": "self.primary.qualification.config.context.retention_receipt_digests",
+      "new": "self\n                .primary\n                .qualification\n                .config\n                .context\n                .retention_receipt_digests"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs:fn into_original_readback(",
+      "old": "self)",
+      "new": "self,\n    )"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs:fn into_original_readback(",
+      "old": "OriginalCircuitEvaluationCohortReadbackV1::retaining(self.original, self.plan)",
+      "new": "OriginalCircuitEvaluationCohortReadbackV1::retaining(\n            self.original,\n            self.plan,\n        )"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(",
+      "old": "&completed.0, &completed.1",
+      "new": "&completed.0,\n            &completed.1"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_original_completion(",
+      "old": "self.retained.as_ref().is_some_and(|previous| previous != &original)",
+      "new": "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn read_panel(",
+      "old": "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel).await.map_err(Error::from)",
+      "new": "OriginalCellEvaluationPanelOwnerV1::read_current(&mut self.panel)\n            .await\n            .map_err(Error::from)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs:fn authenticate_panel(",
+      "old": "self.panel.primary.authenticate(observed.primary(), current)?",
+      "new": "self.panel\n            .primary\n            .authenticate(observed.primary(), current)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn from_original_training(",
+      "old": "coordinator.record(training.receipt().clone(), training.receipt().observed_unix_seconds)?",
+      "new": "coordinator.record(\n            training.receipt().clone(),\n            training.receipt().observed_unix_seconds,\n        )?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn from_checkpoint(",
+      "old": "Self { training, scope, registration, training_evidence, verifier }",
+      "new": "Self {\n            training,\n            scope,\n            registration,\n            training_evidence,\n            verifier,\n        }"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn authenticate(",
+      "old": "self.training.receipts.last()",
+      "new": "self\n            .training\n            .receipts\n            .last()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn authenticate(",
+      "old": "LearningEvidenceRoleV1::Generator, &self.training_evidence",
+      "new": "LearningEvidenceRoleV1::Generator,\n            &self.training_evidence"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn authenticate_receipt(",
+      "old": "original.candidate()",
+      "new": "original\n        .candidate()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs:fn authenticate_receipt(",
+      "old": "LearningEvidenceRoleV1::Evaluator, &signed",
+      "new": "LearningEvidenceRoleV1::Evaluator,\n        &signed"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:None",
+      "old": "enum Origin { Fresh, ReadbackOnly }",
+      "new": "enum Origin {\n    Fresh,\n    ReadbackOnly,\n}"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn from_original_stream(",
+      "old": "verifier, timeout, lifetime, Origin::Fresh",
+      "new": "verifier,\n            timeout,\n            lifetime,\n            Origin::Fresh"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn recover_from_original_stream(",
+      "old": "verifier, timeout, lifetime, Origin::ReadbackOnly",
+      "new": "verifier,\n            timeout,\n            lifetime,\n            Origin::ReadbackOnly"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn bind_initial(",
+      "old": "peer.uid, original_owner_pidfd, timeout, lifetime",
+      "new": "peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn bind_original_training(",
+      "old": "self.scope.clone(), self.registration.clone(), self.verifier.clone(), original",
+      "new": "self.scope.clone(),\n            self.registration.clone(),\n            self.verifier.clone(),\n            original"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn bind_recovered_training(",
+      "old": "training_evidence, self.verifier.clone()",
+      "new": "training_evidence,\n            self.verifier.clone()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn finish_binding(",
+      "old": "self, context: Context, origin: Origin",
+      "new": "self,\n        context: Context,\n        origin: Origin"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn finish_binding(",
+      "old": "expected.snapshot.clone(), expected.attestation.clone(), current",
+      "new": "expected.snapshot.clone(),\n                expected.attestation.clone(),\n                current"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs:fn exchange(",
+      "old": "channel.peer.request(&encoded)",
+      "new": "channel\n                .peer\n                .request(&encoded)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs:fn encode_completed(",
+      "old": "receipt.snapshot.clone(), receipt.attestation.clone(), current",
+      "new": "receipt.snapshot.clone(),\n        receipt.attestation.clone(),\n        current"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs:fn decode_completed(",
+      "old": "STANDARD_NO_PAD.decode(&snapshot)",
+      "new": "STANDARD_NO_PAD\n        .decode(&snapshot)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs:fn decode_completed(",
+      "old": "STANDARD_NO_PAD.decode(&original_evidence)",
+      "new": "STANDARD_NO_PAD\n        .decode(&original_evidence)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs:fn authenticate_completed(",
+      "old": "snapshot.request != context.training.request || snapshot.owners != context.training.owners",
+      "new": "snapshot.request != context.training.request\n        || snapshot.owners != context.training.owners"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs:fn serve_commands(",
+      "old": "Arc::clone(&self.connections).try_acquire_owned()",
+      "new": "Arc::clone(&self.connections)\n            .try_acquire_owned()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs:fn serve_commands(",
+      "old": "stream, consumer, consumer_uid, original_consumer_pidfd, timeout, lifetime",
+      "new": "stream,\n                consumer,\n                consumer_uid,\n                original_consumer_pidfd,\n                timeout,\n                lifetime"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs:fn original_response(",
+      "old": "self.runtime.block_on(owners.completion(&self.context, action))",
+      "new": "self.runtime\n                .block_on(owners.completion(&self.context, action))"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:None",
+      "old": "enum Action { Execute, Readback }",
+      "new": "enum Action {\n    Execute,\n    Readback,\n}"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn training_prefix(",
+      "old": "self.common.material.scope.validate_snapshot(prefix.snapshot())?",
+      "new": "self.common\n            .material\n            .scope\n            .validate_snapshot(prefix.snapshot())?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "self, &training_cut, mode",
+      "new": "self,\n            &training_cut,\n            mode"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "common.original_dataset.as_ref()",
+      "new": "common\n                    .original_dataset\n                    .as_ref()"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "connection, dataset.snapshot().clone(), &training",
+      "new": "connection,\n                    dataset.snapshot().clone(),\n                    &training"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "gate, &training_cut, &self.common.material.scope",
+      "new": "gate,\n                &training_cut,\n                &self.common.material.scope"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "gate, &training_cut, &self.common.material.scope",
+      "new": "gate,\n                &training_cut,\n                &self.common.material.scope"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "self, &training_cut, mode",
+      "new": "self,\n            &training_cut,\n            mode"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "gate, &training_cut, &self.common.material.scope",
+      "new": "gate,\n                &training_cut,\n                &self.common.material.scope"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "old": "lane.retained.as_ref().is_some_and(|saved| saved != &original)",
+      "new": "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != &original)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "candidate.candidate().ok_or(Error::WrongScope)?",
+      "new": "candidate\n            .candidate()\n            .ok_or(Error::WrongScope)?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "self.common.material.scope.validate_snapshot(original.snapshot())?",
+      "new": "self.common\n            .material\n            .scope\n            .validate_snapshot(original.snapshot())?"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "!original.snapshot().receipts.starts_with(&training_cut.receipts)",
+      "new": "!original\n                .snapshot()\n                .receipts\n                .starts_with(&training_cut.receipts)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "supplied.receipts.get(3).is_some_and(|saved| saved != receipt)",
+      "new": "supplied\n                .receipts\n                .get(3)\n                .is_some_and(|saved| saved != receipt)"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "training.receipt(), training.attestation(), current",
+      "new": "training.receipt(),\n            training.attestation(),\n            current"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "self.common.material.verifier.verify(",
+      "new": "self\n            .common\n            .material\n            .verifier\n            .verify("
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn verify_original_evaluation(",
+      "old": "LearningEvidenceRoleV1::Evaluator, signed",
+      "new": "LearningEvidenceRoleV1::Evaluator,\n                signed"
+    }
+  ],
+  "qa_changes": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "self.retained.as_ref().is_some_and(|previous| previous != &original)",
+      "new": "self\n            .retained\n            .as_ref()\n            .is_some_and(|previous| previous != &original)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "peer.uid, original_owner_pidfd, timeout, lifetime",
+      "new": "peer.uid,\n            original_owner_pidfd,\n            timeout,\n            lifetime"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "expected.snapshot.clone(), expected.attestation.clone(), current",
+      "new": "expected.snapshot.clone(),\n                expected.attestation.clone(),\n                current"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "channel.peer.request(&encoded)",
+      "new": "channel\n                .peer\n                .request(&encoded)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "self.retained.try_lock().map_err(|_| Error::Unavailable)?.is_some()",
+      "new": "self\n                    .retained\n                    .try_lock()\n                    .map_err(|_| Error::Unavailable)?\n                    .is_some()"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "lane.retained.as_ref().is_some_and(|saved| saved != &original)",
+      "new": "lane\n            .retained\n            .as_ref()\n            .is_some_and(|saved| saved != &original)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "LearningEvidenceRoleV1::Evaluator, &signed",
+      "new": "LearningEvidenceRoleV1::Evaluator,\n        &signed"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "supplied.receipts.get(3).is_some_and(|saved| saved != receipt)",
+      "new": "supplied\n                .receipts\n                .get(3)\n                .is_some_and(|saved| saved != receipt)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "LearningEvidenceRoleV1::Evaluator, signed",
+      "new": "LearningEvidenceRoleV1::Evaluator,\n                signed"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "gate, &training_cut, &self.common.material.scope",
+      "new": "gate,\n                &training_cut,\n                &self.common.material.scope"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_host_source_closure.py",
+      "old": "gate, snapshot, &self.common.material.scope",
+      "new": "gate,\n                snapshot,\n                &self.common.material.scope"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "sources.prepare(&self.qualification.config, started_at).await?",
+      "new": "sources\n            .prepare(&self.qualification.config, started_at)\n            .await?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "/*new_publication*/ false",
+      "new": "false"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "/*new_publication*/ true",
+      "new": "true"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "self.retained.as_ref().is_some_and(|original| original != &result)",
+      "new": "self\n            .retained\n            .as_ref()\n            .is_some_and(|original| original != &result)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "self.primary.qualification.config.context.retention_receipt_digests",
+      "new": "self\n                .primary\n                .qualification\n                .config\n                .context\n                .retention_receipt_digests"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "let cohort_before = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_before =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "old": "let cohort_after = OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?",
+      "new": "let cohort_after =\n            OriginalCircuitEvaluationCohortReadbackV1::read_current(&mut self.cohort)?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "old": "outcome.value.ok_or",
+      "new": "outcome\n            .value\n            .ok_or"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "old": "training.generator.principal().credential_chain_digest == outcome.observer_credential_chain_digest",
+      "new": "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "old": "training.generator.principal().signing_key_digest == outcome.observer_signing_key_digest",
+      "new": "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "old": "decision.generator_credential_chain_digest == outcome.observer_credential_chain_digest",
+      "new": "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_provider_source_closure.py",
+      "old": "outcomes.insert",
+      "new": "outcomes\n                    .insert"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "verifier.read_lease(&lease.lease_id)",
+      "new": "verifier\n            .read_lease(&lease.lease_id)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "verifier.verify_use(&lease.lease_id, lease.revision, &binding)",
+      "new": "verifier\n            .verify_use(&lease.lease_id, lease.revision, &binding)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "verifier.with_dispatch_boundary(token, &binding, ||",
+      "new": "verifier\n            .with_dispatch_boundary(token, &binding, ||"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "self.issuer.hold_original_resident_intent_v3(",
+      "new": "self\n                    .issuer\n                    .hold_original_resident_intent_v3("
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": ".take().ok_or(Error::Unavailable)?",
+      "new": ".take()\n            .ok_or(Error::Unavailable)?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "channel.peer.request(&bytes)",
+      "new": "channel\n                .peer\n                .request(&bytes)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "channel.peer.check_peer_lifetime()",
+      "new": "channel\n                .peer\n                .check_peer_lifetime()"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "channel.as_ref().is_none_or(|channel| channel.execution_requested)",
+      "new": "channel\n            .as_ref()\n            .is_none_or(|channel| channel.execution_requested)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "#[path = \"authority_host_learning_resident_evaluation_tests.rs\"]\nmod evaluation;",
+      "new": "#[path =                                         ]\nmod evaluation;"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "\"-p\", \"codex-hepta-neuron\"",
+      "new": ","
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "self.store.compare_and_set(&self.owner_id, &current, &next)",
+      "new": "self.store\n            .compare_and_set(&self.owner_id, &current, &next)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "self.profile.scope.validate_snapshot(&snapshot)",
+      "new": "self.profile\n            .scope\n            .validate_snapshot(&snapshot)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "inner.owner.authority.perform(operation, &inner.cancellation)",
+      "new": "inner\n                .owner\n                .authority\n                .perform(operation, &inner.cancellation)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)",
+      "new": "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?",
+      "new": "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "state.require_resident_learning_source_candidate(request).await",
+      "new": "state\n            .require_resident_learning_source_candidate(request)\n            .await"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "host.reconcile_learning_outbox(store, Some(&request.source_run_id)).await",
+      "new": "host.reconcile_learning_outbox(store, Some(&request.source_run_id))\n            .await"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "store.claim_circuit_learning(&row.intent, &digest).await",
+      "new": "store\n                .claim_circuit_learning(&row.intent, &digest)\n                .await"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "store.acknowledge_circuit_learning(&row.intent, &digest, &head).await",
+      "new": "store\n            .acknowledge_circuit_learning(&row.intent, &digest, &head)\n            .await"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "stages.receipt_attestation(snapshot, receipt, now / 1_000).await?",
+      "new": "stages\n                .receipt_attestation(snapshot, receipt, now / 1_000)\n                .await?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_root_source_closure.py",
+      "old": "verifier.verify(role, signature, &payload, now)",
+      "new": "verifier\n            .verify(role, signature, &payload, now)"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "old": "ResidentOriginalStageOwnersV3::require_initial(&stages, &profile.initial, &profile.scope, &verifier)",
+      "new": "ResidentOriginalStageOwnersV3::require_initial(\n        &stages,\n        &profile.initial,\n        &profile.scope,\n        &verifier,\n    )"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "old": "owner.authority.authorization_binding()",
+      "new": "owner\n        .authority\n        .authorization_binding()"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "old": "gate.checkpoint(&predecessor, coordinator.snapshot().clone()).await?",
+      "new": "gate.checkpoint(&predecessor, coordinator.snapshot().clone())\n            .await?"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "old": "self.owner, stages::ResidentOriginalStageOwnersV3::NoUpdate(stages), verifier, capacity",
+      "new": "self.owner,\n            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),\n            verifier,\n            capacity"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "old": "self.owner, stages::ResidentOriginalStageOwnersV3::Candidate(stages), verifier, capacity",
+      "new": "self.owner,\n            stages::ResidentOriginalStageOwnersV3::Candidate(stages),\n            verifier,\n            capacity"
+    }
+  ],
+  "unresolved": [
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local_inner(",
+      "marker": "GateActionV3::Current => ResidentStoreActionV3::RequireDispatch"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local_inner(",
+      "marker": "GateActionV3::Begin(stage) => ResidentStoreActionV3::Begin"
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs:fn local_inner(",
+      "marker": "GateActionV3::Checkpoint(next) => ResidentStoreActionV3::Checkpoint"
+    }
+  ],
+  "ambiguous": [
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "marker": "self.common.continuation.try_lock()",
+      "values": [
+        "self\n                .common\n                .continuation\n                .try_lock()",
+        "self\n            .common\n            .continuation\n            .try_lock()"
+      ]
+    },
+    {
+      "where": "protected_file:codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs:fn original_evaluation(",
+      "marker": "common.original_training.as_ref()",
+      "values": [
+        "common\n                    .original_training\n                    .as_ref()",
+        "common\n            .original_training\n            .as_ref()"
+      ]
+    }
+  ]
+}

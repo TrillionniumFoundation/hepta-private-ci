@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.mem8.matrix-fixture-diagnostic-candidate.v1",
+  "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+  "base_commit": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "preimage_git_blob": "a4fe89722175a8327b42e12f40b46f902c280ea3",
+  "postimage_git_blob": "061c082d6dcb90af331dc51c120ede2ed3bccc77",
+  "changed_error_sites": [
+    "open_and_bind_room",
+    "bind_room_thread",
+    "timeline_commit",
+    "begin_dispatch",
+    "read_inbox",
+    "read_checkpoint",
+    "post_conflict_ingest"
+  ],
+  "scope": "test fixture error context only; original source had 18 passes and 1 Unavailable failure; cause unknown; no fix or qualification claimed",
+  "format_status": "pending",
+  "native_tests_executed": 0,
+  "model_requests_executed": 0,
+  "source_refs_modified": false,
+  "full_postimage_git_readback_equal": true,
+  "original_failure": {
+    "run_id": 42971470498,
+    "job_id": 130374692350,
+    "target": "//codex-rs/hepta-matrix-store:hepta-matrix-store-sync_mutation_v2-test",
+    "case": "tombstone_refuses_to_orphan_an_active_dispatch",
+    "cases": 19,
+    "passed": 18,
+    "failed": 1,
+    "original_error": "Error: Unavailable",
+    "failed_await_site": "UNKNOWN"
+  },
+  "case_before": "async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {\n    let temp = TempDir::new()?;\n    let agent_id = agent()?;\n    let room_id = room(\"!active-dispatch:example.test\")?;\n    let store = store_and_room(&temp, &room_id).await?;\n    store\n        .bind_room_thread(&RoomThreadBindingDraft {\n            room_id: room_id.clone(),\n            binding_revision: 1,\n            generation: 1,\n            project_id: room_project_idempotency_key(&agent_id, &room_id),\n            thread_id: Some(\"thread-active\".to_string()),\n            changed_at_ms: 2,\n        })\n        .await?;\n    let target = event(\"$active-target\")?;\n    let timeline = mutation(\n        target.clone(),\n        room_id.clone(),\n        MatrixSyncMutationBodyV2::Timeline {\n            event_type: \"m.room.message\".to_string(),\n            payload: b\"active\".to_vec(),\n        },\n        /*at_ms*/ 10,\n    )?;\n    store\n        .apply_sync_decision_v2(&commit(\n            /*expected*/ None,\n            \"s1\",\n            /*observed_at_ms*/ 11,\n            vec![timeline],\n        ))\n        .await?;\n    store\n        .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)\n        .await?;\n    let redaction_source = event(\"$active-redaction\")?;\n    let redaction = mutation(\n        redaction_source.clone(),\n        room_id.clone(),\n        MatrixSyncMutationBodyV2::Redaction {\n            target_event_id: target.clone(),\n        },\n        /*at_ms*/ 13,\n    )?;\n    assert_eq!(\n        store\n            .apply_sync_decision_v2(&commit(\n                Some(\"s1\"),\n                \"s2\",\n                /*observed_at_ms*/ 14,\n                vec![redaction],\n            ))\n            .await,\n        Err(MatrixDurableError::Conflict)\n    );\n    assert_eq!(\n        store.inbox(&target).await?.ok_or(\"inbox\")?.state,\n        InboxState::Pending\n    );\n    assert_eq!(\n        store\n            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)\n            .await?\n            .ok_or(\"checkpoint\")?\n            .next_batch,\n        \"s1\"\n    );\n    store\n        .ingest_inbox(&inbox_draft(\n            redaction_source,\n            room_id,\n            b\"failed decision left no ledger\",\n            /*at_ms*/ 15,\n        )?)\n        .await?;\n    Ok(())\n}\n",
+  "case_after": "async fn tombstone_refuses_to_orphan_an_active_dispatch() -> TestResult {\n    let temp = TempDir::new()?;\n    let agent_id = agent()?;\n    let room_id = room(\"!active-dispatch:example.test\")?;\n    let store = store_and_room(&temp, &room_id).await.map_err(|error| format!(\"active_dispatch_tombstone:open_and_bind_room: {error}\"))?;\n    store\n        .bind_room_thread(&RoomThreadBindingDraft {\n            room_id: room_id.clone(),\n            binding_revision: 1,\n            generation: 1,\n            project_id: room_project_idempotency_key(&agent_id, &room_id),\n            thread_id: Some(\"thread-active\".to_string()),\n            changed_at_ms: 2,\n        })\n        .await.map_err(|error| format!(\"active_dispatch_tombstone:bind_room_thread: {error}\"))?;\n    let target = event(\"$active-target\")?;\n    let timeline = mutation(\n        target.clone(),\n        room_id.clone(),\n        MatrixSyncMutationBodyV2::Timeline {\n            event_type: \"m.room.message\".to_string(),\n            payload: b\"active\".to_vec(),\n        },\n        /*at_ms*/ 10,\n    )?;\n    store\n        .apply_sync_decision_v2(&commit(\n            /*expected*/ None,\n            \"s1\",\n            /*observed_at_ms*/ 11,\n            vec![timeline],\n        ))\n        .await.map_err(|error| format!(\"active_dispatch_tombstone:timeline_commit: {error}\"))?;\n    store\n        .begin_inbox_dispatch(&target, /*begun_at_ms*/ 12)\n        .await.map_err(|error| format!(\"active_dispatch_tombstone:begin_dispatch: {error}\"))?;\n    let redaction_source = event(\"$active-redaction\")?;\n    let redaction = mutation(\n        redaction_source.clone(),\n        room_id.clone(),\n        MatrixSyncMutationBodyV2::Redaction {\n            target_event_id: target.clone(),\n        },\n        /*at_ms*/ 13,\n    )?;\n    assert_eq!(\n        store\n            .apply_sync_decision_v2(&commit(\n                Some(\"s1\"),\n                \"s2\",\n                /*observed_at_ms*/ 14,\n                vec![redaction],\n            ))\n            .await,\n        Err(MatrixDurableError::Conflict)\n    );\n    assert_eq!(\n        store.inbox(&target).await.map_err(|error| format!(\"active_dispatch_tombstone:read_inbox: {error}\"))?.ok_or(\"inbox\")?.state,\n        InboxState::Pending\n    );\n    assert_eq!(\n        store\n            .sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1)\n            .await.map_err(|error| format!(\"active_dispatch_tombstone:read_checkpoint: {error}\"))?\n            .ok_or(\"checkpoint\")?\n            .next_batch,\n        \"s1\"\n    );\n    store\n        .ingest_inbox(&inbox_draft(\n            redaction_source,\n            room_id,\n            b\"failed decision left no ledger\",\n            /*at_ms*/ 15,\n        )?)\n        .await.map_err(|error| format!(\"active_dispatch_tombstone:post_conflict_ingest: {error}\"))?;\n    Ok(())\n}\n"
+}

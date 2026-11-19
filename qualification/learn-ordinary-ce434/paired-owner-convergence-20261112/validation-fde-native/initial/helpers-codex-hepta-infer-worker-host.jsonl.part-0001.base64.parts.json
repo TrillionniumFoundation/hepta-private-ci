@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.ordered-artifact-parts.v1",
+  "archive_name": "helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64",
+  "archive_bytes": 524289,
+  "archive_sha256": "d1f09c9998a67fbe5d7f9729afbe9a7c5c9f3cb97a7b4000e2e56356490c36c4",
+  "original_repository_path": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-fde-native/initial/helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64",
+  "original_git_commit": "543542dcc8ff4e7c2d8c888ca836d749c52b7091",
+  "original_git_blob": "3ed02457f36444abfc4eb6baa136947e326d4599",
+  "max_part_bytes": 500000,
+  "ordered_parts": [
+    {
+      "path": "helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64.part000",
+      "offset": 0,
+      "bytes": 500000,
+      "sha256": "ff921b0e703f68749e361c3de35249a9becd35cf5ec9613a75698720fbe7e434"
+    },
+    {
+      "path": "helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64.part001",
+      "offset": 500000,
+      "bytes": 24289,
+      "sha256": "2818cde08dc4198d77509f0f62b7965cfb28c39c526001839718694b91805eaa"
+    }
+  ],
+  "restoration": {
+    "working_directory": "qualification/learn-ordinary-ce434/paired-owner-convergence-20261112/validation-fde-native/initial",
+    "command": "( set -C; cat helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64.part000 helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64.part001 > helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64 )",
+    "verification_command": "printf '%s  %s\\n' d1f09c9998a67fbe5d7f9729afbe9a7c5c9f3cb97a7b4000e2e56356490c36c4 helpers-codex-hepta-infer-worker-host.jsonl.part-0001.base64 | sha256sum -c -",
+    "no_overwrite": true,
+    "instructions": "../../../../learn-evidence-storage-followup-20261115/README.md"
+  },
+  "storage_only": true,
+  "original_bytes_unchanged": true
+}

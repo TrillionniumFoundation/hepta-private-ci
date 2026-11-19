@@ -1,0 +1,284 @@
+{
+  "arm_orders": {
+    "bursty_then_interleaved": 2,
+    "interleaved_then_bursty": 2
+  },
+  "authority": "DENY_ALL",
+  "candidate": "HOLD_NO_GO",
+  "confirmatory_inference": false,
+  "evaluation": "PRE_EXPOSED_AND_OPERATOR_CONSTRUCTED_NOT_INDEPENDENT",
+  "experimental_unit": "four_paired_training_seeds",
+  "hypothesis": "bursty_minus_interleaved",
+  "input_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c",
+  "schema": "HPCA-V2-EXPOSED-PROBABILITY-POSTHOC-V1",
+  "sections": {
+    "B_exposed_eval": {
+      "claim": "post_hoc_only_not_equivalence_not_independent_efficacy",
+      "exploratory_two_sided_signflip_p_log_loss": 0.5,
+      "mean_bursty_minus_interleaved": {
+        "accuracy": 0.0,
+        "brier": 7.940722435643283e-05,
+        "log_loss": 0.00017497128980925591
+      },
+      "parent": {
+        "accuracy": 0.75,
+        "brier": 0.23830972663450206,
+        "log_loss": 0.670303191815982
+      },
+      "per_seed": [
+        {
+          "bursty": {
+            "accuracy": 0.75,
+            "brier": 0.24126278972111384,
+            "log_loss": 0.6768220870427121
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 0.00026734369936345925,
+            "log_loss": 0.0005865506861035819
+          },
+          "interleaved": {
+            "accuracy": 0.75,
+            "brier": 0.24099544602175038,
+            "log_loss": 0.6762355363566085
+          },
+          "seed": 11
+        },
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.2453390107134742,
+            "log_loss": 0.6852799695051882
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 0.00018531146756117778,
+            "log_loss": 0.0004041805388192987
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.24515369924591301,
+            "log_loss": 0.6848757889663689
+          },
+          "seed": 17
+        },
+        {
+          "bursty": {
+            "accuracy": 0.75,
+            "brier": 0.23571214417925107,
+            "log_loss": 0.6648065467490395
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": -0.0002213833530473608,
+            "log_loss": -0.00048479580334304107
+          },
+          "interleaved": {
+            "accuracy": 0.75,
+            "brier": 0.23593352753229843,
+            "log_loss": 0.6652913425523825
+          },
+          "seed": 23
+        },
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.2367735034830966,
+            "log_loss": 0.6663539063851696
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 8.635708354845506e-05,
+            "log_loss": 0.00019394973765718415
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.23668714639954813,
+            "log_loss": 0.6661599566475124
+          },
+          "seed": 29
+        }
+      ],
+      "questions": 4
+    },
+    "C_operator_constructed": {
+      "claim": "post_hoc_only_not_equivalence_not_independent_efficacy",
+      "exploratory_two_sided_signflip_p_log_loss": 0.625,
+      "mean_bursty_minus_interleaved": {
+        "accuracy": 0.0,
+        "brier": 2.0917584209287354e-05,
+        "log_loss": 0.00011125708716996918
+      },
+      "parent": {
+        "accuracy": 0.375,
+        "brier": 0.39894578249161783,
+        "log_loss": 1.066275843642099
+      },
+      "per_seed": [
+        {
+          "bursty": {
+            "accuracy": 0.375,
+            "brier": 0.40151763920139755,
+            "log_loss": 1.0774467113061066
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 0.0001358132053867478,
+            "log_loss": 0.000580993561697829
+          },
+          "interleaved": {
+            "accuracy": 0.375,
+            "brier": 0.4013818259960108,
+            "log_loss": 1.0768657177444088
+          },
+          "seed": 11
+        },
+        {
+          "bursty": {
+            "accuracy": 0.375,
+            "brier": 0.40191750393991893,
+            "log_loss": 1.0814181653540982
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 8.726902776723389e-05,
+            "log_loss": 0.00042100840674463846
+          },
+          "interleaved": {
+            "accuracy": 0.375,
+            "brier": 0.4018302349121517,
+            "log_loss": 1.0809971569473535
+          },
+          "seed": 17
+        },
+        {
+          "bursty": {
+            "accuracy": 0.375,
+            "brier": 0.39570406901649113,
+            "log_loss": 1.0569133218158244
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": -0.00010850620978031245,
+            "log_loss": -0.0004165360545154151
+          },
+          "interleaved": {
+            "accuracy": 0.375,
+            "brier": 0.39581257522627145,
+            "log_loss": 1.0573298578703398
+          },
+          "seed": 23
+        },
+        {
+          "bursty": {
+            "accuracy": 0.375,
+            "brier": 0.39973889608823865,
+            "log_loss": 1.0701330816137828
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": -3.0905686536519816e-05,
+            "log_loss": -0.00014043756524717566
+          },
+          "interleaved": {
+            "accuracy": 0.375,
+            "brier": 0.39976980177477517,
+            "log_loss": 1.07027351917903
+          },
+          "seed": 29
+        }
+      ],
+      "questions": 8
+    },
+    "calibration": {
+      "claim": "post_hoc_only_not_equivalence_not_independent_efficacy",
+      "exploratory_two_sided_signflip_p_log_loss": 0.375,
+      "mean_bursty_minus_interleaved": {
+        "accuracy": 0.0,
+        "brier": 8.022823514297617e-05,
+        "log_loss": 0.00017374795192404147
+      },
+      "parent": {
+        "accuracy": 0.25,
+        "brier": 0.2633045963530602,
+        "log_loss": 0.7201437836022795
+      },
+      "per_seed": [
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.26639854620673314,
+            "log_loss": 0.7267545317000762
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 0.0002287133745513814,
+            "log_loss": 0.0004934717594664573
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.26616983283218176,
+            "log_loss": 0.7262610599406097
+          },
+          "seed": 11
+        },
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.269209206095556,
+            "log_loss": 0.73288211437984
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 0.0001545252204761538,
+            "log_loss": 0.00034036600118314553
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.26905468087507983,
+            "log_loss": 0.7325417483786568
+          },
+          "seed": 17
+        },
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.26027006423826793,
+            "log_loss": 0.7140040488842704
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": -0.00011501918666956268,
+            "log_loss": -0.00024723150949945705
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.2603850834249375,
+            "log_loss": 0.7142512803937698
+          },
+          "seed": 23
+        },
+        {
+          "bursty": {
+            "accuracy": 0.5,
+            "brier": 0.26205786129813546,
+            "log_loss": 0.7175382471937767
+          },
+          "bursty_minus_interleaved": {
+            "accuracy": 0.0,
+            "brier": 5.269353221393214e-05,
+            "log_loss": 0.00010838555654602011
+          },
+          "interleaved": {
+            "accuracy": 0.5,
+            "brier": 0.26200516776592153,
+            "log_loss": 0.7174298616372307
+          },
+          "seed": 29
+        }
+      ],
+      "questions": 4
+    }
+  },
+  "source_binding": "SHA256_OF_ARCHIVED_BYTES_NOT_OWNER_ATTESTATION"
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "hepta.shared-stem-bakeoff.v1",
+  "status": "qualification_plan",
+  "authority": "qualification_only",
+  "runtime_posture": {
+    "mode": "SHADOW_ONLY",
+    "authority": "DENY_ALL",
+    "release": "HOLD_NO_GO"
+  },
+  "decision": "shared_stem_light_cell_heads",
+  "control": {
+    "id": "control_421m",
+    "role": "cognition_control",
+    "parameter_budget_m": 421,
+    "trainable": false,
+    "required": true,
+    "input_modalities": [
+      "text"
+    ]
+  },
+  "candidates": [
+    {
+      "id": "embeddinggemma2_740m",
+      "role": "perception_memory_stem",
+      "parameter_budget_m": 740,
+      "active_parameter_budgets_m": [
+        270,
+        440,
+        570,
+        740
+      ],
+      "latent_width": 768,
+      "context_tokens": 8192,
+      "input_modalities": [
+        "text",
+        "image",
+        "audio"
+      ],
+      "weights_status": "external_artifact_required"
+    },
+    {
+      "id": "t5gemma2_encoder_270m",
+      "role": "context_stem",
+      "parameter_budget_m": 270,
+      "context_tokens": 128000,
+      "input_modalities": [
+        "text",
+        "image"
+      ],
+      "weights_status": "external_artifact_required"
+    },
+    {
+      "id": "hepta_latent_150m",
+      "role": "native_latent_stem",
+      "parameter_budget_m": 150,
+      "input_modalities": [
+        "projected_modalities"
+      ],
+      "weights_status": "to_be_trained"
+    },
+    {
+      "id": "hepta_latent_300m",
+      "role": "native_latent_stem",
+      "parameter_budget_m": 300,
+      "input_modalities": [
+        "projected_modalities"
+      ],
+      "weights_status": "to_be_trained"
+    }
+  ],
+  "cell_contract": {
+    "shared_forward_once_per_batch": true,
+    "allowed_cell_components": [
+      "gate",
+      "light_adapter",
+      "task_head",
+      "action_head",
+      "value_head",
+      "local_state",
+      "external_memory_ref"
+    ],
+    "forbidden_cell_components": [
+      "encoder_copy",
+      "per_cell_backbone",
+      "per_cell_optimizer_state",
+      "authority_token"
+    ]
+  },
+  "scales": [
+    1,
+    8,
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "comparison_arms": [
+    "control_421m",
+    "embeddinggemma2_740m",
+    "t5gemma2_encoder_270m",
+    "hepta_latent_150m",
+    "hepta_latent_300m",
+    "shared_encoder",
+    "duplicated_encoder"
+  ],
+  "required_metrics": [
+    "task_utility",
+    "future_window_utility",
+    "negative_transfer_rate",
+    "multimodal_coverage",
+    "long_context_retention",
+    "calibration_error",
+    "p99_ms",
+    "throughput_per_host",
+    "gpu_peak_bytes",
+    "rss_bytes",
+    "feature_cache_reuse_rate",
+    "per_cell_incremental_bytes"
+  ],
+  "required_gates": [
+    "artifact_digest",
+    "one_shared_forward_per_batch",
+    "zero_delta_parity",
+    "stale_generation_rejection",
+    "receipt_terminality",
+    "control_regression_bound",
+    "resource_budget",
+    "rollback_witness"
+  ]
+}

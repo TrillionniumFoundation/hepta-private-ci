@@ -298,8 +298,8 @@ async fn incomplete_or_conflicting_response_leaves_all_rooms_and_cursor_unchange
         response((0..=MAX_MATRIX_SYNC_MUTATIONS_V2).map(|i| message(&format!("$bound-{i}"), "x")).collect())?,
         response((0..17).map(|i| message(&format!("$bytes-{i}"), &"x".repeat(1_000_000))).collect())?,
     ].into_iter().chain(conflicting_nested) {
-        assert_eq!(fixture.composer().commit_response(&rejected, /*checkpoint*/ None,
-            /*observed_at_ms*/ 20, |_| Some(RoomVersionRules::V11)).await, Err(MatrixSdkError::Sync));
+        assert!(matches!(fixture.composer().commit_response(&rejected, /*checkpoint*/ None,
+            /*observed_at_ms*/ 20, |_| Some(RoomVersionRules::V11)).await, Err(MatrixSdkError::Sync)));
         assert_eq!(fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?, before);
         assert_eq!(fixture.store.sync_checkpoint(/*binding_revision*/ 1, /*generation*/ 1).await?, None);
     }
@@ -403,7 +403,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
         next_batch: "s1".to_string(),
         updated_at_ms: 1,
     };
-    assert_eq!(
+    assert!(matches!(
         fixture
             .composer()
             .commit_response(
@@ -414,7 +414,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
             )
             .await,
         Err(MatrixSdkError::Store)
-    );
+    ));
     assert_eq!(
         fixture
             .store
@@ -442,7 +442,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
         .expect("room")
         .timeline
         .limited = true;
-    assert_eq!(
+    assert!(matches!(
         fixture
             .composer()
             .commit_response(
@@ -453,7 +453,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
             )
             .await,
         Err(MatrixSdkError::Sync)
-    );
+    ));
     assert_eq!(
         fixture
             .store
@@ -516,7 +516,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
         .expect("room")
         .timeline
         .limited = false;
-    assert_eq!(
+    assert!(matches!(
         fixture
             .composer()
             .commit_response(
@@ -527,7 +527,7 @@ async fn unchanged_observation_requires_full_normalization_and_current_durable_c
             )
             .await,
         Err(MatrixSdkError::Store)
-    );
+    ));
     assert_eq!(
         fixture
             .store
@@ -650,7 +650,7 @@ async fn redaction_room_version_and_decision_payload_identity_are_enforced() -> 
         .await?;
     let before = fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?;
     let changed = self::response(vec![message("$content", "changed")])?;
-    assert_eq!(
+    assert!(matches!(
         fixture
             .composer()
             .commit_response(
@@ -661,14 +661,14 @@ async fn redaction_room_version_and_decision_payload_identity_are_enforced() -> 
             )
             .await,
         Err(MatrixSdkError::Store)
-    );
+    ));
     assert_eq!(
         fixture.store.snapshot(/*now_ms*/ 100, /*limit*/ 10).await?,
         before
     );
     let mut changed_config = fixture.config.clone();
     changed_config.binding.require_explicit_mention = false;
-    assert_eq!(
+    assert!(matches!(
         MatrixSyncComposer {
             config: &changed_config,
             ingress: &fixture.ingress,
@@ -682,7 +682,7 @@ async fn redaction_room_version_and_decision_payload_identity_are_enforced() -> 
         )
         .await,
         Err(MatrixSdkError::Configuration)
-    );
+    ));
     fixture.store.close().await;
     Ok(())
 }

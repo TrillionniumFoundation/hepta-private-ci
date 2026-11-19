@@ -1,0 +1,96 @@
+{
+  "schema": "learn.original-archive-only-actual-root-readback.v1",
+  "prepared_commit": "f41c4a43cc14140e37ba30a44cde3faa70ad1cd0",
+  "request_blob": "e7a3e64784c844e8815d1038f3f3754a25c0abdf",
+  "job": "1a1d0d20d4d-2564-1bcb",
+  "idempotency_key": "learn-ce434-453-original-archive-only-recovery-v1",
+  "actual_status": "succeeded",
+  "actual_exit_code": 0,
+  "complete_durable_terminal": true,
+  "timed_out": false,
+  "cancelled": false,
+  "complete_result": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/result.json",
+    "version": "2050:16319985:7554:1794504802757544457:1794504802836542106",
+    "bytes": 7554,
+    "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"
+  },
+  "actual_archive": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "bytes": 29366352,
+    "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "metadata": {
+      "device": 2067,
+      "inode": 40370259,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 29366352,
+      "mtime_ns": "1794504802273558861",
+      "ctime_ns": "1794504802472552939"
+    }
+  },
+  "original_binding": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "metadata": {
+      "device": 2067,
+      "inode": 40370261,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 39884,
+      "mtime_ns": "1794482968901013685",
+      "ctime_ns": "1794482968909814746"
+    }
+  },
+  "preserved": {
+    "source_before_equals_after": true,
+    "private_directory_identity_before_equals_after": true,
+    "binding_full_identity_and_bytes_before_equals_after": true,
+    "original_manifest_and_receipt_hashes_rechecked": true
+  },
+  "download": {
+    "actual_exit_code": 0,
+    "seconds": 8.757476195925847,
+    "original_limits_unchanged": true
+  },
+  "targets_created": false,
+  "production_source_mutated": false,
+  "originals": [
+    {
+      "filename": "result.original.json",
+      "sha": "925d5709a727479bcb08d44c3ed9968d767b92f4",
+      "bytes": 7554,
+      "sha256": "972452dc254fd0c11ceaed85acea76d55c4b34b0c7c62a018c3cf281a2324af3"
+    },
+    {
+      "filename": "h-terminal-status.original-sdk.json",
+      "sha": "8f22e8efb2d305f8a5c85df843a53a8b50659def",
+      "bytes": 908,
+      "sha256": "fd24c188185434d163b36eed23dd95862b4a408f52a9fa47d6c0bf6b8e9faa09"
+    },
+    {
+      "filename": "h-process-read.original-sdk.json",
+      "sha": "a6324ad7fca8c9d7c6dd4b096d2d9a141bac5e14",
+      "bytes": 2295,
+      "sha256": "8afd31c5ba6a7b1c434039b184030451e2d07c157e59a45d324e6e42674dc94d"
+    },
+    {
+      "filename": "stdout.original.log",
+      "sha": "8beee5ba0bff6f1d944a965d7b6f6865301f36f4",
+      "bytes": 586,
+      "sha256": "420dfb1ccdca5e3ffc31050bf2223cf724339fdb91ed221bad32ba4a001d75d0"
+    },
+    {
+      "filename": "stderr.original.log",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "native_tests_executed": 0,
+  "ordinary_acceptance": 0
+}

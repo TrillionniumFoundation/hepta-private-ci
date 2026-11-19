@@ -1,0 +1,45 @@
+test_replaced_source_tree_never_dispatches_as_original_commit (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_source_tree_never_dispatches_as_original_commit) ... FAIL
+test_clean_original_checkout_ignores_replacement_metadata (test_hepta_ci_exec.ExecutionRecordTests.test_clean_original_checkout_ignores_replacement_metadata) ... FAIL
+test_replaced_merge_parents_never_dispatch (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_merge_parents_never_dispatch) ... FAIL
+test_replaced_source_cannot_change_recomputed_merge_tree (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_source_cannot_change_recomputed_merge_tree) ... FAIL
+
+======================================================================
+FAIL: test_replaced_source_tree_never_dispatches_as_original_commit (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_source_tree_never_dispatches_as_original_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/hepta-ci-fix/candidate/scripts/test_hepta_ci_exec.py", line 148, in test_replaced_source_tree_never_dispatches_as_original_commit
+    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+AssertionError: 0 != 2 : {"after": {"commit": "b02bd845e164b155365cd452e9e2968262ebb355", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355"], "tree": "cc5f1927a25775bcec7c268c1b069ae6552f3de3"}, "base_sha": "0000000000000000000000000000000000000000", "before": {"commit": "b02bd845e164b155365cd452e9e2968262ebb355", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355"], "tree": "cc5f1927a25775bcec7c268c1b069ae6552f3de3"}, "command": ["/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python", "-c", "from pathlib import Path; Path('/tmp/hepta-exec-5xpxuyqv/effect').write_text('executed')"], "command_exit_code": 0, "elapsed_seconds": 0.04092969300108962, "exit_code": 0, "finished_at": "2026-10-21T00:45:31.633829+00:00", "job": null, "lane": "source-head", "log_bytes": 0, "log_file": "result.json.2832f9960bfd477ebd7d68dd0c9b72d8.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "minimum_tests": 0, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "started_at": "2026-10-21T00:45:31.591957+00:00", "status": "passed", "tested_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "timed_out": false, "working_directory": "/tmp/hepta-exec-5xpxuyqv/repo"}
+
+
+======================================================================
+FAIL: test_clean_original_checkout_ignores_replacement_metadata (test_hepta_ci_exec.ExecutionRecordTests.test_clean_original_checkout_ignores_replacement_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/hepta-ci-fix/candidate/scripts/test_hepta_ci_exec.py", line 167, in test_clean_original_checkout_ignores_replacement_metadata
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+AssertionError: 2 != 0 : {"base_sha": "0000000000000000000000000000000000000000", "before": {"commit": "b02bd845e164b155365cd452e9e2968262ebb355", "dirty": true, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355"], "tree": "cc5f1927a25775bcec7c268c1b069ae6552f3de3"}, "command": ["/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python", "-c", "from pathlib import Path; Path('/tmp/hepta-exec-rmf59ki9/effect').write_text('executed')"], "command_exit_code": null, "elapsed_seconds": 0.00798500599921681, "error": "checkout does not match the clean tested identity", "exit_code": 2, "finished_at": "2026-10-21T00:45:31.713390+00:00", "job": null, "lane": "source-head", "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "started_at": "2026-10-21T00:45:31.704417+00:00", "status": "rejected", "tested_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "working_directory": "/tmp/hepta-exec-rmf59ki9/repo"}
+
+
+======================================================================
+FAIL: test_replaced_merge_parents_never_dispatch (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_merge_parents_never_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/hepta-ci-fix/candidate/scripts/test_hepta_ci_exec.py", line 206, in test_replaced_merge_parents_never_dispatch
+    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+AssertionError: 0 != 2 : {"after": {"commit": "f32c3eeb90bc92784af9e8af6562c9504a125202", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355", "acceb8d5aa3cfed6da0b4b9436478ce8f0849275"], "tree": "46b689c1bc77bfc87065b25606deeae17c5e6d10"}, "base_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "before": {"commit": "f32c3eeb90bc92784af9e8af6562c9504a125202", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355", "acceb8d5aa3cfed6da0b4b9436478ce8f0849275"], "tree": "46b689c1bc77bfc87065b25606deeae17c5e6d10"}, "command": ["/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python", "-c", "from pathlib import Path; Path('/tmp/hepta-exec-u70tpjbn/effect').write_text('executed')"], "command_exit_code": 0, "elapsed_seconds": 0.04028766500414349, "exit_code": 0, "finished_at": "2026-10-21T00:45:31.837948+00:00", "job": null, "lane": "base-merge", "log_bytes": 0, "log_file": "result.json.8431d00bd45d428999683290ef1dfad7.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "minimum_tests": 0, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "recomputed_merge_tree": "46b689c1bc77bfc87065b25606deeae17c5e6d10", "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "acceb8d5aa3cfed6da0b4b9436478ce8f0849275", "started_at": "2026-10-21T00:45:31.796705+00:00", "status": "passed", "tested_sha": "f32c3eeb90bc92784af9e8af6562c9504a125202", "timed_out": false, "working_directory": "/tmp/hepta-exec-u70tpjbn/repo"}
+
+
+======================================================================
+FAIL: test_replaced_source_cannot_change_recomputed_merge_tree (test_hepta_ci_exec.ExecutionRecordTests.test_replaced_source_cannot_change_recomputed_merge_tree)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/337c309bc660/hepta-ci-fix/candidate/scripts/test_hepta_ci_exec.py", line 238, in test_replaced_source_cannot_change_recomputed_merge_tree
+    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+AssertionError: 0 != 2 : {"after": {"commit": "e8461ec804f19a066251bb32ea884e9af6ed7ffd", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355", "b25e823a781652c6416d2df06e99ca8342e87c59"], "tree": "a99d676eff5c7284d64aa5922420cd0e84d821bb"}, "base_sha": "b02bd845e164b155365cd452e9e2968262ebb355", "before": {"commit": "e8461ec804f19a066251bb32ea884e9af6ed7ffd", "dirty": false, "parents": ["b02bd845e164b155365cd452e9e2968262ebb355", "b25e823a781652c6416d2df06e99ca8342e87c59"], "tree": "a99d676eff5c7284d64aa5922420cd0e84d821bb"}, "command": ["/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python", "-c", "from pathlib import Path; Path('/tmp/hepta-exec-2kgz_w7t/effect').write_text('executed')"], "command_exit_code": 0, "elapsed_seconds": 0.045558746001916006, "exit_code": 0, "finished_at": "2026-10-21T00:45:31.961354+00:00", "job": null, "lane": "base-merge", "log_bytes": 0, "log_file": "result.json.4914596abbf640fc8cf59ae6c3849a8e.log", "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "minimum_tests": 0, "observed_failed_tests": 0, "observed_passed_tests": 0, "output_limit_exceeded": false, "recomputed_merge_tree": "a99d676eff5c7284d64aa5922420cd0e84d821bb", "returncode": 0, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "b25e823a781652c6416d2df06e99ca8342e87c59", "started_at": "2026-10-21T00:45:31.914806+00:00", "status": "passed", "tested_sha": "e8461ec804f19a066251bb32ea884e9af6ed7ffd", "timed_out": false, "working_directory": "/tmp/hepta-exec-2kgz_w7t/repo"}
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.448s
+
+FAILED (failures=4)

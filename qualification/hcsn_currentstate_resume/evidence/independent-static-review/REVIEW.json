@@ -1,0 +1,94 @@
+{
+  "identity": "currentstate-saved-continuation-fullraw-static-review-v1",
+  "new_stage_identity": "currentstate-saved-continuation-fullraw-attempt001",
+  "source_sha256_before": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "qualification/hcsn_currentstate_resume/run_saved.py": "63cb7b8e3ef5772d4dd1e0b28b55a09f4848090a5b670699513cefe65d662b01",
+    "qualification/hcsn_currentstate_resume/PLAN.json": "3874bcbe9d4d0f76a63a67c8bcbe44a2755e5148c8a0068b8d9e160bb6a12943",
+    "qualification/hcsn_currentstate_resume/SPEC.md": "6516977e84bb8d9736d81163d5999d0218a882caaa75969c979a44aab0d9eeb9"
+  },
+  "source_sha256_after": {
+    "qualification/hcsn_currentstate/PLAN.json": "0de8eea18d641235eae5eb808ddba9722324ba4461ce0377df1fe16a09609498",
+    "qualification/hcsn_currentstate/SPEC.md": "2f60396b91d9509b92cd8351ae83b56bda082c0d9dc916fd09865b4b2971af3b",
+    "qualification/hcsn_currentstate/audit.py": "93193560c6d24c1590414e1b9fcc09a6f0f162e0919fc0b111c9a971d0de61a2",
+    "qualification/hcsn_currentstate/fixtures.py": "a92e09ed32ea69f8b13f6370ac767fa7278d7eee5f3659c9818a01e29fcd89d6",
+    "qualification/hcsn_currentstate/negative_control.py": "f06ec6095d677cdaa2a98c3cd374b07774427c66375dfc41b78147ab91bfd72e",
+    "qualification/hcsn_currentstate/packets.py": "940c40f87a10c8a71d12fd6cb7c8cf7c77b8ec359f863394fd01eedc826a2ccd",
+    "qualification/hcsn_currentstate/reference.py": "4bdd8cd52a7cba27f3c326cff510ee8ca8bb7cc7db41dd0161d68b7039b73149",
+    "qualification/hcsn_currentstate_resume/run_saved.py": "63cb7b8e3ef5772d4dd1e0b28b55a09f4848090a5b670699513cefe65d662b01",
+    "qualification/hcsn_currentstate_resume/PLAN.json": "3874bcbe9d4d0f76a63a67c8bcbe44a2755e5148c8a0068b8d9e160bb6a12943",
+    "qualification/hcsn_currentstate_resume/SPEC.md": "6516977e84bb8d9736d81163d5999d0218a882caaa75969c979a44aab0d9eeb9"
+  },
+  "input_sha256_before": {
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/mixed.resume.json": "085ad51f9f9a66424dff241f26a3dc86c87646a203dc17e3be42a847dfff3da7",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/rare.resume.json": "55d4feb6e3402ddc7331a7c458c1ed82d92e2d4526275e2ca7b56ee3e805d50a",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/mixed.final.json": "4eb96eb44b1c67b75b6f7ac49c73281bd22a64b87b14651a2db922c8ea4293c3",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/rare.final.json": "d6b273585255cec9157aace0fe469d974ce505db59295a2d33ec1efd9085cfb1",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/ROWS.json": "f99fdcdd0f3fc51148a75707590f8ddb88214d63f607dd84a56ea80cfa645587"
+  },
+  "input_sha256_after": {
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/mixed.resume.json": "085ad51f9f9a66424dff241f26a3dc86c87646a203dc17e3be42a847dfff3da7",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/rare.resume.json": "55d4feb6e3402ddc7331a7c458c1ed82d92e2d4526275e2ca7b56ee3e805d50a",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/mixed.final.json": "4eb96eb44b1c67b75b6f7ac49c73281bd22a64b87b14651a2db922c8ea4293c3",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/rare.final.json": "d6b273585255cec9157aace0fe469d974ce505db59295a2d33ec1efd9085cfb1",
+    "qualification/hcsn_currentstate/evidence/currentstate-attempt001/ROWS.json": "f99fdcdd0f3fc51148a75707590f8ddb88214d63f607dd84a56ea80cfa645587"
+  },
+  "old_seven_files_equal_de3d937_source_freeze": true,
+  "five_inputs_equal_independently_reviewed_a9a7fc_raw": true,
+  "imports_ast_only": [
+    "argparse",
+    "fractions",
+    "hashlib",
+    "json",
+    "os",
+    "pathlib",
+    "resource",
+    "subprocess",
+    "sys",
+    "time",
+    "numpy",
+    "qualification.hcsn_currentstate.fixtures",
+    "qualification.hcsn_currentstate.packets"
+  ],
+  "new_numerical_executions": 0,
+  "new_candidate_calls": 0,
+  "new_reference_calls": 0,
+  "new_expm_calls": 0,
+  "new_quadratures": 0,
+  "initial_trajectory_replays": 0,
+  "old72_replays": 0,
+  "blocking_findings": [],
+  "static_checks": [
+    "Each trajectory loads the retained exact .201 state; fixture constructs only physics and an unused initial object, which is never advanced.",
+    "Warm and fresh-process cold schedules .28/.36 each write INPUT, STATE-028, STATE-036 and full observation vectors. Coarse writes INPUT and STATE-036 and full observation vectors.",
+    "Warm/cold INPUT, .28 and .36 raw files are compared directly with read_bytes equality, alongside both SHA256s.",
+    "Coarse .36 full vectors are retained; comparison uses each active/upper/M/H/A/R/Z coordinate.",
+    "New warm .36 raw is directly compared with retained old warm final raw as a diagnostic. This does not create or claim the missing old cold raw.",
+    "Original ROWS reference64 vectors are read only; no reference module import or reference evaluation.",
+    "All outputs use fresh exist_ok=False directories; source and five immutable inputs are read only.",
+    "Six fixed trajectory ledgers use maximum=100 with inherited 20-segment cap: fixed upper bounds 600 exponentials and 120 segments.",
+    "Parent CPU limits20/21 and two children5/6 give total hard CPU upper bound33; each process RLIMIT_AS536870912 bytes.",
+    "Parent and child ru_maxrss fields are distinguished and combined peak RSS is explicitly unmeasured.",
+    "The unchanged1e-12 relative floor uses null below floor; finite absolute tolerance remains2e-11; HOLD_NO_GO/all_closed=false."
+  ],
+  "pre_execution_requirements": [
+    "Git checkpoint this exact ten-source roster and five-input roster; driver guarded() trusts the manifest membership rather than asserting a mandatory roster.",
+    "Freeze.source_commit and identity must name the new stage; all hashes must equal the reviewed roster.",
+    "Actual launcher must apply GNU timeout -s KILL45s and OPENBLAS_NUM_THREADS=1/OMP_NUM_THREADS=1. A SPEC statement alone is not a launch receipt."
+  ],
+  "limitations": [
+    "This is a static go-ahead for a new saved-state continuation only; it reports no numerical result.",
+    "Guarded comparisons do not reconstruct absent historical coarse vectors or cold snapshots.",
+    "CLI/freezefile roster and external wall guard require separate pre-execution roster/launcher verification."
+  ],
+  "conclusion": "no_static_blocker_conditional_on_exact_complete_git_freeze_and_guarded_launcher",
+  "admission": "HOLD_NO_GO",
+  "all_closed": false,
+  "reviewer_source_sha256": "ae2ee03da3121c7468a90528eb61f234ea5954ddc3e5da835d50ffb19460f76f"
+}

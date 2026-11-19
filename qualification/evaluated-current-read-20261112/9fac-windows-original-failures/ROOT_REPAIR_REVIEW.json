@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "status": "STATIC_REVIEWED_PREPARED_NOT_PUSHED",
+  "source": "9fac31e6f89569f0c582fc2a9cc2bf0b8f05c7ca",
+  "prepared_commit": "b649baef1967d582b328df1023922a45aa196ab3",
+  "prepared_tree": "ac45546648ab87b9ef2a39ce0e84a514796293c7",
+  "changes": [
+    {
+      "path": ".gitattributes",
+      "base_blob": "17da38650745923743630d38d3eb0327b7a55d1f",
+      "post_blob": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "bytes": 909,
+      "sha256": "697af3562bc9f094af53857d8aa1f5070450bd4fe192efecac35e969cfe138e4",
+      "reason": "Original Windows job 131310622783 exposes exactly one extra byte 13 after the canonical perception JSON; fixture Git bytes end in one LF and their pre-LF SHA256 equals the existing immutable test digest. Pin only this fixture's checkout LF; keep its bytes, digest and assertions unchanged.",
+      "scope": "Test/check-out behavior only; no product owner or lock change."
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "base_blob": "cddb72f40d437dffa9cfc3d3c478924006f16ac8",
+      "post_blob": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "bytes": 12514,
+      "sha256": "d5146e06e1ed575853783c625306cf8ba200de465a13c940b0da49cbc99089f2",
+      "reason": "Four finished control owners are dropped before final original-byte reads; original five methods and all 39 assertions remain.",
+      "scope": "Test/check-out behavior only; no product owner or lock change."
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "base_blob": "966b3324be68c114eb0e6940ab14ac00b373eb92",
+      "post_blob": "526596aa073290c60bf3e8d44f52d2812910b158",
+      "bytes": 8977,
+      "sha256": "bc3d2ae7cf0b8ae04254552cdf5ad64f31758b1a6560f9ca150a7380e5b1dc5d",
+      "reason": "Keep the exact owner.lock path in every full byte snapshot and assert it is a zero-length regular file. All nonempty original publication/checkpoint/current files remain byte-read. Product owner/fence code unchanged.",
+      "scope": "Test/check-out behavior only; no product owner or lock change."
+    }
+  ],
+  "readback": [
+    {
+      "path": ".gitattributes",
+      "sha": "97699ed2b4cdf3f4a1a4080f07b67680da9717f7",
+      "exact": true,
+      "git": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_tests.rs",
+      "sha": "32fbe36826cc43fb4af106d820d82a4a11222425",
+      "exact": true,
+      "git": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback_support_tests.rs",
+      "sha": "526596aa073290c60bf3e8d44f52d2812910b158",
+      "exact": true,
+      "git": true
+    }
+  ],
+  "test_identity": {
+    "before": {
+      "methods": [
+        "new",
+        "path",
+        "port",
+        "drop",
+        "admission",
+        "runtime_tuple",
+        "execute",
+        "feature_control_exact_readback_reopens_without_work_clock_or_write",
+        "feature_control_unknown_dispatch_remains_fenced_after_reopen",
+        "feature_control_dispatch_fsync_deadline_and_late_result_keep_original_cost",
+        "feature_control_same_operation_changed_source_or_state_never_rebinds",
+        "feature_control_original_cell_path_binds_admission_and_pending_recovery"
+      ],
+      "assertions": 39
+    },
+    "after": {
+      "methods": [
+        "new",
+        "path",
+        "port",
+        "drop",
+        "admission",
+        "runtime_tuple",
+        "execute",
+        "feature_control_exact_readback_reopens_without_work_clock_or_write",
+        "feature_control_unknown_dispatch_remains_fenced_after_reopen",
+        "feature_control_dispatch_fsync_deadline_and_late_result_keep_original_cost",
+        "feature_control_same_operation_changed_source_or_state_never_rebinds",
+        "feature_control_original_cell_path_binds_admission_and_pending_recovery"
+      ],
+      "assertions": 39
+    },
+    "identical": true
+  },
+  "product_drop_source": {
+    "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+    "blob": "bb7366e8045a0fb009c28a6de150df829e999e9f",
+    "effect": "Drop only unlocks; no payload writes."
+  },
+  "owner_fence_source": {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+    "blob": "d4b3ae5aa7247912a2b16c00392b114aa5f62c1f",
+    "effect": "Exact writer/owner.lock is opened and exclusively held without writing contents; only that sentinel receives a regular-file/zero-length metadata assertion."
+  },
+  "remaining": "Other live nonempty-journal Windows reads, TUI path normalization, exec-server isolation refusal and core test failure remain open. No unsupported cloned journal handle is introduced. No post-change execution is claimed."
+}

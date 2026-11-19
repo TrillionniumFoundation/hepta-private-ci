@@ -1,0 +1,906 @@
+{
+  "schema_version": 1,
+  "source_tree": "287374b63ee68a43d4aab7597eea5c90ea67195c",
+  "original_hosted_head": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+  "groups": [
+    {
+      "id": "audit",
+      "restored_name": "audit.tar",
+      "raw_bytes": 3962880,
+      "sha256": "833ec19962035f95c987f6bc25320a750b724919ffaca4a10be8baccc70c0033",
+      "parts": [
+        {
+          "index": 0,
+          "path": "audit.part000.gz",
+          "bytes": 424574,
+          "sha256": "007a6c040936f3166101cca330eb768057a808673f38579f5bf410c993c9105b",
+          "raw_bytes": 1981440,
+          "raw_sha256": "1a3b2d3dd84a216fc69efb9704a5eaad13e93ee8523f538c3779cf1bc679af55"
+        },
+        {
+          "index": 1,
+          "path": "audit.part001.gz",
+          "bytes": 382775,
+          "sha256": "52e46122da4124e3dd96d4827c7f5a691b40e27d6e3fa46a6118ad7b11482632",
+          "raw_bytes": 1981440,
+          "raw_sha256": "ba08a55091acb2e522fe5cad94aaee0fc6e29bed50b3c43c43998051595ec948"
+        }
+      ]
+    },
+    {
+      "id": "job-133544269765",
+      "restored_name": "job-133544269765.log",
+      "raw_bytes": 1662193,
+      "sha256": "cf32d8c304660b0c8bbf0645918c5a0477dccaef71dc3307f257aca7b8e0b557",
+      "parts": [
+        {
+          "index": 0,
+          "path": "job-133544269765.part000.gz",
+          "bytes": 202818,
+          "sha256": "7e38d8b8767db5579be6426b9d73d958da08abcbb30060775b628e6e4605505d",
+          "raw_bytes": 1662193,
+          "raw_sha256": "cf32d8c304660b0c8bbf0645918c5a0477dccaef71dc3307f257aca7b8e0b557"
+        }
+      ]
+    },
+    {
+      "id": "job-133544269753",
+      "restored_name": "job-133544269753.log",
+      "raw_bytes": 3735222,
+      "sha256": "c83c38a4adcbc127a348156f5efb8233950f895b9e5c83254291f81931595c1d",
+      "parts": [
+        {
+          "index": 0,
+          "path": "job-133544269753.part000.gz",
+          "bytes": 270818,
+          "sha256": "d1b9751ea3a714e2c60b73a766c215d761de058081c7e27facec8c33f3baac58",
+          "raw_bytes": 1867611,
+          "raw_sha256": "f5f1cfe4319998d8420c18eaec25d32a9038a7663d5690c8159c8f92d5a343bc"
+        },
+        {
+          "index": 1,
+          "path": "job-133544269753.part001.gz",
+          "bytes": 237695,
+          "sha256": "278473139f12b4c44b3df692d73689a1d321d8a2603309eca4ad690ef004d83e",
+          "raw_bytes": 933805,
+          "raw_sha256": "47fc59aee43f47a47ff473a1bb59e45dd55197eafad977bca9c7da6010c12cbe"
+        },
+        {
+          "index": 2,
+          "path": "job-133544269753.part002.gz",
+          "bytes": 244272,
+          "sha256": "25813cbb80d07006ccba8f5966668bd9959d72836e9b16215e1342645d411635",
+          "raw_bytes": 933806,
+          "raw_sha256": "2cdea21d566988635e6fc760c1aa82b79e93c9be91584ac92c9bc04bc095c09d"
+        }
+      ]
+    }
+  ],
+  "members": [
+    {
+      "path": "bazel-native-app-server-v1/change.patch",
+      "bytes": 2056,
+      "sha256": "c84532bbb5b6f365ec3bc552364eb741edc1f7a83e12cd23b7350f8554dee7bf"
+    },
+    {
+      "path": "bazel-native-app-server-v1/codespell.stderr",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "bazel-native-app-server-v1/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bazel-native-app-server-v1/entry-manifest.json",
+      "bytes": 605,
+      "sha256": "3497fa1ad793c478ff37bb659df18ce657cf3caf930985ee3daea5b29766ee93"
+    },
+    {
+      "path": "bazel-native-app-server-v1/gate-commands.json",
+      "bytes": 3914,
+      "sha256": "11374c90f46125d954e6ff752f9024b59dde0595088fc281ce7935a0f65d641a"
+    },
+    {
+      "path": "bazel-native-app-server-v1/preimages/.github/workflows/bazel.yml",
+      "bytes": 25580,
+      "sha256": "6cfc55a08d164f1bf03186a5a0f3b9922116f888751ca3a2c7b3b9d74a558899"
+    },
+    {
+      "path": "bazel-native-app-server-v1/prettier.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "bazel-native-app-server-v1/prettier.stdout",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "bazel-native-app-server-v1/proposal/.github/workflows/bazel.yml",
+      "bytes": 25828,
+      "sha256": "e99e4a5b51f7f18bee984bba647a10ddc74e73627ea7d4272ff238005d72bd04"
+    },
+    {
+      "path": "bazel-native-app-server-v1/target-vector-validation.json",
+      "bytes": 6242,
+      "sha256": "c97b1229dbf454924412f9608c0a52135318aad66a6d1f2c6d5785fe71539605"
+    },
+    {
+      "path": "excluded-generated-artifacts.json",
+      "bytes": 2349,
+      "sha256": "1c0e61e7070b034dfc6f61412e1ea4e56931bff23ebff7bcc31a0af4dc72f6d9"
+    },
+    {
+      "path": "guardian-routing-v1/change.patch",
+      "bytes": 26876,
+      "sha256": "366ca9f24e9cac564ca338ba0c108cbd70bb0630a2ed97b6ad7a372de0629356"
+    },
+    {
+      "path": "guardian-routing-v1/consumer-stage.patch",
+      "bytes": 13732,
+      "sha256": "347aa431627b3b10a02649034182780a78b1843f038334cf07e23564839a8c17"
+    },
+    {
+      "path": "guardian-routing-v1/current-source-preimage-bridge.json",
+      "bytes": 1104,
+      "sha256": "2e356c355f34b37a96f0e99a69227abceff06724553f3acf07147f56f692ab36"
+    },
+    {
+      "path": "guardian-routing-v1/draft-entry-manifest.json",
+      "bytes": 2635,
+      "sha256": "707f0b6b4c8802f016a0074c968b1bad10844fd77b77cf3357866a6876aa9bee"
+    },
+    {
+      "path": "guardian-routing-v1/entry-manifest.json",
+      "bytes": 2635,
+      "sha256": "7cda9ce5db6fc1586ec89ba02fa6e421b21946dad26034bde77e68741362926b"
+    },
+    {
+      "path": "guardian-routing-v1/final-change.patch",
+      "bytes": 28371,
+      "sha256": "17fc9a0432c80548b11f56bcfc2b3c12fae5f7532e4e740efefdc3708617c89d"
+    },
+    {
+      "path": "guardian-routing-v1/final-codespell-check.stderr",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "guardian-routing-v1/final-codespell-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/final-rustfmt-check.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "guardian-routing-v1/final-rustfmt-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/final-static-gates.json",
+      "bytes": 9525,
+      "sha256": "7efca79cef95495bf7a5a6bc426176f7b5776311c750a7a25384dfadac7cc8b8"
+    },
+    {
+      "path": "guardian-routing-v1/format-argv.json",
+      "bytes": 1198,
+      "sha256": "ebaa4a271d4481a724751e976f9e011372aad129e7bc341261c47aa9e3ebe1c2"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/compile-invocation.json",
+      "bytes": 2933,
+      "sha256": "3595bda98b3b72ae0c98c5595a2a64197fa2096171ebd033158c5cb298bc2d25"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/compile-result.json",
+      "bytes": 812,
+      "sha256": "56fc3afa5fffe5a9e351d368ea8a64474e48b164df75aaa7d234ae90a06bedac"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/compile.stderr",
+      "bytes": 27955,
+      "sha256": "50abb8dd62e47e0cbb69f51f9130d4f4a6d783f3c99e314b1dc60ac6df6b2a84"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/harness.rs",
+      "bytes": 34,
+      "sha256": "41448845b1afb7666b28a128753e791e60006a30bda57dea7b30a07db5952d68"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/responses.rs",
+      "bytes": 59390,
+      "sha256": "eb0a2f27af9f05a2ee984f30b872c796d6fdf7e54294b77a0f621b1fd4aacb6d"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/responses_matcher_tests.rs",
+      "bytes": 3840,
+      "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/streaming_sse.rs",
+      "bytes": 27628,
+      "sha256": "42ea240cf2b604462cb7aace6747a0fdc5f6559d14265dc3e0fb6e40f23ba60c"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/test-list.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/test-list.stdout",
+      "bytes": 1081,
+      "sha256": "7ce728c77bef7bfd852ae60cc75f8ea9d6cc7a065c8b0c94c01f77fcb2371072"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/tests-invocation.json",
+      "bytes": 463,
+      "sha256": "b64b0ae3ed1ef2cd3d812a920bc90cff12fc738bed1b400ce91dc276af60edd7"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/tests-result.json",
+      "bytes": 1194,
+      "sha256": "a197ff2b330d3fb2767fff79bbcea78eea2451f952be88f13df388485ff9aa04"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/tests.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/baseline/tests.stdout",
+      "bytes": 1262,
+      "sha256": "078899ce8fb80440d47d1dac470221dab069c02547879d3d0ad8497778276e4b"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/compile-invocation.json",
+      "bytes": 2938,
+      "sha256": "d39fed0191c9b2387906069644706a3420b059d807cc9ba87dba85a9e0a508bd"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/compile-result.json",
+      "bytes": 815,
+      "sha256": "651fd7bf2599f72623224208033b894664c1d2d2fddbd2872b3e5c62e9dd2bb6"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/compile.stderr",
+      "bytes": 3854,
+      "sha256": "d4f9ac0c386513819e8a4cdd56e2fbfefb1abcf7e7689c2bee08c6b7b3cb6619"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/harness.rs",
+      "bytes": 34,
+      "sha256": "41448845b1afb7666b28a128753e791e60006a30bda57dea7b30a07db5952d68"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/responses.rs",
+      "bytes": 59401,
+      "sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/responses_matcher_tests.rs",
+      "bytes": 3840,
+      "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/streaming_sse.rs",
+      "bytes": 30644,
+      "sha256": "dbd4d61f1ee33cbd53d0ce7dcbb78e4d4ea76eb8294000e72a0da3a69a3e6aaf"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/candidate/streaming_sse_matching_tests.rs",
+      "bytes": 6938,
+      "sha256": "6ad96cfe936ae946824258631529be48a12a434a87f597b5798f7e1012664e41"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/dependency-inputs-after.json",
+      "bytes": 304534,
+      "sha256": "adba4fdb12bdf4b455f44dd28f80ef02a08b9dac4c31d5f3426af5609a31aabc"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/dependency-inputs-before.json",
+      "bytes": 329506,
+      "sha256": "d3a3e6239c17a98387b8b0d3617013125815b53c191b1cc8816fddbe04773dd7"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/dependency-selection.json",
+      "bytes": 5040,
+      "sha256": "fae9764868b3b61f75b72b50e797d57fbb14a5877bd12ad70b669a94e794b323"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/runner.py",
+      "bytes": 8906,
+      "sha256": "c5447a839060fa629abf80ca0cd5e748965e413901c016db8c739eab6d64dda7"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/rustc-input.json",
+      "bytes": 246,
+      "sha256": "9188cdfe2e1529559d061c416ff8e47dd9dc7cf8fb9be084e6905ed4c30cd410"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/rustc-version.txt",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/source-inputs-after.json",
+      "bytes": 3200,
+      "sha256": "6d1c1d9783d0028e04ef1deb4daeb9497d9a8b65eed39f665aca1b153c68ab76"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/source-inputs-before.json",
+      "bytes": 4310,
+      "sha256": "1f51bf481f90f4880d0e39cb0859e0c8aa9778ae04539286ee2a03c6188e6522"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v1/summary.json",
+      "bytes": 3609,
+      "sha256": "37560f8423d46e4a372b3838865b3dedf72ab5878d492bcf5f38173bbffe6871"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/compile-invocation.json",
+      "bytes": 2938,
+      "sha256": "4c30b28847f383ef6af3d0a6ac869f8c6ff90fae3bccef81cb4e0955989282b5"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/compile-result.json",
+      "bytes": 815,
+      "sha256": "3e6921dcd824753b8d644565ea80f1f676b1945e111512c0be550d4277ccc7e6"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/compile.stderr",
+      "bytes": 26968,
+      "sha256": "49d61af0b8cf8b42fc54a62c59c0ccdaea197e0b30a7ae69d8cab9da869e607f"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/harness.rs",
+      "bytes": 34,
+      "sha256": "41448845b1afb7666b28a128753e791e60006a30bda57dea7b30a07db5952d68"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/responses.rs",
+      "bytes": 59401,
+      "sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/responses_matcher_tests.rs",
+      "bytes": 3840,
+      "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/streaming_sse.rs",
+      "bytes": 30894,
+      "sha256": "0af6e823fb9688931bd702e41faf65a74c02ae853f956c478baeba9155b99cc9"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/streaming_sse_matching_tests.rs",
+      "bytes": 6938,
+      "sha256": "6ad96cfe936ae946824258631529be48a12a434a87f597b5798f7e1012664e41"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/test-list.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/test-list.stdout",
+      "bytes": 1444,
+      "sha256": "dbb4531dfafcdfd5f28e9c80c46b684b5ced57d1990337f90d9d22220e0fb1f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/tests-invocation.json",
+      "bytes": 465,
+      "sha256": "24f11fd8942cac4198f66fd8fb28b2e32722a45ed3b700ca4a26a9ec541993cf"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/tests-result.json",
+      "bytes": 1198,
+      "sha256": "70dff5e1ee8ccdfee0e810781aefb0eaeb2d5abc0b153c2103bcd32ffd6d2711"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/tests.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/candidate/tests.stdout",
+      "bytes": 1649,
+      "sha256": "e44ed1e2256cd3d2183a2a9b680af51ff7c56fac91c4ff83875c632049463581"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/dependency-inputs-after.json",
+      "bytes": 304534,
+      "sha256": "adba4fdb12bdf4b455f44dd28f80ef02a08b9dac4c31d5f3426af5609a31aabc"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/dependency-inputs-before.json",
+      "bytes": 329506,
+      "sha256": "d3a3e6239c17a98387b8b0d3617013125815b53c191b1cc8816fddbe04773dd7"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/dependency-selection.json",
+      "bytes": 5040,
+      "sha256": "fae9764868b3b61f75b72b50e797d57fbb14a5877bd12ad70b669a94e794b323"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/link-closure-review.json",
+      "bytes": 49646,
+      "sha256": "f37d1eedd8359ff6716ee5ba1afa78d4f35bb75d3375a8a9cd4d5728a9a9061f"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/runner.py",
+      "bytes": 8884,
+      "sha256": "79e97e092e7b261f40e20a3b999c7f9ce9e252abe7fc5274eb4d6fd352fd9b1b"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/rustc-input.json",
+      "bytes": 246,
+      "sha256": "9188cdfe2e1529559d061c416ff8e47dd9dc7cf8fb9be084e6905ed4c30cd410"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/rustc-version.txt",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/source-inputs-after.json",
+      "bytes": 1788,
+      "sha256": "52b1be0514c39511d6e9f61e4bdd4c30b409646d8c791d3cc2da4412866229e0"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/source-inputs-before.json",
+      "bytes": 2447,
+      "sha256": "8f20cd09292dd4ab4b41424b49a3f4b260fb9209d7e92605ebff877a11d0e286"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v2/summary.json",
+      "bytes": 2724,
+      "sha256": "d4db57197de2980b61b172735f1756d50bc44d76e62c2e80829c9dd3972a84b2"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/compile-invocation.json",
+      "bytes": 2737,
+      "sha256": "3ee64522ebcdd7336c3bf7a3fbad7713aa056e5c7820168434f895141dfaa360"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/compile-result.json",
+      "bytes": 816,
+      "sha256": "10708edfe2e35d60aa66ceeb796cd5638193c2ff6e6c97d818de79cede6c9b31"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/compile.stderr",
+      "bytes": 26968,
+      "sha256": "40ee1633ab51cea996fa48694eb5c7669eb309c1e3cd0bea2dabece458d32c43"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/compile.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/harness.rs",
+      "bytes": 34,
+      "sha256": "41448845b1afb7666b28a128753e791e60006a30bda57dea7b30a07db5952d68"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/responses.rs",
+      "bytes": 59401,
+      "sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/responses_matcher_tests.rs",
+      "bytes": 3840,
+      "sha256": "b9e72803f56cce4fb2c4635092d77e7b4d716094e2553a7ec7b73e83d8d585f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/streaming_sse.rs",
+      "bytes": 30894,
+      "sha256": "0af6e823fb9688931bd702e41faf65a74c02ae853f956c478baeba9155b99cc9"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/streaming_sse_matching_tests.rs",
+      "bytes": 6938,
+      "sha256": "6ad96cfe936ae946824258631529be48a12a434a87f597b5798f7e1012664e41"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/test-list.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/test-list.stdout",
+      "bytes": 1444,
+      "sha256": "dbb4531dfafcdfd5f28e9c80c46b684b5ced57d1990337f90d9d22220e0fb1f8"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/tests-invocation.json",
+      "bytes": 465,
+      "sha256": "e8bf03df7589de3de9790ce94e011b561772fb02b5d4a58716f87d83e3d919ea"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/tests-result.json",
+      "bytes": 1198,
+      "sha256": "8eb20e525d6bef51e99618268bdb645f9a999ef65f02bffb82a6ab3ab16e55f5"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/tests.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/candidate/tests.stdout",
+      "bytes": 1649,
+      "sha256": "589025cf069b417a9cfc630b5f2d6a9571e5434399abb9e999a72ab60a8bedb4"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/corrected-closure.json",
+      "bytes": 38174,
+      "sha256": "3f8c3c436b2d54fda43e16c028d02990aaba87779cf441e1c9415a647fb6a2e4"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/dependency-inputs-after.json",
+      "bytes": 305778,
+      "sha256": "a94a724d9a44c1c51c01ff7c3606f612d29ab168af8c7da7f59ebd4f933676d3"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/dependency-inputs-before.json",
+      "bytes": 328965,
+      "sha256": "5dbd4e6ea89f24f2e105e365a438f568556960d030b2c69282d81dac4cb490e0"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/dependency-selection.json",
+      "bytes": 5040,
+      "sha256": "fae9764868b3b61f75b72b50e797d57fbb14a5877bd12ad70b669a94e794b323"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/runner.py",
+      "bytes": 9651,
+      "sha256": "c5944ebf3e39557d28a4fb0c3e91e4f8e3c937aeeb8f5cb668f2b44298844b19"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/rustc-input.json",
+      "bytes": 246,
+      "sha256": "9188cdfe2e1529559d061c416ff8e47dd9dc7cf8fb9be084e6905ed4c30cd410"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/rustc-version.txt",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/source-inputs-after.json",
+      "bytes": 1788,
+      "sha256": "29a731239570996118cd75a1f620c43972d28a73986effd5f4d44f6f813f4904"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/source-inputs-before.json",
+      "bytes": 2447,
+      "sha256": "583e598792d048b96660d9f44c1e22167f714d615f7cd45300febe51191cc0d7"
+    },
+    {
+      "path": "guardian-routing-v1/native-support-v3/summary.json",
+      "bytes": 2782,
+      "sha256": "becfe3ebb709bb2dcc27c07292452419c773196118698b0ee58defa13d8d9f95"
+    },
+    {
+      "path": "guardian-routing-v1/original-background-test.rs",
+      "bytes": 6995,
+      "sha256": "0345cfb94ca416188386c1587ad55ca49cb4c5cc0433c31483dc332eac9d03c9"
+    },
+    {
+      "path": "guardian-routing-v1/original-six-sse-bodies.json",
+      "bytes": 2426,
+      "sha256": "74db7f4aeeccfefaa2c25bd69904cb5cdfcd65a7c403f97326a29dcedadb0389"
+    },
+    {
+      "path": "guardian-routing-v1/preimages/codex-rs/core/tests/common/responses.rs",
+      "bytes": 59390,
+      "sha256": "eb0a2f27af9f05a2ee984f30b872c796d6fdf7e54294b77a0f621b1fd4aacb6d"
+    },
+    {
+      "path": "guardian-routing-v1/preimages/codex-rs/core/tests/common/streaming_sse.rs",
+      "bytes": 27628,
+      "sha256": "42ea240cf2b604462cb7aace6747a0fdc5f6559d14265dc3e0fb6e40f23ba60c"
+    },
+    {
+      "path": "guardian-routing-v1/preimages/codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 52420,
+      "sha256": "3732812e2f7768d2af0fbe3a1c5ae9384be247af8dd2ba68ddeb60f6f8d85060"
+    },
+    {
+      "path": "guardian-routing-v1/preimages/codex-rs/core/tests/suite/network_approval.rs",
+      "bytes": 97781,
+      "sha256": "02a421b66fde55e88c8f13c67aa3fe45b80abc9bd98eb258977778a14247b220"
+    },
+    {
+      "path": "guardian-routing-v1/proposal-stage.json",
+      "bytes": 743,
+      "sha256": "f4372fd030e22d32d6f0f5bd968718a78b5aa6e088b4e610a9875710adfe7405"
+    },
+    {
+      "path": "guardian-routing-v1/proposal/codex-rs/core/tests/common/responses.rs",
+      "bytes": 59401,
+      "sha256": "fc02e5a0e225638d74cfcb366933ab7435076566e3fc6b4ef4611daf87637cc2"
+    },
+    {
+      "path": "guardian-routing-v1/proposal/codex-rs/core/tests/common/streaming_sse.rs",
+      "bytes": 30894,
+      "sha256": "0af6e823fb9688931bd702e41faf65a74c02ae853f956c478baeba9155b99cc9"
+    },
+    {
+      "path": "guardian-routing-v1/proposal/codex-rs/core/tests/common/streaming_sse_matching_tests.rs",
+      "bytes": 6938,
+      "sha256": "6ad96cfe936ae946824258631529be48a12a434a87f597b5798f7e1012664e41"
+    },
+    {
+      "path": "guardian-routing-v1/proposal/codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 52848,
+      "sha256": "1d2b7f3763ad4cb4c926752c7d8a231515424379103580d17b4c9fa9d6db49c7"
+    },
+    {
+      "path": "guardian-routing-v1/proposal/codex-rs/core/tests/suite/network_approval.rs",
+      "bytes": 101890,
+      "sha256": "7d43d53221b70408d70710431c44273fa73a8fe16a6d4b4ba1a10c752fea1672"
+    },
+    {
+      "path": "guardian-routing-v1/readonly-dependency-candidates.json",
+      "bytes": 6389,
+      "sha256": "fa59a9ff8cf29d9c37a993c4ce253681604d9674d14ba505c8fc381409c3c566"
+    },
+    {
+      "path": "guardian-routing-v1/readonly-dependency-fingerprints.json",
+      "bytes": 14283,
+      "sha256": "2da492df8e9571977971bca275cec6397be72998a3f4a00b1e8d12ba9088f14b"
+    },
+    {
+      "path": "guardian-routing-v1/readonly-fingerprint-json-paths.json",
+      "bytes": 406119,
+      "sha256": "77405021155e1de07f7f07613ff9de868218603c11ecdeb099e176ae60f555e2"
+    },
+    {
+      "path": "guardian-routing-v1/review.json",
+      "bytes": 5704,
+      "sha256": "f43ccd759faa394fe359eadd19722f8e2991f7ad02375c39cbec8f5954598c6f"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-check.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-v2-check.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-v2-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-v2.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt-v2.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "guardian-routing-v1/rustfmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "guardian-routing-v1/source-retention-proof.json",
+      "bytes": 1423,
+      "sha256": "444f01cee730aca89480d01c4aded2c166b9d3500097844a181e5107105a61e4"
+    },
+    {
+      "path": "guardian-routing-v1/support-stage.patch",
+      "bytes": 14639,
+      "sha256": "40716e7c2aa57e622a97d7f6beffa1728f9126d80b36773e7eb42928378615ca"
+    },
+    {
+      "path": "guardian-routing-v1/verify_source_retention.py",
+      "bytes": 6601,
+      "sha256": "67cd267a9a9ebe95e14a20356d77d7437638e5c5f4760b9756a7c636eee7064a"
+    },
+    {
+      "path": "original-controls/.codespellignore",
+      "bytes": 89,
+      "sha256": "f6edbf49ccf8f77b0e5a54f272111748f4de13200b83ce9aae6a44f651dcb957"
+    },
+    {
+      "path": "original-controls/.codespellrc",
+      "bytes": 835,
+      "sha256": "bd51168834aaccb2efaf46a77e91d3ca3372fd9cb0847b55c432737ccc6988e6"
+    },
+    {
+      "path": "original-controls/.prettierrc.toml",
+      "bytes": 170,
+      "sha256": "7b0bd68d96ff06518f3943f9e0acc5c10eb9ebd21dee86e65c86e4c67599a09d"
+    },
+    {
+      "path": "original-controls/codex-rs/rustfmt.toml",
+      "bytes": 164,
+      "sha256": "384d5d8a1366a86cd6fc01aecde2b0a5806a9e77073ff53abd97b4f6cad94d1c"
+    },
+    {
+      "path": "original-controls/scoped-codespell-receipt.json",
+      "bytes": 3545,
+      "sha256": "1fb289686d26937d42f80852315e893455ea668a3fbf502f7120ba7fb1d28241"
+    },
+    {
+      "path": "tui-theme-revision-v1/all-StreamingRender-consumers.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tui-theme-revision-v1/all-StreamingRender-consumers.stdout",
+      "bytes": 3130,
+      "sha256": "84f3fbf0b36457a85504b62bbfc52184b8130449b22e9d634afa947d72409ef9"
+    },
+    {
+      "path": "tui-theme-revision-v1/change.patch",
+      "bytes": 4942,
+      "sha256": "26ab43afab4ea680ec565cb93801d39e98bdb97c8acc5742d5ec7306b6978b17"
+    },
+    {
+      "path": "tui-theme-revision-v1/codespell.stderr",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "tui-theme-revision-v1/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tui-theme-revision-v1/entry-manifest.json",
+      "bytes": 1071,
+      "sha256": "412a4b79146f4d02c4a9d0900b2bf148af671ba1a7bfacb67765021f87d11260"
+    },
+    {
+      "path": "tui-theme-revision-v1/final-gates.json",
+      "bytes": 3902,
+      "sha256": "dee9f48632250f43187f1b73c005d066304f683f7a9c20d5e7d387e9d0189c00"
+    },
+    {
+      "path": "tui-theme-revision-v1/literal-consumer-review.json",
+      "bytes": 112585,
+      "sha256": "f6e775a8fdc87782fbf8df9c2f19b9081a919126dedd411d30fc31fff6deeb73"
+    },
+    {
+      "path": "tui-theme-revision-v1/preimages/codex-rs/tui/src/streaming/code_fence_render_tests.rs",
+      "bytes": 4679,
+      "sha256": "c637b1a1ea916b473a3251275d057fce145a89de2952b699a47bbe3ee2156d64"
+    },
+    {
+      "path": "tui-theme-revision-v1/preimages/codex-rs/tui/src/streaming/render.rs",
+      "bytes": 8287,
+      "sha256": "7661640d0b6adfd0417acb93458d083ab3343c1aa65b4b0f9a9eeff0e5178621"
+    },
+    {
+      "path": "tui-theme-revision-v1/proposal/codex-rs/tui/src/streaming/code_fence_render_tests.rs",
+      "bytes": 5803,
+      "sha256": "3d72fe044426b66ce7821b0474f4086fbf05c31b41916a5e9c9ca5a4b2b7b046"
+    },
+    {
+      "path": "tui-theme-revision-v1/proposal/codex-rs/tui/src/streaming/render.rs",
+      "bytes": 8883,
+      "sha256": "0abc6860100448df8b9e29129501265e578c32089ec0aecd2b0d98e06239b953"
+    },
+    {
+      "path": "tui-theme-revision-v1/review.json",
+      "bytes": 3155,
+      "sha256": "bfbc3e2af55b2180dd4b0219e86173dc30fe2e150163dad233e2fdc02735f147"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt-check.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt-final.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt-final.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "path": "tui-theme-revision-v1/rustfmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "source_proposals": {
+    "bazel": 1,
+    "tui": 2,
+    "guardian": 5
+  },
+  "scope": {
+    "bazel": "Original command-vector proof and static workflow checks; no successful new Bazel run claimed.",
+    "tui": "Two explicit Rust paths formatted with the original config. Full just fmt/fix and native TUI tests pending.",
+    "guardian": "Actual complete original support modules: baseline 15/15, corrected candidate 19/19. Complete Core consumer E2E and musl pending.",
+    "dependency_inventory": "Third support attempt pins 494 library/proc-macro artifacts, including all 311 rlibs in the prior actual link map; only build-script fingerprints were not executed.",
+    "original_failures": "Original hosted GNU and musl logs, first candidate compile failure, and incomplete second-attempt dependency inventory are preserved."
+  },
+  "excluded_generated_artifacts": [
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c0e-linux-required-review-v1/guardian-routing-v1/native-support-v1/baseline/fixture-tests",
+      "bytes": 259617168,
+      "sha256": "385993593410f706ad4ec8d1f3884520d2447d648d1c32501f0f85af52520e94",
+      "reason": "Generated binary or verbose linker map retained in the owned work directory. Original compiler/test output and complete input/link inventories are included."
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c0e-linux-required-review-v1/guardian-routing-v1/native-support-v1/baseline/link-map.txt",
+      "bytes": 124500399,
+      "sha256": "ac731740a022a5c274cbe00a63e7eab0461a71f4c16bbe8a17d4e56717ef5167",
+      "reason": "Generated binary or verbose linker map retained in the owned work directory. Original compiler/test output and complete input/link inventories are included."
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c0e-linux-required-review-v1/guardian-routing-v1/native-support-v2/candidate/fixture-tests",
+      "bytes": 261191928,
+      "sha256": "387cd578102ecec32ecf5863c3892a341976c08ae94f4c28db5cf4eb641f00b7",
+      "reason": "Generated binary or verbose linker map retained in the owned work directory. Original compiler/test output and complete input/link inventories are included."
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c0e-linux-required-review-v1/guardian-routing-v1/native-support-v2/candidate/link-map.txt",
+      "bytes": 125567923,
+      "sha256": "7571ab3d663bb91db6daa8c1eb24e8007e875d9d5ae56bb40dce8f6bb6fbab15",
+      "reason": "Generated binary or verbose linker map retained in the owned work directory. Original compiler/test output and complete input/link inventories are included."
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/c0e-linux-required-review-v1/guardian-routing-v1/native-support-v3/candidate/fixture-tests",
+      "bytes": 261191928,
+      "sha256": "164b908ac6b2ec5600accf7e8b068bed27048e31d4f696e854b2d2971b13f262",
+      "reason": "Generated binary or verbose linker map retained in the owned work directory. Original compiler/test output and complete input/link inventories are included."
+    }
+  ],
+  "recovery": "Each physical carrier is an independent gzip member. Decode parts in index order, concatenate raw bytes, verify group SHA256 and every archive member. No carrier is a bare fragment of a gzip stream."
+}

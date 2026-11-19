@@ -17,4 +17,10 @@ platformFamily: string,
  * Operating system for the running app-server target, for example
  * `"macos"`, `"linux"`, or `"windows"`.
  */
-platformOs: string, };
+platformOs: string,
+/**
+ * True only when this connection negotiated processIndeterminate and kept
+ * both process/exited and process/indeterminate notifications enabled.
+ * Missing on older servers; clients must treat absence as unsupported.
+ */
+processIndeterminate?: boolean, };

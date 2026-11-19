@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.matrix-startup.diagnostic.v1",
+  "name": "original-debug",
+  "claim": "diagnostic overlay; not unmodified-source qualification",
+  "deadline_changed": false,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-matrix-sdk",
+    "--test",
+    "store_version_migration",
+    "--no-capture",
+    "--retries",
+    "0",
+    "-E",
+    "test(encrypted_state_identity_session_and_queues_survive_restart)"
+  ],
+  "cwd": "/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/codex-rs",
+  "source_before": {
+    "head": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+    "tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+    "status": "M codex-rs/hepta-matrix-sdk/src/sdk.rs\n M codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+    "overlay_sha256": "7f0511d2e71ba114c33c9bad8b1e80890e0f6af592570914e8bc932eace65d2e"
+  },
+  "environment": {
+    "PATH": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_HOME": "/home/qq/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_TARGET_DIR": "/home/qq/hepta-cell-common-e1c98-20261109/target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "8",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CODEX_REPO_ROOT": "/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source/scripts:/home/qq/hepta-cell-common-e1c98-20261109/matrix-diagnostic-original/source",
+    "TMPDIR": "/home/qq/hepta-cell-common-e1c98-20261109/tmp",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "started_unix": 1794223151.763026,
+  "exit_code": 0,
+  "wall_seconds": 67.702209248906,
+  "child_cpu_seconds": 259.43307200000004,
+  "child_peak_rss_kib": 2000964,
+  "source_after": {
+    "head": "84b2a97c2ab3d727e27a2f5d3bc72ecfd56ae36d",
+    "tree": "eb01896296d28bfa86f6d30236e5b0d08f2942fd",
+    "status": "M codex-rs/hepta-matrix-sdk/src/sdk.rs\n M codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+    "overlay_sha256": "7f0511d2e71ba114c33c9bad8b1e80890e0f6af592570914e8bc932eace65d2e"
+  },
+  "source_unchanged": true,
+  "raw_log_bytes": 26192,
+  "raw_log_sha256": "9981dfffbb30136baab9917c2c9692826845bffd17544fd2b119285f96140276",
+  "completed_unix": 1794223219.465488
+}

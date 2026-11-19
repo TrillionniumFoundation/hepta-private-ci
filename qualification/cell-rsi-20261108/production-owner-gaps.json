@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.learning.production-owner-gap-review.v2",
+  "observed_at_utc": "2026-11-08T09:15:08.017366+00:00",
+  "classification": "Read-only source review and actionable implementation inventory; no production authority or scientific acceptance",
+  "inspected_source": {
+    "host": "rog",
+    "root": "/home/qian-qi/work/cell-rsi-ci-hook-20261108-r1/source",
+    "commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "tree": "491eace326f335498334fb051c9e8f298ca7a04c",
+    "scope": "Exact inspected baseline. The current session Python configuration/state-codec changes do not implement the Rust production ports. Later changes must supersede this inventory explicitly."
+  },
+  "read_only_evidence": {
+    "job_id": "1a1ba6a8508-12894-1a79",
+    "host": "rog",
+    "idempotency_key": "cell-rsi-858e972109d9-owner-production-surface-read-v1",
+    "request_digest": "c49bce7d3965ca29a9d849b56285f60f9556d9de60186cd482078024a9021644",
+    "command_scope": "git rev-parse HEAD; bounded rg in codex-rs/hepta-agentd; hash four named source files. No modifications, training, registration, cancellation or restart.",
+    "additional_reads": "h.read_multiple_files read complete named ports/runtime/auth/proposal/checkpoint/main/generation-readback source files with independent SHA256 and file versions.",
+    "implementation_search": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+        "line": 48,
+        "observation": "struct IterationPorts"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+        "line": 98,
+        "observation": "impl LearningIterationOwnerPortsV1 for IterationPorts; only implementation found in the inspected hepta-agentd source"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "line": 103,
+        "observation": "pub fn learning_iteration_channel_v1; implementation seam exists"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "observation": "Ordinary main has plasticity/generation descriptor loaders, but no learning_iteration_channel_v1 or with_learning_iteration_bootstrap call"
+      }
+    ],
+    "source_pins": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+        "bytes": 3817,
+        "sha256": "608f783f4aa15a0171508e1050dbead7cd5131322fd2a2ed6254d6bf4bd9092b"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "bytes": 11769,
+        "sha256": "1c03c7f8ae51fe7d19211bb6fb81aeec6a7b6d114e7d3f7ff7b6ae754e67efa5"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "bytes": 9268,
+        "sha256": "3452d8c63b3bcdb7f582aede9bfd3e94710ff7a4df311327fb2250aa5ea3f000"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+        "bytes": 6475,
+        "sha256": "db2bcd9107ff9de82fde3423030131b94b4ac95ada5958ffc029a50454cfa021"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+        "bytes": 6213,
+        "sha256": "cb7d7c42c8f9be4c1280a00eb3d74472016ceb18899143c08b2113a229de8950"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/main.rs",
+        "bytes": 13038,
+        "sha256": "9b6c157d88b2c1f32ab87adf34b73d52f2fce9db2581b222c0a54bf814994f97"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+        "bytes": 6650,
+        "sha256": "87d1973a648cc53a7154623622b74a3e340f521e7657f7f93312d7510cc92db4"
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "production_ports",
+      "status": "IMPLEMENTATION_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs"
+      ],
+      "interfaces": [
+        "restore",
+        "execute_stage",
+        "prepare_proposal",
+        "receipt_attestation",
+        "checkpoint"
+      ],
+      "current_fact": "A public trait and a test-only IterationPorts implementation exist; a production composition is not implemented in the inspected source.",
+      "can_code_now": true,
+      "minimum_implementation": "Implement a dedicated production composition with explicit registered capability injection. Delegate checkpoint and generation readback to their existing owners; dispatch real durable training/evaluation work and authenticate returned stages. Missing capabilities/stages must return OwnerUnavailable or CommitUncertain, never canned success.",
+      "external_dependency": "Actual capability objects and authenticated current owner endpoints are required before the adapter can execute protected production work."
+    },
+    {
+      "id": "protected_checkpoint",
+      "status": "MECHANISM_EXISTS_COMPOSITION_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs"
+      ],
+      "interfaces": [
+        "LearningIterationCheckpointOwnerV1::from_registered",
+        "LearningIterationCheckpointOwnerV1::restore",
+        "LearningIterationCheckpointOwnerV1::checkpoint"
+      ],
+      "current_fact": "A concrete Root CAS owner implementation already validates exact request/owners, fresh CURRENT, prefix+1 CAS, exact retry, bounded snapshot and ambiguous commit.",
+      "can_code_now": true,
+      "minimum_implementation": "Hold the existing checkpoint owner inside the production ports and map its errors without downgrading CommitUncertain; wire the typed capability through the trusted startup path.",
+      "external_dependency": "The original registered HostAuthorityFrontierStore<LearningIterationCheckpointRecordV1>, original_owner_id, protected current record and legitimate transfer after Root credential drop have not been obtained in this session.",
+      "not_equivalent": [
+        "ordinary actor checkpoint JSON",
+        "Device/Notes store",
+        "new unauthorized owner registration",
+        "model checkpoint digest"
+      ]
+    },
+    {
+      "id": "real_stage_jobs_and_model_worker",
+      "status": "IMPLEMENTATION_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_ports.rs",
+        "scripts/ndu_real_runtime/native_worker.py",
+        "scripts/ndu_real_runtime/actor.py",
+        "scripts/ndu_real_runtime/state_codec.py",
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs"
+      ],
+      "interfaces": [
+        "execute_stage(Experience|Dataset|Training|Evaluation)",
+        "CellGenerationControlPortV2",
+        "CellGenerationRequestV2",
+        "CellGenerationReceiptV2"
+      ],
+      "current_fact": "The Python native_worker can run a real research EpisodeHost and explicitly reports formal_final_use_claim=false. It is not a complete Cell generation step/ACK/cancel/reconcile/journal bridge. The original pilot fit is historical work, not a new stage execution.",
+      "can_code_now": true,
+      "minimum_implementation": "Bind model components and the real state codec to the complete CellCompatibilityBundleV1/CellBackendManifestV2, implement bounded input/output transport, stable operation-to-native-job mapping, create-once submission intent, same-job UNKNOWN readback/cancellation, full costs, and stage observation conversion. Connect Experience/Dataset to real ledger outcomes and current freeze/withdrawal state; connect independent evaluation output to its durable qualification sink.",
+      "external_dependency": "Current completed-task receipt, dataset rights/deletion frontier, original ledger/trainer/evaluator custody, legal holdout/CAS/sink and authenticated stage-result endpoints must be supplied before production acceptance.",
+      "available_primitives": [
+        "h.process_start",
+        "h.process_status",
+        "h.process_read",
+        "h.process_wait",
+        "existing research weights and training receipts"
+      ],
+      "not_equivalent": [
+        "stdout as committed journal receipt",
+        "historical pilot fit re-labelled as this iteration",
+        "fixed engineering observations as new scientific episodes"
+      ]
+    },
+    {
+      "id": "stage_attestations_and_trust",
+      "status": "ADAPTER_AND_CURRENT_INPUTS_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+        "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+        "codex-rs/hepta-learning-ledger/src/trust_distribution.rs"
+      ],
+      "interfaces": [
+        "receipt_attestation",
+        "learning_iteration_receipt_signing_bytes_v1",
+        "activate_learning_trust",
+        "LearningEvidenceVerifierV1::verify"
+      ],
+      "current_fact": "Every signed stage and restored stage is revalidated against current time/Ready and the bootstrap-pinned verifier. The payload domain is hepta.learning.iteration-observation.v1 and binds operation/predecessor/actor/time/full observation.",
+      "can_code_now": true,
+      "minimum_implementation": "Implement authenticated current readback adapters for the existing owner-signed iteration payloads and a trusted signed-distribution loader with rollback floor and actor/controller separation checks.",
+      "external_dependency": "Original public trust root, actual signed distribution, authenticated previous protected floor, exact seven owner IDs/evidence_trust_digest, and valid current SignedLearningEvidenceV1 for the complete iteration payload have not been obtained.",
+      "not_equivalent": [
+        "ledger production-outcome signature",
+        "dataset-freeze signature",
+        "artifact-selection signature",
+        "local fixture key or self-issued owner"
+      ]
+    },
+    {
+      "id": "proposal_and_next_task",
+      "status": "READBACK_MECHANISMS_EXIST_COMPOSITION_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/learning_iteration_proposal.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_learning_runtime.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_learning.rs",
+        "codex-rs/hepta-agentd/src/neuron_generation_update_adopted_learning.rs"
+      ],
+      "interfaces": [
+        "prepare_proposal",
+        "submit_parameter_plasticity_v1",
+        "submit_topology_plasticity_v1",
+        "read_learning_selection",
+        "read_learning_next_use",
+        "read_learning_updated_selection",
+        "read_learning_updated_next_use"
+      ],
+      "current_fact": "Proposal submission checks exact training/evaluation lineage and the existing anchored proposal ACK. Generation handle readback only accepts an actual Ready/Published owner and committed intent; changed-candidate readback requires the original previous_manifest. Updated path supports the existing reset publication, not generic Preserve/Migrate.",
+      "can_code_now": true,
+      "minimum_implementation": "Construct proposals from actual candidate/evaluation artifacts; delegate Selection and NextUse to the same actual published generation handle. Preserve evaluated NoUpdate, read incumbent-side contract, and require distinct next task/run with a committed use. Do not create a second writer.",
+      "external_dependency": "Original artifact/CURRENT/journal/witness owner, current FinalUse authority/frontier/clock, signed selection, exact publication operation/intent, proposal anchor ACK and distinct task committed use have not been obtained in this session.",
+      "not_equivalent": [
+        "caller-supplied use or cutover hash",
+        "generic Unpublished runtime",
+        "new grant/nonce",
+        "training receipt as adoption"
+      ]
+    },
+    {
+      "id": "trusted_startup",
+      "status": "IMPLEMENTATION_MISSING",
+      "files": [
+        "codex-rs/hepta-agentd/src/main.rs",
+        "codex-rs/hepta-agentd/src/config.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration.rs"
+      ],
+      "interfaces": [
+        "learning_iteration_channel_v1",
+        "AgentdConfig::with_learning_iteration_bootstrap"
+      ],
+      "current_fact": "The typed library seam exists and checks generation/agent/trust digest/queue. Ordinary main does not load or attach a production learning bootstrap.",
+      "can_code_now": true,
+      "minimum_implementation": "First attach a concrete composition from a trusted embedded host using the existing config setter. Add ordinary-main loading only with a typed broker transfer for the original registered capabilities and rollback-bound trust state. A CLI flag without these capabilities is not production integration.",
+      "external_dependency": "The current session has operator execution tools but has not acquired a typed runtime/broker provider for these learning trust, checkpoint and stage attestation capabilities. This is not a claim that no deployed provider exists anywhere."
+    }
+  ],
+  "recommended_next_slice": [
+    "Build a dedicated production-composition module accepting existing registered checkpoint, generation and signed-stage readback handles.",
+    "Implement restore/checkpoint and read-only Selection/NextUse delegation first, with precise unavailable/uncertain errors for missing stages.",
+    "Implement the bounded real-model worker and durable trainer/evaluator operation bridge using exact source/model/state/encoder/backend/budget pins.",
+    "Wire current authenticated stage signatures and proposal payloads, then attach through the existing trusted bootstrap seam.",
+    "Only after actual capability and custody readback, run one complete real iteration and a distinct next task plus cold recovery under the frozen total budget."
+  ],
+  "claim_boundary": {
+    "complete_production_loop_verified": false,
+    "runtime_registration_authority_obtained": false,
+    "owner_attestation_provider_obtained": false,
+    "all_remaining_work_is_externally_blocked": false,
+    "public_tools_prove_no_deployed_owner_exists": false,
+    "new_registration_or_owner_fabricated": false
+  },
+  "current_session_review_notes": [
+    "The actor state-codec work is an engineering implementation; its JSON checkpoint does not replace the protected learning-iteration Root CAS owner.",
+    "The full-bundle configuration checker reports content integrity and keeps provider/owner/execution/adoption authenticity false.",
+    "Fixed-budget public engineering observations are useful for continuation equivalence, but do not establish full-budget causal benefit or a new admitted pilot."
+  ]
+}

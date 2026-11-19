@@ -1,0 +1,78 @@
+{
+  "scope": "AST syntax/method inventory, exact bytes, literal function-set comparison only; no verifier invocation or unittest execution",
+  "qa_execution": "NOT_RUN",
+  "records": [
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_panel_source_closure.py",
+      "base_git_blob": "4da0873c757803beb46256d84e27e63b12991347",
+      "post_git_blob": "7d9c5a41caa0cfc559f52274ae35f9baac8929f8",
+      "post_sha256": "b5c8443b407ceb266bcc6b7dcd7217d6f8a58506ec030e7f3f1018c8ed57056a",
+      "post_bytes": 13298,
+      "preserved_test_methods": [
+        "test_exact_original_panel_edges_remain_closed",
+        "test_registration_rejects_empty_duplicate_and_rebound_original_tasks",
+        "test_each_member_retains_full_original_training_roles_and_config",
+        "test_both_physical_cells_and_actual_completed_qualification_are_read",
+        "test_all_original_reads_precede_fresh_auth_and_unknown_never_rearms",
+        "test_primary_signature_must_name_the_complete_actual_nonempty_panel",
+        "test_each_member_consumes_exact_original_cohort_custody",
+        "test_original_cohort_current_brackets_all_members_before_final_clock"
+      ],
+      "syntax": "parsed_only_no_execution"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_qualification_owner_source_closure.py",
+      "base_git_blob": "a65614c5bb04d3d22b007213a94c20f318bf73b4",
+      "post_git_blob": "bad5b389ab00c6bb4b500ba6e21fe4c653488753",
+      "post_sha256": "8d1340ad9a3fb43ee364c7e0a5e58526727eb04afd256072afa49586085c673d",
+      "post_bytes": 12716,
+      "preserved_test_methods": [
+        "test_each_original_custody_effect_and_fresh_clock_guard_is_effective",
+        "test_public_owner_routes_are_closed_and_actual_original_edges_are_exact",
+        "test_recovery_and_readback_cannot_acquire_or_repeat_effects",
+        "test_complete_original_signatures_context_and_decision_remain_bound",
+        "test_only_concrete_original_sources_and_internal_time_can_satisfy_readback",
+        "test_actual_fixture_uses_original_owner_and_native_inventory_preserves_limits"
+      ],
+      "syntax": "parsed_only_no_execution",
+      "literal_function_sets_match_final_manifest": {
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs": [
+          "fn completed_bytes(",
+          "fn create(",
+          "fn publish_once(",
+          "fn qualify_or_readback(",
+          "fn recover(",
+          "fn state("
+        ],
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_binding.rs": [
+          "fn authenticate(",
+          "fn authenticate_fixed(",
+          "fn clock_time(",
+          "fn decision_bytes(",
+          "fn new_work_time(",
+          "fn now(",
+          "fn validate_config("
+        ],
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs": [
+          "fn prepare(",
+          "fn prepare_with_training(",
+          "fn read_original(",
+          "fn read_trainer(",
+          "fn verify_current("
+        ],
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_persist.rs": [
+          "fn persist(",
+          "fn persist_original("
+        ],
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs": [
+          "fn finish_readback(",
+          "fn finish_readback_with_training(",
+          "fn persist(",
+          "fn read_completed(",
+          "fn read_original(",
+          "fn readback("
+        ]
+      }
+    }
+  ]
+}

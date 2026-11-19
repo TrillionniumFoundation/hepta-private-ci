@@ -1,0 +1,51 @@
+{
+  "actual_continuations_started": 6,
+  "actual_job_id": "1a1c74f3308-be2a-75",
+  "cost_overlap_rule": "Observer GNU total contains its deploy/import/archive work. Do not add script prefixes. Actual C2 global GNU and per-child wait4 totals remain pending until terminal, never estimated as complete.",
+  "created_utc": "2026-11-10T21:13:38.824Z",
+  "cumulative_active_wall_cap_per_fit": 43200,
+  "decision": {
+    "bytes": 7524,
+    "path": "/workspace/scratch/c385a7439f8e/c2-execution-decision-v1/DECISION.json",
+    "sha256": "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+  },
+  "first_dispatch_utc": "2026-11-10T21:13:44.057721+00:00",
+  "first_observation_original_archive": {
+    "bytes": 152528,
+    "path": "/workspace/scratch/c385a7439f8e/c2-start-observation-recovered-v1/hcsn-c2-start-observation-20261110-v1.zip",
+    "sha256": "13b1b12a43998dc05ce70cf727ac58e47c9249c9971ba64bcf0aebff17666a5b"
+  },
+  "first_observation_summary": {
+    "bytes": 91920,
+    "path": "/workspace/scratch/c385a7439f8e/c2-start-observation-recovered-v1/payload/SUMMARY.json",
+    "sha256": "2f0e67369cad4ae69542539bfbc2ac2070cf28d85839591d391c4aa11eb8bcdd"
+  },
+  "fresh_independent_fits_started": 0,
+  "last_dispatch_utc": "2026-11-10T21:13:44.061997+00:00",
+  "max_total_epochs": 200,
+  "observation_scope": "Existing C2 work observed read-only. Six optimizer completion witnesses refer to actual production training; the observer performs none.",
+  "observer_gnu_full_wall_seconds_rounded": 0.26,
+  "observer_gnu_peak_rss_bytes": 19296256,
+  "observer_gnu_user_system_seconds_rounded": [
+    0.22,
+    0.04
+  ],
+  "observer_model_loads_forward_backward_optimizer_steps": 0,
+  "original_partial_work_refund_seconds": 0,
+  "padding_exclusion_verified_in_observed_capture_receipts": true,
+  "schema": "c2-v4-authorized-launch-and-first-step-handoff-v1",
+  "scientific_admission": "HOLD",
+  "six_actual_gradient_microbatch_captures": true,
+  "six_complete_state_witnesses": true,
+  "six_corresponding_optimizer_steps_completed": true,
+  "source_capsule_sha256": "95d53c9a8fd7b6d0d60388b29d58519160c1d04357069bd805e5f4bfa2c91079",
+  "source_manifest_sha256": "322eb8f76cce589ba44ed66eff822f7b497e6507106a1ad56a65bdc8c83f7f57",
+  "source_version": "v4",
+  "stable_key": "hcsn-c2-native-execution-c385-v1",
+  "total_first_capture_time_rows": 1536,
+  "total_first_capture_valid_sample_states": 12182,
+  "training_adequacy": "not_yet_granted",
+  "training_terminal_status": "pending_at_observation",
+  "v3_native_vs_v4_scope": "V3 received 53 native software tests and six bind-only validations. Reporting-only v4 received five cloud targeted tests plus independent static review, then this separately authorized actual continuation.",
+  "whole_training_numerical_admission": "HOLD"
+}

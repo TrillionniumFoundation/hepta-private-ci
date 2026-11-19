@@ -1,0 +1,5398 @@
+{
+  "boundaries": [
+    {
+      "elapsed_seconds": 3.0336270339321345,
+      "id": "root_registered_learning_checkpoint_writer",
+      "index": 0,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.348248506896198,
+      "id": "root_original_learning_checkpoint_exchange",
+      "index": 1,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.027237687027081847,
+      "id": "supervisor_authorized_boot",
+      "index": 2,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017607938032597303,
+      "id": "memory_production_writer_open",
+      "index": 3,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.0177416130900383,
+      "id": "cognitive_store_recovery_open",
+      "index": 4,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.3005791811738163,
+      "id": "cognitive_production_mutation_capability",
+      "index": 5,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01764545706100762,
+      "id": "agentd_production_writer_host",
+      "index": 6,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.3051725090481341,
+      "id": "agentd_production_operation_runtime",
+      "index": 7,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017099705059081316,
+      "id": "learning_artifact_owner_bootstrap",
+      "index": 8,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.0168712439481169,
+      "id": "learning_artifact_owner_restart",
+      "index": 9,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.30315793002955616,
+      "id": "learning_artifact_verified_current_view",
+      "index": 10,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01806440087966621,
+      "id": "provider_effect_coordinator",
+      "index": 11,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017007818911224604,
+      "id": "http_provider_effect_adapter",
+      "index": 12,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 32.333096734946594,
+      "id": "final_use_open_state",
+      "index": 13,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02358124707825482,
+      "id": "final_use_claim",
+      "index": 14,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 7.630020967917517,
+      "id": "final_use_claim_raw",
+      "index": 15,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023979813093319535,
+      "id": "final_use_delivery",
+      "index": 16,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02335077407769859,
+      "id": "final_use_delivery_witness",
+      "index": 17,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 15.56269982503727,
+      "id": "final_use_delivery_raw",
+      "index": 18,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023621415020897985,
+      "id": "final_use_dispatch",
+      "index": 19,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022868801839649677,
+      "id": "final_use_dispatch_witness",
+      "index": 20,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.025265397038310766,
+      "id": "final_use_dispatch_raw",
+      "index": 21,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.135099106002599,
+      "id": "final_use_revocation_update",
+      "index": 22,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016775766853243113,
+      "id": "final_use_approval_trust",
+      "index": 23,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.025481459917500615,
+      "id": "final_use_approval_verify",
+      "index": 24,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016704998910427094,
+      "id": "final_use_revocation_feed_trust",
+      "index": 25,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02780307806096971,
+      "id": "final_use_revocation_feed_apply",
+      "index": 26,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016680869972333312,
+      "id": "final_use_revocation_convergence_trust",
+      "index": 27,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022978858090937138,
+      "id": "final_use_revocation_convergence_verify",
+      "index": 28,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.0232814468909055,
+      "id": "bao_final_use_consumer",
+      "index": 29,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.0175334510859102,
+      "id": "bao_registered_consumer_new",
+      "index": 30,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01657758397050202,
+      "id": "bao_final_use_host_new",
+      "index": 31,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023239738075062633,
+      "id": "bao_registered_revocation_update",
+      "index": 32,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13857645308598876,
+      "id": "bao_registered_final_use_host",
+      "index": 33,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 15.599108173046261,
+      "id": "authority_lease_open_state",
+      "index": 34,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.16186640900559723,
+      "id": "authority_lease_put",
+      "index": 35,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.423904276220128,
+      "id": "authority_lease_revoke",
+      "index": 36,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01876303693279624,
+      "id": "authority_lease_prune",
+      "index": 37,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01832053204998374,
+      "id": "authority_lease_epoch_advance",
+      "index": 38,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.16168430587276816,
+      "id": "authority_lease_verify_use",
+      "index": 39,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017622397048398852,
+      "id": "authority_lease_delivery",
+      "index": 40,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02317958092316985,
+      "id": "authority_lease_delivery_witness",
+      "index": 41,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.230071423109621,
+      "id": "authority_lease_dispatch_raw",
+      "index": 42,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023699023062363267,
+      "id": "authority_lease_dispatch_witness",
+      "index": 43,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01725052995607257,
+      "id": "final_use_async_dispatch_fence",
+      "index": 44,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017546359915286303,
+      "id": "automation_taskflow_provider_effect_bridge",
+      "index": 45,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.3069448219612241,
+      "id": "final_use_guarded_effect",
+      "index": 46,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01707917614839971,
+      "id": "notes_original_pending_call_proof",
+      "index": 47,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016961000859737396,
+      "id": "notes_original_operation_observation_proof",
+      "index": 48,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13876791507937014,
+      "id": "notes_original_thread_prepare",
+      "index": 49,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13904327619820833,
+      "id": "notes_original_writer_terminal_receipt",
+      "index": 50,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13703588605858386,
+      "id": "memory_original_owner_current_publication",
+      "index": 51,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13626885414123535,
+      "id": "memory_original_protected_current_readback",
+      "index": 52,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1369294309988618,
+      "id": "original_authbus_human_delivery_read",
+      "index": 53,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017679365118965507,
+      "id": "notes_original_human_turn_proof",
+      "index": 54,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1390267361421138,
+      "id": "root_registered_human_text_writer",
+      "index": 55,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13806133111938834,
+      "id": "root_registered_human_text_admission",
+      "index": 56,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13806291110813618,
+      "id": "root_human_text_same_issuer_cas",
+      "index": 57,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13794091390445828,
+      "id": "root_retained_human_text_lookup",
+      "index": 58,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13679152610711753,
+      "id": "root_live_human_session_install",
+      "index": 59,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.8319041810464114,
+      "id": "root_original_human_text_verification",
+      "index": 60,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029479297809302807,
+      "id": "notes_original_turn_unprepared_admission",
+      "index": 61,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.5587734628934413,
+      "id": "root_host_original_human_text_verification",
+      "index": 62,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.6085312920622528,
+      "id": "notes_original_human_text_verification",
+      "index": 63,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01810094015672803,
+      "id": "root_prepared_fresh_session",
+      "index": 64,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13726609898731112,
+      "id": "root_retained_native_ui_launch",
+      "index": 65,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02414853614754975,
+      "id": "root_prepared_native_ui_execution",
+      "index": 66,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018067572033032775,
+      "id": "root_material_capture_original_image",
+      "index": 67,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017954394919797778,
+      "id": "root_material_verify_retained_image",
+      "index": 68,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017952146008610725,
+      "id": "root_material_install_original_generation",
+      "index": 69,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017970304936170578,
+      "id": "root_material_reopen_original_installation",
+      "index": 70,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6673031619284302,
+      "id": "root_material_release_registered_custody",
+      "index": 71,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018345940858125687,
+      "id": "root_material_fresh_registered_session",
+      "index": 72,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018054662039503455,
+      "id": "root_material_recover_registered_session",
+      "index": 73,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01788045815192163,
+      "id": "root_material_existing_session_open",
+      "index": 74,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.667281521949917,
+      "id": "root_material_resume_registered_handoff",
+      "index": 75,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6848143520765007,
+      "id": "root_material_current_observation_chain",
+      "index": 76,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6535361970309168,
+      "id": "root_original_writer_descriptor_chain",
+      "index": 77,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.662524248007685,
+      "id": "root_same_retained_service_serve",
+      "index": 78,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6725166258402169,
+      "id": "root_registered_material_recovery",
+      "index": 79,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6794458688236773,
+      "id": "root_registered_material_handoff_resume",
+      "index": 80,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02795327198691666,
+      "id": "root_original_writer_purpose_send",
+      "index": 81,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029073473066091537,
+      "id": "root_original_writer_purpose_receive",
+      "index": 82,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018351970938965678,
+      "id": "agentd_original_root_writer_consume",
+      "index": 83,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028156185057014227,
+      "id": "root_registered_writer_rotation",
+      "index": 84,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.027477328199893236,
+      "id": "native_original_operation_host_attach",
+      "index": 85,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6610177110414952,
+      "id": "native_original_owner_current_ack",
+      "index": 86,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6561389530543238,
+      "id": "native_original_terminal_history_observation",
+      "index": 87,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028480553068220615,
+      "id": "root_original_authority_initialize",
+      "index": 88,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02912528091110289,
+      "id": "root_original_writer_authorize",
+      "index": 89,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6797912858892232,
+      "id": "root_same_registered_bootstrap_seal",
+      "index": 90,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.652391805080697,
+      "id": "root_same_registered_bootstrap_capture",
+      "index": 91,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6482757199555635,
+      "id": "root_original_physical_login_install",
+      "index": 92,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6947790361009538,
+      "id": "root_original_writer_successor_shape",
+      "index": 93,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6912357010878623,
+      "id": "root_original_issuer_writer_rotation",
+      "index": 94,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01784724905155599,
+      "id": "root_physical_current_retired_adoption",
+      "index": 95,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01830803300254047,
+      "id": "root_physical_recovery_retirement_admission",
+      "index": 96,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6932429089210927,
+      "id": "root_physical_fresh_service_genesis",
+      "index": 97,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.019039497012272477,
+      "id": "root_physical_registered_checkpoint_genesis",
+      "index": 98,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01751755108125508,
+      "id": "root_physical_current_backend_genesis",
+      "index": 99,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.707417168887332,
+      "id": "root_registered_physical_current_observation",
+      "index": 100,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.027997881174087524,
+      "id": "root_original_two_descriptor_send",
+      "index": 101,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029123019892722368,
+      "id": "root_original_two_descriptor_receive",
+      "index": 102,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6930540858302265,
+      "id": "native_original_writer_terminal_observation",
+      "index": 103,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.670339937787503,
+      "id": "native_original_writer_next_delivery_observation",
+      "index": 104,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6689854559954256,
+      "id": "root_notes_original_startup_before",
+      "index": 105,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6586388309951872,
+      "id": "root_notes_recovered_successor_startup_before",
+      "index": 106,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.671770425979048,
+      "id": "root_notes_original_reserved_session_binding",
+      "index": 107,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6590411060024053,
+      "id": "root_notes_registered_successor_policy_replace",
+      "index": 108,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.7137364021036774,
+      "id": "root_desktop_original_issuer_pair_policy_cas",
+      "index": 109,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6129501448012888,
+      "id": "root_notes_original_issuer_policy_cas",
+      "index": 110,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.2944087020587176,
+      "id": "root_retained_native_ready_launch",
+      "index": 111,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.30189403891563416,
+      "id": "root_prepared_native_ready_execution",
+      "index": 112,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.2942441089544445,
+      "id": "root_prepared_native_ready_text_session",
+      "index": 113,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.29410897311754525,
+      "id": "root_original_bound_native_lanes",
+      "index": 114,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.29405325604602695,
+      "id": "root_original_bound_native_lane_acceptance",
+      "index": 115,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.2937819850631058,
+      "id": "root_original_ready_lane_bridge",
+      "index": 116,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.727978667942807,
+      "id": "notes_original_retained_reference_projection",
+      "index": 117,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13843592605553567,
+      "id": "memory_original_sender_read_only_cut",
+      "index": 118,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13888282096013427,
+      "id": "notes_recorded_original_observation_proof",
+      "index": 119,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13668228802271187,
+      "id": "notes_previous_recovery_typed_resolution",
+      "index": 120,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13678187504410744,
+      "id": "root_live_admin_enable",
+      "index": 121,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018477257108315825,
+      "id": "root_live_admin_mint",
+      "index": 122,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018256913870573044,
+      "id": "root_live_admin_exchange",
+      "index": 123,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13533237599767745,
+      "id": "root_live_admin_checked_dispatch",
+      "index": 124,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13566704490222037,
+      "id": "root_live_admin_signed_artifact_verify",
+      "index": 125,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13565210392698646,
+      "id": "root_live_admin_exact_issuer_head_revoke",
+      "index": 126,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1363446309696883,
+      "id": "root_live_admin_fixed_notes_revoke_prepare",
+      "index": 127,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13720867899246514,
+      "id": "root_live_admin_existing_effect_revoke",
+      "index": 128,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1371461919043213,
+      "id": "root_live_admin_existing_signed_grant_revoke",
+      "index": 129,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1348809318151325,
+      "id": "root_live_admin_same_service_signed_revoke",
+      "index": 130,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13686569198034704,
+      "id": "root_live_admin_original_issue_observer_enable",
+      "index": 131,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13708810391835868,
+      "id": "root_live_admin_original_issue_observation",
+      "index": 132,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1367062870413065,
+      "id": "root_live_admin_original_bounded_lease_revoke",
+      "index": 133,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1360109429806471,
+      "id": "root_live_admin_retained_artifact_observe",
+      "index": 134,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13668455905281007,
+      "id": "root_live_admin_original_effect_state_observe",
+      "index": 135,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13442871789447963,
+      "id": "root_live_admin_same_service_effect_state_observe",
+      "index": 136,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13599545205943286,
+      "id": "agentd_original_registered_writer_custody",
+      "index": 137,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.14593675103969872,
+      "id": "agentd_original_recovered_writer_custody_factory",
+      "index": 138,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1376468949019909,
+      "id": "agentd_original_root_handoff_unique_file",
+      "index": 139,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.67098345188424,
+      "id": "desktop_original_retained_reference_projection",
+      "index": 140,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1370652848854661,
+      "id": "calculator_previous_recovery_owner_target",
+      "index": 141,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1372840569820255,
+      "id": "calculator_previous_recovery_host_attach",
+      "index": 142,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13730086688883603,
+      "id": "calculator_previous_recovery_process_attach",
+      "index": 143,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13714027195237577,
+      "id": "calculator_previous_recovery_runtime_selection",
+      "index": 144,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13655963190831244,
+      "id": "calculator_previous_recovery_config_selection",
+      "index": 145,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022376079112291336,
+      "id": "root_original_issuer_renewal_prepare",
+      "index": 146,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023838406894356012,
+      "id": "root_original_issuer_renewal_commit",
+      "index": 147,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6600137089844793,
+      "id": "root_desktop_original_startup_before",
+      "index": 148,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.6599708290304989,
+      "id": "root_desktop_recovered_successor_startup_before",
+      "index": 149,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.643148424103856,
+      "id": "root_desktop_registered_successor_policy_replace",
+      "index": 150,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1370312760118395,
+      "id": "desktop_previous_original_cut_selection",
+      "index": 151,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13594357506372035,
+      "id": "desktop_previous_joint_config_selection",
+      "index": 152,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01808468997478485,
+      "id": "memory_original_validated_target_retirement_ack",
+      "index": 153,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13574545201845467,
+      "id": "memory_original_notes_retirement_ack",
+      "index": 154,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1360375618096441,
+      "id": "memory_original_calculator_retirement_ack",
+      "index": 155,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13552283984608948,
+      "id": "memory_original_retirement_ack_commit",
+      "index": 156,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13535618595778942,
+      "id": "memory_original_owner_current_readonly_receipt",
+      "index": 157,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13571691187098622,
+      "id": "authority_lease_exact_bounded_revoke",
+      "index": 158,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.135309596080333,
+      "id": "root_live_admin_exact_issuer_revoke",
+      "index": 159,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.13467935915105045,
+      "id": "root_live_admin_committed_issuer_reply",
+      "index": 160,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.1372856569942087,
+      "id": "root_live_admin_exact_issuer_reply_record",
+      "index": 161,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028447545133531094,
+      "id": "root_learning_explicit_registration",
+      "index": 162,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.8575192661955953,
+      "id": "root_learning_original_store_registration",
+      "index": 163,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.881651361938566,
+      "id": "root_learning_original_store_reopen",
+      "index": 164,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.9053297438658774,
+      "id": "root_learning_original_owner_install",
+      "index": 165,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.8758815650362521,
+      "id": "root_learning_original_scope_seal",
+      "index": 166,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.8776298721786588,
+      "id": "root_learning_original_scope_capture",
+      "index": 167,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.888591444818303,
+      "id": "root_learning_same_service_serve",
+      "index": 168,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01798726385459304,
+      "id": "root_learning_registered_checkpoint_constructor",
+      "index": 169,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01837314013391733,
+      "id": "root_learning_original_client_constructor",
+      "index": 170,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.027611854020506144,
+      "id": "root_learning_original_purpose_send",
+      "index": 171,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028882109094411135,
+      "id": "root_learning_original_purpose_receive",
+      "index": 172,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0021920560393482,
+      "id": "root_learning_original_handoff_consume",
+      "index": 173,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.8672963969875127,
+      "id": "root_learning_original_config_hold",
+      "index": 174,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.8614001639652997,
+      "id": "root_learning_original_stage_assembly",
+      "index": 175,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.070508918026462,
+      "id": "root_learning_original_runtime_consume",
+      "index": 176,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.891553747933358,
+      "id": "root_original_registered_ready_serve",
+      "index": 177,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.027771038934588432,
+      "id": "root_original_private_sealed_bytes",
+      "index": 178,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017329927068203688,
+      "id": "root_learning_scoped_checkpoint_constructor",
+      "index": 179,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.017613696865737438,
+      "id": "root_learning_scoped_client_constructor",
+      "index": 180,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.024724215967580676,
+      "id": "root_learning_scoped_runtime_constructor",
+      "index": 181,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016825184924528003,
+      "id": "learning_frozen_update_scope_constructor",
+      "index": 182,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016615932807326317,
+      "id": "root_learning_scoped_profile_constructor",
+      "index": 183,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.016843514051288366,
+      "id": "root_learning_scoped_checkpoint_record",
+      "index": 184,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01686671399511397,
+      "id": "learning_evidence_original_owner_constructor",
+      "index": 185,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.301769530866295,
+      "id": "original_pinned_stream_explicit_uid",
+      "index": 186,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.021351176081225276,
+      "id": "cell_learning_evaluation_profile_freeze",
+      "index": 187,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022579601034522057,
+      "id": "cell_learning_evaluation_receipt_prepare",
+      "index": 188,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028860109858214855,
+      "id": "cell_learning_evaluation_original_readback",
+      "index": 189,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028831511037424207,
+      "id": "generation_learning_original_stage_readback",
+      "index": 190,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.69524463522248,
+      "id": "cell_original_evaluation_execution",
+      "index": 191,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.614972994895652,
+      "id": "product_original_evaluation_execution",
+      "index": 192,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.944059792906046,
+      "id": "cell_completed_evaluation_readback",
+      "index": 193,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.759020830038935,
+      "id": "product_completed_evaluation_readback",
+      "index": 194,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0120759869460016,
+      "id": "root_learning_original_delivery_source",
+      "index": 195,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.13731972198002,
+      "id": "root_learning_completed_circuit_source",
+      "index": 196,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.018854812951758504,
+      "id": "cell_q24_single_head_training_plan",
+      "index": 197,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9938005111180246,
+      "id": "cell_q24_single_head_candidate_validation",
+      "index": 198,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.986937938956544,
+      "id": "circuit_learning_exact_ack_retirement",
+      "index": 199,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1605955047998577,
+      "id": "cell_q24_native_training_fit",
+      "index": 200,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.295898016076535,
+      "id": "cell_q24_original_training_observation",
+      "index": 201,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.024089667946100235,
+      "id": "learning_original_evaluator_attestation",
+      "index": 202,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.9406283202115446,
+      "id": "circuit_feature_original_initial_publication",
+      "index": 203,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.0535308809485286,
+      "id": "circuit_feature_original_update_publication",
+      "index": 204,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0496074019465595,
+      "id": "circuit_feature_guarded_private_cell",
+      "index": 205,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 6.323735311161727,
+      "id": "circuit_feature_private_cell_writer",
+      "index": 206,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.0081628139596432,
+      "id": "circuit_feature_original_task_control",
+      "index": 207,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023368062917143106,
+      "id": "circuit_q24_ordinary_profile_assembly",
+      "index": 208,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02858930896036327,
+      "id": "circuit_feature_original_predecessor_recovery",
+      "index": 209,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.7263500390108675,
+      "id": "circuit_feature_acknowledged_readonly_history",
+      "index": 210,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.3785023170057684,
+      "id": "learning_original_training_receipt_create",
+      "index": 211,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1793459388427436,
+      "id": "learning_original_training_receipt_recover",
+      "index": 212,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1760501449462026,
+      "id": "learning_original_training_receipt_attest",
+      "index": 213,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1787447798997164,
+      "id": "learning_original_training_receipt_readback",
+      "index": 214,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4560502441599965,
+      "id": "cell_q24_original_training_execute",
+      "index": 215,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4688655498903245,
+      "id": "cell_q24_original_training_pair_binding",
+      "index": 216,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 7.430241900961846,
+      "id": "learning_original_training_stage_constructor",
+      "index": 217,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.276405313052237,
+      "id": "learning_original_training_stage_execute",
+      "index": 218,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.310430958168581,
+      "id": "learning_original_training_stage_readback",
+      "index": 219,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.323816284071654,
+      "id": "learning_original_training_stage_attestation",
+      "index": 220,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029093050863593817,
+      "id": "learning_original_training_snapshot_readback",
+      "index": 221,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.2827091061044484,
+      "id": "cell_q24_model_material_owner_create",
+      "index": 222,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4505060268566012,
+      "id": "cell_q24_model_material_owner_recover",
+      "index": 223,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4480452029965818,
+      "id": "cell_q24_model_material_owner_commit",
+      "index": 224,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4563758180011064,
+      "id": "cell_q24_model_material_owner_readback",
+      "index": 225,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.2938085820060223,
+      "id": "learning_original_evaluation_receipt_create",
+      "index": 226,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4582091229967773,
+      "id": "learning_original_evaluation_receipt_recover",
+      "index": 227,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4608453391119838,
+      "id": "learning_original_evaluation_receipt_attest",
+      "index": 228,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4976848871447146,
+      "id": "learning_original_evaluation_receipt_readback",
+      "index": 229,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 7.962415028130636,
+      "id": "learning_original_owner_physical_current",
+      "index": 230,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.382864647079259,
+      "id": "learning_original_training_model_create",
+      "index": 231,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.4100713138468564,
+      "id": "learning_original_training_model_recover",
+      "index": 232,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.271958007942885,
+      "id": "learning_original_training_model_commit",
+      "index": 233,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.2642175510991365,
+      "id": "learning_original_training_model_readback",
+      "index": 234,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0299881829414517,
+      "id": "learning_original_circuit_next_use_receipt_create",
+      "index": 235,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1633131890557706,
+      "id": "learning_original_circuit_next_use_receipt_recover",
+      "index": 236,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.159925288055092,
+      "id": "learning_original_circuit_next_use_receipt_attest",
+      "index": 237,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1611762039829046,
+      "id": "learning_original_circuit_next_use_receipt_readback",
+      "index": 238,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.408549016108736,
+      "id": "circuit_feature_original_next_use_observation",
+      "index": 239,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.4032302999403328,
+      "id": "learning_original_circuit_selection_receipt_create",
+      "index": 240,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5077041969634593,
+      "id": "learning_original_circuit_selection_receipt_recover",
+      "index": 241,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5421806580852717,
+      "id": "learning_original_circuit_selection_receipt_attest",
+      "index": 242,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.557274613995105,
+      "id": "learning_original_circuit_selection_receipt_readback",
+      "index": 243,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.556344834156334,
+      "id": "circuit_feature_original_selection_observation",
+      "index": 244,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0583543141838163,
+      "id": "learning_original_material_create",
+      "index": 245,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.194976296974346,
+      "id": "learning_original_material_recover",
+      "index": 246,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.773693900089711,
+      "id": "learning_original_material_completed_dataset_read",
+      "index": 247,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02289521018974483,
+      "id": "learning_original_training_source_capture",
+      "index": 248,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1814557041507214,
+      "id": "learning_original_material_readback_host",
+      "index": 249,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4457672259304672,
+      "id": "learning_source_bound_training_owner_create",
+      "index": 250,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.443190306890756,
+      "id": "learning_source_bound_training_owner_recover",
+      "index": 251,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.268722560023889,
+      "id": "learning_source_bound_training_stage_constructor",
+      "index": 252,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.450691491132602,
+      "id": "learning_source_bound_training_stage_execute",
+      "index": 253,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "identifier": "learning_source_bound_training_stage_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "SourceBoundCellQ24TrainingStageV1",
+        "symbol": "SourceBoundCellQ24TrainingStageV1::readback"
+      },
+      "elapsed_seconds": 1.5394646811764687,
+      "error": "learning_source_bound_training_stage_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_source_bound_training_stage_readback",
+      "index": 254,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 1.5835499519016594,
+      "id": "learning_source_bound_training_stage_attestation",
+      "index": 255,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.568047618959099,
+      "id": "learning_source_bound_training_stage_model_create",
+      "index": 256,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5120696199592203,
+      "id": "learning_source_bound_training_stage_model_recover",
+      "index": 257,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.51875439286232,
+      "id": "learning_source_bound_training_stage_model_commit",
+      "index": 258,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.471831092145294,
+      "id": "learning_source_bound_training_stage_model_readback",
+      "index": 259,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.070728279883042,
+      "id": "learning_original_training_source_current",
+      "index": 260,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.204880123026669,
+      "id": "learning_original_training_source_inputs",
+      "index": 261,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2389813181944191,
+      "id": "learning_original_training_source_identity",
+      "index": 262,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5492210248485208,
+      "id": "learning_source_bound_training_admission",
+      "index": 263,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5455772730056196,
+      "id": "learning_source_bound_training_live_check",
+      "index": 264,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.586503844941035,
+      "id": "learning_source_bound_training_work_deadline",
+      "index": 265,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.881413253955543,
+      "id": "product_original_completed_execution_evidence_readback",
+      "index": 266,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.942539070965722,
+      "id": "learning_original_circuit_model_selection_receipt_create",
+      "index": 267,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.9585742149502039,
+      "id": "learning_original_circuit_model_selection_receipt_recover",
+      "index": 268,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.9579202579334378,
+      "id": "learning_original_circuit_model_selection_receipt_attest",
+      "index": 269,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.9597685721237212,
+      "id": "learning_original_circuit_model_selection_receipt_readback",
+      "index": 270,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.879662952153012,
+      "id": "learning_original_material_source_projection",
+      "index": 271,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.819514341885224,
+      "id": "learning_original_material_source_decode",
+      "index": 272,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.032353770919144,
+      "id": "learning_original_material_completed_source_read",
+      "index": 273,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.0287799569778144,
+      "id": "learning_original_material_source_client",
+      "index": 274,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1632815930061042,
+      "id": "learning_original_material_source_current",
+      "index": 275,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1627029129303992,
+      "id": "learning_original_material_source_binding",
+      "index": 276,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022824493004009128,
+      "id": "learning_original_remote_training_source_capture",
+      "index": 277,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.735810953890905,
+      "id": "learning_original_training_command_client_create",
+      "index": 278,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.865024867001921,
+      "id": "learning_original_training_command_client_recover",
+      "index": 279,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.8505688479635864,
+      "id": "learning_original_training_command_client_execute",
+      "index": 280,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.967643256066367,
+      "id": "learning_original_training_command_client_readback",
+      "index": 281,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9566253249067813,
+      "id": "learning_original_training_command_client_attestation",
+      "index": 282,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.710899556055665,
+      "id": "learning_original_training_command_owner_create",
+      "index": 283,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8808280020020902,
+      "id": "learning_original_training_command_owner_recover",
+      "index": 284,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8735722780693322,
+      "id": "learning_original_training_command_owner_serve",
+      "index": 285,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8723546920809895,
+      "id": "learning_original_training_command_owner_evidence",
+      "index": 286,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4443372481036931,
+      "id": "learning_source_bound_training_command_context",
+      "index": 287,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2017084110993892,
+      "id": "learning_original_material_experience_attest",
+      "index": 288,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2322105620987713,
+      "id": "learning_original_material_experience_readback",
+      "index": 289,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2295524950604886,
+      "id": "learning_original_material_dataset_attest",
+      "index": 290,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2341019348241389,
+      "id": "learning_original_material_dataset_readback",
+      "index": 291,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.01847104704938829,
+      "id": "learning_original_material_readback_custody",
+      "index": 292,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2305727989878505,
+      "id": "learning_original_material_evidence_serve",
+      "index": 293,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2299062830861658,
+      "id": "learning_original_material_source_serve",
+      "index": 294,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_owner_command_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "identifier": "learning_original_owner_command_channel",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": null,
+        "symbol": "original_owner_command_channel_v1"
+      },
+      "elapsed_seconds": 0.027074981946498156,
+      "error": "learning_original_owner_command_channel: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/artifact_original_head_client.rs', 'codex-rs/hepta-agentd/src/artifact_original_head_service.rs', 'codex-rs/hepta-agentd/src/artifact_original_registry_source.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 0.03468438284471631,
+      "id": "learning_original_owner_snapshot_encode",
+      "index": 296,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.023291785968467593,
+      "id": "learning_original_owner_snapshot_decode",
+      "index": 297,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1569390839431435,
+      "id": "learning_original_material_command_bootstrap",
+      "index": 298,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6897217428777367,
+      "id": "learning_original_material_command_custody",
+      "index": 299,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8757179519161582,
+      "id": "learning_original_material_command_serve_experience_commands",
+      "index": 300,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8742851531133056,
+      "id": "learning_original_material_command_serve_dataset_commands",
+      "index": 301,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8736235259566456,
+      "id": "learning_original_material_command_serve_experience_readback",
+      "index": 302,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8745962418615818,
+      "id": "learning_original_material_command_serve_dataset_readback",
+      "index": 303,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.876483844127506,
+      "id": "learning_original_material_command_serve_dataset_source",
+      "index": 304,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.271257699932903,
+      "id": "learning_original_material_command_client_from_original_experience_stream",
+      "index": 305,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4582503740675747,
+      "id": "learning_original_material_command_client_from_original_dataset_stream",
+      "index": 306,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.455318456981331,
+      "id": "learning_original_material_command_client_recover_original_experience_stream",
+      "index": 307,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4567373380996287,
+      "id": "learning_original_material_command_client_recover_original_dataset_stream",
+      "index": 308,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4545360649935901,
+      "id": "learning_original_material_command_client_execute",
+      "index": 309,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4566963580437005,
+      "id": "learning_original_material_command_client_readback",
+      "index": 310,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4552805291023105,
+      "id": "learning_original_material_command_client_receipt_attestation",
+      "index": 311,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1605209049303085,
+      "id": "learning_original_material_pair_readback",
+      "index": 312,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 7.474918927997351,
+      "id": "learning_evidence_original_owner_readback",
+      "index": 313,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02327727689407766,
+      "id": "learning_original_evaluation_key",
+      "index": 314,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.137942580971867,
+      "id": "cell_original_completed_evaluation_evidence_readback",
+      "index": 315,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.824367596069351,
+      "id": "product_original_execution_evidence_revalidate",
+      "index": 316,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.949546911055222,
+      "id": "learning_original_execution_store_create",
+      "index": 317,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.1183146429248154,
+      "id": "learning_original_execution_store_recover",
+      "index": 318,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.119819349143654,
+      "id": "learning_original_execution_store_readback_only",
+      "index": 319,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.258065297966823,
+      "id": "learning_original_qualification_owner_create",
+      "index": 320,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4604939811397344,
+      "id": "learning_original_qualification_owner_recover",
+      "index": 321,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.459453227929771,
+      "id": "learning_original_qualification_owner_publish",
+      "index": 322,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4588946278672665,
+      "id": "learning_original_qualification_owner_readback",
+      "index": 323,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.979297977872193,
+      "id": "cell_original_qualification_publication",
+      "index": 324,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.050059915985912,
+      "id": "learning_original_published_read_client_create",
+      "index": 325,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.0581349770072848,
+      "id": "learning_original_published_read_client_current",
+      "index": 326,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.093918350059539,
+      "id": "learning_original_published_read_client_context",
+      "index": 327,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9691281360574067,
+      "id": "learning_original_published_read_owner_create",
+      "index": 328,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1653667211066931,
+      "id": "learning_original_published_read_owner_serve",
+      "index": 329,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 8.082439379999414,
+      "id": "learning_original_source_input_current",
+      "index": 330,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.451989119173959,
+      "id": "learning_original_circuit_selection_remote_attest",
+      "index": 331,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback_remote("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "identifier": "learning_original_circuit_selection_remote_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote"
+      },
+      "elapsed_seconds": 1.448020719923079,
+      "error": "learning_original_circuit_selection_remote_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_circuit_selection_remote_readback",
+      "index": 332,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 1.1575820960570127,
+      "id": "learning_original_circuit_next_use_remote_attest",
+      "index": 333,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1579203940927982,
+      "id": "learning_original_circuit_next_use_remote_readback",
+      "index": 334,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_training("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "identifier": "learning_original_selector_command_context",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandContextV1",
+        "symbol": "OriginalCircuitSelectionCommandContextV1::from_original_training"
+      },
+      "elapsed_seconds": 3.8073360670823604,
+      "error": "learning_original_selector_command_context: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_context",
+      "index": 335,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 1.446639017900452,
+      "id": "learning_original_selector_command_owner_consume",
+      "index": 336,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4670714151579887,
+      "id": "learning_original_selector_command_owner_profile",
+      "index": 337,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "identifier": "learning_original_selector_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandOwnerV1",
+        "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.7589708669111133,
+      "error": "learning_original_selector_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_owner_factory",
+      "index": 338,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 3.1841010448988527,
+      "id": "learning_original_selector_command_client_create",
+      "index": 339,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2445139680057764,
+      "id": "learning_original_selector_command_client_recover",
+      "index": 340,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2460236749611795,
+      "id": "learning_original_selector_command_client_execute",
+      "index": 341,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2467505591921508,
+      "id": "learning_original_selector_command_client_readback",
+      "index": 342,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.239204706158489,
+      "id": "learning_original_selector_command_client_attestation",
+      "index": 343,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.943435040069744,
+      "id": "learning_original_selector_command_owner_serve",
+      "index": 344,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.9441919538658112,
+      "id": "learning_original_selector_command_owner_evidence",
+      "index": 345,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4370794538408518,
+      "id": "learning_original_dataset_readback_attenuation",
+      "index": 346,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_dataset_readback_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24DatasetCommandReadbackV1",
+        "symbol": "OriginalCellQ24DatasetCommandReadbackV1::readback"
+      },
+      "elapsed_seconds": 3.261062119854614,
+      "error": "learning_original_dataset_readback_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_dataset_readback_current",
+      "index": 347,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 1.4412994850426912,
+      "id": "learning_original_dataset_readback_context",
+      "index": 348,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4371875708457083,
+      "id": "learning_original_dataset_readback_cut",
+      "index": 349,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9601505550090224,
+      "id": "learning_original_material_connection_create",
+      "index": 350,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1570002639200538,
+      "id": "learning_original_material_connection_context",
+      "index": 351,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1578445930499583,
+      "id": "learning_original_material_connection_dataset",
+      "index": 352,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.686964869964868,
+      "id": "learning_original_training_bootstrap_create",
+      "index": 353,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8736569888424128,
+      "id": "learning_original_training_bootstrap_recover",
+      "index": 354,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8741899488959461,
+      "id": "learning_original_training_bootstrap_serve",
+      "index": 355,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8744664599653333,
+      "id": "learning_original_training_bootstrap_evidence",
+      "index": 356,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 11.197404090082273,
+      "id": "learning_original_training_initial_connection_create",
+      "index": 357,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.027952639851719,
+      "id": "learning_original_training_initial_connection_recover",
+      "index": 358,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.014906260883436,
+      "id": "learning_original_training_initial_connection_dataset",
+      "index": 359,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_command_initial("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_initial_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial"
+      },
+      "elapsed_seconds": 11.128630912164226,
+      "error": "learning_original_material_initial_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_initial_context_check",
+      "index": 360,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_dataset_context("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_dataset_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+        "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context"
+      },
+      "elapsed_seconds": 4.898991255089641,
+      "error": "learning_original_material_dataset_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_dataset_context_check",
+      "index": 361,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 3.298528344836086,
+      "id": "learning_original_next_use_command_context",
+      "index": 362,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.161524391034618,
+      "id": "learning_original_next_use_command_owner_consume",
+      "index": 363,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.159481911920011,
+      "id": "learning_original_next_use_command_owner_profile",
+      "index": 364,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "identifier": "learning_original_next_use_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitNextUseCommandOwnerV1",
+        "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.6911661750636995,
+      "error": "learning_original_next_use_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_next_use_command_owner_factory",
+      "index": 365,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 2.971054860856384,
+      "id": "learning_original_next_use_command_client_create",
+      "index": 366,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1566735820379108,
+      "id": "learning_original_next_use_command_client_recover",
+      "index": 367,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1547912780661136,
+      "id": "learning_original_next_use_command_client_attest",
+      "index": 368,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1543127049226314,
+      "id": "learning_original_next_use_command_client_readback",
+      "index": 369,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1555870501324534,
+      "id": "learning_original_next_use_command_client_attestation",
+      "index": 370,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8732887487858534,
+      "id": "learning_original_next_use_command_owner_serve",
+      "index": 371,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8688713861629367,
+      "id": "learning_original_next_use_command_owner_evidence",
+      "index": 372,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.70375589793548,
+      "id": "learning_original_candidate_material_native",
+      "index": 373,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8758832369931042,
+      "id": "learning_original_candidate_material_verified",
+      "index": 374,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.1643688089679927,
+      "id": "learning_original_training_candidate_material",
+      "index": 375,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4492314278613776,
+      "id": "learning_source_bound_training_candidate_material",
+      "index": 376,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.0279017619322985,
+      "id": "learning_original_candidate_initial_binding",
+      "index": 377,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9834976671263576,
+      "id": "learning_original_candidate_client_binding",
+      "index": 378,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1604821048676968,
+      "id": "learning_original_candidate_client_readback",
+      "index": 379,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8751221138518304,
+      "id": "learning_original_candidate_command_serve",
+      "index": 380,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8807041260879487,
+      "id": "learning_original_candidate_command_response",
+      "index": 381,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.9172874509822577,
+      "id": "learning_original_candidate_bootstrap_serve",
+      "index": 382,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 6.354899025987834,
+      "id": "learning_original_no_update_stage_create",
+      "index": 383,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.0381252190563828,
+      "id": "learning_original_no_update_stage_recover",
+      "index": 384,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.01528736599721,
+      "id": "learning_original_no_update_stage_initial",
+      "index": 385,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.0150132961571217,
+      "id": "learning_original_no_update_stage_resident_gate",
+      "index": 386,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.020851759938523,
+      "id": "learning_original_no_update_stage_execute",
+      "index": 387,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.150634862948209,
+      "id": "learning_original_selector_stage_binding",
+      "index": 388,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1549838290084153,
+      "id": "learning_original_next_use_stage_binding",
+      "index": 389,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.010411431081593,
+      "id": "learning_original_c_readiness_binding",
+      "index": 390,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1601052479818463,
+      "id": "learning_original_c_readiness_current",
+      "index": 391,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1635166970081627,
+      "id": "learning_original_c_readiness_serve",
+      "index": 392,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.979452423052862,
+      "id": "cell_generation_original_physical_current",
+      "index": 393,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028994703898206353,
+      "id": "root_resident_original_register",
+      "index": 394,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.028773812111467123,
+      "id": "root_resident_original_recover",
+      "index": 395,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.026192513993009925,
+      "id": "root_resident_original_custody_open",
+      "index": 396,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.7453407179564238,
+      "id": "root_resident_original_custody_retain",
+      "index": 397,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.997934221988544,
+      "id": "root_resident_registration_create",
+      "index": 398,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1523940898478031,
+      "id": "root_resident_registration_recover",
+      "index": 399,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.7203167430125177,
+      "id": "root_resident_service_register",
+      "index": 400,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.71910795615986,
+      "id": "root_resident_service_recover",
+      "index": 401,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.155149552039802,
+      "id": "root_resident_runtime_consume",
+      "index": 402,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6890940989833325,
+      "id": "root_resident_coordinator_run",
+      "index": 403,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.710175952874124,
+      "id": "root_resident_original_stream_serve",
+      "index": 404,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.269010306801647,
+      "id": "root_resident_original_client_create",
+      "index": 405,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4444849218707532,
+      "id": "root_resident_original_client_recover",
+      "index": 406,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4426040488760918,
+      "id": "root_resident_original_client_readback",
+      "index": 407,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4434417600277811,
+      "id": "root_resident_postclaim_admit",
+      "index": 408,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4882327641826123,
+      "id": "root_resident_preclaim_channel",
+      "index": 409,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5101784172002226,
+      "id": "root_resident_final_observation",
+      "index": 410,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.4474235519301146,
+      "id": "root_resident_gate_effect_current",
+      "index": 411,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5563420429825783,
+      "id": "root_resident_gate_training_cancel",
+      "index": 412,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 5.161912746960297,
+      "id": "root_resident_original_intent_fence",
+      "index": 413,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.776466764975339,
+      "id": "root_resident_original_intent_current",
+      "index": 414,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 5.969589182874188,
+      "id": "root_resident_late_enrollment_config",
+      "index": 415,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.68709583603777,
+      "id": "root_resident_late_enrollment_submit",
+      "index": 416,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9747684949543327,
+      "id": "root_resident_late_delivery_run",
+      "index": 417,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.2725530059542507,
+      "id": "root_resident_late_source_candidate",
+      "index": 418,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.024350100196898,
+      "id": "root_resident_checkpoint_register",
+      "index": 419,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.2083759370725602,
+      "id": "root_resident_checkpoint_recover",
+      "index": 420,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.212958473013714,
+      "id": "root_resident_checkpoint_fresh_cas",
+      "index": 421,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.647313133114949,
+      "id": "root_resident_registered_fresh_admit",
+      "index": 422,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5173645811155438,
+      "id": "root_resident_gate_begin_dispatch",
+      "index": 423,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.5109219178557396,
+      "id": "root_resident_gate_commit_checkpoint",
+      "index": 424,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 8.329201569082215,
+      "id": "learning_original_evaluation_panel_registration",
+      "index": 425,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.7119087849278003,
+      "id": "learning_original_evaluation_panel_owner",
+      "index": 426,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8722258410416543,
+      "id": "learning_original_evaluation_panel_current",
+      "index": 427,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9722911389544606,
+      "id": "learning_original_evaluation_panel_member_current",
+      "index": 428,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6854528409894556,
+      "id": "learning_original_candidate_stage_create",
+      "index": 429,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8720346491318196,
+      "id": "learning_original_candidate_stage_recover",
+      "index": 430,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8725455400999635,
+      "id": "learning_original_candidate_stage_initial",
+      "index": 431,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.871539284940809,
+      "id": "learning_original_candidate_stage_resident_gate",
+      "index": 432,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8731429988984019,
+      "id": "learning_original_candidate_stage_current_material",
+      "index": 433,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1549668950028718,
+      "id": "root_resident_candidate_runtime_consume",
+      "index": 434,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.674039723118767,
+      "id": "root_resident_concrete_stages_initial",
+      "index": 435,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8685571909882128,
+      "id": "root_resident_concrete_stages_gate",
+      "index": 436,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.87069186498411,
+      "id": "root_resident_concrete_stages_route",
+      "index": 437,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.2504420140758157,
+      "id": "learning_retained_publication_context",
+      "index": 438,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022993955994024873,
+      "id": "learning_retained_publication_prepare",
+      "index": 439,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6732200011610985,
+      "id": "learning_retained_publication_publish",
+      "index": 440,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029020453104749322,
+      "id": "learning_retained_publication_recover",
+      "index": 441,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.51619594800286,
+      "id": "learning_original_evaluation_cohort_capture",
+      "index": 442,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.712685465812683,
+      "id": "learning_original_evaluation_holdout_provider",
+      "index": 443,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.7121187159791589,
+      "id": "learning_original_evaluation_material_current",
+      "index": 444,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.1107681731227785,
+      "id": "learning_original_source_policy_projection",
+      "index": 445,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.8248360729776323,
+      "id": "learning_evaluated_retention_context",
+      "index": 446,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.006959540070966,
+      "id": "learning_evaluated_retention_context_recover",
+      "index": 447,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.022895050002261996,
+      "id": "learning_evaluated_retention_prepare",
+      "index": 448,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6705570449121296,
+      "id": "learning_evaluated_retention_publish",
+      "index": 449,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8695236661005765,
+      "id": "learning_evaluated_retention_preserve_original_evidence",
+      "index": 450,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.029212356079369783,
+      "id": "learning_evaluated_retention_recover",
+      "index": 451,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.959338332992047,
+      "id": "learning_original_evaluation_cohort_readback_retain",
+      "index": 452,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.955782627919689,
+      "id": "learning_original_evaluation_cohort_readback_after_release",
+      "index": 453,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.7121048748958856,
+      "id": "learning_original_evaluation_cohort_readback_cold",
+      "index": 454,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1492796640377492,
+      "id": "learning_original_evaluation_cohort_readback_current",
+      "index": 455,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1464661839418113,
+      "id": "learning_original_evaluation_cohort_member_binding",
+      "index": 456,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1505580691155046,
+      "id": "learning_original_evaluation_cohort_final_authentication",
+      "index": 457,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4241535761393607,
+      "id": "learning_original_evaluation_host_consume",
+      "index": 458,
+      "status": "verified"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_host_profile("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_profile",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile"
+      },
+      "elapsed_seconds": 1.4235839559696615,
+      "error": "learning_original_evaluation_host_profile: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_profile",
+      "index": 459,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_host_completed("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_receipt_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed"
+      },
+      "elapsed_seconds": 1.427477107848972,
+      "error": "learning_original_evaluation_host_receipt_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_receipt_current",
+      "index": 460,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "identifier": "learning_original_evaluation_host_constructor",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.9654477660078555,
+      "error": "learning_original_evaluation_host_constructor: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_constructor",
+      "index": 461,
+      "status": "rejected"
+    },
+    {
+      "elapsed_seconds": 1.1673003360629082,
+      "id": "learning_original_evaluation_host_serve",
+      "index": 462,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9441849971190095,
+      "id": "learning_original_evaluation_connection_create",
+      "index": 463,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1461559939198196,
+      "id": "learning_original_evaluation_connection_recover",
+      "index": 464,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1483936649747193,
+      "id": "learning_original_evaluation_connection_training",
+      "index": 465,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1532890319358557,
+      "id": "learning_original_evaluation_connection_recovery",
+      "index": 466,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.082780058030039,
+      "id": "learning_original_evaluation_command_execute",
+      "index": 467,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.3657520988490433,
+      "id": "learning_original_evaluation_command_readback",
+      "index": 468,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.3956751888617873,
+      "id": "learning_original_evaluation_command_attestation",
+      "index": 469,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.1002360829152167,
+      "id": "learning_artifact_original_publication_host_readback",
+      "index": 470,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 4.93310261098668,
+      "id": "learning_artifact_original_publication_service_readback",
+      "index": 471,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9474208301398903,
+      "id": "learning_retained_version_client_bind",
+      "index": 472,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1575674500782043,
+      "id": "learning_retained_version_client_recover",
+      "index": 473,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1571905529126525,
+      "id": "learning_retained_version_client_prepare",
+      "index": 474,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1564111709594727,
+      "id": "learning_retained_version_client_readback",
+      "index": 475,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.973910642787814,
+      "id": "learning_retained_version_host_create",
+      "index": 476,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1594969008583575,
+      "id": "learning_retained_version_host_recover",
+      "index": 477,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.15911854384467,
+      "id": "learning_retained_version_host_serve",
+      "index": 478,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1606431300751865,
+      "id": "learning_retained_version_ordinary_serve",
+      "index": 479,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.160010303137824,
+      "id": "learning_retained_version_selection_readback",
+      "index": 480,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1567999760154635,
+      "id": "learning_retained_version_final_use_binding",
+      "index": 481,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1549964100122452,
+      "id": "learning_retained_version_original_final_use",
+      "index": 482,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1537625731434673,
+      "id": "learning_retained_version_original_c_runtime",
+      "index": 483,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8744292110204697,
+      "id": "learning_retained_version_preserve_trainer",
+      "index": 484,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.164787622867152,
+      "id": "learning_retained_version_original_selection_channel",
+      "index": 485,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.00377294793725,
+      "id": "learning_retained_version_original_issuer_attenuation",
+      "index": 486,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9606253111269325,
+      "id": "learning_retained_version_original_issuer_request",
+      "index": 487,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1505081178620458,
+      "id": "learning_retained_version_original_issuer_worker",
+      "index": 488,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9564631779212505,
+      "id": "learning_original_model_command_initial_create",
+      "index": 489,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1586341210640967,
+      "id": "learning_original_model_command_initial_recover",
+      "index": 490,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.152113860938698,
+      "id": "learning_original_model_command_bind",
+      "index": 491,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.9564437880180776,
+      "id": "learning_original_model_command_client_execute",
+      "index": 492,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1474877351429313,
+      "id": "learning_original_model_command_client_readback",
+      "index": 493,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.7940871589817107,
+      "id": "learning_original_model_root_record",
+      "index": 494,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8668042900972068,
+      "id": "learning_original_candidate_stage_model_readback",
+      "index": 495,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8651068699546158,
+      "id": "root_resident_concrete_stages_model_readback",
+      "index": 496,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.527722236001864,
+      "id": "root_resident_model_proof_original",
+      "index": 497,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.715969174169004,
+      "id": "root_resident_model_proof_decode",
+      "index": 498,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.71040458092466,
+      "id": "root_resident_model_proof_authenticate",
+      "index": 499,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4291315348818898,
+      "id": "root_resident_model_readonly_client",
+      "index": 500,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.6653495100326836,
+      "id": "learning_original_model_command_host_create",
+      "index": 501,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8719357580412179,
+      "id": "learning_original_model_command_host_recover",
+      "index": 502,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8739357369486243,
+      "id": "learning_original_model_command_host_serve",
+      "index": 503,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4344378679525107,
+      "id": "cell_q24_current_model_owner_create",
+      "index": 504,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.2013446369674057,
+      "id": "learning_original_training_stage_current_model_create",
+      "index": 505,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4948360999114811,
+      "id": "learning_source_bound_stage_current_model_create",
+      "index": 506,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4818678079172969,
+      "id": "cell_q24_current_model_owner_recover",
+      "index": 507,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.260570411104709,
+      "id": "learning_original_training_stage_current_model_recover",
+      "index": 508,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.513309224974364,
+      "id": "learning_source_bound_stage_current_model_recover",
+      "index": 509,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4732234550174326,
+      "id": "cell_q24_current_model_owner_commit",
+      "index": 510,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.1647615409456193,
+      "id": "learning_original_training_stage_current_model_commit",
+      "index": 511,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.464108836837113,
+      "id": "learning_source_bound_stage_current_model_commit",
+      "index": 512,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4664582931436598,
+      "id": "cell_q24_current_model_owner_readback",
+      "index": 513,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 3.135239665862173,
+      "id": "learning_original_training_stage_current_model_readback",
+      "index": 514,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.455491331871599,
+      "id": "learning_source_bound_stage_current_model_readback",
+      "index": 515,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8939667069353163,
+      "id": "learning_original_training_command_model_training",
+      "index": 516,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8926865130197257,
+      "id": "learning_original_training_command_model_create",
+      "index": 517,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8933472197968513,
+      "id": "learning_original_training_command_model_recover",
+      "index": 518,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8934539759065956,
+      "id": "learning_original_training_command_model_commit",
+      "index": 519,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8944369701202959,
+      "id": "learning_original_training_command_model_readback",
+      "index": 520,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.02763533196412027,
+      "id": "cell_q24_model_material_digest",
+      "index": 521,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4422760789748281,
+      "id": "learning_original_evaluated_selection_create",
+      "index": 522,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4430407921317965,
+      "id": "learning_original_evaluated_selection_recover",
+      "index": 523,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4293385471682996,
+      "id": "learning_original_evaluated_selection_attest",
+      "index": 524,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4364329758100212,
+      "id": "learning_original_evaluated_selection_readback",
+      "index": 525,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.026675995904952288,
+      "id": "learning_original_circuit_experience_v2_intake",
+      "index": 526,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1507377589587122,
+      "id": "learning_original_evaluated_next_use_create",
+      "index": 527,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1488554449751973,
+      "id": "learning_original_evaluated_next_use_recover",
+      "index": 528,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1471863039769232,
+      "id": "learning_original_evaluated_next_use_attest",
+      "index": 529,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1490418079774827,
+      "id": "learning_original_evaluated_next_use_readback",
+      "index": 530,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.4357742390129715,
+      "id": "learning_original_evaluated_selection_readback_transfer",
+      "index": 531,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 2.674201913177967,
+      "id": "learning_original_evaluated_selection_readback_factory",
+      "index": 532,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 0.8680374450050294,
+      "id": "learning_original_evaluated_selection_readback_serve",
+      "index": 533,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.9928809790872037,
+      "id": "learning_evaluated_current_read_client",
+      "index": 534,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.1473566570784897,
+      "id": "learning_evaluated_current_read_owner",
+      "index": 535,
+      "status": "verified"
+    },
+    {
+      "elapsed_seconds": 1.9928900990635157,
+      "id": "learning_evaluated_retention_read_proof",
+      "index": 536,
+      "status": "verified"
+    }
+  ],
+  "checker": {
+    "git_blob_sha": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+    "path": "scripts/verify_hepta_callers.py"
+  },
+  "complete": true,
+  "exit_code": 1,
+  "failures": [
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+        "identifier": "learning_source_bound_training_stage_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_lane.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "SourceBoundCellQ24TrainingStageV1",
+        "symbol": "SourceBoundCellQ24TrainingStageV1::readback"
+      },
+      "elapsed_seconds": 1.5394646811764687,
+      "error": "learning_source_bound_training_stage_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_source_bound_training_stage_readback",
+      "index": 254,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_owner_command_channel_v1("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+        "identifier": "learning_original_owner_command_channel",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+          "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_service.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": null,
+        "symbol": "original_owner_command_channel_v1"
+      },
+      "elapsed_seconds": 0.027074981946498156,
+      "error": "learning_original_owner_command_channel: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/artifact_original_head_client.rs', 'codex-rs/hepta-agentd/src/artifact_original_head_service.rs', 'codex-rs/hepta-agentd/src/artifact_original_registry_source.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/cell_q24_training_command_readback_service.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_owner_command_channel",
+      "index": 295,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback_remote("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+        "identifier": "learning_original_circuit_selection_remote_readback",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionReceiptOwnerV1",
+        "symbol": "OriginalCircuitSelectionReceiptOwnerV1::readback_remote"
+      },
+      "elapsed_seconds": 1.448020719923079,
+      "error": "learning_original_circuit_selection_remote_readback: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback_service.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_circuit_selection_remote_readback",
+      "index": 332,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub fn from_original_training("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+        "identifier": "learning_original_selector_command_context",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandContextV1",
+        "symbol": "OriginalCircuitSelectionCommandContextV1::from_original_training"
+      },
+      "elapsed_seconds": 3.8073360670823604,
+      "error": "learning_original_selector_command_context: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_context",
+      "index": 335,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+        "identifier": "learning_original_selector_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitSelectionCommandOwnerV1",
+        "symbol": "OriginalCircuitSelectionCommandOwnerV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.7589708669111133,
+      "error": "learning_original_selector_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_selection_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_selector_command_owner_factory",
+      "index": 338,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub async fn readback("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_dataset_readback_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24DatasetCommandReadbackV1",
+        "symbol": "OriginalCellQ24DatasetCommandReadbackV1::readback"
+      },
+      "elapsed_seconds": 3.261062119854614,
+      "error": "learning_original_dataset_readback_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_dataset_readback_current",
+      "index": 347,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_command_initial("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_initial_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialReceiptConfigV1",
+        "symbol": "OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial"
+      },
+      "elapsed_seconds": 11.128630912164226,
+      "error": "learning_original_material_initial_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_initial_context_check",
+      "index": 360,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_dataset_context("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+        "identifier": "learning_original_material_dataset_context_check",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+          "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+          "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+          "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_model_command_context.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellQ24MaterialCommandReceiptV1",
+        "symbol": "OriginalCellQ24MaterialCommandReceiptV1::require_original_dataset_context"
+      },
+      "elapsed_seconds": 4.898991255089641,
+      "error": "learning_original_material_dataset_context_check: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/cell_q24_training_command_readback.rs', 'codex-rs/hepta-agentd/src/circuit_selection_command_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_material_dataset_context_check",
+      "index": 361,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+        "identifier": "learning_original_next_use_command_owner_factory",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCircuitNextUseCommandOwnerV1",
+        "symbol": "OriginalCircuitNextUseCommandOwnerV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.6911661750636995,
+      "error": "learning_original_next_use_command_owner_factory: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/circuit_next_use_readback_host.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_next_use_command_owner_factory",
+      "index": 365,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn original_host_profile("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_profile",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::original_host_profile"
+      },
+      "elapsed_seconds": 1.4235839559696615,
+      "error": "learning_original_evaluation_host_profile: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_profile",
+      "index": 459,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn require_original_host_completed("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+        "identifier": "learning_original_evaluation_host_receipt_current",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationReceiptOwnerV1",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed"
+      },
+      "elapsed_seconds": 1.427477107848972,
+      "error": "learning_original_evaluation_host_receipt_current: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_receipt_current",
+      "index": 460,
+      "status": "rejected"
+    },
+    {
+      "actual_sources": {},
+      "boundary": {
+        "call_pattern": null,
+        "caller_markers": [],
+        "definition_markers": [
+          "pub(crate) fn from_original_receipt_owner("
+        ],
+        "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "identifier": "learning_original_evaluation_host_constructor",
+        "product_callers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ],
+        "receiver_methods": [],
+        "receiver_type": "OriginalCellEvaluationHostV1",
+        "symbol": "OriginalCellEvaluationHostV1::from_original_receipt_owner"
+      },
+      "elapsed_seconds": 2.9654477660078555,
+      "error": "learning_original_evaluation_host_constructor: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_training_readback.rs']",
+      "error_type": "VerificationFailure",
+      "id": "learning_original_evaluation_host_constructor",
+      "index": 461,
+      "status": "rejected"
+    }
+  ],
+  "finished_at": "2026-11-12T11:47:35.528512+00:00",
+  "mode": "all-boundary-diagnostic",
+  "native_build_or_test_started": false,
+  "protected_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/main.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_authority.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_proof.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_status.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/notes_thread_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_owner_publication.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_hos2_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_prepare.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_human.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_human_text.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_human_text_client.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_native_launch.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_seed.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_hos2_ordering.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_logind.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_execution.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_read.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_recovery_selection.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_notes_deployment.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_observation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_observe.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_transport.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_calculator_previous.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_process.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_root_composition.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_previous_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_retirement_ack.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_retirement_ack.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_dispatch.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_barrier.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/action_skill_driver.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_learning_outbox.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_observation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_journal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_codec.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_model_selection_receipt_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_remote.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_command_channel.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_store.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_execution_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_evidence_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_pair_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_current.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_persist.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_capability.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source_connection.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_dataset_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_evidence.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/witness.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_material.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_candidate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_material_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_owners.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_auth.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_selection_command_stage_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_command_stage_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_completion_readiness_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_physical_current.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_generation_journal.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_profile.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_store.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_learning_resident.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_authority.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_gate.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_transport.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_resident_registration.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_resident_learning.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/resident_learning_delivery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_store.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_stages.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_context.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_contract.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_records.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider_read.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_policy.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_contract.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_binding.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_owners.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_inputs.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_provider.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_contract.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_read_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_inputs.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_state.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_retained_publication.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service_readback.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_context.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_client.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_artifact.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_state.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_c_task.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_retained_version_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_issuer.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_host.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_effect.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_retained_version_service.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_context.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_publication.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_retention_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_resident_model_recovery.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_command_wire.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_receipt.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_experience_intake.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_selection_readback_owner.rs",
+      "status": "verified"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_next_use_receipt_binding.rs",
+      "status": "verified"
+    }
+  ],
+  "qualification_gate": false,
+  "requested_boundaries": 537,
+  "requested_protected_files": 386,
+  "schema_version": 1,
+  "source_after": {
+    "head": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+    "status": "",
+    "tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a"
+  },
+  "source_before": {
+    "head": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+    "status": "",
+    "tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a"
+  },
+  "source_index": {
+    "bytes": 1353660,
+    "files": 6597,
+    "sha256": "6d89df794cea9667a3fb77bf4af72d3e96ab554ecbfdbbe61adbf4c96e82a8f3"
+  },
+  "source_sha": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+  "source_tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+  "source_unchanged": true,
+  "started_at": "2026-11-12T11:32:29.816443+00:00",
+  "status": "diagnostic_rejections",
+  "sudo_or_escalation_attempted": false
+}

@@ -1,0 +1,83 @@
+name: Hepta Execution Boundary B0 (synthetic only)
+
+on:
+  pull_request:
+    paths:
+      - qa/execution-boundary/**
+      - .github/workflows/hepta-execution-boundary-research.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-execution-boundary-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-transport:
+    name: Synthetic transport (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out exact candidate (no persisted credentials)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify source and prospective merge identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          if [ '${{ matrix.lane }}' = base-merge ]; then
+            test -n "$BASE_SHA"
+            git cat-file -e "$BASE_SHA^{commit}"
+            tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            export GIT_AUTHOR_NAME=hepta-research GIT_COMMITTER_NAME=hepta-research
+            export GIT_AUTHOR_EMAIL=research@invalid GIT_COMMITTER_EMAIL=research@invalid
+            export GIT_AUTHOR_DATE=2000-01-01T00:00:00Z GIT_COMMITTER_DATE=2000-01-01T00:00:00Z
+            merge="$(printf '%s\n' 'Synthetic verification only - no promotion' | git commit-tree "$tree" -p "$BASE_SHA" -p "$SOURCE_SHA")"
+            test "$(git show -s --format=%P "$merge")" = "$BASE_SHA $SOURCE_SHA"
+            git checkout --detach "$merge"
+            test "$(git rev-parse HEAD^{tree})" = "$tree"
+          fi
+          echo "source=$SOURCE_SHA base=$BASE_SHA tested=$(git rev-parse HEAD) tree=$(git rev-parse HEAD^{tree})"
+
+      - name: Run all standard-library adversarial tests
+        run: python3 -m unittest discover -v -s qa/execution-boundary -p 'test_*.py'
+
+      - name: Execute real local process/queue reference, never Codex tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qa/execution-boundary/cost_probe.py \
+            --logical-cells 64 --active-cells 8 --payload-bytes 256 --rounds 4 \
+            > "$RUNNER_TEMP/execution-b0.json"
+          python3 - "$RUNNER_TEMP/execution-b0.json" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as f:
+              data = json.load(f)
+          assert data['status'] == 'RESEARCH_DENY_ALL'
+          assert not any(data[key] for key in (
+              'real_codex_exec_server', 'real_hepta_runtime',
+              'real_model_or_tool_effects', 'production_qualification'))
+          assert [r['processes_spawned'] for r in data['runs']] == [0, 0, 1, 32]
+          assert {r['observed_receipts_sha256'] for r in data['runs']} == {
+              data['expected_receipts_sha256']}
+          print('B0-only workload/parity/authority denial verified')
+          PY
+          sha256sum "$RUNNER_TEMP/execution-b0.json"
+          cat "$RUNNER_TEMP/execution-b0.json"

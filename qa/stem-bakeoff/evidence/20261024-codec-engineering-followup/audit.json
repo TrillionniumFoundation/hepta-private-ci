@@ -1,0 +1,73 @@
+{
+  "A_B_result_hashes_unchanged": {
+    "baseline-run-001/result.json": "42687690b436cbfdb4da6e2d7699ac1e4d789b8a9f68a0b92505b14999b00092",
+    "input-only-tasks-001/result.json": "3ee1b45b69d33b69a67b1fee638df5290aa19dc17f55890756accf4126944546",
+    "model-budget-run-001/result.json": "5cde385cec6f760bda917b882681c04d9d1dd8cc32a34daf239a74bdb88f0ba0",
+    "retrieval-tasks-001/result.json": "cc9c91f93713214187c70bb7baf76cd56f09d4e5a5a13a63d5a64fff7969d912"
+  },
+  "audit_method": "Standard-library hashes, AST parsing and raw log/result comparison; no module import or discovery execution.",
+  "checks": 115,
+  "current_tool_readback": {
+    "ffmpeg": {
+      "bytes": 342488,
+      "path": "/usr/bin/ffmpeg",
+      "sha256": "ed16af623947494a72e284b6eb8ff225f2da22b38b5d5069c2fd4b4ba3384e41"
+    },
+    "ffprobe": {
+      "bytes": 191888,
+      "path": "/usr/bin/ffprobe",
+      "sha256": "272f6ebc634a63d9c8b4ca68e964119d980f25154e5aa2c35e5487da48e9a58f"
+    },
+    "openssl": {
+      "bytes": 1005368,
+      "path": "/usr/bin/openssl",
+      "sha256": "204951390b4f82d39f98b0dd0fa54502f27256c8d2fd08b55a5e3781408ae83b"
+    }
+  },
+  "driver_sha256": "0855ebb68ed0db86bf3f64faf5876c6aa0b156953145b2793ce47765c98dc89f",
+  "extra_test_or_model_calls": 0,
+  "failures": [],
+  "not_qualified": [
+    "A/B repair",
+    "model benefit",
+    "strong RAG",
+    "common-budget outcome",
+    "original hosted installation"
+  ],
+  "passed": true,
+  "protocol_sha256": "a17a78785482c1e06220d3f973cd9bf73ea5460235f9cdb0d1fa126bc20f00b9",
+  "raw_result_sha256": "e36e79c4f6b34f9ce76bf56236aa80d21437f7b17cd07352deb730af3042cb94",
+  "rows_recomputed_from_raw_logs": [
+    {
+      "child_cpu_ns": 79513000,
+      "name": "missing_tools_negative",
+      "passed": 0,
+      "path_overlay": "",
+      "pid_in_driver_namespace": 5,
+      "returncode": 0,
+      "skipped": 21,
+      "tests": 21,
+      "unittest_reported_seconds": "0.000",
+      "wall_ns": 116490834
+    },
+    {
+      "child_cpu_ns": 11150750000,
+      "name": "available_real_tools",
+      "passed": 21,
+      "path_overlay": "/usr/bin:/bin",
+      "pid_in_driver_namespace": 6,
+      "returncode": 0,
+      "skipped": 0,
+      "tests": 21,
+      "unittest_reported_seconds": "11.305",
+      "wall_ns": 11383618894
+    }
+  ],
+  "schema": "hepta.codec-engineering.read-only-audit.v1",
+  "source_bytes": 220039,
+  "source_commit": "a88f2832f2a1a4d3734c1c88f76977dcc9b98ff1",
+  "source_files": 25,
+  "source_manifest_sha256": "c880266b1f27eee68e0e7ff7a2b47def718070b5b8caa8727a591446d77e22b3",
+  "source_tree": "a536ad588592851225003384121aac243097e0bb",
+  "tool_identity_boundary": "Preparation and packaging hashes agree. Original driver does not retain separate per-tool exec-time hash/PID attestations."
+}

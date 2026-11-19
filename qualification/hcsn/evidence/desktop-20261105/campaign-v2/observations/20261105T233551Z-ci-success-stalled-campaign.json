@@ -1,0 +1,102 @@
+{
+  "schema": "hcsn-desktop-read-only-followup-v1",
+  "observation_utc": "2026-11-05T23:35:51.094133+00:00",
+  "evidence_kind": "ci_terminal_and_existing_campaign_observation",
+  "immutable_research_identity": {
+    "source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "python_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "campaign_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "campaign_archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "full_json_original_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "provenance_note": "The source/map/archive/manifest values are previously fixed pins, not re-hashed by this observation."
+  },
+  "desktop": {
+    "configured_host": "desktop",
+    "task_root_redacted": true,
+    "retained_campaign_job": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "progress_relpath": "campaigns/full-v2/progress.json",
+    "progress_sha256": "5cb51a7b1fe8d140d85dcece8f3ce45459f977402c7e163526409fc72789f716",
+    "progress_record_updated_utc": "2026-11-05T23:35:39.250729+00:00",
+    "progress_state": "waiting_for_pinned_runtime",
+    "stages": [],
+    "cuda_runs_completed": 0,
+    "cuda_runs_requested": 170,
+    "qualification": "open",
+    "auto_training_retry": false,
+    "torch_job": {
+      "id": "1a1aca78192-fc05-562f",
+      "terminal": "failed",
+      "exit_code": 1,
+      "known_blocker": "wheel METADATA identity ambiguous",
+      "new_retry": false
+    },
+    "mamba_waiter": {
+      "id": "1a1acadd69c-fc05-5654",
+      "terminal": "failed",
+      "exit_code": 1,
+      "reason": "torch owned job did not succeed",
+      "automatic_install_attempts": 0
+    },
+    "storage_observer": {
+      "job": "1a1acda2df4-fc05-5745",
+      "state": "running",
+      "relpath": "envsetup/storage-observation-latest.json",
+      "sha256": "69039cc7ad91f00697114be87aa8246d31a350aad7c38dbed01b1dfa9e16748d",
+      "sample_utc": "2026-11-05T23:35:51.094133+00:00",
+      "data_free_bytes": 30894682112,
+      "control_filesystem_free_bytes": 8679174144,
+      "threshold_flags": {
+        "control_below_1gib": false,
+        "data_below_5gib": false
+      },
+      "installation_ready_markers_observed": false,
+      "changes_to_training_or_installation_processes": false,
+      "deleted_bytes_by_observer": 0
+    }
+  },
+  "exact_source_ci": {
+    "run_id": 42078258351,
+    "job_id": 127424159520,
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "run_attempt": 1,
+    "run_event": "push",
+    "run_status": "completed",
+    "run_conclusion": "success",
+    "job_name": "kernel-and-mechanisms",
+    "job_status": "completed",
+    "job_conclusion": "success",
+    "job_started_utc": "2026-11-05T23:12:04Z",
+    "job_completed_utc": "2026-11-05T23:14:10Z",
+    "job_steps": "9 recorded steps all success (including setup, checkout, install, FP64, equal-budget CPU smoke, artifact retention, source unchanged and completion)",
+    "artifact": {
+      "name": "hcsn-research-f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "id": 13461093202,
+      "size_bytes": 576824,
+      "expired": false,
+      "created_utc": "2026-11-05T23:14:05Z"
+    },
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42078258351",
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42078258351/job/127424159520",
+    "scope": "Hosted exact-source CPU CI passed; this is NOT a CUDA or full 170-run qualification."
+  },
+  "trusted_main_gpu_probe": {
+    "run_id": 39526325715,
+    "run_attempt": 5,
+    "status": "queued",
+    "conclusion": null,
+    "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39526325715"
+  },
+  "unclosed": [
+    "pinned Torch runtime validation",
+    "Mamba offline install readiness",
+    "170 CUDA original-budget terminals and saved checkpoints",
+    "A/B/Mamba2 complete-shape CUDA parity and performance",
+    "20 B uniform-policy population audits",
+    "physical GPU energy NOT_SUPPORTED; keep null"
+  ],
+  "physical_gpu_energy_joules": null,
+  "policy_note": "No training or installer replay, no change to frozen source, no skipped identities, no CPU CUDA substitution, no power proxy, no runner trust changes.",
+  "historical_evidence": "qualification/hcsn/evidence/desktop-20261105/campaign-v2/observations/20261105T203614Z-dependency-terminal.json"
+}

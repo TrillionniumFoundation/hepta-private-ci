@@ -1,0 +1,598 @@
+{
+  "schema": "isolated-original-notebook-code-projection-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_private_at_publication": false,
+  "parent_commit": "9da1f20bf40e708a75c3ec16cc72d58d840f1d3c",
+  "frozen_candidate_count": 6116,
+  "formal_verified_count_unchanged": 5887,
+  "additional_code_object_count": 8,
+  "additional_code_bytes": 16133,
+  "new_frozen_candidates_counted": 0,
+  "comment_only_cells_not_published": [
+    {
+      "git_blob_sha": "499c11dda32a73dc7541e23071208251acc12262",
+      "sha256": "bfde58387d9a6a379ca8444118c52762c4a2adeddff224bee5834f1f1eabf889",
+      "bytes": 71
+    },
+    {
+      "git_blob_sha": "83603970ced5f80aa685e3d39a6f296bd6c4f175",
+      "sha256": "2f39e4d9a33ae0e48ca84556948f106496b34aebe27ad2d581d786fc83d4229b",
+      "bytes": 107
+    },
+    {
+      "git_blob_sha": "c40b615945ba70cd17e2061afc03ba809e2a693a",
+      "sha256": "77ce14320fc0788fa23b87622dce90a00a130e6ac03470c97a2b93c92e0c4969",
+      "bytes": 95
+    },
+    {
+      "git_blob_sha": "c9ff4f2cfb7ed93e793cf9521fff66d9cb9535c7",
+      "sha256": "b1ec2befc051ef3f4df5bec648eea2c4e86aaa0e59bc597e4932ff36cf93903f",
+      "bytes": 83
+    }
+  ],
+  "objects": [
+    {
+      "git_blob_sha": "13bcd90f7c647070007d1ad880917d51f181f89c",
+      "sha256": "16a55b7b7184e3278bd913abb05e23b48ca935a777154cb26fb1938603279a7f",
+      "bytes": 231,
+      "relative_path": "objects/13bcd90f7c647070007d1ad880917d51f181f89c.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "aaffca0b258d4de0f7f544e478121d5e6b561d8f",
+            "sha256": "54f73c21ea36c12635fd2cb52acb931fc5c8b9f770d594188f0dadbde502a5ba",
+            "bytes": 920796
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_Experimental_Report.ipynb",
+              "member": "RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_V2_Research_Package.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "original ZIP member",
+            "package": "RR_SNN_V2_Research_Package.zip",
+            "archive_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+            "archive_bytes": 74626316,
+            "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+            "archive_chain": [],
+            "zip_size_crc_validated_by_complete_read": true
+          },
+          "cell_index": 17,
+          "json_pointer": "/cells/17/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 0,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "1467f849369ebf6a8be71d25fd0be9d49d5af446",
+      "sha256": "3192e7859fc1f4e41a0943cce8eb3416a39cff25933251a9d807a02b240ccf88",
+      "bytes": 186,
+      "relative_path": "objects/1467f849369ebf6a8be71d25fd0be9d49d5af446.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "aaffca0b258d4de0f7f544e478121d5e6b561d8f",
+            "sha256": "54f73c21ea36c12635fd2cb52acb931fc5c8b9f770d594188f0dadbde502a5ba",
+            "bytes": 920796
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_Experimental_Report.ipynb",
+              "member": "RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_V2_Research_Package.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "original ZIP member",
+            "package": "RR_SNN_V2_Research_Package.zip",
+            "archive_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+            "archive_bytes": 74626316,
+            "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+            "archive_chain": [],
+            "zip_size_crc_validated_by_complete_read": true
+          },
+          "cell_index": 9,
+          "json_pointer": "/cells/9/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 1,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "261feaaf14e3ca2d7bf66f42d50006c8f2334a20",
+      "sha256": "f4351fd2fd9c5d8720ac05a5ba19325a3c856f59ef480daf3470890dc45a3bc4",
+      "bytes": 14691,
+      "relative_path": "objects/261feaaf14e3ca2d7bf66f42d50006c8f2334a20.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "7976b6b5f13fe3a5f2d985326f904a41d58f9385",
+            "sha256": "aada798e279d62a94976588103499cbead809a760bee204da06a3855cc6769a4",
+            "bytes": 406545
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.ipynb",
+              "member": "rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "complete official Library materialization",
+            "original_file": "rollover_snn_research.ipynb",
+            "archive_chain": []
+          },
+          "cell_index": 12,
+          "json_pointer": "/cells/12/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 0,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": true,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "3b6de5966bd8d989d31295d2a0a041aba0be7da0",
+      "sha256": "72fc16fa38164807906a8a1d862469beccd9ad5ffa8d9c66ccff0ab1ce14fb9e",
+      "bytes": 122,
+      "relative_path": "objects/3b6de5966bd8d989d31295d2a0a041aba0be7da0.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "7976b6b5f13fe3a5f2d985326f904a41d58f9385",
+            "sha256": "aada798e279d62a94976588103499cbead809a760bee204da06a3855cc6769a4",
+            "bytes": 406545
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.ipynb",
+              "member": "rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "complete official Library materialization",
+            "original_file": "rollover_snn_research.ipynb",
+            "archive_chain": []
+          },
+          "cell_index": 14,
+          "json_pointer": "/cells/14/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 0,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "3d5fb5ed1a3f15ea1c090fdf07a6b445e0422940",
+      "sha256": "d9aaf109abb328a581965938d61c7bc94084ff03f329b0c85c4b18f744f02be4",
+      "bytes": 49,
+      "relative_path": "objects/3d5fb5ed1a3f15ea1c090fdf07a6b445e0422940.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "7976b6b5f13fe3a5f2d985326f904a41d58f9385",
+            "sha256": "aada798e279d62a94976588103499cbead809a760bee204da06a3855cc6769a4",
+            "bytes": 406545
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.ipynb",
+              "member": "rollover_snn_research.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "rollover_snn_research.zip",
+              "member": "rollover_snn_research/rollover_snn_research.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "complete official Library materialization",
+            "original_file": "rollover_snn_research.ipynb",
+            "archive_chain": []
+          },
+          "cell_index": 13,
+          "json_pointer": "/cells/13/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 0,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "941f41c11cbff9f89124b0b219e2603c24bc6307",
+      "sha256": "fe53c0462a7d954e03bb9c78be7659e28b1d9a030b94ed8f63d1dc991ca4b38a",
+      "bytes": 474,
+      "relative_path": "objects/941f41c11cbff9f89124b0b219e2603c24bc6307.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "aaffca0b258d4de0f7f544e478121d5e6b561d8f",
+            "sha256": "54f73c21ea36c12635fd2cb52acb931fc5c8b9f770d594188f0dadbde502a5ba",
+            "bytes": 920796
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_Experimental_Report.ipynb",
+              "member": "RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_V2_Research_Package.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "original ZIP member",
+            "package": "RR_SNN_V2_Research_Package.zip",
+            "archive_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+            "archive_bytes": 74626316,
+            "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+            "archive_chain": [],
+            "zip_size_crc_validated_by_complete_read": true
+          },
+          "cell_index": 1,
+          "json_pointer": "/cells/1/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 1,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "d643a2e38f7d33881013dcdf7e7cef580a0fdf15",
+      "sha256": "f1719503137454959f823ec5a3e0348d01a5e8428b48e25f433002c583cae7b1",
+      "bytes": 194,
+      "relative_path": "objects/d643a2e38f7d33881013dcdf7e7cef580a0fdf15.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "aaffca0b258d4de0f7f544e478121d5e6b561d8f",
+            "sha256": "54f73c21ea36c12635fd2cb52acb931fc5c8b9f770d594188f0dadbde502a5ba",
+            "bytes": 920796
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_Experimental_Report.ipynb",
+              "member": "RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_V2_Research_Package.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "original ZIP member",
+            "package": "RR_SNN_V2_Research_Package.zip",
+            "archive_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+            "archive_bytes": 74626316,
+            "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+            "archive_chain": [],
+            "zip_size_crc_validated_by_complete_read": true
+          },
+          "cell_index": 7,
+          "json_pointer": "/cells/7/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 1,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    },
+    {
+      "git_blob_sha": "f7b4c01fdac6e5460f28427bc4026f057ac5a6a8",
+      "sha256": "6733d2393f42e6d2857725829fbf045e52a3f39f3f60ae43402c6df6f47194ea",
+      "bytes": 186,
+      "relative_path": "objects/f7b4c01fdac6e5460f28427bc4026f057ac5a6a8.py",
+      "candidate_group": "additional-notebook-code-cell",
+      "candidate_types": [
+        "notebook code-cell source string"
+      ],
+      "outside_frozen_candidate_union": true,
+      "counts_as_new_frozen_candidate": false,
+      "occurrences": [
+        {
+          "parent_notebook": {
+            "git_blob_sha": "aaffca0b258d4de0f7f544e478121d5e6b561d8f",
+            "sha256": "54f73c21ea36c12635fd2cb52acb931fc5c8b9f770d594188f0dadbde502a5ba",
+            "bytes": 920796
+          },
+          "original_occurrences": [
+            {
+              "file": "RR_SNN_Experimental_Report.ipynb",
+              "member": "RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_R1_R5_Experiments.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            },
+            {
+              "file": "RR_SNN_V2_Research_Package.zip",
+              "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+              "archive_chain": []
+            }
+          ],
+          "materialized_origin": {
+            "kind": "original ZIP member",
+            "package": "RR_SNN_V2_Research_Package.zip",
+            "archive_sha256": "9acdbc34dda91e1a87d5965b4f5da887ca175ee04a7579843bd28ef6ea6fe117",
+            "archive_bytes": 74626316,
+            "member": "rrsnn_experiments/RR_SNN_Experimental_Report.ipynb",
+            "archive_chain": [],
+            "zip_size_crc_validated_by_complete_read": true
+          },
+          "cell_index": 2,
+          "json_pointer": "/cells/2/source",
+          "source_json_type": "string",
+          "source_string_parts": null,
+          "extraction": "UTF-8 of the original JSON string, or concatenation in order of its string array; no newline normalization",
+          "execution_count_present": false,
+          "output_entries_not_preserved": 1,
+          "original_parent_counted_as_verified": false
+        }
+      ],
+      "attribution_basis": "Original RR-SNN notebook/package context and concrete module references are carried forward to the existing public private-ci research archive. The complete analytic-neuron cell is also an exact prefix of the already archived same-package source, with its CLI tail omitted in the notebook.",
+      "current_context_source_reference": {
+        "repo": "TrillionniumFoundation/hepta-private-ci",
+        "commit": "1120725f362729bd0ce4c0a1d43822eb5831d63d",
+        "path": "library-recovery/rrsnn-v2-source-20261103/objects/e90406b9dc5fc8a77ab0dabdec4b68b2c1060383.py",
+        "git_blob_sha": "e90406b9dc5fc8a77ab0dabdec4b68b2c1060383",
+        "sha256": "3d18a9c42bf75e615cfb28eab9d9fecdbeb099b8b707143b5525714a29e31086",
+        "bytes": 14897
+      },
+      "exact_prefix_of_context_source": null,
+      "pattern_findings": [],
+      "source_executed": false,
+      "outputs_preserved": false,
+      "scientific_acceptance_inferred": false,
+      "original_parent_sync_inferred": false
+    }
+  ],
+  "preserved_source_executed": false,
+  "original_notebooks_uploaded": false,
+  "notebook_outputs_preserved": false,
+  "source_candidate_sets_unchanged": true,
+  "scientific_or_production_acceptance": false,
+  "all_library_source_synced": false,
+  "original_archive_dot_history_completeness_proven": false,
+  "eligible_to_clear_library": false,
+  "library_deletion_performed": false,
+  "boundaries": [
+    "DRAFT",
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "HOLD_NO_GO"
+  ]
+}

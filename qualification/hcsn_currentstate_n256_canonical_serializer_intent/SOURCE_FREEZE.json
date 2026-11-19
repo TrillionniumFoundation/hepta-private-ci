@@ -1,0 +1,49 @@
+{
+  "schema": "hcsn-n256-canonical-serializer-source-freeze-v1",
+  "identity": "hcsn-n256-canonical-serializer-source-20261113-c06d-001",
+  "base_commit": "77f344bfd662630e8a93572cd5deba672a8e70b1",
+  "parent_draft": 6300,
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-canonical-serializer-intent.yml": "26b3088b2bc9d6d8834c5e8d130642880cbf7e7bd84de644a9d86f69695350c7",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/__init__.py": "aff0ca614e107e773cc08feffa3f74f3d86c05441b357b5b6846b5c7ce8427a4",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/admission.py": "66667360770b2ddd53821ff5b14ae953a4b06b3c30c049c4cac52661585eceb7",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/canonical_serializer.py": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/static_inspector.py": "d8caea645b792f6cc76c03388c3c34aee2c6cf705cb05b18f1674d3a9d9063b3",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/test_serializer.py": "fbeada08ab7cb4507ec9dc5811a11915ff373bd1f14455b57449c3fddbaacabb",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/REQUEST.json": "b298cb968f8bc52cf81a1d12710d9bdc13a016fce926b160c6bcfa569d23a62c",
+    "qualification/hcsn_currentstate_n256_canonical_serializer_intent/README.md": "2278b31f590c99df64edc249c6dc47ef36faaa89987cf7f70ba4a2041bd53bc6"
+  },
+  "bindings": {
+    "candidate_source_sha256": "0f686be417338f7aa102a8386171798b06a63689acdd043a69e95212655bf3f9",
+    "oracle_source_sha256": "4213f078e36cd3e296e9301df2d1788c3b9375cf7a911c73c0090fe500f5ab73",
+    "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+    "roster_identity": "e289c20d6595cb6d92dd3e2585bc7cb40fb0d5a408725c5edc14a9fb7f328fe2"
+  },
+  "small_fixture_controls": {
+    "tests": 4,
+    "deterministic_bytes": true,
+    "decode_reencode_byte_identity": true,
+    "corruption_rejected": true,
+    "cold_load_rejects_before_state_read": true,
+    "atomic_publish_and_directory_fsync": true
+  },
+  "execution_counts": {
+    "small_fixture_serializations": 4,
+    "n256_dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "n256_serializer_calls": 0,
+    "candidate_oracle_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "unresolved": [
+    "serializer source SHA binding in an independent admission",
+    "current host and ancestor-cgroup snapshots",
+    "allocation and calendar",
+    "actual N256 packet size and full-state bytes",
+    "candidate/oracle numerical agreement and cold restart"
+  ],
+  "status": "PASS_SMALL_STDLIB_SOURCE_HOLD_N256",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

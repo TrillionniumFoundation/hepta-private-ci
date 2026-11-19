@@ -346,7 +346,7 @@ pub(super) async fn ensure_listener_task_running(
                         conversation_id,
                     );
 
-                    apply_bespoke_event_handling(
+                    let event_handling = apply_bespoke_event_handling(
                         event.clone(),
                         conversation_id,
                         conversation.clone(),
@@ -356,8 +356,16 @@ pub(super) async fn ensure_listener_task_running(
                         thread_watch_manager.clone(),
                         thread_list_state_permit.clone(),
                         fallback_model_provider.clone(),
-                    )
-                    .await;
+                    );
+                    if matches!(&event.msg, EventMsg::TurnComplete(_)) {
+                        tokio::select! {
+                            biased;
+                            _ = &mut cancel_rx => break,
+                            () = event_handling => {}
+                        }
+                    } else {
+                        event_handling.await;
+                    }
                     if matches!(event.msg, EventMsg::ShutdownComplete)
                         && let Some(completion_tx) = thread_state
                             .lock()

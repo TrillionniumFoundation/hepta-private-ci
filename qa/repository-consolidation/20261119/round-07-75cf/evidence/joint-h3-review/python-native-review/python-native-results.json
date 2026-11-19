@@ -1,0 +1,79 @@
+{
+  "trees": {
+    "q24": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+    "memory": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b"
+  },
+  "source_files_verified_before_and_after": 182,
+  "environment": {
+    "torch": "2.15.0",
+    "safetensors": "0.8.0",
+    "numpy": "2.5.4",
+    "packaging": "26.3",
+    "transformers": "5.22.1",
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+    "actual_tensor_device": "cpu",
+    "workflow_q24_dependency_pins_matched": false
+  },
+  "results": [
+    {
+      "stage": "q24-normal",
+      "command": [
+        "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/neuron-gated-sparse-v3",
+        "-p",
+        "test_public_q24_independent_cases.py",
+        "-v"
+      ],
+      "cwd": "/Users/qianqi/ci-small-python-20261119-75cf/q24",
+      "exit": 0,
+      "duration_seconds": 1.1083382080541924,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "69b1a9a8fbd79319ffdb671dc13896b3897a6d2656562931b94536acb3bd4943",
+      "stderr_tail": "test_changed_projection_refused_despite_rehashed_seal (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_changed_projection_refused_despite_rehashed_seal) ... ok\ntest_corrupted_actual_q24_feature_refused (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_corrupted_actual_q24_feature_refused) ... ok\ntest_exact_frozen_quantized_inputs_do_not_claim_future_or_training (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_exact_frozen_quantized_inputs_do_not_claim_future_or_training) ... ok\ntest_hidden_official_test_labels_refused_despite_rehashed_seal (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_hidden_official_test_labels_refused_despite_rehashed_seal) ... ok\ntest_reject_crafted_duplicate_keys (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_reject_crafted_duplicate_keys) ... ok\ntest_source_claim_wrong_model_or_signed_authority_refused (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_source_claim_wrong_model_or_signed_authority_refused) ... ok\ntest_synthetic_fixture_cannot_be_used_as_real_pretrained_source (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_synthetic_fixture_cannot_be_used_as_real_pretrained_source) ... ok\ntest_two_identical_trials_preserve_same_input_hash (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_two_identical_trials_preserve_same_input_hash) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.849s\n\nOK\n"
+    },
+    {
+      "stage": "q24-optimized",
+      "command": [
+        "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qualification/neuron-gated-sparse-v3",
+        "-p",
+        "test_public_q24_independent_cases.py",
+        "-v"
+      ],
+      "cwd": "/Users/qianqi/ci-small-python-20261119-75cf/q24",
+      "exit": 0,
+      "duration_seconds": 3.21305529109668,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "8952fee869c0a89560b3e97b6ee70af840ab430337258cd24405c39bce0b0d8b",
+      "stderr_tail": "test_changed_projection_refused_despite_rehashed_seal (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_changed_projection_refused_despite_rehashed_seal) ... ok\ntest_corrupted_actual_q24_feature_refused (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_corrupted_actual_q24_feature_refused) ... ok\ntest_exact_frozen_quantized_inputs_do_not_claim_future_or_training (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_exact_frozen_quantized_inputs_do_not_claim_future_or_training) ... ok\ntest_hidden_official_test_labels_refused_despite_rehashed_seal (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_hidden_official_test_labels_refused_despite_rehashed_seal) ... ok\ntest_reject_crafted_duplicate_keys (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_reject_crafted_duplicate_keys) ... ok\ntest_source_claim_wrong_model_or_signed_authority_refused (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_source_claim_wrong_model_or_signed_authority_refused) ... ok\ntest_synthetic_fixture_cannot_be_used_as_real_pretrained_source (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_synthetic_fixture_cannot_be_used_as_real_pretrained_source) ... ok\ntest_two_identical_trials_preserve_same_input_hash (test_public_q24_independent_cases.PublicQ24IndependentCaseTests.test_two_identical_trials_preserve_same_input_hash) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 2.935s\n\nOK\n"
+    },
+    {
+      "stage": "memory-network-original-suite",
+      "command": [
+        "/bin/bash",
+        "scripts/memory_cell_network/run_tests.sh"
+      ],
+      "cwd": "/Users/qianqi/ci-small-python-20261119-75cf/memory",
+      "exit": 1,
+      "duration_seconds": 3.261692375061102,
+      "stdout_sha256": "619f55a5340303ccb112fba3aa858c6db1746bbafc0c50c613d84dc39bcf2ca4",
+      "stderr_sha256": "512b034acd35223340aa53cdca036fe71b33ca882e2a182ff67e4ad306c9e77f",
+      "stderr_tail": "test_current_parameter_network (unittest.loader._FailedTest.test_current_parameter_network) ... ERROR\ntest_child_receives_runtime_controls_without_parent_credentials (test_model_process.ModelProcessTests.test_child_receives_runtime_controls_without_parent_credentials) ... ok\ntest_large_stdin_and_escaped_reader_do_not_delay_timeout (test_model_process.ModelProcessTests.test_large_stdin_and_escaped_reader_do_not_delay_timeout) ... skipped 'Linux descendant lifetime observation'\ntest_nonzero_and_timeout_return_authenticated_errors_with_receipts (test_model_process.ModelProcessTests.test_nonzero_and_timeout_return_authenticated_errors_with_receipts) ... ok\ntest_normal_child_exit_also_terminates_remaining_descendant (test_model_process.ModelProcessTests.test_normal_child_exit_also_terminates_remaining_descendant) ... skipped 'Linux descendant lifetime observation'\ntest_receipt_preserves_raw_output_and_empty_reader_directory (test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory) ... FAIL\ntest_timeout_terminates_descendant_and_retains_output_without_pipe_wait (test_model_process.ModelProcessTests.test_timeout_terminates_descendant_and_retains_output_without_pipe_wait) ... skipped 'Linux descendant lifetime observation'\ntest_wrong_parent_cannot_reach_target_script (test_model_process.ModelProcessTests.test_wrong_parent_cannot_reach_target_script) ... ok\ntest_network (unittest.loader._FailedTest.test_network) ... ERROR\ntest_source_network (unittest.loader._FailedTest.test_source_network) ... ERROR\n\n======================================================================\nERROR: test_current_parameter_network (unittest.loader._FailedTest.test_current_parameter_network)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_current_parameter_network\nTraceback (most recent call last):\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 426, in _find_test_path\n    module = self._get_module_from_name(name)\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 367, in _get_module_from_name\n    __import__(name)\n    ~~~~~~~~~~^^^^^^\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell_network/test_current_parameter_network.py\", line 14, in <module>\n    import test_parametric_model as tiny\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell/test_parametric_model.py\", line 11, in <module>\n    from peft import get_peft_model_state_dict\nModuleNotFoundError: No module named 'peft'\n\n\n======================================================================\nERROR: test_network (unittest.loader._FailedTest.test_network)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_network\nTraceback (most recent call last):\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 426, in _find_test_path\n    module = self._get_module_from_name(name)\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 367, in _get_module_from_name\n    __import__(name)\n    ~~~~~~~~~~^^^^^^\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell_network/test_network.py\", line 21, in <module>\n    from parametric_model import SourceMemoryCell\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell/parametric_model.py\", line 18, in <module>\n    from peft import get_peft_model_state_dict\nModuleNotFoundError: No module named 'peft'\n\n\n======================================================================\nERROR: test_source_network (unittest.loader._FailedTest.test_source_network)\n----------------------------------------------------------------------\nImportError: Failed to import test module: test_source_network\nTraceback (most recent call last):\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 426, in _find_test_path\n    module = self._get_module_from_name(name)\n  File \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/unittest/loader.py\", line 367, in _get_module_from_name\n    __import__(name)\n    ~~~~~~~~~~^^^^^^\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell_network/test_source_network.py\", line 14, in <module>\n    import test_parametric_model as tiny\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell/test_parametric_model.py\", line 11, in <module>\n    from peft import get_peft_model_state_dict\nModuleNotFoundError: No module named 'peft'\n\n\n======================================================================\nFAIL: test_receipt_preserves_raw_output_and_empty_reader_directory (test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/memory/scripts/memory_cell_network/test_model_process.py\", line 167, in test_receipt_preserves_raw_output_and_empty_reader_directory\n    self.assertEqual(\n    ~~~~~~~~~~~~~~~~^\n        json.loads(result[\"stdout\"]),\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<5 lines>...\n        },\n        ^^\n    )\n    ^\nAssertionError: {'pid[14 chars]': '/private/var/folders/4b/3k3pz4g52rqf29hjr0[79 chars]est'} != {'pid[14 chars]': '/var/folders/4b/3k3pz4g52rqf29hjr083nzd000[71 chars]est'}\n  {'arguments': ['one'],\n-  'cwd': '/private/var/folders/4b/3k3pz4g52rqf29hjr083nzd00000gn/T/tmphmx5vtnk/reader',\n?          --------\n\n+  'cwd': '/var/folders/4b/3k3pz4g52rqf29hjr083nzd00000gn/T/tmphmx5vtnk/reader',\n   'input': 'closed request',\n   'pid': 58394}\n\n----------------------------------------------------------------------\nRan 10 tests in 2.768s\n\nFAILED (failures=1, errors=3, skipped=3)\n"
+    }
+  ],
+  "source_bytes_changed": false,
+  "installed_dependencies": false,
+  "gpu_training": false
+}

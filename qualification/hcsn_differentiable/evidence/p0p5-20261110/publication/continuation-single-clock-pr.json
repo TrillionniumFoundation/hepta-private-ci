@@ -1,0 +1,96 @@
+{
+  "schema": "hcsn-single-clock-source-publication-v1",
+  "observed_utc": "2026-11-10T17:43:36.829Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "local_commit": "7d7fa1dff8ea8259b1bae0a9e1889183325693bf",
+  "remote_commit": "a5f32fb86588bd88b5408dea6c920172d48f6e75",
+  "full_tree": "a6760d06484d6d88c4c4e6ac0a60e39e487b525e",
+  "full_tree_equal": true,
+  "branch": "codex/hcsn-c1-single-clock-api-20261110-c385",
+  "base": "codex/hcsn-p2-continuation-tests-api-20261110-c385",
+  "draft_pr": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5821",
+    "number": 5821,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": true,
+    "body": "## Problem\n\nThe completed C1 source sampled the monotonic clock twice in one epoch record. The two legitimate observations differed by microseconds, so the recorded phase cost plus the complete parent cost could differ from the cumulative cost. The independent review correctly rejected its strict accounting identity.\n\n## Change\n\nSample the phase clock once after development evaluation and derive both epoch fields from that sample. The epoch journal uses the same values. This prospective source change leaves every original C1 source capsule, checkpoint, log, failed audit and charged cost intact; the historical chains need their separately recorded interval audit.\n\n## Validation\n\n- The new advancing-clock regression failed against the original source by the deliberately introduced one-millisecond sampling interval.\n- All 12 continuation tests pass, including the five existing exact state-recovery fixtures.\n- `just fmt` passes.\n- API-published full tree `a6760d06484d6d88c4c4e6ac0a60e39e487b525e` exactly matches local commit `7d7fa1dff8ea8259b1bae0a9e1889183325693bf`.\n\nThis is a draft stacked on #5803. It adds no training run, numerical-domain qualification or scientific-benefit claim.",
+    "title": "Fix continuation epoch cost records to share one clock sample",
+    "base": "codex/hcsn-p2-continuation-tests-api-20261110-c385",
+    "base_sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+    "head": "codex/hcsn-c1-single-clock-api-20261110-c385",
+    "head_sha": "a5f32fb86588bd88b5408dea6c920172d48f6e75",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-10T17:43:07Z",
+    "updated_at": "2026-11-10T17:43:07Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 1,
+    "changed_files": 2,
+    "additions": 34,
+    "deletions": 2,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5821",
+    "display_title": "Fix continuation epoch cost records to share one clock sample"
+  },
+  "commit_readback": {
+    "sha": "a5f32fb86588bd88b5408dea6c920172d48f6e75",
+    "node_id": "C_kwDOTrgxoNoAKGE1ZjMyZmI4NjU4OGJkODhiNTQwOGRlYTZjOTIwMTcyZDQ4ZjZlNzU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a5f32fb86588bd88b5408dea6c920172d48f6e75",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a5f32fb86588bd88b5408dea6c920172d48f6e75",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-10T17:43:05Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-10T17:43:05Z"
+    },
+    "tree": {
+      "sha": "a6760d06484d6d88c4c4e6ac0a60e39e487b525e",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/a6760d06484d6d88c4c4e6ac0a60e39e487b525e"
+    },
+    "message": "fix(hcsn): sample continuation epoch cost once\n\nIndependent C1 review found separate monotonic-clock calls could break the phase-plus-parent accounting identity by microseconds. Derive both epoch cost fields from one sample and verify the invariant under an advancing test clock. Historical source capsules and native C1 outputs remain unchanged.\n\nValidation: the new targeted regression fails on the old source; all 12 continuation tests pass on this source, including five core state-recovery fixtures. just fmt passes.",
+    "parents": [
+      {
+        "sha": "56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/56de11a29bbbb8a9aba93e67731cdee4909b4e15",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/56de11a29bbbb8a9aba93e67731cdee4909b4e15"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "ref_readback": {
+    "ref": "refs/heads/codex/hcsn-c1-single-clock-api-20261110-c385",
+    "node_id": "REF_kwDOTrgxoNoAN3JlZnMvaGVhZHMvY29kZXgvaGNzbi1jMS1zaW5nbGUtY2xvY2stYXBpLTIwMjYxMTEwLWMzODU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/hcsn-c1-single-clock-api-20261110-c385",
+    "object": {
+      "sha": "a5f32fb86588bd88b5408dea6c920172d48f6e75",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a5f32fb86588bd88b5408dea6c920172d48f6e75"
+    }
+  },
+  "native_training_uses_this_source": false,
+  "scope": "Prospective producer fix only. Historical C1 used its retained original source; no original record or cost is rewritten."
+}

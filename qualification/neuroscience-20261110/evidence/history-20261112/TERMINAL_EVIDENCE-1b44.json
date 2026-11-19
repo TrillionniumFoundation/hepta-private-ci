@@ -1,0 +1,823 @@
+{
+  "schema": "hepta.neuroscience-terminal-evidence.v1",
+  "observed_at_utc": "2026-11-12 13:02:08 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "publication_parent": "10ba2e54cf6cf42cf11cb79ea23dbf0508348dbe",
+  "scope": "Evidence and documentation only. Exact original campaign reconciled without redispatch; raw research labels retained.",
+  "status": "HOLD",
+  "owner_decision": null,
+  "owner_evaluation": "not_authenticated",
+  "adoption": "NOT_REQUESTED",
+  "all_blockers_closed": false,
+  "historical_snapshot": "NEXT_STEP_EVIDENCE.json",
+  "original_campaign": {
+    "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "host": "ai395",
+    "original_key": "ctrl-1333-real-campaign-pty-v2",
+    "session": "dpty-40ff97e76f70d0a5e1c37280afeab264b349cee40962d4e6b77d543fdb391c65",
+    "new_campaign_dispatches": 0,
+    "campaign_directory": "/home/qq/ctrl-real-study-20261112-1333/run-v2",
+    "campaign_stages": 12,
+    "successful_stages": 12,
+    "campaign_elapsed_seconds": 2038.5219799471088,
+    "factorial_elapsed_seconds": 937.0059730908833,
+    "launcher_exit": 1,
+    "launcher_failure": "Final bookkeeping reads run-v1/COMPLETED.json while original execution output is run-v2. Preserve FAILED; do not redispatch.",
+    "report": {
+      "gzip_bytes": 373009,
+      "gzip_sha256": "8293d2106a9d40961d6d65f9612ee941dddd96ca06ab455a7690ebf34f5236eb",
+      "raw_bytes": 3108442,
+      "raw_sha256": "968b1d462dcc6afc3c51ecf34f17c05c59762c2d9cda889054d10cb87c48e41a",
+      "gzip_crc32": 2828415264,
+      "deflate_blocks": 19,
+      "independent_root_decompression": true,
+      "full_original_json_parsed": true,
+      "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd"
+    },
+    "content_receipt": {
+      "gzip_bytes": 34404,
+      "gzip_sha256": "9bd751047430e146ae9bfcd3ef80d3bdbf0a695aa47e9427cb38b4eef5f96b2b",
+      "raw_bytes": 295081,
+      "raw_sha256": "9349296f8b051963e2363cb212b44cecb4ce354844dc3853fa839a9278617e85",
+      "gzip_crc32": 346387844,
+      "independent_root_decompression": true
+    },
+    "denominator": {
+      "sources": 16,
+      "contexts": 48,
+      "arms": 12,
+      "planned_executions": 576,
+      "unique_executions": 576,
+      "completed": 576,
+      "failed": 0,
+      "unknown": 0,
+      "not_started": 0,
+      "cancelled": 0,
+      "running": 0,
+      "missing": 0,
+      "complete_source_arms": true
+    },
+    "actions": {
+      "READ": 62,
+      "STOP": 514,
+      "conditional_READ": 0,
+      "conditional_STOP": 96,
+      "conditional_rejection_reasons": {
+        "insufficient_calibration": 94,
+        "outside_observed_feature_envelope": 2
+      }
+    },
+    "derived_arm_results": [
+      {
+        "arm": "frozen/STOP",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18257923477644605,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/light",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18267976063114474,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/tuned-fixed",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18277954284412168,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/point",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.28125,
+        "observed_task_cost_net": 0.26310400722820004,
+        "READ": 19,
+        "STOP": 29
+      },
+      {
+        "arm": "frozen/unconditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.18272289228295752,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "frozen/conditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.19791666666666669,
+        "observed_task_cost_net": 0.1827178000029138,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/STOP",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17230390806900686,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/light",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.21875,
+        "observed_task_cost_net": 0.20016114381971423,
+        "READ": 24,
+        "STOP": 24
+      },
+      {
+        "arm": "adapted/tuned-fixed",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17200546531908908,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/point",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.2708333333333333,
+        "observed_task_cost_net": 0.25363112211663974,
+        "READ": 19,
+        "STOP": 29
+      },
+      {
+        "arm": "adapted/unconditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17227284798214293,
+        "READ": 0,
+        "STOP": 48
+      },
+      {
+        "arm": "adapted/conditional",
+        "planned": 48,
+        "completed": 48,
+        "quality": 0.1875,
+        "observed_task_cost_net": 0.17216143684553875,
+        "READ": 0,
+        "STOP": 48
+      }
+    ],
+    "conditional_minus_stop": {
+      "frozen_quality": 0,
+      "adapted_quality": 0,
+      "quality_difference_in_differences": 0,
+      "observed_task_cost_net_difference_in_differences": -0.00028103644993582983,
+      "full_cost_difference_in_differences": null,
+      "full_cost_paired_sources": 0
+    },
+    "calibration": {
+      "both_complete": false,
+      "alpha": 0.1,
+      "conditional_cells_sources_each": 9,
+      "unconditional_sources": 18,
+      "finite_quantile_rank": 1,
+      "minimum_sources_for_finite_quantile": 9,
+      "finite_quantile_count_requirement_met": true,
+      "reason_scope": "Complete original run-v2 EXPORT audit: frozen 45/54 rows in train-only envelope, 9 excluded across7 sources; adapted47/54,7excluded across7sources. All54 paired gains known in each model. All18 calibration sources still have an included row and cells remain9 each. Two evaluation envelope exclusions are distinct.",
+      "frozen_fit": 72,
+      "frozen_calibration": 54,
+      "adapted_fit": 72,
+      "adapted_calibration": 54,
+      "known_gains_each": 54,
+      "frozen_in_envelope": 45,
+      "frozen_excluded": 9,
+      "adapted_in_envelope": 47,
+      "adapted_excluded": 7,
+      "excluded_sources_each": 7,
+      "original_export_audit": "evidence/v-calibration-domain-20261112/v_calibration_observations.json",
+      "root_independent_recomputation": "evidence/v-calibration-domain-20261112/ROOT_RECOMPUTATION.json",
+      "mechanical_cause_located": true,
+      "admission_passed": false,
+      "frozen_budget": {
+        "read_seconds_bound": 30,
+        "finalizer_seconds_reserve": 5,
+        "action_budget_seconds": 40,
+        "episode_wall_seconds": 60,
+        "time_budget_is_blocker": false
+      }
+    },
+    "content_training": {
+      "optimizer_steps": 60,
+      "rows_per_epoch": 142,
+      "sequence_count": 142,
+      "fit_sources": 24,
+      "epochs": 12,
+      "learning_rate": 0.0003,
+      "estimator": "observed_auxiliary_losses",
+      "recursive_objective_applied": false,
+      "environment_unbiased_policy_gradient": false,
+      "control_gradient_into_content": null,
+      "prior_checkpoint_exposure_cleared": false,
+      "full_cost_observed": false,
+      "parameter_equals_cold_load": true,
+      "content_and_weights_changed": true
+    },
+    "full_cost_observed": false,
+    "full_cost_observed_rows": 0,
+    "new_source_confirmation": false,
+    "source_custody_authenticated": false,
+    "ordinary_owner_decision_observed": false,
+    "native_artifacts_readmitted": false,
+    "original_report_decision": "NoUpdate",
+    "original_decision_is_hardcoded_research_label": true,
+    "root_verification": "evidence/terminal-20261112/ROOT_ORIGINAL_VERIFICATION.json",
+    "full_original_archives": {
+      "report": "evidence/report-lossless-archive-20261112/REPORT.json.gz",
+      "receipt": "evidence/content-receipt-lossless-archive-20261112/receipt.json.gz"
+    },
+    "readonly_arithmetic_analysis": {
+      "source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+      "job": "1a1cf1c9b7e-2564-1997",
+      "comparisons": 276,
+      "mismatches": 0,
+      "stdout_sha256": "c563f6d1559d7db10ce7514ca4d10d29bda0a24c5bef541d0844fd4677886161",
+      "analysis_path": "evidence/report-readonly-analysis-20261112/report-projection.stdout.json"
+    }
+  },
+  "validated_implementations": [
+    {
+      "pr": 6192,
+      "head": "1ac802f4b1196fe15c5d3ae730207ff585d41250",
+      "tree": "f004cd0cf481be6a47a3f1698d6a4820b7bca30d",
+      "hosted_run": 43173410889,
+      "rust": {
+        "job": 131031841067,
+        "passed": 106,
+        "failed": 0,
+        "ignored": 0,
+        "filtered_out": 0
+      },
+      "python": {
+        "job": 131031840903,
+        "tests": 119,
+        "status": "OK"
+      },
+      "native_boundary_vectors": 11,
+      "max_q24_delta": 0,
+      "allowed_q24_delta": 1
+    },
+    {
+      "pr": 6198,
+      "head": "52f936df6e7d3f55e65c133dd7d9c9d16ca699a2",
+      "tree": "a04bf46d1fd4aaeeeaa353a47c850a11c7088509",
+      "hosted_run": 43174070320,
+      "rust": {
+        "job": 131033956660,
+        "passed": 106,
+        "failed": 0,
+        "ignored": 0,
+        "filtered_out": 0
+      },
+      "python": {
+        "job": 131033956955,
+        "tests": 129,
+        "status": "OK"
+      },
+      "wrapper_actor_calls": 0
+    },
+    {
+      "pr": 6221,
+      "source": "2d1f610f0f2abf6dc5d7d903243621376697b407",
+      "tree": "93ada9e27db2eb991e21e97f4554d3963de1ccc6",
+      "job": "1a1cf230cd2-2564-19a4",
+      "tests": 26,
+      "passed": 26,
+      "failed": 0,
+      "source_unchanged": true,
+      "source_inventory_sha256": "ea34e33bb72745c89e606620ec13287a13b85cec2e5b72665e70de85e7ea237f",
+      "full_original_logs_archived": true,
+      "hosted_equivalence": false
+    },
+    {
+      "pr": 6240,
+      "source": "2411261240f0f38bd0d60e2ba158304f918b8ce1",
+      "tree": "da633e55b6783b46f65a3e2c55d0ec753bd09c80",
+      "job": "1a1cf734db5-2564-1a2c",
+      "tests": 200,
+      "passed": 200,
+      "failed": 0,
+      "source_unchanged": true,
+      "source_inventory_sha256": "3598451bd2e7338dbc086a7233251e9524aa7d74b6004ef22f24dae34eba8735",
+      "full_original_logs_archived": true,
+      "full_hosted_suite_proven": false,
+      "affected_suite_history": {
+        "job": "1a1cf222fed-2564-19a1",
+        "tests": 19,
+        "passed": 19,
+        "failed": 0,
+        "source_inventory_sha256": "ec5d4eb7b4ee660c188cf967133adc5f39eb616b6311d7052106295c97036e0c"
+      },
+      "suites": 28,
+      "skipped": 0,
+      "source_inventory_scope_files": 384,
+      "source_inventory_scope": "All tracked scripts Python, qualification CTRL analysis Python, plus five pinned workflow/configuration inputs selected by the original driver. This is not a full repository payload inventory.",
+      "full_original_tar_members": 149,
+      "root_independent_archive_verification": true,
+      "ordinary_exact_version_contract_suite_proven": true,
+      "runtime": {
+        "python": "3.12.14",
+        "numpy": "2.3.5",
+        "pillow": "11.3.0",
+        "ruff": "0.15.13",
+        "uid": 1000,
+        "hosted": false
+      },
+      "evidence": "../ctrl-real-comparison-20261112/analysis/pr6240-full-contract-v4/",
+      "prior_attempts": [
+        {
+          "job": "1a1cf50d48a-2564-19ea",
+          "attempt": "v1",
+          "suites": 28,
+          "passed": 199,
+          "failed": 1,
+          "cause": "External PYTHONVERBOSE propagated stderr into an otherwise exit0 CLI test."
+        },
+        {
+          "job": "1a1cf5d9c1b-2564-1a03",
+          "attempt": "v2",
+          "suites": 0,
+          "cause": "External help-string guard failed before managed Python installation."
+        },
+        {
+          "job": "1a1cf6ba6ec-2564-1a1c",
+          "attempt": "v3",
+          "suites": 0,
+          "cause": "Exact runtime installed, but external driver reused an expired ephemeral uv executable."
+        }
+      ]
+    },
+    {
+      "pr": 6213,
+      "source": "088aadac3c88a5be6299ece1561d1ed54dd7d494",
+      "tree": "e338a817d39a7269ea815bf4b1a594d9985779d9",
+      "job": "1a1cf3462ea-2564-19c4",
+      "source_contract_tests_passed": 376,
+      "owner_evidence_parser_tests_passed": 16,
+      "result_provenance": "Root retrieved complete original source and parser logs plus execution records; exact bytes, SHA256 and Git blobs verified.",
+      "native_compile": "NOT_PROVEN",
+      "ordinary_adopt": 0,
+      "ordinary_evaluated_no_update": 0,
+      "ordinary_complete_cold_recovery": 0,
+      "previous_failure_retained": {
+        "source": "7efec4fff19ce49b3dceb9d704ac9559a8d92c54",
+        "source_tests": 376,
+        "passed": 375,
+        "failed": 1,
+        "parser_passed": 16,
+        "fix": "One stale five-caller expected tuple corrected to the six actual original callers."
+      },
+      "full_raw_test_logs_archived": true,
+      "original_source_log_bytes": 85110,
+      "original_source_log_sha256": "2cbbebf1c1dfb55cec47339f1bcf42bd5800376d4f01cf95014acb6b460bc1ed",
+      "full_inventory_payload_archive": "COMPLETE: three original gzip parts reassembled from GitHub, CRC32/ISIZE and full SHA256 independently verified by root; 14,753 original tracked-file records parsed.",
+      "archive_manifest": "../evaluated-current-read-20261112/source-closure-088aada/ARCHIVE_MANIFEST.json",
+      "current_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+      "current_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+      "current_native_status": "NOT_DISPATCHED; HOLD_MATCHING_CLANG_RESOURCE_PREFLIGHT",
+      "current_source_gate_status": "FOUR_SOURCE_GATES_PASSED",
+      "previous_source_results_transferred": false,
+      "full_inventory_original_gzip_bytes": 762747,
+      "full_inventory_original_gzip_sha256": "ce499f30331e13626ae232034e0b18c0df4fc15e9c9201d96ca49e0b2a182d55",
+      "full_inventory_root_verification": "../evaluated-current-read-20261112/source-closure-088aada/ROOT_INVENTORY_VERIFICATION.json",
+      "current_validation": {
+        "job": "1a1cfb4675b-2564-1a8e",
+        "key": "owner6213-ai395-1026bd0-source-caller-862531d11598-v2",
+        "request_digest": "3fa029c9aff14aa3aca420ef415fe8ae6f644c48561801ffef9972904965d6bb",
+        "status": "PASSED",
+        "source_passed": 398,
+        "parser_passed": 16,
+        "caller_self_test_exit": 0,
+        "full_caller_verify_exit": 0,
+        "previous_results_transferred": false,
+        "previous_attempt": {
+          "job": "1a1cfa1d75d-2564-1a75",
+          "source": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+          "driver_exit": 2,
+          "fetch_exit": 128,
+          "stages_executed": 0,
+          "failure": "curl56 connection reset/incomplete Git pack",
+          "historical_registry_read_timeouts_preserved": true,
+          "subsequent_registry_terminal": "Root read original later registry: failed exit2, terminal_publication_confirmed=true, durable complete stdout691B/stderr0; original earlier UNKNOWN read errors preserved."
+        },
+        "full_caller_verify_elapsed_seconds": 898.0422165810596,
+        "full_caller_log_bytes": 251315,
+        "full_caller_log_sha256": "c4c6e37e012fbd7a1a47afff7d3d313f963276eac94ade0a609475afb6fe4651",
+        "caller_receipt_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+        "caller_boundaries": 537,
+        "privileged_inventory": 537,
+        "protected_files": 386,
+        "rust_files_scanned": 6597,
+        "authority_granted": false,
+        "tracked_files": 15046,
+        "source_unchanged": true,
+        "source_inventory_sha256": "8de3eb210fd92cbf1810930ce7a86cca766689ca188386d3a8bdde677a21e6e2",
+        "full_original_core_text_artifacts_root_verified": 26,
+        "full_inventory_payload_root_verified": false,
+        "root_readback": "../evaluated-current-read-20261112/source-caller-1026bd0-attempt2/ROOT_COMPLETE_READBACK.json"
+      },
+      "previous_0e_validation": {
+        "source": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+        "source_methods": 398,
+        "explicit_ok_methods": 385,
+        "distinct_affected_methods": 13,
+        "raw_failure_records": 16,
+        "raw_error_records": 5,
+        "original_wrapper_count_retained": "377 passed / 21 failed counts subTest records, not distinct failed methods",
+        "parser_passed": 16,
+        "native_job": "1a1cf610a94-2564-1a0a",
+        "native_exit": 1,
+        "source_prerequisite_failed": true,
+        "helper_build_started": false,
+        "ordinary_native_started": false
+      },
+      "previous_620_validation": {
+        "source": "620235b1e74a9bb9f6dda230cc38297b59ddf03c",
+        "tree": "bbc0f682eb9856d0bae9751dbe516e3660765b8a",
+        "job": "1a1cf762917-2564-1a36",
+        "source_contract_tests_passed": 398,
+        "parser_tests_passed": 16,
+        "caller_self_test_exit": 0,
+        "full_caller_verify_exit": 1,
+        "full_caller_verify_elapsed_seconds": 346.2550980078522,
+        "full_caller_failure": "learning_source_bound_training_stage_readback unexpected actual cell_q24_training_command_readback_service.rs caller",
+        "full_caller_log_bytes": 192,
+        "full_caller_log_sha256": "39ca8695a50ab0408e13e693c7bfb4563e989d3b1a13e07ec3a01c18fc8ca139",
+        "source_before_after_unchanged": true,
+        "native_build_started": false,
+        "full_diagnostic": {
+          "job": "1a1cf87d54c-2564-1a51",
+          "boundaries": 537,
+          "verified": 525,
+          "rejected": 12,
+          "protected_files": 386,
+          "protected_errors": 0,
+          "qualification_gate": false,
+          "original_source_index": {
+            "raw_bytes": 1353660,
+            "raw_sha256": "6d89df794cea9667a3fb77bf4af72d3e96ab554ecbfdbbe61adbf4c96e82a8f3",
+            "records": 6597,
+            "root_independent_full_decode": true,
+            "verification": "../evaluated-current-read-20261112/caller-diagnostic-620235b/ROOT_SOURCE_INDEX_VERIFICATION.json"
+          }
+        },
+        "complete_original_text_artifacts": 33,
+        "full_tracked_inventory_records": 14886,
+        "full_inventory_gzip_bytes": 769626,
+        "full_inventory_gzip_sha256": "9b3937132faa2814443672b78a1676f700406dd3a3abbada5c64b1692bfb8560",
+        "full_inventory_raw_sha256": "b0c607c7db8b936e7629323e8688e4f836bee8b995024fcc26cacd1b41662f75",
+        "root_independent_inventory_decode": true
+      },
+      "current_caller_closure_fix": {
+        "boundary_rows": 12,
+        "actual_caller_edges_added": 21,
+        "qa_files": 11,
+        "expected_tuples_updated": 26,
+        "production_Rust_changed": false,
+        "checker_changed": false,
+        "classes_tests_rejection_mutations_unchanged": true,
+        "root_review": "../evaluated-current-read-20261112/caller-closure-639f894/ROOT_REVIEW.json"
+      },
+      "prepared_native": {
+        "key": "owner6213-ai395-1026bd0-ordinary-native-862531d11598-v1",
+        "request_blob": "4b5d2eb3b7f138c26ffc63209231f40c57dca5ea",
+        "admitted": false,
+        "hold": "Actual matching Clang21 resource dependency preflight pending; source four gates passed."
+      }
+    }
+  ],
+  "runtime_environment": {
+    "host": "ai395",
+    "operator_uid": 1000,
+    "python": "3.12.16",
+    "numpy": "1.26.4",
+    "pillow": "12.0.0",
+    "hosted_environment_same": false,
+    "hosted_python": "3.12.14",
+    "hosted_numpy": "2.3.5",
+    "hosted_pillow": "11.3.0",
+    "junit": "not_emitted_by_original_unittest_commands",
+    "module_origin_probe_scope": "The archived19/26 runtime.log origins came from a separate pre-execution probe with the same cwd/env, not an in-test-PID import trace. Original commands and clean source inventories bind the actual tests separately.",
+    "scope": "Historical 19/26 affected-suite executions. The full200 v4 exact-version ordinary runtime is separately recorded under PR6240."
+  },
+  "upstream_replay": {
+    "mem11_v3": {
+      "publication_commit": "a21bea479bc51726da4a6e5ee15e4b1911f84716",
+      "execution_source": "fa3b62440f3dbe21e904dfbd390d346d03322b7e",
+      "original_key": "mem11-first-local-generation-20261112-21bb-v3",
+      "generation_status": "RETURNED",
+      "model_calls": 1,
+      "exit_code": 0,
+      "raw_files_hash_verified": 7,
+      "source_unchanged": true,
+      "original_registry_status": "UNKNOWN",
+      "original_job_id": null,
+      "earlier_unknown_identities_preserved": true,
+      "scored_memory_benefit_episodes": 0
+    },
+    "act2": {
+      "controlled_published_head": "ba7d4a55bce09be44bf03fd86504f129220c513a",
+      "controlled_scope": "Same UID/boot, controlled original-invocation and GRU state recovery; not general task efficacy.",
+      "native_seed_failure": {
+        "pr": 6127,
+        "source": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+        "run": 43163424939,
+        "job": 130999664797,
+        "distinct_tests": 1,
+        "failed": 1,
+        "attempts": 2
+      },
+      "fix": {
+        "pr": 6243,
+        "head": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+        "tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+        "static_review": true,
+        "required_methods": 6,
+        "dedicated_runs": [
+          {
+            "run": 43200801767,
+            "job": 131123414182,
+            "head": "8514d4754790e642f5f083d56696921b0628a313",
+            "status": "completed",
+            "conclusion": "failure",
+            "caller_elapsed_seconds": 120.105523659,
+            "caller_exit": 124,
+            "build_and_six_methods": "skipped",
+            "full_original_job_log_bytes": 82203,
+            "root_full_log_verified": true
+          },
+          {
+            "run": 43201926673,
+            "head": "7d31bf9677748330ae17efe964de48d98ba5e542",
+            "status": "queued",
+            "observed_at_utc": "2026-11-12T12:37:00Z"
+          },
+          {
+            "run": 43217423865,
+            "head": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+            "status": "pending",
+            "observed_at_utc": "2026-11-12T12:37:00Z",
+            "jobs_observed": 0
+          }
+        ],
+        "ordinary_native": "V3_FAILED_BUILD_MISSING_CLANG_BUILTIN_HEADER; CALLER_PASSED",
+        "cancelled_earlier_architecture": {
+          "run": 43198310744,
+          "job": 131114867114,
+          "status": "cancelled",
+          "log_bytes": 394524,
+          "preserved": true
+        },
+        "ordinary_job": "1a1cfbdbae4-2564-1a9a",
+        "ordinary_idempotency_key": "neuro4-act6243-native-5fc34e1ac0f1-862531d-v3",
+        "ordinary_request_digest": "794221f1072dbc9d836a6fc603f98c0f895b1558cf81e7b4f1d9758216973170",
+        "ordinary_request_blob": "e2b70716644eef0896fda062fc56ef44c64bce34",
+        "ordinary_driver_blob": "247f17bb782d2140d41133eeea17bbf8f7eb2973",
+        "ordinary_cpu_quota_percent": 200,
+        "ordinary_memory_max_bytes": 34359738368,
+        "ordinary_test_retries": 0,
+        "ordinary_readiness_probe_status": "Actual v3 RESOURCE_AT_START and tool/source records verified; original separate read timeout retained.",
+        "ordinary_tests_proven": 0,
+        "previous_attempts": [
+          {
+            "attempt": 1,
+            "source": "7d31bf9677748330ae17efe964de48d98ba5e542",
+            "job": "1a1cf8ed400-2564-1a56",
+            "status": "FAILED_V8_PREPARATION",
+            "error": "RemoteDisconnected at official checksum GET",
+            "caller_started": false,
+            "build_started": false,
+            "rust_methods_executed": 0
+          },
+          {
+            "attempt": 2,
+            "source": "7d31bf9677748330ae17efe964de48d98ba5e542",
+            "job": "1a1cfa11c7d-2564-1a72",
+            "status": "FAILED_CALLER_TIMEOUT",
+            "v8_preparation_exit": 0,
+            "v8_preparation_elapsed_seconds": 23.801552831195295,
+            "caller_elapsed_seconds": 120.05062907584943,
+            "caller_exit": 124,
+            "caller_returncode": -9,
+            "caller_log_bytes": 0,
+            "build_started": false,
+            "rust_methods_executed": 0,
+            "format_started": false,
+            "tracked_files_unchanged": 13722
+          }
+        ],
+        "caller_budget_fix": {
+          "old_seconds": 120,
+          "new_seconds": 4800,
+          "outer_seconds": 5400,
+          "one_workflow_line_only": true,
+          "origin": "120s was introduced by this work in8514;4800 is a separate owner620 dedicated-checker budget precedent, not same-source gate evidence",
+          "checker_tests_and_failure_handling_unchanged": true
+        },
+        "ordinary_caller_exit": 0,
+        "ordinary_caller_elapsed_seconds": 154.42577228997834,
+        "ordinary_build_exit": 101,
+        "ordinary_build_elapsed_seconds": 22.12454494088888,
+        "ordinary_build_log_sha256": "3794841c799304fbff428ae9be1de6f7ddc953d39a40e353137c0cff04514bee",
+        "ordinary_not_run": [
+          "positive",
+          "five regressions",
+          "named-case receipt",
+          "format"
+        ],
+        "ordinary_source_inventory_unchanged": true,
+        "ordinary_source_inventory_count": 13722,
+        "initial_ack_timeout_reconciled_same_key": true,
+        "build_failure": "aws-lc-sys0.46.0 bindgen via Ubuntu Clang21.1.8: openssl/base.h cannot find stddef.h",
+        "clang_diagnostic": {
+          "job": "1a1cfc87ac7-2564-1ab4",
+          "loaded_library": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+          "sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+          "version": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+          "package": "libclang1-21 1:21.1.8-6ubuntu1",
+          "matching_resource_package_installed": false,
+          "root_full_output_verified": true,
+          "resource_recovery": "In progress, user-local official package/hash-verified extraction only; no successful new build yet."
+        }
+      }
+    }
+  },
+  "moving_bases": {
+    "observed_at_utc": "2026-11-12T11:09:00Z",
+    "owner_upstream": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+    "ctrl_upstream": "928a2603a7911cb5e8db439b7b814b9e033b6007",
+    "affected_prs": [
+      6213
+    ],
+    "merge_integration": "COMPLETED_FOR_EXACT_cc22",
+    "prior_test_results_do_not_qualify_new_code": true,
+    "raw_github_merge_states": {
+      "6213": {
+        "mergeable": true,
+        "observation": "post-update PR metadata; exact two-parent integration checked"
+      },
+      "6221": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      },
+      "6240": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      },
+      "6243": {
+        "mergeable": true,
+        "mergeable_state": "unstable"
+      }
+    },
+    "note": "Actual branch ref cc22 was read independently of the stale PR base.sha. Both merge parents/tree and all 41 changed paths were checked before the leased update. Full caller proof later found a real missing manifest registration; no source/native result is inherited.",
+    "owner_merged_head": "1026bd09bc16e0035e8ea28053def5731d0a235e",
+    "owner_merged_tree": "03dee89cec18fc7275755a77042b973e1d6728a6",
+    "owner_ref_update_leased_against": "0e4617b7e86e7394aff6e1994bbb9f637f84a8b2",
+    "latest_observed_upstream": "639f894e088cdc5b30b65ed3732dcaa0a2fbe004",
+    "latest_observed_at_utc": "2026-11-12T11:36:26Z",
+    "latest_upstream_integration": "COMPLETED exact620+639 into1026; root code/evidence byte review and new exact-source four gates passed. No prior-source results transferred."
+  },
+  "remaining_gates": [
+    "Original source/exposure custody",
+    "Original clock/domain/boot attestation",
+    "Persistent cadence and CURRENT CAS consumption",
+    "Complete ordinary owner bridge and native execution",
+    "T efficacy",
+    "R independent episodic/skill replay efficacy",
+    "V matched information/checker efficacy",
+    "L plasticity and retention",
+    "Independent source B and different ordinary C",
+    "Power and complete denominators",
+    "Complete life-cycle costs",
+    "Ordinary different-worker/boot cold recovery"
+  ],
+  "wrapper_actor_calls": null,
+  "representation_notes": [
+    "Original JSON text with nanosecond integers is byte-preserved, never parse/reserialized as original evidence.",
+    "Gzip originals are independently decoded, CRC32/ISIZE and full raw SHA256 verified by root.",
+    "Source snapshots renamed .py.txt preserve bytes; mapping records original path.",
+    "The earlier RETRIEVAL_LIMITS records a historical failed direct read. Full reconstruction later succeeded and is recorded separately.",
+    "Original raw NoUpdate/adoption labels are preserved without promoting them to an authenticated owner decision."
+  ],
+  "git_binary_persistence": {
+    "status": "VERIFIED",
+    "record": "evidence/terminal-20261112/GIT_PERSISTENCE_VERIFIED.json",
+    "same_original_bytes": true,
+    "readback_commit": "e99ef9cca7e2185426dd91a136ad17ad0e765ea3"
+  },
+  "wrapper_real_asset_validation": {
+    "job": "1a1cf673fde-2564-1a15",
+    "key": "neuro4-rv-v2-entry-assets-read-862531d-v1",
+    "status": "succeeded",
+    "exit_code": 0,
+    "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "wrapper_blob": "94e819d579232597de08a5c239a78e9d40768416",
+    "original_source_pins": 83,
+    "source_plus_driver_analysis_records": 85,
+    "observed_input_assets": 16,
+    "actual_checks": 6,
+    "checks": "Pinned original wrapper load_native/validate_partitions over real completed run-v2 assets, original native thaw/load/cold-record/collection/retained-plan validators",
+    "frozen_sha256": "7679b083343d6de9d7b3e1f1acc4f3252b044de36deafadb289ff532c7de7497",
+    "stdout_bytes": 19447,
+    "stdout_sha256": "6d766ffeda9c1f48be08422f8fb3427ec5430a30a30fb63ccc2f7bf3b3e75d37",
+    "root_verified_original_files": 11,
+    "process_writes": 0,
+    "subprocesses": 0,
+    "network": 0,
+    "new_fresh_process_cold_load": 0,
+    "new_collection_fit_export": 0,
+    "formal_wrapper_freeze": 0,
+    "B_C_START": 0,
+    "actor_calls": 0,
+    "calibration_complete": false,
+    "full_cost_observed": false,
+    "evidence": "evidence/rv-v2-entry-assets-20261112/",
+    "source_confirmation": false
+  },
+  "latest_act_admission_observed_at_utc": "2026-11-12 13:02:08 UTC",
+  "wrapper_actor_calls_scope": "B two native macro executions completed; C two-effect exact request admitted, result not yet read. Historical fixture/probe/freeze zero counts remain scoped to original executions. Total cannot yet be called four completed.",
+  "wrapper_development_execution": {
+    "scope": "Existing exposed development sources; not independent B/C qualification",
+    "independent_new_sources": 0,
+    "source": "3c94ea8252619ba3fa1f1821bef96a7f2b7f66fd",
+    "freeze": {
+      "job": "1a1cf9dcdb3-2564-1a6a",
+      "status": "FROZEN_VERIFIED_NO_ACTORS",
+      "raw_sha256": "7fd4d8fcfaa1dd133adf667dccab28b1f1e44e4e3e84973a32ee4561e039509b",
+      "raw_bytes": 5296,
+      "root_verified_original_files": 12,
+      "input_records_unchanged": 96,
+      "source_pins_per_plan": 83,
+      "plans": 2,
+      "deployment_files": 4,
+      "actor_calls_in_freeze": 0,
+      "new_effect_ids": 4,
+      "old_effect_ids": 576,
+      "new_old_id_intersection": 0
+    },
+    "B": {
+      "status": "RECORDED",
+      "job": "1a1cfb71a25-2564-1a94",
+      "key": "neuro4-rv-bc-phase-b-862531d-v1",
+      "request_digest": "11616e6d2932422b17d6d339ee0c8b60736aeeeb7b5e42ebeceefaa3b188110f",
+      "planned_effects": 2,
+      "completed": 2,
+      "failed": 0,
+      "unknown": 0,
+      "supervisor": "succeeded exit0",
+      "not_started": 0,
+      "incomplete": 0,
+      "READ": 0,
+      "STOP": 2,
+      "qualities": [
+        0,
+        0
+      ],
+      "task_costs": [
+        0.014269793331623077,
+        0.013473927038721741
+      ],
+      "original_inputs_unchanged": true,
+      "native_report_canonical_sha256": "bf29a1f92767878d9552fd55b7dde361ae47c87d869df24d3d7a7ec75ea8069b",
+      "root_full_original_stdout_status_report_terminals_realizations_verified": true,
+      "source_before_file_info_sha256": "d234bca7cea115067487df09e4ae30742ba63b2ce206574f582e3a41005b51da",
+      "source_after_file_info": "PENDING"
+    },
+    "C": {
+      "status": "ADMITTED",
+      "planned_effects": 2,
+      "job": "1a1cfd835b7-2564-1ac5",
+      "key": "neuro4-rv-bc-phase-c-862531d-v1",
+      "request_digest": "ad3de85d4a2e9cdd3fd9e7ac1f42cc89f0cf57db65bd9a95b067a2995fb0dfae",
+      "request_blob": "05cdd4100337fd20f943baa3f5dbde31ec469830",
+      "completed": null,
+      "root_exact_request_reviewed": true
+    },
+    "calibration_complete": false,
+    "full_cost_observed": false,
+    "owner_decision": null,
+    "qualification": "HOLD_NOT_EVALUATED",
+    "evidence": "evidence/rv-bc-wrapper-development-20261112/"
+  },
+  "current_source_results_transfer": false,
+  "latest_followup_observed_at_utc": "2026-11-12 13:02:08 UTC"
+}

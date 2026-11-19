@@ -10,8 +10,7 @@ import {
 
 const digest = "ab".repeat(32);
 const runtimeSchema = "hepta.ui-control.local-runtime-observation.v1";
-const operationSchema =
-  "hepta.ui-control.local-operation-proposal-input.v1";
+const operationSchema = "hepta.ui-control.local-operation-proposal-input.v1";
 
 function canonicalJson(value) {
   const entries = Object.entries(value).sort(([left], [right]) =>

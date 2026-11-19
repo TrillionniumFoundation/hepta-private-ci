@@ -1,0 +1,2467 @@
+6-11-12T21:51:25.7584848Z    |
+2026-11-12T21:51:25.7584934Z 
+2026-11-12T21:51:25.7585040Z warning: large size difference between variants
+2026-11-12T21:51:25.7585361Z   --> hepta-agentd/src/authority_host_learning_resident_stages.rs:25:1
+2026-11-12T21:51:25.7585642Z    |
+2026-11-12T21:51:25.7585840Z 25 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+2026-11-12T21:51:25.7586155Z 26 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+2026-11-12T21:51:25.7586538Z    | |     ---------------------------------------------- the second-largest variant contains at least 2920 bytes
+2026-11-12T21:51:25.7586924Z 27 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:51:25.7587301Z    | |     ------------------------------------------------ the largest variant contains at least 3184 bytes
+2026-11-12T21:51:25.7587787Z 28 | | }
+2026-11-12T21:51:25.7588034Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:51:25.7588328Z    |
+2026-11-12T21:51:25.7588743Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7589343Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7589742Z    |
+2026-11-12T21:51:25.7589952Z 27 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:51:25.7590415Z 27 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+2026-11-12T21:51:25.7590678Z    |
+2026-11-12T21:51:25.7590765Z 
+2026-11-12T21:51:25.7590867Z warning: large size difference between variants
+2026-11-12T21:51:25.7591185Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+2026-11-12T21:51:25.7591471Z    |
+2026-11-12T21:51:25.7591639Z 72 | / enum ClientOriginV3 {
+2026-11-12T21:51:25.7591833Z 73 | |     Fresh,
+2026-11-12T21:51:25.7592055Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7592391Z 74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:25.7592790Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:51:25.7593115Z 75 | | }
+2026-11-12T21:51:25.7593296Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:51:25.7593528Z    |
+2026-11-12T21:51:25.7593882Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7594475Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7594873Z    |
+2026-11-12T21:51:25.7595095Z 74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:25.7595450Z 74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:51:25.7595735Z    |
+2026-11-12T21:51:25.7595813Z 
+2026-11-12T21:51:25.7595920Z warning: large size difference between variants
+2026-11-12T21:51:25.7596235Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+2026-11-12T21:51:25.7596642Z    |
+2026-11-12T21:51:25.7596811Z 77 | / enum ResidentExchangeV3 {
+2026-11-12T21:51:25.7597055Z 78 | |     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:51:25.7597413Z    | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+2026-11-12T21:51:25.7597905Z 79 | |     Refused(Error),
+2026-11-12T21:51:25.7598163Z    | |     -------------- the second-largest variant contains at least 48 bytes
+2026-11-12T21:51:25.7598446Z 80 | | }
+2026-11-12T21:51:25.7598624Z    | |_^ the entire enum is at least 1480 bytes
+2026-11-12T21:51:25.7598837Z    |
+2026-11-12T21:51:25.7599186Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7599781Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7600167Z    |
+2026-11-12T21:51:25.7600361Z 78 -     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:51:25.7600670Z 78 +     Observed(Box<RootResidentLearningObservationV3>),
+2026-11-12T21:51:25.7600922Z    |
+2026-11-12T21:51:25.7601005Z 
+2026-11-12T21:51:25.7601109Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7601443Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+2026-11-12T21:51:25.7601743Z     |
+2026-11-12T21:51:25.7601927Z 131 | /     pub fn recover_original_root_stream(
+2026-11-12T21:51:25.7602172Z 132 | |         stream: UnixStream,
+2026-11-12T21:51:25.7602404Z 133 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:25.7602643Z 134 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:25.7602854Z ...   |
+2026-11-12T21:51:25.7603022Z 140 | |         lifetime: Duration,
+2026-11-12T21:51:25.7603236Z 141 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7603441Z     | |____________________________^
+2026-11-12T21:51:25.7603641Z     |
+2026-11-12T21:51:25.7604085Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7604824Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:51:25.7605126Z 
+2026-11-12T21:51:25.7605293Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7605767Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+2026-11-12T21:51:25.7606058Z     |
+2026-11-12T21:51:25.7606220Z 159 | /     fn bind(
+2026-11-12T21:51:25.7606404Z 160 | |         stream: UnixStream,
+2026-11-12T21:51:25.7606628Z 161 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:25.7606863Z 162 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:25.7607083Z ...   |
+2026-11-12T21:51:25.7607244Z 168 | |         lifetime: Duration,
+2026-11-12T21:51:25.7607449Z 169 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7607808Z     | |____________________________^
+2026-11-12T21:51:25.7608005Z     |
+2026-11-12T21:51:25.7608370Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7608717Z 
+2026-11-12T21:51:25.7608826Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7609162Z   --> hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+2026-11-12T21:51:25.7609464Z    |
+2026-11-12T21:51:25.7609647Z 20 | /     pub fn recover_original_model_root_stream(
+2026-11-12T21:51:25.7609898Z 21 | |         stream: UnixStream,
+2026-11-12T21:51:25.7610125Z 22 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:25.7610359Z 23 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:25.7610578Z ...  |
+2026-11-12T21:51:25.7610739Z 33 | |         lifetime: Duration,
+2026-11-12T21:51:25.7610947Z 34 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7611162Z    | |____________________________^
+2026-11-12T21:51:25.7611353Z    |
+2026-11-12T21:51:25.7611808Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7612156Z 
+2026-11-12T21:51:25.7612264Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7612535Z    --> hepta-agentd/src/cell_q24_dataset.rs:193:5
+2026-11-12T21:51:25.7612768Z     |
+2026-11-12T21:51:25.7612929Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:51:25.7613154Z 194 | |         &mut self,
+2026-11-12T21:51:25.7613375Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:25.7613643Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:51:25.7613874Z ...   |
+2026-11-12T21:51:25.7614108Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:51:25.7614463Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:51:25.7614793Z     | |________________________________________________________________^
+2026-11-12T21:51:25.7615039Z     |
+2026-11-12T21:51:25.7615390Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7615724Z 
+2026-11-12T21:51:25.7615831Z warning: large size difference between variants
+2026-11-12T21:51:25.7616122Z   --> hepta-agentd/src/circuit_evaluated_learning_read.rs:30:1
+2026-11-12T21:51:25.7616380Z    |
+2026-11-12T21:51:25.7616547Z 30 | / enum OriginalCut {
+2026-11-12T21:51:25.7616814Z 31 | |     Selection(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:25.7617230Z    | |     ----------------------------------------------------- the second-largest variant contains at least 3536 bytes
+2026-11-12T21:51:25.7617779Z 32 | |     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:25.7618214Z    | |     --------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:51:25.7618539Z 33 | | }
+2026-11-12T21:51:25.7618717Z    | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:51:25.7618944Z    |
+2026-11-12T21:51:25.7619301Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7619892Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7620290Z    |
+2026-11-12T21:51:25.7620621Z 32 -     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:25.7620964Z 32 +     NextUse(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:51:25.7621244Z    |
+2026-11-12T21:51:25.7621323Z 
+2026-11-12T21:51:25.7621428Z warning: large size difference between variants
+2026-11-12T21:51:25.7621717Z   --> hepta-agentd/src/circuit_learning_read_profile.rs:18:1
+2026-11-12T21:51:25.7621971Z    |
+2026-11-12T21:51:25.7622134Z 18 | / pub(super) enum ReadProfile {
+2026-11-12T21:51:25.7622416Z 19 | |     TrainingNoUpdate(OriginalCircuitLearningReadContextV1),
+2026-11-12T21:51:25.7622826Z    | |     ------------------------------------------------------ the second-largest variant contains at least 2496 bytes
+2026-11-12T21:51:25.7623259Z 20 | |     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:51:25.7623667Z    | |     -------------------------------------------------------- the largest variant contains at least 6016 bytes
+2026-11-12T21:51:25.7623996Z 21 | | }
+2026-11-12T21:51:25.7624187Z    | |_^ the entire enum is at least 6016 bytes
+2026-11-12T21:51:25.7624411Z    |
+2026-11-12T21:51:25.7624758Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7625389Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7625784Z    |
+2026-11-12T21:51:25.7626017Z 20 -     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:51:25.7626393Z 20 +     Evaluated(Box<OriginalCircuitEvaluatedLearningReadContextV1>),
+2026-11-12T21:51:25.7626681Z    |
+2026-11-12T21:51:25.7626766Z 
+2026-11-12T21:51:25.7626969Z warning: large size difference between variants
+2026-11-12T21:51:25.7627294Z   --> hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+2026-11-12T21:51:25.7627565Z    |
+2026-11-12T21:51:25.7627901Z 68 | / pub(super) enum Readiness {
+2026-11-12T21:51:25.7628105Z 69 | |     NotReady,
+2026-11-12T21:51:25.7628344Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7628637Z 70 | |     Ready { read: original::OriginalRead },
+2026-11-12T21:51:25.7628964Z    | |     -------------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:51:25.7629274Z 71 | | }
+2026-11-12T21:51:25.7629456Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:51:25.7629673Z    |
+2026-11-12T21:51:25.7630038Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7630637Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7631030Z    |
+2026-11-12T21:51:25.7631217Z 70 -     Ready { read: original::OriginalRead },
+2026-11-12T21:51:25.7631486Z 70 +     Ready { read: Box<original::OriginalRead> },
+2026-11-12T21:51:25.7631718Z    |
+2026-11-12T21:51:25.7631802Z 
+2026-11-12T21:51:25.7631911Z warning: large size difference between variants
+2026-11-12T21:51:25.7632219Z   --> hepta-agentd/src/circuit_evaluated_completion_readiness.rs:82:1
+2026-11-12T21:51:25.7632495Z    |
+2026-11-12T21:51:25.7632657Z 82 | / pub(super) enum Readiness {
+2026-11-12T21:51:25.7632868Z 83 | |     NotReady,
+2026-11-12T21:51:25.7633091Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7633366Z 84 | |     Ready { read: wire::OriginalRead },
+2026-11-12T21:51:25.7633686Z    | |     ---------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:51:25.7633981Z 85 | | }
+2026-11-12T21:51:25.7634153Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:51:25.7634380Z    |
+2026-11-12T21:51:25.7634724Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7635306Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7635876Z    |
+2026-11-12T21:51:25.7636057Z 84 -     Ready { read: wire::OriginalRead },
+2026-11-12T21:51:25.7636304Z 84 +     Ready { read: Box<wire::OriginalRead> },
+2026-11-12T21:51:25.7636527Z    |
+2026-11-12T21:51:25.7648247Z 
+2026-11-12T21:51:25.7648430Z warning: large size difference between variants
+2026-11-12T21:51:25.7648877Z   --> hepta-agentd/src/circuit_retained_version_client.rs:69:1
+2026-11-12T21:51:25.7649214Z    |
+2026-11-12T21:51:25.7649422Z 69 | / enum OriginalVersionValue {
+2026-11-12T21:51:25.7649708Z 70 | |     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:51:25.7650105Z    | |     -------------------------------------------------- the largest variant contains at least 216 bytes
+2026-11-12T21:51:25.7650514Z 71 | |     Progress(OriginalCircuitEvaluatedVersionProgressV1),
+2026-11-12T21:51:25.7650927Z    | |     --------------------------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:51:25.7651269Z 72 | | }
+2026-11-12T21:51:25.7651457Z    | |_^ the entire enum is at least 216 bytes
+2026-11-12T21:51:25.7651686Z    |
+2026-11-12T21:51:25.7652071Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7652677Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7653085Z    |
+2026-11-12T21:51:25.7653300Z 70 -     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:51:25.7653639Z 70 +     Readback(Box<OriginalCircuitRetainedVersionReadbackV1>),
+2026-11-12T21:51:25.7653910Z    |
+2026-11-12T21:51:25.7653997Z 
+2026-11-12T21:51:25.7654260Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7654564Z   --> hepta-agentd/src/circuit_evaluated_version_host.rs:57:5
+2026-11-12T21:51:25.7654818Z    |
+2026-11-12T21:51:25.7655011Z 57 | /     pub fn from_original_evaluated_owners(
+2026-11-12T21:51:25.7655310Z 58 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:51:25.7655622Z 59 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:51:25.7655945Z 60 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:51:25.7656204Z ...  |
+2026-11-12T21:51:25.7656372Z 66 | |         lifetime: Duration,
+2026-11-12T21:51:25.7656589Z 67 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7656816Z    | |____________________________^
+2026-11-12T21:51:25.7657013Z    |
+2026-11-12T21:51:25.7657370Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7657878Z 
+2026-11-12T21:51:25.7657997Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7658306Z   --> hepta-agentd/src/circuit_retained_version_service.rs:76:5
+2026-11-12T21:51:25.7658567Z    |
+2026-11-12T21:51:25.7658894Z 76 | /     pub async fn serve_original_ordinary(
+2026-11-12T21:51:25.7659221Z 77 | |         self: Arc<Self>,
+2026-11-12T21:51:25.7659440Z 78 | |         stream: UnixStream,
+2026-11-12T21:51:25.7659676Z 79 | |         consumer: AgentdRootAuthorityPeer,
+2026-11-12T21:51:25.7659902Z ...  |
+2026-11-12T21:51:25.7660104Z 84 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+2026-11-12T21:51:25.7660355Z 85 | |     ) -> Result<u64, Error> {
+2026-11-12T21:51:25.7660574Z    | |___________________________^
+2026-11-12T21:51:25.7660763Z    |
+2026-11-12T21:51:25.7661131Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7661476Z 
+2026-11-12T21:51:25.7661595Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7661896Z    --> hepta-agentd/src/circuit_retained_version_host.rs:183:5
+2026-11-12T21:51:25.7662158Z     |
+2026-11-12T21:51:25.7662344Z 183 | /     pub fn from_original_owners(
+2026-11-12T21:51:25.7662625Z 184 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:51:25.7663083Z 185 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:51:25.7663406Z 186 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:51:25.7663674Z ...   |
+2026-11-12T21:51:25.7663842Z 191 | |         lifetime: Duration,
+2026-11-12T21:51:25.7664058Z 192 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7664277Z     | |____________________________^
+2026-11-12T21:51:25.7664471Z     |
+2026-11-12T21:51:25.7664825Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7665161Z 
+2026-11-12T21:51:25.7665271Z warning: large size difference between variants
+2026-11-12T21:51:25.7665570Z   --> hepta-agentd/src/circuit_retained_version_profile.rs:21:1
+2026-11-12T21:51:25.7665829Z    |
+2026-11-12T21:51:25.7666002Z 21 | / pub(super) enum VersionCut {
+2026-11-12T21:51:25.7666235Z 22 | |     TrainingNoUpdate(OriginalVersionCut),
+2026-11-12T21:51:25.7666593Z    | |     ------------------------------------ the second-largest variant contains at least 6480 bytes
+2026-11-12T21:51:25.7666952Z 23 | |     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:51:25.7667284Z    | |     -------------------------------------- the largest variant contains at least 7792 bytes
+2026-11-12T21:51:25.7667585Z 24 | | }
+2026-11-12T21:51:25.7667940Z    | |_^ the entire enum is at least 7792 bytes
+2026-11-12T21:51:25.7668158Z    |
+2026-11-12T21:51:25.7668527Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7669245Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7669661Z    |
+2026-11-12T21:51:25.7669851Z 23 -     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:51:25.7670132Z 23 +     Evaluated(Box<OriginalEvaluatedVersionCut>),
+2026-11-12T21:51:25.7670380Z    |
+2026-11-12T21:51:25.7670466Z 
+2026-11-12T21:51:25.7670571Z warning: large size difference between variants
+2026-11-12T21:51:25.7670874Z    --> hepta-agentd/src/circuit_feature_current.rs:134:1
+2026-11-12T21:51:25.7671131Z     |
+2026-11-12T21:51:25.7671295Z 134 | /  enum Publication {
+2026-11-12T21:51:25.7671540Z 135 | |      Initial(PublishedNeuronGenerationInitialV1),
+2026-11-12T21:51:25.7671921Z     | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+2026-11-12T21:51:25.7672251Z 136 | |/     Update {
+2026-11-12T21:51:25.7672478Z 137 | ||         original: PublishedNeuronGenerationUpdateV1,
+2026-11-12T21:51:25.7672794Z 138 | ||         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:51:25.7673056Z 139 | ||     },
+2026-11-12T21:51:25.7673262Z     | ||_____- the largest variant contains at least 2744 bytes
+2026-11-12T21:51:25.7673502Z 140 | |  }
+2026-11-12T21:51:25.7673696Z     | |__^ the entire enum is at least 2744 bytes
+2026-11-12T21:51:25.7673918Z     |
+2026-11-12T21:51:25.7674280Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7674879Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7675281Z     |
+2026-11-12T21:51:25.7675497Z 138 -         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:51:25.7675832Z 138 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+2026-11-12T21:51:25.7676092Z     |
+2026-11-12T21:51:25.7676180Z 
+2026-11-12T21:51:25.7676282Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7676635Z    --> hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+2026-11-12T21:51:25.7676933Z     |
+2026-11-12T21:51:25.7677115Z 143 | /     pub(crate) fn require_original_member(
+2026-11-12T21:51:25.7677353Z 144 | |         &self,
+2026-11-12T21:51:25.7677716Z 145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+2026-11-12T21:51:25.7678170Z 146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+2026-11-12T21:51:25.7678422Z ...   |
+2026-11-12T21:51:25.7678622Z 151 | |         verifier: &LearningEvidenceVerifierV1,
+2026-11-12T21:51:25.7678874Z 152 | |     ) -> Result<(), Error> {
+2026-11-12T21:51:25.7679087Z     | |__________________________^
+2026-11-12T21:51:25.7679289Z     |
+2026-11-12T21:51:25.7679662Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7680008Z 
+2026-11-12T21:51:25.7680116Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7680461Z   --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+2026-11-12T21:51:25.7680755Z    |
+2026-11-12T21:51:25.7680923Z 48 | / pub(super) fn assemble(
+2026-11-12T21:51:25.7681177Z 49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:51:25.7681451Z 50 | |     ledger: &LedgerWriter,
+2026-11-12T21:51:25.7681687Z 51 | |     dataset: &DatasetSnapshotReceiptV3,
+2026-11-12T21:51:25.7681908Z ...  |
+2026-11-12T21:51:25.7682079Z 56 | |     current: u64,
+2026-11-12T21:51:25.7682307Z 57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+2026-11-12T21:51:25.7682572Z    | |______________________________________________^
+2026-11-12T21:51:25.7682799Z    |
+2026-11-12T21:51:25.7683149Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7683487Z 
+2026-11-12T21:51:25.7683588Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7683929Z    --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+2026-11-12T21:51:25.7684333Z     |
+2026-11-12T21:51:25.7684499Z 227 | /     fn read_episode(
+2026-11-12T21:51:25.7684742Z 228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:51:25.7685025Z 229 | |         ledger: &LedgerWriter,
+2026-11-12T21:51:25.7685284Z 230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+2026-11-12T21:51:25.7685542Z ...   |
+2026-11-12T21:51:25.7685710Z 236 | |         current: u64,
+2026-11-12T21:51:25.7685935Z 237 | |     ) -> Result<Episode<'a>, Error> {
+2026-11-12T21:51:25.7686159Z     | |___________________________________^
+2026-11-12T21:51:25.7686363Z     |
+2026-11-12T21:51:25.7686712Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7687044Z 
+2026-11-12T21:51:25.7687297Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:51:25.7687842Z    --> hepta-agentd/src/circuit_task_source_codec.rs:508:36
+2026-11-12T21:51:25.7688094Z     |
+2026-11-12T21:51:25.7688311Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:51:25.7688664Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:51:25.7688952Z     |
+2026-11-12T21:51:25.7689330Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:51:25.7689865Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:51:25.7690112Z 
+2026-11-12T21:51:25.7690219Z warning: large size difference between variants
+2026-11-12T21:51:25.7690526Z   --> hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+2026-11-12T21:51:25.7690785Z    |
+2026-11-12T21:51:25.7690982Z 17 | / pub(super) enum OriginalCommandEvidenceV1 {
+2026-11-12T21:51:25.7691249Z 18 | |     Training(OriginalTrainingReadbackV1),
+2026-11-12T21:51:25.7691596Z    | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+2026-11-12T21:51:25.7691948Z 19 | |     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:51:25.7692266Z    | |     -------------------------------------- the largest variant contains at least 8776 bytes
+2026-11-12T21:51:25.7692687Z 20 | | }
+2026-11-12T21:51:25.7692875Z    | |_^ the entire enum is at least 8776 bytes
+2026-11-12T21:51:25.7693092Z    |
+2026-11-12T21:51:25.7693453Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7694055Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7694445Z    |
+2026-11-12T21:51:25.7694629Z 19 -     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:51:25.7694913Z 19 +     Selection(Box<OriginalSelectionReadbackV1>),
+2026-11-12T21:51:25.7695153Z    |
+2026-11-12T21:51:25.7695234Z 
+2026-11-12T21:51:25.7695344Z warning: large size difference between variants
+2026-11-12T21:51:25.7695644Z   --> hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+2026-11-12T21:51:25.7695920Z    |
+2026-11-12T21:51:25.7696085Z 41 | / enum Origin {
+2026-11-12T21:51:25.7696259Z 42 | |     Fresh,
+2026-11-12T21:51:25.7696499Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7696860Z 43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:51:25.7697327Z    | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+2026-11-12T21:51:25.7697778Z 44 | | }
+2026-11-12T21:51:25.7697957Z    | |_^ the entire enum is at least 656 bytes
+2026-11-12T21:51:25.7698171Z    |
+2026-11-12T21:51:25.7698523Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7699213Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7699608Z    |
+2026-11-12T21:51:25.7699875Z 43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:51:25.7700307Z 43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+2026-11-12T21:51:25.7700629Z    |
+2026-11-12T21:51:25.7700716Z 
+2026-11-12T21:51:25.7700815Z warning: large size difference between variants
+2026-11-12T21:51:25.7701109Z   --> hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+2026-11-12T21:51:25.7701357Z    |
+2026-11-12T21:51:25.7701521Z 13 | / pub(super) enum Observed {
+2026-11-12T21:51:25.7701734Z 14 | |     Missing,
+2026-11-12T21:51:25.7701961Z    | |     ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7702218Z 15 | |     Pending,
+2026-11-12T21:51:25.7702431Z 16 | |     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:51:25.7702770Z    | |     ---------------------------------------- the largest variant contains at least 384 bytes
+2026-11-12T21:51:25.7703072Z 17 | | }
+2026-11-12T21:51:25.7703254Z    | |_^ the entire enum is at least 384 bytes
+2026-11-12T21:51:25.7703477Z    |
+2026-11-12T21:51:25.7703830Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7704437Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7704834Z    |
+2026-11-12T21:51:25.7705027Z 16 -     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:51:25.7705311Z 16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+2026-11-12T21:51:25.7705572Z    |
+2026-11-12T21:51:25.7705650Z 
+2026-11-12T21:51:25.7705745Z warning: this `if` has identical blocks
+2026-11-12T21:51:25.7706030Z    --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+2026-11-12T21:51:25.7706308Z     |
+2026-11-12T21:51:25.7706468Z 135 | /         {
+2026-11-12T21:51:25.7706679Z 136 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:51:25.7707064Z 137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:51:25.7707402Z     | |_________^
+2026-11-12T21:51:25.7707764Z     |
+2026-11-12T21:51:25.7707920Z note: same as this
+2026-11-12T21:51:25.7708176Z    --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+2026-11-12T21:51:25.7708449Z     |
+2026-11-12T21:51:25.7708731Z 137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:51:25.7709169Z     |  ____________________________________________________________________________________________________^
+2026-11-12T21:51:25.7709505Z 138 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:51:25.7709743Z 139 | |         } else {
+2026-11-12T21:51:25.7709931Z     | |_________^
+2026-11-12T21:51:25.7710300Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+2026-11-12T21:51:25.7710750Z     = note: `#[warn(clippy::if_same_then_else)]` on by default
+2026-11-12T21:51:25.7710939Z 
+2026-11-12T21:51:25.7711045Z warning: large size difference between variants
+2026-11-12T21:51:25.7711336Z    --> hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+2026-11-12T21:51:25.7711584Z     |
+2026-11-12T21:51:25.7711815Z  96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+2026-11-12T21:51:25.7712163Z  97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:51:25.7712582Z     | |     ----------------------------------------------------------- the largest variant contains at least 22984 bytes
+2026-11-12T21:51:25.7712926Z  98 | |     Starting,
+2026-11-12T21:51:25.7713175Z  99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+2026-11-12T21:51:25.7713722Z     | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:51:25.7714070Z 100 | |     Fenced,
+2026-11-12T21:51:25.7714247Z 101 | | }
+2026-11-12T21:51:25.7714434Z     | |_^ the entire enum is at least 22984 bytes
+2026-11-12T21:51:25.7714664Z     |
+2026-11-12T21:51:25.7715026Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7715623Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7716008Z     |
+2026-11-12T21:51:25.7716250Z  97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:51:25.7716632Z  97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+2026-11-12T21:51:25.7716922Z     |
+2026-11-12T21:51:25.7717008Z 
+2026-11-12T21:51:25.7717115Z warning: large size difference between variants
+2026-11-12T21:51:25.7717414Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+2026-11-12T21:51:25.7717771Z    |
+2026-11-12T21:51:25.7717929Z 26 | / enum Origin {
+2026-11-12T21:51:25.7718104Z 27 | |     Fresh,
+2026-11-12T21:51:25.7718323Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7718647Z 28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:51:25.7719062Z    | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+2026-11-12T21:51:25.7719391Z 29 | | }
+2026-11-12T21:51:25.7719562Z    | |_^ the entire enum is at least 1336 bytes
+2026-11-12T21:51:25.7719778Z    |
+2026-11-12T21:51:25.7720126Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7720707Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7721095Z    |
+2026-11-12T21:51:25.7721313Z 28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:51:25.7721654Z 28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+2026-11-12T21:51:25.7721924Z    |
+2026-11-12T21:51:25.7722003Z 
+2026-11-12T21:51:25.7722109Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7722521Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+2026-11-12T21:51:25.7722774Z    |
+2026-11-12T21:51:25.7722941Z 61 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:25.7723170Z 62 | |         stream: UnixStream,
+2026-11-12T21:51:25.7723407Z 63 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7723662Z 64 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7723869Z ...  |
+2026-11-12T21:51:25.7724024Z 69 | |         lifetime: Duration,
+2026-11-12T21:51:25.7724228Z 70 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7724440Z    | |____________________________^
+2026-11-12T21:51:25.7724630Z    |
+2026-11-12T21:51:25.7724980Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7725315Z 
+2026-11-12T21:51:25.7725422Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7725716Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+2026-11-12T21:51:25.7725979Z    |
+2026-11-12T21:51:25.7726148Z 82 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7726363Z 83 | |         stream: UnixStream,
+2026-11-12T21:51:25.7726591Z 84 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7726844Z 85 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7727051Z ...  |
+2026-11-12T21:51:25.7727206Z 90 | |         origin: Origin,
+2026-11-12T21:51:25.7727409Z 91 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7727613Z    | |____________________________^
+2026-11-12T21:51:25.7727887Z    |
+2026-11-12T21:51:25.7728339Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7728668Z 
+2026-11-12T21:51:25.7728771Z warning: large size difference between variants
+2026-11-12T21:51:25.7729072Z   --> hepta-agentd/src/cell_q24_model_command_root_support_tests.rs:91:1
+2026-11-12T21:51:25.7729357Z    |
+2026-11-12T21:51:25.7729520Z 91 | / enum FixtureAccess {
+2026-11-12T21:51:25.7729709Z 92 | |     Fresh,
+2026-11-12T21:51:25.7729926Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7730232Z 93 | |     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+2026-11-12T21:51:25.7730595Z    | |     ---------------------------------------------- the largest variant contains at least 2536 bytes
+2026-11-12T21:51:25.7730908Z 94 | | }
+2026-11-12T21:51:25.7731087Z    | |_^ the entire enum is at least 2536 bytes
+2026-11-12T21:51:25.7731301Z    |
+2026-11-12T21:51:25.7731639Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7732238Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7732627Z    |
+2026-11-12T21:51:25.7732828Z 93 -     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+2026-11-12T21:51:25.7733147Z 93 +     Readonly(Box<OriginalCellQ24ModelCommandReceiptV1>),
+2026-11-12T21:51:25.7733404Z    |
+2026-11-12T21:51:25.7733487Z 
+2026-11-12T21:51:25.7733581Z warning: large size difference between variants
+2026-11-12T21:51:25.7733866Z    --> hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+2026-11-12T21:51:25.7734120Z     |
+2026-11-12T21:51:25.7734292Z 141 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:25.7734511Z 142 | |/     Completed {
+2026-11-12T21:51:25.7734712Z 143 | ||         snapshot: String,
+2026-11-12T21:51:25.7734938Z 144 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7735174Z 145 | ||     },
+2026-11-12T21:51:25.7735372Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:25.7735624Z 146 | |      Missing,
+2026-11-12T21:51:25.7735850Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7736104Z ...   |
+2026-11-12T21:51:25.7736265Z 152 | |      Unavailable,
+2026-11-12T21:51:25.7736451Z 153 | |  }
+2026-11-12T21:51:25.7736783Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:25.7736998Z     |
+2026-11-12T21:51:25.7737356Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7738104Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7738493Z     |
+2026-11-12T21:51:25.7738677Z 144 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7738931Z 144 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:25.7739154Z     |
+2026-11-12T21:51:25.7739239Z 
+2026-11-12T21:51:25.7739342Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7739622Z    --> hepta-agentd/src/cell_q24_training_command.rs:234:5
+2026-11-12T21:51:25.7739864Z     |
+2026-11-12T21:51:25.7740020Z 234 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7740234Z 235 | |         stream: UnixStream,
+2026-11-12T21:51:25.7740468Z 236 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7740731Z 237 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7740956Z ...   |
+2026-11-12T21:51:25.7741185Z 242 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:51:25.7741476Z 243 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7741687Z     | |____________________________^
+2026-11-12T21:51:25.7741873Z     |
+2026-11-12T21:51:25.7742215Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7742542Z 
+2026-11-12T21:51:25.7742642Z warning: large size difference between variants
+2026-11-12T21:51:25.7743062Z    --> hepta-agentd/src/circuit_evaluated_selection_command_wire.rs:140:1
+2026-11-12T21:51:25.7743346Z     |
+2026-11-12T21:51:25.7743508Z 140 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:25.7743730Z 141 | |/     Completed {
+2026-11-12T21:51:25.7743919Z 142 | ||         snapshot: String,
+2026-11-12T21:51:25.7744142Z 143 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7744364Z 144 | ||     },
+2026-11-12T21:51:25.7744567Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:25.7744811Z 145 | |      Missing,
+2026-11-12T21:51:25.7745033Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7745286Z ...   |
+2026-11-12T21:51:25.7745440Z 151 | |      Unavailable,
+2026-11-12T21:51:25.7745615Z 152 | |  }
+2026-11-12T21:51:25.7745795Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:25.7746008Z     |
+2026-11-12T21:51:25.7746358Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7746944Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7747336Z     |
+2026-11-12T21:51:25.7747510Z 143 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7747866Z 143 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:25.7748089Z     |
+2026-11-12T21:51:25.7748172Z 
+2026-11-12T21:51:25.7748271Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7748573Z    --> hepta-agentd/src/circuit_evaluated_selection_command.rs:184:5
+2026-11-12T21:51:25.7748866Z     |
+2026-11-12T21:51:25.7749025Z 184 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7749231Z 185 | |         stream: UnixStream,
+2026-11-12T21:51:25.7749469Z 186 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7749722Z 187 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7749935Z ...   |
+2026-11-12T21:51:25.7750187Z 192 | |         retained: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+2026-11-12T21:51:25.7750494Z 193 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7750695Z     | |____________________________^
+2026-11-12T21:51:25.7750886Z     |
+2026-11-12T21:51:25.7751228Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7751682Z 
+2026-11-12T21:51:25.7751783Z warning: large size difference between variants
+2026-11-12T21:51:25.7752073Z    --> hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+2026-11-12T21:51:25.7752331Z     |
+2026-11-12T21:51:25.7752501Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:25.7752719Z 137 | |/     Completed {
+2026-11-12T21:51:25.7752915Z 138 | ||         snapshot: String,
+2026-11-12T21:51:25.7753144Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7753362Z 140 | ||     },
+2026-11-12T21:51:25.7753575Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:25.7753825Z 141 | |      Missing,
+2026-11-12T21:51:25.7754044Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7754301Z ...   |
+2026-11-12T21:51:25.7754456Z 147 | |      Unavailable,
+2026-11-12T21:51:25.7754718Z 148 | |  }
+2026-11-12T21:51:25.7754937Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:25.7755157Z     |
+2026-11-12T21:51:25.7755503Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7756094Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7756486Z     |
+2026-11-12T21:51:25.7756659Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7756908Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:25.7757135Z     |
+2026-11-12T21:51:25.7757212Z 
+2026-11-12T21:51:25.7757439Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:25.7757888Z    --> hepta-agentd/src/circuit_selection_command.rs:272:5
+2026-11-12T21:51:25.7758141Z     |
+2026-11-12T21:51:25.7758310Z 272 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:25.7758538Z 273 | |         stream: UnixStream,
+2026-11-12T21:51:25.7758780Z 274 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7759041Z 275 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7759254Z ...   |
+2026-11-12T21:51:25.7759410Z 282 | |         lifetime: Duration,
+2026-11-12T21:51:25.7759619Z 283 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7759826Z     | |____________________________^
+2026-11-12T21:51:25.7760016Z     |
+2026-11-12T21:51:25.7760354Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7760682Z 
+2026-11-12T21:51:25.7760785Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7761069Z    --> hepta-agentd/src/circuit_selection_command.rs:307:5
+2026-11-12T21:51:25.7761307Z     |
+2026-11-12T21:51:25.7761471Z 307 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7761672Z 308 | |         stream: UnixStream,
+2026-11-12T21:51:25.7761899Z 309 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7762159Z 310 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7762370Z ...   |
+2026-11-12T21:51:25.7762604Z 315 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+2026-11-12T21:51:25.7762905Z 316 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7763108Z     | |____________________________^
+2026-11-12T21:51:25.7763295Z     |
+2026-11-12T21:51:25.7763635Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7763964Z 
+2026-11-12T21:51:25.7764067Z warning: large size difference between variants
+2026-11-12T21:51:25.7764350Z    --> hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+2026-11-12T21:51:25.7764598Z     |
+2026-11-12T21:51:25.7764766Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:25.7764980Z 137 | |/     Completed {
+2026-11-12T21:51:25.7765167Z 138 | ||         snapshot: String,
+2026-11-12T21:51:25.7765398Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7765737Z 140 | ||     },
+2026-11-12T21:51:25.7765943Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:25.7766194Z 141 | |      Missing,
+2026-11-12T21:51:25.7766416Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7766671Z ...   |
+2026-11-12T21:51:25.7766832Z 147 | |      Unavailable,
+2026-11-12T21:51:25.7767013Z 148 | |  }
+2026-11-12T21:51:25.7767188Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:25.7767403Z     |
+2026-11-12T21:51:25.7767843Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7768443Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7768838Z     |
+2026-11-12T21:51:25.7769019Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7769270Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:25.7769500Z     |
+2026-11-12T21:51:25.7769584Z 
+2026-11-12T21:51:25.7769692Z warning: this function has too many arguments (11/7)
+2026-11-12T21:51:25.7769969Z    --> hepta-agentd/src/circuit_next_use_command.rs:291:5
+2026-11-12T21:51:25.7770205Z     |
+2026-11-12T21:51:25.7770371Z 291 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:25.7770602Z 292 | |         stream: UnixStream,
+2026-11-12T21:51:25.7770836Z 293 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7771089Z 294 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7771307Z ...   |
+2026-11-12T21:51:25.7771462Z 302 | |         lifetime: Duration,
+2026-11-12T21:51:25.7771773Z 303 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7771985Z     | |____________________________^
+2026-11-12T21:51:25.7772173Z     |
+2026-11-12T21:51:25.7772516Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7772850Z 
+2026-11-12T21:51:25.7772955Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7773236Z    --> hepta-agentd/src/circuit_next_use_command.rs:328:5
+2026-11-12T21:51:25.7773476Z     |
+2026-11-12T21:51:25.7773634Z 328 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7773845Z 329 | |         stream: UnixStream,
+2026-11-12T21:51:25.7774076Z 330 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7774328Z 331 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7774547Z ...   |
+2026-11-12T21:51:25.7774783Z 336 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+2026-11-12T21:51:25.7775080Z 337 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7775299Z     | |____________________________^
+2026-11-12T21:51:25.7775489Z     |
+2026-11-12T21:51:25.7775827Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7776153Z 
+2026-11-12T21:51:25.7776258Z warning: large size difference between variants
+2026-11-12T21:51:25.7776570Z    --> hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs:142:1
+2026-11-12T21:51:25.7776845Z     |
+2026-11-12T21:51:25.7777021Z 142 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:25.7777240Z 143 | |/     Completed {
+2026-11-12T21:51:25.7777434Z 144 | ||         snapshot: String,
+2026-11-12T21:51:25.7777740Z 145 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7777973Z 146 | ||     },
+2026-11-12T21:51:25.7778175Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:25.7778420Z 147 | |      Missing,
+2026-11-12T21:51:25.7778657Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7778911Z ...   |
+2026-11-12T21:51:25.7779070Z 153 | |      Unavailable,
+2026-11-12T21:51:25.7779249Z 154 | |  }
+2026-11-12T21:51:25.7779429Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:25.7779643Z     |
+2026-11-12T21:51:25.7780097Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7780688Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7781080Z     |
+2026-11-12T21:51:25.7781259Z 145 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:25.7781516Z 145 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:25.7781743Z     |
+2026-11-12T21:51:25.7781834Z 
+2026-11-12T21:51:25.7781933Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7782237Z    --> hepta-agentd/src/circuit_evaluated_next_use_command.rs:182:5
+2026-11-12T21:51:25.7782505Z     |
+2026-11-12T21:51:25.7782686Z 182 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7782901Z 183 | |         stream: UnixStream,
+2026-11-12T21:51:25.7783143Z 184 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7783404Z 185 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7783621Z ...   |
+2026-11-12T21:51:25.7783860Z 190 | |         retained: Option<OriginalCircuitEvaluatedNextUseReceiptV1>,
+2026-11-12T21:51:25.7784155Z 191 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7784362Z     | |____________________________^
+2026-11-12T21:51:25.7784553Z     |
+2026-11-12T21:51:25.7784899Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7785229Z 
+2026-11-12T21:51:25.7785327Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7785631Z    --> hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+2026-11-12T21:51:25.7785888Z     |
+2026-11-12T21:51:25.7786146Z 119 | /     fn serve_role_commands(
+2026-11-12T21:51:25.7786345Z 120 | |         &self,
+2026-11-12T21:51:25.7786526Z 121 | |         role: Role,
+2026-11-12T21:51:25.7786718Z 122 | |         stream: UnixStream,
+2026-11-12T21:51:25.7786906Z ...   |
+2026-11-12T21:51:25.7787074Z 127 | |         lifetime: Duration,
+2026-11-12T21:51:25.7787276Z 128 | |     ) -> Result<u64, Error> {
+2026-11-12T21:51:25.7787476Z     | |___________________________^
+2026-11-12T21:51:25.7787755Z     |
+2026-11-12T21:51:25.7788098Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7788420Z 
+2026-11-12T21:51:25.7788523Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7788798Z    --> hepta-agentd/src/cell_q24_material_command.rs:236:5
+2026-11-12T21:51:25.7789046Z     |
+2026-11-12T21:51:25.7789201Z 236 | /     fn bind_original_stream(
+2026-11-12T21:51:25.7789404Z 237 | |         stream: UnixStream,
+2026-11-12T21:51:25.7789643Z 238 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7789899Z 239 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7790109Z ...   |
+2026-11-12T21:51:25.7790340Z 245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:51:25.7790637Z 246 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7790837Z     | |____________________________^
+2026-11-12T21:51:25.7791022Z     |
+2026-11-12T21:51:25.7791368Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7791685Z 
+2026-11-12T21:51:25.7791790Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7792082Z   --> hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+2026-11-12T21:51:25.7792346Z    |
+2026-11-12T21:51:25.7792506Z 35 | /     pub fn from_original_stream(
+2026-11-12T21:51:25.7792724Z 36 | |         stream: UnixStream,
+2026-11-12T21:51:25.7792968Z 37 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7793224Z 38 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7793438Z ...  |
+2026-11-12T21:51:25.7793608Z 43 | |         lifetime: Duration,
+2026-11-12T21:51:25.7793815Z 44 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7794155Z    | |____________________________^
+2026-11-12T21:51:25.7794344Z    |
+2026-11-12T21:51:25.7794699Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7795025Z 
+2026-11-12T21:51:25.7795129Z warning: large size difference between variants
+2026-11-12T21:51:25.7795415Z   --> hepta-agentd/src/artifact_original_head_client.rs:31:1
+2026-11-12T21:51:25.7795671Z    |
+2026-11-12T21:51:25.7795823Z 31 | / enum Origin {
+2026-11-12T21:51:25.7795993Z 32 | |     Fresh,
+2026-11-12T21:51:25.7796214Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7796517Z 33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:51:25.7796875Z    | |     --------------------------------------------- the largest variant contains at least 304 bytes
+2026-11-12T21:51:25.7797187Z 34 | | }
+2026-11-12T21:51:25.7797364Z    | |_^ the entire enum is at least 304 bytes
+2026-11-12T21:51:25.7797585Z    |
+2026-11-12T21:51:25.7798017Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7798608Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7798997Z    |
+2026-11-12T21:51:25.7799191Z 33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:51:25.7799488Z 33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+2026-11-12T21:51:25.7799732Z    |
+2026-11-12T21:51:25.7799816Z 
+2026-11-12T21:51:25.7799921Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7800324Z   --> hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+2026-11-12T21:51:25.7800586Z    |
+2026-11-12T21:51:25.7800828Z 20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+2026-11-12T21:51:25.7801152Z 21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+2026-11-12T21:51:25.7801424Z 22 | |     dataset_cut: &LearningIterationSnapshotV1,
+2026-11-12T21:51:25.7801667Z 23 | |     scope: Digest32,
+2026-11-12T21:51:25.7801855Z ...  |
+2026-11-12T21:51:25.7802013Z 28 | |     now: u64,
+2026-11-12T21:51:25.7802196Z 29 | | ) -> Result<Admission, Error> {
+2026-11-12T21:51:25.7802403Z    | |_____________________________^
+2026-11-12T21:51:25.7802600Z    |
+2026-11-12T21:51:25.7802939Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7803271Z 
+2026-11-12T21:51:25.7803367Z warning: large size difference between variants
+2026-11-12T21:51:25.7803648Z    --> hepta-agentd/src/cell_q24_training_source.rs:146:1
+2026-11-12T21:51:25.7803896Z     |
+2026-11-12T21:51:25.7804061Z 146 | / enum OriginalMaterialSource {
+2026-11-12T21:51:25.7804309Z 147 | |     Local(Box<dyn OriginalMaterialReadback>),
+2026-11-12T21:51:25.7804658Z     | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+2026-11-12T21:51:25.7805028Z 148 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:51:25.7805385Z     | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+2026-11-12T21:51:25.7805688Z 149 | | }
+2026-11-12T21:51:25.7805865Z     | |_^ the entire enum is at least 3056 bytes
+2026-11-12T21:51:25.7806083Z     |
+2026-11-12T21:51:25.7806438Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7807028Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7807416Z     |
+2026-11-12T21:51:25.7807706Z 148 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:51:25.7808016Z 148 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+2026-11-12T21:51:25.7808272Z     |
+2026-11-12T21:51:25.7808357Z 
+2026-11-12T21:51:25.7808463Z warning: large size difference between variants
+2026-11-12T21:51:25.7808874Z    --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:180:1
+2026-11-12T21:51:25.7809143Z     |
+2026-11-12T21:51:25.7809316Z 180 | / pub(super) enum Profile {
+2026-11-12T21:51:25.7809520Z 181 | |     Legacy,
+2026-11-12T21:51:25.7809740Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:51:25.7810068Z 182 | |     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:25.7810481Z     | |     ----------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:51:25.7810807Z 183 | | }
+2026-11-12T21:51:25.7810984Z     | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:51:25.7811215Z     |
+2026-11-12T21:51:25.7811567Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7812158Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7812559Z     |
+2026-11-12T21:51:25.7812783Z 182 -     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:25.7813137Z 182 +     Evaluated(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:51:25.7813423Z     |
+2026-11-12T21:51:25.7813503Z 
+2026-11-12T21:51:25.7813616Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:51:25.7813911Z    --> hepta-agentd/src/circuit_next_use_receipt_owner.rs:150:1
+2026-11-12T21:51:25.7814171Z     |
+2026-11-12T21:51:25.7814336Z 150 | / enum ObservationLocation {
+2026-11-12T21:51:25.7814541Z 151 | |     LocalOwner,
+2026-11-12T21:51:25.7814725Z 152 | |     RemoteOwner,
+2026-11-12T21:51:25.7815018Z 153 | |     EvaluatedOwner,
+2026-11-12T21:51:25.7815208Z 154 | | }
+2026-11-12T21:51:25.7815360Z     | |_^
+2026-11-12T21:51:25.7815509Z     |
+2026-11-12T21:51:25.7815777Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:51:25.7816296Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:51:25.7816637Z 
+2026-11-12T21:51:25.7816738Z warning: large size difference between variants
+2026-11-12T21:51:25.7817038Z    --> hepta-agentd/src/circuit_evaluated_selection_receipt.rs:145:1
+2026-11-12T21:51:25.7817304Z     |
+2026-11-12T21:51:25.7817471Z 145 | / pub(super) enum Profile {
+2026-11-12T21:51:25.7817770Z 146 | |     TrainingNoUpdate,
+2026-11-12T21:51:25.7818038Z     | |     ---------------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7818383Z 147 | |     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:25.7818796Z     | |     ----------------------------------------------------- the largest variant contains at least 3536 bytes
+2026-11-12T21:51:25.7819119Z 148 | | }
+2026-11-12T21:51:25.7819294Z     | |_^ the entire enum is at least 3536 bytes
+2026-11-12T21:51:25.7819528Z     |
+2026-11-12T21:51:25.7826060Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7826833Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7827244Z     |
+2026-11-12T21:51:25.7827483Z 147 -     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:25.7828041Z 147 +     Evaluated(Box<OriginalCircuitEvaluatedRetentionContextV1>),
+2026-11-12T21:51:25.7828323Z     |
+2026-11-12T21:51:25.7828414Z 
+2026-11-12T21:51:25.7828527Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:51:25.7828851Z    --> hepta-agentd/src/circuit_selection_receipt_owner.rs:130:1
+2026-11-12T21:51:25.7829113Z     |
+2026-11-12T21:51:25.7829282Z 130 | / enum ObservationLocation {
+2026-11-12T21:51:25.7829491Z 131 | |     LocalOwner,
+2026-11-12T21:51:25.7829677Z 132 | |     RemoteOwner,
+2026-11-12T21:51:25.7829864Z 133 | |     EvaluatedOwner,
+2026-11-12T21:51:25.7830236Z 134 | | }
+2026-11-12T21:51:25.7830395Z     | |_^
+2026-11-12T21:51:25.7830541Z     |
+2026-11-12T21:51:25.7830818Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:51:25.7831351Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:51:25.7831691Z 
+2026-11-12T21:51:25.7831803Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7832153Z    --> hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs:103:5
+2026-11-12T21:51:25.7832453Z     |
+2026-11-12T21:51:25.7832627Z 103 | /     pub(crate) async fn new(
+2026-11-12T21:51:25.7832877Z 104 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:25.7833145Z 105 | |         training: LearningIterationSnapshotV1,
+2026-11-12T21:51:25.7833427Z 106 | |         training_evidence: SignedLearningEvidenceV1,
+2026-11-12T21:51:25.7833668Z ...   |
+2026-11-12T21:51:25.7833916Z 111 | |         [candidate_manifest, baseline_manifest]: [CellBackendManifestV2; 2],
+2026-11-12T21:51:25.7834237Z 112 | |     ) -> anyhow::Result<Self> {
+2026-11-12T21:51:25.7834453Z     | |_____________________________^
+2026-11-12T21:51:25.7834641Z     |
+2026-11-12T21:51:25.7834995Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7835323Z 
+2026-11-12T21:51:25.7835433Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:25.7835785Z   --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:51:5
+2026-11-12T21:51:25.7836098Z    |
+2026-11-12T21:51:25.7836268Z 51 | /     pub(crate) async fn complete(
+2026-11-12T21:51:25.7836615Z 52 | |         original_plan: ProviderPlanFixture,
+2026-11-12T21:51:25.7836860Z 53 | |         mut provider: ProviderAt,
+2026-11-12T21:51:25.7837102Z 54 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:25.7837322Z ...  |
+2026-11-12T21:51:25.7837509Z 61 | |         retention_receipt_digests: Vec<Digest32>,
+2026-11-12T21:51:25.7837858Z 62 | |     ) -> anyhow::Result<Box<Self>> {
+2026-11-12T21:51:25.7838075Z    | |__________________________________^
+2026-11-12T21:51:25.7838271Z    |
+2026-11-12T21:51:25.7838626Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7838951Z 
+2026-11-12T21:51:25.7839246Z warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+2026-11-12T21:51:25.7839723Z   --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:9
+2026-11-12T21:51:25.7839983Z    |
+2026-11-12T21:51:25.7840148Z 92 |         drop(sources);
+2026-11-12T21:51:25.7840339Z    |         ^^^^^^^^^^^^^
+2026-11-12T21:51:25.7840511Z    |
+2026-11-12T21:51:25.7840920Z note: argument has type `neuron_cell_evaluation_qualification_owner::sources::OriginalCellEvaluationQualificationSourcesV1<'_, C, F, X>`
+2026-11-12T21:51:25.7841444Z   --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:14
+2026-11-12T21:51:25.7841705Z    |
+2026-11-12T21:51:25.7841860Z 92 |         drop(sources);
+2026-11-12T21:51:25.7842039Z    |              ^^^^^^^
+2026-11-12T21:51:25.7842399Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#drop_non_drop
+2026-11-12T21:51:25.7842822Z    = note: `#[warn(clippy::drop_non_drop)]` on by default
+2026-11-12T21:51:25.7842987Z 
+2026-11-12T21:51:25.7843094Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7843394Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+2026-11-12T21:51:25.7843656Z    |
+2026-11-12T21:51:25.7843824Z 51 | /     pub fn from_original_stream(
+2026-11-12T21:51:25.7844041Z 52 | |         stream: UnixStream,
+2026-11-12T21:51:25.7844272Z 53 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7844522Z 54 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7844855Z ...  |
+2026-11-12T21:51:25.7845011Z 60 | |         lifetime: Duration,
+2026-11-12T21:51:25.7845219Z 61 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7845424Z    | |____________________________^
+2026-11-12T21:51:25.7845612Z    |
+2026-11-12T21:51:25.7845967Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7846293Z 
+2026-11-12T21:51:25.7846400Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7846689Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+2026-11-12T21:51:25.7846949Z    |
+2026-11-12T21:51:25.7847125Z 76 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:25.7847364Z 77 | |         stream: UnixStream,
+2026-11-12T21:51:25.7847608Z 78 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7847960Z 79 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7848178Z ...  |
+2026-11-12T21:51:25.7848374Z 85 | |         lifetime: Duration,
+2026-11-12T21:51:25.7848597Z 86 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7848811Z    | |____________________________^
+2026-11-12T21:51:25.7849008Z    |
+2026-11-12T21:51:25.7849368Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7849696Z 
+2026-11-12T21:51:25.7849808Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:25.7850115Z    --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+2026-11-12T21:51:25.7850389Z     |
+2026-11-12T21:51:25.7850551Z 101 | /     fn bind_initial(
+2026-11-12T21:51:25.7850747Z 102 | |         stream: UnixStream,
+2026-11-12T21:51:25.7851088Z 103 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7851368Z 104 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7851588Z ...   |
+2026-11-12T21:51:25.7851746Z 111 | |         origin: Origin,
+2026-11-12T21:51:25.7851954Z 112 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7852169Z     | |____________________________^
+2026-11-12T21:51:25.7852360Z     |
+2026-11-12T21:51:25.7852720Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7853055Z 
+2026-11-12T21:51:25.7853162Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7853499Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+2026-11-12T21:51:25.7853805Z    |
+2026-11-12T21:51:25.7853972Z 47 | /     pub fn from_original_stream(
+2026-11-12T21:51:25.7854195Z 48 | |         stream: UnixStream,
+2026-11-12T21:51:25.7854431Z 49 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:25.7854700Z 50 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:25.7854914Z ...  |
+2026-11-12T21:51:25.7855068Z 56 | |         lifetime: Duration,
+2026-11-12T21:51:25.7855274Z 57 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:25.7855481Z    | |____________________________^
+2026-11-12T21:51:25.7855675Z    |
+2026-11-12T21:51:25.7856026Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7856358Z 
+2026-11-12T21:51:25.7856467Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7856796Z    --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+2026-11-12T21:51:25.7857090Z     |
+2026-11-12T21:51:25.7857257Z 300 | / pub(super) fn publication(
+2026-11-12T21:51:25.7857463Z 301 | |     member: &Member,
+2026-11-12T21:51:25.7857762Z 302 | |     context: &Context,
+2026-11-12T21:51:25.7857962Z 303 | |     bundle: &Bundle,
+2026-11-12T21:51:25.7858140Z ...   |
+2026-11-12T21:51:25.7858339Z 309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+2026-11-12T21:51:25.7858593Z 310 | | ) -> Result<(), Error> {
+2026-11-12T21:51:25.7858785Z     | |______________________^
+2026-11-12T21:51:25.7858962Z     |
+2026-11-12T21:51:25.7859312Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7859801Z 
+2026-11-12T21:51:25.7859909Z warning: large size difference between variants
+2026-11-12T21:51:25.7860187Z   --> hepta-agentd/src/notes_thread_status.rs:82:1
+2026-11-12T21:51:25.7860408Z    |
+2026-11-12T21:51:25.7860579Z 82 | / pub(super) enum StatusDiscovery {
+2026-11-12T21:51:25.7860819Z 83 | |     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:51:25.7860984Z    | |     ----------------------------------- the largest variant contains at least 224 bytes
+2026-11-12T21:51:25.7861068Z 84 | |     Unknown(StatusUnknownReason),
+2026-11-12T21:51:25.7861232Z    | |     ---------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:51:25.7861297Z 85 | | }
+2026-11-12T21:51:25.7861383Z    | |_^ the entire enum is at least 224 bytes
+2026-11-12T21:51:25.7861451Z    |
+2026-11-12T21:51:25.7861723Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7861992Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7862055Z    |
+2026-11-12T21:51:25.7862152Z 83 -     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:51:25.7862252Z 83 +     Found(Box<VerifiedNotesThreadOperation>),
+2026-11-12T21:51:25.7862315Z    |
+2026-11-12T21:51:25.7862318Z 
+2026-11-12T21:51:25.7862415Z warning: large size difference between variants
+2026-11-12T21:51:25.7862580Z    --> hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs:140:1
+2026-11-12T21:51:25.7862646Z     |
+2026-11-12T21:51:25.7862841Z 140 | / enum RetainedIssuerReplyV1 {
+2026-11-12T21:51:25.7862926Z 141 | |     Signed(SignedFinalUseGrant),
+2026-11-12T21:51:25.7863073Z     | |     --------------------------- the largest variant contains at least 280 bytes
+2026-11-12T21:51:25.7863146Z 142 | |     Denied,
+2026-11-12T21:51:25.7863273Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:51:25.7863348Z 143 | |     LoseAck,
+2026-11-12T21:51:25.7863417Z 144 | | }
+2026-11-12T21:51:25.7863503Z     | |_^ the entire enum is at least 280 bytes
+2026-11-12T21:51:25.7863571Z     |
+2026-11-12T21:51:25.7863845Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7864104Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7864173Z     |
+2026-11-12T21:51:25.7864262Z 141 -     Signed(SignedFinalUseGrant),
+2026-11-12T21:51:25.7864355Z 141 +     Signed(Box<SignedFinalUseGrant>),
+2026-11-12T21:51:25.7864423Z     |
+2026-11-12T21:51:25.7864427Z 
+2026-11-12T21:51:25.7864531Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:25.7864698Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:1
+2026-11-12T21:51:25.7864769Z     |
+2026-11-12T21:51:25.7864854Z 302 | / pub(super) fn material(
+2026-11-12T21:51:25.7864937Z 303 | |     root: &std::path::Path,
+2026-11-12T21:51:25.7865020Z 304 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:25.7865099Z 305 | |     credentials: &Credentials,
+2026-11-12T21:51:25.7865163Z ...   |
+2026-11-12T21:51:25.7865288Z 310 | |     publication: &CircuitTaskSourcePublicationV1,
+2026-11-12T21:51:25.7865376Z 311 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:25.7865446Z     | |_____________________________^
+2026-11-12T21:51:25.7865514Z     |
+2026-11-12T21:51:25.7865791Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7865798Z 
+2026-11-12T21:51:25.7865916Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:25.7866085Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:325:1
+2026-11-12T21:51:25.7866157Z     |
+2026-11-12T21:51:25.7866271Z 325 | / pub(super) fn unstarted_material_with_profile(
+2026-11-12T21:51:25.7866552Z 326 | |     _root: &std::path::Path,
+2026-11-12T21:51:25.7866635Z 327 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:25.7866717Z 328 | |     credentials: &Credentials,
+2026-11-12T21:51:25.7866782Z ...   |
+2026-11-12T21:51:25.7866864Z 338 | |     crate::CellQ24SgdRuleV1,
+2026-11-12T21:51:25.7866933Z 339 | | )> {
+2026-11-12T21:51:25.7866999Z     | |__^
+2026-11-12T21:51:25.7867066Z     |
+2026-11-12T21:51:25.7867330Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7867338Z 
+2026-11-12T21:51:25.7867440Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:25.7867604Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:1
+2026-11-12T21:51:25.7867768Z     |
+2026-11-12T21:51:25.7867861Z 437 | / pub(super) fn material_with_profile(
+2026-11-12T21:51:25.7867942Z 438 | |     root: &std::path::Path,
+2026-11-12T21:51:25.7868028Z 439 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:25.7868105Z 440 | |     credentials: &Credentials,
+2026-11-12T21:51:25.7868172Z ...   |
+2026-11-12T21:51:25.7868263Z 446 | |     evaluation_profile: Digest32,
+2026-11-12T21:51:25.7868346Z 447 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:25.7868423Z     | |_____________________________^
+2026-11-12T21:51:25.7868489Z     |
+2026-11-12T21:51:25.7868747Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7868754Z 
+2026-11-12T21:51:25.7868862Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:25.7869130Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:464:1
+2026-11-12T21:51:25.7869194Z     |
+2026-11-12T21:51:25.7869310Z 464 | / pub(super) fn material_with_profile_and_observer(
+2026-11-12T21:51:25.7869394Z 465 | |     root: &std::path::Path,
+2026-11-12T21:51:25.7869470Z 466 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:25.7869554Z 467 | |     credentials: &Credentials,
+2026-11-12T21:51:25.7869619Z ...   |
+2026-11-12T21:51:25.7869699Z 474 | |     next_use_observer: StableId,
+2026-11-12T21:51:25.7869786Z 475 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:25.7869860Z     | |_____________________________^
+2026-11-12T21:51:25.7869922Z     |
+2026-11-12T21:51:25.7870181Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:25.7870185Z 
+2026-11-12T21:51:25.7870286Z warning: large size difference between variants
+2026-11-12T21:51:25.7870449Z   --> hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs:34:1
+2026-11-12T21:51:25.7870524Z    |
+2026-11-12T21:51:25.7870616Z 34 | /  enum TrainingComposition {
+2026-11-12T21:51:25.7870684Z 35 | |      Fixture,
+2026-11-12T21:51:25.7870815Z    | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:25.7870889Z 36 | |/     Original {
+2026-11-12T21:51:25.7871060Z 37 | ||         connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
+2026-11-12T21:51:25.7871205Z 38 | ||         dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
+2026-11-12T21:51:25.7871348Z 39 | ||         training: crate::OriginalCellQ24TrainingCommandReceiptV1,
+2026-11-12T21:51:25.7871412Z 40 | ||     },
+2026-11-12T21:51:25.7871531Z    | ||_____- the largest variant contains at least 4968 bytes
+2026-11-12T21:51:25.7871600Z 41 | |  }
+2026-11-12T21:51:25.7871688Z    | |__^ the entire enum is at least 4968 bytes
+2026-11-12T21:51:25.7871755Z    |
+2026-11-12T21:51:25.7872020Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:25.7872282Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:25.7872351Z    |
+2026-11-12T21:51:25.7872524Z 37 ~         connection: Box<crate::OriginalCellQ24TrainingReadbackConnectionV1>,
+2026-11-12T21:51:25.7872768Z 38 ~         dataset: Box<crate::OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:51:25.7872919Z 39 ~         training: Box<crate::OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:51:25.7872984Z    |
+2026-11-12T21:51:25.7872987Z 
+2026-11-12T21:51:25.7873096Z warning: local variable doesn't need to be boxed here
+2026-11-12T21:51:25.7873253Z    --> hepta-agentd/src/circuit_evaluated_selection_command_tests.rs:109:31
+2026-11-12T21:51:25.7873320Z     |
+2026-11-12T21:51:25.7873483Z 109 |     fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
+2026-11-12T21:51:25.7873561Z     |                               ^^^^
+2026-11-12T21:51:25.7873627Z     |
+2026-11-12T21:51:25.7873881Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#boxed_local
+2026-11-12T21:51:25.7873995Z     = note: `#[warn(clippy::boxed_local)]` on by default
+2026-11-12T21:51:25.7873998Z 
+2026-11-12T21:51:25.7874084Z warning: 88 warnings emitted
+2026-11-12T21:51:25.7874087Z 
+2026-11-12T21:51:26.5578238Z [38,901 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 56s remote, remote-cache ... (3 actions running)
+2026-11-12T21:51:37.5528154Z [38,901 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 67s remote, remote-cache ... (3 actions running)
+2026-11-12T21:51:38.0401538Z INFO: From Clippy //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin:
+2026-11-12T21:51:38.0403186Z warning: file is loaded as a module multiple times: `codex-rs/hepta-agentd/src/circuit_credit_ledger_test_support.rs`
+2026-11-12T21:51:38.0404487Z   |
+2026-11-12T21:51:38.0404804Z   = help: replace all but one `mod` item with `use` items
+2026-11-12T21:51:38.0405437Z   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+2026-11-12T21:51:38.0406115Z   = note: `#[warn(clippy::duplicate_mod)]` on by default
+2026-11-12T21:51:38.0406360Z 
+2026-11-12T21:51:38.0406810Z warning: file is loaded as a module multiple times: `codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs`
+2026-11-12T21:51:38.0407417Z   |
+2026-11-12T21:51:38.0407840Z   = help: replace all but one `mod` item with `use` items
+2026-11-12T21:51:38.0408435Z   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#duplicate_mod
+2026-11-12T21:51:38.0408896Z 
+2026-11-12T21:51:38.0409150Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:51:38.0409692Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:38.0410095Z     |
+2026-11-12T21:51:38.0410319Z  84 | impl LedgerFixture {
+2026-11-12T21:51:38.0410653Z     | ------------------ associated items in this implementation
+2026-11-12T21:51:38.0411005Z ...
+2026-11-12T21:51:38.0411301Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:38.0411740Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:38.0412039Z ...
+2026-11-12T21:51:38.0412311Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:51:38.0412676Z     |                   ^^^^^
+2026-11-12T21:51:38.0412933Z     |
+2026-11-12T21:51:38.0413239Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:51:38.0413544Z 
+2026-11-12T21:51:38.0413680Z warning: function `append_decision` is never used
+2026-11-12T21:51:38.0414142Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:51:38.0414540Z     |
+2026-11-12T21:51:38.0414979Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:51:38.0415525Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:51:38.0415712Z 
+2026-11-12T21:51:38.0415844Z warning: function `closure` is never used
+2026-11-12T21:51:38.0416267Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:51:38.0416931Z     |
+2026-11-12T21:51:38.0417230Z 212 | pub(super) fn closure(
+2026-11-12T21:51:38.0417512Z     |               ^^^^^^^
+2026-11-12T21:51:38.0417851Z 
+2026-11-12T21:51:38.0418091Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:51:38.0418631Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:38.0418977Z    |
+2026-11-12T21:51:38.0419177Z 84 | impl LedgerFixture {
+2026-11-12T21:51:38.0419500Z    | ------------------ associated function in this implementation
+2026-11-12T21:51:38.0419831Z ...
+2026-11-12T21:51:38.0420113Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:38.0420492Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:38.0420675Z 
+2026-11-12T21:51:38.0420812Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:51:38.0421184Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:51:38.0421512Z    |
+2026-11-12T21:51:38.0421713Z 22 | pub(super) enum Status {
+2026-11-12T21:51:38.0421982Z    |                 ------ variant in this enum
+2026-11-12T21:51:38.0422252Z ...
+2026-11-12T21:51:38.0422452Z 26 |     Unavailable = 4,
+2026-11-12T21:51:38.0422699Z    |     ^^^^^^^^^^^
+2026-11-12T21:51:38.0422914Z    |
+2026-11-12T21:51:38.0423426Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:51:38.0423930Z 
+2026-11-12T21:51:38.0424062Z warning: field `at` is never read
+2026-11-12T21:51:38.0424510Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:51:38.0424981Z    |
+2026-11-12T21:51:38.0425375Z 91 | pub(super) struct Fixture {
+2026-11-12T21:51:38.0425672Z    |                   ------- field in this struct
+2026-11-12T21:51:38.0426026Z 92 |     root: PathBuf,
+2026-11-12T21:51:38.0426299Z 93 |     pub(super) at: u64,
+2026-11-12T21:51:38.0426592Z    |                ^^
+2026-11-12T21:51:38.0426766Z 
+2026-11-12T21:51:38.0426973Z warning: associated function `from_research_store` is never used
+2026-11-12T21:51:38.0427482Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:51:38.0428060Z     |
+2026-11-12T21:51:38.0428322Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:51:38.0428852Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:51:38.0429287Z ...
+2026-11-12T21:51:38.0429507Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:51:38.0429801Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:38.0429975Z 
+2026-11-12T21:51:38.0430088Z warning: field `estimand` is never read
+2026-11-12T21:51:38.0430491Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:51:38.0430932Z    |
+2026-11-12T21:51:38.0431167Z 19 | pub(super) struct Checked {
+2026-11-12T21:51:38.0431475Z    |                   ------- field in this struct
+2026-11-12T21:51:38.0431785Z ...
+2026-11-12T21:51:38.0431992Z 23 |     pub estimand: Digest32,
+2026-11-12T21:51:38.0432237Z    |         ^^^^^^^^
+2026-11-12T21:51:38.0432383Z 
+2026-11-12T21:51:38.0432511Z warning: method `context` is never used
+2026-11-12T21:51:38.0432929Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:51:38.0433313Z    |
+2026-11-12T21:51:38.0433507Z 30 | impl Request {
+2026-11-12T21:51:38.0433761Z    | ------------ method in this implementation
+2026-11-12T21:51:38.0434042Z ...
+2026-11-12T21:51:38.0434308Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:51:38.0434644Z    |                   ^^^^^^^
+2026-11-12T21:51:38.0434816Z 
+2026-11-12T21:51:38.0434942Z warning: function `ledger` is never used
+2026-11-12T21:51:38.0435418Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:51:38.0435900Z    |
+2026-11-12T21:51:38.0436152Z 80 | pub(super) fn ledger(
+2026-11-12T21:51:38.0436437Z    |               ^^^^^^
+2026-11-12T21:51:38.0436806Z 
+2026-11-12T21:51:38.0436972Z warning: function `material` is never used
+2026-11-12T21:51:38.0437488Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:51:38.0438152Z     |
+2026-11-12T21:51:38.0438401Z 302 | pub(super) fn material(
+2026-11-12T21:51:38.0438706Z     |               ^^^^^^^^
+2026-11-12T21:51:38.0438897Z 
+2026-11-12T21:51:38.0439075Z warning: function `material_with_profile` is never used
+2026-11-12T21:51:38.0439647Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:51:38.0440137Z     |
+2026-11-12T21:51:38.0440399Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:51:38.0440767Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:38.0440983Z 
+2026-11-12T21:51:38.0441131Z warning: type alias `Selector` is never used
+2026-11-12T21:51:38.0441635Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:51:38.0442119Z    |
+2026-11-12T21:51:38.0442619Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:51:38.0443221Z    |                 ^^^^^^^^
+2026-11-12T21:51:38.0443413Z 
+2026-11-12T21:51:38.0443568Z warning: large size difference between variants
+2026-11-12T21:51:38.0444078Z   --> hepta-agentd/src/authority_host_learning_resident_authority.rs:33:1
+2026-11-12T21:51:38.0444535Z    |
+2026-11-12T21:51:38.0444806Z 33 | / pub(super) enum ResidentAuthorizationV3 {
+2026-11-12T21:51:38.0445170Z 34 | |     Fresh,
+2026-11-12T21:51:38.0445505Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0446200Z 35 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:38.0446863Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:51:38.0447399Z 36 | | }
+2026-11-12T21:51:38.0447796Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:51:38.0448153Z    |
+2026-11-12T21:51:38.0448747Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0449497Z    = note: `#[warn(clippy::large_enum_variant)]` on by default
+2026-11-12T21:51:38.0450106Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0450690Z    |
+2026-11-12T21:51:38.0451003Z 35 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:38.0451490Z 35 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:51:38.0451873Z    |
+2026-11-12T21:51:38.0451989Z 
+2026-11-12T21:51:38.0452134Z warning: large size difference between variants
+2026-11-12T21:51:38.0452547Z   --> hepta-agentd/src/authority_host_learning_resident_authority.rs:71:1
+2026-11-12T21:51:38.0452948Z    |
+2026-11-12T21:51:38.0453174Z 71 | / pub(super) enum ResidentStoreValueV3 {
+2026-11-12T21:51:38.0453493Z 72 | |     Store(ResidentCheckpointV3),
+2026-11-12T21:51:38.0453907Z    | |     --------------------------- the largest variant contains at least 2576 bytes
+2026-11-12T21:51:38.0454339Z 73 | |     Snapshot(ResidentSnapshotV3),
+2026-11-12T21:51:38.0454770Z    | |     ---------------------------- the second-largest variant contains at least 1312 bytes
+2026-11-12T21:51:38.0455232Z 74 | |     Fresh(Option<FreshResidentCheckpointV3>),
+2026-11-12T21:51:38.0455541Z 75 | |     Checked,
+2026-11-12T21:51:38.0455759Z 76 | | }
+2026-11-12T21:51:38.0456010Z    | |_^ the entire enum is at least 2576 bytes
+2026-11-12T21:51:38.0456330Z    |
+2026-11-12T21:51:38.0456847Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0457891Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0458476Z    |
+2026-11-12T21:51:38.0458718Z 72 -     Store(ResidentCheckpointV3),
+2026-11-12T21:51:38.0459252Z 72 +     Store(Box<ResidentCheckpointV3>),
+2026-11-12T21:51:38.0459565Z    |
+2026-11-12T21:51:38.0459677Z 
+2026-11-12T21:51:38.0459851Z warning: all variants have the same postfix: `Channels`
+2026-11-12T21:51:38.0460358Z   --> hepta-agentd/src/authority_host_learning_resident_origin_tests.rs:29:1
+2026-11-12T21:51:38.0460813Z    |
+2026-11-12T21:51:38.0461030Z 29 | / enum Pairing {
+2026-11-12T21:51:38.0461273Z 30 | |     FreshRegistrationRecoveredChannels,
+2026-11-12T21:51:38.0461534Z 31 | |     RecoveredRegistrationFreshChannels,
+2026-11-12T21:51:38.0461781Z 32 | |     FreshRegistrationFreshChannels,
+2026-11-12T21:51:38.0462042Z 33 | |     RecoveredRegistrationRecoveredChannels,
+2026-11-12T21:51:38.0462288Z 34 | | }
+2026-11-12T21:51:38.0462446Z    | |_^
+2026-11-12T21:51:38.0462591Z    |
+2026-11-12T21:51:38.0462859Z    = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:51:38.0463396Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:51:38.0463873Z    = note: `#[warn(clippy::enum_variant_names)]` on by default
+2026-11-12T21:51:38.0464065Z 
+2026-11-12T21:51:38.0464166Z warning: large size difference between variants
+2026-11-12T21:51:38.0464483Z    --> hepta-agentd/src/authority_host_learning_resident_gate.rs:143:1
+2026-11-12T21:51:38.0464757Z     |
+2026-11-12T21:51:38.0464918Z 143 | / enum GateActionV3 {
+2026-11-12T21:51:38.0465117Z 144 | |     Current,
+2026-11-12T21:51:38.0465311Z 145 | |     Begin(LearningIterationStageV1),
+2026-11-12T21:51:38.0465636Z     | |     ------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:51:38.0466104Z 146 | |     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:51:38.0466455Z     | |     --------------------------------------- the largest variant contains at least 1304 bytes
+2026-11-12T21:51:38.0466755Z 147 | | }
+2026-11-12T21:51:38.0466930Z     | |_^ the entire enum is at least 1304 bytes
+2026-11-12T21:51:38.0467164Z     |
+2026-11-12T21:51:38.0467514Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0468344Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0468755Z     |
+2026-11-12T21:51:38.0468943Z 146 -     Checkpoint(LearningIterationSnapshotV1),
+2026-11-12T21:51:38.0469230Z 146 +     Checkpoint(Box<LearningIterationSnapshotV1>),
+2026-11-12T21:51:38.0469476Z     |
+2026-11-12T21:51:38.0469556Z 
+2026-11-12T21:51:38.0469659Z warning: large size difference between variants
+2026-11-12T21:51:38.0469975Z   --> hepta-agentd/src/authority_host_learning_resident_runtime.rs:57:1
+2026-11-12T21:51:38.0470257Z    |
+2026-11-12T21:51:38.0470424Z 57 | / enum ResidentStagesV3 {
+2026-11-12T21:51:38.0470670Z 58 | |     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:51:38.0471210Z    | |     -------------------------------------------------- the largest variant contains at least 3184 bytes
+2026-11-12T21:51:38.0471584Z 59 | |     Installed(Arc<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:51:38.0471943Z    | |     --------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:51:38.0472266Z 60 | | }
+2026-11-12T21:51:38.0472452Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:51:38.0472664Z    |
+2026-11-12T21:51:38.0473005Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0473605Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0473996Z    |
+2026-11-12T21:51:38.0474197Z 58 -     Uninstalled(Option<ResidentOriginalStageOwnersV3>),
+2026-11-12T21:51:38.0474529Z 58 +     Uninstalled(Box<Option<ResidentOriginalStageOwnersV3>>),
+2026-11-12T21:51:38.0474916Z    |
+2026-11-12T21:51:38.0474999Z 
+2026-11-12T21:51:38.0475091Z warning: large size difference between variants
+2026-11-12T21:51:38.0475406Z   --> hepta-agentd/src/authority_host_learning_resident_stages.rs:25:1
+2026-11-12T21:51:38.0475678Z    |
+2026-11-12T21:51:38.0475869Z 25 | / pub(super) enum ResidentOriginalStageOwnersV3 {
+2026-11-12T21:51:38.0476164Z 26 | |     NoUpdate(OriginalCellQ24NoUpdateStageOwnersV1),
+2026-11-12T21:51:38.0476540Z    | |     ---------------------------------------------- the second-largest variant contains at least 2920 bytes
+2026-11-12T21:51:38.0476921Z 27 | |     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:51:38.0477291Z    | |     ------------------------------------------------ the largest variant contains at least 3184 bytes
+2026-11-12T21:51:38.0477616Z 28 | | }
+2026-11-12T21:51:38.0478013Z    | |_^ the entire enum is at least 3184 bytes
+2026-11-12T21:51:38.0478237Z    |
+2026-11-12T21:51:38.0478606Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0479217Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0479608Z    |
+2026-11-12T21:51:38.0479825Z 27 -     Candidate(OriginalCellQ24CandidateStageOwnersV1),
+2026-11-12T21:51:38.0480145Z 27 +     Candidate(Box<OriginalCellQ24CandidateStageOwnersV1>),
+2026-11-12T21:51:38.0480409Z    |
+2026-11-12T21:51:38.0480498Z 
+2026-11-12T21:51:38.0480606Z warning: large size difference between variants
+2026-11-12T21:51:38.0480928Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:72:1
+2026-11-12T21:51:38.0481214Z    |
+2026-11-12T21:51:38.0481494Z 72 | / enum ClientOriginV3 {
+2026-11-12T21:51:38.0481691Z 73 | |     Fresh,
+2026-11-12T21:51:38.0481911Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0482238Z 74 | |     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:38.0482650Z    | |     ----------------------------------------------------- the largest variant contains at least 480 bytes
+2026-11-12T21:51:38.0482983Z 75 | | }
+2026-11-12T21:51:38.0483159Z    | |_^ the entire enum is at least 480 bytes
+2026-11-12T21:51:38.0483383Z    |
+2026-11-12T21:51:38.0483735Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0484324Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0484718Z    |
+2026-11-12T21:51:38.0484936Z 74 -     Readback(RootResidentLearningReadbackAuthorizationV3),
+2026-11-12T21:51:38.0485293Z 74 +     Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
+2026-11-12T21:51:38.0485575Z    |
+2026-11-12T21:51:38.0485652Z 
+2026-11-12T21:51:38.0485758Z warning: large size difference between variants
+2026-11-12T21:51:38.0486076Z   --> hepta-agentd/src/authority_host_learning_resident_transport.rs:77:1
+2026-11-12T21:51:38.0486372Z    |
+2026-11-12T21:51:38.0486536Z 77 | / enum ResidentExchangeV3 {
+2026-11-12T21:51:38.0486780Z 78 | |     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:51:38.0487126Z    | |     ------------------------------------------- the largest variant contains at least 1480 bytes
+2026-11-12T21:51:38.0487452Z 79 | |     Refused(Error),
+2026-11-12T21:51:38.0487804Z    | |     -------------- the second-largest variant contains at least 48 bytes
+2026-11-12T21:51:38.0488075Z 80 | | }
+2026-11-12T21:51:38.0488257Z    | |_^ the entire enum is at least 1480 bytes
+2026-11-12T21:51:38.0488466Z    |
+2026-11-12T21:51:38.0488808Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0489397Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0489784Z    |
+2026-11-12T21:51:38.0489969Z 78 -     Observed(RootResidentLearningObservationV3),
+2026-11-12T21:51:38.0490394Z 78 +     Observed(Box<RootResidentLearningObservationV3>),
+2026-11-12T21:51:38.0490641Z    |
+2026-11-12T21:51:38.0490724Z 
+2026-11-12T21:51:38.0490828Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0491185Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:131:5
+2026-11-12T21:51:38.0491471Z     |
+2026-11-12T21:51:38.0491647Z 131 | /     pub fn recover_original_root_stream(
+2026-11-12T21:51:38.0491891Z 132 | |         stream: UnixStream,
+2026-11-12T21:51:38.0492131Z 133 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:38.0492371Z 134 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:38.0492577Z ...   |
+2026-11-12T21:51:38.0492752Z 140 | |         lifetime: Duration,
+2026-11-12T21:51:38.0492966Z 141 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0493173Z     | |____________________________^
+2026-11-12T21:51:38.0493375Z     |
+2026-11-12T21:51:38.0493733Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0494194Z     = note: `#[warn(clippy::too_many_arguments)]` on by default
+2026-11-12T21:51:38.0494382Z 
+2026-11-12T21:51:38.0494490Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0494813Z    --> hepta-agentd/src/authority_host_learning_resident_transport.rs:159:5
+2026-11-12T21:51:38.0495097Z     |
+2026-11-12T21:51:38.0495250Z 159 | /     fn bind(
+2026-11-12T21:51:38.0495434Z 160 | |         stream: UnixStream,
+2026-11-12T21:51:38.0495661Z 161 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:38.0495898Z 162 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:38.0496224Z ...   |
+2026-11-12T21:51:38.0496390Z 168 | |         lifetime: Duration,
+2026-11-12T21:51:38.0496595Z 169 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0496804Z     | |____________________________^
+2026-11-12T21:51:38.0496992Z     |
+2026-11-12T21:51:38.0497334Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0497754Z 
+2026-11-12T21:51:38.0497862Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0498185Z   --> hepta-agentd/src/authority_host_learning_resident_model_recovery.rs:20:5
+2026-11-12T21:51:38.0498479Z    |
+2026-11-12T21:51:38.0498662Z 20 | /     pub fn recover_original_model_root_stream(
+2026-11-12T21:51:38.0498913Z 21 | |         stream: UnixStream,
+2026-11-12T21:51:38.0499140Z 22 | |         root: AgentdRootAuthorityPeer,
+2026-11-12T21:51:38.0499366Z 23 | |         held_root_pidfd: OwnedFd,
+2026-11-12T21:51:38.0499576Z ...  |
+2026-11-12T21:51:38.0499741Z 33 | |         lifetime: Duration,
+2026-11-12T21:51:38.0499942Z 34 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0500154Z    | |____________________________^
+2026-11-12T21:51:38.0500341Z    |
+2026-11-12T21:51:38.0500680Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0501014Z 
+2026-11-12T21:51:38.0501112Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0501385Z    --> hepta-agentd/src/cell_q24_dataset.rs:193:5
+2026-11-12T21:51:38.0501612Z     |
+2026-11-12T21:51:38.0501771Z 193 | /     fn read_current_at_clock(
+2026-11-12T21:51:38.0501983Z 194 | |         &mut self,
+2026-11-12T21:51:38.0502201Z 195 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:38.0502460Z 196 | |         baseline: &LoadedCellQ24ModelV1,
+2026-11-12T21:51:38.0502700Z ...   |
+2026-11-12T21:51:38.0502921Z 201 | |         mut clock: impl FnMut() -> Result<u64, CellQ24DatasetErrorV1>,
+2026-11-12T21:51:38.0503276Z 202 | |     ) -> Result<OriginalCellQ24DatasetV1, CellQ24DatasetErrorV1> {
+2026-11-12T21:51:38.0503604Z     | |________________________________________________________________^
+2026-11-12T21:51:38.0503848Z     |
+2026-11-12T21:51:38.0504189Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0504642Z 
+2026-11-12T21:51:38.0504746Z warning: large size difference between variants
+2026-11-12T21:51:38.0505038Z   --> hepta-agentd/src/circuit_evaluated_learning_read.rs:30:1
+2026-11-12T21:51:38.0505293Z    |
+2026-11-12T21:51:38.0505457Z 30 | / enum OriginalCut {
+2026-11-12T21:51:38.0505718Z 31 | |     Selection(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:38.0506132Z    | |     ----------------------------------------------------- the second-largest variant contains at least 3536 bytes
+2026-11-12T21:51:38.0506539Z 32 | |     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:38.0506931Z    | |     --------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:51:38.0507253Z 33 | | }
+2026-11-12T21:51:38.0507431Z    | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:51:38.0507809Z    |
+2026-11-12T21:51:38.0508197Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0508803Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0509201Z    |
+2026-11-12T21:51:38.0509418Z 32 -     NextUse(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:38.0509769Z 32 +     NextUse(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:51:38.0510045Z    |
+2026-11-12T21:51:38.0510125Z 
+2026-11-12T21:51:38.0510231Z warning: large size difference between variants
+2026-11-12T21:51:38.0510516Z   --> hepta-agentd/src/circuit_learning_read_profile.rs:18:1
+2026-11-12T21:51:38.0510873Z    |
+2026-11-12T21:51:38.0511042Z 18 | / pub(super) enum ReadProfile {
+2026-11-12T21:51:38.0511324Z 19 | |     TrainingNoUpdate(OriginalCircuitLearningReadContextV1),
+2026-11-12T21:51:38.0511732Z    | |     ------------------------------------------------------ the second-largest variant contains at least 2496 bytes
+2026-11-12T21:51:38.0512161Z 20 | |     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:51:38.0512566Z    | |     -------------------------------------------------------- the largest variant contains at least 6016 bytes
+2026-11-12T21:51:38.0512900Z 21 | | }
+2026-11-12T21:51:38.0513082Z    | |_^ the entire enum is at least 6016 bytes
+2026-11-12T21:51:38.0513296Z    |
+2026-11-12T21:51:38.0513635Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0514224Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0514614Z    |
+2026-11-12T21:51:38.0514839Z 20 -     Evaluated(OriginalCircuitEvaluatedLearningReadContextV1),
+2026-11-12T21:51:38.0515208Z 20 +     Evaluated(Box<OriginalCircuitEvaluatedLearningReadContextV1>),
+2026-11-12T21:51:38.0515493Z    |
+2026-11-12T21:51:38.0515582Z 
+2026-11-12T21:51:38.0515676Z warning: large size difference between variants
+2026-11-12T21:51:38.0515980Z   --> hepta-agentd/src/circuit_learning_completion_readiness.rs:68:1
+2026-11-12T21:51:38.0516251Z    |
+2026-11-12T21:51:38.0516411Z 68 | / pub(super) enum Readiness {
+2026-11-12T21:51:38.0516615Z 69 | |     NotReady,
+2026-11-12T21:51:38.0516852Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0517139Z 70 | |     Ready { read: original::OriginalRead },
+2026-11-12T21:51:38.0517487Z    | |     -------------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:51:38.0517967Z 71 | | }
+2026-11-12T21:51:38.0518151Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:51:38.0518371Z    |
+2026-11-12T21:51:38.0518722Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0519312Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0519833Z    |
+2026-11-12T21:51:38.0520020Z 70 -     Ready { read: original::OriginalRead },
+2026-11-12T21:51:38.0520282Z 70 +     Ready { read: Box<original::OriginalRead> },
+2026-11-12T21:51:38.0520509Z    |
+2026-11-12T21:51:38.0520593Z 
+2026-11-12T21:51:38.0520691Z warning: large size difference between variants
+2026-11-12T21:51:38.0521000Z   --> hepta-agentd/src/circuit_evaluated_completion_readiness.rs:82:1
+2026-11-12T21:51:38.0521271Z    |
+2026-11-12T21:51:38.0521432Z 82 | / pub(super) enum Readiness {
+2026-11-12T21:51:38.0521639Z 83 | |     NotReady,
+2026-11-12T21:51:38.0521874Z    | |     -------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0522152Z 84 | |     Ready { read: wire::OriginalRead },
+2026-11-12T21:51:38.0522463Z    | |     ---------------------------------- the largest variant contains at least 288 bytes
+2026-11-12T21:51:38.0522753Z 85 | | }
+2026-11-12T21:51:38.0522919Z    | |_^ the entire enum is at least 288 bytes
+2026-11-12T21:51:38.0523143Z    |
+2026-11-12T21:51:38.0523483Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0524060Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0524452Z    |
+2026-11-12T21:51:38.0524621Z 84 -     Ready { read: wire::OriginalRead },
+2026-11-12T21:51:38.0524866Z 84 +     Ready { read: Box<wire::OriginalRead> },
+2026-11-12T21:51:38.0525090Z    |
+2026-11-12T21:51:38.0525172Z 
+2026-11-12T21:51:38.0525275Z warning: large size difference between variants
+2026-11-12T21:51:38.0525788Z   --> hepta-agentd/src/circuit_retained_version_client.rs:69:1
+2026-11-12T21:51:38.0526050Z    |
+2026-11-12T21:51:38.0526219Z 69 | / enum OriginalVersionValue {
+2026-11-12T21:51:38.0526484Z 70 | |     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:51:38.0526858Z    | |     -------------------------------------------------- the largest variant contains at least 216 bytes
+2026-11-12T21:51:38.0527255Z 71 | |     Progress(OriginalCircuitEvaluatedVersionProgressV1),
+2026-11-12T21:51:38.0527804Z    | |     --------------------------------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:51:38.0528195Z 72 | | }
+2026-11-12T21:51:38.0528460Z    | |_^ the entire enum is at least 216 bytes
+2026-11-12T21:51:38.0528706Z    |
+2026-11-12T21:51:38.0529059Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0529653Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0530044Z    |
+2026-11-12T21:51:38.0530253Z 70 -     Readback(OriginalCircuitRetainedVersionReadbackV1),
+2026-11-12T21:51:38.0530584Z 70 +     Readback(Box<OriginalCircuitRetainedVersionReadbackV1>),
+2026-11-12T21:51:38.0530859Z    |
+2026-11-12T21:51:38.0530936Z 
+2026-11-12T21:51:38.0531050Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0531343Z   --> hepta-agentd/src/circuit_evaluated_version_host.rs:57:5
+2026-11-12T21:51:38.0531596Z    |
+2026-11-12T21:51:38.0531770Z 57 | /     pub fn from_original_evaluated_owners(
+2026-11-12T21:51:38.0532051Z 58 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:51:38.0532384Z 59 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:51:38.0532703Z 60 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:51:38.0532967Z ...  |
+2026-11-12T21:51:38.0533140Z 66 | |         lifetime: Duration,
+2026-11-12T21:51:38.0533356Z 67 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0533566Z    | |____________________________^
+2026-11-12T21:51:38.0533752Z    |
+2026-11-12T21:51:38.0534109Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0534565Z 
+2026-11-12T21:51:38.0534679Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0534981Z   --> hepta-agentd/src/circuit_retained_version_service.rs:76:5
+2026-11-12T21:51:38.0535242Z    |
+2026-11-12T21:51:38.0535416Z 76 | /     pub async fn serve_original_ordinary(
+2026-11-12T21:51:38.0544793Z 77 | |         self: Arc<Self>,
+2026-11-12T21:51:38.0545066Z 78 | |         stream: UnixStream,
+2026-11-12T21:51:38.0545325Z 79 | |         consumer: AgentdRootAuthorityPeer,
+2026-11-12T21:51:38.0545561Z ...  |
+2026-11-12T21:51:38.0545767Z 84 | |         arg0_paths: codex_arg0::Arg0DispatchPaths,
+2026-11-12T21:51:38.0546030Z 85 | |     ) -> Result<u64, Error> {
+2026-11-12T21:51:38.0546254Z    | |___________________________^
+2026-11-12T21:51:38.0546451Z    |
+2026-11-12T21:51:38.0546836Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0547170Z 
+2026-11-12T21:51:38.0547293Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0547597Z    --> hepta-agentd/src/circuit_retained_version_host.rs:183:5
+2026-11-12T21:51:38.0547984Z     |
+2026-11-12T21:51:38.0548162Z 183 | /     pub fn from_original_owners(
+2026-11-12T21:51:38.0548441Z 184 | |         material: OriginalCellQ24MaterialReceiptConfigV1,
+2026-11-12T21:51:38.0548758Z 185 | |         dataset: OriginalCellQ24DatasetCommandReadbackV1,
+2026-11-12T21:51:38.0549085Z 186 | |         trainer: OriginalCellQ24TrainingCommandConnectionV1,
+2026-11-12T21:51:38.0549356Z ...   |
+2026-11-12T21:51:38.0549525Z 191 | |         lifetime: Duration,
+2026-11-12T21:51:38.0549751Z 192 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0550143Z     | |____________________________^
+2026-11-12T21:51:38.0550342Z     |
+2026-11-12T21:51:38.0550717Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0551052Z 
+2026-11-12T21:51:38.0551161Z warning: large size difference between variants
+2026-11-12T21:51:38.0551470Z   --> hepta-agentd/src/circuit_retained_version_profile.rs:21:1
+2026-11-12T21:51:38.0551744Z    |
+2026-11-12T21:51:38.0551922Z 21 | / pub(super) enum VersionCut {
+2026-11-12T21:51:38.0552165Z 22 | |     TrainingNoUpdate(OriginalVersionCut),
+2026-11-12T21:51:38.0552518Z    | |     ------------------------------------ the second-largest variant contains at least 6480 bytes
+2026-11-12T21:51:38.0552889Z 23 | |     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:51:38.0553224Z    | |     -------------------------------------- the largest variant contains at least 7792 bytes
+2026-11-12T21:51:38.0553530Z 24 | | }
+2026-11-12T21:51:38.0553729Z    | |_^ the entire enum is at least 7792 bytes
+2026-11-12T21:51:38.0553950Z    |
+2026-11-12T21:51:38.0554319Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0554928Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0555493Z    |
+2026-11-12T21:51:38.0555713Z 23 -     Evaluated(OriginalEvaluatedVersionCut),
+2026-11-12T21:51:38.0556007Z 23 +     Evaluated(Box<OriginalEvaluatedVersionCut>),
+2026-11-12T21:51:38.0556254Z    |
+2026-11-12T21:51:38.0556353Z 
+2026-11-12T21:51:38.0556451Z warning: large size difference between variants
+2026-11-12T21:51:38.0556747Z    --> hepta-agentd/src/circuit_feature_current.rs:134:1
+2026-11-12T21:51:38.0556999Z     |
+2026-11-12T21:51:38.0557169Z 134 | /  enum Publication {
+2026-11-12T21:51:38.0557419Z 135 | |      Initial(PublishedNeuronGenerationInitialV1),
+2026-11-12T21:51:38.0558005Z     | |      ------------------------------------------- the second-largest variant contains at least 40 bytes
+2026-11-12T21:51:38.0558343Z 136 | |/     Update {
+2026-11-12T21:51:38.0558576Z 137 | ||         original: PublishedNeuronGenerationUpdateV1,
+2026-11-12T21:51:38.0558897Z 138 | ||         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:51:38.0559288Z 139 | ||     },
+2026-11-12T21:51:38.0559497Z     | ||_____- the largest variant contains at least 2744 bytes
+2026-11-12T21:51:38.0559744Z 140 | |  }
+2026-11-12T21:51:38.0559931Z     | |__^ the entire enum is at least 2744 bytes
+2026-11-12T21:51:38.0560152Z     |
+2026-11-12T21:51:38.0560517Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0561127Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0561533Z     |
+2026-11-12T21:51:38.0561751Z 138 -         previous: PublishedCircuitFeatureCompletionV1,
+2026-11-12T21:51:38.0562084Z 138 +         previous: Box<PublishedCircuitFeatureCompletionV1>,
+2026-11-12T21:51:38.0562346Z     |
+2026-11-12T21:51:38.0562435Z 
+2026-11-12T21:51:38.0562540Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0562897Z    --> hepta-agentd/src/circuit_original_evaluation_cohort_readback.rs:143:5
+2026-11-12T21:51:38.0563193Z     |
+2026-11-12T21:51:38.0563373Z 143 | /     pub(crate) fn require_original_member(
+2026-11-12T21:51:38.0563616Z 144 | |         &self,
+2026-11-12T21:51:38.0563873Z 145 | |         registration: &OriginalCellEvaluationPanelRegistrationV1,
+2026-11-12T21:51:38.0564205Z 146 | |         task: &OriginalCellEvaluationPanelTaskV1,
+2026-11-12T21:51:38.0564453Z ...   |
+2026-11-12T21:51:38.0564642Z 151 | |         verifier: &LearningEvidenceVerifierV1,
+2026-11-12T21:51:38.0564886Z 152 | |     ) -> Result<(), Error> {
+2026-11-12T21:51:38.0565104Z     | |__________________________^
+2026-11-12T21:51:38.0565307Z     |
+2026-11-12T21:51:38.0565775Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0566132Z 
+2026-11-12T21:51:38.0566237Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0566586Z   --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:48:1
+2026-11-12T21:51:38.0566888Z    |
+2026-11-12T21:51:38.0567060Z 48 | / pub(super) fn assemble(
+2026-11-12T21:51:38.0567326Z 49 | |     config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:51:38.0567603Z 50 | |     ledger: &LedgerWriter,
+2026-11-12T21:51:38.0567930Z 51 | |     dataset: &DatasetSnapshotReceiptV3,
+2026-11-12T21:51:38.0568166Z ...  |
+2026-11-12T21:51:38.0568333Z 56 | |     current: u64,
+2026-11-12T21:51:38.0568577Z 57 | | ) -> Result<TemporalComparisonInputsV1, Error> {
+2026-11-12T21:51:38.0568851Z    | |______________________________________________^
+2026-11-12T21:51:38.0569081Z    |
+2026-11-12T21:51:38.0569454Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0569799Z 
+2026-11-12T21:51:38.0569906Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0570251Z    --> hepta-agentd/src/circuit_original_evaluation_provider_records.rs:227:5
+2026-11-12T21:51:38.0570557Z     |
+2026-11-12T21:51:38.0570725Z 227 | /     fn read_episode(
+2026-11-12T21:51:38.0570988Z 228 | |         config: &OriginalCircuitEvaluationCohortConfigV1,
+2026-11-12T21:51:38.0571267Z 229 | |         ledger: &LedgerWriter,
+2026-11-12T21:51:38.0571529Z 230 | |         requested: &OriginalCircuitEvaluationEpisodeV1,
+2026-11-12T21:51:38.0571793Z ...   |
+2026-11-12T21:51:38.0571959Z 236 | |         current: u64,
+2026-11-12T21:51:38.0572172Z 237 | |     ) -> Result<Episode<'a>, Error> {
+2026-11-12T21:51:38.0572401Z     | |___________________________________^
+2026-11-12T21:51:38.0572614Z     |
+2026-11-12T21:51:38.0572976Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0573314Z 
+2026-11-12T21:51:38.0573569Z warning: this argument (8 byte) is passed by reference, but would be more efficient if passed by value (limit: 8 byte)
+2026-11-12T21:51:38.0574014Z    --> hepta-agentd/src/circuit_task_source_codec.rs:508:36
+2026-11-12T21:51:38.0574385Z     |
+2026-11-12T21:51:38.0574606Z 508 |     fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+2026-11-12T21:51:38.0574963Z     |                                    ^^^^^^^^ help: consider passing by value instead: `[u8; 8]`
+2026-11-12T21:51:38.0575244Z     |
+2026-11-12T21:51:38.0575626Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#trivially_copy_pass_by_ref
+2026-11-12T21:51:38.0576175Z     = note: requested on the command line with `-W clippy::trivially-copy-pass-by-ref`
+2026-11-12T21:51:38.0576420Z 
+2026-11-12T21:51:38.0576533Z warning: large size difference between variants
+2026-11-12T21:51:38.0576841Z   --> hepta-agentd/src/learning_iteration_command_evidence.rs:17:1
+2026-11-12T21:51:38.0577117Z    |
+2026-11-12T21:51:38.0577310Z 17 | / pub(super) enum OriginalCommandEvidenceV1 {
+2026-11-12T21:51:38.0577574Z 18 | |     Training(OriginalTrainingReadbackV1),
+2026-11-12T21:51:38.0578032Z    | |     ------------------------------------ the second-largest variant contains at least 6928 bytes
+2026-11-12T21:51:38.0578387Z 19 | |     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:51:38.0578720Z    | |     -------------------------------------- the largest variant contains at least 8776 bytes
+2026-11-12T21:51:38.0579028Z 20 | | }
+2026-11-12T21:51:38.0579208Z    | |_^ the entire enum is at least 8776 bytes
+2026-11-12T21:51:38.0579427Z    |
+2026-11-12T21:51:38.0579779Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0580488Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0580893Z    |
+2026-11-12T21:51:38.0581084Z 19 -     Selection(OriginalSelectionReadbackV1),
+2026-11-12T21:51:38.0581374Z 19 +     Selection(Box<OriginalSelectionReadbackV1>),
+2026-11-12T21:51:38.0581612Z    |
+2026-11-12T21:51:38.0581706Z 
+2026-11-12T21:51:38.0581807Z warning: large size difference between variants
+2026-11-12T21:51:38.0582124Z   --> hepta-agentd/src/cell_q24_training_command_connection.rs:41:1
+2026-11-12T21:51:38.0582391Z    |
+2026-11-12T21:51:38.0582547Z 41 | / enum Origin {
+2026-11-12T21:51:38.0582726Z 42 | |     Fresh,
+2026-11-12T21:51:38.0582947Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0583317Z 43 | |     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:51:38.0583789Z    | |     ------------------------------------------------------------------------- the largest variant contains at least 656 bytes
+2026-11-12T21:51:38.0584151Z 44 | | }
+2026-11-12T21:51:38.0584330Z    | |_^ the entire enum is at least 656 bytes
+2026-11-12T21:51:38.0584545Z    |
+2026-11-12T21:51:38.0584903Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0585502Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0585890Z    |
+2026-11-12T21:51:38.0586157Z 43 -     Recovered(Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>),
+2026-11-12T21:51:38.0586593Z 43 +     Recovered(Box<Option<(LearningIterationReceiptV1, SignedLearningEvidenceV1)>>),
+2026-11-12T21:51:38.0586910Z    |
+2026-11-12T21:51:38.0587002Z 
+2026-11-12T21:51:38.0587108Z warning: large size difference between variants
+2026-11-12T21:51:38.0587394Z   --> hepta-agentd/src/cell_q24_model_command_effect.rs:13:1
+2026-11-12T21:51:38.0587733Z    |
+2026-11-12T21:51:38.0587913Z 13 | / pub(super) enum Observed {
+2026-11-12T21:51:38.0588128Z 14 | |     Missing,
+2026-11-12T21:51:38.0588352Z    | |     ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0588608Z 15 | |     Pending,
+2026-11-12T21:51:38.0588819Z 16 | |     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:51:38.0589273Z    | |     ---------------------------------------- the largest variant contains at least 384 bytes
+2026-11-12T21:51:38.0589575Z 17 | | }
+2026-11-12T21:51:38.0589762Z    | |_^ the entire enum is at least 384 bytes
+2026-11-12T21:51:38.0589976Z    |
+2026-11-12T21:51:38.0590319Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0590918Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0591306Z    |
+2026-11-12T21:51:38.0591486Z 16 -     Completed(CellQ24ModelProposalReceiptV1),
+2026-11-12T21:51:38.0591778Z 16 +     Completed(Box<CellQ24ModelProposalReceiptV1>),
+2026-11-12T21:51:38.0592019Z    |
+2026-11-12T21:51:38.0592105Z 
+2026-11-12T21:51:38.0592194Z warning: this `if` has identical blocks
+2026-11-12T21:51:38.0592481Z    --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:135:9
+2026-11-12T21:51:38.0592758Z     |
+2026-11-12T21:51:38.0592920Z 135 | /         {
+2026-11-12T21:51:38.0593132Z 136 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:51:38.0593513Z 137 | |         } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:51:38.0593845Z     | |_________^
+2026-11-12T21:51:38.0594002Z     |
+2026-11-12T21:51:38.0594165Z note: same as this
+2026-11-12T21:51:38.0594405Z    --> hepta-agentd/src/cell_q24_training_bootstrap_service.rs:137:100
+2026-11-12T21:51:38.0594672Z     |
+2026-11-12T21:51:38.0594950Z 137 |           } else if matches!(self.origin, Origin::Fresh) && request.action == wire::Action::Readback {
+2026-11-12T21:51:38.0595485Z     |  ____________________________________________________________________________________________________^
+2026-11-12T21:51:38.0595824Z 138 | |             wire::CommandResult::ReadbackRequired
+2026-11-12T21:51:38.0596063Z 139 | |         } else {
+2026-11-12T21:51:38.0596243Z     | |_________^
+2026-11-12T21:51:38.0596612Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#if_same_then_else
+2026-11-12T21:51:38.0597057Z     = note: `#[warn(clippy::if_same_then_else)]` on by default
+2026-11-12T21:51:38.0597243Z 
+2026-11-12T21:51:38.0597350Z warning: large size difference between variants
+2026-11-12T21:51:38.0597719Z    --> hepta-agentd/src/cell_q24_training_bootstrap.rs:96:1
+2026-11-12T21:51:38.0597971Z     |
+2026-11-12T21:51:38.0598209Z  96 | / enum State<TW: AnchorWitnessStore, RW: AnchorWitnessStore> {
+2026-11-12T21:51:38.0598560Z  97 | |     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:51:38.0598991Z     | |     ----------------------------------------------------------- the largest variant contains at least 22984 bytes
+2026-11-12T21:51:38.0599347Z  98 | |     Starting,
+2026-11-12T21:51:38.0599596Z  99 | |     Ready(Arc<OriginalCellQ24TrainingCommandOwnerV1<TW, RW>>),
+2026-11-12T21:51:38.0600009Z     | |     --------------------------------------------------------- the second-largest variant contains at least 8 bytes
+2026-11-12T21:51:38.0600364Z 100 | |     Fenced,
+2026-11-12T21:51:38.0600535Z 101 | | }
+2026-11-12T21:51:38.0600718Z     | |_^ the entire enum is at least 22984 bytes
+2026-11-12T21:51:38.0600945Z     |
+2026-11-12T21:51:38.0601297Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0601887Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0602286Z     |
+2026-11-12T21:51:38.0602514Z  97 -     Awaiting(OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>),
+2026-11-12T21:51:38.0602891Z  97 +     Awaiting(Box<OriginalCellQ24TrainingBootstrapCustodyV1<TW, RW>>),
+2026-11-12T21:51:38.0603186Z     |
+2026-11-12T21:51:38.0603276Z 
+2026-11-12T21:51:38.0603384Z warning: large size difference between variants
+2026-11-12T21:51:38.0603681Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:26:1
+2026-11-12T21:51:38.0604056Z    |
+2026-11-12T21:51:38.0604225Z 26 | / enum Origin {
+2026-11-12T21:51:38.0604402Z 27 | |     Fresh,
+2026-11-12T21:51:38.0604620Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0604953Z 28 | |     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:51:38.0605362Z    | |     ---------------------------------------------------------- the largest variant contains at least 1336 bytes
+2026-11-12T21:51:38.0605689Z 29 | | }
+2026-11-12T21:51:38.0605875Z    | |_^ the entire enum is at least 1336 bytes
+2026-11-12T21:51:38.0606095Z    |
+2026-11-12T21:51:38.0606453Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0607049Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0607436Z    |
+2026-11-12T21:51:38.0607746Z 28 -     Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+2026-11-12T21:51:38.0608104Z 28 +     Recovered(Box<Option<(LearningIterationSnapshotV1, Digest32)>>),
+2026-11-12T21:51:38.0608386Z    |
+2026-11-12T21:51:38.0608465Z 
+2026-11-12T21:51:38.0608576Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0608876Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:61:5
+2026-11-12T21:51:38.0609137Z    |
+2026-11-12T21:51:38.0609307Z 61 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:38.0609536Z 62 | |         stream: UnixStream,
+2026-11-12T21:51:38.0609779Z 63 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0610143Z 64 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0610363Z ...  |
+2026-11-12T21:51:38.0610531Z 69 | |         lifetime: Duration,
+2026-11-12T21:51:38.0610751Z 70 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0610962Z    | |____________________________^
+2026-11-12T21:51:38.0611149Z    |
+2026-11-12T21:51:38.0611504Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0611826Z 
+2026-11-12T21:51:38.0611938Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0612230Z   --> hepta-agentd/src/cell_q24_model_command_connection.rs:82:5
+2026-11-12T21:51:38.0612488Z    |
+2026-11-12T21:51:38.0612644Z 82 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0612847Z 83 | |         stream: UnixStream,
+2026-11-12T21:51:38.0613082Z 84 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0613333Z 85 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0613542Z ...  |
+2026-11-12T21:51:38.0613707Z 90 | |         origin: Origin,
+2026-11-12T21:51:38.0613916Z 91 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0614121Z    | |____________________________^
+2026-11-12T21:51:38.0614309Z    |
+2026-11-12T21:51:38.0614643Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0614965Z 
+2026-11-12T21:51:38.0615073Z warning: large size difference between variants
+2026-11-12T21:51:38.0615380Z   --> hepta-agentd/src/cell_q24_model_command_root_support_tests.rs:91:1
+2026-11-12T21:51:38.0615665Z    |
+2026-11-12T21:51:38.0615827Z 91 | / enum FixtureAccess {
+2026-11-12T21:51:38.0616012Z 92 | |     Fresh,
+2026-11-12T21:51:38.0616234Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0616538Z 93 | |     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+2026-11-12T21:51:38.0616900Z    | |     ---------------------------------------------- the largest variant contains at least 2536 bytes
+2026-11-12T21:51:38.0617251Z 94 | | }
+2026-11-12T21:51:38.0617439Z    | |_^ the entire enum is at least 2536 bytes
+2026-11-12T21:51:38.0617736Z    |
+2026-11-12T21:51:38.0618079Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0618799Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0619189Z    |
+2026-11-12T21:51:38.0619393Z 93 -     Readonly(OriginalCellQ24ModelCommandReceiptV1),
+2026-11-12T21:51:38.0619714Z 93 +     Readonly(Box<OriginalCellQ24ModelCommandReceiptV1>),
+2026-11-12T21:51:38.0619971Z    |
+2026-11-12T21:51:38.0620057Z 
+2026-11-12T21:51:38.0620156Z warning: large size difference between variants
+2026-11-12T21:51:38.0620450Z    --> hepta-agentd/src/cell_q24_training_command_wire.rs:141:1
+2026-11-12T21:51:38.0620704Z     |
+2026-11-12T21:51:38.0620880Z 141 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:38.0621106Z 142 | |/     Completed {
+2026-11-12T21:51:38.0621303Z 143 | ||         snapshot: String,
+2026-11-12T21:51:38.0621537Z 144 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0621761Z 145 | ||     },
+2026-11-12T21:51:38.0621969Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:38.0622218Z 146 | |      Missing,
+2026-11-12T21:51:38.0622445Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0622703Z ...   |
+2026-11-12T21:51:38.0622868Z 152 | |      Unavailable,
+2026-11-12T21:51:38.0623046Z 153 | |  }
+2026-11-12T21:51:38.0623224Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:38.0623449Z     |
+2026-11-12T21:51:38.0623800Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0624388Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0624887Z     |
+2026-11-12T21:51:38.0625066Z 144 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0625324Z 144 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:38.0625555Z     |
+2026-11-12T21:51:38.0625634Z 
+2026-11-12T21:51:38.0625742Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0626038Z    --> hepta-agentd/src/cell_q24_training_command.rs:234:5
+2026-11-12T21:51:38.0626283Z     |
+2026-11-12T21:51:38.0626442Z 234 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0626665Z 235 | |         stream: UnixStream,
+2026-11-12T21:51:38.0626905Z 236 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0627163Z 237 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0627387Z ...   |
+2026-11-12T21:51:38.0627706Z 242 | |         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:51:38.0628005Z 243 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0628224Z     | |____________________________^
+2026-11-12T21:51:38.0628423Z     |
+2026-11-12T21:51:38.0628775Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0629109Z 
+2026-11-12T21:51:38.0629210Z warning: large size difference between variants
+2026-11-12T21:51:38.0629534Z    --> hepta-agentd/src/circuit_evaluated_selection_command_wire.rs:140:1
+2026-11-12T21:51:38.0629813Z     |
+2026-11-12T21:51:38.0629983Z 140 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:38.0630210Z 141 | |/     Completed {
+2026-11-12T21:51:38.0630410Z 142 | ||         snapshot: String,
+2026-11-12T21:51:38.0630636Z 143 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0630870Z 144 | ||     },
+2026-11-12T21:51:38.0631076Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:38.0631324Z 145 | |      Missing,
+2026-11-12T21:51:38.0631556Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0631813Z ...   |
+2026-11-12T21:51:38.0631979Z 151 | |      Unavailable,
+2026-11-12T21:51:38.0632155Z 152 | |  }
+2026-11-12T21:51:38.0632341Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:38.0632557Z     |
+2026-11-12T21:51:38.0632898Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0633742Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0634147Z     |
+2026-11-12T21:51:38.0634327Z 143 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0634583Z 143 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:38.0634808Z     |
+2026-11-12T21:51:38.0634899Z 
+2026-11-12T21:51:38.0635005Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0635310Z    --> hepta-agentd/src/circuit_evaluated_selection_command.rs:184:5
+2026-11-12T21:51:38.0635573Z     |
+2026-11-12T21:51:38.0635744Z 184 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0635950Z 185 | |         stream: UnixStream,
+2026-11-12T21:51:38.0636189Z 186 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0636457Z 187 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0636674Z ...   |
+2026-11-12T21:51:38.0636919Z 192 | |         retained: Option<OriginalCircuitEvaluatedSelectionReceiptV1>,
+2026-11-12T21:51:38.0637231Z 193 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0637445Z     | |____________________________^
+2026-11-12T21:51:38.0637722Z     |
+2026-11-12T21:51:38.0638075Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0638408Z 
+2026-11-12T21:51:38.0638513Z warning: large size difference between variants
+2026-11-12T21:51:38.0638801Z    --> hepta-agentd/src/circuit_selection_command_wire.rs:136:1
+2026-11-12T21:51:38.0639054Z     |
+2026-11-12T21:51:38.0639230Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:38.0639563Z 137 | |/     Completed {
+2026-11-12T21:51:38.0639757Z 138 | ||         snapshot: String,
+2026-11-12T21:51:38.0639993Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0640216Z 140 | ||     },
+2026-11-12T21:51:38.0640417Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:38.0640666Z 141 | |      Missing,
+2026-11-12T21:51:38.0640894Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0641153Z ...   |
+2026-11-12T21:51:38.0641316Z 147 | |      Unavailable,
+2026-11-12T21:51:38.0641505Z 148 | |  }
+2026-11-12T21:51:38.0641686Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:38.0641903Z     |
+2026-11-12T21:51:38.0642254Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0642836Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0643232Z     |
+2026-11-12T21:51:38.0643416Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0643663Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:38.0643884Z     |
+2026-11-12T21:51:38.0643972Z 
+2026-11-12T21:51:38.0644083Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:38.0644380Z    --> hepta-agentd/src/circuit_selection_command.rs:272:5
+2026-11-12T21:51:38.0644628Z     |
+2026-11-12T21:51:38.0644801Z 272 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:38.0645040Z 273 | |         stream: UnixStream,
+2026-11-12T21:51:38.0645286Z 274 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0645555Z 275 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0645786Z ...   |
+2026-11-12T21:51:38.0645959Z 282 | |         lifetime: Duration,
+2026-11-12T21:51:38.0646174Z 283 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0646388Z     | |____________________________^
+2026-11-12T21:51:38.0646599Z     |
+2026-11-12T21:51:38.0646958Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0647294Z 
+2026-11-12T21:51:38.0647399Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0647944Z    --> hepta-agentd/src/circuit_selection_command.rs:307:5
+2026-11-12T21:51:38.0648193Z     |
+2026-11-12T21:51:38.0648354Z 307 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0648573Z 308 | |         stream: UnixStream,
+2026-11-12T21:51:38.0648806Z 309 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0649063Z 310 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0649286Z ...   |
+2026-11-12T21:51:38.0649532Z 315 | |         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
+2026-11-12T21:51:38.0649829Z 316 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0650042Z     | |____________________________^
+2026-11-12T21:51:38.0650243Z     |
+2026-11-12T21:51:38.0650591Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0650922Z 
+2026-11-12T21:51:38.0651025Z warning: large size difference between variants
+2026-11-12T21:51:38.0651319Z    --> hepta-agentd/src/circuit_next_use_command_wire.rs:136:1
+2026-11-12T21:51:38.0651583Z     |
+2026-11-12T21:51:38.0651754Z 136 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:38.0651982Z 137 | |/     Completed {
+2026-11-12T21:51:38.0652176Z 138 | ||         snapshot: String,
+2026-11-12T21:51:38.0652404Z 139 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0652641Z 140 | ||     },
+2026-11-12T21:51:38.0652847Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:38.0653086Z 141 | |      Missing,
+2026-11-12T21:51:38.0653311Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0653572Z ...   |
+2026-11-12T21:51:38.0653736Z 147 | |      Unavailable,
+2026-11-12T21:51:38.0654027Z 148 | |  }
+2026-11-12T21:51:38.0654217Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:38.0654435Z     |
+2026-11-12T21:51:38.0654784Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0655386Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0655781Z     |
+2026-11-12T21:51:38.0655958Z 139 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0656212Z 139 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:38.0656449Z     |
+2026-11-12T21:51:38.0656527Z 
+2026-11-12T21:51:38.0656640Z warning: this function has too many arguments (11/7)
+2026-11-12T21:51:38.0656920Z    --> hepta-agentd/src/circuit_next_use_command.rs:291:5
+2026-11-12T21:51:38.0657168Z     |
+2026-11-12T21:51:38.0657341Z 291 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:38.0657573Z 292 | |         stream: UnixStream,
+2026-11-12T21:51:38.0657908Z 293 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0658166Z 294 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0658381Z ...   |
+2026-11-12T21:51:38.0658544Z 302 | |         lifetime: Duration,
+2026-11-12T21:51:38.0658759Z 303 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0658969Z     | |____________________________^
+2026-11-12T21:51:38.0659159Z     |
+2026-11-12T21:51:38.0659509Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0659830Z 
+2026-11-12T21:51:38.0659942Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0660217Z    --> hepta-agentd/src/circuit_next_use_command.rs:328:5
+2026-11-12T21:51:38.0660457Z     |
+2026-11-12T21:51:38.0660615Z 328 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0660819Z 329 | |         stream: UnixStream,
+2026-11-12T21:51:38.0661067Z 330 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0661317Z 331 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0661531Z ...   |
+2026-11-12T21:51:38.0661759Z 336 | |         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
+2026-11-12T21:51:38.0662177Z 337 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0662383Z     | |____________________________^
+2026-11-12T21:51:38.0662571Z     |
+2026-11-12T21:51:38.0662916Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0663235Z 
+2026-11-12T21:51:38.0663342Z warning: large size difference between variants
+2026-11-12T21:51:38.0663648Z    --> hepta-agentd/src/circuit_evaluated_next_use_command_wire.rs:142:1
+2026-11-12T21:51:38.0663934Z     |
+2026-11-12T21:51:38.0664101Z 142 | /  pub(super) enum CommandResult {
+2026-11-12T21:51:38.0664315Z 143 | |/     Completed {
+2026-11-12T21:51:38.0664514Z 144 | ||         snapshot: String,
+2026-11-12T21:51:38.0664748Z 145 | ||         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0664971Z 146 | ||     },
+2026-11-12T21:51:38.0665177Z     | ||_____- the largest variant contains at least 240 bytes
+2026-11-12T21:51:38.0665433Z 147 | |      Missing,
+2026-11-12T21:51:38.0665657Z     | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0665915Z ...   |
+2026-11-12T21:51:38.0666079Z 153 | |      Unavailable,
+2026-11-12T21:51:38.0666257Z 154 | |  }
+2026-11-12T21:51:38.0666436Z     | |__^ the entire enum is at least 240 bytes
+2026-11-12T21:51:38.0666656Z     |
+2026-11-12T21:51:38.0666995Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0667584Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0668087Z     |
+2026-11-12T21:51:38.0668270Z 145 -         evidence: evidence_wire::Evidence,
+2026-11-12T21:51:38.0668636Z 145 +         evidence: Box<evidence_wire::Evidence>,
+2026-11-12T21:51:38.0668863Z     |
+2026-11-12T21:51:38.0668955Z 
+2026-11-12T21:51:38.0669065Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0669363Z    --> hepta-agentd/src/circuit_evaluated_next_use_command.rs:182:5
+2026-11-12T21:51:38.0669637Z     |
+2026-11-12T21:51:38.0669798Z 182 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0670008Z 183 | |         stream: UnixStream,
+2026-11-12T21:51:38.0670237Z 184 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0670500Z 185 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0670714Z ...   |
+2026-11-12T21:51:38.0670951Z 190 | |         retained: Option<OriginalCircuitEvaluatedNextUseReceiptV1>,
+2026-11-12T21:51:38.0671249Z 191 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0671461Z     | |____________________________^
+2026-11-12T21:51:38.0671651Z     |
+2026-11-12T21:51:38.0672006Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0672343Z 
+2026-11-12T21:51:38.0672452Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0672749Z    --> hepta-agentd/src/cell_q24_material_command_service.rs:119:5
+2026-11-12T21:51:38.0673011Z     |
+2026-11-12T21:51:38.0673175Z 119 | /     fn serve_role_commands(
+2026-11-12T21:51:38.0673371Z 120 | |         &self,
+2026-11-12T21:51:38.0673546Z 121 | |         role: Role,
+2026-11-12T21:51:38.0673755Z 122 | |         stream: UnixStream,
+2026-11-12T21:51:38.0673948Z ...   |
+2026-11-12T21:51:38.0674104Z 127 | |         lifetime: Duration,
+2026-11-12T21:51:38.0674308Z 128 | |     ) -> Result<u64, Error> {
+2026-11-12T21:51:38.0674521Z     | |___________________________^
+2026-11-12T21:51:38.0674706Z     |
+2026-11-12T21:51:38.0675042Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0675368Z 
+2026-11-12T21:51:38.0675475Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0675750Z    --> hepta-agentd/src/cell_q24_material_command.rs:236:5
+2026-11-12T21:51:38.0675993Z     |
+2026-11-12T21:51:38.0676156Z 236 | /     fn bind_original_stream(
+2026-11-12T21:51:38.0676613Z 237 | |         stream: UnixStream,
+2026-11-12T21:51:38.0676842Z 238 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0677100Z 239 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0677317Z ...   |
+2026-11-12T21:51:38.0677549Z 245 | |         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:51:38.0677954Z 246 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0678168Z     | |____________________________^
+2026-11-12T21:51:38.0678356Z     |
+2026-11-12T21:51:38.0678689Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0679013Z 
+2026-11-12T21:51:38.0679121Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0679416Z   --> hepta-agentd/src/cell_q24_material_source_connection.rs:35:5
+2026-11-12T21:51:38.0679675Z    |
+2026-11-12T21:51:38.0679848Z 35 | /     pub fn from_original_stream(
+2026-11-12T21:51:38.0680070Z 36 | |         stream: UnixStream,
+2026-11-12T21:51:38.0680305Z 37 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0680564Z 38 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0680777Z ...  |
+2026-11-12T21:51:38.0680942Z 43 | |         lifetime: Duration,
+2026-11-12T21:51:38.0681149Z 44 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0681359Z    | |____________________________^
+2026-11-12T21:51:38.0681552Z    |
+2026-11-12T21:51:38.0681901Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0682235Z 
+2026-11-12T21:51:38.0682340Z warning: large size difference between variants
+2026-11-12T21:51:38.0682732Z   --> hepta-agentd/src/artifact_original_head_client.rs:31:1
+2026-11-12T21:51:38.0682988Z    |
+2026-11-12T21:51:38.0683147Z 31 | / enum Origin {
+2026-11-12T21:51:38.0683316Z 32 | |     Fresh,
+2026-11-12T21:51:38.0683530Z    | |     ----- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0683834Z 33 | |     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:51:38.0684194Z    | |     --------------------------------------------- the largest variant contains at least 304 bytes
+2026-11-12T21:51:38.0684508Z 34 | | }
+2026-11-12T21:51:38.0684683Z    | |_^ the entire enum is at least 304 bytes
+2026-11-12T21:51:38.0684906Z    |
+2026-11-12T21:51:38.0685251Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0685841Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0686236Z    |
+2026-11-12T21:51:38.0686437Z 33 -     Readonly(Option<SignedCurrentArtifactHeadV1>),
+2026-11-12T21:51:38.0686729Z 33 +     Readonly(Box<Option<SignedCurrentArtifactHeadV1>>),
+2026-11-12T21:51:38.0686977Z    |
+2026-11-12T21:51:38.0687056Z 
+2026-11-12T21:51:38.0687165Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0687461Z   --> hepta-agentd/src/cell_q24_model_current_admission.rs:20:1
+2026-11-12T21:51:38.0687817Z    |
+2026-11-12T21:51:38.0688063Z 20 | / pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
+2026-11-12T21:51:38.0688387Z 21 | |     trainer: &mut CellQ24TrainingOwnerV1<T>,
+2026-11-12T21:51:38.0688645Z 22 | |     dataset_cut: &LearningIterationSnapshotV1,
+2026-11-12T21:51:38.0688893Z 23 | |     scope: Digest32,
+2026-11-12T21:51:38.0689079Z ...  |
+2026-11-12T21:51:38.0689231Z 28 | |     now: u64,
+2026-11-12T21:51:38.0689420Z 29 | | ) -> Result<Admission, Error> {
+2026-11-12T21:51:38.0689630Z    | |_____________________________^
+2026-11-12T21:51:38.0689822Z    |
+2026-11-12T21:51:38.0690174Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0690498Z 
+2026-11-12T21:51:38.0690606Z warning: large size difference between variants
+2026-11-12T21:51:38.0690877Z    --> hepta-agentd/src/cell_q24_training_source.rs:146:1
+2026-11-12T21:51:38.0691245Z     |
+2026-11-12T21:51:38.0691413Z 146 | / enum OriginalMaterialSource {
+2026-11-12T21:51:38.0691661Z 147 | |     Local(Box<dyn OriginalMaterialReadback>),
+2026-11-12T21:51:38.0692010Z     | |     ---------------------------------------- the second-largest variant contains at least 16 bytes
+2026-11-12T21:51:38.0692384Z 148 | |     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:51:38.0692740Z     | |     --------------------------------------------- the largest variant contains at least 3056 bytes
+2026-11-12T21:51:38.0693044Z 149 | | }
+2026-11-12T21:51:38.0693236Z     | |_^ the entire enum is at least 3056 bytes
+2026-11-12T21:51:38.0693455Z     |
+2026-11-12T21:51:38.0693812Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0694442Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0694840Z     |
+2026-11-12T21:51:38.0695055Z 148 -     Remote(OriginalCellQ24RemoteMaterialClientV1),
+2026-11-12T21:51:38.0695385Z 148 +     Remote(Box<OriginalCellQ24RemoteMaterialClientV1>),
+2026-11-12T21:51:38.0695642Z     |
+2026-11-12T21:51:38.0695725Z 
+2026-11-12T21:51:38.0695825Z warning: large size difference between variants
+2026-11-12T21:51:38.0696131Z    --> hepta-agentd/src/circuit_evaluated_next_use_receipt.rs:180:1
+2026-11-12T21:51:38.0696402Z     |
+2026-11-12T21:51:38.0696564Z 180 | / pub(super) enum Profile {
+2026-11-12T21:51:38.0696764Z 181 | |     Legacy,
+2026-11-12T21:51:38.0696993Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:51:38.0697518Z 182 | |     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:38.0698144Z     | |     ----------------------------------------------------- the largest variant contains at least 5496 bytes
+2026-11-12T21:51:38.0698479Z 183 | | }
+2026-11-12T21:51:38.0698657Z     | |_^ the entire enum is at least 5496 bytes
+2026-11-12T21:51:38.0698885Z     |
+2026-11-12T21:51:38.0699247Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0699840Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0700227Z     |
+2026-11-12T21:51:38.0700457Z 182 -     Evaluated(OriginalCircuitEvaluatedSelectionReceiptV1),
+2026-11-12T21:51:38.0700819Z 182 +     Evaluated(Box<OriginalCircuitEvaluatedSelectionReceiptV1>),
+2026-11-12T21:51:38.0701103Z     |
+2026-11-12T21:51:38.0701189Z 
+2026-11-12T21:51:38.0701311Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:51:38.0701612Z    --> hepta-agentd/src/circuit_next_use_receipt_owner.rs:150:1
+2026-11-12T21:51:38.0701870Z     |
+2026-11-12T21:51:38.0702042Z 150 | / enum ObservationLocation {
+2026-11-12T21:51:38.0702265Z 151 | |     LocalOwner,
+2026-11-12T21:51:38.0702457Z 152 | |     RemoteOwner,
+2026-11-12T21:51:38.0702653Z 153 | |     EvaluatedOwner,
+2026-11-12T21:51:38.0702848Z 154 | | }
+2026-11-12T21:51:38.0703002Z     | |_^
+2026-11-12T21:51:38.0703149Z     |
+2026-11-12T21:51:38.0703425Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:51:38.0703958Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:51:38.0704300Z 
+2026-11-12T21:51:38.0704403Z warning: large size difference between variants
+2026-11-12T21:51:38.0704707Z    --> hepta-agentd/src/circuit_evaluated_selection_receipt.rs:145:1
+2026-11-12T21:51:38.0704988Z     |
+2026-11-12T21:51:38.0705159Z 145 | / pub(super) enum Profile {
+2026-11-12T21:51:38.0705384Z 146 | |     TrainingNoUpdate,
+2026-11-12T21:51:38.0705664Z     | |     ---------------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0706011Z 147 | |     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:38.0706534Z     | |     ----------------------------------------------------- the largest variant contains at least 3536 bytes
+2026-11-12T21:51:38.0706861Z 148 | | }
+2026-11-12T21:51:38.0707046Z     | |_^ the entire enum is at least 3536 bytes
+2026-11-12T21:51:38.0707264Z     |
+2026-11-12T21:51:38.0707712Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0708319Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0708733Z     |
+2026-11-12T21:51:38.0708957Z 147 -     Evaluated(OriginalCircuitEvaluatedRetentionContextV1),
+2026-11-12T21:51:38.0709320Z 147 +     Evaluated(Box<OriginalCircuitEvaluatedRetentionContextV1>),
+2026-11-12T21:51:38.0709596Z     |
+2026-11-12T21:51:38.0709684Z 
+2026-11-12T21:51:38.0709794Z warning: all variants have the same postfix: `Owner`
+2026-11-12T21:51:38.0710098Z    --> hepta-agentd/src/circuit_selection_receipt_owner.rs:130:1
+2026-11-12T21:51:38.0710354Z     |
+2026-11-12T21:51:38.0710520Z 130 | / enum ObservationLocation {
+2026-11-12T21:51:38.0710730Z 131 | |     LocalOwner,
+2026-11-12T21:51:38.0710911Z 132 | |     RemoteOwner,
+2026-11-12T21:51:38.0711100Z 133 | |     EvaluatedOwner,
+2026-11-12T21:51:38.0711291Z 134 | | }
+2026-11-12T21:51:38.0711444Z     | |_^
+2026-11-12T21:51:38.0711592Z     |
+2026-11-12T21:51:38.0711856Z     = help: remove the postfixes and use full paths to the variants instead of glob imports
+2026-11-12T21:51:38.0712371Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#enum_variant_names
+2026-11-12T21:51:38.0712712Z 
+2026-11-12T21:51:38.0712942Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0713295Z    --> hepta-agentd/src/circuit_model_selection_evaluation_support_tests.rs:103:5
+2026-11-12T21:51:38.0713621Z     |
+2026-11-12T21:51:38.0713785Z 103 | /     pub(crate) async fn new(
+2026-11-12T21:51:38.0714038Z 104 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:38.0714315Z 105 | |         training: LearningIterationSnapshotV1,
+2026-11-12T21:51:38.0714589Z 106 | |         training_evidence: SignedLearningEvidenceV1,
+2026-11-12T21:51:38.0714836Z ...   |
+2026-11-12T21:51:38.0715090Z 111 | |         [candidate_manifest, baseline_manifest]: [CellBackendManifestV2; 2],
+2026-11-12T21:51:38.0715414Z 112 | |     ) -> anyhow::Result<Self> {
+2026-11-12T21:51:38.0715631Z     | |_____________________________^
+2026-11-12T21:51:38.0715828Z     |
+2026-11-12T21:51:38.0716176Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0716508Z 
+2026-11-12T21:51:38.0716615Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:38.0716969Z   --> hepta-agentd/src/circuit_original_evaluation_panel_member_support_tests.rs:51:5
+2026-11-12T21:51:38.0717322Z    |
+2026-11-12T21:51:38.0717493Z 51 | /     pub(crate) async fn complete(
+2026-11-12T21:51:38.0724328Z 52 | |         original_plan: ProviderPlanFixture,
+2026-11-12T21:51:38.0724609Z 53 | |         mut provider: ProviderAt,
+2026-11-12T21:51:38.0724865Z 54 | |         initial: &LearningIterationSnapshotV1,
+2026-11-12T21:51:38.0725100Z ...  |
+2026-11-12T21:51:38.0725311Z 61 | |         retention_receipt_digests: Vec<Digest32>,
+2026-11-12T21:51:38.0725581Z 62 | |     ) -> anyhow::Result<Box<Self>> {
+2026-11-12T21:51:38.0725808Z    | |__________________________________^
+2026-11-12T21:51:38.0726017Z    |
+2026-11-12T21:51:38.0726400Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0726748Z 
+2026-11-12T21:51:38.0727053Z warning: call to `std::mem::drop` with a value that does not implement `Drop`. Dropping such a type only extends its contained lifetimes
+2026-11-12T21:51:38.0727553Z   --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:9
+2026-11-12T21:51:38.0728116Z    |
+2026-11-12T21:51:38.0728284Z 92 |         drop(sources);
+2026-11-12T21:51:38.0728364Z    |         ^^^^^^^^^^^^^
+2026-11-12T21:51:38.0728430Z    |
+2026-11-12T21:51:38.0728773Z note: argument has type `neuron_cell_evaluation_qualification_owner::sources::OriginalCellEvaluationQualificationSourcesV1<'_, C, F, X>`
+2026-11-12T21:51:38.0728923Z   --> hepta-agentd/src/neuron_cell_evaluation_panel_member.rs:92:14
+2026-11-12T21:51:38.0728987Z    |
+2026-11-12T21:51:38.0729069Z 92 |         drop(sources);
+2026-11-12T21:51:38.0729145Z    |              ^^^^^^^
+2026-11-12T21:51:38.0729403Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#drop_non_drop
+2026-11-12T21:51:38.0729528Z    = note: `#[warn(clippy::drop_non_drop)]` on by default
+2026-11-12T21:51:38.0729532Z 
+2026-11-12T21:51:38.0729647Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0729788Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:51:5
+2026-11-12T21:51:38.0729855Z    |
+2026-11-12T21:51:38.0729951Z 51 | /     pub fn from_original_stream(
+2026-11-12T21:51:38.0730040Z 52 | |         stream: UnixStream,
+2026-11-12T21:51:38.0730147Z 53 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0730245Z 54 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0730315Z ...  |
+2026-11-12T21:51:38.0730391Z 60 | |         lifetime: Duration,
+2026-11-12T21:51:38.0730480Z 61 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0730562Z    | |____________________________^
+2026-11-12T21:51:38.0730626Z    |
+2026-11-12T21:51:38.0730899Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0731003Z 
+2026-11-12T21:51:38.0731114Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0731243Z   --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:76:5
+2026-11-12T21:51:38.0731316Z    |
+2026-11-12T21:51:38.0731415Z 76 | /     pub fn recover_from_original_stream(
+2026-11-12T21:51:38.0731495Z 77 | |         stream: UnixStream,
+2026-11-12T21:51:38.0731600Z 78 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0731689Z 79 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0731754Z ...  |
+2026-11-12T21:51:38.0731835Z 85 | |         lifetime: Duration,
+2026-11-12T21:51:38.0731919Z 86 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0731989Z    | |____________________________^
+2026-11-12T21:51:38.0732058Z    |
+2026-11-12T21:51:38.0732318Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0732322Z 
+2026-11-12T21:51:38.0732431Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:38.0732573Z    --> hepta-agentd/src/neuron_cell_evaluation_host_command.rs:101:5
+2026-11-12T21:51:38.0732643Z     |
+2026-11-12T21:51:38.0732718Z 101 | /     fn bind_initial(
+2026-11-12T21:51:38.0732801Z 102 | |         stream: UnixStream,
+2026-11-12T21:51:38.0732913Z 103 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0733001Z 104 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0733075Z ...   |
+2026-11-12T21:51:38.0733155Z 111 | |         origin: Origin,
+2026-11-12T21:51:38.0733234Z 112 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0733312Z     | |____________________________^
+2026-11-12T21:51:38.0733382Z     |
+2026-11-12T21:51:38.0733641Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0733644Z 
+2026-11-12T21:51:38.0733754Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0733932Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_connection.rs:47:5
+2026-11-12T21:51:38.0733995Z    |
+2026-11-12T21:51:38.0734088Z 47 | /     pub fn from_original_stream(
+2026-11-12T21:51:38.0734171Z 48 | |         stream: UnixStream,
+2026-11-12T21:51:38.0734272Z 49 | |         peer: LearningIterationEvidencePeerV1,
+2026-11-12T21:51:38.0734465Z 50 | |         original_owner_pidfd: OwnedFd,
+2026-11-12T21:51:38.0734538Z ...  |
+2026-11-12T21:51:38.0734612Z 56 | |         lifetime: Duration,
+2026-11-12T21:51:38.0734698Z 57 | |     ) -> Result<Self, Error> {
+2026-11-12T21:51:38.0734771Z    | |____________________________^
+2026-11-12T21:51:38.0734835Z    |
+2026-11-12T21:51:38.0735106Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0735110Z 
+2026-11-12T21:51:38.0735215Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0735379Z    --> hepta-agentd/src/neuron_cell_evaluation_model_material_proofs.rs:300:1
+2026-11-12T21:51:38.0735453Z     |
+2026-11-12T21:51:38.0735540Z 300 | / pub(super) fn publication(
+2026-11-12T21:51:38.0735616Z 301 | |     member: &Member,
+2026-11-12T21:51:38.0735695Z 302 | |     context: &Context,
+2026-11-12T21:51:38.0735770Z 303 | |     bundle: &Bundle,
+2026-11-12T21:51:38.0735838Z ...   |
+2026-11-12T21:51:38.0735957Z 309 | |     signatures: [&SignedLearningEvidenceV1; 3],
+2026-11-12T21:51:38.0736042Z 310 | | ) -> Result<(), Error> {
+2026-11-12T21:51:38.0736112Z     | |______________________^
+2026-11-12T21:51:38.0736182Z     |
+2026-11-12T21:51:38.0736444Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0736447Z 
+2026-11-12T21:51:38.0736545Z warning: large size difference between variants
+2026-11-12T21:51:38.0736653Z   --> hepta-agentd/src/notes_thread_status.rs:82:1
+2026-11-12T21:51:38.0736724Z    |
+2026-11-12T21:51:38.0736812Z 82 | / pub(super) enum StatusDiscovery {
+2026-11-12T21:51:38.0736996Z 83 | |     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:51:38.0737169Z    | |     ----------------------------------- the largest variant contains at least 224 bytes
+2026-11-12T21:51:38.0737257Z 84 | |     Unknown(StatusUnknownReason),
+2026-11-12T21:51:38.0737429Z    | |     ---------------------------- the second-largest variant contains at least 1 bytes
+2026-11-12T21:51:38.0737500Z 85 | | }
+2026-11-12T21:51:38.0737589Z    | |_^ the entire enum is at least 224 bytes
+2026-11-12T21:51:38.0737867Z    |
+2026-11-12T21:51:38.0738209Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0738477Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0738550Z    |
+2026-11-12T21:51:38.0738657Z 83 -     Found(VerifiedNotesThreadOperation),
+2026-11-12T21:51:38.0738761Z 83 +     Found(Box<VerifiedNotesThreadOperation>),
+2026-11-12T21:51:38.0738839Z    |
+2026-11-12T21:51:38.0738843Z 
+2026-11-12T21:51:38.0738948Z warning: large size difference between variants
+2026-11-12T21:51:38.0739121Z    --> hepta-agentd/src/circuit_retained_version_issuer_support_tests.rs:140:1
+2026-11-12T21:51:38.0739186Z     |
+2026-11-12T21:51:38.0739286Z 140 | / enum RetainedIssuerReplyV1 {
+2026-11-12T21:51:38.0739374Z 141 | |     Signed(SignedFinalUseGrant),
+2026-11-12T21:51:38.0739531Z     | |     --------------------------- the largest variant contains at least 280 bytes
+2026-11-12T21:51:38.0739605Z 142 | |     Denied,
+2026-11-12T21:51:38.0739737Z     | |     ------ the second-largest variant carries no data at all
+2026-11-12T21:51:38.0739806Z 143 | |     LoseAck,
+2026-11-12T21:51:38.0739881Z 144 | | }
+2026-11-12T21:51:38.0739966Z     | |_^ the entire enum is at least 280 bytes
+2026-11-12T21:51:38.0740040Z     |
+2026-11-12T21:51:38.0740316Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0740579Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0740643Z     |
+2026-11-12T21:51:38.0740735Z 141 -     Signed(SignedFinalUseGrant),
+2026-11-12T21:51:38.0740958Z 141 +     Signed(Box<SignedFinalUseGrant>),
+2026-11-12T21:51:38.0741021Z     |
+2026-11-12T21:51:38.0741024Z 
+2026-11-12T21:51:38.0741137Z warning: this function has too many arguments (8/7)
+2026-11-12T21:51:38.0741313Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:1
+2026-11-12T21:51:38.0741378Z     |
+2026-11-12T21:51:38.0741463Z 302 | / pub(super) fn material(
+2026-11-12T21:51:38.0741559Z 303 | |     root: &std::path::Path,
+2026-11-12T21:51:38.0741639Z 304 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:38.0741726Z 305 | |     credentials: &Credentials,
+2026-11-12T21:51:38.0741797Z ...   |
+2026-11-12T21:51:38.0741917Z 310 | |     publication: &CircuitTaskSourcePublicationV1,
+2026-11-12T21:51:38.0742010Z 311 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:38.0742090Z     | |_____________________________^
+2026-11-12T21:51:38.0742155Z     |
+2026-11-12T21:51:38.0742422Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0742429Z 
+2026-11-12T21:51:38.0742542Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:38.0742699Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:325:1
+2026-11-12T21:51:38.0742771Z     |
+2026-11-12T21:51:38.0742884Z 325 | / pub(super) fn unstarted_material_with_profile(
+2026-11-12T21:51:38.0742961Z 326 | |     _root: &std::path::Path,
+2026-11-12T21:51:38.0743047Z 327 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:38.0743133Z 328 | |     credentials: &Credentials,
+2026-11-12T21:51:38.0743197Z ...   |
+2026-11-12T21:51:38.0743279Z 338 | |     crate::CellQ24SgdRuleV1,
+2026-11-12T21:51:38.0743354Z 339 | | )> {
+2026-11-12T21:51:38.0743515Z     | |__^
+2026-11-12T21:51:38.0743585Z     |
+2026-11-12T21:51:38.0743847Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0743850Z 
+2026-11-12T21:51:38.0743950Z warning: this function has too many arguments (9/7)
+2026-11-12T21:51:38.0744116Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:1
+2026-11-12T21:51:38.0744186Z     |
+2026-11-12T21:51:38.0744276Z 437 | / pub(super) fn material_with_profile(
+2026-11-12T21:51:38.0744364Z 438 | |     root: &std::path::Path,
+2026-11-12T21:51:38.0744448Z 439 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:38.0744524Z 440 | |     credentials: &Credentials,
+2026-11-12T21:51:38.0744595Z ...   |
+2026-11-12T21:51:38.0744685Z 446 | |     evaluation_profile: Digest32,
+2026-11-12T21:51:38.0744768Z 447 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:38.0744846Z     | |_____________________________^
+2026-11-12T21:51:38.0744916Z     |
+2026-11-12T21:51:38.0745173Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0745176Z 
+2026-11-12T21:51:38.0745292Z warning: this function has too many arguments (10/7)
+2026-11-12T21:51:38.0745458Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:464:1
+2026-11-12T21:51:38.0745523Z     |
+2026-11-12T21:51:38.0745644Z 464 | / pub(super) fn material_with_profile_and_observer(
+2026-11-12T21:51:38.0745726Z 465 | |     root: &std::path::Path,
+2026-11-12T21:51:38.0745802Z 466 | |     writer: &mut LedgerWriter,
+2026-11-12T21:51:38.0745888Z 467 | |     credentials: &Credentials,
+2026-11-12T21:51:38.0746009Z ...   |
+2026-11-12T21:51:38.0746130Z 474 | |     next_use_observer: StableId,
+2026-11-12T21:51:38.0746248Z 475 | | ) -> anyhow::Result<Material> {
+2026-11-12T21:51:38.0746359Z     | |_____________________________^
+2026-11-12T21:51:38.0746439Z     |
+2026-11-12T21:51:38.0746714Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#too_many_arguments
+2026-11-12T21:51:38.0746718Z 
+2026-11-12T21:51:38.0746824Z warning: large size difference between variants
+2026-11-12T21:51:38.0746988Z   --> hepta-agentd/src/circuit_original_evaluation_host_support_tests.rs:34:1
+2026-11-12T21:51:38.0747190Z    |
+2026-11-12T21:51:38.0747282Z 34 | /  enum TrainingComposition {
+2026-11-12T21:51:38.0747349Z 35 | |      Fixture,
+2026-11-12T21:51:38.0747481Z    | |      ------- the second-largest variant carries no data at all
+2026-11-12T21:51:38.0747558Z 36 | |/     Original {
+2026-11-12T21:51:38.0747886Z 37 | ||         connection: crate::OriginalCellQ24TrainingReadbackConnectionV1,
+2026-11-12T21:51:38.0748037Z 38 | ||         dataset: crate::OriginalCellQ24MaterialCommandReceiptV1,
+2026-11-12T21:51:38.0748189Z 39 | ||         training: crate::OriginalCellQ24TrainingCommandReceiptV1,
+2026-11-12T21:51:38.0748255Z 40 | ||     },
+2026-11-12T21:51:38.0748387Z    | ||_____- the largest variant contains at least 4968 bytes
+2026-11-12T21:51:38.0748459Z 41 | |  }
+2026-11-12T21:51:38.0748552Z    | |__^ the entire enum is at least 4968 bytes
+2026-11-12T21:51:38.0748626Z    |
+2026-11-12T21:51:38.0748897Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#large_enum_variant
+2026-11-12T21:51:38.0749164Z help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+2026-11-12T21:51:38.0749236Z    |
+2026-11-12T21:51:38.0749418Z 37 ~         connection: Box<crate::OriginalCellQ24TrainingReadbackConnectionV1>,
+2026-11-12T21:51:38.0749562Z 38 ~         dataset: Box<crate::OriginalCellQ24MaterialCommandReceiptV1>,
+2026-11-12T21:51:38.0749720Z 39 ~         training: Box<crate::OriginalCellQ24TrainingCommandReceiptV1>,
+2026-11-12T21:51:38.0749791Z    |
+2026-11-12T21:51:38.0749795Z 
+2026-11-12T21:51:38.0749912Z warning: local variable doesn't need to be boxed here
+2026-11-12T21:51:38.0750170Z    --> hepta-agentd/src/circuit_evaluated_selection_command_tests.rs:109:31
+2026-11-12T21:51:38.0750242Z     |
+2026-11-12T21:51:38.0750420Z 109 |     fn recover_original_owner(self: Box<Self>) -> anyhow::Result<Box<Self>> {
+2026-11-12T21:51:38.0750496Z     |                               ^^^^
+2026-11-12T21:51:38.0750574Z     |
+2026-11-12T21:51:38.0750839Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#boxed_local
+2026-11-12T21:51:38.0750947Z     = note: `#[warn(clippy::boxed_local)]` on by default
+2026-11-12T21:51:38.0750950Z 
+2026-11-12T21:51:38.0751038Z warning: 88 warnings emitted
+2026-11-12T21:51:38.0751041Z 
+2026-11-12T21:51:38.5593988Z [38,902 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 68s remote, remote-cache ... (2 actions running)
+2026-11-12T21:51:46.6309853Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-unit-tests-bin (967 files):
+2026-11-12T21:51:46.6310428Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:51:46.6310834Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:46.6311110Z     |
+2026-11-12T21:51:46.6311287Z  84 | impl LedgerFixture {
+2026-11-12T21:51:46.6311554Z     | ------------------ associated items in this implementation
+2026-11-12T21:51:46.6311814Z ...
+2026-11-12T21:51:46.6312050Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:46.6312354Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6312568Z ...
+2026-11-12T21:51:46.6312759Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:51:46.6313015Z     |                   ^^^^^
+2026-11-12T21:51:46.6313195Z     |
+2026-11-12T21:51:46.6313417Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:51:46.6313626Z 
+2026-11-12T21:51:46.6313735Z warning: function `append_decision` is never used
+2026-11-12T21:51:46.6314058Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:51:46.6314334Z     |
+2026-11-12T21:51:46.6314633Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:51:46.6315052Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6315485Z 
+2026-11-12T21:51:46.6315576Z warning: function `closure` is never used
+2026-11-12T21:51:46.6315861Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:51:46.6316137Z     |
+2026-11-12T21:51:46.6316303Z 212 | pub(super) fn closure(
+2026-11-12T21:51:46.6316500Z     |               ^^^^^^^
+2026-11-12T21:51:46.6316619Z 
+2026-11-12T21:51:46.6316774Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:51:46.6317126Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:51:46.6317387Z    |
+2026-11-12T21:51:46.6317559Z 84 | impl LedgerFixture {
+2026-11-12T21:51:46.6318058Z    | ------------------ associated function in this implementation
+2026-11-12T21:51:46.6318314Z ...
+2026-11-12T21:51:46.6318545Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:51:46.6318831Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6318989Z 
+2026-11-12T21:51:46.6319098Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:51:46.6319389Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:51:46.6319644Z    |
+2026-11-12T21:51:46.6319814Z 22 | pub(super) enum Status {
+2026-11-12T21:51:46.6320024Z    |                 ------ variant in this enum
+2026-11-12T21:51:46.6320239Z ...
+2026-11-12T21:51:46.6320396Z 26 |     Unavailable = 4,
+2026-11-12T21:51:46.6320576Z    |     ^^^^^^^^^^^
+2026-11-12T21:51:46.6320748Z    |
+2026-11-12T21:51:46.6321114Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:51:46.6321458Z 
+2026-11-12T21:51:46.6321751Z warning: field `at` is never read
+2026-11-12T21:51:46.6322049Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:51:46.6322328Z    |
+2026-11-12T21:51:46.6322491Z 91 | pub(super) struct Fixture {
+2026-11-12T21:51:46.6322705Z    |                   ------- field in this struct
+2026-11-12T21:51:46.6322943Z 92 |     root: PathBuf,
+2026-11-12T21:51:46.6323131Z 93 |     pub(super) at: u64,
+2026-11-12T21:51:46.6323317Z    |                ^^
+2026-11-12T21:51:46.6323430Z 
+2026-11-12T21:51:46.6323564Z warning: associated function `from_research_store` is never used
+2026-11-12T21:51:46.6323892Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:51:46.6324142Z     |

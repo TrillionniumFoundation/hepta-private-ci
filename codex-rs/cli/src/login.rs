@@ -576,13 +576,8 @@ async fn load_config_or_exit(cli_config_overrides: CliConfigOverrides) -> Config
     }
 }
 
-fn safe_format_key(key: &str) -> String {
-    if key.len() <= 13 {
-        return "***".to_string();
-    }
-    let prefix = &key[..8];
-    let suffix = &key[key.len() - 5..];
-    format!("{prefix}***{suffix}")
+fn safe_format_key(_key: &str) -> String {
+    "***".to_string()
 }
 
 #[cfg(test)]
@@ -628,12 +623,40 @@ mod tests {
     #[test]
     fn formats_long_key() {
         let key = "sk-proj-1234567890ABCDE";
-        assert_eq!(safe_format_key(key), "sk-proj-***ABCDE");
+        assert_eq!(safe_format_key(key), "***");
+    }
+
+    #[test]
+    fn fourteen_byte_keys_are_fully_redacted() {
+        let key = "sk-12345678901";
+        assert_eq!(safe_format_key(key), "***");
     }
 
     #[test]
     fn short_key_returns_stars() {
         let key = "sk-proj-12345";
         assert_eq!(safe_format_key(key), "***");
+    }
+
+    #[test]
+    fn non_ascii_keys_are_fully_redacted() {
+        for key in [
+            "sk-proj-é1234567890",
+            "sk-proj-1234567890🦀",
+            "密钥密钥密钥密钥密钥",
+        ] {
+            assert_eq!(safe_format_key(key), "***");
+        }
+    }
+
+    #[test]
+    fn control_characters_are_never_emitted() {
+        for key in [
+            "\x1b[31msk-proj-1234567890",
+            "sk-proj-1234567890AB\nDE",
+            "sk-proj-1234567890AB\x7fDE",
+        ] {
+            assert_eq!(safe_format_key(key), "***");
+        }
     }
 }

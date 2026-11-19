@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "capturedUtc": "2026-11-16T18:35:50.008172+00:00",
+  "executedAgentdBase": "3d6d17adfa92757085a371d67cd269e043d8dbed",
+  "executedAgentdTree": "2df942a48b4deb6b3539a48f6417f5308aabada3",
+  "executedAgentdOverlay": "Four fixture files listed in darwin-source-and-validation.json",
+  "laterCombinedCandidate": "7b718db56f941d779f53d94cb9177fe8b0eae090",
+  "laterCombinedTree": "46b6d43c409bdd6aa46e49282f98c2fa6495e5b0",
+  "hostedObservedHead": "7e04259b85ee2d3c31182c6b4be8b6a3ace29fc0",
+  "nativeScopes": {
+    "agentdSelected": {
+      "run": 22,
+      "passed": 22,
+      "otherTestsNotSelected": 1596,
+      "inputs": 7777,
+      "allInputsUnchanged": true,
+      "host": "Linux with owned symlink temporary root"
+    },
+    "ptyConfiguredMac": {
+      "focusedRun": 1,
+      "focusedPassed": 1,
+      "fullPackageRun": 30,
+      "fullPackagePassed": 30,
+      "inputs": 12014,
+      "allInputsUnchanged": true
+    }
+  },
+  "maintenance": {
+    "scope": [
+      "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/README.md",
+      "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/darwin-source-and-validation.json",
+      "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/hosted-7e-final-status.json",
+      "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/mac-pty-validation.json"
+    ],
+    "cwd": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-login-diagnostics-review",
+    "prettier": {
+      "argv": [
+        "/usr/bin/node",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/prettier-dist-3.5.3/bin/prettier.cjs",
+        "--config",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/ci-login-diagnostics-review/.prettierrc.toml",
+        "--check",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/README.md",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/darwin-source-and-validation.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/hosted-7e-final-status.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/mac-pty-validation.json"
+      ],
+      "returncode": 0,
+      "logSha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    "codespell": {
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "codespell_lib",
+        "--count",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-00,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-01,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-02,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-03,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-04,./archive/branch-convergence-20261113/historical-automation/originals/scripts/.hepta-intelligence-bootstrap/part-05,./qualification/memory-cell-mem9-causal-20261112/EVIDENCE.tar.xz.b64,./qualification/hcsn_differentiable/evidence/p0p5-20261110/review/baseline36-c1-native-v1/v2/bootstrap/6e1c204a063b39f1fff14c405c09d153fe3ca57f.json,./qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/codespell-fix/original-red.stdout,./qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/numerical-audit/collector-launch/git-response.json,./qualification/hcsn_joint_dde/evidence/all-visits-attempt002/review_visited_l8_raw.py,./library-recovery/plaintext-source-continuation-20261103/objects/5af07857378b92a86da62af1f1bb18558eefaece.patch,./library-recovery/retained-build-source-20261103/objects/b566b9f3055daec20a773a0e52d329760efc0e46.patch,./library-recovery/source-companion-documents-20261103/objects/2a7eb1137ff5639ed4c044e4fb9d36808c651f8f.md,./library-recovery/source-context-20261103/objects/012a448a0619582d8c6161ad41d9fb48438a98d1.md,./library-recovery/source-context-20261103/objects/55f77c496eb414023f8bb78a55d9b0527af9eef4.md,./library-recovery/source-context-20261103/objects/8bab527bdc9fd566625ddbf15da1f188166981ce.md,./library-recovery/source-package-guides-20261103/objects/2e4668ef62528cef691a8a662756227a83a02c5b.md,./library-recovery/source-package-guides-20261103/objects/42e4a96e5c4ab3a33cab491207a7d7e22ee922e8.md,./library-recovery/source-package-guides-20261103/objects/904c5746848a8366d846575ed728a94477410aa5.md,./library-recovery/source-package-guides-20261103/objects/be70b7b06d8c03059ae7d56988a465830bc57a2a.md,./library-recovery/source-package-guides-20261103/objects/cf54f405509f0a9dd89dbdb7e4eba69cf3f93d2c.md,./library-recovery/source-package-guides-20261103/objects/e19dc62c3b1bd74cfee628a02241cadbd6390cdb.md,./qualification/memory-cell-mem6/run-001/raw-transfer/complete-20261111-ed353/missing-000046379392.part,./qualification/memory-cell-mem6/run-001/raw-transfer/complete-20261111-ed353/missing-000049879392.part",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/README.md",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/darwin-source-and-validation.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/hosted-7e-final-status.json",
+        "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/darwin-pty-publication-v1/publication/mac-pty-validation.json"
+      ],
+      "returncode": 0,
+      "logSha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    "codespellPythonPath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/codespell_vendor",
+    "binaryArchiveRoundTripVerified": true,
+    "allScopeOnlyNotWholeRepository": true
+  },
+  "prettierCheckLog": "Checking formatting...\nAll matched files use Prettier code style!\n",
+  "codespellLog": "0\n",
+  "entries": [
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/README.md",
+      "baseBlob": null,
+      "postBlob": "7ca00474d8929dd65022fd646fceae554565e9e7",
+      "bytes": 3329,
+      "sha256": "82083e8e1390a83ac951e1b6c7050828db61cae8e7b5e97b63b23e573309a72c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-source-and-validation.json",
+      "baseBlob": null,
+      "postBlob": "36db359955786cd26709709577e0096a4473e209",
+      "bytes": 23210,
+      "sha256": "ef435ef18d111baf01e642aee1251563ec325bcb6d0e99b68b8899dda56fedd0",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/mac-pty-validation.json",
+      "baseBlob": null,
+      "postBlob": "b5e08f9dfb1da68d798ddc2cafaefad21c8f1997",
+      "bytes": 11562,
+      "sha256": "f44fee7079725225b73d1c8ab5b85bf6d839c4ef207a706b1e5d9eb5a00913fe",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/hosted-7e-final-capture.tar.gz",
+      "baseBlob": null,
+      "postBlob": "09e756ad35a13c70b4abd124cbcc6a85f4bcc932",
+      "bytes": 68494,
+      "sha256": "9b6e6741c9626aea58e0fe666f5c23f4373848ad3baafdd7a4848e161aef6593",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/hosted-7e-final-status.json",
+      "baseBlob": null,
+      "postBlob": "319967b6f3de31b46d865d7e87d865f84afa3ad9",
+      "bytes": 5748,
+      "sha256": "73303d0b8194c0b7a4e9e187443b472c9a414ee4503c28e40c7fb95543480fd1",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-native-proof.part-0000.gz",
+      "baseBlob": null,
+      "postBlob": "395755beb58dacb1654d199ddec4cd3282f509db",
+      "bytes": 480000,
+      "sha256": "0289903b567578001fc5a40a74864b2910e3f02c9952430725857306ae88651e",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-native-proof.part-0001.gz",
+      "baseBlob": null,
+      "postBlob": "a7f797f1d7b0bfdfb2c25c5cef7d0b8afd8bb7e0",
+      "bytes": 480000,
+      "sha256": "524877f43dc641ffa94c062ca08e3a1a6323ae3786702a413c22b578c0c3e185",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-native-proof.part-0002.gz",
+      "baseBlob": null,
+      "postBlob": "edc3d6fc3df6a00ab405d2fffa2225ab3631e0c8",
+      "bytes": 480000,
+      "sha256": "c64267848141581f62db8bfdd24090a73744ed5a8065bc96ea8184e3233487f8",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-native-proof.part-0003.gz",
+      "baseBlob": null,
+      "postBlob": "c6a02e7dd571b93897b7770b67f7d9efa8bb9f12",
+      "bytes": 480000,
+      "sha256": "c8130819f095b73b56e067c325731ce671abd5698ede06be58ec3dcf6d6968ea",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/darwin-native-proof.part-0004.gz",
+      "baseBlob": null,
+      "postBlob": "421bdd6c0ad0ce4fee517257fed2ce87bb4be522",
+      "bytes": 175585,
+      "sha256": "d6202aca627221d93341125e41c6c88ba7d0df069dcd80288d40c8d80f559f10",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/mac-pty-native-proof.part-0000.gz",
+      "baseBlob": null,
+      "postBlob": "3b7d5a1ea96c3e875469701f549483362eaa76a5",
+      "bytes": 480000,
+      "sha256": "b406e846be0aa6ccc9d2d170a494ae852fd53c7b15eb66ed609b8d87cbe197bb",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/mac-pty-native-proof.part-0001.gz",
+      "baseBlob": null,
+      "postBlob": "0316e2c46ce6ca120f2780441e999ac28261cc21",
+      "bytes": 480000,
+      "sha256": "7a9500c6d17b086a8b7a7b8de9f456bca9c454bb049466834be68e5fe916e06c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/mac-pty-native-proof.part-0002.gz",
+      "baseBlob": null,
+      "postBlob": "27b39c988acde515c30a0399a7418dde74f6a003",
+      "bytes": 480000,
+      "sha256": "7a2f149eb83082cb2edac346a7d9cc924aa5de9dc9ec64358e93ede0e25d615a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/darwin-pty-v1/mac-pty-native-proof.part-0003.gz",
+      "baseBlob": null,
+      "postBlob": "37f2ea9f298d7d697c2e9de88fd35e923a741180",
+      "bytes": 235774,
+      "sha256": "1d74677ab75b27cb7eacd1bcf4d9ca0a5f5b4b0479968896f9e49b0848d3ff67",
+      "mode": "100644"
+    }
+  ],
+  "roundTripAndEveryArchiveMemberVerified": true,
+  "originalFailuresRetained": true,
+  "wholeRepositoryQualificationClaimed": false,
+  "originalHostedPtyFailureCauseEstablished": false,
+  "remoteRefMutations": 0
+}

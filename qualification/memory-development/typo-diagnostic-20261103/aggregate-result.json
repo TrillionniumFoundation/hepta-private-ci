@@ -1,0 +1,51 @@
+{
+  "status": "DIAGNOSTIC_NO_GO",
+  "scope": "EXPOSED_DEVELOPMENT_SYNTHETIC_TYPO_ONLY",
+  "selected_alpha": 0.1,
+  "checks": {
+    "clean_no_loss": true,
+    "typo_gain_at_least_005": false,
+    "cold_wall_at_most_2x": false
+  },
+  "median_wall_ratio": 3.02986101131919,
+  "model_forwards": 0,
+  "test72_reads": 0,
+  "generalization_claim": false,
+  "whole_wall_seconds": 0.5133131189995765,
+  "counts": {
+    "train_queries": 48,
+    "dev_queries": 25,
+    "dev_components": 2,
+    "dev_queries_perturbed": 25
+  },
+  "quality": {
+    "baseline": {
+      "clean_correct": 25,
+      "typo_correct": 25
+    },
+    "candidate": {
+      "clean_correct": 25,
+      "typo_correct": 25
+    }
+  },
+  "timing": {
+    "baseline_median_seconds": 0.01083245299923874,
+    "candidate_median_seconds": 0.03282082699934108
+  },
+  "limitations": [
+    "Historical development data already exposed; no source-held-out generalization.",
+    "Synthetic one-character transposition, not a real-user typo distribution.",
+    "Same-process cold index construction and scoring, not fresh-process startup.",
+    "Protocol frozen before execution. Source hash first persisted after TRAIN selection, before DEV scoring; source was not independently hash-frozen before TRAIN.",
+    "Public runner adapts data/output paths to command-line options after execution; ranking logic unchanged.",
+    "Producer self-check only unless independent review separately recorded."
+  ],
+  "limits_additional": [
+    "Zero model calls and sealed-test reads are code/report observations, not an independently instrumented access audit.",
+    "Runner is single-threaded Python; external environment thread settings were supplied, but no two-thread enforcement is implemented.",
+    "300-second limit is checked between rows; it is not an interrupting hard timeout.",
+    "Independent arithmetic review confirmed result calculations, but did not independently remeasure runtime.",
+    "Published runner hash identifies the sanitized derivative, not the originally executed file."
+  ],
+  "published_runner_sha256": "dfc263b045fbbff4d33cf8340fb0a53139dfd2b43520f55358b163a7b601e6fd"
+}

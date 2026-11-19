@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "title": "Publication component original registered paths are inaccessible to its real non-Root child",
+  "baseline_commit": "2d3a240d48aaa733775b134877c43981db50b702",
+  "baseline_tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16",
+  "actual_v3_evidence": {
+    "junit": {
+      "git_blob": "db50c213e12d5a759544f352eea77b36bcd96afa",
+      "bytes": 8689,
+      "sha256": "4402806b645d9c993b96a7b3a98792347a569f1380e01a537bfad5ffe798d527"
+    },
+    "execution_git_blob": "4f0f4a97b2456961707f461e235f4690b56f005d",
+    "reported_selected_executed": 17,
+    "reported_selected_passed": 15,
+    "reported_selected_failed": 2,
+    "child_phase": "Publish",
+    "publication_last_progress": "ROOT_PUBLICATION_CHILD phase=Publish step=receive-original-offers",
+    "initial_last_progress": "ROOT_INITIAL_CHILD phase=Publish stage=awaiting_original_handoffs",
+    "first_visible_child_error": "Permission denied (os error 13)",
+    "child_exit": 101,
+    "parent_service_consequence": "owner process exited",
+    "parent_control_consequence": "timeout waiting for LEARNING_AND_ORIGINAL_INPUTS_READY; raw EAGAIN is not the first child error"
+  },
+  "source_facts": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_config.rs",
+      "git_blob": "24c49866fdd994f8bc2c1b9fdc40342149525bca",
+      "bytes": 7060,
+      "function": "HostAuthorityRegisteredIdentity::identity",
+      "fact": "Checks nonzero spawn_generation and exact fleet_root.canonicalize()/workspace.canonicalize(), then derives original paths; no non-Root path-ownership exemption or fallback."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+      "bytes": 30230,
+      "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225",
+      "fact": "Creates fleet and workspace under the protected Root-owned mode0700 directory, then registers those exact paths. The child is actual uid/gid60001 and separately asserts the protected directory is inaccessible."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+      "bytes": 15383,
+      "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8",
+      "fact": "After successful Context-wrapped production handoff, calls original.registered_identity.identity()? without Context; both real non-Root child variants share this path."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "git_blob": "60d210626d1bde702a7e848e21235d69c48611c0",
+      "bytes": 13853,
+      "function": "read_bootstrap",
+      "fact": "The original product five-lane entry repeats the exact same registered identity validation; bypassing only the preliminary test call cannot repair this input."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_fresh.rs",
+      "git_blob": "b1046a8df09092a9d9aeea38f9ead6d1a2b3eaf4",
+      "bytes": 5451,
+      "function": "FreshHostCognitiveState::prepare / validate_fresh_custody",
+      "fact": "Still requires the original Registry Starting record, Root0700 agent/cognitive/run directories and Root0600 writer. This patch does not transfer those files or use an alternate constructor."
+    }
+  ],
+  "conclusion": "A concrete fixture construction defect is established: its registered ordinary paths are necessarily inaccessible to the actual child. This explains the stage and bare EACCES consistently with the actual V3 log. No syscall trace was captured, and this patch is not claimed to resolve any later stage before a new run.",
+  "repair": [
+    "Move the already-existing /run runtime-directory construction earlier without changing its Root:60001 mode02710.",
+    "Create only ordinary workspace and fleet under that runtime parent. After FleetRegistry initialization explicitly set those two directory nodes to Root:60001 mode0710, with only peer search permission and no peer read/list/write permission.",
+    "Register the actual new fleet_path and workspace before the original fresh state, writer registration and sealed handoff. All registrations still use the same actual original path identities.",
+    "Keep Root protected/config/issuer/CURRENT/journal/witness locations and all internal file permissions unchanged; no recursive chown or change to production identity checks.",
+    "Add phase Context to the child's two original registered-identity calls."
+  ],
+  "scope": {
+    "changed_test_files": 2,
+    "production_files_changed": 0,
+    "callers_changes": 0,
+    "root_parent_roster_changes": 0,
+    "new_parent_tests": 0,
+    "complete_agent_filesystem_handoff": false,
+    "ordinary_complete": 0,
+    "positive_adoption_chain": 0,
+    "no_update_or_rollback_chain": 0,
+    "physical_cold_restart": 0
+  },
+  "validation": {
+    "exact_ops_replay": true,
+    "postimage_api_sha_verified": true,
+    "all_original_assertion_negative_timeout_token_sequences_equal": true,
+    "rust_compile": false,
+    "native": false,
+    "root_test_run": false,
+    "refs_changed": false,
+    "old_attempt_modified": false
+  },
+  "followup": "Integrate with the separately owned Initial fixture repair, freeze a new source, then run original Root diagnostics under root's sole scheduler. Keep all 15 old passes and both failures attributed only to 2d3a240.",
+  "final_permission_refinement": {
+    "reason": "Independent permission review found canonicalize needs search, not directory listing. Tighten only the two newly accessible ordinary directory nodes from0750 to0710.",
+    "earlier_fixture_git_blob": "2446a551c0628b8e2d6befa35f807c318dd9c147",
+    "final_fixture_git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+    "byte_delta": "exactly two literal changes 0o750->0o710",
+    "proof": {
+      "literal_changes": 2,
+      "no_remaining_new_0750": 0,
+      "unchanged_private_code": [
+        {
+          "code": "std::fs::set_permissions(protected.path(), std::fs::Permissions::from_mode(0o700))?;",
+          "before": true,
+          "after": true
+        },
+        {
+          "code": "std::fs::set_permissions(witnesses.path(), std::fs::Permissions::from_mode(0o700))?;",
+          "before": true,
+          "after": true
+        },
+        {
+          "code": "std::fs::set_permissions(&current_path, std::fs::Permissions::from_mode(0o700))?;",
+          "before": true,
+          "after": true
+        },
+        {
+          "code": "let fresh = runtime.block_on(crate::FreshHostCognitiveState::prepare(&registered))?;",
+          "before": true,
+          "after": true
+        }
+      ],
+      "only_changes_from_uploaded_750": true
+    }
+  },
+  "supersedes_git_blob": "5cc27c32b9563e77df30032f3df563d199da3f33"
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "same_session_independent_reviewer",
+  "reviewer": "/root/hcsn_repair/review_transport",
+  "random_check": {
+    "source_stage": "Before fixed-delay field change; no source digest was captured by this reviewer command",
+    "execution_tool": "exec_command",
+    "chunk_id": "db75fa",
+    "exit_code": 0,
+    "wall_time_seconds": 1.099163598,
+    "captured_tool_stdout": "{'random_cases': 1000, 'intervals_checked': 12401, 'mass_content_cdf_failures': 0}\n",
+    "script": "random_check.original.py",
+    "script_note": "Original command retained with whitespace reformatted only; no new execution. The command was not originally persisted as a filesystem script. Stdout above is transcribed verbatim from the retained tool result, not an independently stored original log file.",
+    "final_source_rerun": false
+  },
+  "static_final_review": {
+    "fixed_delay_field": "RefractoryState.delay is converted to exact rational and checked nonnegative in __post_init__",
+    "hit_shift": "advance_to uses self.delay for both hit support endpoints",
+    "state_inheritance": "new RefractoryState receives self.delay as the fifth field",
+    "per_call_override": "removed from advance_to signature",
+    "finding": "Prior mutable-delay contract issue resolved. No final-source randomized execution claimed."
+  },
+  "limits": "Synthetic rational measure transport only; no full diffusion, autograd, trained trajectory or hardware qualification. Same-session review is not external custody."
+}

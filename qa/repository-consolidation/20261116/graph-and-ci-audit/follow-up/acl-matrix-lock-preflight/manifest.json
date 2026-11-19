@@ -1,0 +1,93 @@
+{
+  "schema": "acl-matrix-lock-preflight-repair-v1",
+  "source_commit": "59a450cc7b33a2f8d833043cc093b7fc92f2b7ab",
+  "workflow_base_blob": "9f4a38a5b111a97c4793c45e925541c889100b6b",
+  "workflow_repaired_blob": "ecf17089f0313e795d8700c98bdfe553b2ea8d11",
+  "original_complete_remainder_sha256": "2aa9733f0f760902b34ff63baac2361f0925c102c31feeffb593af80fb22c391",
+  "reviewed_difference": "The single codex-hepta-matrix-sdk dependency codex-utils-path is required exactly once and removed only for comparison against the unchanged original complete lock fingerprint. The exact anyhow record remains required.",
+  "actual_inline_policy_cases": 9,
+  "all_cases_passed": true,
+  "original_hosted_failure_preserved": true,
+  "native_windows_tests_executed_by_this_check": false,
+  "windows_positive_isolation_qualified": false,
+  "format_and_spelling": "Original pinned Prettier and Codespell passed without changing their configuration or the reviewed workflow bytes.",
+  "archive": {
+    "file": "original-records.tar.gz",
+    "bytes": 252686,
+    "sha256": "119e1615dc416ff65c39cb8d79278e873b6cae2534ec8a25335c3bc3ffd78a74",
+    "members": [
+      {
+        "path": "codespell-original-check.log",
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/codespell-original-check.log"
+      },
+      {
+        "path": "maintenance-results-v1.json",
+        "bytes": 4783,
+        "sha256": "a6ca7134a1f5c2c509534baf879aa94c18c731704936a07207e829df15d54710",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/maintenance-results-v1.json"
+      },
+      {
+        "path": "matrix-Cargo.lock",
+        "bytes": 422811,
+        "sha256": "63c1a073cc1e3904198be6d9f43dce92dc06d27d5b112e6635ed7d2f44444eff",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/matrix-Cargo.lock"
+      },
+      {
+        "path": "original-Cargo.lock",
+        "bytes": 422790,
+        "sha256": "6629440b8121f2971abe2aa8e0e4cfcabb6ecac96907dd5c37b2796c11f221ff",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/original-Cargo.lock"
+      },
+      {
+        "path": "original-hosted-acl-observe.log",
+        "bytes": 89966,
+        "sha256": "bb771c1cd678710284d556a3d625d87ab9d2893d2d084a078f8a9bb47c8c5b43",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/hosted-c0e525f-v1/job-133543720721.log"
+      },
+      {
+        "path": "original-inline-validation.py",
+        "bytes": 31161,
+        "sha256": "bbe8e37e654e97a7ac7f98e69ffc8e29e5a9691cca906a740ad99d186fb72df4",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/original-inline-validation.py"
+      },
+      {
+        "path": "original-workflow.yml",
+        "bytes": 43079,
+        "sha256": "bf223c68b78ea841e1e510faac7611118596035406b1540e5bf79eff7e9df139",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/original-workflow.yml"
+      },
+      {
+        "path": "prettier-original-check.log",
+        "bytes": 66,
+        "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/prettier-original-check.log"
+      },
+      {
+        "path": "proposal.json",
+        "bytes": 5128,
+        "sha256": "42e85fceabfccb058e190f610f2091bd16649dba37fb43adbfed23cddcbac157",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/proposal.json"
+      },
+      {
+        "path": "proposal.patch",
+        "bytes": 2622,
+        "sha256": "97812e675bf575edddd339e9d03a864a5bc303d8cac04f1bcfe2893f8eb8031d",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/proposal.patch"
+      },
+      {
+        "path": "updated-inline-validation.py",
+        "bytes": 32223,
+        "sha256": "c5cfee8427f34f814e82ddea9be33ca862b68fdbcee3b521bb86881f95d30c43",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/updated-inline-validation.py"
+      },
+      {
+        "path": "updated-workflow.yml",
+        "bytes": 44301,
+        "sha256": "139f6dffb6826318ff8b4ef16fef326f2e1ad6a7da5854e1c9e2fb0cc9d57333",
+        "source": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/root-acl-matrix-lock-repair-v2/source/.github/workflows/ndu-windows-storage-probe.yml"
+      }
+    ]
+  }
+}

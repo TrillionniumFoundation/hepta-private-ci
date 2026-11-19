@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/tmp/perc-runtime-e11c/bin/python",
+    "-m",
+    "qualification.hcsn_boundary_factorial.run",
+    "--output",
+    "/workspace/scratch/8262eeaa059c/hcsn-local-full-001",
+    "--seeds",
+    "11",
+    "23",
+    "37",
+    "--updates",
+    "32",
+    "--train-per-task",
+    "4",
+    "--development-per-task",
+    "8",
+    "--wall-seconds",
+    "1200"
+  ],
+  "source_commit": "5578bd1931afcb6facbf72176cf479b902301feb",
+  "source_kind": "selected_dependency_materialization_not_full_checkout; factorial blobs unchanged in subsequent shared source heads",
+  "started_utc": "2026-11-12T00:35:43.736959+00:00",
+  "finished_utc": "2026-11-12T00:37:43.954184+00:00",
+  "returncode": 2,
+  "outer_wall_seconds": 120.21748335199936,
+  "child_user_cpu_seconds": 113.726275,
+  "child_system_cpu_seconds": 1.38941,
+  "independence": "same frozen seeds and synthetic data as planned CI; separate execution, not independent real-task sources"
+}

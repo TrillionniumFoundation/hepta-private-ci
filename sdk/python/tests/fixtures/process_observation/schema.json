@@ -1,0 +1,147 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/ProcessExitedNotification"
+    },
+    {
+      "$ref": "#/definitions/ProcessIndeterminateNotification"
+    },
+    {
+      "$ref": "#/definitions/ProcessOutputDeltaNotification"
+    }
+  ],
+  "definitions": {
+    "ProcessExitedNotification": {
+      "description": "Final process exit notification for `process/spawn`.",
+      "properties": {
+        "exitCode": {
+          "description": "Process exit code.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "processHandle": {
+          "description": "Client-supplied, connection-scoped `processHandle` from `process/spawn`.",
+          "type": "string"
+        },
+        "stderr": {
+          "description": "Buffered stderr capture.\n\nEmpty when stderr was streamed via `process/outputDelta`.",
+          "type": "string"
+        },
+        "stderrCapReached": {
+          "description": "Whether stderr reached `outputBytesCap`.\n\nIn streaming mode, stderr is empty and cap state is also reported on the final stderr `process/outputDelta` notification.",
+          "type": "boolean"
+        },
+        "stdout": {
+          "description": "Buffered stdout capture.\n\nEmpty when stdout was streamed via `process/outputDelta`.",
+          "type": "string"
+        },
+        "stdoutCapReached": {
+          "description": "Whether stdout reached `outputBytesCap`.\n\nIn streaming mode, stdout is empty and cap state is also reported on the final stdout `process/outputDelta` notification.",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "exitCode",
+        "processHandle",
+        "stderr",
+        "stderrCapReached",
+        "stdout",
+        "stdoutCapReached"
+      ],
+      "type": "object"
+    },
+    "ProcessIndeterminateNotification": {
+      "description": "Terminal observation failed for an acknowledged `process/spawn`.\n\nThe original owner remains retained and new `process/spawn` requests are fenced server-wide, including on new connections. The handle is not reusable. Only reconciliation of the original owner can establish exit; reconnecting or restarting the server is not exit evidence.",
+      "properties": {
+        "processHandle": {
+          "type": "string"
+        },
+        "reason": {
+          "$ref": "#/definitions/ProcessIndeterminateReason"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "stderrCapReached": {
+          "type": "boolean"
+        },
+        "stdout": {
+          "description": "Output observed before the original bounded drain ended; not a complete-exit claim.",
+          "type": "string"
+        },
+        "stdoutCapReached": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "processHandle",
+        "reason",
+        "stderr",
+        "stderrCapReached",
+        "stdout",
+        "stdoutCapReached"
+      ],
+      "type": "object"
+    },
+    "ProcessIndeterminateReason": {
+      "description": "The server cannot confirm the native process's exit. This is not an exit code or evidence that a cleanup request reached the process.",
+      "enum": [
+        "exitObservationLost"
+      ],
+      "type": "string"
+    },
+    "ProcessOutputDeltaNotification": {
+      "description": "Base64-encoded output chunk emitted for a streaming `process/spawn` request.",
+      "properties": {
+        "capReached": {
+          "description": "True on the final streamed chunk for this stream when output was truncated by `outputBytesCap`.",
+          "type": "boolean"
+        },
+        "deltaBase64": {
+          "description": "Base64-encoded output bytes.",
+          "type": "string"
+        },
+        "processHandle": {
+          "description": "Client-supplied, connection-scoped `processHandle` from `process/spawn`.",
+          "type": "string"
+        },
+        "stream": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ProcessOutputStream"
+            }
+          ],
+          "description": "Output stream this chunk belongs to."
+        }
+      },
+      "required": [
+        "capReached",
+        "deltaBase64",
+        "processHandle",
+        "stream"
+      ],
+      "type": "object"
+    },
+    "ProcessOutputStream": {
+      "description": "Stream label for `process/outputDelta` notifications.",
+      "oneOf": [
+        {
+          "description": "stdout stream. PTY mode multiplexes terminal output here.",
+          "enum": [
+            "stdout"
+          ],
+          "type": "string"
+        },
+        {
+          "description": "stderr stream.",
+          "enum": [
+            "stderr"
+          ],
+          "type": "string"
+        }
+      ]
+    }
+  },
+  "title": "ProcessObservation"
+}

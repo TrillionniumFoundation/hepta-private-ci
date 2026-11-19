@@ -1,0 +1,5 @@
+# Only constrain these runtime packages when the original freeze requests them.
+# Compatible CPU versions: https://pytorch.org/get-started/previous-versions/
+torch==2.10.0
+torchvision==0.25.0
+torchaudio==2.10.0

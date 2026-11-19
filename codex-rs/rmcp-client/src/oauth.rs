@@ -1,20 +1,17 @@
 //! This file handles all logic related to managing MCP OAuth credentials.
-//! All credentials are stored using the keyring crate which uses os-specific keyring services.
-//! https://crates.io/crates/keyring
-//! macOS: macOS keychain.
-//! Windows: Windows Credential Manager
-//! Linux: DBus-based Secret Service, the kernel keyutils, and a combo of the two
-//! FreeBSD, OpenBSD: DBus-based Secret Service
+//! Credential storage follows the configured OAuthCredentialsStoreMode and
+//! AuthKeyringBackendKind policy.
 //!
-//! For Linux, we use linux-native-async-persistent which uses both keyutils and async-secret-service (see below) for storage.
-//! See the docs for the keyutils_persistent module for a full explanation of why both are used. Because this store uses the
-//! async-secret-service, you must specify the additional features required by that store
+//! Direct keyring access goes through codex_keyring_store::DefaultKeyringStore.
+//! It initializes the platform store through keyring v4 and uses the synchronous
+//! keyring_core::Entry API. The current Linux dependency graph uses the ZBus
+//! Secret Service store; it does not enable the former keyring v3
+//! linux-native-async-persistent or vendored feature flags.
 //!
-//! async-secret-service provides access to the DBus-based Secret Service storage on Linux, FreeBSD, and OpenBSD. This is an asynchronous
-//! keystore that always encrypts secrets when they are transferred across the bus. If DBus isn't installed the keystore will fall back to the json
-//! file because we don't use the "vendored" feature.
-//!
-//! If the keyring is not available or fails, we fall back to CODEX_HOME/.credentials.json which is consistent with other coding CLI agents.
+//! Selecting that backend does not provide a running session bus or Secret
+//! Service. File storage and the Auto mode fallback use CODEX_HOME/.credentials.json
+//! according to the configured store policy. Explicit Keyring mode propagates
+//! backend failures instead of silently changing the selected storage mode.
 
 mod issuer_binding;
 mod refresh_lock;
@@ -1089,7 +1086,7 @@ mod tests {
     use anyhow::Result;
     use codex_keyring_store::tests::MockKeyringStore;
     use codex_secrets::compute_keyring_account;
-    use keyring::Error as KeyringError;
+    use keyring_core::Error as KeyringError;
     use pretty_assertions::assert_eq;
     use std::sync::Arc;
     #[path = "persistor_tests.rs"]

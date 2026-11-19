@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "original just fmt",
+  "source": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-local-handoff/codex-rs",
+  "started_at_utc": "2026-10-23T21:05:24.315599+00:00",
+  "finished_at_utc": "2026-10-23T21:05:24.515443+00:00",
+  "elapsed_seconds": 0.270097,
+  "exit_code": 0,
+  "status": "succeeded",
+  "log": {
+    "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format.log",
+    "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "bytes": 73
+  },
+  "before": {
+    "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+    "status_porcelain_v1": "",
+    "diff_stat": "",
+    "diff_cached_stat": "",
+    "diff": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-before-diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "diff_cached": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-before-diff_cached.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "after": {
+    "head": "9b133c5f2ebc97160f592fa32974b1f6be443c9d",
+    "status_porcelain_v1": "",
+    "diff_stat": "",
+    "diff_cached_stat": "",
+    "diff": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-after-diff.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "diff_cached": {
+      "path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/local-handoff-format-after-diff_cached.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "source_changed": false,
+  "toolchain_pin": "[toolchain]\nchannel = \"1.96.0\"\ncomponents = [\"clippy\", \"rustfmt\", \"rust-src\"]\n",
+  "scope_note": "Original no-argument recipe uses changed_paths(base=None) against HEAD. On this clean committed source it reports no changed files; this receipt establishes command completion and no source change, not a full-tree or six-commit formatting check.",
+  "tests_run": false,
+  "build_run": false,
+  "target_used": false
+}

@@ -1,0 +1,158 @@
+name: Hepta parametric memory shadow checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_research:
+        description: Run this bounded research workflow, including its declared compute and downloads
+        type: boolean
+        required: true
+        default: false
+      accept_model_terms:
+        description: "Run the pinned SmolLM2-135M-Instruct confirmation study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+# Preserve evidence from each exact source HEAD; no production gate is changed.
+concurrency:
+  group: hepta-parametric-shadow-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  PYTHONDONTWRITEBYTECODE: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  OPENBLAS_NUM_THREADS: "2"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+
+jobs:
+  parametric-memory-confirmation:
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.run_research == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify and record exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/parametric-metadata"
+          python - <<'PY'
+          import json, os, platform, subprocess
+          from pathlib import Path
+          record = {
+              "source_sha": os.environ["SOURCE_SHA"],
+              "tree_sha": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "python": platform.python_version(),
+              "platform": platform.platform(),
+              "mode": "SHADOW_ONLY",
+              "production_activation_allowed": False,
+          }
+          (Path(os.environ["RUNNER_TEMP"]) / "parametric-metadata" / "source.json").write_text(
+              json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Install pinned CPU model runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/parametric-metadata/runtime.txt"
+      - name: Run parametric unit and owner regression tests
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s scripts/memory_cell -p 'test_parametric_*.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/parametric-unit.log"
+          python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/evolution.log"
+          python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/process.log"
+      - name: Acquire the pinned public decoder
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          python scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/smol135m" --download 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/acquisition.log"
+      - name: Run the actual confirmation and require the mechanism gate
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+        timeout-minutes: 45
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python scripts/memory_cell/parametric_trial.py --model "$RUNNER_TEMP/smol135m" --output "$RUNNER_TEMP/parametric-trial" --phase confirmation 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/confirmation.log"
+      - name: Preserve reports and adapter evidence without the base checkpoint
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: parametric-memory-shadow-${{ env.SOURCE_SHA }}
+          path: |
+            ${{ runner.temp }}/parametric-metadata/
+            ${{ runner.temp }}/parametric-trial/
+            ${{ runner.temp }}/smol135m.acquisition.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Confirm source tree unchanged
+        if: always()
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,58 @@
+{
+  "schema": "verify-bazel-spawn-observation-v1",
+  "bazel": "9.3.0",
+  "artifact_id": 13739510839,
+  "artifact_sha256": "75f0d66a9bed98b735a0149e6f097dafedbf146b0201616d23d13c85092ed33b",
+  "source_head": "e4ba7c89eee20062d33303c95162e9796490d853",
+  "entries": 277928,
+  "decoded_record_bytes": 169871293,
+  "spawns": [
+    {
+      "kind": "test-execution",
+      "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "mnemonic": "TestRunner",
+      "args": [
+        "external/bazel_tools/tools/test/test-setup.sh",
+        "codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests"
+      ],
+      "exit_code": 101,
+      "runner": "remote",
+      "cache_hit": false,
+      "platform": {
+        "Arch": "amd64",
+        "OSFamily": "Linux",
+        "container-image": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+      },
+      "environment": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
+    },
+    {
+      "kind": "xml-generation",
+      "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "mnemonic": "TestRunner",
+      "args": [
+        "external/bazel_tools/tools/test/generate-xml.sh",
+        "bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests/test.log",
+        "bazel-out/rbe-fastbuild/testlogs/codex-rs/hepta-operator-acceptance/hepta-operator-acceptance-tests/test.xml",
+        "0",
+        "101"
+      ],
+      "exit_code": 0,
+      "runner": "remote",
+      "cache_hit": false,
+      "platform": {
+        "Arch": "amd64",
+        "OSFamily": "Linux",
+        "container-image": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+      },
+      "environment": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "TEST_SHARD_INDEX": "0",
+        "TEST_TOTAL_SHARDS": "0"
+      }
+    }
+  ],
+  "tool_visibility_proved": false,
+  "root_cause_closed": false
+}

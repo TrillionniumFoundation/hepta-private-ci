@@ -1,0 +1,269 @@
+{
+  "artifact_kind": "sanitized_aggregate_export_of_original_frozen_run",
+  "derivative_toy_rerun_is_not_source_of_numbers": true,
+  "aggregate": {
+    "all_arm_execution_status": {
+      "bm25": "SUCCESS",
+      "bm25_top8": "SUCCESS",
+      "hash_links": "SUCCESS",
+      "links": "SUCCESS",
+      "prf": "SUCCESS"
+    },
+    "budget_infeasible_count": 0,
+    "candidate_cold_time_ratio": 1.371678355762786,
+    "complete_counts": {
+      "bm25": 11,
+      "bm25_top8": 12,
+      "hash_links": 10,
+      "links": 10,
+      "prf": 10
+    },
+    "diagnostic_arms": [
+      "bm25_top8"
+    ],
+    "diagnostic_enters_primary_screen": false,
+    "direct_loss_count": 0,
+    "eligible": 14,
+    "eligible_rates": {
+      "bm25": 0.7857142857142857,
+      "bm25_top8": 0.8571428571428571,
+      "hash_links": 0.7142857142857143,
+      "links": 0.7142857142857143,
+      "prf": 0.7142857142857143
+    },
+    "excluded_count": 2,
+    "experimental_model_calls": 0,
+    "gains_over_each_control": {
+      "bm25": -1,
+      "hash_links": 0,
+      "prf": 0
+    },
+    "inconclusive_reasons": [],
+    "network_requests": 0,
+    "parent_count": 269,
+    "planned": 16,
+    "planned_denominator_rates": {
+      "bm25": 0.6875,
+      "bm25_top8": 0.75,
+      "hash_links": 0.625,
+      "links": 0.625,
+      "prf": 0.625
+    },
+    "rejection_reasons": [
+      "insufficient_gain_over_at_least_one_control"
+    ],
+    "scope": "single_source_development_pilot_not_confirmation",
+    "screen": "REJECT",
+    "source_files_accepted": 28,
+    "source_files_planned": 32,
+    "strata": {
+      "condition": {
+        "complete_counts": {
+          "bm25": 6,
+          "bm25_top8": 7,
+          "hash_links": 5,
+          "links": 5,
+          "prf": 5
+        },
+        "eligible": 8
+      },
+      "direct": {
+        "complete_counts": {
+          "bm25": 3,
+          "bm25_top8": 3,
+          "hash_links": 3,
+          "links": 3,
+          "prf": 3
+        },
+        "eligible": 4
+      },
+      "reference": {
+        "complete_counts": {
+          "bm25": 2,
+          "bm25_top8": 2,
+          "hash_links": 2,
+          "links": 2,
+          "prf": 2
+        },
+        "eligible": 2
+      }
+    },
+    "strongest_cheap_control": "bm25"
+  },
+  "paired_candidate_vs_control": {
+    "bm25": {
+      "both_complete": 10,
+      "candidate_only_complete": 0,
+      "control_only_complete": 1,
+      "neither_complete": 3
+    },
+    "hash_links": {
+      "both_complete": 10,
+      "candidate_only_complete": 0,
+      "control_only_complete": 0,
+      "neither_complete": 4
+    },
+    "prf": {
+      "both_complete": 10,
+      "candidate_only_complete": 0,
+      "control_only_complete": 0,
+      "neither_complete": 4
+    }
+  },
+  "costs_from_original_frozen_run": {
+    "all_process_seconds_including_failed_work": 0.998521592000543,
+    "arms": {
+      "bm25": {
+        "child_cpu_seconds": 0.11863549100000001,
+        "child_cpu_seconds_including_failed_work": 0.16419800000000004,
+        "cold_cpu_seconds": 0.089193731,
+        "cold_end_to_end_seconds": 0.12624135700025363,
+        "cold_peak_rss_bytes": 19169280,
+        "extract_links": false,
+        "failed_work_charged_seconds": 0,
+        "index_seconds": 0.013671671000338392,
+        "output_write_seconds": 0.007573475999379298,
+        "parent_count": 269,
+        "peak_rss_bytes": 19431424,
+        "process_total_seconds": 0.17027999899983115,
+        "query_pack_seconds": 0.0068458509995252825,
+        "raw_bytes": 250014,
+        "raw_load_parse_graph_seconds": 0.06263244899855636,
+        "startup_seconds": 0.03512910599965835,
+        "status": "SUCCESS",
+        "warm_p50_seconds": 0.0004956359989591874,
+        "warm_p95_seconds": 0.0009223879987985129,
+        "warm_queries": 42,
+        "warm_repeat_including_output_seconds": [
+          0.00996309000038309,
+          0.011838571999760461,
+          0.009248476000720984
+        ],
+        "warm_repeats": 3
+      },
+      "bm25_top8": {
+        "child_cpu_seconds": 0.12594688799999998,
+        "child_cpu_seconds_including_failed_work": 0.200301,
+        "cold_cpu_seconds": 0.086027814,
+        "cold_end_to_end_seconds": 0.15188994299933256,
+        "cold_peak_rss_bytes": 19152896,
+        "extract_links": false,
+        "failed_work_charged_seconds": 0,
+        "index_seconds": 0.012410151999574737,
+        "output_write_seconds": 0.0067098960007569985,
+        "parent_count": 269,
+        "peak_rss_bytes": 20070400,
+        "process_total_seconds": 0.20569452999916393,
+        "query_pack_seconds": 0.00844178099941928,
+        "raw_bytes": 250014,
+        "raw_load_parse_graph_seconds": 0.05942847799997253,
+        "startup_seconds": 0.06455386499874294,
+        "status": "SUCCESS",
+        "warm_p50_seconds": 0.0006012239991832757,
+        "warm_p95_seconds": 0.0008336050013895147,
+        "warm_queries": 42,
+        "warm_repeat_including_output_seconds": [
+          0.013351038000109838,
+          0.01409712599888735,
+          0.013687164000657503
+        ],
+        "warm_repeats": 3
+      },
+      "hash_links": {
+        "child_cpu_seconds": 0.16156703,
+        "child_cpu_seconds_including_failed_work": 0.206293,
+        "cold_cpu_seconds": 0.12805291800000002,
+        "cold_end_to_end_seconds": 0.16430486300123448,
+        "cold_peak_rss_bytes": 19542016,
+        "extract_links": true,
+        "failed_work_charged_seconds": 0,
+        "index_seconds": 0.013885411999581265,
+        "output_write_seconds": 0.012100186999305151,
+        "parent_count": 269,
+        "peak_rss_bytes": 19804160,
+        "process_total_seconds": 0.21267116600029112,
+        "query_pack_seconds": 0.00845795600071142,
+        "raw_bytes": 250014,
+        "raw_load_parse_graph_seconds": 0.09522291599932942,
+        "startup_seconds": 0.03427915199972631,
+        "status": "SUCCESS",
+        "warm_p50_seconds": 0.000599572000282933,
+        "warm_p95_seconds": 0.0008517520000168588,
+        "warm_queries": 42,
+        "warm_repeat_including_output_seconds": [
+          0.012638647000130732,
+          0.010988403999363072,
+          0.012323101998845232
+        ],
+        "warm_repeats": 3
+      },
+      "links": {
+        "child_cpu_seconds": 0.155932761,
+        "child_cpu_seconds_including_failed_work": 0.21014699999999997,
+        "cold_cpu_seconds": 0.127526163,
+        "cold_end_to_end_seconds": 0.1731625369993708,
+        "cold_peak_rss_bytes": 19550208,
+        "extract_links": true,
+        "failed_work_charged_seconds": 0,
+        "index_seconds": 0.013873584999601007,
+        "output_write_seconds": 0.00979387600091286,
+        "parent_count": 269,
+        "peak_rss_bytes": 19812352,
+        "process_total_seconds": 0.21606197400069505,
+        "query_pack_seconds": 0.014595790999010205,
+        "raw_bytes": 250014,
+        "raw_load_parse_graph_seconds": 0.09014940100132662,
+        "startup_seconds": 0.044244882999919355,
+        "status": "SUCCESS",
+        "warm_p50_seconds": 0.0005105880009068642,
+        "warm_p95_seconds": 0.0007442399983119685,
+        "warm_queries": 42,
+        "warm_repeat_including_output_seconds": [
+          0.01032199099972786,
+          0.010153768000236596,
+          0.010581040000033681
+        ],
+        "warm_repeats": 3
+      },
+      "prf": {
+        "child_cpu_seconds": 0.139911896,
+        "child_cpu_seconds_including_failed_work": 0.18817900000000007,
+        "cold_cpu_seconds": 0.09289013300000001,
+        "cold_end_to_end_seconds": 0.13260870200065256,
+        "cold_peak_rss_bytes": 19169280,
+        "extract_links": false,
+        "failed_work_charged_seconds": 0,
+        "index_seconds": 0.012419927999872016,
+        "output_write_seconds": 0.005952456000159145,
+        "parent_count": 269,
+        "peak_rss_bytes": 19300352,
+        "process_total_seconds": 0.19381392300056177,
+        "query_pack_seconds": 0.014335428999402211,
+        "raw_bytes": 250014,
+        "raw_load_parse_graph_seconds": 0.06138164699950721,
+        "startup_seconds": 0.03821441299987782,
+        "status": "SUCCESS",
+        "warm_p50_seconds": 0.000968457999988459,
+        "warm_p95_seconds": 0.001355058000626741,
+        "warm_queries": 42,
+        "warm_repeat_including_output_seconds": [
+          0.017025576999003533,
+          0.015971520999300992,
+          0.01635426800021378
+        ],
+        "warm_repeats": 3
+      }
+    },
+    "measurement_limits": "Shared cloud host; one parent-observed fresh-process cold run per arm, not a cold OS cache claim. Warm three repeats are separate. Data acquisition and authoring are separate upstream costs, not measured by runner.",
+    "shared_preflight_seconds": 0.03961466900000232,
+    "shared_semantic_review_costs_from_seal": {
+      "author_reviewer_model_exposure": true,
+      "elapsed_wall_seconds": 567.207684,
+      "experimental_model_calls": 0,
+      "factual_correction_rounds": 1,
+      "hidden_tokens_and_compute_measured": false,
+      "review_task_assignments": 1
+    },
+    "total_failed_work_seconds": 0
+  }
+}

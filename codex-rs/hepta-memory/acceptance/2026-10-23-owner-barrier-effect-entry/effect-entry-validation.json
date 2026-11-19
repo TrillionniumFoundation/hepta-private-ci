@@ -1,0 +1,72 @@
+{
+  "status": "qualified within stated original-owner synchronous Notes/HOS2 fixture scope",
+  "qualified": true,
+  "negative": {
+    "source": "dfc34e36e75d7754696345a3dcb3a9e862d30fac",
+    "host": "main",
+    "job_id": "1a16aed8ad2-1b6abb-3f12",
+    "state": "failed",
+    "exit_code": 100,
+    "tests_run": 1,
+    "failed": 1,
+    "actual_channel_entries": 1,
+    "required_entries_without_current_ack": 0,
+    "log": "work/effect-entry-negative-v2.log",
+    "provenance": "work/owner-test-artifacts/effect-entry-negative-v2/provenance.json"
+  },
+  "common_barrier": "same original owner private physical writer-lock-only pool; permanent deny-commit and query_only after BEGIN; original observer pool remains physical read-only",
+  "required_aggregate": "work/owner-barrier-required-aggregate-tests.json",
+  "scope": "Original Notes/HOS2 synchronous target entry, original owner/SQLite with explicit Root/issuer/channel fixtures. Not installed Root/application/device proof and not arbitrary deferred-effect adapters.",
+  "remaining": [],
+  "positive_attempts": [
+    {
+      "source": "f0c2b2dda9222e60dfc679a21a32e44660788f5a",
+      "tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-effect-entry-barrier-fix",
+      "host": "main",
+      "job_id": "1a16aef8909-1b6abb-3f14",
+      "state": "failed",
+      "log": "work/effect-entry-positive-v2.log",
+      "exit_code": 100,
+      "passed": 73,
+      "failed": 1,
+      "provenance": "work/owner-test-artifacts/effect-entry-positive-v2/provenance.json",
+      "failure": "new sync-entry test required stale checked-out competitor to commit; original commit gate correctly rejected COMMIT with SQLite531; actual physical lock assertion and target success had passed"
+    }
+  ],
+  "positive": {
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+    "tree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-effect-entry-barrier-fix",
+    "state": "succeeded",
+    "log": "work/effect-entry-positive-v3.log",
+    "host": "main",
+    "job_id": "1a16af5077a-1b6abb-3f18",
+    "exit_code": 0,
+    "tests_run": 74,
+    "passed": 74,
+    "failed": 0,
+    "seconds": 108.973,
+    "provenance": "work/owner-test-artifacts/effect-entry-positive-v3/provenance.json",
+    "aggregate": "work/owner-barrier-final-aggregate.json"
+  },
+  "source_only_review": {
+    "reviewer": "root",
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+    "finding": "No relaxed physical exclusion oracle, production change, or deadline change; actual test outcome pending"
+  },
+  "final_source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+  "scoped_fix": {
+    "host": "main",
+    "job_id": "1a16af7be8e-1b6abb-3f19",
+    "state": "succeeded",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8",
+    "log": "work/effect-entry-fix-v2.log",
+    "source_changed": false,
+    "warning_scope": "Existing lib-test unwrap/expect and AsyncFd deprecation warnings retained; not a zero-warning claim"
+  },
+  "format_check": {
+    "command": "just fmt --base 0f7a96752529a7914b7c24d07fadd527c5bd7bce --check",
+    "exit_code": 0,
+    "source": "2ff0a02710c39c5f47030eb1896585ca667484f8"
+  }
+}

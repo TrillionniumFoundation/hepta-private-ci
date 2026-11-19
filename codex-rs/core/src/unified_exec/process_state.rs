@@ -8,6 +8,9 @@ pub(crate) struct ProcessState {
 
 impl ProcessState {
     pub(crate) fn exited(&self, exit_code: Option<i32>) -> Self {
+        if self.has_exited {
+            return self.clone();
+        }
         Self {
             has_exited: true,
             exit_code,
@@ -16,12 +19,19 @@ impl ProcessState {
         }
     }
 
+    /// A control or policy failure does not establish a native exit.
     pub(crate) fn failed(&self, message: String) -> Self {
         Self {
-            has_exited: true,
-            exit_code: self.exit_code,
-            failure_message: Some(message),
-            sandbox_denied: self.sandbox_denied,
+            failure_message: self.failure_message.clone().or(Some(message)),
+            ..self.clone()
+        }
+    }
+
+    /// Losing an observation channel does not establish a native process exit.
+    pub(crate) fn observation_failed(&self, message: String) -> Self {
+        Self {
+            failure_message: self.failure_message.clone().or(Some(message)),
+            ..self.clone()
         }
     }
 }

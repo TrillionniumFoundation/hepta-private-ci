@@ -1,0 +1,221 @@
+{
+  "actual_execution_attempts": 1,
+  "all_original_test_process_identities_reaped": true,
+  "cases": [
+    {
+      "admitted": true,
+      "adopted_wait4": [],
+      "case": "test_01_normal_exit",
+      "direct_process_started": true,
+      "direct_returncode": 0,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 4903,
+        "sha256": "7f000d4cc9f2d9ae8071cc876c04f362d839a7b0d8dc00eba734c0b2801eaa9f"
+      },
+      "wait4_CPU_seconds": 0.029273
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_02_nonzero_exit",
+      "direct_process_started": true,
+      "direct_returncode": 7,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 5010,
+        "sha256": "ab7114d8868212ed97a69eab82ae9f5b9b82065a41974a3b2b8358b5e6ef0535"
+      },
+      "wait4_CPU_seconds": 0.026306
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_03_timeout_kill_reap",
+      "direct_process_started": true,
+      "direct_returncode": -9,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 4994,
+        "sha256": "d88c94883df8e07ab6d9551e3a3d386f6d96db417d80b903bdf3b7a85b1d6587"
+      },
+      "wait4_CPU_seconds": 0.023579
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_04_RSS_kill_reap",
+      "direct_process_started": true,
+      "direct_returncode": -9,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 5081,
+        "sha256": "3e265540da48eaf37abd178a47169d28711346d471b6a9cef3652a5ba3d83a65"
+      },
+      "wait4_CPU_seconds": 0.053905999999999996
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [
+        {
+          "CPU_seconds": 0.017165,
+          "peak_RSS_bytes": 8519680,
+          "pid": 12,
+          "returncode": -9
+        }
+      ],
+      "case": "test_05_detached_grandchild",
+      "direct_process_started": true,
+      "direct_returncode": 0,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 6815,
+        "sha256": "48a92f80faa64060832603b5380b4f2e198337b773af94dd24815140809dc8a5"
+      },
+      "wait4_CPU_seconds": 0.037951
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [
+        {
+          "CPU_seconds": 0.0008399999999999999,
+          "peak_RSS_bytes": 3239936,
+          "pid": 14,
+          "returncode": -9
+        }
+      ],
+      "case": "test_06_immediate_orphan_adoption",
+      "direct_process_started": true,
+      "direct_returncode": 0,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 6777,
+        "sha256": "150152fa5a41ec926236dee9e7c8890d67295f9990c464c11219a73f03fc3f68"
+      },
+      "wait4_CPU_seconds": 0.043081999999999995
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_07_final_observation_unreadable",
+      "direct_process_started": true,
+      "direct_returncode": 0,
+      "helper_remaining_or_unknown": true,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 6283,
+        "sha256": "9d08780f15bb94253835a5294107362485520c16e83cd664554b60485bee859a"
+      },
+      "wait4_CPU_seconds": 0.026004
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_08_residual_child_refused",
+      "direct_process_started": true,
+      "direct_returncode": 0,
+      "helper_remaining_or_unknown": true,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [
+          17
+        ],
+        "remaining_original_identities": [],
+        "wait4": [
+          {
+            "CPU_seconds": 0.019853,
+            "peak_RSS_bytes": 8519680,
+            "pid": 17,
+            "returncode": -9
+          }
+        ]
+      },
+      "observe_identity": {
+        "bytes": 7306,
+        "sha256": "049ad85f51df58cbfaa2bdc4e65113b8d5f1923d7357f751a9141becae2ccfa7"
+      },
+      "wait4_CPU_seconds": 0.103336
+    },
+    {
+      "admitted": false,
+      "adopted_wait4": [],
+      "case": "test_09_expired_start_deadline",
+      "direct_process_started": false,
+      "direct_returncode": null,
+      "helper_remaining_or_unknown": false,
+      "independent_cleanup": {
+        "errors": [],
+        "killed": [],
+        "remaining_original_identities": [],
+        "wait4": []
+      },
+      "observe_identity": {
+        "bytes": 4151,
+        "sha256": "78c0488d05fff828d1415413c231d40071e4f3289e23cdfc42c663aaff2efdec"
+      },
+      "wait4_CPU_seconds": null
+    }
+  ],
+  "exact_helper_sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6",
+  "exact_worker_wait4_CPU_seconds": 0.6504179999999999,
+  "guard_self_CPU_prefix_seconds": 0.143361465,
+  "observed_aggregate_peak_RSS_bytes": 56221696,
+  "old_lost_test_credit_inherited": false,
+  "production_deployment_authorized_by_this_result": false,
+  "real_direct_child_cases": 8,
+  "refused_before_spawn_cases": 1,
+  "schema": "new-os-helper-validation-v3-summary",
+  "scope": [
+    "Fresh cloud stdlib lifecycle validation, not recovery of the lost old twelve-test result.",
+    "Cases07/08 use explicit observation/kill fault injection around actual tiny child processes; raw original observer rows remain separate from independent cleanup.",
+    "Production complete_os_envelope authorization/artifact checking was not invoked.",
+    "External timeout60 returned exit0. Aggregate RSS is sampled and bounded by the independent guard; per-process AS128MiB is kernel-enforced. No cgroup-memory-hardcap claim.",
+    "Complete worker wait4 includes its reaped children. Nested per-case CPU must not be added again. Guard self CPU/wall are prefixes; exact outer timeout/shell/guard exit CPU is unavailable.",
+    "No native operator call, C2 work, model import/forward/optimizer, E access or numerical oracle."
+  ],
+  "software_tests_run": 9,
+  "source_unchanged": true,
+  "status": "nine_new_cases_passed",
+  "whole_guard_wall_prefix_seconds": 1.7424241409999013
+}

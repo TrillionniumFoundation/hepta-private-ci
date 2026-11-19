@@ -1,0 +1,18 @@
+{
+  "D_actual_run": false,
+  "data_access_retried": false,
+  "findings_closed": [
+    "Row/policy index/fold prep precedes shared150 close",
+    "Next build begins at exact previous close without free preamble",
+    "Supervisor leaves initial output creation to worker",
+    "Explicit reaped flag guarantees wait4 after supervisor exception",
+    "Atomic partial terminal remains available without worker finally",
+    "CPU/RSS limit kills directly without additional flush budget"
+  ],
+  "local_total_software_tests": 52,
+  "new_handmade_tests": 9,
+  "parent_dot_old_source_checks_not_counted_locally": 42,
+  "reviewer": "/root/audit_runtime_costs",
+  "schema": "hepta.fashion-recovery-v2-targeted-review.v1",
+  "scope": "Only lifecycle receipt/reaping and shared/index phase ownership; no model/data or scientific-gate changes"
+}

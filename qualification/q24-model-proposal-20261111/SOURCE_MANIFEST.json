@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.q24-model-proposal-source.v1",
+  "base_commit": "72251601928807febae580dbd7754edac20bda10",
+  "files": [
+    {
+      "path": "CALLERS.toml",
+      "bytes": 344339,
+      "sha256": "20ed552c43f0a73cba5e338748ea8c6181f277ae9abf0e55e3c7ff59b2b38df2",
+      "git_blob_sha1": "f58701e2761b585a24a07b15eb06eb5fa03156ae",
+      "base_blob_sha1": "1b60db58712cf0dea8cf184902bedbe742cf2936"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner_tests.rs",
+      "bytes": 12342,
+      "sha256": "2da7c4e4fb5705c3c59ce4d49ab778cb8f68f5b6cf80a9bb9356588a1eede867",
+      "git_blob_sha1": "d84b89803800449ca66829fbe36acc84e0a2d7ba",
+      "base_blob_sha1": "37fc7d452bfb3eee2d8f8901376a057221c8ad78"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "bytes": 11596,
+      "sha256": "1949c90a37d8ecbc01fa9e34bd80a20b57b995875903c7cae139de4ac2a5bbde",
+      "git_blob_sha1": "5192b067a5e2f3457d28f237c7beb2a318242178",
+      "base_blob_sha1": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+      "bytes": 9181,
+      "sha256": "df5849870e8e828101c18dd36c06e85c781d91d0578c3d4036c721c6ac16a245",
+      "git_blob_sha1": "662a5239c0091576b9278cc3fb261e6354139b8c",
+      "base_blob_sha1": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+      "bytes": 18320,
+      "sha256": "627159736bae29d35480617b5c6d317f3cc018d9cef3fc6d2fc0f409b715ed44",
+      "git_blob_sha1": "003ae45f7fadfe155221694c481ece7cc06b6871",
+      "base_blob_sha1": null
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_recovery_tests.rs",
+      "bytes": 27119,
+      "sha256": "f34440609a58ad7f528491db49d33da7fe0abda619c63895ad69adba264b5b03",
+      "git_blob_sha1": "ca27cebeab33fba5771a846045380ae4911b7871",
+      "base_blob_sha1": "de1cf6ae5a822e9a05b3eba280df589382e875d6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "bytes": 50232,
+      "sha256": "1708ee185500e8e5716ccc065c171f61304e7b4f6442806f4cfc5ad20b41474e",
+      "git_blob_sha1": "227313d5fb146d67af1cfe3fc86ea7f985bd2e73",
+      "base_blob_sha1": "6cfef32060750955bd8282c591da8fad7959c2b7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "bytes": 11771,
+      "sha256": "696337daaac68d5898b3439bfd80eec3ca1e1321cee35190a250ae1036fc2a17",
+      "git_blob_sha1": "01f4dd6507c0fddaceb489be4e9cf2f0ef3c830c",
+      "base_blob_sha1": "dcf7bbf81a039d33ca059225823e5926a7284461"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation_tests.rs",
+      "bytes": 29993,
+      "sha256": "c7ef251cb40a42c670abf58151e90773049c3bb0685e8b8e55816f0fa9831062",
+      "git_blob_sha1": "81ebffad7c918f1c89df9e4923de1142bbff9765",
+      "base_blob_sha1": "18de13b001c425373c4f44ba2ee2ce5b54479bea"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "bytes": 11027,
+      "sha256": "eedb2377ed510dd2d4a1fa2baddffbebd5f5b6590b92e2166fa39f253bd3fd75",
+      "git_blob_sha1": "01e6ccc961082d1f214bb18cc6e41602981f61f2",
+      "base_blob_sha1": "7d302da444603cbd750bb93ca4c461e80f7a377b"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "bytes": 5999,
+      "sha256": "fd2b665281cf9d2760d3fabcbcc4ff9b986c6798e6c3a13c204e9dfe33da999d",
+      "git_blob_sha1": "7734a3bc99aa73505ac0811f23aef9427a5287b8",
+      "base_blob_sha1": null
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "bytes": 4618,
+      "sha256": "4752c4a83f4b1a7082efb325696a243f372144808a09fa679a2b08643ebdbd28",
+      "git_blob_sha1": "373efb313ea6bbce97d1855a7269d05dcc50e016",
+      "base_blob_sha1": "478897c85a97ef4d37e49c3fd7fc9885524b0bd1"
+    }
+  ],
+  "format_command": "just fmt --base 72251601928807febae580dbd7754edac20bda10",
+  "format_exit_code": 0,
+  "native_qualification": "PENDING",
+  "source_controls_passed": 20
+}

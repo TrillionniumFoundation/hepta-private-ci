@@ -1,0 +1,78 @@
+{
+  "reviewer": "branch_scope",
+  "reviewed_at": "2026-11-19T13:14:09.948418+00:00",
+  "scope": "Read-only review of exact ten-file Cargo-dev opt override -> Bazel parity change",
+  "status": "APPROVED_SOURCE_REVIEW_PENDING_ACTUAL_CQUERY",
+  "files": [
+    {
+      "path": "BUILD.bazel",
+      "bytes": 4487,
+      "sha256": "216fa9a0db8bd4542a2895801714088f3e92341110ad1e245407375f22ee694a"
+    },
+    {
+      "path": "bazel/rules/testing/qualification_lease_clock.bzl",
+      "bytes": 2833,
+      "sha256": "1a8665918b16ad8c19f98f22d88c538d692f90dfc533219e018b5767e43d3b23"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "bytes": 14343,
+      "sha256": "bded6c0d7fa581ed91dbf6da00fdc0ff9ac4a47b788dc712f81e6454fbd71a45"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/v13_acceptance.bzl",
+      "bytes": 1336,
+      "sha256": "ba69ba06fa348e00715475ac1a6ec4a4c84c82eca1576fe97fdd78d963d56169"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/BUILD.bazel",
+      "bytes": 4776,
+      "sha256": "e6f85ffa066c69d5b5cb968fc24c4464fa91bdebc744f8d8f92185562110a4e3"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/BUILD.bazel",
+      "bytes": 591,
+      "sha256": "c2fd4c6058498d84c046348acc46967c9e5b6f1b7428f7c958c4f8f816ee2523"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/BUILD.bazel",
+      "bytes": 276,
+      "sha256": "0fe58d5d1d9a71fa35f8efdb85580c04ae8522837aa3e06e6ffeafda39ae591f"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/BUILD.bazel",
+      "bytes": 850,
+      "sha256": "c9805b0d745a061fe63930d55437ed6603f108389287ecf719352bfe7fb8f3fb"
+    },
+    {
+      "path": "codex-rs/hepta-types/BUILD.bazel",
+      "bytes": 200,
+      "sha256": "4a43a2a95a7cb7e7814f0ceb47037c82a495372a1c10848e9f9994e7695a29fd"
+    },
+    {
+      "path": "defs.bzl",
+      "bytes": 36771,
+      "sha256": "cdea9f33cded434e17b2ee1593a0fb0a1e902f38f626d846622f6cc0be4ab4ea"
+    }
+  ],
+  "facts": [
+    "All six per-package opt-level values match Cargo.toml: hepta-learning-artifacts=3; hepta-types/contracts/intelligence-eval/neuron/agentd=1.",
+    "The shared codex_rust_crate macro propagates flags to product, dependency and integration/unit test rules. Every direct Agentd/Contracts library/test/binary and Agentd lease-clock variant is wired.",
+    "Independent review found the V13 fallback rust_binary missing flags; corrected by optional parameter forwarding while preserving auto-discovered continue behavior.",
+    "Pinned local rules_rust emits global extra rustc flags before authored target rustc_flags. Thus explicit release select must suppress added debug/overflow yes flags.",
+    "Existing verify-release-build workflow and just e2e-benchmarks use both exact target and exec -Cdebug-assertions=no flags. The new flag_values condition matches these spellings; opt returns [] and adds no checks.",
+    "The two opt/release-select cases both yield [] when simultaneously matched; compilation-mode branches are exclusive.",
+    "Linker flags and remap flags retain existing order after new per-crate codegen flags; no later authored opt/debug/overflow overrides in reviewed targets.",
+    "No Rust source, authorization boundary, elapsed deadline, test assertion, skip, timeout or retry setting changed."
+  ],
+  "actual_rules_rust_source": {
+    "path": "/workspace/scratch/2f490fb85225/bazel-user-root/b32b2da2504d3a9c5fdc25b81654910f/external/rules_rs++rules_rust+rules_rust/rust/private/rustc.bzl",
+    "sha256": "5bbefa807d97047b515fb935e5db66c0061b3bfb85e17b6387982720e212d762",
+    "flag_order": "toolchain compilation-mode flags; collect_extra_rustc_flags; authored target rustc_flags last",
+    "settings": "extra_rustc_flag and extra_exec_rustc_flag are repeatable config.string_list"
+  },
+  "validation_owner": "ci_audit",
+  "pending": [
+    "Actual cquery fastbuild/dbg/opt/release-with---config=ci checks, including V13 fallback targets. Review does not claim cquery or native runtime success."
+  ]
+}

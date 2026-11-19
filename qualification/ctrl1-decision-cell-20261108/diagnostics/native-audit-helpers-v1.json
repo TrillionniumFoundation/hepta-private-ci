@@ -1,0 +1,112 @@
+{
+  "schema": "ctrl1.native-audit-helpers.v1",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "472c825a87220574acc5338afe59558e1ad2038f\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "status",
+        "--porcelain"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/python3",
+        "-c",
+        "import json; from ndu_ctrl1.run import source_manifest; print(json.dumps(source_manifest(), sort_keys=True))"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "{\"scripts/ndu_ctrl1/__init__.py\": {\"bytes\": 78, \"sha256\": \"1d30d626478e0655db28f9dbceefb6bfeaa1deaedde86a56218facd341f11b7c\"}, \"scripts/ndu_ctrl1/budget_sensitivity.py\": {\"bytes\": 12054, \"sha256\": \"7868f0da26447e3c1f631a3aeb09cef7b1fdf9cfb3d36847e676046bebca663e\"}, \"scripts/ndu_ctrl1/evaluation.py\": {\"bytes\": 8590, \"sha256\": \"15bdb99af470a20984e37c9a171432a80b2bac7aee563015bdc66d4a38dd6f3e\"}, \"scripts/ndu_ctrl1/learning.py\": {\"bytes\": 22484, \"sha256\": \"695784397aaa7d2cd7a0f3a9c3315d8aca414104448a42120731da2d3519f011\"}, \"scripts/ndu_ctrl1/model.py\": {\"bytes\": 10421, \"sha256\": \"6001a45f067a7f439a8ae930368baa5959ba3bf0f714d5e113a598147187173f\"}, \"scripts/ndu_ctrl1/oracle.py\": {\"bytes\": 4644, \"sha256\": \"0a07c19116253f34fda5cf2c0b2361756bbd424607bf0e2035d5d0de87256382\"}, \"scripts/ndu_ctrl1/policies.py\": {\"bytes\": 10920, \"sha256\": \"3f82b001f42ea528d70e64f1805586a494dd64d564c4a6a722f012e2850587f5\"}, \"scripts/ndu_ctrl1/routing.py\": {\"bytes\": 14426, \"sha256\": \"ad3d41c6f2d14560d5be8d7ee093c26c7d8673bbe66a2ee9fa99f7900f9cfea3\"}, \"scripts/ndu_ctrl1/run.py\": {\"bytes\": 23547, \"sha256\": \"bf220bfdd094613a1cacf32d045b9b29dc150fb3172484ed109b76acbc835933\"}, \"scripts/ndu_ctrl1/sensitivity_run.py\": {\"bytes\": 16318, \"sha256\": \"dfc31f265cf80e03d092d40b17fa27ccb8650ba6967c8bdf01f1d14c39a5a0a5\"}, \"scripts/ndu_ctrl1/test_ctrl1_cpu_evidence.py\": {\"bytes\": 9585, \"sha256\": \"700461978110ac7b78d5ea879a4056a987fabc845ea7dd9aba777a4047710007\"}, \"scripts/ndu_ctrl1/test_ctrl1_evidence.py\": {\"bytes\": 11853, \"sha256\": \"f6eafac5965d920aa706cb3e38f55f7cfd855a09235254b2c1e3f6dca97efb0c\"}, \"scripts/ndu_ctrl1/test_ctrl1_learning.py\": {\"bytes\": 12957, \"sha256\": \"5e73edfaf25ffe1706d21eecece780047c2b8f49487fe0ca5de59629b7c62860\"}, \"scripts/ndu_ctrl1/test_ctrl1_model.py\": {\"bytes\": 8356, \"sha256\": \"d0ab9c3cd6681f7ebcf12690d29e69b08f6c83764bbad512d1db42d6244f0e56\"}, \"scripts/ndu_ctrl1/test_ctrl1_policies.py\": {\"bytes\": 7738, \"sha256\": \"96cda9dc2058b1a69f345b0d90be3596239c622e625ed73116a3215636ea75e4\"}, \"scripts/ndu_ctrl1/test_ctrl1_profiles.py\": {\"bytes\": 3078, \"sha256\": \"02fef20b3412b4ea159fcc0cbca3021cf2875a26fd30c1100b678eb32d3d536a\"}, \"scripts/ndu_ctrl1/test_ctrl1_routing.py\": {\"bytes\": 5543, \"sha256\": \"c1d93ef85192d309f0fa1069eea4d26ef2c74cc3d9864a1a7b76f087610737b3\"}, \"scripts/ndu_ctrl1/verify.py\": {\"bytes\": 31617, \"sha256\": \"a69fd54bf5b95f2c4f205d241c1b38adc1becc965d8fd87c7f213f831b59047e\"}, \"scripts/ndu_real_runtime/finite_entropic_golden.json\": {\"bytes\": 2076, \"sha256\": \"361f37baddd9bbcccbfa16f9b438e14707b22ae7c997863a13b19fe01def02cc\"}, \"scripts/ndu_real_runtime/objective.py\": {\"bytes\": 3377, \"sha256\": \"cb3194011908ac46c20bedb8833e18a606709debbb051291360648ec2b869edd\"}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "HEAD",
+        "--",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "ls-tree",
+        "HEAD",
+        "--",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo/codex-rs",
+      "returncode": 0,
+      "stdout": "No changed files need formatting. Use --all for a full repository check.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--locked",
+        "--project",
+        "scripts",
+        "ruff",
+        "format",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 0,
+      "stdout": "2 files reformatted\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/uv",
+        "run",
+        "--locked",
+        "--project",
+        "scripts",
+        "ruff",
+        "check",
+        "qualification/ctrl1-decision-cell-20261108/audit_primary.py",
+        "qualification/ctrl1-decision-cell-20261108/audit_cpu.py"
+      ],
+      "cwd": "/Users/qianqi/ctrl1-decision-cell-20261108-839e1cbe/repo",
+      "returncode": 1,
+      "stdout": "E402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:29:1\n   |\n27 | sys.path.insert(0, str(ROOT / \"scripts\"))\n28 |\n29 | from ndu_ctrl1.evaluation import METRICS, evaluate\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n30 | from ndu_ctrl1.learning import FEATURES, Learner, _sha\n31 | from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:30:1\n   |\n29 | from ndu_ctrl1.evaluation import METRICS, evaluate\n30 | from ndu_ctrl1.learning import FEATURES, Learner, _sha\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n31 | from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n32 | from ndu_ctrl1.policies import Controller\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:31:1\n   |\n29 | from ndu_ctrl1.evaluation import METRICS, evaluate\n30 | from ndu_ctrl1.learning import FEATURES, Learner, _sha\n31 | from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n32 | from ndu_ctrl1.policies import Controller\n33 | from ndu_ctrl1.run import (\n   |\n\nF401 [*] `ndu_ctrl1.model.Profile` imported but unused\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:31:38\n   |\n29 | from ndu_ctrl1.evaluation import METRICS, evaluate\n30 | from ndu_ctrl1.learning import FEATURES, Learner, _sha\n31 | from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n   |                                      ^^^^^^^\n32 | from ndu_ctrl1.policies import Controller\n33 | from ndu_ctrl1.run import (\n   |\nhelp: Remove unused import: `ndu_ctrl1.model.Profile`\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:32:1\n   |\n30 | from ndu_ctrl1.learning import FEATURES, Learner, _sha\n31 | from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n32 | from ndu_ctrl1.policies import Controller\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n33 | from ndu_ctrl1.run import (\n34 |     digest,\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_cpu.py:33:1\n   |\n31 |   from ndu_ctrl1.model import ACTIONS, Profile, Scenario, State, legal_actions\n32 |   from ndu_ctrl1.policies import Controller\n33 | / from ndu_ctrl1.run import (\n34 | |     digest,\n35 | |     examples_for_training,\n36 | |     profiles,\n37 | |     scenarios,\n38 | |     source_manifest,\n39 | | )\n   | |_^\n40 |\n41 |   MAX_BYTES, MAX_FILES = 2_000_000, 1024\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:19:1\n   |\n17 | sys.path.insert(0, str(ROOT / \"scripts\"))\n18 |\n19 | from ndu_ctrl1.evaluation import evaluate, sample_episode\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n20 | from ndu_ctrl1.learning import COST_UNIT, Learner, adoption_decision\n21 | from ndu_ctrl1.model import legal_actions, transitions\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:20:1\n   |\n19 | from ndu_ctrl1.evaluation import evaluate, sample_episode\n20 | from ndu_ctrl1.learning import COST_UNIT, Learner, adoption_decision\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n21 | from ndu_ctrl1.model import legal_actions, transitions\n22 | from ndu_ctrl1.policies import Controller\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:21:1\n   |\n19 | from ndu_ctrl1.evaluation import evaluate, sample_episode\n20 | from ndu_ctrl1.learning import COST_UNIT, Learner, adoption_decision\n21 | from ndu_ctrl1.model import legal_actions, transitions\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n22 | from ndu_ctrl1.policies import Controller\n23 | from ndu_ctrl1.routing import Router\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:22:1\n   |\n20 | from ndu_ctrl1.learning import COST_UNIT, Learner, adoption_decision\n21 | from ndu_ctrl1.model import legal_actions, transitions\n22 | from ndu_ctrl1.policies import Controller\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n23 | from ndu_ctrl1.routing import Router\n24 | from ndu_ctrl1.run import controller_for, digest, source_manifest\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:23:1\n   |\n21 | from ndu_ctrl1.model import legal_actions, transitions\n22 | from ndu_ctrl1.policies import Controller\n23 | from ndu_ctrl1.routing import Router\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n24 | from ndu_ctrl1.run import controller_for, digest, source_manifest\n25 | from ndu_ctrl1.verify import _inventory, _lines, _rosters, load_json, verify\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:24:1\n   |\n22 | from ndu_ctrl1.policies import Controller\n23 | from ndu_ctrl1.routing import Router\n24 | from ndu_ctrl1.run import controller_for, digest, source_manifest\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n25 | from ndu_ctrl1.verify import _inventory, _lines, _rosters, load_json, verify\n   |\n\nE402 Module level import not at top of file\n  --> qualification/ctrl1-decision-cell-20261108/audit_primary.py:25:1\n   |\n23 | from ndu_ctrl1.routing import Router\n24 | from ndu_ctrl1.run import controller_for, digest, source_manifest\n25 | from ndu_ctrl1.verify import _inventory, _lines, _rosters, load_json, verify\n   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n26 |\n27 | MAX_ROWS, MAX_DEVELOPMENT, MAX_RUNS, MAX_EPISODES = 864, 96, 12, 13_824\n   |\n\nFound 13 errors.\n[*] 1 fixable with the `--fix` option.\n",
+      "stderr": ""
+    }
+  ],
+  "pushed": false,
+  "status": "failed",
+  "error_type": "RuntimeError",
+  "error": "Required auditor preparation command failed"
+}

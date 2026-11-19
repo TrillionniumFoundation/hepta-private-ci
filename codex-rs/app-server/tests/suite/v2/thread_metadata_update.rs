@@ -1,3 +1,4 @@
+use anyhow::Context;
 use anyhow::Result;
 use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
@@ -57,7 +58,9 @@ async fn thread_section_move_pins_before_first_turn() -> Result<()> {
         .with_codex_home(codex_home.path())
         .build()
         .await?;
-    timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;
+    timeout(DEFAULT_READ_TIMEOUT, mcp.initialize())
+        .await
+        .with_context(|| mcp.initialization_timeout_context())??;
 
     let start_id = mcp
         .send_thread_start_request_with_auto_env(ThreadStartParams {

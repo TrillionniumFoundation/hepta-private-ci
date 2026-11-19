@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 866, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 859, in main
+    return train(args.freeze, args.out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 654, in train
+    completed = run_candidate_rounds(tasks, plan["systems"],
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 84, in run_candidate_rounds
+    candidate = next(tasks[system])
+                ^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 310, in train_system
+    return (yield from _train_system_candidates(system, plan, run, shared, bases, train, val,
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 356, in _train_system_candidates
+    raise ValueError("shared build leaves no useful candidate training budget")
+ValueError: shared build leaves no useful candidate training budget

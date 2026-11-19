@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.source-custody-volumes.v1",
+  "source_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "original_directory": "library-recovery/handoff-command-fragment-20261104",
+  "member_count": 4,
+  "member_bytes": 6992,
+  "source_executed": false,
+  "scientific_or_runtime_qualification": false,
+  "members": [
+    {
+      "path": "library-recovery/handoff-command-fragment-20261104/EXTRACTION_RECEIPT.json",
+      "member": "EXTRACTION_RECEIPT.json",
+      "mode": "100644",
+      "bytes": 1891,
+      "sha256": "0cea72e0b439556588e60b3d2791211478de7f75d9b28ca1c88c46b2bf9d2ca9",
+      "oid": "62e49e368479c359be8281eed0e0ae791f832bb8",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/handoff-command-fragment-20261104/README.md",
+      "member": "README.md",
+      "mode": "100644",
+      "bytes": 1282,
+      "sha256": "f9c7670c59108af2f4e86f962dadf0f764f3badc9ba0ff4e4e92d185710ae653",
+      "oid": "20778d559fc777ce61d63d5a2ebadd8a80709076",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/handoff-command-fragment-20261104/SOURCE_MANIFEST.json",
+      "member": "SOURCE_MANIFEST.json",
+      "mode": "100644",
+      "bytes": 3105,
+      "sha256": "608d782ae0a21ff550a56c67680a9a3d368cf9c45a0377e050b18c002f5bf377",
+      "oid": "2c21d778833d6085bb546340ebbda6480b5b8bd3",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/handoff-command-fragment-20261104/objects/e4fae6ef44c01e268c8937b99775204506f41d93.sh",
+      "member": "objects/e4fae6ef44c01e268c8937b99775204506f41d93.sh",
+      "mode": "100644",
+      "bytes": 714,
+      "sha256": "f6589754cb991753838bd5d44c308c075af2d72790b440405d00fe871897d5ec",
+      "oid": "e4fae6ef44c01e268c8937b99775204506f41d93",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    }
+  ],
+  "volumes": [
+    {
+      "path": "source-custody-001.tar.gz",
+      "bytes": 2792,
+      "sha256": "82f1113f2ba8ea0308d1c5b707b889160eb59af5c4e7de97b21b6ec255e8a482",
+      "tar_bytes": 20480,
+      "tar_sha256": "9b724aba7f2faa3a3348b9850da130e3ca28b520d5085b23743df1b73972aa27",
+      "member_count": 4,
+      "member_bytes": 6992
+    }
+  ]
+}

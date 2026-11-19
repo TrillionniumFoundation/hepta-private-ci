@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "representation": "normalized_process_status_observation",
+  "normalization": "Parsed the original h_process_status JSON and serialized it with two-space indentation. This is not a raw host file or the original MCP response envelope.",
+  "source_tool": "h_process_status",
+  "source_arguments": {
+    "host": "desktop",
+    "job_id": "1a1cc7949e6-2564-f4a"
+  },
+  "observation": {
+    "at_unix_ms": 1794433450944,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1cc7949e6-2564-f4a",
+    "launch_nonce": "d4b9f1243bc87ffe049642143515ad7d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 25504,
+        "stored": 25504
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

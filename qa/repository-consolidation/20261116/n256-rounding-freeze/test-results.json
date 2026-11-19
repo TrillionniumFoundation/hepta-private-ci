@@ -1,0 +1,80 @@
+{
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "results": [
+    {
+      "name": "tests-normal",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.061,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/tests-normal.log",
+      "sha256": "9cb028196d2bc7e638574e8018ce4efc4c6bb91f20a6ce9b9d8012c0f3923a92"
+    },
+    {
+      "name": "tests-optimized",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-O",
+        "-m",
+        "unittest",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_fp64_round",
+        "qualification.hcsn_currentstate_n256_fp64_rounding.test_source_freeze",
+        "-v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.205,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/tests-optimized.log",
+      "sha256": "6ed28d08f2b1c7f753d569f9a8b23e51714a605c3ad60f742a24aa42d702f21f"
+    },
+    {
+      "name": "verify-normal",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.023,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/verify-normal.log",
+      "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+    },
+    {
+      "name": "verify-optimized",
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-O",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.071,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/verify-optimized.log",
+      "sha256": "a19d00841931bbed41eaffb4e31eec381ff65b71bea91a4f4abc830248507bfd"
+    },
+    {
+      "name": "bytecode",
+      "argv": [
+        "/usr/bin/python3",
+        "-m",
+        "py_compile",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/fp64_round.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/verify_source.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/__init__.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/test_source_freeze.py",
+        "qualification/hcsn_currentstate_n256_fp64_rounding/test_fp64_round.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.037,
+      "log": "/home/qian-qi/hepta-rust-review-a25-n256-v2/evidence/bytecode.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

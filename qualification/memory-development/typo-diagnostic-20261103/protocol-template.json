@@ -1,0 +1,35 @@
+{
+  "study_id": "chargram-typo-development-diagnostic-20261103-v1",
+  "hypothesis": "A BM25/character-trigram rank-fusion candidate improves macro top1 by at least 0.05 under a fixed single adjacent-letter transposition while preserving clean DEV macro top1 and cold runtime no more than 2x BM25.",
+  "scope": "DEVELOPMENT_ONLY; synthetic typo robustness; NOT independent-source generalization",
+  "inputs": {
+    "train.jsonl": "REPLACE_WITH_PROSPECTIVELY_FROZEN_SHA256",
+    "dev.jsonl": "REPLACE_WITH_PROSPECTIVELY_FROZEN_SHA256"
+  },
+  "test72_access": false,
+  "candidate": "(1-alpha)/(60+BM25_rank)+alpha/(60+char_trigram_Jaccard_rank), deterministic document-id ties",
+  "alphas": [
+    0.1,
+    0.25,
+    0.5
+  ],
+  "baseline": "BM25 k1=1.2 b=0.75 on lowercase ASCII alphanumeric tokens; full provided candidate set",
+  "perturbation": "Choose earliest longest ASCII alphabetic word of length>=6 in query, swap its middle adjacent distinct letters; search other adjacent positions then next length-sorted word if needed. Exactly one transposition; no doc/gold access. Preserve unperturbable query.",
+  "selection": "TRAIN only: discard candidates below BM25 clean macro accuracy; maximize corrupted macro accuracy, then clean macro accuracy, then smallest alpha. If all fail, record NO_TRAIN_ADMISSION and no DEV scoring.",
+  "dev": "Freeze selected alpha receipt before one DEV comparison against BM25. Report clean and corrupted macro accuracy and counts separately.",
+  "cost": "Independent cold paths include document preprocessing and both clean/corrupted queries. Three repetitions with order BM25/candidate, candidate/BM25, BM25/candidate; median wall time. Not general hardware benchmark.",
+  "budget": {
+    "wall_seconds": 300,
+    "threads": 2,
+    "native_pairs": 0,
+    "model_forwards": 0,
+    "network_requests": 0
+  },
+  "stopping": "One frozen candidate evaluation; no hyperparameter expansion or retry based on outcome. Runtime errors can be repaired only with new version and preserved failure.",
+  "limitations": [
+    "DEV historically exposed and BM25 already saturated.",
+    "Artificial typographical perturbations do not establish real-user utility.",
+    "No changed data membership, new sources, label edits, or sealed TEST release."
+  ],
+  "artifact_role": "TEMPLATE, NOT the exact frozen execution manifest"
+}

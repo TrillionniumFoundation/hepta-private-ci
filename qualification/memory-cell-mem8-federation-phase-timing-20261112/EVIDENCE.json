@@ -1,0 +1,50 @@
+{
+  "adoption": "HOLD/NoUpdate",
+  "archive": {
+    "bytes": 6368,
+    "members": [
+      {
+        "bytes": 23,
+        "name": "./diff-check.log",
+        "sha256": "75ebccfc18cc5b1a8b32589edccfa2e9f53d9f4dcde857010b3235519655e37f"
+      },
+      {
+        "bytes": 318,
+        "name": "./fmt.log",
+        "sha256": "40fb37a0cb48659f9e05e0228f8de81e088ad05b38d0d3ef39f45fdc488dddd6"
+      },
+      {
+        "bytes": 33763,
+        "name": "./native.log",
+        "sha256": "0b3e618e261252d22782b5b9b812e77aef0fd54aba0676aba3844cfb17566b25"
+      }
+    ],
+    "name": "raw-native-evidence.tar.xz",
+    "sha256": "e685331e73cbd5cf61444cccea5d931da78f1cec5399ade8a752a09c3186a1cf"
+  },
+  "equivalent_local_parent": "5072deaf558ae28455cc75fa5a1e22cbe71c4ff4",
+  "local_parent_tree": "050c7f61d9d31eca9fa3d0f17fb9323cca26c7c1",
+  "modified_source_path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+  "modified_source_sha256": "0c25e288f7f49930100ed547fcafc13d21f5a00b456f6dc3fd84b66849931c03",
+  "parent_github_head": "a9227838515fe9341c28b141f95c3a9aa36602aa",
+  "parent_github_pr": 6023,
+  "qualified_checks": {
+    "cargo_fmt_hepta_memory": "pass",
+    "git_diff_check": "pass",
+    "linux_targeted_test": {
+      "exit_code": 0,
+      "failed": 0,
+      "filtered_out": 432,
+      "macos_reproduced": false,
+      "passed": 1
+    }
+  },
+  "restricted_scope": {
+    "authority_sandbox_changed": false,
+    "mem5_actors_reused": false,
+    "production_code_changed": false,
+    "sixteen_peer_assertion_changed": false,
+    "two_second_budget_changed": false
+  },
+  "schema": "mem8-federation-phase-timing-test-only-v1"
+}

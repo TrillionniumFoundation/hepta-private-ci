@@ -1,0 +1,49 @@
+{
+  "schema": "hepta.mem8.provider-projection-privacy-erratum.v1",
+  "original_host_records_modified": false,
+  "original_native_logs_receipts_junit_modified": false,
+  "original_native_test_status": "FAILED",
+  "physical_provider_outcome": "UNKNOWN",
+  "cause": "Both prior readonly projections copied world_state.state as an entire object while incorrectly declaring private_context_text_exported=false.",
+  "correction": "Exclude both original projections. Publish explicitly derived scalar observations and world_state field names/hash/length only. Retain ready only for the event_msg turn_recovery_candidate scalar.",
+  "projections": [
+    {
+      "excluded_member": "readonly-v1/ROLLOUT_SAFE_OBSERVATIONS.json",
+      "original_private_host_path": "/home/qian-qi/mem8-provider-original-settlement-ed353817-v1/ROLLOUT_SAFE_OBSERVATIONS.json",
+      "original_bytes": 8501,
+      "original_sha256": "ad250418f70a0dc6793cc741c456626ad40926a007fd1ed04b950925627ffc7f",
+      "original_flag_private_context_text_exported": false,
+      "original_flag_was_incorrect": true,
+      "derived_member": "readonly-v1/ROLLOUT_REDACTED_OBSERVATIONS.json",
+      "derived_bytes": 5886,
+      "derived_sha256": "9cdf5e28d7d4c409e901d2cb669cb6cdea713bd8bbd185e9467e63c779017d03"
+    },
+    {
+      "excluded_member": "readonly-v2/ROLLOUT_SAFE_OBSERVATIONS.json",
+      "original_private_host_path": "/home/qian-qi/mem8-provider-original-settlement-ed353817-v2/ROLLOUT_SAFE_OBSERVATIONS.json",
+      "original_bytes": 8501,
+      "original_sha256": "ad250418f70a0dc6793cc741c456626ad40926a007fd1ed04b950925627ffc7f",
+      "original_flag_private_context_text_exported": false,
+      "original_flag_was_incorrect": true,
+      "derived_member": "readonly-v2/ROLLOUT_REDACTED_OBSERVATIONS.json",
+      "derived_bytes": 5886,
+      "derived_sha256": "a1ef90bd7d25647ad33423ca2c9adfbf03de67234f46a7c7f0ff3e9104f386f6"
+    }
+  ],
+  "do_not_reference_objects": [
+    {
+      "kind": "unsafe_unreferenced_v2_archive",
+      "git_blob": "0338719385dda608a7815179f88e93265b8a5be3",
+      "bytes": 52368,
+      "sha256": "2afb2e0bf0dca015061e1773cbddb38ced52331c019405b95adaacbd9b3bf4df"
+    },
+    {
+      "kind": "superseded_v2_manifest",
+      "git_blob": "48787ad0877c8c4288ba3253939102bb11dc78d7"
+    }
+  ],
+  "unsafe_objects_uploaded_at": "2026-11-11T06:08:24.647272+00:00",
+  "unsafe_objects_not_added_to_tree_commit_or_ref_by_this_task": true,
+  "unsafe_archive_and_original_projection_bytes_excluded_from_this_package": true,
+  "model_calls_or_database_queries_performed_by_redaction": 0
+}

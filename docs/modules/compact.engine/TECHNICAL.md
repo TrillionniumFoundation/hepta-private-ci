@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpointV1`, `build_qualified_candidate`, `MemoryCheckpointCoordinatorV2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -171,7 +171,8 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
+- [codex-rs/hepta-compact-engine/src/product_e2e_tests.rs](../../../codex-rs/hepta-compact-engine/src/product_e2e_tests.rs); named case: `public_v2_path_publishes_restarts_reconstructs_and_advances`.
+- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `tombstoned_head_is_never_replayed_or_retained`.
 - [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
 
 In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.

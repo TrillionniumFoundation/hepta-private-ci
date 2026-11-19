@@ -1,0 +1,622 @@
+{
+  "schema": "hepta.learn.paired-original-source-failure-repair.v1",
+  "base_commit": "441de918b863dd15b2faeae920017c1b4b08f59d",
+  "base_tree": "c3390ffc8c18c47f7bb4cbaa24ce4b585645fae2",
+  "base_manifest_blob": "f11dc34ca24ce63057257702a775e74828e792af",
+  "result_manifest_blob": "eb05412707d9c97916413d1c6eacb04f99bc4840",
+  "scope": "Minimal same-receiver UFCS and fail-closed QA exception normalization. No statistical, canonical-byte, authority, transport, runtime gate or test-inventory change.",
+  "replace_complete_protected_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "required": [
+          "pub(super) struct Episode",
+          "exact original policy and independent terminal Outcome"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".drive_q24",
+          ".prediction_q24",
+          "ProbabilityQ32::from_raw",
+          "f64",
+          "f32",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_episode(",
+            "sequence": [
+              "fn read_episode(",
+              "circuit_learning_run_id_v1(",
+              "&owner.identity.agent_id",
+              "&requested.episode_id",
+              "CircuitTaskSourcePublicationV1::original_policy(source)?",
+              "source\n            .original_record()\n            .admission\n            .observed_at_unix_micros",
+              "outcome\n            .observed_at\n            .ok_or",
+              "outcome\n            .finalized_at\n            .ok_or",
+              "outcome\n            .value\n            .ok_or",
+              "original_run != requested.behavior_run_id",
+              "decision.record_id != requested.behavior_run_id",
+              "input.scope.run_id != requested.behavior_run_id",
+              "decision.run_snapshot_digest != input.ndu_snapshot_digest",
+              "!policy.checkpoint_before().is_zero()",
+              "decision.selected_candidate_id != *policy.selected()",
+              "decision.selected_propensity != ProbabilityQ32::ONE",
+              "decision.candidate_ids\n                != policy\n                    .entries()",
+              "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
+              "outcome.censoring_reason.is_some()",
+              "outcome.unit_profile_digest != config.rule.unit_profile_digest",
+              "outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest",
+              "training.generator.principal().principal_id == outcome.observer_id",
+              "training.generator.controller_id() == &outcome.observer_controller_id",
+              "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+              "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest",
+              "decision.generator_id == outcome.observer_id",
+              "decision.generator_controller_id == outcome.observer_controller_id",
+              "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+              "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
+              "admitted_at > observed_at",
+              "observed_at > outcome.latest_observable_at",
+              "outcome.latest_observable_at > finalized_at",
+              "finalized_at > current",
+              "!(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)",
+              "config.rule.source_input(&requested.behavior_run_id)?",
+              "input.scope != expected.scope",
+              "input.source_frontier != expected.source_frontier",
+              "input.objective_digest != expected.objective_digest",
+              "input.ndu_snapshot_digest != expected.ndu_snapshot_digest",
+              "input.monotonic_micros != expected.monotonic_micros",
+              "input.deadline_micros != expected.deadline_micros",
+              "input.observation != expected.observation",
+              "input.candidates != expected.candidates",
+              "config.rule.protocol.require_publication(source)?",
+              "input.scope.principal_digest",
+              "super::binding::episode_lineage(ledger, &requested.episode_id)?",
+              "Ok(Episode"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn probability(",
+            "sequence": [
+              "fn probability(",
+              "match ppm",
+              "0 => Ok(ProbabilityQ32::ZERO)",
+              "1_000_000 => Ok(ProbabilityQ32::ONE)",
+              "_ => Err(Error::Binding("
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn observation(",
+            "sequence": [
+              "for behavior in row.policy.entries()",
+              "behavior_probability: probability(behavior.probability_ppm)?",
+              "evaluation_probability: probability(behavior.probability_ppm)?",
+              "predicted_outcome: FixedQ32::ZERO",
+              "decision_id: row.decision.record_id.clone()",
+              "chosen_action: row.decision.selected_candidate_id.clone()",
+              "finalized_outcome: Some(row.value)",
+              "outcome_observed_at: row.observed_at",
+              "outcome_evidence: row.evidence",
+              "outcome_model_evidence: Digest32::ZERO"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+        "required": [
+          "pub(super) struct Episode",
+          "exact original policy and independent terminal Outcome"
+        ],
+        "forbidden": [
+          "SigningKey",
+          ".drive_q24",
+          ".prediction_q24",
+          "ProbabilityQ32::from_raw",
+          "f64",
+          "f32",
+          "unwrap_or",
+          "if false",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn read_episode(",
+            "sequence": [
+              "fn read_episode(",
+              "circuit_learning_run_id_v1(",
+              "&owner.identity.agent_id",
+              "&requested.episode_id",
+              "CircuitTaskSourcePublicationV1::original_policy(source)?",
+              "source\n            .original_record()\n            .admission\n            .observed_at_unix_micros",
+              "outcome\n            .observed_at\n            .ok_or",
+              "outcome\n            .finalized_at\n            .ok_or",
+              "outcome\n            .value\n            .ok_or",
+              "original_run != requested.behavior_run_id",
+              "decision.record_id != requested.behavior_run_id",
+              "input.scope.run_id != requested.behavior_run_id",
+              "decision.run_snapshot_digest != input.ndu_snapshot_digest",
+              "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()",
+              "decision.selected_candidate_id != *policy.selected()",
+              "decision.selected_propensity != ProbabilityQ32::ONE",
+              "decision.candidate_ids\n                != policy\n                    .entries()",
+              "outcome.terminality != AuthenticatedOutcomeTerminality::Terminal",
+              "outcome.censoring_reason.is_some()",
+              "outcome.unit_profile_digest != config.rule.unit_profile_digest",
+              "outcome.expected_delay_profile_digest != config.rule.expected_delay_profile_digest",
+              "training.generator.principal().principal_id == outcome.observer_id",
+              "training.generator.controller_id() == &outcome.observer_controller_id",
+              "training.generator.principal().credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+              "training.generator.principal().signing_key_digest\n                == outcome.observer_signing_key_digest",
+              "decision.generator_id == outcome.observer_id",
+              "decision.generator_controller_id == outcome.observer_controller_id",
+              "decision.generator_credential_chain_digest\n                == outcome.observer_credential_chain_digest",
+              "decision.generator_signing_key_digest == outcome.observer_signing_key_digest",
+              "admitted_at > observed_at",
+              "observed_at > outcome.latest_observable_at",
+              "outcome.latest_observable_at > finalized_at",
+              "finalized_at > current",
+              "!(FixedQ32::ZERO..=FixedQ32::ONE).contains(&value)",
+              "config.rule.source_input(&requested.behavior_run_id)?",
+              "input.scope != expected.scope",
+              "input.source_frontier != expected.source_frontier",
+              "input.objective_digest != expected.objective_digest",
+              "input.ndu_snapshot_digest != expected.ndu_snapshot_digest",
+              "input.monotonic_micros != expected.monotonic_micros",
+              "input.deadline_micros != expected.deadline_micros",
+              "input.observation != expected.observation",
+              "input.candidates != expected.candidates",
+              "config.rule.protocol.require_publication(source)?",
+              "input.scope.principal_digest",
+              "super::binding::episode_lineage(ledger, &requested.episode_id)?",
+              "Ok(Episode"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn probability(",
+            "sequence": [
+              "fn probability(",
+              "match ppm",
+              "0 => Ok(ProbabilityQ32::ZERO)",
+              "1_000_000 => Ok(ProbabilityQ32::ONE)",
+              "_ => Err(Error::Binding("
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn observation(",
+            "sequence": [
+              "for behavior in row.policy.entries()",
+              "behavior_probability: probability(behavior.probability_ppm)?",
+              "evaluation_probability: probability(behavior.probability_ppm)?",
+              "predicted_outcome: FixedQ32::ZERO",
+              "decision_id: row.decision.record_id.clone()",
+              "chosen_action: row.decision.selected_candidate_id.clone()",
+              "finalized_outcome: Some(row.value)",
+              "outcome_observed_at: row.observed_at",
+              "outcome_evidence: row.evidence",
+              "outcome_model_evidence: Digest32::ZERO"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "before": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "required": [
+          "one active original Outcome per episode",
+          "OnPolicyTemporalComparisonInputsV1",
+          "source_evidence_digest: row.source.publication_digest()",
+          "execution_evidence_digest: history_digest(row.source.history_digest())?"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "if false",
+          "unwrap_or",
+          ".drive_q24",
+          ".prediction_q24",
+          "ProbabilityQ32::from_raw",
+          "f32",
+          "f64",
+          "cluster_id: pair",
+          "cluster_id: row.lineage"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn assemble(",
+            "sequence": [
+              "rule.history.iter().map(|row| row.episode.episode_id.clone())",
+              "rule.pairs.iter().flat_map",
+              "row.candidate.episode_id.clone(), row.baseline.episode_id.clone()",
+              "for record in records",
+              "LedgerEvent::AuthenticatedDecisionV2",
+              "decisions.insert",
+              "LedgerEvent::AuthenticatedOutcomeV2",
+              "outcomes",
+              "LedgerEvent::CreditBatchV2",
+              "credits.insert",
+              "decisions.keys().cloned().collect::<BTreeSet<_>>() != expected",
+              "outcomes.keys().cloned().collect::<BTreeSet<_>>() != expected",
+              "credit.outcome_id != outcome.outcome_id",
+              "Some(credit.terminal_outcome) != outcome.value",
+              "for requested in &rule.history",
+              "Episode::read_episode(",
+              "row.admitted_at < rule.history_start_unix_seconds",
+              "row.observed_at > rule.candidate_plan.fold.training_watermark",
+              "row.source.bundle_digest() != training_binding.baseline",
+              "outcome: row.value",
+              "observed_at: row.observed_at",
+              "evidence_digest: row.evidence",
+              "for requested in &rule.pairs",
+              "pairing.pairs.iter().find(|pair| pair.pair_id == requested.pair_id)",
+              "Episode::read_episode(",
+              "&requested.candidate",
+              "Episode::read_episode(",
+              "&requested.baseline",
+              "left.decision.record_id == right.decision.record_id",
+              "left.outcome.outcome_id == right.outcome.outcome_id",
+              "left.evidence == right.evidence",
+              "left.source.input().operation_id == right.source.input().operation_id",
+              "left.source.publication_digest() == right.source.publication_digest()",
+              "left.source.history_digest() == right.source.history_digest()",
+              "left.principal != right.principal",
+              "left.source.bundle_digest() != training_binding.candidate",
+              "right.source.bundle_digest() != training_binding.baseline",
+              "append_arm(&mut candidate, &left, pair",
+              "append_arm(&mut baseline, &right, pair",
+              "Ok(OnPolicyTemporalComparisonInputsV1"
+            ],
+            "top_level": [
+              "for record in records",
+              "for requested in &rule.history",
+              "for requested in &rule.pairs",
+              "Ok(OnPolicyTemporalComparisonInputsV1"
+            ]
+          },
+          {
+            "function": "fn append_arm(",
+            "sequence": [
+              "row.admitted_at < evaluation_start",
+              "row.observed_at > evaluation_end",
+              "row.outcome.finalized_at.is_none_or(|at| at > evaluation_end)",
+              "!row.policy.checkpoint_before().is_zero()",
+              "super::episode::observation(row)?",
+              "decision_id: row.decision.record_id.clone()",
+              "principal_lineage: row.principal.clone()",
+              "episode_lineage: row.lineage.clone()",
+              "decision_at: row.admitted_at",
+              "actions: row.decision.candidate_ids.clone()",
+              "cluster_id: row.principal.clone()",
+              "OnPolicyArmProvenanceV1",
+              "behavior_run_id: row.source.input().scope.run_id.clone()",
+              "model_digest: row.source.bundle_digest()",
+              "input_digest: pair.input_digest",
+              "protocol_digest: pair.protocol_digest",
+              "checkpoint_before: row.policy.checkpoint_before()",
+              "source_evidence_digest: row.source.publication_digest()",
+              "execution_evidence_digest: history_digest(row.source.history_digest())?"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn history_digest(",
+            "sequence": [
+              "value.as_str().parse::<Digest32>()",
+              "if digest.is_zero()",
+              "return Err(Error::Binding(",
+              "Ok(digest)"
+            ],
+            "top_level": []
+          }
+        ]
+      },
+      "after": {
+        "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+        "required": [
+          "one active original Outcome per episode",
+          "OnPolicyTemporalComparisonInputsV1",
+          "source_evidence_digest: row.source.publication_digest()",
+          "execution_evidence_digest: history_digest(row.source.history_digest())?"
+        ],
+        "forbidden": [
+          "SigningKey",
+          "LearningEvidenceVerifierV1::new",
+          "UnixStream::connect",
+          "File::open",
+          "File::create",
+          "CellQ24FeatureWorkerV1::new",
+          "shared_worker(",
+          "into_worker(",
+          "PublishedCircuitFeatureTaskV1::",
+          "FinalUseGrant",
+          "with_root_learning_stage_owners",
+          "if false",
+          "unwrap_or",
+          ".drive_q24",
+          ".prediction_q24",
+          "ProbabilityQ32::from_raw",
+          "f32",
+          "f64",
+          "cluster_id: pair",
+          "cluster_id: row.lineage"
+        ],
+        "required_function_order": [
+          {
+            "function": "fn assemble(",
+            "sequence": [
+              "rule.history.iter().map(|row| row.episode.episode_id.clone())",
+              "rule.pairs.iter().flat_map",
+              "row.candidate.episode_id.clone(), row.baseline.episode_id.clone()",
+              "for record in records",
+              "LedgerEvent::AuthenticatedDecisionV2",
+              "decisions.insert",
+              "LedgerEvent::AuthenticatedOutcomeV2",
+              "outcomes",
+              "LedgerEvent::CreditBatchV2",
+              "credits.insert",
+              "decisions.keys().cloned().collect::<BTreeSet<_>>() != expected",
+              "outcomes.keys().cloned().collect::<BTreeSet<_>>() != expected",
+              "credit.outcome_id != outcome.outcome_id",
+              "Some(credit.terminal_outcome) != outcome.value",
+              "for requested in &rule.history",
+              "Episode::read_episode(",
+              "row.admitted_at < rule.history_start_unix_seconds",
+              "row.observed_at > rule.candidate_plan.fold.training_watermark",
+              "row.source.bundle_digest() != training_binding.baseline",
+              "outcome: row.value",
+              "observed_at: row.observed_at",
+              "evidence_digest: row.evidence",
+              "for requested in &rule.pairs",
+              "pairing.pairs.iter().find(|pair| pair.pair_id == requested.pair_id)",
+              "Episode::read_episode(",
+              "&requested.candidate",
+              "Episode::read_episode(",
+              "&requested.baseline",
+              "left.decision.record_id == right.decision.record_id",
+              "left.outcome.outcome_id == right.outcome.outcome_id",
+              "left.evidence == right.evidence",
+              "left.source.input().operation_id == right.source.input().operation_id",
+              "left.source.publication_digest() == right.source.publication_digest()",
+              "left.source.history_digest() == right.source.history_digest()",
+              "left.principal != right.principal",
+              "left.source.bundle_digest() != training_binding.candidate",
+              "right.source.bundle_digest() != training_binding.baseline",
+              "append_arm(&mut candidate, &left, pair",
+              "append_arm(&mut baseline, &right, pair",
+              "Ok(OnPolicyTemporalComparisonInputsV1"
+            ],
+            "top_level": [
+              "for record in records",
+              "for requested in &rule.history",
+              "for requested in &rule.pairs",
+              "Ok(OnPolicyTemporalComparisonInputsV1"
+            ]
+          },
+          {
+            "function": "fn append_arm(",
+            "sequence": [
+              "row.admitted_at < evaluation_start",
+              "row.observed_at > evaluation_end",
+              "row.outcome.finalized_at.is_none_or(|at| at > evaluation_end)",
+              "!CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()",
+              "super::episode::observation(row)?",
+              "decision_id: row.decision.record_id.clone()",
+              "principal_lineage: row.principal.clone()",
+              "episode_lineage: row.lineage.clone()",
+              "decision_at: row.admitted_at",
+              "actions: row.decision.candidate_ids.clone()",
+              "cluster_id: row.principal.clone()",
+              "OnPolicyArmProvenanceV1",
+              "behavior_run_id: row.source.input().scope.run_id.clone()",
+              "model_digest: row.source.bundle_digest()",
+              "input_digest: pair.input_digest",
+              "protocol_digest: pair.protocol_digest",
+              "checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)",
+              "source_evidence_digest: row.source.publication_digest()",
+              "execution_evidence_digest: history_digest(row.source.history_digest())?"
+            ],
+            "top_level": []
+          },
+          {
+            "function": "fn history_digest(",
+            "sequence": [
+              "value.as_str().parse::<Digest32>()",
+              "if digest.is_zero()",
+              "return Err(Error::Binding(",
+              "Ok(digest)"
+            ],
+            "top_level": []
+          }
+        ]
+      }
+    }
+  ],
+  "add_boundaries": [],
+  "remove_boundaries": [],
+  "replace_boundaries": [],
+  "add_protected_records": [],
+  "remove_protected_records": [],
+  "required_boundary_ids": "unchanged, all 710",
+  "source_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_episode.rs",
+      "before_blob": "112f330ada77a72524a19ebfc7bfa16d6b676668",
+      "after_blob": "270227f62f8af4824c1bc75b4246eef2dc071132",
+      "bytes": 8992,
+      "mode": "100644",
+      "exact_edits": [
+        {
+          "before": "!policy.checkpoint_before().is_zero()",
+          "after": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_records.rs",
+      "before_blob": "005e108f3bede3723753d10b89f6f1f05e70da42",
+      "after_blob": "c33b542c30c7bc53b5ba002f0c691e50b29fdf1f",
+      "bytes": 9494,
+      "mode": "100644",
+      "exact_edits": [
+        {
+          "before": "use crate::OriginalCircuitEvaluationSourceV1;",
+          "after": "use crate::OriginalCircuitEvaluationSourceV1;\nuse crate::circuit_task::CircuitTaskPolicyProjectionV1;"
+        },
+        {
+          "before": "!row.policy.checkpoint_before().is_zero()",
+          "after": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy).is_zero()"
+        },
+        {
+          "before": "checkpoint_before: row.policy.checkpoint_before()",
+          "after": "checkpoint_before: CircuitTaskPolicyProjectionV1::checkpoint_before(&row.policy)"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+      "before_blob": "9832e7800829bfbe9ee913884c50bd3d2add68bc",
+      "after_blob": "2e3e99ad03d1d5e630694faca0906446e0d110c0",
+      "bytes": 20515,
+      "mode": "100644",
+      "exact_edits": [
+        {
+          "before": "!policy.checkpoint_before().is_zero()",
+          "after": "!CircuitTaskPolicyProjectionV1::checkpoint_before(&policy).is_zero()"
+        }
+      ]
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+      "before_blob": "9fe310b95ab493e9704ad5be39beba2f5d048f9a",
+      "after_blob": "548d0bfbdc17f498f515c258903b721fd2f525e4",
+      "bytes": 9234,
+      "mode": "100644",
+      "exact_edits": [
+        {
+          "before": "            first, after = source_marker_span(source, literal[\"marker\"], start, end + 1)\n            self.assertLessEqual(after, end + 1)",
+          "after": "            try:\n                first, after = source_marker_span(source, literal[\"marker\"], start, end + 1)\n            except ValueError as error:\n                raise AssertionError((\"missing original code literal\", literal)) from error\n            self.assertLessEqual(after, end + 1)"
+        }
+      ]
+    },
+    {
+      "path": "CALLERS.toml",
+      "before_blob": "f11dc34ca24ce63057257702a775e74828e792af",
+      "after_blob": "eb05412707d9c97916413d1c6eacb04f99bc4840",
+      "bytes": 1537067,
+      "mode": "100644"
+    }
+  ],
+  "preserved_records": {
+    "total_records": 1199,
+    "boundaries": 710,
+    "protected": 489,
+    "changed_records": 2,
+    "unchanged_record_raw_bytes": 1197,
+    "unchanged_boundaries": 710,
+    "qa_methods": [
+      {
+        "path": "qa/b4-no-bypass/test_original_on_policy_evaluation_source_closure.py",
+        "methods": [
+          "test_exact_original_paired_and_closed_cohort_edges",
+          "test_complete_records_preserve_shared_and_paired_guards",
+          "test_each_actual_producer_guard_cannot_move_to_a_comment",
+          "test_original_authority_and_outcome_substitutions_are_rejected",
+          "test_freeze_guards_stay_inside_the_one_original_generic_function",
+          "test_frozen_identity_fresh_empty_and_actual_principal_are_required",
+          "test_distinct_domains_are_real_code_and_cannot_be_comment_substitutes",
+          "test_shared_release_and_cross_mode_current_are_explicitly_closed"
+        ],
+        "count": 8,
+        "unchanged": true
+      },
+      {
+        "path": "qa/b4-no-bypass/test_original_paired_product_source_closure.py",
+        "methods": [
+          "test_complete_records_and_actual_composed_callers_are_installed",
+          "test_frozen_protocol_and_temporal_parameters_cannot_drift",
+          "test_original_run_source_outcome_and_principal_identities_cannot_merge",
+          "test_single_original_consumption_and_signed_qualification_path_remain",
+          "test_complete_paired_body_and_legacy_mode_are_not_interchangeable",
+          "test_original_confidence_bounds_and_strict_roles_cannot_be_softened",
+          "test_domains_are_actual_literals_in_the_original_functions",
+          "test_original_shared_function_code_is_preserved",
+          "test_pure_pair_metadata_cannot_mint_authority_or_reconnect"
+        ],
+        "count": 9,
+        "unchanged": true
+      }
+    ]
+  },
+  "untouched_proof_sources": [
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62"
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+    },
+    {
+      "path": "qa/b4-no-bypass/rust_source_marker_support.py",
+      "blob": "4234ebafeb7c0d7a4fc6c671cff339f853411f4c"
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/paired-product-domain-20261112/guard-contract.json",
+      "blob": "8fa207df345953a1fffedb295f0a07ce64905622"
+    }
+  ],
+  "merge_rules": [
+    "Apply each exact complete before record once and replace it by its complete after record. Keep all other records, including multiple records sharing a path, byte-for-byte.",
+    "Do not replace another child's full CALLERS.toml. This child changes exactly two agentd producer protected records and no boundary.",
+    "Preserve every existing test method and native inventory item. This child changes one mutation marker and one literal-absence exception conversion only.",
+    "Keep all original SharedBehavior and PairedOnPolicy canonical domains, estimator formulas, confidence parameters, metric roles, thresholds, caps, grants and positive-stage gates."
+  ],
+  "validation_status": {
+    "real_source_run_at_base": "Parent's original H run executed 423 methods: 5 FAIL, 69 ERROR, 0 skipped. This child owns the paired checkpoint 1 ERROR and Product domains method 25 ERROR titles.",
+    "detailed_original_trace": "Not retrieved at publication time. The Source window call and this child's authorized existing-operation status/result both returned MCP timeout. Do not treat the projected exception as an actual traceback.",
+    "original_python_execution_after_change": false,
+    "native_execution_after_change": false,
+    "rust_format_or_compile_after_change": false,
+    "ordinary_acceptance": 0,
+    "qualified_e_to_version_effect_coverage": "not established",
+    "projected_static_checks": "V8 transcription of fixed original algorithms only; full result details and limitations in reproduction-evidence.json."
+  }
+}

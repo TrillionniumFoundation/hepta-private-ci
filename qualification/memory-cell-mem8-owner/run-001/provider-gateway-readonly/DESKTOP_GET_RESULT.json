@@ -1,0 +1,99 @@
+{
+  "boundary": "These GETs observe current availability only. They do not settle or identify the original inference request; all diagnostic/model-list/response IDs are separate.",
+  "finished_at": "2026-11-11T05:53:42.115273+00:00",
+  "model_requests": 0,
+  "observations": [
+    {
+      "attempts": 1,
+      "body_limit_exceeded": false,
+      "captured_body_bytes": 35,
+      "captured_body_sha256": "7c25cfc56d93b19fc9acce2f4530785951467c3ccdadea3f8f5f6b97d6cf3376",
+      "current_get_response_id_metadata": {
+        "x-request-id": {
+          "bytes": 32,
+          "present": true,
+          "sha256": "5419da973753a44969b259d2d8774db3b193230e94c19b50632b0e26df76c0c6"
+        }
+      },
+      "finished_at": "2026-11-11T05:53:42.015641+00:00",
+      "http_status": 200,
+      "id_scope": "Current diagnostic GET only; not the original thread, turn, client key, or model request ID.",
+      "json_parse_status": "PARSED",
+      "method": "GET",
+      "observation_id": "mem8-provider-get-desktop-20261111-ed353-v1-get-1",
+      "raw_body_persisted": false,
+      "safe_current_availability": {
+        "json_kind": "object",
+        "status": "ok"
+      },
+      "socket_timeout_seconds": 6,
+      "started_at": "2026-11-11T05:53:41.578646+00:00",
+      "url": "http://127.0.0.1:18083/health",
+      "wall_deadline_seconds": 7
+    },
+    {
+      "attempts": 1,
+      "body_limit_exceeded": false,
+      "captured_body_bytes": 605,
+      "captured_body_sha256": "1be077dffe7bc17dd0fe5695eabf95e063677ad9bfcc5090921667c7cf75bf00",
+      "current_get_response_id_metadata": {
+        "x-request-id": {
+          "bytes": 32,
+          "present": true,
+          "sha256": "b257558b1f7b89238d03b0627c95b9ec85e98af33feed8a3e4cd82c467a4b847"
+        }
+      },
+      "finished_at": "2026-11-11T05:53:42.061880+00:00",
+      "http_status": 200,
+      "id_scope": "Current diagnostic GET only; not the original thread, turn, client key, or model request ID.",
+      "json_parse_status": "PARSED",
+      "method": "GET",
+      "observation_id": "mem8-provider-get-desktop-20261111-ed353-v1-get-2",
+      "raw_body_persisted": false,
+      "safe_current_availability": {
+        "json_kind": "object"
+      },
+      "socket_timeout_seconds": 6,
+      "started_at": "2026-11-11T05:53:42.015682+00:00",
+      "url": "http://127.0.0.1:18083/routing",
+      "wall_deadline_seconds": 7
+    },
+    {
+      "attempts": 1,
+      "body_limit_exceeded": false,
+      "captured_body_bytes": 718,
+      "captured_body_sha256": "8b33bb47ad6240afee6b93c9ea08d0b56f5e23694c37b6a7b4ef0d63f8409097",
+      "current_get_response_id_metadata": {
+        "x-request-id": {
+          "bytes": 32,
+          "present": true,
+          "sha256": "d8e9a59b2febb836308559c03264886fe89fdbb725b5e97ac48eb42d14335f81"
+        }
+      },
+      "finished_at": "2026-11-11T05:53:42.115229+00:00",
+      "http_status": 200,
+      "id_scope": "Current diagnostic GET only; not the original thread, turn, client key, or model request ID.",
+      "json_parse_status": "PARSED",
+      "method": "GET",
+      "observation_id": "mem8-provider-get-desktop-20261111-ed353-v1-get-3",
+      "raw_body_persisted": false,
+      "safe_current_availability": {
+        "current_get_model_ids": [
+          "qwen38-flash-next-uc"
+        ],
+        "json_kind": "object",
+        "model_id_scope": "Current GET metadata only; not an ID or identity observed for the original inference request."
+      },
+      "socket_timeout_seconds": 6,
+      "started_at": "2026-11-11T05:53:42.061914+00:00",
+      "url": "http://127.0.0.1:18083/v1/models",
+      "wall_deadline_seconds": 7
+    }
+  ],
+  "original_provider_final_status": "UNKNOWN",
+  "retry_count": 0,
+  "run_id": "mem8-provider-get-desktop-20261111-ed353-v1",
+  "schema": "hepta.mem8.provider-current-get-readonly.v1",
+  "service_changes": false,
+  "started_at": "2026-11-11T05:53:41.538398+00:00"
+}

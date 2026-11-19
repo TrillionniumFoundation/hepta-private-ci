@@ -1,0 +1,237 @@
+{
+  "schema": "learn.original-archive-only-restoration.v1",
+  "state": "original-archive-restored-binding-preserved-and-full-hash-verified",
+  "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+  "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+  "source_before": {
+    "current": {
+      "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "status": "",
+      "directory": {
+        "device": 2050,
+        "inode": 13007679,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      }
+    },
+    "preserved": {
+      "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+      "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+      "status": "",
+      "directory": {
+        "device": 2050,
+        "inode": 52497821,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      }
+    }
+  },
+  "data_parent": {
+    "device": 2067,
+    "inode": 2,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o40755"
+  },
+  "data_free_bytes_before": 189477466112,
+  "existing_private_directories_before": {
+    "/data/hepta-learn-ce434-runtime-20261112-v1": {
+      "device": 2067,
+      "inode": 40370256,
+      "uid": 1000,
+      "gid": 1000,
+      "mode": "0o40700"
+    },
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins": {
+      "device": 2067,
+      "inode": 40370257,
+      "uid": 1000,
+      "gid": 1000,
+      "mode": "0o40700"
+    }
+  },
+  "binding_before": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "metadata": {
+      "device": 2067,
+      "inode": 40370261,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 39884,
+      "mtime_ns": "1794482968901013685",
+      "ctime_ns": "1794482968909814746"
+    }
+  },
+  "binding_written": false,
+  "binding_copied": false,
+  "binding_chmodded": false,
+  "binding_preserved": true,
+  "archive_path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+  "archive_url": "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+  "official_asset_id": 493388485,
+  "expected_archive_bytes": 29366352,
+  "expected_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+  "new_archive_created": true,
+  "new_archive_identity": {
+    "device": 2067,
+    "inode": 40370259,
+    "mode": "0o100400",
+    "nlink": 1,
+    "uid": 1000,
+    "gid": 1000,
+    "bytes": 29366352,
+    "mtime_ns": "1794504802273558861",
+    "ctime_ns": "1794504802472552939"
+  },
+  "private_directories_created": false,
+  "v1_target_created": false,
+  "preexisting_files_overwritten": false,
+  "old_receipts_rewritten": false,
+  "historical_receipts": [
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/dependency-recovery-441de918-v1/result.json",
+      "sha256": "8db2c096ff2c16b8e02f293a67c26939c5de6bf6e0dd69888179c4b0d31ca3fc"
+    },
+    {
+      "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/build-root-recovery-e5c7-v2/result.json",
+      "sha256": "cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb"
+    }
+  ],
+  "steps": [
+    {
+      "name": "download-exact-original-public-asset",
+      "exit_code": 0,
+      "seconds": 8.757476195925847,
+      "log_bytes": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "new_signals_by_outer": [],
+  "native_tests_executed": 0,
+  "ordinary_acceptance": 0,
+  "download_command": [
+    "/usr/bin/curl",
+    "--fail",
+    "--location",
+    "--silent",
+    "--show-error",
+    "--proto",
+    "=https",
+    "--proto-redir",
+    "=https",
+    "--tlsv1.2",
+    "--socks5-hostname",
+    "127.0.0.1:11080",
+    "--connect-timeout",
+    "20",
+    "--max-time",
+    "300",
+    "--max-redirs",
+    "5",
+    "--max-filesize",
+    "29366352",
+    "--output",
+    "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz.partial",
+    "https://github.com/openai/codex/releases/download/rusty-v8-v150.4.0/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+  ],
+  "received_archive": {
+    "path": "/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/original-archive-only-recovery-4537458b51b6-v1/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz.partial",
+    "bytes": 29366352,
+    "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "metadata": {
+      "device": 2050,
+      "inode": 16319984,
+      "mode": "0o100600",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 29366352,
+      "mtime_ns": "1794504801590579187",
+      "ctime_ns": "1794504801590579187"
+    }
+  },
+  "archive": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "bytes": 29366352,
+    "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+    "metadata": {
+      "device": 2067,
+      "inode": 40370259,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 29366352,
+      "mtime_ns": "1794504802273558861",
+      "ctime_ns": "1794504802472552939"
+    }
+  },
+  "binding_after": {
+    "path": "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+    "metadata": {
+      "device": 2067,
+      "inode": 40370261,
+      "mode": "0o100400",
+      "nlink": 1,
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 39884,
+      "mtime_ns": "1794482968901013685",
+      "ctime_ns": "1794482968909814746"
+    }
+  },
+  "existing_private_directories_after": {
+    "/data/hepta-learn-ce434-runtime-20261112-v1": {
+      "device": 2067,
+      "inode": 40370256,
+      "uid": 1000,
+      "gid": 1000,
+      "mode": "0o40700"
+    },
+    "/data/hepta-learn-ce434-runtime-20261112-v1/v8-private-pins": {
+      "device": 2067,
+      "inode": 40370257,
+      "uid": 1000,
+      "gid": 1000,
+      "mode": "0o40700"
+    }
+  },
+  "source_after": {
+    "current": {
+      "repo": "/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1",
+      "source_sha": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+      "source_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+      "status": "",
+      "directory": {
+        "device": 2050,
+        "inode": 13007679,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      }
+    },
+    "preserved": {
+      "repo": "/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1",
+      "source_sha": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+      "source_tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+      "status": "",
+      "directory": {
+        "device": 2050,
+        "inode": 52497821,
+        "uid": 1000,
+        "gid": 1000,
+        "mode": "0o40700"
+      }
+    }
+  },
+  "finished_unix_ms": 1794504802756
+}

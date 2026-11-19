@@ -29,6 +29,7 @@ use crate::TaskFlowStepObservation;
 use crate::TaskFlowStepReceipt;
 use crate::TaskFlowStepState;
 use crate::TaskFlowTransition;
+use crate::taskflow::diagnostics::storage_unavailable;
 
 const AUTOMATION_WORKFLOW_ID: &str = "hepta.automation.codex-turn";
 const AUTOMATION_WORKFLOW_VERSION: u32 = 1;
@@ -757,7 +758,7 @@ impl AutomationStore {
         .bind(self.taskflow_owner_agent_id().as_str())
         .fetch_optional(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| storage_unavailable("occurrence.step_attempt.read", error))?
         .ok_or_else(|| TaskFlowError::Conflict("automation occurrence is missing".to_string()))?;
         u32::try_from(value).map_err(|_| TaskFlowError::Corrupt("step attempt column".to_string()))
     }
@@ -780,7 +781,7 @@ impl AutomationStore {
         .bind(i64::from(attempt))
         .fetch_optional(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| storage_unavailable("occurrence.step_fence.read", error))?
         .ok_or_else(|| {
             TaskFlowError::Conflict("automation TaskFlow step history is missing".to_string())
         })?;

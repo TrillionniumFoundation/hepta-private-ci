@@ -1,0 +1,3399 @@
+{
+  "artifact_manifest_sha256": "cf309d7aa5ed63746037ce7b1423edb1b57c89a87c35161986f7c5422c8a439b",
+  "audit_binding": {
+    "artifact": "AUDIT_PRIMARY_REPEAT_2.json",
+    "artifact_manifest_sha256": "cf309d7aa5ed63746037ce7b1423edb1b57c89a87c35161986f7c5422c8a439b",
+    "artifact_sha256": "c6ec3195d5f0ced0e79f6315caf72cbf9026d2e362b1ff29fa22e1c588f8e430",
+    "auditor_sha256": "f052f179fc498d391670c903931cd28224a9c23e2b30db21ce707194906cd7eb",
+    "confirmation_rows_verified": 864,
+    "development_rows_verified": 96,
+    "errors": [],
+    "excluded": [
+      "measured wall/CPU timings",
+      "training reproduction",
+      "external task outcomes"
+    ],
+    "learners_reconstructed": 24,
+    "mismatch_count": 0,
+    "plan_sha256": "b44c4084feea4a6fc1c3b690790c9a15ae2930c4b57fa6155e408fa564eabb7c",
+    "routers_reconstructed": 12,
+    "sampled_episodes_verified": 13824,
+    "schema": "hepta.ctrl1.primary-replay-audit.v1",
+    "scope": "independent replay invocation using frozen code; not external evaluator attestation",
+    "selections_verified": 12,
+    "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+    "status": "PASSED_PRIMARY_REPLAY",
+    "strict_source_inventory_verified": true,
+    "trajectories_requested": true,
+    "verified": true
+  },
+  "counts": {
+    "attempt_events": 1992,
+    "attempt_phase_status_counts": {
+      "confirmation/Completed": 864,
+      "confirmation/Started": 864,
+      "development/Completed": 96,
+      "development/Started": 96,
+      "router_training/Completed": 12,
+      "router_training/Started": 12,
+      "training/Completed": 24,
+      "training/Started": 24
+    },
+    "comparisons": 864,
+    "comparisons_per_profile_controller": 24,
+    "confirmation_scenarios": 8,
+    "development_decisions": {
+      "Candidate": 9,
+      "NoUpdate": 3
+    },
+    "exact_budget_violations": 0.0,
+    "independent_training_seeds": 3,
+    "profile_seed_runs": 12,
+    "sampled_budget_violations_reported_by_rows": 0,
+    "sampled_episodes_reported_by_rows": 13824,
+    "seeds": [
+      17,
+      23,
+      41
+    ]
+  },
+  "development_selections": [
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.47414206249999996,
+      "candidate_mean_value": 0.47204816406249994,
+      "decision": "NoUpdate",
+      "id": "97e2016b00cc-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": -0.0020938984375000053,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "scenario_gains": [
+        0.0,
+        -0.008375593750000021,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.39414206249999995,
+      "candidate_mean_value": 0.4079856640624999,
+      "decision": "Candidate",
+      "id": "29d3a0540d92-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.013843601562500002,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "scenario_gains": [
+        0.0,
+        0.05537440625000001,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.44782832817934165,
+      "candidate_mean_value": 0.4522844576417607,
+      "decision": "Candidate",
+      "id": "6c4949f90c48-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.004456129462419023,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "scenario_gains": [
+        0.0,
+        0.01782451784967609,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-17",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-23",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "baseline_mean_value": 0.3663694854871775,
+      "candidate_mean_value": 0.3871911490730133,
+      "decision": "Candidate",
+      "id": "6d077dda5bd1-41",
+      "mean_extra_cost": 0.0,
+      "mean_gain": 0.02082166358583578,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "scenario_gains": [
+        0.0,
+        0.08328665434334312,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "first_attempt": "Retained separately on HOLD; not pooled or counted as additional independent seeds",
+  "observed_sample_counts": {
+    "declared_budget_violations": 0,
+    "fallback_decisions": 0,
+    "max_decision_expanded_nodes": 72,
+    "max_recorded_duration_seconds": 7,
+    "max_recorded_environment_plus_controller_cost": 10,
+    "recorded_charge_bound_violations": 0,
+    "sampled_cases": 864,
+    "sampled_episodes": 13824
+  },
+  "offline_cost_notes": {
+    "distillation_teacher_nested_meter": {
+      "calls": 528,
+      "cpu_ns": 492601855,
+      "expanded_nodes": 7992,
+      "fallbacks": 0,
+      "forecast_calls": 7992,
+      "legal_mask_calls": 4464,
+      "wall_ns": 492339440
+    },
+    "router_training_cpu_seconds": 7.665714874999998,
+    "scope": "Teacher timings are nested in learner training; shared roster receipts repeat and are counted once per profile; timings do not constitute matched consumed whole-pipeline physical cost",
+    "shared_roster_cpu_seconds_counted_once": 0.7644853350000128
+  },
+  "paired_contrasts": [
+    {
+      "candidate": "fixed",
+      "different_action_expectation_rows": 24,
+      "losses": 12,
+      "maximum_value_delta": 0.04099841666666665,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": -0.12055912500000002,
+      "minimum_value_delta": -0.2871121666666667,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.12055912500000002,
+        "23": -0.12055912500000002,
+        "41": -0.12055912500000002
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "voi",
+      "different_action_expectation_rows": 24,
+      "losses": 6,
+      "maximum_value_delta": 0.14699687339752948,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.07305265058483135,
+      "minimum_value_delta": -0.0010123582186667424,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.07305265058483135,
+        "23": 0.07305265058483135,
+        "41": 0.07305265058483135
+      },
+      "ties": 0,
+      "wins": 18
+    },
+    {
+      "candidate": "mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.03049841666666664,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": 0.0034857758333333155,
+      "minimum_value_delta": -0.01911336500000005,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.0034857758333333155,
+        "23": 0.0034857758333333155,
+        "41": 0.0034857758333333155
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.03049841666666664,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": 0.0034857758333333155,
+      "minimum_value_delta": -0.01911336500000005,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.0034857758333333155,
+        "23": 0.0034857758333333155,
+        "41": 0.0034857758333333155
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "hybrid",
+      "different_action_expectation_rows": 24,
+      "losses": 0,
+      "maximum_value_delta": 0.3598315012361944,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.24521855548520827,
+      "minimum_value_delta": 0.13404323884155545,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.24521855548520827,
+        "23": 0.24521855548520827,
+        "41": 0.24521855548520827
+      },
+      "ties": 0,
+      "wins": 24
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 10,
+      "losses": 0,
+      "maximum_value_delta": 0.3598315012361944,
+      "mean_controller_credit_delta": 1.6666666666666667,
+      "mean_value_delta": 0.1289219961390347,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.08791374129551735,
+        "23": 0.08791374129551735,
+        "41": 0.2109385058260694
+      },
+      "ties": 14,
+      "wins": 10
+    },
+    {
+      "candidate": "distilled_candidate",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.04099841666666665,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.010570569444444436,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.00905529166666666,
+        "23": 0.013601124999999992,
+        "41": 0.00905529166666666
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "selected_fast",
+      "different_action_expectation_rows": 0,
+      "losses": 0,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.0,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.0,
+        "23": 0.0,
+        "41": 0.0
+      },
+      "ties": 24,
+      "wins": 0
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 0,
+      "losses": 0,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.0,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "mpc",
+      "seed_mean_value_deltas": {
+        "17": 0.0,
+        "23": 0.0,
+        "41": 0.0
+      },
+      "ties": 24,
+      "wins": 0
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 14,
+      "losses": 14,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": -2.3333333333333335,
+      "mean_value_delta": -0.11629655934617357,
+      "minimum_value_delta": -0.3598315012361944,
+      "paired_rows": 24,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "hybrid",
+      "seed_mean_value_deltas": {
+        "17": -0.15730481418969092,
+        "23": -0.15730481418969092,
+        "41": -0.034280049659138875
+      },
+      "ties": 10,
+      "wins": 0
+    },
+    {
+      "candidate": "fixed",
+      "different_action_expectation_rows": 24,
+      "losses": 12,
+      "maximum_value_delta": 0.09969999999999998,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": -0.06055912500000001,
+      "minimum_value_delta": -0.23211216666666667,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.06055912500000001,
+        "23": -0.06055912500000001,
+        "41": -0.06055912500000001
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "voi",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.05255590155633197,
+      "mean_controller_credit_delta": 3.5,
+      "mean_value_delta": -0.025257442773634016,
+      "minimum_value_delta": -0.08746336500000002,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.025257442773634016,
+        "23": -0.025257442773634016,
+        "41": -0.025257442773634016
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.019199999999999967,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": -0.03561422416666669,
+      "minimum_value_delta": -0.08746336500000002,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.03561422416666669,
+        "23": -0.03561422416666669,
+        "41": -0.03561422416666669
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.019199999999999967,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": -0.03561422416666669,
+      "minimum_value_delta": -0.08746336500000002,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.03561422416666669,
+        "23": -0.03561422416666669,
+        "41": -0.03561422416666669
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "hybrid",
+      "different_action_expectation_rows": 24,
+      "losses": 9,
+      "maximum_value_delta": 0.23122326956952774,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.10400471548520823,
+      "minimum_value_delta": -0.012818452825111182,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.10400471548520823,
+        "23": 0.10400471548520823,
+        "41": 0.10400471548520823
+      },
+      "ties": 0,
+      "wins": 15
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 6,
+      "losses": 1,
+      "maximum_value_delta": 0.23122326956952774,
+      "mean_controller_credit_delta": 1.0,
+      "mean_value_delta": 0.04242294262617706,
+      "minimum_value_delta": -0.012818452825111182,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.04998411289273955,
+        "23": 0.0,
+        "41": 0.07728471498579162
+      },
+      "ties": 18,
+      "wins": 5
+    },
+    {
+      "candidate": "distilled_candidate",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.09969999999999998,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.028209458333333326,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.02405529166666666,
+        "23": 0.03651779166666666,
+        "41": 0.02405529166666666
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "selected_fast",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.09969999999999998,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.028209458333333326,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.02405529166666666,
+        "23": 0.03651779166666666,
+        "41": 0.02405529166666666
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 0,
+      "losses": 0,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.0,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "mpc",
+      "seed_mean_value_deltas": {
+        "17": 0.0,
+        "23": 0.0,
+        "41": 0.0
+      },
+      "ties": 24,
+      "wins": 0
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 18,
+      "losses": 10,
+      "maximum_value_delta": 0.012818452825111182,
+      "mean_controller_credit_delta": -3.0,
+      "mean_value_delta": -0.061581772859031166,
+      "minimum_value_delta": -0.23122326956952774,
+      "paired_rows": 24,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "hybrid",
+      "seed_mean_value_deltas": {
+        "17": -0.05402060259246867,
+        "23": -0.10400471548520823,
+        "41": -0.026720000499416603
+      },
+      "ties": 6,
+      "wins": 8
+    },
+    {
+      "candidate": "fixed",
+      "different_action_expectation_rows": 24,
+      "losses": 12,
+      "maximum_value_delta": 0.06424323955947764,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": -0.0959739491378906,
+      "minimum_value_delta": -0.26106533595748715,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.0959739491378906,
+        "23": -0.0959739491378906,
+        "41": -0.0959739491378906
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "voi",
+      "different_action_expectation_rows": 24,
+      "losses": 0,
+      "maximum_value_delta": 0.16015772990213517,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.08675708134242704,
+      "minimum_value_delta": 0.00990586290197426,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.08675708134242704,
+        "23": 0.08675708134242704,
+        "41": 0.08675708134242704
+      },
+      "ties": 0,
+      "wins": 24
+    },
+    {
+      "candidate": "mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.05374323955947763,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": 0.015833453495046376,
+      "minimum_value_delta": -0.01833196007872462,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015833453495046376,
+        "23": 0.015833453495046376,
+        "41": 0.015833453495046376
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 12,
+      "losses": 12,
+      "maximum_value_delta": 0.05374323955947763,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": 0.015833453495046376,
+      "minimum_value_delta": -0.01833196007872462,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015833453495046376,
+        "23": 0.015833453495046376,
+        "41": 0.015833453495046376
+      },
+      "ties": 0,
+      "wins": 12
+    },
+    {
+      "candidate": "hybrid",
+      "different_action_expectation_rows": 24,
+      "losses": 0,
+      "maximum_value_delta": 0.3656608828393798,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.2553603309998347,
+      "minimum_value_delta": 0.14819492892794295,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.2553603309998347,
+        "23": 0.2553603309998347,
+        "41": 0.2553603309998347
+      },
+      "ties": 0,
+      "wins": 24
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 13,
+      "losses": 0,
+      "maximum_value_delta": 0.3656608828393798,
+      "mean_controller_credit_delta": 2.1666666666666665,
+      "mean_value_delta": 0.16862292822309116,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.18002162889802975,
+        "23": 0.08931734848157988,
+        "41": 0.23652980728966383
+      },
+      "ties": 11,
+      "wins": 13
+    },
+    {
+      "candidate": "distilled_candidate",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.06424323955947764,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.01755769474781279,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015046002363523159,
+        "23": 0.02258107951639205,
+        "41": 0.015046002363523159
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "selected_fast",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.06424323955947764,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.01755769474781279,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015046002363523159,
+        "23": 0.02258107951639205,
+        "41": 0.015046002363523159
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 0,
+      "losses": 0,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.0,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "mpc",
+      "seed_mean_value_deltas": {
+        "17": 0.0,
+        "23": 0.0,
+        "41": 0.0
+      },
+      "ties": 24,
+      "wins": 0
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 11,
+      "losses": 11,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": -1.8333333333333333,
+      "mean_value_delta": -0.08673740277674352,
+      "minimum_value_delta": -0.3656608828393798,
+      "paired_rows": 24,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "hybrid",
+      "seed_mean_value_deltas": {
+        "17": -0.07533870210180495,
+        "23": -0.1660429825182548,
+        "41": -0.01883052371017084
+      },
+      "ties": 13,
+      "wins": 0
+    },
+    {
+      "candidate": "fixed",
+      "different_action_expectation_rows": 23,
+      "losses": 12,
+      "maximum_value_delta": 0.12466313209868199,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": -0.040800306854472806,
+      "minimum_value_delta": -0.20430824597559194,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.05062091155996664,
+        "23": -0.035890004501725886,
+        "41": -0.035890004501725886
+      },
+      "ties": 1,
+      "wins": 11
+    },
+    {
+      "candidate": "voi",
+      "different_action_expectation_rows": 18,
+      "losses": 13,
+      "maximum_value_delta": 0.06789266274248767,
+      "mean_controller_credit_delta": 3.75,
+      "mean_value_delta": -0.02173035021881119,
+      "minimum_value_delta": -0.08632822614320229,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.03155095492430503,
+        "23": -0.016820047866064274,
+        "41": -0.016820047866064274
+      },
+      "ties": 0,
+      "wins": 11
+    },
+    {
+      "candidate": "mpc",
+      "different_action_expectation_rows": 11,
+      "losses": 13,
+      "maximum_value_delta": 0.04416313209868197,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": -0.02813688664078499,
+      "minimum_value_delta": -0.08662924737926775,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.03795749134627883,
+        "23": -0.023226584288038074,
+        "41": -0.023226584288038074
+      },
+      "ties": 0,
+      "wins": 11
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 11,
+      "losses": 13,
+      "maximum_value_delta": 0.04416313209868197,
+      "mean_controller_credit_delta": 3.0,
+      "mean_value_delta": -0.02813688664078499,
+      "minimum_value_delta": -0.08662924737926775,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": -0.03795749134627883,
+        "23": -0.023226584288038074,
+        "41": -0.023226584288038074
+      },
+      "ties": 0,
+      "wins": 11
+    },
+    {
+      "candidate": "hybrid",
+      "different_action_expectation_rows": 24,
+      "losses": 0,
+      "maximum_value_delta": 0.2373583820102197,
+      "mean_controller_credit_delta": 4.0,
+      "mean_value_delta": 0.10924275844114899,
+      "minimum_value_delta": 0.00042850814520878355,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.09942215373565516,
+        "23": 0.11415306079389591,
+        "41": 0.11415306079389591
+      },
+      "ties": 0,
+      "wins": 24
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 7,
+      "losses": 0,
+      "maximum_value_delta": 0.21014891289765755,
+      "mean_controller_credit_delta": 1.1666666666666667,
+      "mean_value_delta": 0.03828833622292309,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.03658993669911331,
+        "23": 0.026268614112207194,
+        "41": 0.05200645785744876
+      },
+      "ties": 17,
+      "wins": 7
+    },
+    {
+      "candidate": "distilled_candidate",
+      "different_action_expectation_rows": 6,
+      "losses": 0,
+      "maximum_value_delta": 0.12466313209868199,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.03035668638960514,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015341784513332887,
+        "23": 0.04565558308390889,
+        "41": 0.03007269157157364
+      },
+      "ties": 18,
+      "wins": 6
+    },
+    {
+      "candidate": "selected_fast",
+      "different_action_expectation_rows": 6,
+      "losses": 0,
+      "maximum_value_delta": 0.12466313209868199,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.03035668638960514,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "seed_mean_value_deltas": {
+        "17": 0.015341784513332887,
+        "23": 0.04565558308390889,
+        "41": 0.03007269157157364
+      },
+      "ties": 18,
+      "wins": 6
+    },
+    {
+      "candidate": "mean_mpc",
+      "different_action_expectation_rows": 0,
+      "losses": 0,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": 0.0,
+      "mean_value_delta": 0.0,
+      "minimum_value_delta": 0.0,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "mpc",
+      "seed_mean_value_deltas": {
+        "17": 0.0,
+        "23": 0.0,
+        "41": 0.0
+      },
+      "ties": 24,
+      "wins": 0
+    },
+    {
+      "candidate": "learned_router",
+      "different_action_expectation_rows": 17,
+      "losses": 17,
+      "maximum_value_delta": 0.0,
+      "mean_controller_credit_delta": -2.8333333333333335,
+      "mean_value_delta": -0.0709544222182259,
+      "minimum_value_delta": -0.2373583820102197,
+      "paired_rows": 24,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "hybrid",
+      "seed_mean_value_deltas": {
+        "17": -0.06283221703654183,
+        "23": -0.08788444668168871,
+        "41": -0.06214660293644715
+      },
+      "ties": 7,
+      "wins": 0
+    }
+  ],
+  "plan_file_sha256": "7fb7e51050c04e9c0d99adc92fa56119d1af58fdefb9810a0d272f3dd8ab192c",
+  "plan_sha256": "b44c4084feea4a6fc1c3b690790c9a15ae2930c4b57fa6155e408fa564eabb7c",
+  "production_authority": "none",
+  "profiles": [
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.0
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.0,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.0,
+      "risk": 0.25
+    },
+    {
+      "adapter_id": "hepta.ctrl1.resource-cost.v1",
+      "digest": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "discount_per_second": 0.97,
+      "latency_weight": 0.01,
+      "profile_id": "hepta.ndu.finite-entropic.v1",
+      "resource_weight": 0.02,
+      "risk": 0.25
+    }
+  ],
+  "promotion": "HOLD",
+  "report_file_sha256": "613badd00c6d51266e0cbf0b9bdcd8f1a574e79af41840cb1606564778bc6413",
+  "schema": "hepta.ctrl1.primary-descriptive-analysis.v1",
+  "scope": "Read-only numeric parsing and original-roster/report reconciliation; no replay, new experiment, selection change, or inferential significance test",
+  "source_manifest_sha256": "f9ed764f50edfc4a6a6e1408eeba964f7a0c75e11a5d2a5621f9f9bf185b30ee",
+  "source_run": "primary_repeat_2",
+  "status": "descriptive_analysis_bound_to_passed_primary_replay",
+  "stratified_contrasts": [
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.24516168808333327,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.12942800856666664,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.06684521930986662,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.0035243333333333238,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.003030555555555555,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.2452754228870833,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.12841598371140278,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.07926008185979608,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.0034472183333333073,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.01811058333333332,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.24335140912364578,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.19833545810190506,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.0736405078710804,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.004751747083333327,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.010249604166666662,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.24708570184677076,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.05950853417616434,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.0724647932985823,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.002219804583333304,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.010891534722222212,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.10394784808333322,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.034108888331481464,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": -0.029561925333333364,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": -0.035575666666666686,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.008308333333333333,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.10406158288708323,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.050736996920872655,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": -0.020952960213934668,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": -0.03565278166666669,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.04811058333333332,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.09453196079031241,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.06557727945489347,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": -0.028129023686351007,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": -0.03636908625000003,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.023999604166666653,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.11347747018010404,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.019268605797460644,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": -0.022385861860917025,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": -0.034859362083333345,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.0324193125,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.25530877508679284,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.1625425826785385,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.08071266725810544,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.01585921110406452,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.0050233847685792615,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.25541188691287653,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.17470327376764383,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.09280149542674863,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.015807695886028234,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.030092004727046318,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.2533444766154872,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.2035379568472689,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.08720345882031608,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.016914096620564742,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.01606080988986941,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.25737618538418217,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.1337078995989134,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.086310703864538,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.01475281036952801,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.01905457960575617,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.1141020789716745,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.052958595279043445,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": -0.022488238976841435,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": -0.02321622293894486,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": false,
+      "mean_value_delta": 0.010388594341556832,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.10438343791062347,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.02361807716680273,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": -0.02097246146078095,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": -0.03305755034262512,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "variable_time",
+      "level": true,
+      "mean_value_delta": 0.05032477843765345,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.09419231100940367,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.07657667244584618,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": -0.030779031441569644,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": -0.034633756952288736,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": -1,
+      "mean_value_delta": 0.01964120941098767,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "hybrid",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.1242932058728943,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "learned_router",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.0,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "voi",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": -0.01268166899605274,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "mpc",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": -0.021640016329281246,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    },
+    {
+      "candidate": "distilled_candidate",
+      "dimension": "outcome_correlation",
+      "level": 1,
+      "mean_value_delta": 0.04107216336822261,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "reference": "fast_actor_critic",
+      "rows": 12
+    }
+  ],
+  "summaries": [
+    {
+      "actions": {
+        "execute": 0.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 1.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.3936211498446545,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 0.0,
+      "environment_seconds": 0.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.35,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.3936211498446545,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.35,
+        "23": 0.35,
+        "41": 0.35
+      },
+      "seed_value_range": [
+        0.35,
+        0.35
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.3936211498446545,
+      "terminal_payoff": 0.35,
+      "value": 0.35
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 2.0,
+      "environment_seconds": 2.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.27306202484465447,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.47055912499999997,
+        "23": 0.47055912499999997,
+        "41": 0.47055912499999997
+      },
+      "seed_value_range": [
+        0.47055912499999997,
+        0.47055912499999997
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.5,
+      "value": 0.47055912499999997
+    },
+    {
+      "actions": {
+        "execute": 0.504,
+        "observe": 0.75,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.496,
+        "verify": 0.25
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.011176130920703993,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 2.758,
+      "environment_seconds": 3.008,
+      "expanded_nodes": 35.85,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.6189333333333333,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.20000937425982313,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.5436117755848313,
+        "23": 0.5436117755848313,
+        "41": 0.5436117755848313
+      },
+      "seed_value_range": [
+        0.5436117755848313,
+        0.5436117755848313
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0015914783429333318,
+      "terminal_payoff": 0.6189333333333333,
+      "value": 0.5436117755848313
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.18031641143354343,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.26957624901132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.4740449008333333,
+        "23": 0.4740449008333333,
+        "41": 0.4740449008333333
+      },
+      "seed_value_range": [
+        0.4740449008333333,
+        0.4740449008333333
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.1693603961097222,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.4740449008333333
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.18031641143354343,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.26957624901132116,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.4740449008333333,
+        "23": 0.4740449008333333,
+        "41": 0.4740449008333333
+      },
+      "seed_value_range": [
+        0.4740449008333333,
+        0.4740449008333333
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.1693603961097222,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.4740449008333333
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 1.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 4.0,
+      "environment_seconds": 4.0,
+      "expanded_nodes": 56.75,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.8333333333333334,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.027843469359446205,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.7157776804852083,
+        "23": 0.7157776804852083,
+        "41": 0.7157776804852083
+      },
+      "seed_value_range": [
+        0.7157776804852083,
+        0.7157776804852083
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.8333333333333334,
+      "value": 0.7157776804852083
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.4166666666666667,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.6666666666666665,
+      "controller_seconds": 0.4166666666666667,
+      "decision_calls": 1.4166666666666667,
+      "environment_cost": 2.925925925925926,
+      "environment_seconds": 2.8796296296296298,
+      "expanded_nodes": 23.416666666666668,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.6666666666666666,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.1441400287056198,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.5584728662955174,
+        "23": 0.5584728662955174,
+        "41": 0.6814976308260694
+      },
+      "seed_value_range": [
+        0.5584728662955174,
+        0.6814976308260694
+      ],
+      "seed_value_sample_sd": 0.07102838091870452,
+      "slow_calls": 0.4166666666666667,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.6666666666666666,
+      "value": 0.5994811211390347
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.10380906180819735,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.26249145540021007,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.47961441666666665,
+        "23": 0.48416024999999996,
+        "41": 0.47961441666666665
+      },
+      "seed_value_range": [
+        0.47961441666666665,
+        0.48416024999999996
+      ],
+      "seed_value_sample_sd": 0.0026245380986911573,
+      "slow_calls": 0.0,
+      "stop_regret": 0.10380906180819735,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4811296944444444
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 2.0,
+      "environment_seconds": 2.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5,
+      "oracle_value": 0.7436211498446544,
+      "policy_gap": 0.27306202484465447,
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "seed_value_means": {
+        "17": 0.47055912499999997,
+        "23": 0.47055912499999997,
+        "41": 0.47055912499999997
+      },
+      "seed_value_range": [
+        0.47055912499999997,
+        0.47055912499999997
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.5,
+      "value": 0.47055912499999997
+    },
+    {
+      "actions": {
+        "execute": 0.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 1.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.2914611345208332,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 0.0,
+      "environment_seconds": 0.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.32999999999999996,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.2914611345208332,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.32999999999999996,
+        "23": 0.32999999999999996,
+        "41": 0.32999999999999996
+      },
+      "seed_value_range": [
+        0.32999999999999996,
+        0.32999999999999996
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.2714611345208332,
+      "terminal_payoff": 0.35,
+      "value": 0.32999999999999996
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 2.0,
+      "environment_seconds": 2.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.42,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.23090200952083323,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.39055912499999995,
+        "23": 0.39055912499999995,
+        "41": 0.39055912499999995
+      },
+      "seed_value_range": [
+        0.39055912499999995,
+        0.39055912499999995
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.5,
+      "value": 0.39055912499999995
+    },
+    {
+      "actions": {
+        "execute": 0.692,
+        "observe": 0.25,
+        "recall": 0.25,
+        "repair": 0.0,
+        "stop": 0.308,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.006160000000000006,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 4.5,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.5,
+      "environment_cost": 2.184,
+      "environment_seconds": 2.1839999999999997,
+      "expanded_nodes": 35.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.41694666666666663,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.25615945229446724,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.36530168222636594,
+        "23": 0.36530168222636594,
+        "41": 0.36530168222636594
+      },
+      "seed_value_range": [
+        0.36530168222636594,
+        0.36530168222636594
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.5824666666666667,
+      "value": 0.36530168222636594
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.16138339610972222,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.26651623368749994,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.3549449008333333,
+        "23": 0.3549449008333333,
+        "41": 0.3549449008333333
+      },
+      "seed_value_range": [
+        0.3549449008333333,
+        0.3549449008333333
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.1111333961097222,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.3549449008333333
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.16138339610972222,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.26651623368749994,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.3549449008333333,
+        "23": 0.3549449008333333,
+        "41": 0.3549449008333333
+      },
+      "seed_value_range": [
+        0.3549449008333333,
+        0.3549449008333333
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.1111333961097222,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.3549449008333333
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 1.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 4.0,
+      "environment_seconds": 4.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.6033333333333333,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.126897294035625,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.4945638404852082,
+        "23": 0.4945638404852082,
+        "41": 0.4945638404852082
+      },
+      "seed_value_range": [
+        0.4945638404852082,
+        0.4945638404852082
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.8333333333333334,
+      "value": 0.4945638404852082
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.25,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.0,
+      "controller_seconds": 0.25,
+      "decision_calls": 1.25,
+      "environment_cost": 2.564814814814815,
+      "environment_seconds": 2.5277777777777777,
+      "expanded_nodes": 13.666666666666666,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.48277777777777775,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.18847906689465618,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.4405432378927395,
+        "23": 0.39055912499999995,
+        "41": 0.4678438399857916
+      },
+      "seed_value_range": [
+        0.39055912499999995,
+        0.4678438399857916
+      ],
+      "seed_value_sample_sd": 0.03919324258668481,
+      "slow_calls": 0.25,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.6018518518518519,
+      "value": 0.432982067626177
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.07091222319305555,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.2026925511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.41461441666666665,
+        "23": 0.42707691666666664,
+        "41": 0.41461441666666665
+      },
+      "seed_value_range": [
+        0.41461441666666665,
+        0.42707691666666664
+      ],
+      "seed_value_sample_sd": 0.007195227729775704,
+      "slow_calls": 0.0,
+      "stop_regret": 0.06507888985972221,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4187685833333333
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.07091222319305555,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "oracle_value": 0.6214611345208332,
+      "policy_gap": 0.2026925511874999,
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "seed_value_means": {
+        "17": 0.41461441666666665,
+        "23": 0.42707691666666664,
+        "41": 0.41461441666666665
+      },
+      "seed_value_range": [
+        0.41461441666666665,
+        0.42707691666666664
+      ],
+      "seed_value_sample_sd": 0.007195227729775704,
+      "slow_calls": 0.0,
+      "stop_regret": 0.06507888985972221,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4187685833333333
+    },
+    {
+      "actions": {
+        "execute": 0.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 1.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.3834643263571982,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 0.0,
+      "environment_seconds": 0.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.35,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.3834643263571982,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.35,
+        "23": 0.35,
+        "41": 0.35
+      },
+      "seed_value_range": [
+        0.35,
+        0.35
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.3834643263571982,
+      "terminal_payoff": 0.35,
+      "value": 0.35
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 2.0,
+      "environment_seconds": 2.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.2874903772193076,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.44597394913789057,
+        "23": 0.44597394913789057,
+        "41": 0.44597394913789057
+      },
+      "seed_value_range": [
+        0.44597394913789057,
+        0.44597394913789057
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.5,
+      "value": 0.44597394913789057
+    },
+    {
+      "actions": {
+        "execute": 0.504,
+        "observe": 0.75,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.496,
+        "verify": 0.25
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.00954891005732605,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 2.758,
+      "environment_seconds": 3.008,
+      "expanded_nodes": 35.85,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.6189333333333333,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.20073329587688057,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.5327310304803177,
+        "23": 0.5327310304803177,
+        "41": 0.5327310304803177
+      },
+      "seed_value_range": [
+        0.5327310304803177,
+        0.5327310304803177
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.001369922433339929,
+      "terminal_payoff": 0.6189333333333333,
+      "value": 0.5327310304803177
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.17564339036858329,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.2716569237242612,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.46180740263293696,
+        "23": 0.46180740263293696,
+        "41": 0.46180740263293696
+      },
+      "seed_value_range": [
+        0.46180740263293696,
+        0.46180740263293696
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.15995409508120495,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.46180740263293696
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.17564339036858329,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5083333333333333,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.2716569237242612,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.46180740263293696,
+        "23": 0.46180740263293696,
+        "41": 0.46180740263293696
+      },
+      "seed_value_range": [
+        0.46180740263293696,
+        0.46180740263293696
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.15995409508120495,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.46180740263293696
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 1.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 4.0,
+      "environment_seconds": 4.0,
+      "expanded_nodes": 56.25,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.8333333333333334,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.03213004621947292,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.7013342801377253,
+        "23": 0.7013342801377253,
+        "41": 0.7013342801377253
+      },
+      "seed_value_range": [
+        0.7013342801377253,
+        0.7013342801377253
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.8333333333333334,
+      "value": 0.7013342801377253
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.5416666666666666,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 3.1666666666666665,
+      "controller_seconds": 0.5416666666666666,
+      "decision_calls": 1.5416666666666667,
+      "environment_cost": 3.1296296296296298,
+      "environment_seconds": 3.1018518518518516,
+      "expanded_nodes": 30.916666666666668,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.7129629629629629,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.11886744899621646,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.6259955780359203,
+        "23": 0.5352912976194705,
+        "41": 0.6825037564275545
+      },
+      "seed_value_range": [
+        0.5352912976194705,
+        0.6825037564275545
+      ],
+      "seed_value_sample_sd": 0.07426523271281178,
+      "slow_calls": 0.5416666666666666,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.7129629629629629,
+      "value": 0.6145968773609818
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.10116416520762593,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.2699326824714948,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.4610199515014137,
+        "23": 0.4685550286542826,
+        "41": 0.4610199515014137
+      },
+      "seed_value_range": [
+        0.4610199515014137,
+        0.4685550286542826
+      ],
+      "seed_value_sample_sd": 0.00435037882257345,
+      "slow_calls": 0.0,
+      "stop_regret": 0.10116416520762593,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4635316438857034
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.10116416520762593,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.5048611111111111,
+      "oracle_value": 0.7334643263571982,
+      "policy_gap": 0.2699326824714948,
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "seed_value_means": {
+        "17": 0.4610199515014137,
+        "23": 0.4685550286542826,
+        "41": 0.4610199515014137
+      },
+      "seed_value_range": [
+        0.4610199515014137,
+        0.4685550286542826
+      ],
+      "seed_value_sample_sd": 0.00435037882257345,
+      "slow_calls": 0.0,
+      "stop_regret": 0.10116416520762593,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4635316438857034
+    },
+    {
+      "actions": {
+        "execute": 0.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 1.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.27649126319136275,
+      "continuation_regret": 0.0,
+      "controller": "fixed",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 0.0,
+      "environment_seconds": 0.0,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.32999999999999996,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.27649126319136275,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.32999999999999996,
+        "23": 0.32999999999999996,
+        "41": 0.32999999999999996
+      },
+      "seed_value_range": [
+        0.32999999999999996,
+        0.32999999999999996
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 0.0,
+      "stop_regret": 0.25649126319136273,
+      "terminal_payoff": 0.35,
+      "value": 0.32999999999999996
+    },
+    {
+      "actions": {
+        "execute": 0.9583333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.041666666666666664,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.008622166696531314,
+      "continuation_regret": 0.0,
+      "controller": "fast_actor_critic",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.9236111111111112,
+      "environment_seconds": 1.9236111111111112,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.4229861111111111,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.2356909563368899,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3806209115599666,
+        "23": 0.3658900045017258,
+        "41": 0.3658900045017258
+      },
+      "seed_value_range": [
+        0.3658900045017258,
+        0.3806209115599666
+      ],
+      "seed_value_sample_sd": 0.008504893155482661,
+      "slow_calls": 0.0,
+      "stop_regret": 0.007788833363197981,
+      "terminal_payoff": 0.5006944444444444,
+      "value": 0.37080030685447274
+    },
+    {
+      "actions": {
+        "execute": 0.582,
+        "observe": 0.5,
+        "recall": 0.125,
+        "repair": 0.0,
+        "stop": 0.418,
+        "verify": 0.125
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.010897525553526636,
+      "continuation_regret": 0.0,
+      "controller": "voi",
+      "controller_cost": 4.75,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.75,
+      "environment_cost": 2.432666666666667,
+      "environment_seconds": 2.539,
+      "expanded_nodes": 35.425,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.42192333333333326,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.2574213065557011,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3490699566356616,
+        "23": 0.3490699566356616,
+        "41": 0.3490699566356616
+      },
+      "seed_value_range": [
+        0.3490699566356616,
+        0.3490699566356616
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0003328447571576012,
+      "terminal_payoff": 0.6009666666666666,
+      "value": 0.3490699566356616
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.15193557791735413,
+      "continuation_regret": 0.0,
+      "controller": "mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.2638278429776749,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3426634202136878,
+        "23": 0.3426634202136878,
+        "41": 0.3426634202136878
+      },
+      "seed_value_range": [
+        0.3426634202136878,
+        0.3426634202136878
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.10168557791735411,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.3426634202136878
+    },
+    {
+      "actions": {
+        "execute": 0.5,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.5,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.15193557791735413,
+      "continuation_regret": 0.0,
+      "controller": "mean_mpc",
+      "controller_cost": 4.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.0,
+      "environment_seconds": 1.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.3883333333333333,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.2638278429776749,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3426634202136878,
+        "23": 0.3426634202136878,
+        "41": 0.3426634202136878
+      },
+      "seed_value_range": [
+        0.3426634202136878,
+        0.3426634202136878
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.10168557791735411,
+      "terminal_payoff": 0.5083333333333333,
+      "value": 0.3426634202136878
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 1.0,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "hybrid",
+      "controller_cost": 5.0,
+      "controller_seconds": 1.0,
+      "decision_calls": 2.0,
+      "environment_cost": 4.0,
+      "environment_seconds": 4.0,
+      "expanded_nodes": 52.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.6033333333333333,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.1264481978957409,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.48004306529562174,
+        "23": 0.48004306529562174,
+        "41": 0.48004306529562174
+      },
+      "seed_value_range": [
+        0.48004306529562174,
+        0.48004306529562174
+      ],
+      "seed_value_sample_sd": 0.0,
+      "slow_calls": 1.0,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.8333333333333334,
+      "value": 0.48004306529562174
+    },
+    {
+      "actions": {
+        "execute": 1.0,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.2916666666666667,
+        "stop": 0.0,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.0,
+      "continuation_regret": 0.0,
+      "controller": "learned_router",
+      "controller_cost": 2.1666666666666665,
+      "controller_seconds": 0.2916666666666667,
+      "decision_calls": 1.2916666666666667,
+      "environment_cost": 2.694444444444444,
+      "environment_seconds": 2.6296296296296298,
+      "expanded_nodes": 14.833333333333334,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.4846759259259259,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.1974026201139668,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.4172108482590799,
+        "23": 0.39215861861393303,
+        "41": 0.4178964623591746
+      },
+      "seed_value_range": [
+        0.39215861861393303,
+        0.4178964623591746
+      ],
+      "seed_value_sample_sd": 0.014665838295973713,
+      "slow_calls": 0.2916666666666667,
+      "stop_regret": 0.0,
+      "terminal_payoff": 0.611111111111111,
+      "value": 0.40908864307739584
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.06535113097545966,
+      "continuation_regret": 0.0,
+      "controller": "distilled_candidate",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.20533426994728476,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3959626960732995,
+        "23": 0.41154558758563475,
+        "41": 0.3959626960732995
+      },
+      "seed_value_range": [
+        0.3959626960732995,
+        0.41154558758563475
+      ],
+      "seed_value_sample_sd": 0.008996786609399504,
+      "slow_calls": 0.0,
+      "stop_regret": 0.05951779764212632,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4011569932440779
+    },
+    {
+      "actions": {
+        "execute": 0.7083333333333334,
+        "observe": 0.0,
+        "recall": 0.0,
+        "repair": 0.0,
+        "stop": 0.2916666666666667,
+        "verify": 0.0
+      },
+      "cases": 24,
+      "compute_and_stop_regret": 0.06535113097545966,
+      "continuation_regret": 0.0,
+      "controller": "selected_fast",
+      "controller_cost": 1.0,
+      "controller_seconds": 0.0,
+      "decision_calls": 1.0,
+      "environment_cost": 1.409722222222222,
+      "environment_seconds": 1.4166666666666667,
+      "expanded_nodes": 0.0,
+      "fallback_count": 0.0,
+      "net_terminal_utility": 0.44249999999999995,
+      "oracle_value": 0.6064912631913627,
+      "policy_gap": 0.20533426994728476,
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "seed_value_means": {
+        "17": 0.3959626960732995,
+        "23": 0.41154558758563475,
+        "41": 0.3959626960732995
+      },
+      "seed_value_range": [
+        0.3959626960732995,
+        0.41154558758563475
+      ],
+      "seed_value_sample_sd": 0.008996786609399504,
+      "slow_calls": 0.0,
+      "stop_regret": 0.05951779764212632,
+      "terminal_payoff": 0.5048611111111111,
+      "value": 0.4011569932440779
+    }
+  ],
+  "training_costs": [
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.35548034300000003,
+        0.35922941199999947,
+        0.3009354699999989
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.3385484083333328,
+      "method": "actor_critic",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 1.0156452249999983
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.12401172599999999,
+        0.12376606700000004,
+        0.13078906999999873
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.1261889543333329,
+      "method": "distillation",
+      "profile_id": "97e2016b00cc56ca11a2d451ec2f74b79e08e51709881e2a06864044e453cd1f",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 0.37856686299999875
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.29627978299999924,
+        0.273101675999996,
+        0.30342028900000173
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.290933915999999,
+      "method": "actor_critic",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 0.872801747999997
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.11829982000000072,
+        0.1113381289999964,
+        0.11634835799999621
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.11532876899999778,
+      "method": "distillation",
+      "profile_id": "29d3a0540d9234ba814ef30d4b0f2899df4d1914a6a3a5825035690315d6a251",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 0.34598630699999333
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.4689050380000026,
+        0.34353744700000277,
+        0.2751646749999992
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.3625357200000015,
+      "method": "actor_critic",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 1.0876071600000046
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.1112103210000015,
+        0.11961072500000114,
+        0.10510626999999317
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.1119757719999986,
+      "method": "distillation",
+      "profile_id": "6c4949f90c48e91bb15ee071c2607cdb0ad1ed1f679e7c33e3683198f5d7143c",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 0.3359273159999958
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.3198576630000076,
+        0.3704385580000036,
+        0.31912762800000394
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.33647461633333836,
+      "method": "actor_critic",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 1.0094238490000151
+    },
+    {
+      "actual_actor_updates": [
+        4096
+      ],
+      "attempts": 3,
+      "epochs": [
+        32
+      ],
+      "examples": [
+        128
+      ],
+      "inclusive_attempt_cpu_seconds": [
+        0.16278046200000063,
+        0.16347848799999554,
+        0.11715615600000717
+      ],
+      "mean_inclusive_attempt_cpu_seconds": 0.14780503533333444,
+      "method": "distillation",
+      "profile_id": "6d077dda5bd14597af7d47f46898eceb63f0787f7043616299113a50366a5f4f",
+      "retained_actor_updates": [
+        4096
+      ],
+      "sum_inclusive_attempt_cpu_seconds": 0.44341510600000333
+    }
+  ]
+}

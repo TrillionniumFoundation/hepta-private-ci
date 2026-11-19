@@ -1,0 +1,143 @@
+{
+  "cloud_receipts_preserved": "cloud-execution/attempt-v4",
+  "continuation_status": {
+    "at_unix_ms": 1794118672619,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b9ce34b2-12894-16fc",
+    "launch_nonce": "65d3bc4fd62d1b3f7df87698d3ce89d8",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 7034,
+        "stored": 7034
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "first_status": {
+    "at_unix_ms": 1794118519134,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1b9cb9626-12894-16ee",
+    "launch_nonce": "b90c42fd8b24e5247071b33fa2ab8e4b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 409,
+        "stored": 409
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "github_mutation_performed": false,
+  "jobs": [
+    {
+      "job": {
+        "args": [
+          "-"
+        ],
+        "created_unix_ms": 1794118489638,
+        "cwd": null,
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "rog",
+        "id": "1a1b9cb9626-12894-16ee",
+        "idempotency_key": "ndu-986c-delivery-successor-rename-focused-qualification-v1",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b9cb9626-12894-16ee",
+        "request_digest": "f4c5b2be9870a787153e59d74bd73b76b21620ec4c90f0230fa589cad4c07842",
+        "request_fingerprint": 17637700047337466000,
+        "ssh_target": "rog-ts",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1b9cb9626-12894-16ee"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1b9cb9626-12894-16ee"
+      },
+      "reused": false
+    },
+    {
+      "job": {
+        "args": [
+          "-"
+        ],
+        "created_unix_ms": 1794118661298,
+        "cwd": null,
+        "env_keys": [],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "rog",
+        "id": "1a1b9ce34b2-12894-16fc",
+        "idempotency_key": "ndu-986c-delivery-successor-rename-qualification-continuation-v2",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1b9ce34b2-12894-16fc",
+        "request_digest": "3e5192ea1b82a558e9eff03924279885ded725334fc0dff0feb3054e4aaecabd",
+        "request_fingerprint": 4490531837646644700,
+        "ssh_target": "rog-ts",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1b9ce34b2-12894-16fc"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1b9ce34b2-12894-16fc"
+      },
+      "reused": false
+    }
+  ],
+  "new_training_submitted": false,
+  "schema": "hepta.delivery-successor-rename.execution.v1",
+  "source_snapshot_preserved": "cloud-execution/native-rust-source-v3"
+}

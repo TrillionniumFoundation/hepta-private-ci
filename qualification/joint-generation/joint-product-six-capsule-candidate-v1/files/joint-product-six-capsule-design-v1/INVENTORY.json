@@ -1,0 +1,221 @@
+{
+  "candidates": [
+    {
+      "candidate": "joint-policy-delivery-candidate-v2",
+      "freeze_sha256": "7389bbb0ac2188ef48a1ee17f9b1b9241c6a35e8fb1388711945080ac5a895ee",
+      "review_sha256": "cc423a3350698cb2d514fd8107f09f71efc2700ee8fbce2fde4283615efcefff",
+      "review_status": "PASS_SAVED_SCOPED_ACTOR_SELECTED_LOCAL_TEXT_RGB",
+      "frozen_files": 26,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review"
+      ]
+    },
+    {
+      "candidate": "joint-policy-reconnect-candidate-v1",
+      "freeze_sha256": "e387122724ca941406a36415e6204ea3c712d43c122ac6ab8d8aba896ed7086e",
+      "review_sha256": "c272ec3a16f27f52d56faa5fef32cff150f3455d822caddc697b5f15c6b421f8",
+      "review_status": "PASS_SAVED_SCOPED_ACKNOWLEDGED_LEARNED_ROUTE_PROCESS_RECONNECT",
+      "frozen_files": 28,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review",
+        "old_request",
+        "old_wire",
+        "old_route",
+        "old_artifact",
+        "prior_saved_review",
+        "prior_freeze"
+      ]
+    },
+    {
+      "candidate": "joint-policy-live-control-candidate-v1",
+      "freeze_sha256": "ace422cc766e54fa4fb21884815d6a173fcb53e84f507b2dcdc68cc910082129",
+      "review_sha256": "2e65f5eab987b1095200748845339c2946d8fd0f7c5c07cdaf2b1fd3c5c1274f",
+      "review_status": "PASS_SAVED_SCOPED_LOCAL_ASYNC_CANCEL_BOUNDARY",
+      "frozen_files": 31,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review",
+        "old_request",
+        "old_wire",
+        "old_route",
+        "old_artifact",
+        "prior_saved_review",
+        "prior_freeze"
+      ]
+    },
+    {
+      "candidate": "joint-policy-deferred-deadline-candidate-v1",
+      "freeze_sha256": "27009841810567ffba63bacc300e3551aaa03c8f5590801cff9ec7ec62e5833f",
+      "review_sha256": "d5a2f0ceb35e358920fa4fe04edac40c4252757437ee26ef7d49fcd362399062",
+      "review_status": "PASS_SAVED_SCOPED_REAL_RESULT_DELAYED_RETURN_DEADLINE",
+      "frozen_files": 28,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review",
+        "old_request",
+        "old_wire",
+        "old_route",
+        "old_artifact",
+        "prior_saved_review",
+        "prior_freeze"
+      ]
+    },
+    {
+      "candidate": "joint-policy-active-channel-fault-candidate-v1",
+      "freeze_sha256": "82abe08b0447b3ba45afff37857c18f793eebf02158b6ff2ccb46097d5ec8ec2",
+      "review_sha256": "f34e327df18484df9762de7d32e574cf16920a74a1b01407b72c7a4413c09cf4",
+      "review_status": "PASS_SAVED_SCOPED_REAL_PREFIX_ACTIVE_CHANNEL_EOF",
+      "frozen_files": 29,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review",
+        "old_request",
+        "old_wire",
+        "old_route",
+        "old_artifact",
+        "prior_saved_review",
+        "prior_freeze"
+      ]
+    },
+    {
+      "candidate": "joint-policy-output-budget-outcome-candidate-v2",
+      "freeze_sha256": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+      "review_sha256": "3ed14eee219a68e6e749d6b0337d72e9e17f6c8167e4e58668d8535bb1534bf9",
+      "review_status": "PASS_SAVED_SCOPED_TYPED_OUTPUT_REJECTION_AND_PURE_RECOVERY",
+      "frozen_files": 31,
+      "entry": "run_once.py",
+      "inputs": [
+        "content",
+        "actor",
+        "fixture",
+        "state",
+        "complete",
+        "source_freeze",
+        "source_saved_review",
+        "old_request",
+        "old_wire",
+        "old_route",
+        "old_artifact",
+        "prior_saved_review",
+        "prior_freeze"
+      ]
+    }
+  ],
+  "unique_runtime_input_paths": 13,
+  "unique_input_bytes": 1772664,
+  "inputs": {
+    "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150"
+    },
+    "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/actor_full.npz",
+      "bytes": 12303,
+      "sha256": "37a504cbd5da31fdc5476d3a30ee9314248554ce0d04797e823d273ebec53035"
+    },
+    "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/fixture.npz",
+      "bytes": 76344,
+      "sha256": "970deb6a478d772738bda40f09776035aa28fa318b4b95d77521915bda5e52b5"
+    },
+    "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-state.json",
+      "bytes": 6473,
+      "sha256": "e2c6ab063df6f5a8a9d013e62b2cbfe147010078690e1d1c8070944830219e9d"
+    },
+    "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json": {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/06-export-complete.json",
+      "bytes": 320,
+      "sha256": "7927836d412b538db94f207461bd978a3f18fdeda1d757911160f64318c0bacb"
+    },
+    "multi-stage-guarded-chain-candidate-v1/FREEZE.json": {
+      "path": "multi-stage-guarded-chain-candidate-v1/FREEZE.json",
+      "bytes": 1272,
+      "sha256": "649479caf0e78092c7fe70fb42d9153a68b1f788a3482e1a3b3dc4b2f19b2505"
+    },
+    "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json": {
+      "path": "multi-stage-guarded-chain-candidate-v1/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 9601,
+      "sha256": "2f515a81bc3e7a350421ceb91d163ff3973424f07850c01eef58eb29ad079a54"
+    },
+    "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-REQUEST.json",
+      "bytes": 48449,
+      "sha256": "f6516bd94d8a0819d3b008599a8606baae5e3eae3fc771937e4a61ddbe5c6c63"
+    },
+    "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-WIRE.json",
+      "bytes": 34884,
+      "sha256": "1fb4562c61b2745c7993c8831a079d500e6b48c4aeb50d1e44e59f08e56c1514"
+    },
+    "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/success-ROUTE.json",
+      "bytes": 1247,
+      "sha256": "dd88f6af048cf5a09abea85569b87a877a427529e025656097d6e20cb3f6c25e"
+    },
+    "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json": {
+      "path": "joint-policy-delivery-candidate-v2/RUN_ONCE/PAIRED_ARTIFACT.json",
+      "bytes": 12818,
+      "sha256": "2acd070cdc031d37ff516ee8d9be2abdb69bce1cb192884983caae265c003224"
+    },
+    "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json": {
+      "path": "joint-policy-delivery-candidate-v2/INDEPENDENT_SAVED_REVIEW.json",
+      "bytes": 6119,
+      "sha256": "cc423a3350698cb2d514fd8107f09f71efc2700ee8fbce2fde4283615efcefff"
+    },
+    "joint-policy-delivery-candidate-v2/FREEZE.json": {
+      "path": "joint-policy-delivery-candidate-v2/FREEZE.json",
+      "bytes": 2427,
+      "sha256": "7389bbb0ac2188ef48a1ee17f9b1b9241c6a35e8fb1388711945080ac5a895ee"
+    }
+  },
+  "oversize_inputs": [
+    {
+      "path": "multi-stage-guarded-chain-candidate-v1/RUN_ONCE/baseline/session/content.npz",
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150",
+      "gzip9_bytes": 1475632,
+      "zip_members": 78,
+      "raw_local_record_parts": 79,
+      "max_record_part": 401600,
+      "zip_records_cover_original": true,
+      "central_directory_plus_eocd_bytes": 4960,
+      "central_directory_only_bytes": 4938,
+      "eocd_bytes": 22
+    }
+  ],
+  "scope": "Exact frozen INPUTS only; external runtime code-path and failure-reference closure still requires separate audit; not full RUN raw archive or new execution."
+}

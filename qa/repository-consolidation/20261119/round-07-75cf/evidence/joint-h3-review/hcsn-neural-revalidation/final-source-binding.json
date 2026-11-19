@@ -1,0 +1,160 @@
+{
+  "schema": "hepta-current-neural-control-final-source-binding-v1",
+  "status": "PASS_EXACT_EIGHT_SOURCE_CPU_TEST_BINDING",
+  "source_freeze_tree_tested": "c3995fc4c03db4a139fc0a71525085f47092a683",
+  "source_freeze_sha256_tested": "0dd9e4b23ceb8a452a3b108c1cc1c48862d6d1eb754956f0cae6ea1326b924f8",
+  "updated_ci_freeze_sha256": "eeea596b02a5914a29e27a7c27326a731e04aaa7b7e5389707064d8bb2984cbd",
+  "updated_freeze_diff_is_metadata_only": true,
+  "merge_commit": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+  "merge_parents": [
+    "41d193cbd34571fb67a047c206a97734a677e21c",
+    "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+  ],
+  "final_commit": "1109776d0b777999f0605ff92c98ddfcb03c2159",
+  "final_tree": "0ef5bf40bced3af12f1f49245acb2a87272cd520",
+  "final_parents": [
+    "3aeee638cf589590878b2dd88e4d3558ad76e37b"
+  ],
+  "source_checks": [
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "git_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "mode": "100644",
+      "bytes": 237,
+      "sha256": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+      "executed_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "final_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "git_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "mode": "100644",
+      "bytes": 5122,
+      "sha256": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+      "executed_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "final_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "git_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "mode": "100644",
+      "bytes": 25096,
+      "sha256": "3db9a92fffc0d465343e598ec725db631e676dee096a2f999593c7a40038e734",
+      "executed_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "final_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/regenerative.py",
+      "git_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "mode": "100644",
+      "bytes": 10216,
+      "sha256": "3c3df0f5fa28796fd3fd18b468a63ed8e66a7984c0ebc133b76d6ec2cc00f863",
+      "executed_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "final_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/finite_renewal.py",
+      "git_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "mode": "100644",
+      "bytes": 7278,
+      "sha256": "6f582ab64695ba676f5d1b4f47ceb39c6b4f8a70cde85eafe21ab3aaaca823de",
+      "executed_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "final_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "git_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "mode": "100644",
+      "bytes": 5817,
+      "sha256": "60bf3cc067f75a05f83f0f29978c7939fa91a7815858b5cc2becf0e62428dc3f",
+      "executed_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "final_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "git_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "mode": "100644",
+      "bytes": 9911,
+      "sha256": "99aeeecfcf38a139dac4235f38fee02e33cfb23d43974809194e02b65fe98f44",
+      "executed_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "final_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "git_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "mode": "100644",
+      "bytes": 2126,
+      "sha256": "ccc234f23bb8d5bde82eb4f999b12842d1808d8ede9c83c6ef54de38e8180b47",
+      "executed_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "final_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "final_bytes_match_executed": true,
+      "final_mode_matches": true
+    }
+  ],
+  "all_eight_final_sources_equal_tested_sources": true,
+  "tests_rerun_for_metadata_only_binding": false,
+  "native_job": {
+    "host": "mac",
+    "job_id": "1a1f4bd9b0d-ffbe-112a",
+    "idempotency_key": "hcsn-neural-current-original-four-75cf-v1",
+    "exit_code": 0,
+    "output_complete": true
+  },
+  "native_receipt": {
+    "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/current-neural-cpu-result.json",
+    "bytes": 11516,
+    "sha256": "2b9cd7c2701361a6e352dc1c03751d1586a2a459d931b170b9975bcff234372d"
+  },
+  "test_log": {
+    "path": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/tests.stderr.log",
+    "sha256": "59a243ac6340b3ed28f52eadb072192a2a67d07b66556fa51e593922b784492f"
+  },
+  "tests_run": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "original_test_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+  "new_operator_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+  "runtime": {
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "platform": "darwin",
+    "versions": {
+      "torch": "2.15.0",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "safetensors": "0.8.0"
+    },
+    "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+    "torch_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/torch/__init__.py",
+    "numpy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/numpy/__init__.py",
+    "scipy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/scipy/__init__.py",
+    "default_tensor_device": "cpu",
+    "cuda_build": null,
+    "torch_threads": 1
+  },
+  "workflow_runtime_lines": [
+    "python-version: \"3.12.3\"",
+    "python -m pip install --disable-pip-version-check \"torch==2.8.0+cpu\" --index-url https://download.pytorch.org/whl/cpu",
+    "python -m pip install --disable-pip-version-check \"numpy==2.5.4\" \"mpmath==1.3.0\" \"scipy==1.17.0\""
+  ],
+  "limits": [
+    "Current original four tests passed on the recorded existing Mac CPU environment.",
+    "The workflow-pinned runtime image and full repository CI were not executed by this task.",
+    "No source or original test changes, no stubs, no dependency installation, no GPU job and no expansion beyond the original four tests."
+  ],
+  "checked_utc": "2026-11-19T17:00:15+00:00"
+}

@@ -42,6 +42,7 @@ async fn exec_server_reports_malformed_websocket_json_and_keeps_running() -> any
         .send_request(
             "initialize",
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-test".to_string(),
                 resume_session_id: None,
             })?,
@@ -75,6 +76,7 @@ async fn exec_server_accepts_binary_websocket_json() -> anyhow::Result<()> {
         id: initialize_id.clone(),
         method: "initialize".to_string(),
         params: Some(serde_json::to_value(InitializeParams {
+            process_exit_observation: true,
             client_name: "exec-server-binary-test".to_string(),
             resume_session_id: None,
         })?),

@@ -763,6 +763,15 @@ async fn subagent_stop_replaces_stop_and_skips_internal_subagents() -> Result<()
     let _ = wait_for_requests(&first_child_request).await?;
     let _ = wait_for_requests(&second_child_request).await?;
 
+    let child_id = ThreadId::from_string(&wait_for_spawned_thread_id(&test).await?)?;
+    let child_thread = test.thread_manager.get_thread(child_id).await?;
+    // The second response resumes the same turn after SubagentStop. Wait for
+    // that turn's finish owner before inspecting its final hook invocation.
+    wait_for_event(child_thread.as_ref(), |event| {
+        matches!(event, EventMsg::TurnComplete(_))
+    })
+    .await;
+
     let subagent_stop_inputs = wait_for_hook_log(
         test.codex_home_path(),
         "subagent_stop_hook_log.jsonl",
@@ -1721,7 +1730,7 @@ async fn spawned_multi_agent_v2_child_inherits_parent_developer_context() -> Res
             ev_response_created("resp-turn1-1"),
             ev_function_call_with_namespace(
                 SPAWN_CALL_ID,
-                MULTI_AGENT_V1_NAMESPACE,
+                MULTI_AGENT_V2_NAMESPACE,
                 "spawn_agent",
                 &spawn_args,
             ),
@@ -1733,7 +1742,7 @@ async fn spawned_multi_agent_v2_child_inherits_parent_developer_context() -> Res
     let child_request_log = mount_sse_once_match(
         &server,
         |req: &wiremock::Request| {
-            body_contains(req, CHILD_PROMPT) && !body_contains(req, SPAWN_CALL_ID)
+            body_contains(req, CHILD_PROMPT) && request_has_input_type(req, "agent_message")
         },
         sse(vec![
             ev_response_created("resp-child-1"),
@@ -1744,7 +1753,9 @@ async fn spawned_multi_agent_v2_child_inherits_parent_developer_context() -> Res
 
     let _turn1_followup = mount_sse_once_match(
         &server,
-        |req: &wiremock::Request| body_contains(req, SPAWN_CALL_ID),
+        |req: &wiremock::Request| {
+            body_contains(req, SPAWN_CALL_ID) && !request_has_input_type(req, "agent_message")
+        },
         sse(vec![
             ev_response_created("resp-turn1-2"),
             ev_assistant_message("msg-turn1-2", "parent done"),
@@ -1793,6 +1804,12 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
         .with_max_level(Level::INFO)
         .with_writer(MockWriter::new(output))
         .finish();
+    // Keep two live dispatches while capturing. With only one scoped dispatch,
+    // tracing-core's callsite fast path consults the first caller's thread-local
+    // subscriber. A parallel untraced test can otherwise cache these shared
+    // communication callsites as disabled for this test as well.
+    let _callsite_registry_guard =
+        tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
     let _guard = tracing::subscriber::set_default(subscriber);
 
     let server = start_mock_server().await;
@@ -1873,8 +1890,7 @@ async fn multi_agent_v2_spawn_sends_agent_message_to_child(
 
     test.submit_turn(TURN_1_PROMPT).await?;
 
-    // The response mock records candidate requests before its request matcher runs, so wait for
-    // the child request instead of assuming the latest recorded request is already it.
+    // V2 spawn starts the child asynchronously; wait for its first agent-message request.
     let deadline = Instant::now() + Duration::from_secs(2);
     let child_request = loop {
         if let Some(request) = child_request_log
@@ -2636,7 +2652,7 @@ async fn skills_toggle_skips_instructions_for_parent_and_spawned_child() -> Resu
             ev_response_created("resp-turn1-1"),
             ev_function_call_with_namespace(
                 SPAWN_CALL_ID,
-                MULTI_AGENT_V1_NAMESPACE,
+                MULTI_AGENT_V2_NAMESPACE,
                 "spawn_agent",
                 &spawn_args,
             ),
@@ -2648,7 +2664,7 @@ async fn skills_toggle_skips_instructions_for_parent_and_spawned_child() -> Resu
     let child_request_log = mount_sse_once_match(
         &server,
         |req: &wiremock::Request| {
-            body_contains(req, CHILD_PROMPT) && !body_contains(req, SPAWN_CALL_ID)
+            body_contains(req, CHILD_PROMPT) && request_has_input_type(req, "agent_message")
         },
         sse(vec![
             ev_response_created("resp-child-1"),
@@ -2659,7 +2675,9 @@ async fn skills_toggle_skips_instructions_for_parent_and_spawned_child() -> Resu
 
     let _turn1_followup = mount_sse_once_match(
         &server,
-        |req: &wiremock::Request| body_contains(req, SPAWN_CALL_ID),
+        |req: &wiremock::Request| {
+            body_contains(req, SPAWN_CALL_ID) && !request_has_input_type(req, "agent_message")
+        },
         sse(vec![
             ev_response_created("resp-turn1-2"),
             ev_assistant_message("msg-turn1-2", "parent done"),

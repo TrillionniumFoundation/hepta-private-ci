@@ -1,0 +1,248 @@
+{
+  "schema": "hepta.learn.original-launcher-v3-preparation-audit.v1",
+  "status": "prepared_artifacts_only",
+  "parent": {
+    "commit": "a6717d7228045e6cb60532966f06e6e02c4a6abe",
+    "tree": "647b9e78151299c1e7de455eae9c530ca93b28c9",
+    "canonical_git_commit_read": true,
+    "complete_root_tree_git_object_recomputed": true
+  },
+  "destination": "qualification/learn-ordinary-ce434/original-launcher-classification-20261112/",
+  "scope": "Add only standalone reviewed inspector/launcher/request contracts and exact diff; no Rust, CALLERS, QA, inventory, dependency, original CI or runtime worktree mutation.",
+  "root_instructions_respected": {
+    "no_h": true,
+    "no_python_or_rust_execution": true,
+    "no_target_script_execution": true,
+    "no_referenced_path_read": true,
+    "no_v2_request_change": true,
+    "no_e5c_fallback": true,
+    "new_source_is_explicit_a671": true
+  },
+  "git_full_readback_pins": [
+    {
+      "path": "approved-plan.json",
+      "blob": "e420ef42bafeda8592127dc429cbd967673787df",
+      "bytes": 9382,
+      "full_api_readback": true
+    },
+    {
+      "path": "inspect.py",
+      "blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+      "bytes": 21070,
+      "full_api_readback": true
+    },
+    {
+      "path": "inspector-contract.json",
+      "blob": "b80dd6405702b6cf0074ac823a746eae7b8d3505",
+      "bytes": 12459,
+      "full_api_readback": true
+    },
+    {
+      "path": "inspector-peer-review.json",
+      "blob": "a99e1a80bfe820c6d66e643ef47c7529007f2b09",
+      "bytes": 4123,
+      "full_api_readback": true
+    },
+    {
+      "path": "launch-wrapper.py",
+      "blob": "7f8dc6b4e452ba7be2668a477590359f108adfcc",
+      "bytes": 29172,
+      "full_api_readback": true
+    },
+    {
+      "path": "frozen-request.json",
+      "blob": "972e515d03956dc8ade7dc00dbf908c3b7a8a124",
+      "bytes": 31373,
+      "full_api_readback": true
+    },
+    {
+      "path": "launch-contract.json",
+      "blob": "261e8597f467b8bef7c9c8c021a5544e5bad8911",
+      "bytes": 5900,
+      "full_api_readback": true
+    },
+    {
+      "path": "wrapper-exact.diff",
+      "blob": "8fbcf9a33721db634a7619c47d29f71484334615",
+      "bytes": 43254,
+      "full_api_readback": true
+    }
+  ],
+  "original_wrapper_blob": "bd006f3762bda50e40ca389f9eeb5b616e4477d7",
+  "original_request_blob": "ece6b9a4bda6c2a95dc02dfe40146a354c26b91e",
+  "wrapper_reversible_exact_edits": [
+    {
+      "kind": "embedded_inspector_literal",
+      "count": 1,
+      "before_script_blob": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+      "after_script_blob": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+      "encoding": "one exact script= JSON string literal line"
+    },
+    {
+      "kind": "exact_text",
+      "before": "source=\"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\"",
+      "after": "source=\"a6717d7228045e6cb60532966f06e6e02c4a6abe\"",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "source_tree=\"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\"",
+      "after": "source_tree=\"647b9e78151299c1e7de455eae9c530ca93b28c9\"",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "original-launcher-shape-root01-v2",
+      "after": "original-launcher-classify-root01-v3",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "59f521dead73be8738dae97cee2b5cbd4d08ac21",
+      "after": "db9c66e9202c9dd9eae5de658d881201de7aeec4",
+      "count": 2
+    },
+    {
+      "kind": "exact_text",
+      "before": "e061c2f77eadcdae4c695042c6c25dece3f93a0919a006ca4b6d241479ad642c",
+      "after": "7efe06fadf8ea6f13b8cfd55945a2a730f2f87d6a98484df1bac2a0e13102315",
+      "count": 2
+    },
+    {
+      "kind": "exact_text",
+      "before": "15226",
+      "after": "21070",
+      "count": 2
+    },
+    {
+      "kind": "exact_text",
+      "before": "\"schema\":\"original-launcher-static-shape-execution-v2\"",
+      "after": "\"schema\":\"original-launcher-static-classification-execution-v3\"",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "f2704db8cdcaf2ef2b6c80b3e5fa51d7dd2a3ad3",
+      "after": "b80dd6405702b6cf0074ac823a746eae7b8d3505",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "c155eafb8fe3fc23ccf29e7db251db61bc3d36cb",
+      "after": "a99e1a80bfe820c6d66e643ef47c7529007f2b09",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": " \"classification\":\"unknown_from_static_ast\",",
+      "after": " \"classification\":\"unknown_static_purpose\",",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "    if report.get(\"schema\")!=\"hepta.service-root01.safe-static-locator-shape.v2\" or report.get(\"target\")!=\"/data/hepta-service-root-01.py\" or report.get(\"assessment\")!=\"unknown_from_static_ast\" or report.get(\"ordinary_execution_authority_proven\") is not False or report.get(\"runtime_owner_custody_observed\") is not False:",
+      "after": "    if report.get(\"schema\")!=\"hepta.service-root01.safe-static-token-classification.v3\" or report.get(\"target\")!=\"/data/hepta-service-root-01.py\" or report.get(\"assessment\") not in (\"unknown_static_purpose\",\"static_original_root29_selector_declared\") or report.get(\"ordinary_execution_authority_proven\") is not False or report.get(\"runtime_owner_custody_observed\") is not False or report.get(\"current_runtime_instance_observed\") is not False:",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "    record[\"inspection_status\"]=status",
+      "after": "    record[\"inspection_status\"]=status\n    record[\"classification\"]=report[\"assessment\"]",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "\"inspection-recorded-unknown-purpose\"",
+      "after": "\"inspection-recorded-static-classification\"",
+      "count": 1
+    },
+    {
+      "kind": "exact_text",
+      "before": "\"classification\":\"unknown_from_static_ast\"}),flush=True)",
+      "after": "\"classification\":record[\"classification\"]}),flush=True)",
+      "count": 1
+    }
+  ],
+  "full_forward_reverse_equality": true,
+  "wrapper_helper_whole_body_comparison": [
+    {
+      "name": "digest",
+      "unchanged": true,
+      "blob": "214d3b9591ae81bccec5be70bc44f696ce14451e"
+    },
+    {
+      "name": "git",
+      "unchanged": true,
+      "blob": "135dcc5a3e1eb95d5252a52948008ca7274ad441"
+    },
+    {
+      "name": "snapshot",
+      "unchanged": true,
+      "blob": "ec10c07feaba837b2f596dc45c3e8286a73ab99a"
+    },
+    {
+      "name": "fixed",
+      "unchanged": true,
+      "blob": "c8bd7d27c76d9b0a7a5366c580446e47239de02d"
+    },
+    {
+      "name": "file_record",
+      "unchanged": true,
+      "blob": "84ab383abf2574bd1e86997d8ca5913c187c6ad6"
+    },
+    {
+      "name": "save",
+      "unchanged": true,
+      "blob": "cf138c375dac1c7da694beeec80ee4c028bf5c82"
+    }
+  ],
+  "unified_diff": {
+    "hunks": 5,
+    "added_lines": 14,
+    "removed_lines": 13,
+    "whole_before_after_reconstructed": true,
+    "blob": "8fbcf9a33721db634a7619c47d29f71484334615"
+  },
+  "request_exact_changes": {
+    "args_4": "Complete old wrapper bytes replaced by complete reviewed new wrapper bytes.",
+    "idempotency_key": {
+      "before": "learn-ce434-existing-launcher-shape-readonly-v2",
+      "after": "learn-ce434-a671-existing-launcher-classify-v3"
+    },
+    "other_fields_order_and_values_identical": true,
+    "request_keys": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "no_timeout_resource_fields": true
+  },
+  "inspector_static_checks": {
+    "kind": "V8 mirror and exact-text static checks only",
+    "python_executed": false,
+    "source_ast_parse_executed": false,
+    "h_executed": false,
+    "known_case_positive_count": 29,
+    "negative_count": 67,
+    "unknown_value_redaction_cases": 5,
+    "os_calls": [
+      "close",
+      "fstat",
+      "lstat",
+      "open",
+      "read"
+    ],
+    "warning_block_exact": true,
+    "seven_original_helpers_exact": true,
+    "original_29_names_and_order_exact": true
+  },
+  "limitations": [
+    "These are V8/exact-text/API checks, not Python syntax execution or H results.",
+    "The preparation child is not the pinned source observed by the eventual wrapper; a671 remains explicit.",
+    "A successful static classification cannot prove deployed original owner custody, completed ordinary tasks or true cold restart."
+  ],
+  "ordinary_acceptance": 0
+}

@@ -1,0 +1,141 @@
+{
+  "cuda_or_torch_imported": false,
+  "device_count": {
+    "status": 0,
+    "value": 1
+  },
+  "device_name": "NVIDIA GeForce RTX 4060",
+  "device_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+  "direct_energy_mJ": {
+    "error": "Not Supported",
+    "error_type": "NVMLError_NotSupported",
+    "status": 3
+  },
+  "direct_power_mW": {
+    "error": "Not Supported",
+    "error_type": "NVMLError_NotSupported",
+    "status": 3
+  },
+  "driver": {
+    "status": 0,
+    "value": "580.178.04"
+  },
+  "ended_at": "2026-11-05T15:50:36.652083+00:00",
+  "field_scope_id": 0,
+  "field_wrapper_source": "def nvmlDeviceGetFieldValues(handle, fieldIds):\n    values_arr = c_nvmlFieldValue_t * len(fieldIds)\n    values = values_arr()\n    fn = _nvmlGetFunctionPointer(\"nvmlDeviceGetFieldValues\")\n\n    for i, fieldId in enumerate(fieldIds):\n        try:\n            (values[i].fieldId, values[i].scopeId) = fieldId\n        except TypeError:\n            values[i].fieldId = fieldId\n\n    ret = fn(handle, c_int32(len(fieldIds)), byref(values))\n    _nvmlCheckReturn(ret)\n    return values\n",
+  "init_status": 0,
+  "interpretation": "Only status 0 values with a known union type are decoded; failed buffers are not readings.",
+  "nvidia_ml_py_version": "13.610.43",
+  "nvml_version": {
+    "status": 0,
+    "value": "13.580.178.04"
+  },
+  "official_references": [
+    "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlFieldValueEnums.html",
+    "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlFieldValueQueries.html"
+  ],
+  "power_management_mode": {
+    "status": 0,
+    "value": 1
+  },
+  "pynvml_source_sha256": "d3233c78cd3f17bda97850346eba30fa88f1d6b295cee90fa7ec1c6cbf291e5b",
+  "samples": [
+    {
+      "aggregate_status": 0,
+      "ended_at": "2026-11-05T15:50:35.644090+00:00",
+      "fields": [
+        {
+          "error": "Not Supported",
+          "field_id": 186,
+          "name": "NVML_FI_DEV_POWER_INSTANT",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mW",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 185,
+          "name": "NVML_FI_DEV_POWER_AVERAGE",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mW",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 83,
+          "name": "NVML_FI_DEV_TOTAL_ENERGY_CONSUMPTION",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mJ",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 191,
+          "name": "NVML_FI_DEV_ENERGY",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mJ",
+          "value": null
+        }
+      ],
+      "sample_index": 0,
+      "started_at": "2026-11-05T15:50:35.643836+00:00"
+    },
+    {
+      "aggregate_status": 0,
+      "ended_at": "2026-11-05T15:50:36.644457+00:00",
+      "fields": [
+        {
+          "error": "Not Supported",
+          "field_id": 186,
+          "name": "NVML_FI_DEV_POWER_INSTANT",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mW",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 185,
+          "name": "NVML_FI_DEV_POWER_AVERAGE",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mW",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 83,
+          "name": "NVML_FI_DEV_TOTAL_ENERGY_CONSUMPTION",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mJ",
+          "value": null
+        },
+        {
+          "error": "Not Supported",
+          "field_id": 191,
+          "name": "NVML_FI_DEV_ENERGY",
+          "scope_id": 0,
+          "status": 3,
+          "unit": "mJ",
+          "value": null
+        }
+      ],
+      "sample_index": 1,
+      "started_at": "2026-11-05T15:50:36.644245+00:00"
+    }
+  ],
+  "schema": "hcsn.nvml-field-observation.v1",
+  "scope": "GPU device aggregate; read-only queries without task GPU work",
+  "script_sha256": "ac7afeec24967b4801b0c9e02fd01bee7c2f846e086ff5ea0c1b0cec96e8017b",
+  "shutdown": {
+    "status": 0,
+    "value": null
+  },
+  "started_at": "2026-11-05T15:50:35.590935+00:00",
+  "task_energy_measured": false
+}

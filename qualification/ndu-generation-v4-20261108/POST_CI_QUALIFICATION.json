@@ -1,0 +1,75 @@
+{
+  "caller_repair": {
+    "canonical_inverse_rename_matches_prior": true,
+    "checker_and_privileged_manifest_changed": false,
+    "full_repository_caller_check_executed_locally": false,
+    "logic_change": false,
+    "method_after": "validate_delivery_successor",
+    "method_before": "validate_successor",
+    "official_boundary_after": "PASS for exact unchanged rule and canonical-source slice",
+    "official_boundary_before": "FAIL with exact original CI unexpected-caller error",
+    "reason": "The receiver-unrestricted root-writer rule also matched a differently typed delivery contract method.",
+    "record": "post-ci/caller-boundary-proof.json"
+  },
+  "code_changes": [
+    {
+      "after_sha256": "e69d384980418fcd9f00a0ab521f90f37a224ee0d211ec06a151bbd8cff31c9d",
+      "before_sha256": "d9380b1651436e04c7d615b52fa9f2eb1d7d5a05a1e266941b4e67d8e7a6e594",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation.rs"
+    },
+    {
+      "after_sha256": "20ac1039b1309dfbd49047563372bf56ed3f707a64d0d75853b201c5dc8f77da",
+      "before_sha256": "c40435fa84d7a018ad06c38c15e6583d77ef3ccd92f179d395d2c1c147cdc713",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 1,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/proposal.rs"
+    },
+    {
+      "after_sha256": "2074133ebd9fb9d0e26ba5c5a63e48e98f958dc669ffb0ede97a89016270ae00",
+      "before_sha256": "aca1f05877c294eb4f6e7f75c55a7c9c4cc062cd78587fa74ac9a82c913f3949",
+      "canonical_inverse_rename_matches_prior": true,
+      "occurrences": 3,
+      "path": "codex-rs/hepta-infer-worker-host/src/joint_generation/observation_tests.rs"
+    }
+  ],
+  "dependency_gate": {
+    "cargo_manifests_lockfiles_and_deny_settings_changed": false,
+    "fatal_errors_observed": [
+      "pin-utils 0.1.1 / RUSTSEC-2026-0441",
+      "vodozemac 0.10.0 / RUSTSEC-2026-0451"
+    ],
+    "historical_baseline_ci_rerun": false,
+    "not_exhaustive_outside_retrieved_log_ranges": true,
+    "observed_on": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+    "record": "post-ci/cargo-deny-diagnosis.json",
+    "status": "FAILED_EXISTING_DEPENDENCY_ADVISORIES"
+  },
+  "native_repair_validation": {
+    "existing_tests_failed": 0,
+    "existing_tests_passed": 19,
+    "format": "PASS",
+    "initial_harness_assertion_failure_retained": true,
+    "new_cloud_training_or_numerical_replay": false,
+    "new_source_manifest_sha256": "f544261664be3ffe4759bba12e76ae88b0ff45f45afd51f2dde5aa93d3bec789",
+    "new_stripped_binary_sha256": "c44d366eb31ed86605ef1ce4b55206bde8352242aac929e56d7be5cb27b06bc7",
+    "original_cloud_binary_sha256": "0866ace1c10daa70abf95eaa5f45020293986ea00ec06bbc9e03dbd59f9f9967",
+    "record": "post-ci/rename-validation/run-receipt.json",
+    "scoped_clippy": "PASS -D warnings",
+    "stripped_byte_identical_to_cloud_v4": false
+  },
+  "original_numerical_candidate": "e2802a53a82529b9a206f77fcdfa98dd65918bfc",
+  "original_package_sha256": "3e190f4a262e79d18ad05ec88b60381eb6ac83ca7a0424a421892dfdb5937aa8",
+  "other_original_source_files_unchanged": 71,
+  "schema": "hepta.ndu.generation-post-ci-qualification.v1",
+  "scientific_results": "Original measured results are unchanged and remain attached to the original numerical source/executable identities; no execution claim is transferred to the newly built ELF.",
+  "spelling_repair": {
+    "added_word": "inout",
+    "baseline_raw_logs_changed": false,
+    "local_codespell_execution": "NOT_RUN_NO_EXISTING_EXECUTABLE_OR_MODULE_LOCAL_MAC_ROG",
+    "original_false_positive_count": 4,
+    "record": "post-ci/codespell-repair.json"
+  },
+  "status": "SCOPED_REPAIR_PASS_REPOSITORY_CI_NOT_CLAIMED"
+}

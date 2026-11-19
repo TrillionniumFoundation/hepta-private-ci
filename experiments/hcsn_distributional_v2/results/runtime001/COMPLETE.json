@@ -1,0 +1,380 @@
+{
+  "complete_workers_cpu_seconds": 95.665581,
+  "coordinator_complete_self_cpu_through_cutoff": 1.85064475,
+  "note": "Nested resume CPU is already inside its recovery worker scope; do not add twice",
+  "records": [
+    {
+      "execution": {
+        "child_cpu_seconds": 4.7246559999999995,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_dual_b4_t32",
+          "--model",
+          "distribution_free_dual",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 305804,
+        "wall_seconds": 11.285087019000002
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_dual_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.30293,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_conditional_dual_b4_t32",
+          "--model",
+          "distribution_conditional_dual",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 307404,
+        "wall_seconds": 10.292641158999686
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_conditional_dual_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.718637999999999,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_ordinary_b4_t32",
+          "--model",
+          "distribution_free_ordinary",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 307468,
+        "wall_seconds": 14.286550317000092
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_ordinary_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.840771,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/active_mean_collapse_free_dual_b4_t32",
+          "--model",
+          "active_mean_collapse_free_dual",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 307144,
+        "wall_seconds": 14.97901760700006
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/active_mean_collapse_free_dual_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.409028,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/legacy_free_b4_t32",
+          "--model",
+          "legacy_free",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 277604,
+        "wall_seconds": 9.927616953999859
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/legacy_free_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 3.946105,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/two_gates_b4_t32",
+          "--model",
+          "two_gates",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 267820,
+        "wall_seconds": 9.170869675999711
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/two_gates_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 3.6072819999999997,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/transformer_b4_t32",
+          "--model",
+          "transformer",
+          "--batch",
+          "4",
+          "--length",
+          "32",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 273644,
+        "wall_seconds": 8.431826537000234
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/transformer_b4_t32"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 9.353332,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_dual_b4_t128",
+          "--model",
+          "distribution_free_dual",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 407252,
+        "wall_seconds": 19.735290618999898
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_dual_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 9.572613,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_conditional_dual_b4_t128",
+          "--model",
+          "distribution_conditional_dual",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 367208,
+        "wall_seconds": 23.42858384300007
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_conditional_dual_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 8.872362,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_ordinary_b4_t128",
+          "--model",
+          "distribution_free_ordinary",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 350824,
+        "wall_seconds": 21.10810937699989
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/distribution_free_ordinary_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 10.004305,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/active_mean_collapse_free_dual_b4_t128",
+          "--model",
+          "active_mean_collapse_free_dual",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 408832,
+        "wall_seconds": 25.33237229999986
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/active_mean_collapse_free_dual_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 6.314131,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/legacy_free_b4_t128",
+          "--model",
+          "legacy_free",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 302868,
+        "wall_seconds": 14.37387869899976
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/legacy_free_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.501921,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/two_gates_b4_t128",
+          "--model",
+          "two_gates",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 226196,
+        "wall_seconds": 15.473618052000347
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/two_gates_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 4.7054160000000005,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "bench",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/transformer_b4_t128",
+          "--model",
+          "transformer",
+          "--batch",
+          "4",
+          "--length",
+          "128",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 226956,
+        "wall_seconds": 15.011216479999803
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/transformer_b4_t128"
+    },
+    {
+      "execution": {
+        "child_cpu_seconds": 11.792091,
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+          "-m",
+          "experiments.hcsn_distributional_v2.runtime_eval",
+          "recovery",
+          "--output",
+          "experiments/hcsn_distributional_v2/results/runtime001/recovery",
+          "--registration",
+          "experiments/hcsn_distributional_v2/results/runtime001/REGISTRATION.json",
+          "--checkpoint-run",
+          "experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201"
+        ],
+        "exit_code": 0,
+        "maxrss_kib": 210680,
+        "wall_seconds": 41.280968285999734
+      },
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/recovery"
+    }
+  ],
+  "schema": "hcsn-v2-runtime-complete.v1",
+  "source_changed_during_run": []
+}

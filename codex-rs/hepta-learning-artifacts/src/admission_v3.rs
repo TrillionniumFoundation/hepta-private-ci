@@ -74,7 +74,9 @@ pub fn verify_artifact_admission_v3(
     }
     let revalidated =
         validate_artifact_manifest_v2(admission.validated_manifest.manifest.clone(), now)?;
-    if revalidated.manifest_digest != admission.validated_manifest.manifest_digest {
+    // An admission is a wire value, not an unforgeable validation capability.
+    // Compare the complete normalized value, not just its asserted digest.
+    if revalidated != admission.validated_manifest {
         return Err(ArtifactAdmissionError::ManifestDigestMismatch);
     }
     if admission.withdrawal_scope_digest.is_zero() {
@@ -103,7 +105,15 @@ pub fn validate_artifact_publication_v3(
     if admission.withdrawal_scope_digest != scope_digest {
         return Err(ArtifactAdmissionError::WithdrawalScopeChanged);
     }
-    verify_artifact_admission_v3(admission, registry.head_digest(), now)
+    verify_artifact_admission_v3(admission, registry.head_digest(), now)?;
+    // Matching an attacker-recomputable hash to the current frontier does not
+    // prove that the dataset is admitted. Re-run the owner's eligibility check
+    // under the same writer fence immediately before each publication phase.
+    let current = registry.admit_manifest(admission.validated_manifest.manifest.clone(), now)?;
+    if current != admission.validated_manifest {
+        return Err(ArtifactAdmissionError::ManifestDigestMismatch);
+    }
+    Ok(())
 }
 
 fn digest_admission(
@@ -212,6 +222,21 @@ mod tests {
         }
     }
 
+    fn withdraw(registry: &mut DatasetWithdrawalRegistry, dataset: Digest32) {
+        registry
+            .append(DatasetWithdrawalNoticeV1 {
+                notice_id: id("notice"),
+                dataset_digest: dataset,
+                source_tombstone_digest: digest("tombstone"),
+                authority_id: id("authority"),
+                credential_chain_digest: digest("credential"),
+                signing_key_digest: digest("key"),
+                authority_epoch: 1,
+                issued_at: 21,
+            })
+            .fixture("withdrawal appends");
+    }
+
     #[test]
     fn art_05_admission_binds_exact_withdrawal_head() {
         let registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
@@ -243,7 +268,6 @@ mod tests {
         let registry_a = DatasetWithdrawalRegistry::new_scoped(scope("a"));
         let registry_b = DatasetWithdrawalRegistry::new_scoped(scope("b"));
         assert_ne!(registry_a.head_digest(), registry_b.head_digest());
-
         let admission = admit_manifest_at_withdrawal_head_v3(
             &registry_a,
             registry_a.head_digest(),
@@ -268,21 +292,59 @@ mod tests {
             20,
         )
         .fixture("initial admission succeeds");
-        registry
-            .append(DatasetWithdrawalNoticeV1 {
-                notice_id: id("notice"),
-                dataset_digest: dataset,
-                source_tombstone_digest: digest("tombstone"),
-                authority_id: id("authority"),
-                credential_chain_digest: digest("credential"),
-                signing_key_digest: digest("key"),
-                authority_epoch: 1,
-                issued_at: 21,
-            })
-            .fixture("withdrawal appends");
+        withdraw(&mut registry, dataset);
         assert_eq!(
             validate_artifact_publication_v3(&admission, &registry, 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
         );
+    }
+
+    #[test]
+    fn art_13_recomputed_admission_cannot_reauthorize_withdrawn_dataset() {
+        let dataset = digest("dataset");
+        let mut registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
+        let mut admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            registry.head_digest(),
+            manifest(dataset),
+            20,
+        )
+        .fixture("initial admission");
+        withdraw(&mut registry, dataset);
+        admission.withdrawal_head_digest = registry.head_digest();
+        admission.admitted_at = 21;
+        admission.admission_digest = digest_admission(
+            admission.validated_manifest.manifest_digest,
+            admission.withdrawal_scope_digest,
+            admission.withdrawal_head_digest,
+            admission.admitted_at,
+        );
+        // Integrity alone still succeeds: no signer secret is needed to hash.
+        verify_artifact_admission_v3(&admission, registry.head_digest(), 21)
+            .fixture("forged value has internally consistent hashes");
+        assert!(matches!(
+            validate_artifact_publication_v3(&admission, &registry, 21),
+            Err(ArtifactAdmissionError::Manifest(_))
+        ));
+    }
+
+    #[test]
+    fn art_13_manifest_mutation_never_inherits_admission() {
+        let registry = DatasetWithdrawalRegistry::new_scoped(scope("a"));
+        let admission = admit_manifest_at_withdrawal_head_v3(
+            &registry,
+            registry.head_digest(),
+            manifest(digest("dataset")),
+            20,
+        )
+        .fixture("initial admission");
+        for replacement in ["other-dataset", "second-dataset", "third-dataset"] {
+            let mut forged = admission.clone();
+            forged.validated_manifest.manifest.source_dataset_digests = vec![digest(replacement)];
+            assert_eq!(
+                validate_artifact_publication_v3(&forged, &registry, 21),
+                Err(ArtifactAdmissionError::ManifestDigestMismatch)
+            );
+        }
     }
 }

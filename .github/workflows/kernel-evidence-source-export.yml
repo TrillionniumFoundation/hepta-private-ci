@@ -1,0 +1,37 @@
+name: Kernel evidence source export
+
+on:
+  push:
+    branches:
+      - codex/kernel-evidence-convergence-20260925-v2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact branch source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Pack exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$(git rev-parse HEAD)" > SOURCE_COMMIT
+          printf '%s\n' "$(git rev-parse HEAD^{tree})" > SOURCE_TREE
+          tar --exclude=.git --exclude=target --exclude='codex-rs/target' -czf "$RUNNER_TEMP/hepta-private-ci-source.tgz" .
+
+      - name: Upload exact source
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: kernel-evidence-source-export
+          path: ${{ runner.temp }}/hepta-private-ci-source.tgz
+          if-no-files-found: error
+          retention-days: 1

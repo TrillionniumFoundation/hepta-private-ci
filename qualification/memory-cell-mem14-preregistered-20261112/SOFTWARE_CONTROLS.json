@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.mem14.software-controls.v1",
+  "real_model_calls": 0,
+  "tests_passed": 11,
+  "new_protocol_tests": 3,
+  "legacy_runner_tests": 8,
+  "test_wall_seconds_reported_by_unittest": 11.947,
+  "legacy_sentence_fixture_rows": 80,
+  "legacy_sentence_fixture_successes": 0,
+  "followup_fixture_rows": 320,
+  "followup_fixture_sources": 32,
+  "fixture_generation_is_scientific_evidence": false,
+  "just_fmt_exit": 0,
+  "ruff_check_exit": 0,
+  "ruff_format_check_exit": 0,
+  "diff_check_exit": 0,
+  "implementation_asts_unchanged_by_format": true,
+  "test_ast_only_change_after_tests": "removed unused import json; all test bodies unchanged",
+  "tests_rerun_after_format": false,
+  "actor": {
+    "actor_bytes_unchanged": true,
+    "actor_sha256": "de250eb7feb7d0318ba78c9ce059933dd365800616055b25a1aa1000821052c9",
+    "provider_worker_or_model_loading_code_changed": false,
+    "tests_rerun_after_format": false
+  },
+  "source_files": {
+    "scripts/ndu_real_runtime/run_episodic_diagnostic.py": {
+      "sha256": "6baa50a83169323fad657e43cf5df5a7fc55bc8d3ed43d5c8c0d9d8b700310d2",
+      "ast_unchanged": true,
+      "lines": 474
+    },
+    "scripts/ndu_real_runtime/episodic_diagnostic_report.py": {
+      "sha256": "640f63c8a7971f7d70313969612b1975ccfa93ef1b85c26ddd03561d3f7dfc1c",
+      "ast_unchanged": true,
+      "lines": 320
+    },
+    "scripts/ndu_real_runtime/episodic_diagnostic_protocol.py": {
+      "sha256": "2ea0a847ac89b9fe1281d569dee863179cbfda4f2e9689a2f51e6f0a1cd3e830",
+      "ast_unchanged": true,
+      "lines": 128
+    },
+    "scripts/ndu_real_runtime/test_episodic_diagnostic_protocol.py": {
+      "sha256": "5e991cfd88a315462cabaf5c4e8e58cffc574679d05e707e41507c9a17e78c96",
+      "ast_unchanged": false,
+      "lines": 230,
+      "only_ast_change": "removed unused import json; all test bodies unchanged"
+    }
+  },
+  "archive": {
+    "file": "software-controls.tar.xz",
+    "bytes": 16704,
+    "sha256": "d81a11b776c7e79afa8ad80ee0e99240bf450ca9e41f05372517cf97a90c1d15"
+  },
+  "scientific_acceptance": "HOLD"
+}

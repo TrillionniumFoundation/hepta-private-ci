@@ -1,0 +1,52 @@
+{
+  "audit_source_sha256": "4c563781b61563e5ef0f153b0da8b812f79c9210b09b3ba468d0578622cc6372",
+  "base_commit": "5f7f55e015dde7fab0c174081fef090ff45501de",
+  "complete_equal_budget_scientific_comparison": false,
+  "confirmation_access": false,
+  "evidence_files": {
+    "BLOB_POLICY_BACKPORT.json": "bd0a7e70d16466737c04d71289799b37f29b233411b7c9dedf2424bb9d59abe6",
+    "FORMATTING.json": "6e2df53f77f7745019f8be17030a44490dec4ad3384470d6798f00e40d966c6c",
+    "FUNCTIONAL_COMMITS.json": "5ea27455015affd2ff1d42f41fe8a99284c277eb4bbd6f3e2ebeb784e9a39ecb",
+    "NATIVE_AUDIT_SUMMARY.json": "eed311caf6e3b97ad37a2c4a5d81b815d52c8b984b0d9c4b83a79845db8ff1db"
+  },
+  "formal_fits_started": 0,
+  "native_development": {
+    "diagnostic_updates_per_arm": 16,
+    "energy_joules": null,
+    "fresh_baseline_fits": 5,
+    "independent_seeds": [
+      101
+    ],
+    "main_completed_epoch": false,
+    "main_updates_per_arm": 12,
+    "measured_packing_seconds": 0.854307304834947,
+    "measured_prior_failures_and_recovery_seconds": 15.921077022794634,
+    "measured_readonly_audit_seconds": 2.4675007117912173,
+    "measured_validation_seconds": 50.139141301158816,
+    "plif_changed_zero_moment_scalars": 3534,
+    "plif_nonzero_gradient_moment_scalars": 6236,
+    "plif_trainable_real_scalars": 9770,
+    "regression_methods_passed": 5,
+    "short_memorization_passed_arms": [
+      "attention"
+    ],
+    "total_optimizer_updates": 140
+  },
+  "publication_only_checks": {
+    "blob_policy_regression_tests": 7,
+    "no_training_or_scientific_retest": true,
+    "scope_formatting_preserves_python_ast": true
+  },
+  "raw_archive": {
+    "bytes": 1843158,
+    "manifest_sha256": "601007f3d80d1de9cae3284b85035c123c46454b8c932cac4406dd1989f06c16",
+    "member_hashes_verified": true,
+    "members": 142,
+    "path": "hcsn-trainer-native-evidence.zip",
+    "sha256": "27d4f684ba9df1b9dec5c518377c50f80239d2a3f4998045f88939593fa01bcc"
+  },
+  "schema": "hcsn-localization-trainer-qualification-v1",
+  "scientific_admission": "HOLD",
+  "source_unformatted_head": "1970b75cbbac93d0e498bbf41da92dd1febebfa7",
+  "training_source_archive_sha256": "b8138610c41e5e78d41dfb78e40f35ab1a344ca23ca87422b2a7d9c87ec418d3"
+}

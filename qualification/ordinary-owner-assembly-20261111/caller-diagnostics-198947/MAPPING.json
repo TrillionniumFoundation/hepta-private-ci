@@ -1,0 +1,194 @@
+{
+  "schema": "hepta.original-receiver-per-file-diagnostic-delivery.v2",
+  "classification": "DIAGNOSTIC_WITH_FINDINGS_NOT_OFFICIAL_VERIFIER_PASS",
+  "source_sha": "19894714403a97fcd58ca8c592e75761de95687c",
+  "source_tree": "8c64ab5145f279cafec363130d2a917075800e56",
+  "request_blob": "eb095f4a691294b080d244aa4c7f7bf679599fea",
+  "script_blob": "a415f8c4cfeb63a691994176130af4ba6ee95932",
+  "script_sha256": "ae944bee0bda949bd1bb7a7300174063ced646f4700e7cb018fc1264cbbb6ba0",
+  "session_id": "dpty-72d80ee9d086971cd364babf82bc7a2a7b28e416d46adb95de8335f2d78aaeb4",
+  "raw_result": {
+    "git_blob": "5d260233a32de13ca6f3aaa1b7fbfd27c39711be",
+    "bytes": 16668,
+    "sha256": "8b005bfb48e336f2d8a703ef7dd749bc897f4f1ef15ace7cd129ab41a9b59762",
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-receiver-file-diagnostic-v1/records/result.json",
+    "version": "66306:74060250:16668:1794441584089941207:1794441584089941207"
+  },
+  "raw_pty": {
+    "git_blob": "09d0484a03e9294daad0580c9c4075822d6d0e17",
+    "bytes": 5271,
+    "sha256": "36473450240715cf949ce6dc7d12d2d66dd76ec652180eecb6d72c39bfded924",
+    "exit_code": 0,
+    "output_complete": true,
+    "capture_error": null
+  },
+  "before": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-receiver-file-diagnostic-v1/records/before.json",
+    "sha256": "16bead82151f70894ab9dfa07580da143641a93234bdf86db9880c729ae63004",
+    "size": 1703006,
+    "version": "66306:74060223:1703006:1794441493053070868:1794441493053752028"
+  },
+  "after": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-receiver-file-diagnostic-v1/records/after.json",
+    "sha256": "16bead82151f70894ab9dfa07580da143641a93234bdf86db9880c729ae63004",
+    "size": 1703006,
+    "version": "66306:74060247:1703006:1794441584086165426:1794441584086855135"
+  },
+  "retained_original_491_diagnostic": {
+    "raw_pty_git_blob": "5e989e69e13ac42c6a1f16dc91aedc5f0e6b3d79",
+    "raw_pty_bytes": 7742,
+    "raw_pty_sha256": "461f389c4dbca615e77d8134edba564a7e155784cef0b73f2e066c2d1dd0f4c9",
+    "result_bytes": 182100,
+    "result_sha256": "8007a25bf9dea4424378ae6af8c524aa0c33dd0f3b7a0f7dbd7519f058a336ce",
+    "result_path": "/home/qq/af52-learning-local-decision-20261111/ordinary-198947-all-boundary-diagnostic-v1/records/result.json",
+    "boundary_failures": 11,
+    "protected_failures": 1,
+    "status": "diagnostic completed with findings; official verifier was not executed"
+  },
+  "scope": {
+    "rust_index": {
+      "control_file_count": 369,
+      "ignored_path_fragments": [
+        "/tests/",
+        "/examples/",
+        "_tests.rs"
+      ],
+      "masked_index_sha256": "25b6a5ea726bc7f850e76a91eaf8a89fe94860564c36da47d3db0228f6d7dfcd",
+      "rust_count": 6470,
+      "source_roots": [
+        "codex-rs"
+      ]
+    },
+    "eligible_files_per_boundary": 4360,
+    "diagnosed_boundaries": 11,
+    "uncovered": [],
+    "file_exception_count": 11,
+    "distinct_exception_files": [
+      "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_task_ledger_test_support.rs",
+      "codex-rs/hepta-agentd/src/circuit_q24_task_test_support.rs",
+      "codex-rs/hepta-agentd/src/neuron_cell_evaluation_test_support.rs",
+      "codex-rs/hepta-agentd/src/neuron_generation_runtime_test_support.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+      "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs"
+    ],
+    "driver_errors": [],
+    "duration_seconds": 92.02810835605487,
+    "source_clean_before_after": true
+  },
+  "mapping": [
+    {
+      "boundary": "cell_q24_original_dataset_revalidation",
+      "fix": "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775",
+      "scope": "actual Prepared UFCS, not a change to Batch validation"
+    },
+    {
+      "boundary": "learning_original_source_create",
+      "fixes": [
+        {
+          "file": "cell_q24_task_ledger_test_support.rs",
+          "manifest": "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775"
+        },
+        {
+          "file": "circuit_q24_task_test_support.rs",
+          "manifest": "b6fd6b8ffdfa8d74deece06d704b414dbb582798",
+          "note": "already excluded by the original mask after the proven cfg(test) marker on start_profile; no second source fix required"
+        },
+        {
+          "file": "neuron_cell_evaluation_test_support.rs",
+          "manifest": "4b80f5be8633f484013c6bfc7c52a95b317bde13"
+        },
+        {
+          "file": "neuron_generation_runtime_test_support.rs",
+          "manifest": "4b80f5be8633f484013c6bfc7c52a95b317bde13"
+        },
+        {
+          "file": "hepta-neuron/src/cell_generation_test_support.rs",
+          "manifest": "eaa3d5747aade5f3ae123e42ad5118c961ba0bd8",
+          "postimage_git_blob": "8e7e9d5ecc01abee9c8d01aa2228ccd7cedf7dfd"
+        }
+      ]
+    },
+    {
+      "boundary": "learning_original_q24_stage_require_current",
+      "fix": "ecb2c95414dc13dcfd003d47ccc2fa8ff9a85775"
+    },
+    {
+      "boundary": "root_generation_current_bound_selection",
+      "fix": "c024d30cebddbb90992a183786a8ca86910b1534"
+    },
+    {
+      "boundary": "q24_task_original_ledger_open",
+      "fix": "d4049ab85d0e15d05a0d4dc8edc8783fb9b59d78",
+      "scope": "explicit cfg(test) on actually private test-only impls, original parent chain and all bodies retained"
+    },
+    {
+      "boundary": "q24_task_original_ledger_readback",
+      "source_fix": "d4049ab85d0e15d05a0d4dc8edc8783fb9b59d78",
+      "metadata_fix": "1c2ebd0e055285a944a3e10abd8968600c849d7d",
+      "scope": "Durable source UFCS; self-definition external expectation corrected, real internal readback additionally guarded"
+    },
+    {
+      "boundary": "q24_task_original_dataset_prepare",
+      "fix": "b6fd6b8ffdfa8d74deece06d704b414dbb582798"
+    },
+    {
+      "boundary": "q24_task_original_profile_install",
+      "fix": "b6fd6b8ffdfa8d74deece06d704b414dbb582798"
+    },
+    {
+      "boundary": "q24_task_explicit_delivery_sources",
+      "fix": "beb179eed1f9d7f3b24f6c2970e94bfaf5d8f663"
+    },
+    {
+      "boundary": "q24_training_original_readback_construct",
+      "fix": "242c5cd0d4265c4f2f598fe296b9dd4670851ec0"
+    },
+    {
+      "boundary": "evaluation_original_trainer_borrow",
+      "fix": "242c5cd0d4265c4f2f598fe296b9dd4670851ec0",
+      "scope": "actual Timing UFCS, all genuine Trainer borrows unchanged"
+    }
+  ],
+  "limits": [
+    "All diagnostics used original 198947 source and original checker; listed postimages were not substituted into this measured source.",
+    "The original official verifier is still required on the final integrated published candidate.",
+    "Tests, Root execution, ordinary loops and authority are not granted or established by these diagnostics.",
+    "715 adds two late-writer source files absent from this source; parent has requested a separate two-file full-index diagnostic."
+  ],
+  "native_executed": false,
+  "authorityGranted": false,
+  "ordinary_production_acceptance": false,
+  "supersedes_mapping_only": "6312c2d1b82e625f032e4e38aa04608a2f63c035",
+  "additional_full_original_field_map_replay": {
+    "report_git_blob": "09747559a0faf345a85604f95463d5c23ed42d58",
+    "original_field_map_git_blob": "360d4ef7da5e48d7784fdb2f10acd007af5e79f8",
+    "field_map_sha256": "c04b280e1c5447eac454c39d0d11c5b17447f7c707be131b4c68602cfc787700",
+    "scope": "Three exact fixed postimage helper files against the original unchanged resolver and its retained 6470-file field map; not recomputation of the final candidate's full index.",
+    "results": "All three matched=false, error=null; source/control hashes independently verified."
+  }
+}

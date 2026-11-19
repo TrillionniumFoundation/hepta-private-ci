@@ -1,0 +1,2252 @@
+{
+  "schema": "read-only-170-reconciliation-v1",
+  "prepared_at_utc": "2026-11-07T08:03:03.015868+08:00",
+  "host": "desktop",
+  "job_id": "1a1acdd69f2-fc05-5757",
+  "task_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "campaign_root": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2",
+  "frozen_source_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "observations": {
+    "prior_progress_utc": "2026-11-06T23:47:52.586580+00:00",
+    "prior_completed": 9,
+    "latest_progress_utc": "2026-11-07T00:01:58.560104+00:00",
+    "latest_completed": 10,
+    "attempt_search_created_unix_ms": 1794009666513,
+    "attempt_directory_statistics": {
+      "bytes": 0,
+      "coverage_complete": true,
+      "coverage_reasons": [],
+      "coverage_scope": "selected_authorized_regular_single_link_files",
+      "entries": 52,
+      "extracted_documents": 0,
+      "files": 0,
+      "results": 31,
+      "skipped_binary_or_non_utf8": 0,
+      "skipped_document_invalid": 0,
+      "skipped_document_limited": 0,
+      "skipped_document_unavailable": 0,
+      "skipped_hardlinks": 0,
+      "skipped_large": 0,
+      "skipped_protected": 0,
+      "skipped_special": 0,
+      "skipped_symlinks": 0,
+      "traversal_complete": true,
+      "unreadable": 0
+    },
+    "non_atomic": true
+  },
+  "process_observation": {
+    "audit_recorded": true,
+    "backend": "systemd",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "state": "running",
+    "systemd": {
+      "ActiveState": "active",
+      "Description": "Hepta Runtime job 1a1acdd69f2-fc05-5757 d47233c214bcc8143da5e05871f44372",
+      "ExecMainCode": "0",
+      "ExecMainPID": "356991",
+      "ExecMainStatus": "0",
+      "InvocationID": "639f5d79691948ff8e3f2b7d82d26810",
+      "LoadState": "loaded",
+      "Result": "success",
+      "SubState": "running"
+    }
+  },
+  "counts": {
+    "expected_identities": 170,
+    "completed": 10,
+    "running": 1,
+    "not_started": 159,
+    "failed_full_run_terminals": 0,
+    "unavailable_full_run_terminals": 0,
+    "b_audited": 0,
+    "b_expected": 20
+  },
+  "qualification": "open",
+  "source_integrity": {
+    "canonical_source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "source_file_count": 26,
+    "all_completed_source_identities": [
+      "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc"
+    ],
+    "selected_execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "claimed_bundle_manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "archive_was_not_rehashed_by_this_review": true
+  },
+  "budget": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2,
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5
+  },
+  "current_started_identity": {
+    "task": "delayed_recall",
+    "model": "hx_call",
+    "seed": 0,
+    "attempt_id": "b7777506025a4d498884f62b558b9d03",
+    "key": "6d861d10696a35e46c8c8fcbda126adfeec52577e1efb71976cc3be8194718e9",
+    "started_utc": "2026-11-06T23:59:50.463797+00:00"
+  },
+  "completed_runs": [
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 0,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.04104330763220787,
+      "best_validation_mse": 0.03883013129234314,
+      "initial_training_mse": 0.36484915018081665,
+      "final_training_mse": 0.07533042132854462,
+      "training_wall_seconds_including_validation": 5227.080032530939,
+      "training_examples_per_second": 4.897571845213272,
+      "latency_p50_ms": 3990.6007135286927,
+      "latency_p95_ms": 5741.459388443036,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 14.767357456347234,
+      "parameters": 5633,
+      "trainable_parameters": 5633,
+      "peak_gpu_allocated_bytes": 779019776,
+      "peak_gpu_reserved_bytes": 799014912,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d.attempts/3242847bfb844a46b56d4f3f78f903bb.pt",
+      "best_checkpoint_sha256": "e1e2269e9491ecc230965a2faa0c8727a56eb139166550bbf320ff1ec77dab1b",
+      "attempt_id": "3242847bfb844a46b56d4f3f78f903bb",
+      "identity_key": "e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d",
+      "started_utc": "2026-11-06T08:08:59.999037+00:00",
+      "finished_utc": "2026-11-06T09:44:43.065571+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d.attempts/3242847bfb844a46b56d4f3f78f903bb.json",
+      "terminal_sha256": "946025dc85137c206db9297fad4354dda3bad4fffe95b27dfce49c4e6479bec9",
+      "attempt_elapsed_seconds": 5743.066534,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 1,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.2788465619087219,
+      "best_validation_mse": 0.24678899347782135,
+      "initial_training_mse": 0.4013882577419281,
+      "final_training_mse": 0.26347482204437256,
+      "training_wall_seconds_including_validation": 5159.880796891986,
+      "training_examples_per_second": 4.961354924210644,
+      "latency_p50_ms": 4078.6727814702317,
+      "latency_p95_ms": 4761.303364002379,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.376220098074638,
+      "parameters": 5633,
+      "trainable_parameters": 5633,
+      "peak_gpu_allocated_bytes": 779019776,
+      "peak_gpu_reserved_bytes": 799014912,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/0675edd696488f5b9741521c2572faa3d3d4ec52f9a84c9fad6361e8655e32d6.attempts/1307eb9e35e84b968d2d1a0bd16c0d29.pt",
+      "best_checkpoint_sha256": "8e1bea350687c95c27b903c67b77930c28cf3a3c86323c4bfd358fe82a84db6e",
+      "attempt_id": "1307eb9e35e84b968d2d1a0bd16c0d29",
+      "identity_key": "0675edd696488f5b9741521c2572faa3d3d4ec52f9a84c9fad6361e8655e32d6",
+      "started_utc": "2026-11-06T09:44:43.087449+00:00",
+      "finished_utc": "2026-11-06T11:18:52.951919+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/0675edd696488f5b9741521c2572faa3d3d4ec52f9a84c9fad6361e8655e32d6.attempts/1307eb9e35e84b968d2d1a0bd16c0d29.json",
+      "terminal_sha256": "b4f7a314f4a0cd89a818a7c28e2eaa802c3a30ce6681fe7bdab2bef1dc6b74e7",
+      "attempt_elapsed_seconds": 5649.86447,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 2,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.22985419631004333,
+      "best_validation_mse": 0.21057339012622833,
+      "initial_training_mse": 0.39402469992637634,
+      "final_training_mse": 0.303672194480896,
+      "training_wall_seconds_including_validation": 5248.2311052859295,
+      "training_examples_per_second": 4.877833976140288,
+      "latency_p50_ms": 4183.300845033955,
+      "latency_p95_ms": 5277.115848648827,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.00653354181918,
+      "parameters": 5633,
+      "trainable_parameters": 5633,
+      "peak_gpu_allocated_bytes": 780990464,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0.attempts/30c93edbfa9c4da0b9f54f6fecc25477.pt",
+      "best_checkpoint_sha256": "90599dcfa44bc98357c4f57dfff77de5a4e55816e52ccd591cfdf65e588483a3",
+      "attempt_id": "30c93edbfa9c4da0b9f54f6fecc25477",
+      "identity_key": "2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0",
+      "started_utc": "2026-11-06T11:18:52.974821+00:00",
+      "finished_utc": "2026-11-06T12:54:43.468552+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0.attempts/30c93edbfa9c4da0b9f54f6fecc25477.json",
+      "terminal_sha256": "bdb892346509888a41b4e0d33cf264a92ae16d6675e86820a037f60ea5d7bb73",
+      "attempt_elapsed_seconds": 5750.493731,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 3,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.3296849727630615,
+      "best_validation_mse": 0.30566710233688354,
+      "initial_training_mse": 0.2940777540206909,
+      "final_training_mse": 0.3341289460659027,
+      "training_wall_seconds_including_validation": 5204.482625972945,
+      "training_examples_per_second": 4.918836672110946,
+      "latency_p50_ms": 3986.8389033945277,
+      "latency_p95_ms": 5149.079453723971,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.50710422218459,
+      "parameters": 5633,
+      "trainable_parameters": 5633,
+      "peak_gpu_allocated_bytes": 780990464,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/1eedbec0ae760b77ea5afb8d0276b8fa73ba69fb4bd71282e118adc4e9146149.attempts/b2549ed52ff04e94b3a1a827a1f0bdc3.pt",
+      "best_checkpoint_sha256": "88d63695768c8f69e57b81abebe611c28efd6e734a5fc58968e0f881973427fd",
+      "attempt_id": "b2549ed52ff04e94b3a1a827a1f0bdc3",
+      "identity_key": "1eedbec0ae760b77ea5afb8d0276b8fa73ba69fb4bd71282e118adc4e9146149",
+      "started_utc": "2026-11-06T12:54:43.492104+00:00",
+      "finished_utc": "2026-11-06T14:29:35.972641+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/1eedbec0ae760b77ea5afb8d0276b8fa73ba69fb4bd71282e118adc4e9146149.attempts/b2549ed52ff04e94b3a1a827a1f0bdc3.json",
+      "terminal_sha256": "37503075bae42c60ccee9e5d1d000ef2b8f14d8fb12882dfefbc34405d191360",
+      "attempt_elapsed_seconds": 5692.480537,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 4,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.07978394627571106,
+      "best_validation_mse": 0.08405331522226334,
+      "initial_training_mse": 0.31688714027404785,
+      "final_training_mse": 0.0985700786113739,
+      "training_wall_seconds_including_validation": 5161.911116527161,
+      "training_examples_per_second": 4.95940348876507,
+      "latency_p50_ms": 4049.229427939281,
+      "latency_p95_ms": 4390.069477213547,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.591185669265437,
+      "parameters": 5633,
+      "trainable_parameters": 5633,
+      "peak_gpu_allocated_bytes": 779019776,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/017205ab47d39471bfd826ca5cafcc9e1d51e450b2fb7daf901541bb5caaae65.attempts/1c6fc6b052be4b62853292f318098099.pt",
+      "best_checkpoint_sha256": "a776fa454c21fcfd0f5ee62b93c10d40006bb0ef8d89d0b64df02e6c5595897c",
+      "attempt_id": "1c6fc6b052be4b62853292f318098099",
+      "identity_key": "017205ab47d39471bfd826ca5cafcc9e1d51e450b2fb7daf901541bb5caaae65",
+      "started_utc": "2026-11-06T14:29:35.995768+00:00",
+      "finished_utc": "2026-11-06T16:03:43.809823+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/017205ab47d39471bfd826ca5cafcc9e1d51e450b2fb7daf901541bb5caaae65.attempts/1c6fc6b052be4b62853292f318098099.json",
+      "terminal_sha256": "fb9f5fb19ff301e7ead0a8d1c9d7d3f2c0e3d6c5e1a85ef7261747c88a24e96b",
+      "attempt_elapsed_seconds": 5647.814055,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 0,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.14621196687221527,
+      "best_validation_mse": 0.15330447256565094,
+      "initial_training_mse": 0.36468756198883057,
+      "final_training_mse": 0.16546650230884552,
+      "training_wall_seconds_including_validation": 5241.451250189915,
+      "training_examples_per_second": 4.884143489662796,
+      "latency_p50_ms": 4196.35650399141,
+      "latency_p95_ms": 4628.940216510091,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.046863550641767,
+      "parameters": 5633,
+      "trainable_parameters": 5505,
+      "peak_gpu_allocated_bytes": 777970176,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646.attempts/19d2c77cadca4dc9a6ba07faf70fda9c.pt",
+      "best_checkpoint_sha256": "bcccbdaca61a83ebd497f654abc40808fdb022e182de1a1b01c21629b177d06b",
+      "attempt_id": "19d2c77cadca4dc9a6ba07faf70fda9c",
+      "identity_key": "a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646",
+      "started_utc": "2026-11-06T16:03:43.965254+00:00",
+      "finished_utc": "2026-11-06T17:39:29.581342+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646.attempts/19d2c77cadca4dc9a6ba07faf70fda9c.json",
+      "terminal_sha256": "be203435b6f13703c19453a80608d5085402bbc228950d1baffae0a69fc3f605",
+      "attempt_elapsed_seconds": 5745.616088,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 1,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.23305456340312958,
+      "best_validation_mse": 0.21271438896656036,
+      "initial_training_mse": 0.4004683792591095,
+      "final_training_mse": 0.1722835898399353,
+      "training_wall_seconds_including_validation": 5284.2072357600555,
+      "training_examples_per_second": 4.844624530763283,
+      "latency_p50_ms": 4000.441767508164,
+      "latency_p95_ms": 5493.54669112945,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.490813148609227,
+      "parameters": 5633,
+      "trainable_parameters": 5505,
+      "peak_gpu_allocated_bytes": 777970176,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/2d8356d31f8073495f0846084ae39077d6bea3242a350028b48def49ed9c95b9.attempts/0228a2353fa14d0dbde23f8b2f122a60.pt",
+      "best_checkpoint_sha256": "ecfcbd054c8121c224ee20ec4ac59183042a6d328d0b8c8dfcfc451e6b227c44",
+      "attempt_id": "0228a2353fa14d0dbde23f8b2f122a60",
+      "identity_key": "2d8356d31f8073495f0846084ae39077d6bea3242a350028b48def49ed9c95b9",
+      "started_utc": "2026-11-06T17:39:29.603558+00:00",
+      "finished_utc": "2026-11-06T19:15:40.648859+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/2d8356d31f8073495f0846084ae39077d6bea3242a350028b48def49ed9c95b9.attempts/0228a2353fa14d0dbde23f8b2f122a60.json",
+      "terminal_sha256": "35ed009ac0035cab36ece9f0447d28fa3802cee723c7a77f92bb5d0319dd98a6",
+      "attempt_elapsed_seconds": 5771.045301,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 2,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.18655650317668915,
+      "best_validation_mse": 0.1795220822095871,
+      "initial_training_mse": 0.3939276337623596,
+      "final_training_mse": 0.20905789732933044,
+      "training_wall_seconds_including_validation": 5132.234458336141,
+      "training_examples_per_second": 4.988080768293556,
+      "latency_p50_ms": 3837.4163230182603,
+      "latency_p95_ms": 5563.743851904292,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.432071961706722,
+      "parameters": 5633,
+      "trainable_parameters": 5505,
+      "peak_gpu_allocated_bytes": 777970176,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/84f3cd8bff029342f0a03c7f879403cbe9c9bbc5c4c5ca858b9e1faec99d6c00.attempts/ae60c5d35018433a834c96c0d0b21289.pt",
+      "best_checkpoint_sha256": "95236973f44d8a88f5cd60a681c8240c979219d478fc9172169770a62d0729ba",
+      "attempt_id": "ae60c5d35018433a834c96c0d0b21289",
+      "identity_key": "84f3cd8bff029342f0a03c7f879403cbe9c9bbc5c4c5ca858b9e1faec99d6c00",
+      "started_utc": "2026-11-06T19:15:40.658513+00:00",
+      "finished_utc": "2026-11-06T20:49:16.677964+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/84f3cd8bff029342f0a03c7f879403cbe9c9bbc5c4c5ca858b9e1faec99d6c00.attempts/ae60c5d35018433a834c96c0d0b21289.json",
+      "terminal_sha256": "b75e1d730f53c49bc12c1e203989fc47a50d4b5ec2628263ad7642f6477df2f2",
+      "attempt_elapsed_seconds": 5616.019451,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 3,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.1643586903810501,
+      "best_validation_mse": 0.17340955138206482,
+      "initial_training_mse": 0.2940968871116638,
+      "final_training_mse": 0.16127535700798035,
+      "training_wall_seconds_including_validation": 5273.846279770834,
+      "training_examples_per_second": 4.854142241156183,
+      "latency_p50_ms": 3865.992934559472,
+      "latency_p95_ms": 5536.048879777081,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 15.229858675244877,
+      "parameters": 5633,
+      "trainable_parameters": 5505,
+      "peak_gpu_allocated_bytes": 777970176,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/288bd6a43f3d79a374909bdace20e575267d0d7e07e527bfe6ebc40cd489cbf3.attempts/8ef5378f2158445a92e6a610b9104e31.pt",
+      "best_checkpoint_sha256": "02903576a2f8ce75e78b5c319917ee5a00b73902ae09e961008202206f89586b",
+      "attempt_id": "8ef5378f2158445a92e6a610b9104e31",
+      "identity_key": "288bd6a43f3d79a374909bdace20e575267d0d7e07e527bfe6ebc40cd489cbf3",
+      "started_utc": "2026-11-06T20:49:16.686805+00:00",
+      "finished_utc": "2026-11-06T22:25:25.611851+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/288bd6a43f3d79a374909bdace20e575267d0d7e07e527bfe6ebc40cd489cbf3.attempts/8ef5378f2158445a92e6a610b9104e31.json",
+      "terminal_sha256": "f251b41a281cfa0089ebbfc1fd6d32f375d581574c826db729e85ef134b26660",
+      "attempt_elapsed_seconds": 5768.925046,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 4,
+      "status": "completed",
+      "training_status": "completed",
+      "training_steps_completed": 400,
+      "training_examples_seen": 25600,
+      "training_tokens_seen": 1638400,
+      "test_mse": 0.01943076215684414,
+      "best_validation_mse": 0.018502097576856613,
+      "initial_training_mse": 0.317012757062912,
+      "final_training_mse": 0.028945371508598328,
+      "training_wall_seconds_including_validation": 5198.50405609794,
+      "training_examples_per_second": 4.924493608881719,
+      "latency_p50_ms": 3873.437353526242,
+      "latency_p95_ms": 4490.084670414216,
+      "inference_batch_size": 64,
+      "inference_examples_per_second": 16.13731323303493,
+      "parameters": 5633,
+      "trainable_parameters": 5505,
+      "peak_gpu_allocated_bytes": 777970176,
+      "peak_gpu_reserved_bytes": 801112064,
+      "execution_policy": {
+        "population_checkpoint_steps": 1,
+        "cuda_memory_fraction": 0.5
+      },
+      "implementation": {
+        "encoder_class": "ValueKernelCell",
+        "population_checkpoint_steps": 0,
+        "use_reentrant": null,
+        "preserve_rng_state": null,
+        "gradient_horizon": "full sequence",
+        "training_cost_includes_recomputation": false
+      },
+      "energy": {
+        "joules_by_physical_counter": null,
+        "gpu_device_identity": {
+          "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+          "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+          "mapping_verified": true
+        },
+        "scope": "training wall interval; device/package, not process attribution",
+        "sampling_interval_seconds": 1.0,
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported: Not Supported"
+        ],
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+        "terminal_cuda_synchronized": true,
+        "terminal_cuda_sync_error": null,
+        "interval_complete": true,
+        "interval_completion": "synchronized"
+      },
+      "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184.attempts/45c2dd42a687498c8a7299e0a79650c7.pt",
+      "best_checkpoint_sha256": "2986ad205bc5b92566188c06b2fe40194ebc077c411f57a21a143f847c63664f",
+      "attempt_id": "45c2dd42a687498c8a7299e0a79650c7",
+      "identity_key": "0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184",
+      "started_utc": "2026-11-06T22:25:25.633472+00:00",
+      "finished_utc": "2026-11-06T23:59:50.251920+00:00",
+      "terminal_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184.attempts/45c2dd42a687498c8a7299e0a79650c7.json",
+      "terminal_sha256": "2536347894a031ae0abe7acb37c62560dfa37ee4f7893da30bfad7dcd0734edd",
+      "attempt_elapsed_seconds": 5664.618448,
+      "config_matches_selected": true,
+      "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+      "dataset": {
+        "split_sha256": [
+          "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+          "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+          "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+        ],
+        "constant_predictor_test_mse": 0.3302898406982422
+      },
+      "weights_rehashed_independently": true
+    }
+  ],
+  "roster": [
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 0,
+      "status": "completed",
+      "attempt_id": "3242847bfb844a46b56d4f3f78f903bb",
+      "identity_key": "e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 1,
+      "status": "completed",
+      "attempt_id": "1307eb9e35e84b968d2d1a0bd16c0d29",
+      "identity_key": "0675edd696488f5b9741521c2572faa3d3d4ec52f9a84c9fad6361e8655e32d6"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 2,
+      "status": "completed",
+      "attempt_id": "30c93edbfa9c4da0b9f54f6fecc25477",
+      "identity_key": "2a647ab8790915ddf94024208bf3d9a56616ad525bf8f34f3a4319c686bdd8e0"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 3,
+      "status": "completed",
+      "attempt_id": "b2549ed52ff04e94b3a1a827a1f0bdc3",
+      "identity_key": "1eedbec0ae760b77ea5afb8d0276b8fa73ba69fb4bd71282e118adc4e9146149"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 4,
+      "status": "completed",
+      "attempt_id": "1c6fc6b052be4b62853292f318098099",
+      "identity_key": "017205ab47d39471bfd826ca5cafcc9e1d51e450b2fb7daf901541bb5caaae65"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 0,
+      "status": "completed",
+      "attempt_id": "19d2c77cadca4dc9a6ba07faf70fda9c",
+      "identity_key": "a3cd8f7dfed4c2e84e997a1228f514e0bb99b54fcd9e49c8d3eb0e9008895646"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 1,
+      "status": "completed",
+      "attempt_id": "0228a2353fa14d0dbde23f8b2f122a60",
+      "identity_key": "2d8356d31f8073495f0846084ae39077d6bea3242a350028b48def49ed9c95b9"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 2,
+      "status": "completed",
+      "attempt_id": "ae60c5d35018433a834c96c0d0b21289",
+      "identity_key": "84f3cd8bff029342f0a03c7f879403cbe9c9bbc5c4c5ca858b9e1faec99d6c00"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 3,
+      "status": "completed",
+      "attempt_id": "8ef5378f2158445a92e6a610b9104e31",
+      "identity_key": "288bd6a43f3d79a374909bdace20e575267d0d7e07e527bfe6ebc40cd489cbf3"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 4,
+      "status": "completed",
+      "attempt_id": "45c2dd42a687498c8a7299e0a79650c7",
+      "identity_key": "0afe21e83b1f8c2e1722ec197539d070b2940e03cc74a7ee75ceb778c1eec184"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 0,
+      "status": "running_start_without_terminal",
+      "attempt_id": "b7777506025a4d498884f62b558b9d03",
+      "identity_key": "6d861d10696a35e46c8c8fcbda126adfeec52577e1efb71976cc3be8194718e9"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 0,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 1,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 2,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 3,
+      "status": "not_started_in_complete_inventory"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 4,
+      "status": "not_started_in_complete_inventory"
+    }
+  ],
+  "costs": {
+    "completed_training_validation_wall_seconds": 52131.82895736385,
+    "completed_outer_attempt_elapsed_seconds": 57049.943661,
+    "completed_optimizer_updates": 4000,
+    "completed_submitted_examples": 256000,
+    "completed_submitted_tokens": 16384000,
+    "setup_outer_elapsed_seconds": 829.063943,
+    "stage_intervals": [
+      {
+        "name": "baseline-strict-tests",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:55:06.358030+00:00",
+        "finished_utc": "2026-11-06T07:55:51.948490+00:00",
+        "exit_code": 0,
+        "result_sha256": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+        "outer_elapsed_seconds": 45.59046
+      },
+      {
+        "name": "candidate-strict-tests",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:55:52.158792+00:00",
+        "finished_utc": "2026-11-06T07:56:37.910348+00:00",
+        "exit_code": 0,
+        "result_sha256": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+        "outer_elapsed_seconds": 45.751556
+      },
+      {
+        "name": "original-a-fullshape",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:56:38.104343+00:00",
+        "finished_utc": "2026-11-06T07:57:08.393796+00:00",
+        "exit_code": 0,
+        "result_sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+        "outer_elapsed_seconds": 30.289453
+      },
+      {
+        "name": "original-b-fullshape",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:57:08.600101+00:00",
+        "finished_utc": "2026-11-06T07:57:23.847728+00:00",
+        "exit_code": 1,
+        "result_sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+        "outer_elapsed_seconds": 15.247627
+      },
+      {
+        "name": "parity-cpu",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:57:24.073069+00:00",
+        "finished_utc": "2026-11-06T07:57:39.309355+00:00",
+        "exit_code": 0,
+        "result_sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+        "outer_elapsed_seconds": 15.236286
+      },
+      {
+        "name": "parity-cuda",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:57:39.514289+00:00",
+        "finished_utc": "2026-11-06T07:58:09.923550+00:00",
+        "exit_code": 0,
+        "result_sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+        "outer_elapsed_seconds": 30.409261
+      },
+      {
+        "name": "candidate-fullshape-population_flux",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:58:10.141501+00:00",
+        "finished_utc": "2026-11-06T07:58:25.383966+00:00",
+        "exit_code": 0,
+        "result_sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+        "outer_elapsed_seconds": 15.242465
+      },
+      {
+        "name": "candidate-fullshape-population_flux_no_recovery",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:58:25.642869+00:00",
+        "finished_utc": "2026-11-06T07:58:40.789355+00:00",
+        "exit_code": 0,
+        "result_sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+        "outer_elapsed_seconds": 15.146486
+      },
+      {
+        "name": "original-mamba2-fullshape",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:58:41.012365+00:00",
+        "finished_utc": "2026-11-06T07:59:11.331160+00:00",
+        "exit_code": 0,
+        "result_sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+        "outer_elapsed_seconds": 30.318795
+      },
+      {
+        "name": "legacy-smoke-separable",
+        "status": "returned",
+        "started_utc": "2026-11-06T07:59:11.427157+00:00",
+        "finished_utc": "2026-11-06T08:08:57.258711+00:00",
+        "exit_code": 0,
+        "result_sha256": "baf59095ebba3adb2d45526be7d43cf9a54d6af8c3dbbd45463374590b13a649",
+        "outer_elapsed_seconds": 585.831554
+      },
+      {
+        "name": "full",
+        "status": "running",
+        "started_utc": "2026-11-06T08:08:57.361720+00:00",
+        "finished_utc": null,
+        "exit_code": null,
+        "result_sha256": null
+      }
+    ],
+    "probe_subintervals": [
+      {
+        "file": "original-a-fullshape.json",
+        "sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+        "status": "completed",
+        "scope": "one random-initialized FP32 CUDA training step, same registered first batch",
+        "optimizer_steps_completed": 1,
+        "training_examples_submitted": 64,
+        "training_tokens_submitted": 4096,
+        "wall_seconds": 15.987102776998654,
+        "peak_allocated_bytes": 778152960,
+        "peak_reserved_bytes": 799014912,
+        "oom": null,
+        "reason": null,
+        "energy": {
+          "joules_by_physical_counter": null,
+          "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+          "sampling_interval_seconds": 1.0,
+          "partial_unavailable_reasons": [
+            "RAPL inaccessible: PermissionError",
+            "RAPL inaccessible: PermissionError",
+            "NVML unavailable: NVMLError_NotSupported"
+          ],
+          "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+          "interval_completion": "synchronized"
+        }
+      },
+      {
+        "file": "original-b-fullshape.json",
+        "sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+        "status": "failed",
+        "scope": "one random-initialized FP32 CUDA training step, same registered first batch",
+        "optimizer_steps_completed": 0,
+        "training_examples_submitted": 64,
+        "training_tokens_submitted": 4096,
+        "wall_seconds": 2.499847101047635,
+        "peak_allocated_bytes": 4068922368,
+        "peak_reserved_bytes": 4091543552,
+        "oom": true,
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 16.00 MiB. GPU 0 has a total capacity of 7.62 GiB of which 2.14 GiB is free. Process 2548048 has 376.22 MiB memory in use. Including non-PyTorch memory, this process has 3.95 GiB memory in use. 3.81 GiB allowed; Of the allocated memory 3.79 GiB is allocated by PyTorch, and 21.57 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+        "energy": {
+          "joules_by_physical_counter": null,
+          "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+          "sampling_interval_seconds": 1.0,
+          "partial_unavailable_reasons": [
+            "RAPL inaccessible: PermissionError",
+            "RAPL inaccessible: PermissionError",
+            "NVML unavailable: NVMLError_NotSupported"
+          ],
+          "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+          "interval_completion": "synchronized"
+        }
+      },
+      {
+        "file": "candidate-fullshape-population_flux.json",
+        "sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+        "status": "completed",
+        "scope": "candidate-only rematerialized B; one random-initialized FP32 CUDA training step, same registered first batch",
+        "optimizer_steps_completed": 1,
+        "training_examples_submitted": 64,
+        "training_tokens_submitted": 4096,
+        "wall_seconds": 7.429685393930413,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "oom": null,
+        "reason": null,
+        "energy": {
+          "joules_by_physical_counter": null,
+          "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+          "sampling_interval_seconds": 1.0,
+          "partial_unavailable_reasons": [
+            "RAPL inaccessible: PermissionError",
+            "RAPL inaccessible: PermissionError",
+            "NVML unavailable: NVMLError_NotSupported"
+          ],
+          "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+          "interval_completion": "synchronized"
+        }
+      },
+      {
+        "file": "candidate-fullshape-population_flux_no_recovery.json",
+        "sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+        "status": "completed",
+        "scope": "candidate-only rematerialized B; one random-initialized FP32 CUDA training step, same registered first batch",
+        "optimizer_steps_completed": 1,
+        "training_examples_submitted": 64,
+        "training_tokens_submitted": 4096,
+        "wall_seconds": 7.447462097974494,
+        "peak_allocated_bytes": 833757184,
+        "peak_reserved_bytes": 857735168,
+        "oom": null,
+        "reason": null,
+        "energy": {
+          "joules_by_physical_counter": null,
+          "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+          "sampling_interval_seconds": 1.0,
+          "partial_unavailable_reasons": [
+            "RAPL inaccessible: PermissionError",
+            "RAPL inaccessible: PermissionError",
+            "NVML unavailable: NVMLError_NotSupported"
+          ],
+          "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+          "interval_completion": "synchronized"
+        }
+      }
+    ],
+    "scope_note": "Outer attempt elapsed includes training/validation, heldout evaluation, latency benchmarking and process-side overhead as represented by receipt timestamps. Training-validation wall is a subinterval. Setup/probe measurements have nested scopes and must not be added twice. Current active attempt cost is incomplete. These are known costs, not a complete 170-run campaign total.",
+    "physical_energy_missing_is_not_zero": true
+  },
+  "parity": [
+    {
+      "status": "passed",
+      "scope": "one-update parity fixture; not full-budget qualification",
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "device": "cpu",
+      "file": "parity-cpu.json",
+      "sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "records": 16
+    },
+    {
+      "status": "passed",
+      "scope": "one-update parity fixture; not full-budget qualification",
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "device": "cuda:0",
+      "file": "parity-cuda.json",
+      "sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "records": 16
+    }
+  ],
+  "legacy_smoke": {
+    "status": "completed",
+    "scope": "Exploratory space/time sensitivity of the three frozen smoke B checkpoints.\n\nThis external diagnostic first calls the unchanged baseline audit, preserving\nits coverage, identity, budget, grid, test-byte and exact replay checks. It\ndoes not retrain, select parameters, qualify resolution independence, or alter\nthe original 48-run denominator. All calculations use CPU FP32 as in that audit.\n",
+    "original_accounting": {
+      "requested": 48,
+      "unique_records": 48,
+      "completed": 45,
+      "failed": 0,
+      "unavailable": 3
+    },
+    "original_attempt_accounting": {
+      "total": 51,
+      "completed": 45,
+      "failed": 0,
+      "unavailable": 6,
+      "invalidated": 0,
+      "interrupted": 0,
+      "execution_failure_rate": 0.0,
+      "training_failure_rate": 0.0,
+      "known_training_examples": 5760,
+      "known_training_tokens": 46080,
+      "budget_unknown_attempts": 0,
+      "energy_measured_attempts": 0,
+      "energy_missing_attempts": 51,
+      "measured_joules_by_counter": {},
+      "energy_scope": "sum of available attempt device/package readings; missing attempts excluded, never zero-filled"
+    },
+    "training_steps_performed": 0,
+    "candidate_selection_performed": false,
+    "original_denominator_preserved": true,
+    "research_qualification_pass": null,
+    "requested_b_runs": 3,
+    "completed_b_runs": 3,
+    "audited_b_runs": 3,
+    "failed_b_audits": 0,
+    "original_audit_wall_seconds": 213.37118970707525,
+    "diagnostic_wall_seconds": 581.732301604934,
+    "limits": [
+      "Exploratory sensitivity only; no post-hoc passing threshold.",
+      "Smoke weights do not qualify full-budget B or task advantage.",
+      "External input is held over each original interval; recurrent drive is recomputed each substep, as in the original audit."
+    ]
+  },
+  "b_audit_dependency": "The frozen full audit requires the immutable complete 170-identity terminal receipt plus selected config, all 20 B checkpoints, runtime profile and linking sidecar. Only 10 full-run terminal identities are present, none B; full stage remains active. One-step CPU/CUDA parity passes do not satisfy full-budget B qualification.",
+  "next_no_new_budget_action": "Continue read-only reconciliation of the original job and archive each immutable receipt/checkpoint hash. Leave active campaign untouched. After its own existing supervised full stage completes, verify all-170 aggregate and all-20 B audit receipts before any comparison. No new launch, restart, retry or training is required or performed by this evidence collection.",
+  "verified_cpu_runtime": "Only /data/hcsn-cuda-170run-20261105-r1/.venv/bin/python on desktop is evidenced. No independent mac/x230 runtime was verified or queried."
+}

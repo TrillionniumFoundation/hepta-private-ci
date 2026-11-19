@@ -1,0 +1,50 @@
+{
+  "candidate": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+  "incoming": "6cfa2345cc26e271d443d32e3fff669f7492d1bc",
+  "revision": "r3",
+  "boundaries": 1652,
+  "protected_files": 826,
+  "authority": {
+    "runtime_authority": false,
+    "production_caller": false,
+    "production_writer": false,
+    "external_effect": false,
+    "self_issued_acceptance": false,
+    "promotion": false,
+    "release": false
+  },
+  "files": {
+    "CALLERS.toml": {
+      "bytes": 858,
+      "sha256": "e561dae61d88cc8d24bdc3d12660a789e2c5f70fa2db6d56bbc33cc12f9eb83b",
+      "git_blob": "c74a62e32fa0280864fb4717ef8283e5052f378f"
+    },
+    "scripts/hepta_callers_manifest_parts/part-0000.toml.gz": {
+      "bytes": 249557,
+      "sha256": "0a9335ba7cf2b44826404f73ff121233fbe35cc47626fda24b799c66ba458c74",
+      "git_blob": "a20310fc174bcd8844e5b1f43d25a518eef4d778"
+    },
+    "scripts/hepta_callers_manifest_parts/part-0001.toml.gz": {
+      "bytes": 326115,
+      "sha256": "50838c8700a7d5403111f65d42605e842ffef00a417d4814dbd11b8741c1037d",
+      "git_blob": "d87d744806428613f29bb39d6e2b2bf9190f6fb7"
+    }
+  },
+  "manifest_sha256": "860b25f898ef8784b1e13032dd1cce22111807bba746284a6f4558f0b01dcc48",
+  "manifest_bytes": 3467818,
+  "manifest_json_sha256": "da47fc6803fec4feded9446e218b71e8e64581c670d5cb0f93572cc0f91a7e48",
+  "storage_roundtrip": "PASS",
+  "protected_clauses": "PASS",
+  "all_boundary_definition_and_caller_markers": "PASS",
+  "closed_caller_scan": "PASS",
+  "caller_paths_removed": 8,
+  "previously_undeclared_existing_incoming_callers": 1,
+  "new_actual_product_calls": 0,
+  "new_separately_closed_existing_helpers": 1,
+  "formatting": "just fmt --base MERGE_HEAD: PASS",
+  "closure_passed": 1652,
+  "closure_failed": [],
+  "changed_source_paths_during_scan": [],
+  "indexed_source_files": 8923,
+  "audit_json_sha256": "cfa69241626c5291ca2c9e4aa8c680b9ce6fe3041c9c5c89d9820366dadd034b"
+}

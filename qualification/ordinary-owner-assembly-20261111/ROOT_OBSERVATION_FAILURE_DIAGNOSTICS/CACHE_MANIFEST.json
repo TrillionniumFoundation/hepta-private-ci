@@ -1,0 +1,150 @@
+{
+  "schema": "hepta.root-observation-cache-failure-diagnostics-review.v2",
+  "source": {
+    "commit": "903b6fbae86acff2db2ab0422b9852421d938032",
+    "tree": "b5b82d4e1fb422f8e1986e939764b79fd1be115f"
+  },
+  "mode": "static-review-and-unreferenced-source-blobs-only",
+  "execution": {
+    "native": false,
+    "cargo": false,
+    "h": false,
+    "refs_mutated": false,
+    "shared_source_mutated": false,
+    "ordinary_acceptance": 0
+  },
+  "patch": {
+    "path": "codex-rs/hepta-agentd/src/root_observation_cache.rs",
+    "base_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+    "post_blob": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+    "operations_blob": "093a8077b031ea0bf8547f8bf0a527fe7bd3a5ca",
+    "operations": 16,
+    "before_bytes": 9825,
+    "after_bytes": 16628,
+    "before_sha256": "d52c214a953085d8402766620aaf044351f371717f868e4b0f9513bb5eea401e",
+    "after_sha256": "6f5cf48ad4379cc79f132fa5793c0c2ce91c05bc226b21b6c1e642ee2dd1798e"
+  },
+  "preservation": {
+    "time_samples": {
+      "before": 3,
+      "after": 3
+    },
+    "try_locks": {
+      "before": 1,
+      "after": 1
+    },
+    "blocking_locks": {
+      "before": 2,
+      "after": 2
+    },
+    "original_fence_calls": {
+      "before": 3,
+      "after": 3
+    },
+    "unavailable_returns": {
+      "before": 8,
+      "after": 8
+    },
+    "last_checked_assignment": {
+      "before": 1,
+      "after": 1
+    },
+    "ceiling_guard": {
+      "before": 1,
+      "after": 1
+    },
+    "age_limit_uses": {
+      "before": 4,
+      "after": 4
+    },
+    "authority_calls": {
+      "before": 1,
+      "after": 1
+    }
+  },
+  "checks": {
+    "exact_forward_and_reverse_replay": true,
+    "complete_git_blob_readback": [
+      {
+        "key": "source",
+        "sha": "ea2c4b75b6f95050f3f431a5e2d9febd4028c8e0",
+        "complete_byte_equal": true,
+        "bytes": 16628
+      },
+      {
+        "key": "ops",
+        "sha": "093a8077b031ea0bf8547f8bf0a527fe7bd3a5ca",
+        "complete_byte_equal": true,
+        "bytes": 12485
+      }
+    ],
+    "original_guard_condition_texts_retained": true,
+    "original_timestamp_sampling_and_lock_sites_retained": true,
+    "original_error_and_fence_order_retained": true,
+    "read_or_refresh_added": false,
+    "waiting_or_retry_added": false,
+    "authority_or_timeout_change": false
+  },
+  "diagnostics": [
+    "Only cfg(test) eprintln at existing accept/current/project rejection positions; no timestamp, pidfd, current, refresh or owner read is added.",
+    "Map-error closures retain the original Unavailable result; current try_lock's test-only match labels WouldBlock versus Poisoned without changing either result.",
+    "Logged scalars are existing captured BOOTTIME values, projection bounds and revisions; signer material, keys, lease contents, identity strings and authority digests are not printed. Binding comparisons are booleans.",
+    "V2 also labels original accept/current BOOTTIME-sample failures, absent retained cache, original projection checked-sub underflow and checked-add overflow. Only Result::inspect_err or the pre-existing error closure is used. No new reading or sample occurs.",
+    "Formatting, protected-marker reconciliation and real test execution remain pending for root's next fixed candidate. The patch is diagnostic only, not a repair or a pass.",
+    "The revision adds five exact operations to V1; all original bindings, 500ms budget, current/read/fence sites and request/ended timestamps remain unchanged. The added diagnostics do not repair either static concurrency window."
+  ],
+  "observed_v4": {
+    "junit_blob": "4641d85d6d54c41c3b31621d545937b2985226f0",
+    "execution_blob": "b5e89ca3bf9889569a9b4e34539234131b219152",
+    "parents": 17,
+    "passed": 15,
+    "failed": 2,
+    "publication_child": "connect original CURRENT purpose: root writer observation is unavailable or fenced",
+    "initial_child": "publishing original Feature CURRENT: invalid agentd configuration: Unavailable",
+    "parent_peer_denied": "May follow child exit: original OwnerChannel::check/wait returns PeerDenied on owner pidfd readability. It is not proof that initial SO_PEERCRED authentication failed."
+  },
+  "static_findings": [
+    {
+      "finding": "Pre-lock samples can be serialized out of sample order",
+      "source_blob": "76cfd19e13470a6ced412ef5e7b7a7fa228c53b4",
+      "methods": [
+        "current/current_at",
+        "accept/accept_at"
+      ],
+      "interleaving": [
+        "Thread A captures BOOTTIME t1 then is descheduled before retained lock.",
+        "Thread B captures t2 > t1, acquires retained lock, updates last_checked_ns=t2 and releases.",
+        "A acquires retained lock with its earlier t1; original now < last_checked_ns branch rejects and fences although CLOCK_BOOTTIME did not regress."
+      ],
+      "status": "Source-permitted interleaving, not proven in V4; no behavioral fix included."
+    },
+    {
+      "finding": "Refresh can upgrade a transient retained-lock contention to whole-feed fence",
+      "source_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+      "methods": [
+        "refresh",
+        "background RootWorker",
+        "LiveRoot.current"
+      ],
+      "detail": "refresh's final live.current() uses cache.current's try_lock. An original WouldBlock produces Unavailable without fencing inside cache, but refresh returns Err, the worker returns and its original FenceOnDrop fences the shared feed.",
+      "status": "Source-permitted interleaving, not proven in V4; no retries or weakened fail-closed policy proposed here."
+    }
+  ],
+  "clock_and_sync_scope": {
+    "clock_blob": "c42d9d3c54d741e66ca43ba7a9fcd2bd5e055312",
+    "projection": "Root preserves Unix sub-ms phase by subtracting unix_ns mod 1ms from BOOTTIME anchor. Same-boot project uses max(previous_unix + elapsed, sampled_realtime), hence its offset and ceil receiver projection do not inherently regress.",
+    "consumer_sources": [
+      "ebbf7799623fd8993a6135f5ede63d00a8012b06",
+      "ed96ac3966a20a7aab1c5138c7493464b6d8b2a8",
+      "210040d5b9d89f4d64cdf09b8c8608bbb9edc3f0",
+      "ad523bfa8c61597f6406a7983f8cb9baa6d1e22e"
+    ],
+    "sync": "ConsumerSyncJob's revocation_head/update_revocations do not invoke the same LiveRoot clock; ensure_live_state is local journal validation. Original Root frontier CAS uses its distinct fixed consumer lane, actual pidfd/deadline and Root clock. No direct consumer-sync -> local cache clock -> consumer-sync lock cycle was found in this bounded review.",
+    "not_excluded": "Long original protected I/O or shared registry dispatch fence can delay the observation lane. This review has no runtime timing evidence and does not relax the 500ms age/deadline."
+  },
+  "supersedes": {
+    "source": "2877959738873d222ce5353cb19770e78ab0d6c3",
+    "ops": "47ff39620e030233ba89bc68032bf2077f3b3652",
+    "manifest": "fb0fe1377906899c63be898c0513ebc9a36716c2"
+  }
+}

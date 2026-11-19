@@ -1,0 +1,37 @@
+{
+  "schema": "new-bootstrap-recovery-v3-freeze",
+  "runtime_sources": {
+    "bootstrap.py": {
+      "bytes": 18282,
+      "sha256": "fedff1dde25bdff874b99ad2a13a0b39a12a4452bd5e38bb262c0f96db77697e"
+    },
+    "os_processes.py": {
+      "bytes": 15037,
+      "sha256": "f58ca60428d3abafea377ca64e1d71040df98c4f149adce88436951187c990d6"
+    }
+  },
+  "runtime_lines": 499,
+  "auditor_core_unchanged": {
+    "bytes": 73473,
+    "sha256": "87bedabde7f37ec8d70a80305691f1116e80493174a5cd33bf7058f635230b3a"
+  },
+  "targeted_validation": {
+    "bytes": 2405,
+    "sha256": "a6db16af8a6ef84f8dc75290d016c7920e1343b9ad00fef01412996d80d813f2"
+  },
+  "new_targeted_tests_passed": 4,
+  "broad_21_tests_source": "v2 c18f7341f0ca972c6070b8b440b0b6c7679368a0b798a935f9b301b6532da63b; not rerun on v3",
+  "source_before_after_equal": true,
+  "actual_assembly_authorized": false,
+  "actual_audit_execution_authorized": false,
+  "native_28_tests_executed": false,
+  "actual_C2_model_or_E_access": false,
+  "original_lost_14_test_credit_inherited": false,
+  "scientific_admission": "HOLD",
+  "actual_adoption": false,
+  "preserved_v2_preparation": {
+    "bytes": 290299,
+    "sha256": "2cb25c0f1bdc0ac0f76075947ef08d41e839fafeb352dc9ad55f9c15c628c6d7",
+    "armor_blob": "02751c25f9955be7c0eca47d6ad96fba221d1361"
+  }
+}

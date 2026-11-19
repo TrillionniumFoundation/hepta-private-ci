@@ -1,0 +1,182 @@
+name: Hepta V14 all-facts slot proposal and postseal challenge (DENY_ALL)
+
+on:
+  push:
+    branches:
+      - research/v14-all-evidence-slot-proposal-20261016
+    paths:
+      - 'qualification/stem-cell-v1/v14_*.py'
+      - 'qualification/stem-cell-v1/test_v14_*.py'
+      - 'qualification/stem-cell-v1/V14_ALL_EVIDENCE_RESULTS.md'
+      - '.github/workflows/hepta-v14-all-evidence.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-v14-source-first-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Run complete adversarial unit suite WITHOUT machine learning dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/source-head.txt"
+          python -S -m unittest -v test_v14_candidate_graph 2>&1 | tee "$RUNNER_TEMP/normal.log"
+          python -O -S -m unittest -v test_v14_candidate_graph 2>&1 | tee "$RUNNER_TEMP/optimized.log"
+          python -m compileall -q qualification/stem-cell-v1/v14_*.py qualification/stem-cell-v1/test_v14_candidate_graph.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v14-source-contract-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/source-head.txt
+            ${{ runner.temp }}/normal.log
+            ${{ runner.temp }}/optimized.log
+          if-no-files-found: warn
+          retention-days: 5
+
+  public-only-proposer:
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      # The original V10 public artifact is an immutable read-only SOURCE;
+      # DO NOT download the held truth artifact into this job.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-public-38820394598
+          path: ${{ runner.temp }}/original-public
+      - name: Train-source-only vs explicitly TRANSDUCTIVE, all-fact predictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/original-public/held-labels-restricted.json"
+          test ! -e "$RUNNER_TEMP/original-public/train-labels.json"
+          printf '%s  %s\n' \
+            1b027fd2708068da25674415789906a575a00383abe5712255a432e8679e913c "$RUNNER_TEMP/original-public/public.json" \
+            4de11a06a4d481696fe6efc3a6a1f8085806aeffc7f20a3d14fb07d4dc30d608 "$RUNNER_TEMP/original-public/source-seal.json" | sha256sum -c -
+          python -S qualification/stem-cell-v1/v14_campaign.py prepare \
+            --public "$RUNNER_TEMP/original-public" --output "$RUNNER_TEMP/v14-plan.json"
+          python -S qualification/stem-cell-v1/v14_campaign.py predict \
+            --public "$RUNNER_TEMP/original-public" \
+            --plan "$RUNNER_TEMP/v14-plan.json" \
+            --output "$RUNNER_TEMP/v14-predictions.json"
+          python -S - "$RUNNER_TEMP/v14-predictions.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          if (x['prediction_sha256']!='faa97a19b81d96913a1005b2cb1e1fb21fa288013bdb43339f89b551ba7da7cc'
+                  or x['independent_held_sources']!=240
+                  or x['original_held_answer_labels_loaded'] is not False
+                  or x['transductive_arm_uses_unlabeled_held_source'] is not True
+                  or x['authority']!='DENY_ALL' or x['production_accepted'] is not False):
+              raise SystemExit('original-source exact V14 no-label prediction replay mismatch')
+          print('V14_ORIGINAL_PUBLIC_ONLY_PREDICTION_SEALED')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: v14-predictions-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v14-plan.json
+            ${{ runner.temp }}/v14-predictions.json
+          if-no-files-found: error
+          retention-days: 5
+
+  independent-hidden-review:
+    needs: public-only-proposer
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-public-38820394598
+          path: ${{ runner.temp }}/original-public
+      # Withheld original answer labels become accessible ONLY after the prior
+      # job has already created/uploaded a fully pinned prediction seal.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: 38820394598
+          github-token: ${{ github.token }}
+          name: v10-held-truth-38820394598
+          path: ${{ runner.temp }}/original-held
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v14-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/v14-sealed
+      - name: Independent source-group/full-question review, zero ML imports
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' \
+            1b027fd2708068da25674415789906a575a00383abe5712255a432e8679e913c "$RUNNER_TEMP/original-public/public.json" \
+            31fc4230ce888e325c8b956af0f6bab5b17d8825d3a5e9b9f26a46e65974ea73 "$RUNNER_TEMP/original-held/held-labels-restricted.json" | sha256sum -c -
+          python -S qualification/stem-cell-v1/v14_independent_review.py \
+            --public "$RUNNER_TEMP/original-public" \
+            --held "$RUNNER_TEMP/original-held" \
+            --plan "$RUNNER_TEMP/v14-sealed/v14-plan.json" \
+            --seal "$RUNNER_TEMP/v14-sealed/v14-predictions.json" \
+            --output "$RUNNER_TEMP/v14-independent-review.json" | tee "$RUNNER_TEMP/reviewer.log"
+          python -S - "$RUNNER_TEMP/v14-independent-review.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          if (r['results_sha256']!='21c991d68fd574bd1601f028e3f6296d81e8f80002805d8f252b1b2e0013d7f8'
+                  or r['original_distinct_held_source_groups']!=240
+                  or len(r['per_cohort_arm_results'])!=24
+                  or r['transductive_cannot_establish_future_generalization'] is not True
+                  or r['original_v7_joint_gate_passed'] is not False
+                  or r['model_selected'] is not False
+                  or r['production_accepted'] is not False
+                  or r['authority']!='DENY_ALL'):
+              raise SystemExit('held postseal independent evidence replay failed')
+          print('V14_FULL_HIDDEN_SOURCE_AND_PAIRS_AUDITED_AS_POSTHOC_REPLAY')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v14-independent-postseal-review-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v14-independent-review.json
+            ${{ runner.temp }}/reviewer.log
+          if-no-files-found: warn
+          retention-days: 5

@@ -33,14 +33,10 @@ mod windows_impl {
     use crate::env::normalize_null_device_env;
     use crate::identity::refresh_logon_sandbox_creds;
     use crate::identity::require_logon_sandbox_creds;
-    use crate::ipc_framed::EmptyPayload;
-    use crate::ipc_framed::FramedMessage;
     use crate::ipc_framed::Message;
     use crate::ipc_framed::OutputStream;
     use crate::ipc_framed::SpawnRequest;
     use crate::ipc_framed::decode_bytes;
-    use crate::ipc_framed::read_frame;
-    use crate::ipc_framed::write_frame;
     use crate::logging::log_failure;
     use crate::logging::log_start;
     use crate::logging::log_success;
@@ -53,53 +49,17 @@ mod windows_impl {
     use crate::token::LocalSid;
     use anyhow::Result;
     use codex_utils_absolute_path::AbsolutePathBuf;
-    use std::fs::File;
     use std::path::Path;
-    use std::sync::Arc;
-    use std::sync::atomic::AtomicBool;
-    use std::sync::atomic::Ordering;
-    use std::time::Duration;
+    use std::path::PathBuf;
 
     pub use crate::windows_impl::CaptureResult;
-
-    /// Polls for cancellation and sends the runner's terminate IPC frame when requested.
-    ///
-    /// The 50 ms park bounds cancellation latency without busy-waiting.
-    fn spawn_cancel_writer(
-        pipe_write: &File,
-        cancellation: Option<crate::WindowsSandboxCancellationToken>,
-    ) -> Result<Option<(std::thread::JoinHandle<()>, Arc<AtomicBool>)>> {
-        let Some(cancellation) = cancellation else {
-            return Ok(None);
-        };
-        let mut pipe_write = pipe_write.try_clone()?;
-        let done = Arc::new(AtomicBool::new(false));
-        let done_for_thread = Arc::clone(&done);
-        let handle = std::thread::spawn(move || {
-            while !done_for_thread.load(Ordering::SeqCst) {
-                if cancellation.is_cancelled() {
-                    let _ = write_frame(
-                        &mut pipe_write,
-                        &FramedMessage {
-                            version: 1,
-                            message: Message::Terminate {
-                                payload: EmptyPayload::default(),
-                            },
-                        },
-                    );
-                    break;
-                }
-                std::thread::park_timeout(Duration::from_millis(50));
-            }
-        });
-        Ok(Some((handle, done)))
-    }
 
     /// Launches the command runner under the sandbox user and captures its output.
     #[allow(clippy::too_many_arguments)]
     pub fn run_windows_sandbox_capture_for_permission_profile(
         request: ElevatedSandboxProfileCaptureRequest<'_>,
     ) -> Result<CaptureResult> {
+        crate::elevated_admission::require_elevated_filesystem_isolation()?;
         let ElevatedSandboxProfileCaptureRequest {
             permission_profile,
             workspace_roots,
@@ -183,6 +143,25 @@ mod windows_impl {
         }
 
         (|| -> Result<CaptureResult> {
+            let filesystem_root_overrides = crate::setup::SetupRootOverrides {
+                read_roots: read_roots_override.map(<[PathBuf]>::to_vec),
+                read_roots_include_platform_defaults,
+                write_roots: write_roots_override.map(<[PathBuf]>::to_vec),
+                deny_read_paths: Some(deny_read_paths_override.clone()),
+                deny_write_paths: Some(deny_write_paths_override.clone()),
+            };
+            let filesystem_roles = crate::setup::capability_plan_for_setup(
+                crate::setup::SandboxSetupRequest {
+                    permissions: &permissions,
+                    command_cwd: cwd,
+                    env_map: &env_map,
+                    codex_home,
+                    proxy_enforced,
+                },
+                filesystem_root_overrides,
+            )?
+            .with_network_route(network_proxy_restricting_sid.clone())?;
+            let root_resolution = filesystem_roles.root_resolution_context().cloned();
             let spawn_request = SpawnRequest {
                 command: command.clone(),
                 cwd: cwd.to_path_buf(),
@@ -192,6 +171,8 @@ mod windows_impl {
                 codex_home: sandbox_base.clone(),
                 real_codex_home: codex_home.to_path_buf(),
                 cap_sids,
+                filesystem_roles: Some(filesystem_roles),
+                root_resolution,
                 network_proxy_restricting_sid,
                 timeout_ms,
                 tty: false,
@@ -226,13 +207,18 @@ mod windows_impl {
                     )
                 },
             )?;
-            let (pipe_write, mut pipe_read) = transport.into_files();
-            let cancel_writer = spawn_cancel_writer(&pipe_write, cancellation)?;
-
+            let (pipe_write, mut pipe_read, mut runner_process) = transport.into_parts()?;
+            // The sole reader observes cancellation without a separate blocking
+            // control writer. Failure cleanup retains the exact broker handle;
+            // its private job keeps the original kill-on-close/preserve policy.
             let mut stdout = Vec::new();
             let mut stderr = Vec::new();
             let result = loop {
-                let msg = match read_frame(&mut pipe_read) {
+                let msg = match runner_process.read_frame(&mut pipe_read, || {
+                    cancellation
+                        .as_ref()
+                        .is_some_and(super::super::WindowsSandboxCancellationToken::is_cancelled)
+                }) {
                     Ok(Some(msg)) => msg,
                     Ok(None) => break Err(anyhow::anyhow!("runner pipe closed before exit")),
                     Err(err) => break Err(err),
@@ -259,11 +245,16 @@ mod windows_impl {
                     }
                 }
             };
-            if let Some((cancel_handle, done)) = cancel_writer {
-                done.store(true, Ordering::SeqCst);
-                cancel_handle.thread().unpark();
-                let _ = cancel_handle.join();
-            }
+            let result = result
+                .and_then(|(exit_code, timed_out)| {
+                    runner_process.wait_for_exit(exit_code, || {
+                        cancellation.as_ref().is_some_and(
+                            super::super::WindowsSandboxCancellationToken::is_cancelled,
+                        )
+                    })?;
+                    Ok((exit_code, timed_out))
+                })
+                .map_err(|error| runner_process.reconcile_failure(error));
             drop(pipe_write);
             let (exit_code, timed_out) = result?;
 

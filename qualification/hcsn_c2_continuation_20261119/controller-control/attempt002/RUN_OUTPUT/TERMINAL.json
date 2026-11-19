@@ -1,0 +1,104 @@
+{
+  "budget": {
+    "address_space_bytes_per_fit": 4294967296,
+    "cleanup_grace_seconds": 0.5,
+    "concurrency": 2,
+    "minimum_available_memory_bytes": 0,
+    "minimum_output_disk_free_bytes": 0,
+    "peak_rss_stop_bytes_per_fit": 134217728,
+    "scientific_wall_seconds_per_fit": 0.6,
+    "threads_per_fit": 1
+  },
+  "controller_signals": [],
+  "fits": {
+    "budget": {
+      "assigned_cpu": 1,
+      "cleanup_budget_overrun_wall_seconds": 0.035015808999014575,
+      "cpu_system_seconds": 0.026373999999999998,
+      "cpu_total_seconds": 0.10497,
+      "cpu_user_seconds": 0.078596,
+      "dispatch_monotonic": 18453.495670122,
+      "exit_code": 0,
+      "external_stop": {
+        "dispatch_elapsed_seconds": 0.628227026998502,
+        "identity": "synthetic-budget",
+        "monotonic": 18454.123897149,
+        "pid": 8,
+        "reason": "scientific_wall_limit"
+      },
+      "full_fresh_process_wall_seconds": 0.6350158089990146,
+      "hard_killed": false,
+      "identity": "synthetic-budget",
+      "observed_memory_high_water_bytes": 9654272,
+      "peak_rss_kib": 9472,
+      "pid": 8,
+      "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+      "post_external_stop_wall_seconds": 0.006788782000512583,
+      "raw_wait_status": 0,
+      "result_error": null,
+      "result_sha256": "e28f89bcde581211eaaddc11988927c1cfe1e71ec3b3b3a1256c4ddcf69d8533",
+      "result_status": "BUDGET_STOP",
+      "rss_limit_exceeded": false,
+      "scientific_wall_budget_seconds": 0.6,
+      "status": "REVIEWABLE_TERMINAL",
+      "stop_receipt_error": null,
+      "wait4_return_monotonic": 18454.130685931,
+      "wall_within_scientific_budget_seconds": 0.6
+    },
+    "fast": {
+      "assigned_cpu": 0,
+      "cleanup_budget_overrun_wall_seconds": 0.0,
+      "cpu_system_seconds": 0.031752999999999997,
+      "cpu_total_seconds": 0.076989,
+      "cpu_user_seconds": 0.045236,
+      "dispatch_monotonic": 18453.491854669,
+      "exit_code": 0,
+      "external_stop": null,
+      "full_fresh_process_wall_seconds": 0.12830748800115543,
+      "hard_killed": false,
+      "identity": "synthetic-fast",
+      "observed_memory_high_water_bytes": 0,
+      "peak_rss_kib": 9472,
+      "pid": 7,
+      "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+      "post_external_stop_wall_seconds": null,
+      "raw_wait_status": 0,
+      "result_error": null,
+      "result_sha256": "6c6310be166d9f6a704671cd19ede39ee0276f9bf66c76763814224990cee847",
+      "result_status": "TOY_COMPLETED",
+      "rss_limit_exceeded": false,
+      "scientific_wall_budget_seconds": 0.6,
+      "status": "REVIEWABLE_TERMINAL",
+      "stop_receipt_error": null,
+      "wait4_return_monotonic": 18453.620162157,
+      "wall_within_scientific_budget_seconds": 0.12830748800115543
+    }
+  },
+  "full_six_fit_replay": false,
+  "identity": "SYNTHETIC-CONTROLLER-CONTROL-001",
+  "old_controller_terminal": "UNKNOWN",
+  "original_admission_reused": false,
+  "schema": "hcsn-c2-independent-controller-v1",
+  "source_freeze": {
+    "files": {
+      "BINDINGS.json": "0bdb71521f2235d180dbf416daf10d9d4c3894420f6337257132d7dcdf4f4491",
+      "REQUEST.json": "4645111614a1621fca6b66a2a2cf263469a885743f785401713efed75c95fda5",
+      "controller.py": "df31ef4d8ffb85164201a5ea5eaf7500f0ddb3ab332bb0f253a1226b6ee0ff29",
+      "runner.py": "8c2b59433e5a1b3c90a228814318f286a38a34b9684944829ef662189466ac8f"
+    },
+    "freeze_sha256": "43ab201d13140c5cc82708336012521502988c00675389d496bdb377a5ae3311",
+    "identity": "SYNTHETIC-CONTROLLER-CONTROL-001"
+  },
+  "source_freeze_after": {
+    "files": {
+      "BINDINGS.json": "0bdb71521f2235d180dbf416daf10d9d4c3894420f6337257132d7dcdf4f4491",
+      "REQUEST.json": "4645111614a1621fca6b66a2a2cf263469a885743f785401713efed75c95fda5",
+      "controller.py": "df31ef4d8ffb85164201a5ea5eaf7500f0ddb3ab332bb0f253a1226b6ee0ff29",
+      "runner.py": "8c2b59433e5a1b3c90a228814318f286a38a34b9684944829ef662189466ac8f"
+    },
+    "freeze_sha256": "43ab201d13140c5cc82708336012521502988c00675389d496bdb377a5ae3311",
+    "identity": "SYNTHETIC-CONTROLLER-CONTROL-001"
+  },
+  "status": "REVIEWABLE_TERMINALS",
+  "subprocesses_started": 2
+}

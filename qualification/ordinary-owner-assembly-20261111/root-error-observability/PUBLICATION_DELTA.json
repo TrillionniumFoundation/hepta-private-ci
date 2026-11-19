@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "scope": "test-only Root publication failure observability",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_commit": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+  "baseline_tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+  "preimage_overrides": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "reason": "Parent-supplied V16 nativefmt postimage; exact bytes reconstructed from 715 by removing redundant dyn Error parentheses and Git SHA verified.",
+      "git_blob": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6"
+    }
+  ],
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_support_tests.rs",
+      "preimage": {
+        "git_blob": "b5e5e84aed65e4fb5156eb57f35c81598fb1a7a1",
+        "bytes": 6382,
+        "sha256": "3db950fc0243141b25524ed0ad94baf9b0d66a2efd7cbd733d05d3793db4ff0a"
+      },
+      "postimage": {
+        "git_blob": "e33531e3fecda5e3cd37ca19a48f4698f0ae58e3",
+        "bytes": 7957,
+        "sha256": "17e70f1b907da39042b2ebe19616f639b86efd65c0126734d31ff927f62b7901"
+      },
+      "ops": 6,
+      "exact_replay": true,
+      "operations": [
+        {
+          "label": "retain original child output files",
+          "old": "    child: Option<Child>,\n    deadline: Instant,\n",
+          "new": "    child: Option<Child>,\n    deadline: Instant,\n    stdout: File,\n    stderr: File,\n"
+        },
+        {
+          "label": "create test-only diagnostic sinks",
+          "old": "        let mut command = Command::new(\"/usr/bin/setpriv\");",
+          "new": "        // Anonymous files preserve both original streams even when a parent\n        // handshake fails before finish; there is no pipe-draining wait.\n        let stdout = tempfile::tempfile()?;\n        let stderr = tempfile::tempfile()?;\n        let mut command = Command::new(\"/usr/bin/setpriv\");"
+        },
+        {
+          "label": "retain both original streams",
+          "old": "            .stdout(Stdio::piped())\n            .stderr(Stdio::piped());",
+          "new": "            .stdout(Stdio::from(stdout.try_clone()?))\n            .stderr(Stdio::from(stderr.try_clone()?));"
+        },
+        {
+          "label": "retain diagnostic ownership",
+          "old": "            child: Some(child),\n            deadline,\n",
+          "new": "            child: Some(child),\n            deadline,\n            stdout,\n            stderr,\n"
+        },
+        {
+          "label": "same child status and success output checks",
+          "old": "        let output = self\n            .child\n            .take()\n            .ok_or_else(|| anyhow::anyhow!(\"finished original child required\"))?\n            .wait_with_output()?;\n        anyhow::ensure!(\n            output.status.success(),\n            \"dedicated child failed: {}{}\",\n            String::from_utf8_lossy(&output.stdout),\n            String::from_utf8_lossy(&output.stderr)\n        );\n        Ok(String::from_utf8(output.stdout)?)\n    }\n",
+          "new": "        let status = self\n            .child\n            .take()\n            .ok_or_else(|| anyhow::anyhow!(\"finished original child required\"))?\n            .wait()?;\n        let (stdout, stderr) = self.read_child_output()?;\n        anyhow::ensure!(\n            status.success(),\n            \"dedicated child failed: {}{}\",\n            String::from_utf8_lossy(&stdout),\n            String::from_utf8_lossy(&stderr)\n        );\n        Ok(String::from_utf8(stdout)?)\n    }\n\n    fn read_child_output(&mut self) -> io::Result<(Vec<u8>, Vec<u8>)> {\n        self.stdout.rewind()?;\n        let mut stdout = Vec::new();\n        self.stdout.read_to_end(&mut stdout)?;\n        self.stderr.rewind()?;\n        let mut stderr = Vec::new();\n        self.stderr.read_to_end(&mut stderr)?;\n        Ok((stdout, stderr))\n    }\n"
+        },
+        {
+          "label": "failure cleanup preserves original bytes",
+          "old": "        if let Some(child) = &mut self.child {\n            if !matches!(child.try_wait(), Ok(Some(_))) {\n                let _ = child.kill();\n            }\n            let _ = child.wait();\n        }\n",
+          "new": "        if let Some(mut child) = self.child.take() {\n            if !matches!(child.try_wait(), Ok(Some(_))) {\n                let _ = child.kill();\n            }\n            let status = child.wait();\n            let mut log = io::stderr().lock();\n            let _ = writeln!(\n                log,\n                \"ROOT_COMPONENT_CHILD_CLEANUP pid={} status={status:?}\",\n                child.id()\n            );\n            match self.read_child_output() {\n                Ok((stdout, stderr)) => {\n                    let _ = writeln!(log, \"ROOT_COMPONENT_CHILD_STDOUT bytes={}\", stdout.len());\n                    let _ = log.write_all(&stdout);\n                    let _ = writeln!(log, \"\\nROOT_COMPONENT_CHILD_STDERR bytes={}\", stderr.len());\n                    let _ = log.write_all(&stderr);\n                    let _ = writeln!(log, \"\\nROOT_COMPONENT_CHILD_OUTPUT_END\");\n                }\n                Err(error) => {\n                    let _ = writeln!(log, \"ROOT_COMPONENT_CHILD_OUTPUT_READ_FAILED: {error}\");\n                }\n            }\n        }\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_tests.rs",
+      "preimage": {
+        "git_blob": "f692164419c65c420b2fbfcfeb796f432aca6852",
+        "bytes": 8553,
+        "sha256": "bf5c5b3b3d29fadbc7afbb4e70498f492b7b087f18c21dd7a08488192bb40929"
+      },
+      "postimage": {
+        "git_blob": "2f1b7f3710b5f7a92708234db40c56547f01d358",
+        "bytes": 9120,
+        "sha256": "58fcc4e022282e7400992a7ff91e3672cf968041207aa0d65ff12550a0939202"
+      },
+      "ops": 8,
+      "exact_replay": true,
+      "operations": [
+        {
+          "label": "test error context trait",
+          "old": "use super::*;\n",
+          "new": "use super::*;\nuse anyhow::Context;\n"
+        },
+        {
+          "label": "preserve expected message on original recv error",
+          "old": "    let size = socket.recv(&mut bytes)?;\n    assert_eq!(&bytes[..size], expected);",
+          "new": "    let size = socket.recv(&mut bytes).with_context(|| {\n        format!(\n            \"publication component control awaiting {}\",\n            String::from_utf8_lossy(expected)\n        )\n    })?;\n    assert_eq!(&bytes[..size], expected);"
+        },
+        {
+          "label": "preserve original intent receive error",
+          "old": "    let size = socket.recv(&mut bytes)?;\n    anyhow::ensure!(size > 0 && size <= 32768, \"bounded component control\");",
+          "new": "    let size = socket\n        .recv(&mut bytes)\n        .context(\"publication child awaiting original intent data\")?;\n    anyhow::ensure!(size > 0 && size <= 32768, \"bounded component control\");"
+        },
+        {
+          "label": "identify setup failure",
+          "old": "    let mut fixture = fixture::Fixture::new()?;",
+          "new": "    let mut fixture = fixture::Fixture::new().context(\"publication component fixture setup\")?;"
+        },
+        {
+          "label": "identify Publish failure",
+          "old": "    fixture.run_phase(Phase::Publish)?;",
+          "new": "    fixture\n        .run_phase(Phase::Publish)\n        .context(\"publication component Publish phase\")?;"
+        },
+        {
+          "label": "identify Recover failure",
+          "old": "    fixture.run_phase(Phase::Recover)?;",
+          "new": "    fixture\n        .run_phase(Phase::Recover)\n        .context(\"publication component Recover phase\")?;"
+        },
+        {
+          "label": "identify RetiredSession failure",
+          "old": "    fixture.run_phase(Phase::RetiredSession)?;",
+          "new": "    fixture\n        .run_phase(Phase::RetiredSession)\n        .context(\"publication component RetiredSession phase\")?;"
+        },
+        {
+          "label": "identify Revoked failure",
+          "old": "    fixture.run_phase(Phase::Revoked)?;",
+          "new": "    fixture\n        .run_phase(Phase::Revoked)\n        .context(\"publication component Revoked phase\")?;"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "eeca436dab40d6b30c765fd95e69b1f3507e7427",
+        "bytes": 29805,
+        "sha256": "4deab9a45c068b20f59084817734c2b636f4ea9afcc716c3b49c78ea9ceae375"
+      },
+      "postimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "ops": 3,
+      "exact_replay": true,
+      "operations": [
+        {
+          "label": "test error context trait",
+          "old": "use super::*;\n",
+          "new": "use super::*;\nuse anyhow::Context;\n"
+        },
+        {
+          "label": "identify actual registration error",
+          "old": "                let registered = deployment.wait_and_register(&stopping)?;",
+          "new": "                let registered = deployment\n                    .wait_and_register(&stopping)\n                    .with_context(|| format!(\"publication {phase:?}: original late registration\"))?;"
+        },
+        {
+          "label": "preserve served result before propagating worker error",
+          "old": "            let result = registration\n                .join()\n                .map_err(|_| anyhow::anyhow!(\"original Root registration worker panicked\"))??;\n            // A deliberate refused frame can close its worker before or during\n            // the original fixed-lane shutdown. The child asserts that refusal.\n            println!(\"ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}\");\n",
+          "new": "            // Retain the original service result even when the control worker\n            // returns first with a failed handshake.\n            eprintln!(\"ROOT_PUBLICATION_COMPONENT phase={phase:?} service={served:?}\");\n            let result = registration\n                .join()\n                .map_err(|_| anyhow::anyhow!(\"original Root registration worker panicked\"))?\n                .with_context(|| {\n                    format!(\"publication {phase:?}: control worker failed; service={served:?}\")\n                })?;\n            // A deliberate refused frame can close its worker before or during\n            // the original fixed-lane shutdown. The child asserts that refusal.\n"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c70be8c1b145f82e0ab089cf1bc04ded9a4fbce6",
+        "bytes": 13125,
+        "sha256": "e54c6f674f1d1ba94e8ba1ce3bb410352debf8f7437d7aeedbeff0c5aa7c68fd"
+      },
+      "postimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "ops": 15,
+      "exact_replay": true,
+      "operations": [
+        {
+          "label": "test error context trait",
+          "old": "use super::*;\n",
+          "new": "use super::*;\nuse anyhow::Context;\n"
+        },
+        {
+          "label": "identify each original offer receive",
+          "old": "        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, Phase::Revoked] {\n            let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)?;",
+          "new": "        for phase in [Phase::Publish, Phase::Recover, Phase::RetiredSession, Phase::Revoked] {\n            eprintln!(\"ROOT_PUBLICATION_CHILD phase={phase:?} step=receive-original-offers\");\n            let (mut sealed, root_pin) = crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)\n                .with_context(|| format!(\"publication {phase:?}: receive original production handoff\"))?;"
+        },
+        {
+          "label": "identify learning and publication purpose offers",
+          "old": "            let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)?;\n            let publication = crate::receive_root_generation_publication_handoff(socket.try_clone()?, LIFETIME)?;",
+          "new": "            let mut learning = crate::receive_root_learning_handoff(socket.try_clone()?, LIFETIME)\n                .with_context(|| format!(\"publication {phase:?}: receive original learning handoff\"))?;\n            let publication = crate::receive_root_generation_publication_handoff(socket.try_clone()?, LIFETIME)\n                .with_context(|| format!(\"publication {phase:?}: receive original publication handoff\"))?;"
+        },
+        {
+          "label": "identify original five-lane connection",
+          "old": "            let mut production = crate::receive_root_production_inputs(\n                sealed, root_pin, &identity, TIMEOUT, LIFETIME,\n            ).await?;",
+          "new": "            let mut production = crate::receive_root_production_inputs(\n                sealed, root_pin, &identity, TIMEOUT, LIFETIME,\n            ).await.with_context(|| format!(\"publication {phase:?}: connect original five-lane inputs\"))?;\n            eprintln!(\"ROOT_PUBLICATION_CHILD phase={phase:?} step=original-inputs-connected\");"
+        },
+        {
+          "label": "identify original one-shot context",
+          "old": "            let connection = production.take_generation_publication_connection()?;",
+          "new": "            let connection = production.take_generation_publication_connection()\n                .with_context(|| format!(\"publication {phase:?}: take original connection\"))?;"
+        },
+        {
+          "label": "identify actual learning checkpoint client",
+          "old": "                learning.root_pidfd, initial.clone(), TIMEOUT, LIFETIME, scope,\n            )?;",
+          "new": "                learning.root_pidfd, initial.clone(), TIMEOUT, LIFETIME, scope,\n            ).with_context(|| format!(\"publication {phase:?}: connect original learning checkpoint\"))?;"
+        },
+        {
+          "label": "identify vacant checkpoint restore",
+          "old": "                assert_eq!(checkpoint.restore(&initial.request).await?, None);\n                checkpoint.checkpoint(Digest32::ZERO, &initial).await?;",
+          "new": "                assert_eq!(checkpoint.restore(&initial.request).await\n                    .with_context(|| format!(\"publication {phase:?}: restore vacant original checkpoint\"))?, None);\n                checkpoint.checkpoint(Digest32::ZERO, &initial).await\n                    .with_context(|| format!(\"publication {phase:?}: write original initial checkpoint\"))?;"
+        },
+        {
+          "label": "identify original component checkpoint write",
+          "old": "                    assert_eq!(checkpoint.checkpoint(previous, replay.snapshot()).await?, replay.snapshot().head_digest);",
+          "new": "                    assert_eq!(checkpoint.checkpoint(previous, replay.snapshot()).await\n                        .with_context(|| format!(\"publication {phase:?}: write original component checkpoint\"))?,\n                        replay.snapshot().head_digest);"
+        },
+        {
+          "label": "identify final actual checkpoint restore",
+          "old": "            assert_eq!(checkpoint.restore(&initial.request).await?, Some(decision.snapshot().clone()));",
+          "new": "            assert_eq!(checkpoint.restore(&initial.request).await\n                .with_context(|| format!(\"publication {phase:?}: restore original decision checkpoint\"))?,\n                Some(decision.snapshot().clone()));\n            eprintln!(\"ROOT_PUBLICATION_CHILD phase={phase:?} step=learning-ready\");"
+        },
+        {
+          "label": "identify original intent read",
+          "old": "            let intent: types::UpdateIntent = data(&socket)?;",
+          "new": "            let intent: types::UpdateIntent = data(&socket)\n                .with_context(|| format!(\"publication {phase:?}: receive registered original intent\"))?;"
+        },
+        {
+          "label": "identify actual publication context connection",
+          "old": "            let current = publication.connect(connection, TIMEOUT, LIFETIME).await?;",
+          "new": "            let current = publication.connect(connection, TIMEOUT, LIFETIME).await\n                .with_context(|| format!(\"publication {phase:?}: connect original CURRENT purpose\"))?;\n            eprintln!(\"ROOT_PUBLICATION_CHILD phase={phase:?} step=current-connected\");"
+        },
+        {
+          "label": "identify original Root selection and first CURRENT read",
+          "old": "            current.require_original_root_selection(decision.snapshot(), &operation,\n                Digest32::from_array(intent.selection))?;\n            let before = current.store.load()?;",
+          "new": "            current.require_original_root_selection(decision.snapshot(), &operation,\n                Digest32::from_array(intent.selection))\n                .with_context(|| format!(\"publication {phase:?}: require original Root selection\"))?;\n            let before = current.store.load()\n                .with_context(|| format!(\"publication {phase:?}: read original CURRENT\"))?;"
+        },
+        {
+          "label": "identify original Prepare and immediate readback",
+          "old": "                current.store.replace(&before, &prepared)?;\n                assert_eq!(current.store.load()?, prepared);",
+          "new": "                current.store.replace(&before, &prepared)\n                    .context(\"publication Publish: prepare original CURRENT\")?;\n                assert_eq!(current.store.load()\n                    .context(\"publication Publish: read original prepared CURRENT\")?, prepared);"
+        },
+        {
+          "label": "identify original grant issuance and claim",
+          "old": "                let signed = production.grants.request_grant(&binding)?;\n                let token = claim_final_use(&production.device, &signed, &binding)?;",
+          "new": "                let signed = production.grants.request_grant(&binding)\n                    .context(\"publication Publish: request original grant\")?;\n                let token = claim_final_use(&production.device, &signed, &binding)\n                    .context(\"publication Publish: claim original grant\")?;"
+        },
+        {
+          "label": "identify original dispatch outer and actual effect errors",
+          "old": "                    },\n                )?;\n                let published = result?;",
+          "new": "                    },\n                ).context(\"publication Publish: dispatch original grant\")?;\n                let published = result.context(\"publication Publish: original CURRENT dispatch effect\")?;"
+        }
+      ]
+    }
+  ]
+}

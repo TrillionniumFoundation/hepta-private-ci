@@ -1594,8 +1594,8 @@ impl ChatComposer {
     }
 
     fn shift_text_element(element: TextElement, shift: isize) -> Option<TextElement> {
-        let start = element.byte_range.start.checked_add_signed(shift)?;
-        let end = element.byte_range.end.checked_add_signed(shift)?;
+        let start = element.byte_range.start.checked_add(shift)?;
+        let end = element.byte_range.end.checked_add(shift)?;
         if start >= end {
             return None;
         }

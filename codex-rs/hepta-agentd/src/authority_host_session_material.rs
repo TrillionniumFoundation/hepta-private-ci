@@ -1,0 +1,232 @@
+//! Explicit material-backed startup; no crash-time fresh-capture fallback.
+
+use super::*;
+use crate::authority_host_checkpoint::RootMaterialProfile;
+
+impl PreparedHostAuthoritySession {
+    /// Seal only this material-backed session's registered Agent journal root.
+    /// Recovery cannot select a new consumer directory, recreate a missing
+    /// journal or replace its protected Current with a caller-supplied cut.
+    pub fn seal_original_material_bootstrap(&self) -> io::Result<File> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        let before = self.observe_physical_current()?;
+        let identity = self.registration.registered_identity.identity()?;
+        let consumer_root = identity.layout.agent_root().join("final-use");
+        let sealed = self.seal_bootstrap(&consumer_root)?;
+        let after = self.observe_physical_current()?;
+        if before.current() != after.current()
+            || before.material_sha256() != after.material_sha256()
+            || before.material_bytes() != after.material_bytes()
+        {
+            return Err(io::Error::other(
+                "original physical Current changed during bootstrap sealing",
+            ));
+        }
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        Ok(sealed)
+    }
+
+    /// Delegate only this actual Root session's original Root0600 writer FD.
+    /// No DTO, path, owner or generation parameter can select a different file.
+    /// The original recipient still validates its inode/live binding and must
+    /// acquire the original exclusive lock before configuring its writer.
+    pub fn original_root_writer_descriptor(&self) -> io::Result<File> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        let descriptor = self.service.original_root_writer_descriptor()?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        Ok(descriptor)
+    }
+
+    /// Serve the original fixed lanes by borrowing the SAME retained service.
+    /// Root can concurrently serialize its actual material observations. This
+    /// creates no second authority owner and retains all original lane checks.
+    pub fn serve_retained(&self) -> io::Result<()> {
+        if self.learning.is_some() {
+            return Err(io::Error::other(
+                "registered learning requires the consuming original session serve scope",
+            ));
+        }
+        if self.initial_publication.is_some() {
+            return Err(io::Error::other(
+                "registered Initial publication requires the consuming original session serve scope",
+            ));
+        }
+        if self.root_admin.is_none() {
+            return listeners::serve_lanes(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+            );
+        }
+        let serve = || {
+            listeners::serve_lanes_with_ready(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+                || {
+                    if let Some(admin) = &self.root_admin {
+                        admin.activate()?;
+                    }
+                    Ok(())
+                },
+            )
+        };
+        match &self.root_admin {
+            Some(admin) => admin.run(
+                &self.service,
+                &self.config,
+                &self.registration,
+                &self.owner_pidfd,
+                serve,
+            ),
+            None => serve(),
+        }
+    }
+
+    /// Observe this same service's actual complete Current and independently
+    /// verified physical image. The returned DTO has no authority or write FD.
+    pub fn observe_physical_current(&self) -> io::Result<crate::HostPhysicalCurrentObservation> {
+        let end = Instant::now() + std::time::Duration::from_secs(30);
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        let observed = self.service.observe_registered_physical_current()?;
+        verify_pinned_process(
+            &self.registration,
+            self.config.peer_uid,
+            self.config.peer_gid,
+            &self.owner_pidfd,
+            end,
+        )?;
+        Ok(observed)
+    }
+
+    /// Complete only an existing Current's interrupted filesystem release.
+    /// Open this same live registration with `open_with_physical_material`
+    /// first. Root verifies the independently retained image against the
+    /// unreleased generation, without capture, pointer mutation or adoption.
+    pub fn resume_physical_material_handoff(self) -> io::Result<Self> {
+        self.service.resume_registered_material_handoff(
+            &self.config,
+            &self.registration,
+            &self.owner_pidfd,
+        )?;
+        Ok(self)
+    }
+
+    /// Recover only the actual protected predecessor Current into this already
+    /// registered successor. Root reads the independent material itself; callers
+    /// supply no Current, digest, image path, reset flag or replacement grant.
+    /// Existing consumer journals and original fencing rules remain in force.
+    pub fn recover_with_physical_material(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config = read_root_json(config_file)?;
+        let registration = read_root_json(registration_file)?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)?
+            .recover_material_from_registered(&config, &registration, &owner_pidfd)?;
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: false,
+            root_admin: None,
+            learning: None,
+            publication: None,
+            initial_publication: None,
+            historical_read: None,
+        })
+    }
+
+    /// Publish the genuinely fresh original DB and its independent Root0600
+    /// image before Current genesis. The same retained Root service then owns
+    /// runtime Current images. The original fresh witness holds the original
+    /// writer lock throughout; manager JSON supplies no image, digest or cut.
+    pub async fn prepare_fresh_with_physical_material(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config = read_root_json(config_file)?;
+        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)?;
+        let fresh =
+            crate::FreshHostCognitiveState::prepare(&registration.registered_identity).await?;
+        let service = service.initialize_fresh_heads_with_material(
+            &config,
+            &registration,
+            &owner_pidfd,
+            fresh,
+        )?;
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: true,
+            root_admin: None,
+            learning: None,
+            publication: None,
+            initial_publication: None,
+            historical_read: None,
+        })
+    }
+
+    /// Existing live-session open verifies only the already retained material
+    /// against the actual original Current. This creates no image, Current,
+    /// writer, grant or successor generation and refuses partial material.
+    pub fn open_with_physical_material(
+        config_file: &Path,
+        registration_file: &Path,
+        owner_pidfd: OwnedFd,
+    ) -> io::Result<Self> {
+        let config: HostAuthorityServiceConfig = read_root_json(config_file)?;
+        let registration: HostAuthorityRegistration = read_root_json(registration_file)?;
+        let service = open_registered_service(&config, &registration, &owner_pidfd)?;
+        let service = service.require_existing_physical_material(RootMaterialProfile {
+            layout: registration.registered_identity.identity()?.layout,
+            root: config.state_dir.join("cognitive-material-v1"),
+            deadline: std::time::Duration::from_millis(config.timeout_ms.min(5_000)),
+        })?;
+        Ok(Self {
+            config,
+            registration,
+            owner_pidfd,
+            service,
+            fresh_filesystem: false,
+            root_admin: None,
+            learning: None,
+            publication: None,
+            initial_publication: None,
+            historical_read: None,
+        })
+    }
+}

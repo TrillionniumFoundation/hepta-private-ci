@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.mem8.ci-v9.root-complete-readback.v1",
+  "immutable_commit": "afbc9571c7a7941fc791d6c6af05daa3e747ecd2",
+  "archives": [
+    {
+      "label": "f1fd",
+      "bytes": 59956,
+      "sha256": "03393baed2329c3a9eb50337678c67a0856bc568f753f2527272903492f25a8a",
+      "git_blob": "b22984b6650ec4b523760f9ef09ac94196f831d3",
+      "safe_regular_members": 43,
+      "full_member_hashes_verified": true,
+      "offline_verifier_exit_code": 0,
+      "offline_verification": {
+        "source_commit": "f1fd544b3e12ed6aca83872cdeda8114a1e058c0",
+        "source_tree": "fff40d06312d4f6a185772cd8a62a618d55f31cf",
+        "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+        "selected": 268,
+        "passed": 268,
+        "failed": 0,
+        "selected_skipped": 0,
+        "filtered_or_ignored": 7,
+        "retries": 0,
+        "junit_run_id": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+        "original_unique_case_ids_match": true,
+        "raw_unique_pass_ids_match_junit": true,
+        "full_raw_hashes_verified": 3,
+        "full_junit_hash_verified": true,
+        "cli_before_after_same": true,
+        "cli_sha256": "da59e2327aa74b81be2b6f64a97c060bf67e17db17c860f7642541f804dadbe2",
+        "scoped_fix_exit_zero_and_source_unchanged": true,
+        "all_phase_source_identities_clean": true,
+        "whole_ci_pass_claimed": false,
+        "memory_benefit_claimed": false
+      }
+    },
+    {
+      "label": "provider",
+      "bytes": 56432,
+      "sha256": "5cbc5b4d293b57980d9efe02bea0c0ec0bfe0ae165e1c9881801c7bc9cd1ae3c",
+      "git_blob": "92cde56a3c1aea8fc0d7353621ebeb2ede3257e5",
+      "safe_regular_members": 64,
+      "full_member_hashes_verified": true,
+      "offline_verifier_exit_code": 0,
+      "offline_verification": {
+        "member_count": 64,
+        "all_member_hashes_verified": true,
+        "unsafe_original_projection_members": 0,
+        "nested_archives_or_capsules": 0,
+        "derived_projections": 2,
+        "original_native_selected": 1,
+        "original_native_passed": 0,
+        "original_native_failed": 1,
+        "selected_skipped": 0,
+        "filtered_or_ignored": 12,
+        "physical_provider_outcome": "UNKNOWN",
+        "original_source_clean": true,
+        "world_state_values_present_in_derived_projection": false
+      }
+    }
+  ],
+  "original_and_current_268_case_identity_sets_match": true,
+  "original_junit_uuid": "c6520272-0490-4d9f-bee4-5d08be7198bd",
+  "f1fd_junit_uuid": "b86c9959-e257-4ce0-91e0-f2eb7120d2cc",
+  "f1fd_case_timestamps_checked": 268,
+  "provider_original_raw_junit_observations_binary_preserved": true,
+  "provider_original_outcome": "UNKNOWN",
+  "provider_physical_request_count": null,
+  "unsafe_prior_objects_not_referenced_in_this_commit": true,
+  "new_native_executions": 0,
+  "new_model_calls": 0,
+  "qualification_transferred_to_integrated_2ae": false,
+  "passed": true
+}

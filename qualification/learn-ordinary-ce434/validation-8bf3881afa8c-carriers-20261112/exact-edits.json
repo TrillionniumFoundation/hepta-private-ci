@@ -1,0 +1,479 @@
+{
+  "schema": "hepta.learn.fixed-carrier-exact-edits.v2",
+  "source": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+  "files": [
+    {
+      "before": {
+        "sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+        "bytes": 71126,
+        "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4"
+      },
+      "after": {
+        "path": "source-suite-runner.py",
+        "sha": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+        "bytes": 71447,
+        "sha256": "522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff"
+      },
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true,
+      "replacements": [
+        {
+          "before": "    \"test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle\",\n",
+          "after": "    \"test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_only_the_concrete_root_factory_and_closed_enum_call_each_bundle\",\n    \"test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate\",\n    \"test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_never_replaces_generic_denials_or_actual_root_fences\",\n"
+        },
+        {
+          "before": "if expected != 443 or len(EXPECTED_IDS) != 443 or sorted(actual_ids) != sorted(EXPECTED_IDS):",
+          "after": "if expected != 445 or len(EXPECTED_IDS) != 445 or sorted(actual_ids) != sorted(EXPECTED_IDS):"
+        }
+      ]
+    },
+    {
+      "before": {
+        "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+        "bytes": 13265,
+        "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+      },
+      "after": {
+        "path": "native-runner.py",
+        "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+        "bytes": 14371,
+        "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+      },
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true,
+      "replacements": [
+        {
+          "before": "from pathlib import Path\n",
+          "after": "TARGET_V3_RECEIPT_BINDING = {\"bytes\":12843,\"sha256\":\"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"}\nif TARGET_V3_RECEIPT_BINDING is None:\n    raise SystemExit(\"INERT: actual successful v3 creation receipt is not bound; no filesystem action is permitted\")\n\nfrom pathlib import Path\n"
+        },
+        {
+          "before": "if len(sys.argv)!=4:",
+          "after": "if not isinstance(TARGET_V3_RECEIPT_BINDING,dict) or set(TARGET_V3_RECEIPT_BINDING)!={\"bytes\",\"sha256\"}:raise RuntimeError(\"actual v3 receipt binding shape differs\")\nif type(TARGET_V3_RECEIPT_BINDING[\"bytes\"]) is not int or not 0<TARGET_V3_RECEIPT_BINDING[\"bytes\"]<=16384:raise RuntimeError(\"actual v3 receipt length is unbound or exceeds original bound\")\nif not isinstance(TARGET_V3_RECEIPT_BINDING[\"sha256\"],str) or not re.fullmatch(r\"[0-9a-f]{64}\",TARGET_V3_RECEIPT_BINDING[\"sha256\"]):raise RuntimeError(\"actual v3 receipt full hash is unbound\")\n\nif len(sys.argv)!=4:"
+        },
+        {
+          "before": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\":",
+          "after": "if str(repo) != \"/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1\":"
+        },
+        {
+          "before": "CARGO_TARGET_DIR=\"/data/hepta-learn-ce434-runtime-20261112-v2/target\"",
+          "after": "CARGO_TARGET_DIR=\"/data/hepta-learn-ce434-runtime-20261112-v3/target\""
+        },
+        {
+          "before": "target_recovery_path=evidence/\"native/build-root-recovery-e5c7-v2/result.json\"",
+          "after": "target_recovery_path=evidence/\"native/build-root-recovery-4537458b51b6-v3-attempt2/result.json\""
+        },
+        {
+          "before": "if not stat.S_ISREG(recovery_stat.st_mode) or recovery_stat.st_uid!=os.getuid() or recovery_stat.st_nlink!=1 or recovery_stat.st_size>16384:raise RuntimeError(\"actual new target recovery record differs\")",
+          "after": "if not stat.S_ISREG(recovery_stat.st_mode) or recovery_stat.st_uid!=os.getuid() or recovery_stat.st_nlink!=1 or recovery_stat.st_size!=TARGET_V3_RECEIPT_BINDING[\"bytes\"]:raise RuntimeError(\"actual new target recovery record differs\")"
+        },
+        {
+          "before": "if hashlib.sha256(target_recovery_bytes).hexdigest()!=\"cbd5597a63f2a13bc771230d14b7c65774409f6169fd941bb6c0575f4d11b8eb\":raise RuntimeError(\"original target-v2 creation record differs\")",
+          "after": "if hashlib.sha256(target_recovery_bytes).hexdigest()!=TARGET_V3_RECEIPT_BINDING[\"sha256\"]:raise RuntimeError(\"actual target-v3 creation record differs\")"
+        },
+        {
+          "before": "if target_recovery[\"state\"]!=\"isolated-build-target-created-original-pins-retained\" or target_recovery[\"source_sha\"]!=\"e5c7dbd90938f1c9ac39dd3065c69a1b7707d6c4\" or target_recovery[\"source_tree\"]!=\"a8fdee9eaa9f9f9dbe1bb25e215e4bf58e846b76\" or target_recovery[\"source_status_after\"] or target_recovery[\"target\"]!=str(target_root):raise RuntimeError(\"original target-v2 creation provenance differs\")",
+          "after": "if target_recovery[\"schema\"]!=\"learn.original-build-root-recovery.v1\" or target_recovery[\"state\"]!=\"isolated-build-target-created-original-pins-retained\" or target_recovery[\"source_sha\"]!=\"4537458b51b6ca936264aecea7cfe384b941d0d1\" or target_recovery[\"source_tree\"]!=\"8cbd7b269c9c39df4ee3ffcefed8473060696184\" or target_recovery[\"source_after\"]!=target_recovery[\"source_sha\"] or target_recovery[\"source_tree_after\"]!=target_recovery[\"source_tree\"] or target_recovery[\"source_status_after\"] or target_recovery[\"runtime_root\"]!=str(target_root.parent) or target_recovery[\"target\"]!=str(target_root):raise RuntimeError(\"actual target-v3 creation provenance differs\")"
+        }
+      ]
+    },
+    {
+      "before": {
+        "sha": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+        "bytes": 101858,
+        "sha256": "98ebeb50134af56141dfbc06f5c3cf9d24d552719f8d004e6387b47009db00a3"
+      },
+      "after": {
+        "path": "main-carrier.py",
+        "sha": "832bec9def487d219c51508a2e8816f4142fc2cb",
+        "bytes": 107760,
+        "sha256": "27563b4a3ad10a32df7881ea984b1e7a040ffe45d975bf31dda0386c496d04fd"
+      },
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true,
+      "replacements": [
+        {
+          "label": "actual v3 receipt binding and missing-binding guard before filesystem actions",
+          "before": "from pathlib import Path\n",
+          "after": "TARGET_V3_RECEIPT_BINDING = {\"bytes\":12843,\"sha256\":\"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"}\nif TARGET_V3_RECEIPT_BINDING is None:\n    raise SystemExit(\"INERT: actual successful v3 creation receipt is not bound; no filesystem action is permitted\")\n\nfrom pathlib import Path\n"
+        },
+        {
+          "label": "new exact worktree",
+          "before": "\nrepo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")\n",
+          "after": "\nrepo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1\")\n"
+        },
+        {
+          "label": "preserve existing source453 worktree",
+          "before": "old_repo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")\n",
+          "after": "old_repo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-20261112-3270-v1\")\npreserved_repo=Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")\n"
+        },
+        {
+          "label": "new exclusive outer evidence",
+          "before": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-4537458b51b6-isolated-v1\")",
+          "after": "out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/unified-8bf3881afa8c-isolated-v1\")"
+        },
+        {
+          "label": "new exclusive native evidence",
+          "before": "native_out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-4537458b51b6-isolated-v1\")",
+          "after": "native_out=Path(\"/home/qian-qi/hepta-learn-ce434-evidence-20261111/native/live-owners-full-8bf3881afa8c-isolated-v1\")"
+        },
+        {
+          "label": "fixed candidate SHA",
+          "before": "fixed=\"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+          "after": "fixed=\"8bf3881afa8cccff286fc58909995c96f3e0b260\""
+        },
+        {
+          "label": "fixed candidate tree",
+          "before": "\ntree=\"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+          "after": "\ntree=\"c8730bab75eabe47a3b0b3260a6203a0d86d1443\""
+        },
+        {
+          "label": "native full embedded postimage",
+          "embedded": {
+            "variable": "native_driver",
+            "before_blob": {
+              "sha": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+              "bytes": 13265,
+              "sha256": "f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb"
+            },
+            "after_blob": {
+              "path": "native-runner.py",
+              "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+              "bytes": 14371,
+              "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+            },
+            "literal_format": "native_driver=<JSON string of complete blob>"
+          },
+          "before_line_bytes": 13972,
+          "before_line_sha256": "d3ac505552b58daa29df640ce6c1363e855d923b67cf1f57c07e0cfd827499ae",
+          "after_line_bytes": 15130,
+          "after_line_sha256": "3ebe9095d7a2907f1a1863e9d05ee19164152a3c388f4ec1713e9850edce6300"
+        },
+        {
+          "label": "source full embedded postimage",
+          "embedded": {
+            "variable": "source_runner",
+            "before_blob": {
+              "sha": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+              "bytes": 71126,
+              "sha256": "4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4"
+            },
+            "after_blob": {
+              "path": "source-suite-runner.py",
+              "sha": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+              "bytes": 71447,
+              "sha256": "522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff"
+            },
+            "literal_format": "source_runner=<JSON string of complete blob>"
+          },
+          "before_line_bytes": 72501,
+          "before_line_sha256": "a691c7e69c785b37836c4b15eb739c5190212fa1b986cf9ec0eaeb59378eca07",
+          "after_line_bytes": 72828,
+          "after_line_sha256": "62a363b8487e6b4bfce6d3d4584d52a4a952470c95e458632f47a67c53848b2b"
+        },
+        {
+          "label": "strict outer binding shape before any directory work",
+          "before": "if any(os.path.lexists(path) for path in (out,native_out,repo)):",
+          "after": "if not isinstance(TARGET_V3_RECEIPT_BINDING,dict) or set(TARGET_V3_RECEIPT_BINDING)!={\"bytes\",\"sha256\"} or type(TARGET_V3_RECEIPT_BINDING[\"bytes\"]) is not int or not 0<TARGET_V3_RECEIPT_BINDING[\"bytes\"]<=16384 or not isinstance(TARGET_V3_RECEIPT_BINDING[\"sha256\"],str) or not re.fullmatch(r\"[0-9a-f]{64}\",TARGET_V3_RECEIPT_BINDING[\"sha256\"]):raise RuntimeError(\"actual v3 receipt binding is incomplete\")\nif any(os.path.lexists(path) for path in (out,native_out,repo)):"
+        },
+        {
+          "label": "additional exact source453 read-only observation",
+          "before": "def require_old_source():\n    observed=source_state(old_repo)\n    if observed!=old_expected:raise RuntimeError(\"original a671 worktree changed; retain evidence without cleanup\")\n    return observed\n",
+          "after": "def require_old_source():\n    observed=source_state(old_repo)\n    if observed!=old_expected:raise RuntimeError(\"original a671 worktree changed; retain evidence without cleanup\")\n    return observed\npreserved_expected={\"path\":str(preserved_repo),\"head\":\"4537458b51b6ca936264aecea7cfe384b941d0d1\",\"tree\":\"8cbd7b269c9c39df4ee3ffcefed8473060696184\",\"status\":\"\"}\ndef require_preserved_source():\n    observed=source_state(preserved_repo)\n    if observed!=preserved_expected:raise RuntimeError(\"original 453 worktree changed; retain evidence without cleanup\")\n    return observed\n"
+        },
+        {
+          "label": "capture both actual source directory identities",
+          "before": "old_root_identity=owned_directory(old_repo)\n",
+          "after": "old_root_identity=owned_directory(old_repo)\npreserved_source_before=require_preserved_source()\npreserved_root_identity=owned_directory(preserved_repo)\n"
+        },
+        {
+          "label": "same common Git store for preserved453",
+          "before": "old_common=common_directory(old_repo)\n",
+          "after": "old_common=common_directory(old_repo)\nif common_directory(preserved_repo)!=old_common:raise RuntimeError(\"preserved453 uses a different Git object store\")\n"
+        },
+        {
+          "label": "two added source methods",
+          "before": "\"source_methods_expected\":443,",
+          "after": "\"source_methods_expected\":445,"
+        },
+        {
+          "label": "report both preserved worktrees",
+          "before": "report.update(original_worktree=str(old_repo),isolated_worktree=str(repo),",
+          "after": "report.update(preserved_worktree=str(preserved_repo),preserved_source_before=preserved_source_before,preserved_root_identity=preserved_root_identity,original_worktree=str(old_repo),isolated_worktree=str(repo),"
+        },
+        {
+          "label": "preserved453 after fetch",
+          "before": "    report[\"old_source_after_fetch\"]=require_old_source()\n",
+          "after": "    report[\"old_source_after_fetch\"]=require_old_source()\n    report[\"preserved_source_after_fetch\"]=require_preserved_source()\n"
+        },
+        {
+          "label": "preserved453 after isolated creation",
+          "before": "    report[\"old_source_after_worktree_create\"]=require_old_source();save()\n",
+          "after": "    report[\"old_source_after_worktree_create\"]=require_old_source()\n    report[\"preserved_source_after_worktree_create\"]=require_preserved_source();save()\n"
+        },
+        {
+          "label": "derived original runner hashes",
+          "before": "if digest(np)!=\"f7874683331f1e5142f4c1cff75ffea46cd1e86fd0cb63540b52c47d08c8e4fb\" or digest(sp)!=\"4e0d8e41eff59aee3d18f1a85080a15c2c4e3bd8a002e25751bdfa40dadffdf4\":",
+          "after": "if digest(np)!=\"3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a\" or digest(sp)!=\"522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff\":"
+        },
+        {
+          "label": "preserved453 before tests",
+          "before": "    report[\"old_source_before_tests\"]=require_old_source()\n",
+          "after": "    report[\"old_source_before_tests\"]=require_old_source()\n    report[\"preserved_source_before_tests\"]=require_preserved_source()\n"
+        },
+        {
+          "label": "exclusive actual worktree readiness receipt",
+          "before": "    report.update(state=\"source-and-native-running\",",
+          "after": "    ready_source=source_state(repo)\n    if ready_source!=new_source or common_directory(repo)!=old_common:raise RuntimeError(\"isolated worktree changed before ready receipt\")\n    if owned_directory(old_repo)!=old_root_identity or owned_directory(preserved_repo)!=preserved_root_identity:raise RuntimeError(\"preserved worktree directory identity changed before ready receipt\")\n    creation_step=next(step for step in report[\"steps\"] if step[\"name\"]==\"create-isolated-fixed-worktree\")\n    if type(creation_step[\"exit_code\"]) is not int or creation_step[\"exit_code\"]!=0:raise RuntimeError(\"isolated worktree creation did not complete\")\n    ready={\"schema\":\"learn.fixed-isolated-worktree-ready.v1\",\"state\":\"fixed-worktree-created-and-read-back\",\"source_sha\":fixed,\"source_tree\":tree,\"isolated_worktree\":str(repo),\"isolated_source\":ready_source,\"isolated_root_identity\":report[\"isolated_root_identity\"],\"common_git_directory\":str(old_common),\"creation_step\":creation_step,\"preserved_a671\":report[\"old_source_before_tests\"],\"preserved_a671_identity\":old_root_identity,\"preserved_453\":report[\"preserved_source_before_tests\"],\"preserved_453_identity\":preserved_root_identity,\"tracked_rust_files\":len(rust),\"source_methods_expected\":445,\"native_cases_expected\":201,\"native_groups_expected\":43,\"native_runner_sha256\":digest(np),\"source_runner_sha256\":digest(sp),\"ordinary_acceptance\":0}\n    ready_bytes=(json.dumps(ready,indent=2,sort_keys=True)+\"\\n\").encode(\"utf-8\")\n    ready_path=out/\"worktree-ready.json\"\n    with ready_path.open(\"xb\") as stream:stream.write(ready_bytes);stream.flush();os.fsync(stream.fileno())\n    report[\"worktree_ready\"]={\"path\":str(ready_path),\"bytes\":len(ready_bytes),\"sha256\":hashlib.sha256(ready_bytes).hexdigest()};save()\n    report.update(state=\"source-and-native-running\","
+        },
+        {
+          "label": "preserved453 final readback",
+          "before": "    report[\"old_source_after\"]=require_old_source()\n    if owned_directory(old_repo)!=old_root_identity or owned_directory(repo)!=report[\"isolated_root_identity\"]:",
+          "after": "    report[\"old_source_after\"]=require_old_source()\n    report[\"preserved_source_after\"]=require_preserved_source()\n    if owned_directory(old_repo)!=old_root_identity or owned_directory(preserved_repo)!=preserved_root_identity or owned_directory(repo)!=report[\"isolated_root_identity\"]:"
+        },
+        {
+          "label": "both old source facts participate in final result",
+          "before": "and report[\"old_source_after\"]==old_expected else \"failed\"",
+          "after": "and report[\"old_source_after\"]==old_expected and report[\"preserved_source_after\"]==preserved_expected else \"failed\""
+        },
+        {
+          "label": "failure records both actual preserved sources",
+          "before": "    try:report[\"old_source_after\"]=require_old_source()\n",
+          "after": "    try:\n        report[\"old_source_after\"]=require_old_source()\n        report[\"preserved_source_after\"]=require_preserved_source()\n"
+        },
+        {
+          "label": "failure observation labels both preserved sources",
+          "before": "old_source_observation_error_type=type(observation_error).__name__,old_source_observation_error=str(observation_error)",
+          "after": "preserved_source_observation_error_type=type(observation_error).__name__,preserved_source_observation_error=str(observation_error)"
+        },
+        {
+          "label": "outer and embedded native actual v3 binding must match",
+          "before": "if any(os.path.lexists(path) for path in (out,native_out,repo)):",
+          "after": "native_binding_line=native_driver.splitlines()[0]\nif not native_binding_line.startswith(\"TARGET_V3_RECEIPT_BINDING = \") or json.loads(native_binding_line[len(\"TARGET_V3_RECEIPT_BINDING = \"):])!=TARGET_V3_RECEIPT_BINDING:raise RuntimeError(\"outer and original native v3 receipt bindings differ\")\nif any(os.path.lexists(path) for path in (out,native_out,repo)):"
+        },
+        {
+          "label": "store actual terminal directory identities before comparison",
+          "before": "    if owned_directory(old_repo)!=old_root_identity or owned_directory(preserved_repo)!=preserved_root_identity or owned_directory(repo)!=report[\"isolated_root_identity\"]:raise RuntimeError(\"original or isolated worktree root identity changed\")",
+          "after": "    report[\"old_root_identity_after\"]=owned_directory(old_repo)\n    report[\"preserved_root_identity_after\"]=owned_directory(preserved_repo)\n    report[\"isolated_root_identity_after\"]=owned_directory(repo)\n    if report[\"old_root_identity_after\"]!=old_root_identity or report[\"preserved_root_identity_after\"]!=preserved_root_identity or report[\"isolated_root_identity_after\"]!=report[\"isolated_root_identity\"]:raise RuntimeError(\"original or isolated worktree root identity changed\")"
+        },
+        {
+          "label": "retain observed old directory identities on failure when readable",
+          "before": "        report[\"preserved_source_after\"]=require_preserved_source()\n",
+          "after": "        report[\"preserved_source_after\"]=require_preserved_source()\n        report[\"old_root_identity_after\"]=owned_directory(old_repo)\n        report[\"preserved_root_identity_after\"]=owned_directory(preserved_repo)\n"
+        }
+      ]
+    },
+    {
+      "before": {
+        "sha": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+        "bytes": 18927,
+        "sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171"
+      },
+      "after": {
+        "path": "full-caller-recorder.py",
+        "sha": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+        "bytes": 18927,
+        "sha256": "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+      },
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true,
+      "replacements": [
+        {
+          "before": "SOURCE_SHA = \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+          "after": "SOURCE_SHA = \"8bf3881afa8cccff286fc58909995c96f3e0b260\""
+        },
+        {
+          "before": "SOURCE_TREE = \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+          "after": "SOURCE_TREE = \"c8730bab75eabe47a3b0b3260a6203a0d86d1443\""
+        },
+        {
+          "before": "    \"CALLERS.toml\": \"898948f9b75147f9d758a88bdebbb99fc2529d88\",",
+          "after": "    \"CALLERS.toml\": \"95c8261a6c3eec23d038ba5aec754d618731d222\","
+        },
+        {
+          "before": "EXPECTED_BOUNDARIES = 736",
+          "after": "EXPECTED_BOUNDARIES = 737"
+        }
+      ]
+    },
+    {
+      "before": {
+        "sha": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+        "bytes": 30466,
+        "sha256": "04e43d69932573017a417f808c77fd72323a918e5b3cf64d9d79a2220f652fac"
+      },
+      "after": {
+        "path": "full-caller-launcher.py",
+        "sha": "dc3f1aa0852b93e22e7d65288fafdba55ccf02cb",
+        "bytes": 30466,
+        "sha256": "1658cacb17034130ab4e3a46a6678efccb3a59daf49f48673196d76f74ff282e"
+      },
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true,
+      "replacements": [
+        {
+          "label": "fixed source",
+          "before": "SOURCE_SHA = \"4537458b51b6ca936264aecea7cfe384b941d0d1\"",
+          "after": "SOURCE_SHA = \"8bf3881afa8cccff286fc58909995c96f3e0b260\""
+        },
+        {
+          "label": "fixed tree",
+          "before": "SOURCE_TREE = \"8cbd7b269c9c39df4ee3ffcefed8473060696184\"",
+          "after": "SOURCE_TREE = \"c8730bab75eabe47a3b0b3260a6203a0d86d1443\""
+        },
+        {
+          "label": "new exact worktree",
+          "before": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-4537458b51b6-isolated-v1\")",
+          "after": "REPO = Path(\"/home/qian-qi/hepta-learn-positive-ce434-8bf3881afa8c-isolated-v1\")"
+        },
+        {
+          "label": "new exclusive launch directory",
+          "before": "LAUNCH = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-isolated-launch-v1\"",
+          "after": "LAUNCH = EVIDENCE_PARENT / \"fullcaller-8bf3881afa8c-isolated-launch-v1\""
+        },
+        {
+          "label": "new exclusive recorder directory",
+          "before": "RECORDS = EVIDENCE_PARENT / \"fullcaller-4537458b51b6-isolated-v1\"",
+          "after": "RECORDS = EVIDENCE_PARENT / \"fullcaller-8bf3881afa8c-isolated-v1\""
+        },
+        {
+          "label": "new single purpose key",
+          "before": "KEY = \"learn-ce434-4537458b51b6-isolated-full-caller-v1\"",
+          "after": "KEY = \"learn-ce434-8bf3881afa8c-isolated-full-caller-v1\""
+        },
+        {
+          "label": "four-constant stamped recorder hash",
+          "before": "RUNNER_SHA256 = \"5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171\"",
+          "after": "RUNNER_SHA256 = \"e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0\""
+        },
+        {
+          "label": "complete four-constant stamped recorder",
+          "embedded": {
+            "variable": "RUNNER",
+            "before_blob": {
+              "sha": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+              "bytes": 18927,
+              "sha256": "5f2365e084627a38b57ffec539beba67bbccae525183c6ff0a1201eb6ceae171"
+            },
+            "after_blob": {
+              "path": "full-caller-recorder.py",
+              "sha": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+              "bytes": 18927,
+              "sha256": "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+            },
+            "literal_format": "RUNNER = <JSON string of complete blob>.encode(\"utf-8\")"
+          },
+          "before_line_bytes": 19997,
+          "before_line_sha256": "94e74fb8e4f57d2aee0f7889a4e243e85e870284d6391cf54453462b500cccf7",
+          "after_line_bytes": 19997,
+          "after_line_sha256": "44e5f477dc8e353b69148bf01ac84f119269b856604a7607bb1a81c17842ae31"
+        }
+      ]
+    }
+  ],
+  "actual_v3_binding_transition": {
+    "actual_receipt_blob": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+    "binding": {
+      "bytes": 12843,
+      "sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b"
+    },
+    "native_before": {
+      "path": "native-runner.inert.py",
+      "sha": "402a7b11d87906e42c8f497fc660b27d00919d28",
+      "bytes": 14284,
+      "sha256": "8e200e4838d80d4f35391ae6a34b3c3422a2b8f06f9879ab8c57cff3e74a5d6c"
+    },
+    "native_after": {
+      "path": "native-runner.py",
+      "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+      "bytes": 14371,
+      "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+    },
+    "native_edits": [
+      {
+        "before": "TARGET_V3_RECEIPT_BINDING = None\n",
+        "after": "TARGET_V3_RECEIPT_BINDING = {\"bytes\":12843,\"sha256\":\"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"}\n"
+      }
+    ],
+    "outer_before": {
+      "path": "main-carrier.inert.py",
+      "sha": "b7d1f07b8d0afcc4c9a919d262fd5856bc88decb",
+      "bytes": 107580,
+      "sha256": "34f724a76c106baa5fbed5802ab7a7654da90a291b6c07fc36b570d89a079428"
+    },
+    "outer_after": {
+      "path": "main-carrier.py",
+      "sha": "832bec9def487d219c51508a2e8816f4142fc2cb",
+      "bytes": 107760,
+      "sha256": "27563b4a3ad10a32df7881ea984b1e7a040ffe45d975bf31dda0386c496d04fd"
+    },
+    "outer_edits": [
+      {
+        "label": "actual v3 receipt bytes and full hash",
+        "before": "TARGET_V3_RECEIPT_BINDING = None\n",
+        "after": "TARGET_V3_RECEIPT_BINDING = {\"bytes\":12843,\"sha256\":\"1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b\"}\n"
+      },
+      {
+        "label": "actual-v3-bound complete native body",
+        "embedded": {
+          "variable": "native_driver",
+          "before_blob": {
+            "path": "native-runner.inert.py",
+            "sha": "402a7b11d87906e42c8f497fc660b27d00919d28",
+            "bytes": 14284,
+            "sha256": "8e200e4838d80d4f35391ae6a34b3c3422a2b8f06f9879ab8c57cff3e74a5d6c"
+          },
+          "after_blob": {
+            "path": "native-runner.py",
+            "sha": "7b38fb189736532092d88f59da6a71dd63498ae3",
+            "bytes": 14371,
+            "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+          },
+          "literal_format": "native_driver=<JSON string of complete blob>"
+        },
+        "before_line_bytes": 15037,
+        "before_line_sha256": "fb589a2a042e0af14ead8a83c37da05ebea4cfb96418399b96ab9e5007a9a451",
+        "after_line_bytes": 15130,
+        "after_line_sha256": "3ebe9095d7a2907f1a1863e9d05ee19164152a3c388f4ec1713e9850edce6300"
+      },
+      {
+        "label": "derived actual-v3-bound native whole hash",
+        "before": "if digest(np)!=\"8e200e4838d80d4f35391ae6a34b3c3422a2b8f06f9879ab8c57cff3e74a5d6c\"",
+        "after": "if digest(np)!=\"3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a\""
+      }
+    ],
+    "whole_forward_and_inverse_equal": true
+  },
+  "requests": [
+    {
+      "before_key": "outer_request",
+      "after_key": "outer_request_bound",
+      "changed_fields": [
+        "args[2]",
+        "idempotency_key"
+      ],
+      "all_other_fields_equal": true,
+      "whole_formatted_before_inverse_equal": true,
+      "args_count_unchanged": true,
+      "cwd": "/home/qian-qi",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    },
+    {
+      "before_key": "caller_request",
+      "after_key": "caller_request_after",
+      "changed_fields": [
+        "args[4]",
+        "idempotency_key"
+      ],
+      "all_other_fields_equal": true,
+      "whole_formatted_before_inverse_equal": true,
+      "args_count_unchanged": true,
+      "cwd": "/home/qian-qi",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1"
+      }
+    }
+  ],
+  "all_request_field_changes_are_script_argument_and_key": true
+}

@@ -1,0 +1,18 @@
+--- a/codex-rs/hepta-runtime/src/lib.rs
++++ b/codex-rs/hepta-runtime/src/lib.rs
+@@ -138,7 +138,6 @@
+         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
+         request: RuntimeTopologyApplyRequestV1,
+     ) -> Result<RuntimeTopologyApplyReceiptV1> {
+-        topology_execution::require_control_lifecycle_admission_v1()?;
+         self.organs
+             .apply_governed_topology(authority, signed_grant, request)
+             .map_err(|error| anyhow::anyhow!("{error}"))
+@@ -157,7 +156,6 @@
+         signed_grant: &codex_hepta_contracts::SignedFinalUseGrant,
+         request: RuntimeTopologyApplyRequestV1,
+     ) -> Result<RuntimeTopologyApplyReceiptV1> {
+-        topology_execution::require_control_lifecycle_admission_v1()?;
+         self.organs
+             .recover_governed_topology(authority, signed_grant, request)
+             .map_err(|error| anyhow::anyhow!("{error}"))

@@ -170,6 +170,19 @@ pub fn propose_topology_v2(
 pub fn verify_topology_proposal_v2(
     proposal: &TopologyProposalV2,
 ) -> Result<(), TopologyProposalErrorV2> {
+    // Bound the public shape before copying any caller-controlled change payload
+    // into the header request. These checks inspect lengths only and visit at
+    // most MAX_TOPOLOGY_CANDIDATES_V2 candidates.
+    if proposal.candidates.is_empty() || proposal.candidates.len() > MAX_TOPOLOGY_CANDIDATES_V2 {
+        return Err(TopologyProposalErrorV2::ChangeLimitExceeded);
+    }
+    let mut remaining_changes = MAX_TOPOLOGY_CHANGES_V2;
+    for candidate in &proposal.candidates {
+        remaining_changes = remaining_changes
+            .checked_sub(candidate.changes.len())
+            .ok_or(TopologyProposalErrorV2::ChangeLimitExceeded)?;
+    }
+
     let request = TopologyProposalRequestV2 {
         proposal_id: proposal.proposal_id.clone(),
         proposer_id: proposal.proposer_id.clone(),
@@ -190,12 +203,10 @@ pub fn verify_topology_proposal_v2(
     if proposal.authority.grants_any() {
         return Err(TopologyProposalErrorV2::AuthorityGranted);
     }
-    if proposal.candidates.is_empty()
-        || proposal.candidates.len() > MAX_TOPOLOGY_CANDIDATES_V2
-        || proposal
-            .candidates
-            .windows(2)
-            .any(|pair| pair[0].candidate_id >= pair[1].candidate_id)
+    if proposal
+        .candidates
+        .windows(2)
+        .any(|pair| pair[0].candidate_id >= pair[1].candidate_id)
     {
         return Err(TopologyProposalErrorV2::ChangeLimitExceeded);
     }
@@ -627,5 +638,86 @@ mod tests {
             propose_topology_v2(unchanged),
             Err(TopologyProposalErrorV2::UnchangedTopology(_))
         ));
+    }
+    #[test]
+    fn topology_verifier_accepts_the_full_canonical_candidate_budget() {
+        let mut full = request();
+        let template = full.changes[0].clone();
+        full.changes = (0..MAX_TOPOLOGY_CHANGES_V2)
+            .map(|index| {
+                let mut change = template.clone();
+                change.module_id = id(&format!("module:adapter:{index}"));
+                change
+            })
+            .collect();
+        let expected = propose_topology_v2(full.clone()).expect("maximum proposal");
+        full.changes.reverse();
+        let reordered = propose_topology_v2(full).expect("reordered maximum proposal");
+        assert_eq!(expected, reordered);
+        assert_eq!(expected.candidates.len(), MAX_TOPOLOGY_CANDIDATES_V2);
+        assert_eq!(verify_topology_proposal_v2(&expected), Ok(()));
+    }
+
+    #[test]
+    fn topology_verifier_rejects_oversized_candidates_before_header_checks() {
+        let base = propose_topology_v2(request()).expect("proposal");
+        let update = base
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("update")
+            .clone();
+        for count in [MAX_TOPOLOGY_CANDIDATES_V2 + 1, 4_096] {
+            let mut oversized = base.clone();
+            oversized.candidates = vec![update.clone(); count];
+            // Resource admission must run before even invalid caller metadata
+            // reaches the header path (which previously followed a full copy).
+            oversized.proposer_id = oversized.evaluator_id.clone();
+            assert_eq!(
+                verify_topology_proposal_v2(&oversized),
+                Err(TopologyProposalErrorV2::ChangeLimitExceeded)
+            );
+        }
+    }
+
+    #[test]
+    fn topology_verifier_rejects_oversized_change_payload_before_header_checks() {
+        let base = propose_topology_v2(request()).expect("proposal");
+        for count in [MAX_TOPOLOGY_CHANGES_V2 + 1, 4_096] {
+            let mut oversized = base.clone();
+            let update = oversized
+                .candidates
+                .iter_mut()
+                .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+                .expect("update");
+            update.changes = vec![update.changes[0].clone(); count];
+            oversized.proposer_id = oversized.evaluator_id.clone();
+            assert_eq!(
+                verify_topology_proposal_v2(&oversized),
+                Err(TopologyProposalErrorV2::ChangeLimitExceeded)
+            );
+        }
+
+        // Count all candidates together: a per-candidate cap would miss this.
+        let mut distributed = base;
+        let change = distributed
+            .candidates
+            .iter()
+            .find(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
+            .expect("update")
+            .changes[0]
+            .clone();
+        distributed.candidates = (0..MAX_TOPOLOGY_CANDIDATES_V2)
+            .map(|index| TopologyCandidateV2 {
+                candidate_id: id(&format!("topology:update:{index:02}")),
+                kind: TopologyCandidateKindV2::Update,
+                changes: vec![change.clone()],
+            })
+            .collect();
+        distributed.proposer_id = distributed.evaluator_id.clone();
+        assert_eq!(
+            verify_topology_proposal_v2(&distributed),
+            Err(TopologyProposalErrorV2::ChangeLimitExceeded)
+        );
     }
 }

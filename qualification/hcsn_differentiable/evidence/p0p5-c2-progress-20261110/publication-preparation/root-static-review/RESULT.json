@@ -1,0 +1,30 @@
+{
+  "cost_scope": "Receipt creation and local hash samples only; not elapsed manual review, full process exit or upload cost.",
+  "execution_admission": "not yet executable; actual immutable collector/terminal inputs and frozen outer uploader resource envelope remain required",
+  "observed_utc": "2026-11-10T22:13:18.421673+00:00",
+  "review_receipt_creation_CPU_seconds": 0.0001874790000000008,
+  "review_receipt_creation_wall_seconds": 0.00019084200175711885,
+  "review_type": "manual source-only review; no executed uploader tests, native deployment or publication",
+  "reviewed_source": {
+    "bytes": 13296,
+    "path": "/workspace/scratch/c385a7439f8e/terminal-numerics-draft-uploader-preparation-v1/uploader.py",
+    "sha256": "8409832f5c6561075634fc86cae060fc9c3212c4098679fb00b9d38dbc181cc3"
+  },
+  "schema": "root-static-publication-review-v1",
+  "source_unchanged": true,
+  "static_blocker_found": false,
+  "static_observations": [
+    "Exact repository, release id, tag, target commit, draft and prerelease identity checked against fresh API JSON.",
+    "Collector and bootstrap completion required, both bind the expected original archive byte count and SHA256.",
+    "Local original archive identity, ZIP safe-member/CRC and original member identities checked before upload.",
+    "No-clobber upload once; same-name existing assets require unique uploaded metadata plus full authenticated byte and member verification.",
+    "Timeout is preserved with unknown outcome and no automatic retry.",
+    "Full authenticated readback, anonymous 404 checks, final draft check, exact input and source identity checks remain required.",
+    "Waited child CPU and command wall scopes are recorded separately from original audit and collector."
+  ],
+  "unverified": [
+    "Actual remote inputs and collection completion",
+    "Whole-job hard wall enforcement, which belongs in the separate native bootstrap",
+    "Actual remote release state and readback; no API request made in this review"
+  ]
+}

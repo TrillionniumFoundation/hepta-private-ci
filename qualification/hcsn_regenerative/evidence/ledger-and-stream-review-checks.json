@@ -1,0 +1,35 @@
+{
+  "interrupted_core": {
+    "poisoned_after_interruption": false,
+    "core_mutations": 1,
+    "time": 0,
+    "last_order": -1,
+    "same_event_replay_mutations": 2
+  },
+  "unbound_attempt_inventory": {
+    "all_attempts_status": "HOLD",
+    "all_attempts_budget_errors": [
+      [
+        "A",
+        0,
+        "optimizer_updates",
+        21,
+        20
+      ],
+      [
+        "A",
+        0,
+        "submitted_examples",
+        168,
+        160
+      ]
+    ],
+    "omitted_failure_status": "complete_paired_analysis",
+    "omitted_failure_gain": true,
+    "note": "Demonstrates need for external complete attempt inventory; reader cannot detect an omitted attempt."
+  },
+  "reviewed_files": {
+    "qualification/hcsn_causal/event_stream.py": "b7e7205bfcbd8097a66518dea363941a25962252c1527024d9f832a8d7f6af83",
+    "qualification/hcsn_causal/comparison.py": "bd3b3c875d9b2c1796e32b9ddf6186a825d053078a44dfe7dca17f279f09ea85"
+  }
+}

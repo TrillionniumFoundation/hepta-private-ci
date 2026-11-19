@@ -1,0 +1,94 @@
+{
+  "upstreamPackage": "wasm_evt_listener",
+  "upstreamVersion": "0.1.0",
+  "upstreamRepository": "https://github.com/Alorel/wasm-evt-listener-rs.git",
+  "crateArchive": "https://static.crates.io/crates/wasm_evt_listener/wasm_evt_listener-0.1.0.crate",
+  "crateArchiveSha256": "dc92d6378b411ed94839112a36d9dbc77143451d85b05dfb0cce93a78dab1963",
+  "upstreamVcs": {
+    "git": {
+      "sha1": "34cbb35ed254df6f953ef7a11953b65ecbbe7a45"
+    },
+    "path_in_vcs": ""
+  },
+  "patchPurpose": "Replace derivative Debug/Clone/PartialEq/Eq generation with standard implementations, preserving unconstrained event type parameters and omitted PhantomData diagnostics.",
+  "originalFileSha256": {
+    ".cargo_vcs_info.json": "1887bbe0e2c1a2817bf44919e3ea7a4f62ac1bdfddaab3b52e6a6b2d27159708",
+    "Cargo.toml": "ebcafe85a5c16c234e370a896b23fde6f9b1e926add7a747f14c15e0a2cd5f1d",
+    "Cargo.toml.orig": "9872b5aa76226c4069dd8f7d75f9f2c350a08538c9a8c504d4b4a7e023f15327",
+    "README.md": "df4895b0161ea2b4261a57b06caecb1aaccb4e6e7fbaa345aeb539b0f6b74f37",
+    "src/attached.rs": "1aa949188e91a76f0d623f5b73994886054ae64be1ecdd79801384adc58409c3",
+    "src/builder.rs": "8e70c7e7c01052faa5706a2f64c08d939bf106af1d7052efcfcc6d3b26762ada",
+    "src/lib.rs": "2d7c7a0e9d3127ca32309ca40723d0f63445264e8bbc6922757fe20e37181ec0",
+    "src/listener.rs": "180da4845ce20a2a7686d1af1f563b010c27b8bba60d7b6c29cb04281f6e7673",
+    "src/stream.rs": "364c39391c73e097e76f397076c5946f2abfecdd7ecdff90bb55e6b7b5826cb2"
+  },
+  "changedOriginalFiles": [
+    "Cargo.toml",
+    "src/attached.rs",
+    "src/builder.rs",
+    "src/listener.rs",
+    "src/stream.rs"
+  ],
+  "patchedFileSha256": {
+    "Cargo.toml": "a1cce6286ff12457e9d37bbfd67e383a68af0f643418aa6e5bb0df764aa3cad8",
+    "src/attached.rs": "f26e1f0d13bd87df9a7b956de86a749e962deef378df515c58bdc5fa7dd6a799",
+    "src/builder.rs": "ff18530f35529b6c795c05b3b2ce772284d5c91287518c3eecade2a100c17728",
+    "src/listener.rs": "18f435c1581e20e4cdecf05a56e418443956839be5c9a0912e19cb27cc591eb3",
+    "src/stream.rs": "3313adffc62693dc8cc0e436f4949890c996ab361deb3873d02967b46eb8ef40"
+  },
+  "additionalFiles": [
+    "src/builder_compat_tests.rs"
+  ],
+  "supplementalUpstreamLicenseFiles": {
+    "sourceCommit": "34cbb35ed254df6f953ef7a11953b65ecbbe7a45",
+    "files": {
+      "LICENSE": {
+        "gitBlobSha1": "e5b7527321f7c719ba0c0dcb4637998c7857e8b7",
+        "sha256": "1f3cb6b1a398c40d28a9fbda48fc82a06ad4873ea3eec63f8fd0fea134bc497f",
+        "sourceUrl": "https://api.github.com/repos/Alorel/wasm-evt-listener-rs/git/blobs/e5b7527321f7c719ba0c0dcb4637998c7857e8b7"
+      }
+    }
+  },
+  "maintenancePatch": "HEPTA-maintenance.patch",
+  "maintenancePatchSha256": "df7868e53f6dcc917307fda5cf1da2d2d26e180a3c240ab5ff63967161e7ffc5",
+  "functionalChangedOriginalFiles": [
+    "Cargo.toml",
+    "src/attached.rs",
+    "src/builder.rs",
+    "src/listener.rs"
+  ],
+  "functionalPatchedFileSha256": {
+    "Cargo.toml": "a1cce6286ff12457e9d37bbfd67e383a68af0f643418aa6e5bb0df764aa3cad8",
+    "src/attached.rs": "0796f24978d94fad28e11f47ce24e196ca6df59e3c61350d0b227105541990ea",
+    "src/builder.rs": "7d99898274135ffa8a4c5866c6cbc7c81104faf284e403b57d20a80967d9c56a",
+    "src/listener.rs": "3d622e94a43cc930241cc94cc86d3c3b5818b4c53b350e89ae958b0c76cf4051"
+  },
+  "mechanicalFormatting": {
+    "command": "just fmt",
+    "scope": "Repository-mandated mechanical Rust formatting after scoped tests and just fix",
+    "changedFiles": {
+      "src/attached.rs": {
+        "beforeSha256": "0796f24978d94fad28e11f47ce24e196ca6df59e3c61350d0b227105541990ea",
+        "afterSha256": "f26e1f0d13bd87df9a7b956de86a749e962deef378df515c58bdc5fa7dd6a799"
+      },
+      "src/builder.rs": {
+        "beforeSha256": "7d99898274135ffa8a4c5866c6cbc7c81104faf284e403b57d20a80967d9c56a",
+        "afterSha256": "ff18530f35529b6c795c05b3b2ce772284d5c91287518c3eecade2a100c17728"
+      },
+      "src/builder_compat_tests.rs": {
+        "beforeSha256": "bdc00860aa8a4235a39da64507cd4ef65ad7f34c1bcde6f091c0c2f09cf23791",
+        "afterSha256": "2f584177263be40a85828e8f212e496c9173dde5c64ccac0df52f32e42400e82"
+      },
+      "src/listener.rs": {
+        "beforeSha256": "3d622e94a43cc930241cc94cc86d3c3b5818b4c53b350e89ae958b0c76cf4051",
+        "afterSha256": "18f435c1581e20e4cdecf05a56e418443956839be5c9a0912e19cb27cc591eb3"
+      },
+      "src/stream.rs": {
+        "beforeSha256": "364c39391c73e097e76f397076c5946f2abfecdd7ecdff90bb55e6b7b5826cb2",
+        "afterSha256": "3313adffc62693dc8cc0e436f4949890c996ab361deb3873d02967b46eb8ef40"
+      }
+    },
+    "patch": "HEPTA-formatting.patch",
+    "patchSha256": "7e371f0d6c6c50900e54cc43a8bca87178f89bb46c2c9cc11c2408258d4466bf"
+  }
+}

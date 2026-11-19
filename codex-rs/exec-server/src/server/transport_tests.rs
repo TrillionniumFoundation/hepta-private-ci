@@ -75,6 +75,7 @@ async fn stdio_listen_transport_serves_initialize() {
         method: INITIALIZE_METHOD.to_string(),
         params: Some(
             serde_json::to_value(InitializeParams {
+                process_exit_observation: true,
                 client_name: "exec-server-transport-test".to_string(),
                 resume_session_id: None,
             })

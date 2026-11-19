@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "title": "Disambiguate original Prepared revalidation without changing authority",
+  "base": "2125da36a0e49a19b725c28bb150900f20caac7b",
+  "observed_original_checker_failure": "cell_q24_original_dataset_revalidation: codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs: unresolved possible CellQ24TrainingBatchV1::revalidate_source receiver",
+  "checker_unchanged": {
+    "path": "scripts/verify_hepta_callers.py",
+    "git_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+    "typed_git_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f"
+  },
+  "source": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs",
+    "preimage_git_blob": "a8672f720db903e906dde6fb1433f295a5bf96ed",
+    "sha256": "ea02bda266a052dbcf48b078763df2872fae92ba1ec47c2437f64bd08e9c135b",
+    "bytes": 12602,
+    "operations": [
+      {
+        "old_text": "        self.prepared.revalidate_source().map_err(refused)?;",
+        "new_text": "        CellQ24PreparedLearningV1::revalidate_source(self.prepared.as_ref())\n            .map_err(refused)?;",
+        "expected_count": 1
+      }
+    ],
+    "postimage_git_blob": "178cdbbdb2427a4bd330dd08e98e7d709a074c5e"
+  },
+  "metadata": {
+    "path": "CALLERS.toml",
+    "read_preimage": "10c775207f196fe5b55b91d1572e5bc99cb66747",
+    "operations": [
+      {
+        "kind": "exact_text",
+        "old_text": "\"self.prepared.revalidate_source()\"",
+        "new_text": "\"CellQ24PreparedLearningV1::revalidate_source(self.prepared.as_ref())\"",
+        "expected_count": 1,
+        "scope": "protected_file path=codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs / fn read_accepted("
+      }
+    ],
+    "boundary_rows_unchanged": true,
+    "product_callers_unchanged": true,
+    "protection_order_unchanged": true
+  },
+  "reason": "The exact field is Arc<CellQ24PreparedLearningV1>. UFCS spells its existing inherent method on the same original Arc target. It changes no validation, input, time, ordering, error handling or access. Original batch boundary must not list this unrelated call.",
+  "validation": {
+    "static_exact_replacement": true,
+    "official_checker_executed": false,
+    "rustfmt_executed": false,
+    "native_executed": false
+  }
+}

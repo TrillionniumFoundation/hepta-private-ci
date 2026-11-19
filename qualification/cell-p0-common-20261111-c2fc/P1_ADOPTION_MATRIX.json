@@ -1,0 +1,962 @@
+{
+  "schema": "hepta.p1.adoption-matrix-readonly.v1",
+  "observed_utc": "2026-11-11T00:40:18Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": {
+    "components": [
+      "PERC",
+      "ACT",
+      "VERIFY",
+      "PRED"
+    ],
+    "fixed_topology": true,
+    "scientific_gate": "HOLD",
+    "normalized_adoption": "NoUpdate",
+    "github_reads_only": true,
+    "new_h_jobs": 0,
+    "new_experiments": 0,
+    "pushes_or_prs_created_for_this_audit": 0,
+    "full_repository_enumeration_performed": false
+  },
+  "interpretation": {
+    "unknown_representation": "null or explicit unknown; no absence inference from incomplete search",
+    "unit_rule": "task IDs, synthetic rows, seeds, fits, optimizer calls, subprocesses and test assertions are separate units",
+    "evidence_boundary": "published JSON, protocols, exact Git objects and two original decoded job logs were read; raw archived campaign members were not re-extracted or rerun in this audit",
+    "ci_boundary": "workflow wrapper lists first-page PR-triggered runs only; absent runs are not proof of nonexecution; workflow and job conclusions retained separately",
+    "source_boundary": "distinct research, product, evidence and dependency heads are not treated as a single integrated candidate"
+  },
+  "corrections_to_user_counts": [
+    {
+      "component": "PERC",
+      "old_statement": "current comparisons are only known DEV",
+      "update": "historical DEV limitation remains for those runs; #5768 adds 30 distinct synthetic semantic confirmation tasks repeated over 3 training seeds with actual online encoder batches, not new independent real sources"
+    },
+    {
+      "component": "ACT",
+      "old_statement": "3200 episodes / 80 confirmation tasks with seed repeats",
+      "update": "unchanged: 80 designated controlled instances x 8 training seeds x 5 labelled arms = 3200 episodes per execution; second execution repeats the exposed cohort; 80 IDs are not 80 authenticated independent field units"
+    },
+    {
+      "component": "PRED",
+      "old_statement": "189 fits are development execution volume",
+      "update": "unchanged statistical boundary; #5681 retains a distinct complete 189-fit execution plus zero-fit replay, not recovered originals or 189 confirmations; #5759 adds synthetic 12-train/6-dev engineering data and zero real confirmation units"
+    }
+  ],
+  "components": [
+    {
+      "cell": "PERC",
+      "evidence_pr": 5768,
+      "published_head": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "tested_source": "72ea7a144babd7e0df6138a3d7688768115d6088",
+      "decision": {
+        "scientific": "HOLD",
+        "adoption": "NoUpdate",
+        "retain": "rules; direct ROI when coordinates are valid public task inputs"
+      },
+      "units": {
+        "distinct_synthetic_confirmation_tasks": 30,
+        "controlled_semantic_families": 5,
+        "training_seeds": 3,
+        "executions_per_arm": 90,
+        "fits": 6,
+        "optimizer_updates": 1200,
+        "encoder_batches_total": 432,
+        "encoder_batches_online": 216,
+        "new_real_confirmation_units_admitted": 0,
+        "authenticated_independent_real_source_count": null,
+        "independent_source_status": "unknown",
+        "repeat_is_new_confirmation": false
+      },
+      "baseline": {
+        "fair_comparator": "rules with same public information and acquisition caps",
+        "oracle_only": "direct_roi_oracle receives evaluator coordinates in this semantic experiment",
+        "results": {
+          "dense": {
+            "correct": 63,
+            "executions": 90,
+            "online_wall_seconds": 6.735790162,
+            "encoder_calls": 108
+          },
+          "direct_roi_oracle": {
+            "correct": 90,
+            "executions": 90,
+            "online_wall_seconds": 0.044437444,
+            "encoder_calls": 0
+          },
+          "global": {
+            "correct": 49,
+            "executions": 90,
+            "online_wall_seconds": 6.704176951,
+            "encoder_calls": 108
+          },
+          "rules": {
+            "correct": 90,
+            "executions": 90,
+            "online_wall_seconds": 0.196993453,
+            "encoder_calls": 0
+          }
+        },
+        "inference": "global and dense lose task accuracy and use about 34 times rule-policy online time; no terminal net utility is qualified"
+      },
+      "ordinary_entry": {
+        "implemented": "PYTHONPATH=scripts python -m perc1 capture / capture-read",
+        "measured": "operator-pinned generated local files; one actual MobileNet batch",
+        "production_daemon_qualified": false,
+        "live_camera_or_desktop_acquisition_qualified": false,
+        "native_cell_encoder": "28968 wire bytes / 64 Q24 scalars; exact roundtrip and five rejection controls",
+        "native_cell_owner_or_inference_qualified": false
+      },
+      "recovery": {
+        "observed": "exact immutable receipt/wire replay and separate-process cold read after deleting run-owned source and model copies; zero new encoder work; next-task exact amount/entity spans",
+        "distributed_owner_fencing": null,
+        "complete_product_owner_recovery": null
+      },
+      "existing_work_do_not_duplicate": [
+        {
+          "pr": 5768,
+          "scope": "owned capture, durable local owner, native wire persistence, semantic benchmark and CLI cold read"
+        },
+        {
+          "pr": 5604,
+          "scope": "published source reuse guard"
+        },
+        {
+          "pr": 5608,
+          "scope": "exclusive audit output creation"
+        }
+      ],
+      "remaining": [
+        "new independent real-source task roster and adequate power design",
+        "positive terminal net benefit over rules/direct-ROI as appropriate",
+        "ordinary daemon/live-acquisition to native owner/inference assembly",
+        "distributed owner fencing",
+        "complete energy and provider billing"
+      ],
+      "unknown_costs": {
+        "energy_joules": null,
+        "provider_billing": null,
+        "full_process_tree_cost": null
+      },
+      "refs": [
+        "perc_summary",
+        "perc_benchmark",
+        "perc_owner",
+        "perc_source",
+        "perc_entry"
+      ],
+      "exact_head_ci": [
+        {
+          "run_id": 42833349316,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42833349316"
+        },
+        {
+          "run_id": 42833349588,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42833349588"
+        },
+        {
+          "run_id": 42833349310,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42833349310"
+        }
+      ]
+    },
+    {
+      "cell": "ACT",
+      "learning_pr": 5669,
+      "learning_head": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "product_evidence_pr": 5675,
+      "product_evidence_head": "65c8f46f668eadf26da64d6455fd504af73a1186",
+      "scoped_native_source": "378c06a898728a7fa60498ef051843e38d592e67",
+      "latest_scoped_fixture_repair": {
+        "pr": 5863,
+        "head": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+        "scope": "LF perception fixture and Windows canonical-path assertion; both exact targets passed; full blocking CI failed"
+      },
+      "decision": {
+        "scientific": "HOLD",
+        "adoption": "NoUpdate",
+        "retain": "fixed skill library"
+      },
+      "units": {
+        "training_trajectories": 80,
+        "designated_confirmation_instances": 80,
+        "normalized_destination_families": 1,
+        "training_seeds": 8,
+        "labelled_arms": 5,
+        "episodes_per_arm": 640,
+        "episodes_per_execution": 3200,
+        "recorded_executions": 2,
+        "fits_per_execution": 16,
+        "adam_steps_per_fit": 220,
+        "distinct_B1_macro_decision_sequences": 5,
+        "new_real_field_confirmation_units_admitted": 0,
+        "authenticated_independent_confirmation_unit_count": null,
+        "independent_unit_status": "unknown; controlled IDs and seed repeats do not establish field independence",
+        "run2_new_confirmation": false
+      },
+      "source_binding": {
+        "kind": "three measured file SHA-256 pins, not a blanket tested whole-Git-source claim",
+        "current_source_bytes_match_run2": true,
+        "files": {
+          "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+          "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+          "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+        },
+        "local_check": "/additional_byte_checks"
+      },
+      "baseline": {
+        "B0_B2": "identical primitive controller",
+        "B1": "macro shares underlying deterministic heuristic; not an independently implemented fifth strong strategy",
+        "results": {
+          "B0_workflow": {
+            "completed": 512,
+            "episodes": 640,
+            "unknown": 128,
+            "primitive_calls": 6144
+          },
+          "B1_macro": {
+            "completed": 512,
+            "episodes": 640,
+            "unknown": 128,
+            "primitive_calls": 6144
+          },
+          "B2_flat": {
+            "completed": 512,
+            "episodes": 640,
+            "unknown": 128,
+            "primitive_calls": 6144
+          },
+          "B3_head": {
+            "completed": 512,
+            "episodes": 640,
+            "unknown": 128,
+            "primitive_calls": 6144
+          },
+          "B4_gru": {
+            "completed": 464,
+            "episodes": 640,
+            "unknown": 176,
+            "primitive_calls": 6000
+          }
+        },
+        "frontier_pass": {
+          "B3_head": false,
+          "B4_gru": false
+        },
+        "interpretation": "head ties completion and calls with added learning/inference cost; GRU saves calls with lower completion and more UNKNOWN; full-cost benefit not established",
+        "unknown_outcome_semantics": "No success claimed, including known partial or unsatisfied stops; not only unavailable labels. All final oracle goal labels are available."
+      },
+      "ordinary_entry": {
+        "learning_study": "actual SQLite transactions and same-process separate read-only scoring connection; synthetic faults and goals",
+        "product_final_use_learning_lane": false,
+        "full_dynamic_tool_handler_qualified": false,
+        "existing_entry": "AgentdNotesThreadToolRuntime::run_bound",
+        "missing_runtime_inputs": [
+          "actual Core sealed thread and original same-connection callback",
+          "retained AuthBus human ACK",
+          "current Root human lookup and Core ReconcileOnly queue",
+          "original deployed provider/writer/FinalUse and actual effect readback"
+        ]
+      },
+      "recovery": {
+        "implemented_or_scoped_pass": [
+          "typed original-owner Notes fence and responsibility proof",
+          "durable original-source read floors and fresh-attachment real-App checks",
+          "borrowed pidfd/pipe observer without closing the owner's writer"
+        ],
+        "learning_optimizer_moments_retained": false,
+        "learning_process_restart_qualified": false,
+        "actual_app_source_checkpoint_rewind_qualified": false,
+        "post_close_current_goal_readback": "unknown",
+        "complete_product_cold_recovery": null
+      },
+      "existing_work_do_not_duplicate": [
+        {
+          "pr": 5619,
+          "scope": "require current goal for model tool success"
+        },
+        {
+          "pr": 5641,
+          "scope": "typed original-owner fence"
+        },
+        {
+          "pr": 5645,
+          "scope": "durable original read floors"
+        },
+        {
+          "pr": 5693,
+          "scope": "original responsibility settlement from fence proof"
+        },
+        {
+          "pr": 5713,
+          "scope": "borrowed native wait observer"
+        },
+        {
+          "pr": 5863,
+          "scope": "exact Windows fixture/path fixes"
+        }
+      ],
+      "remaining": [
+        "destination-family holdout and independently grouped confirmation",
+        "full original model-facing handler deployment inputs",
+        "same-owner policy learning and next-task product use",
+        "complete learner/effect-owner recovery and retention evidence",
+        "full cost and a positive quality-cost result"
+      ],
+      "unknown_costs": {
+        "peak_memory": null,
+        "recovery_cost": null,
+        "tuning_and_opportunity_cost": null,
+        "complete_physical_cost": null
+      },
+      "refs": [
+        "act_manifest",
+        "act_result",
+        "act_review",
+        "act_handler",
+        "act_blockers"
+      ],
+      "exact_learning_head_ci": [
+        {
+          "run_id": 42778835522,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42778835522"
+        },
+        {
+          "run_id": 42778835443,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42778835443"
+        },
+        {
+          "run_id": 42778835466,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42778835466"
+        }
+      ]
+    },
+    {
+      "cell": "VERIFY",
+      "policy_pr": 5753,
+      "policy_head": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "separate_dependency_pr": 5852,
+      "separate_dependency_head": "4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0",
+      "decision": {
+        "scientific": "HOLD",
+        "native_published_authority": "NONE",
+        "matrix_adoption": "NoUpdate"
+      },
+      "units": {
+        "engineering_tests": 226,
+        "sqlite_rows": 96,
+        "sqlite_training_rows": 12,
+        "sqlite_calibration_rows": 12,
+        "sqlite_confirmation_rows": 72,
+        "reported_sqlite_effect_subprocesses": 270,
+        "dispatch_scenarios": 9,
+        "dispatch_subprocesses": 17,
+        "hosted_smoke_model_inferences": 0,
+        "new_independent_real_tasks": 0,
+        "authenticated_independent_real_cluster_count": null
+      },
+      "baseline": {
+        "required": "appropriately resourced frozen fixed/VOI and existing controls on same roster, budget, loss, mandatory constraints and checker/evaluator identities",
+        "admissible_real_task_pairs": null,
+        "prospective_terminal_error_and_net_loss_benefit": null,
+        "conditional_p_is_scientific_adoption": false
+      },
+      "ordinary_entry": {
+        "implementation": "advisory scheduler, original prospective/treatment/repair journals and registered checker subprocess dispatch",
+        "native_interfaces": [
+          "EvidenceHost",
+          "QualificationEvidenceStore",
+          "AgentdAutomationEffectHost"
+        ],
+        "ordinary_independent_real_task_owner_path": "unknown",
+        "independent_adjudicator_trust_domain": "unknown; current tests use fixture keys/verifiers"
+      },
+      "recovery": {
+        "implemented": "retained opaque attestations reauthenticated under current host trust; refuse legacy callback-only labels; original pending checker recovery without repeat; child repair lock held through parent commit",
+        "field_owner_evaluator_cold_recovery": null
+      },
+      "existing_work_do_not_duplicate": [
+        {
+          "pr": 5623,
+          "scope": "task-weighted whole-cluster sign flips and positive terminal-error reduction"
+        },
+        {
+          "pr": 5753,
+          "scope": "checker-content/risk-v2 binding; fair-coin allocation authentication; immutable full disposition denominators; label reauthentication; distinct repair outcome lineage"
+        },
+        {
+          "pr": 5845,
+          "scope": "typed discovery metadata compatibility without weakening rejection"
+        },
+        {
+          "pr": 5852,
+          "scope": "actual CLI binding and three original HTTP consumer passes"
+        }
+      ],
+      "exact_policy_ci": {
+        "run_id": 42827989197,
+        "workflow_conclusion": "failure",
+        "ubuntu": {
+          "job_id": 129928197715,
+          "conclusion": "success",
+          "tests": 226,
+          "sqlite_rows": 72,
+          "scenarios": 9,
+          "dispatch_subprocesses": 17,
+          "model_inferences": 0
+        },
+        "windows": {
+          "job_id": 129928198576,
+          "conclusion": "success",
+          "tests": 226,
+          "sqlite_rows": 72,
+          "scenarios": 9,
+          "dispatch_subprocesses": 17,
+          "model_inferences": 0
+        },
+        "macos": {
+          "job_id": 129928198546,
+          "conclusion": "cancelled"
+        },
+        "inference": "Windows fixture fix has exact-head native support; neither macOS nor whole workflow passes are inferred"
+      },
+      "separate_dependency_result": {
+        "run_id": 42903566359,
+        "conclusion": "failure",
+        "executed_tests": 810,
+        "passed_including_flaky": 809,
+        "failed": 1,
+        "skipped": 9,
+        "three_original_remote_http_cases": "pass",
+        "remaining": "unchanged redirect-cycle typed diagnostic expectation mismatch and FORMAT failure; Matrix restart is FLAKY 2/2",
+        "real_confirmation_units_added": 0
+      },
+      "remaining": [
+        "independent real source/task/cluster roster",
+        "original authenticated assignment design",
+        "independently controlled terminal labels for all dispositions",
+        "exclusive complete costs including repair/failure/recovery",
+        "prospective net benefit and separate next-task consumption"
+      ],
+      "unknown_costs": {
+        "complete_physical_cost": null,
+        "full_historical_amortization": null
+      },
+      "refs": [
+        "verify4_result",
+        "verify4_protocol",
+        "verify_matched",
+        "verify_portability",
+        "verify_dependency"
+      ],
+      "workflow_snapshot": [
+        {
+          "run_id": 42827989572,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827989572"
+        },
+        {
+          "run_id": 42827989124,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827989124"
+        },
+        {
+          "run_id": 42827989195,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827989195"
+        },
+        {
+          "run_id": 42827989197,
+          "name": "Hepta VERIFY-1 engineering validation",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42827989197"
+        }
+      ]
+    },
+    {
+      "cell": "PRED",
+      "latest_evidence_pr": 5759,
+      "evidence_head": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "tested_source": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "retained_189_pr": 5681,
+      "retained_189_head": "a3aa398580cbd052f9decbc08af36deea25c6155",
+      "decision": {
+        "scientific": "HOLD",
+        "adoption": "NoUpdate",
+        "production_activation": false
+      },
+      "units": {
+        "distinct_registered_development_fits": 189,
+        "factorization": "3 data x 3 initialization x 3 order x 7 variants",
+        "optimizer_calls": 181440,
+        "sample_presentations": 23224320,
+        "retained_checkpoints": 189,
+        "replay_new_fits": 0,
+        "later_synthetic_train_samples": 12,
+        "later_synthetic_dev_samples": 6,
+        "later_fixture_models": 2,
+        "later_mlp_optimizer_calls": 16,
+        "later_mlp_sample_presentations": 192,
+        "new_live_owner_records": 0,
+        "new_actual_policy_task_comparisons": 0,
+        "new_independent_confirmation_units": 0,
+        "authenticated_independent_real_task_count": null,
+        "historical_original_189_fit_artifacts": "unlocated; new execution is separate and does not recover/replace originals",
+        "used_confirmation_sets_reopened": false
+      },
+      "baseline": {
+        "matched_comparator": "cheap Fixed1 on frozen matched cache",
+        "all_seven_variants_mean_simulated_expected_net_utility": "short and long panels lower than Fixed1 after declared simulated costs",
+        "gru_short_minus_fixed1_expected": -0.001721739,
+        "gru_long_minus_fixed1_expected": -0.001912777,
+        "realized_simulated_sample_direction": "varies by variant; no universal realized dominance claim",
+        "independent_real_paid_task_gain": null
+      },
+      "ordinary_entry": {
+        "implemented": [
+          "bounded read-only TaskFlow owner_capture inventory CLI",
+          "observed empirical/FP64-MLP train/dev runner",
+          "prospective model panel/frozen choice and independent-effect join"
+        ],
+        "live_owner_path": "unknown; checked default paths were absent but service overrides remain unknown",
+        "independent_effect_observer": "unknown",
+        "models_trained_on_live_owner_data": 0
+      },
+      "recovery": {
+        "engineering": "checkpoint/source/Adam resume and unchanged original decisions; offline forecasts do not backdate deployment",
+        "actual_effect_owner_closed_loop": null,
+        "last_service_probe": "UNKNOWN; no session ID; no absence inference"
+      },
+      "existing_work_do_not_duplicate": [
+        {
+          "pr": 5721,
+          "scope": "bounded native owner inventory and create-only capture"
+        },
+        {
+          "pr": 5737,
+          "scope": "observed chosen-action scoring and complete-budget paired eligibility"
+        },
+        {
+          "pr": 5738,
+          "scope": "train-only empirical and FP64 MLP continuous marginals"
+        },
+        {
+          "pr": 5740,
+          "scope": "prospective model/action freeze and independent-effect readback"
+        },
+        {
+          "pr": 5741,
+          "scope": "immutable train/dev CLI with failure receipts"
+        },
+        {
+          "pr": 5759,
+          "scope": "retained synthetic engineering run and owner-source blockers"
+        }
+      ],
+      "remaining": [
+        "locate admissible original owner/action data and independent effect observer",
+        "authenticate provenance and prospective timing",
+        "pre-register real independent paired tasks",
+        "show first-order prediction improves actual decisions over Fixed1",
+        "measure full cost and real owner recovery before longer rollout"
+      ],
+      "measured_development_cost": {
+        "training_outer_wall_seconds": 623.474455454998,
+        "training_child_cpu_seconds": 622.591221,
+        "replay_outer_wall_seconds": 16.06539743200119,
+        "replay_child_cpu_seconds": 15.712234
+      },
+      "unknown_costs": {
+        "complete_physical_cost": null,
+        "independent_paid_task_cost": null
+      },
+      "refs": [
+        "pred_current",
+        "pred_fixture",
+        "pred_189",
+        "pred_replay"
+      ],
+      "exact_source_ci": [
+        {
+          "run_id": 42823758001,
+          "name": "blocking-ci",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823758001"
+        },
+        {
+          "run_id": 42823757799,
+          "name": "Hepta PRED-1 CPU checks",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757799"
+        },
+        {
+          "run_id": 42823757755,
+          "name": "v8-canary",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757755"
+        },
+        {
+          "run_id": 42823757781,
+          "name": "Hepta architecture convergence",
+          "status": "completed",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42823757781"
+        }
+      ]
+    }
+  ],
+  "git_commit_readbacks": {
+    "PERC_evidence": {
+      "sha": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "tree": "c69f037da088686dc2800e3061e0d3b80d1db13d",
+      "parents": [
+        "72ea7a144babd7e0df6138a3d7688768115d6088"
+      ]
+    },
+    "PERC_source": {
+      "sha": "72ea7a144babd7e0df6138a3d7688768115d6088",
+      "tree": "271f7e5e041fbd83efa3b02d036ddd53b1b31cae",
+      "parents": [
+        "58d96081d484125668b31d0130def4e6045196ba"
+      ]
+    },
+    "ACT_learning": {
+      "sha": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "tree": "adb3bf0dfcc84ab9a6a0009190c18d6f964cfc01",
+      "parents": [
+        "dc6c2ed2bf48e952f7e820d7ce8a9b8c72911539"
+      ]
+    },
+    "ACT_ledger": {
+      "sha": "65c8f46f668eadf26da64d6455fd504af73a1186",
+      "tree": "c7537cdf3492e5d504b742d0877291e42a7a011c",
+      "parents": [
+        "618455d8177ed383207ecc5dcd7b5ec79bde3248"
+      ]
+    },
+    "ACT_scoped_source": {
+      "sha": "378c06a898728a7fa60498ef051843e38d592e67",
+      "tree": "1c8af7b5c875f449d2fb04dc4b08d97a6c45c8d1",
+      "parents": [
+        "dbf0e8e7fc334177617b8bc956e416fddd501d77"
+      ]
+    },
+    "VERIFY4": {
+      "sha": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "tree": "606bce6d87235388ceb25236a7ff857c67039a4e",
+      "parents": [
+        "71322d9528e135c1df0a22e6324197db51d0399f"
+      ]
+    },
+    "VERIFY3_dependency": {
+      "sha": "4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0",
+      "tree": "4756de82f6003b0e11e8a71022e68ffcc10b0ed5",
+      "parents": [
+        "130bb4c9297a4fc2fa8eb7ea7c7197f06c7b694f"
+      ]
+    },
+    "PRED_owner_evidence": {
+      "sha": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "tree": "f953289a0f3135ea1da9997dfa58f143a5df81d1",
+      "parents": [
+        "71f4f4c66c0ce8a39d28ff8fe8249b673d57def2"
+      ]
+    },
+    "PRED_owner_source": {
+      "sha": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "tree": "d73b9ebd61944ce64e2061555d002129e6d66ea6",
+      "parents": [
+        "0a7dcd39974c768440134105b25ebc16624f89a4"
+      ]
+    },
+    "PRED_189": {
+      "sha": "a3aa398580cbd052f9decbc08af36deea25c6155",
+      "tree": "256db37a27165d7e70afd181deb5af7294ea8d8c",
+      "parents": [
+        "0ccd03731c2acda612bfd50c2c26d5f6dcef7bff"
+      ]
+    }
+  },
+  "pr_readbacks": [
+    {
+      "number": 5768,
+      "head": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "branch": "research/perc3-semantic-owner-20261110",
+      "base": "72569fba94a38f7bb0628409cbb05b62fa6c9627",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5768"
+    },
+    {
+      "number": 5669,
+      "head": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "branch": "research/act2-learning-cpu-20261110",
+      "base": "631e99f78898543e8dc1e8671632baf73945940e",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5669"
+    },
+    {
+      "number": 5675,
+      "head": "65c8f46f668eadf26da64d6455fd504af73a1186",
+      "branch": "qualification/act2-continuation-evidence-20261110",
+      "base": "932ddd2df826db7b15e3b8bd6eea0292ca099a7d",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5675"
+    },
+    {
+      "number": 5753,
+      "head": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "branch": "research/verify4-evidence-closure-20261110",
+      "base": "a2cd828aad47c56ac8c01dc2e423454eca7eafae",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5753"
+    },
+    {
+      "number": 5759,
+      "head": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "branch": "evidence/pred-owner-decision-20261110-9e31",
+      "base": "74d3fddbc6e6cf28184848558422a81711460dc8",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5759"
+    },
+    {
+      "number": 5681,
+      "head": "a3aa398580cbd052f9decbc08af36deea25c6155",
+      "branch": "evidence/pred-reexecution-004-20261110-4456",
+      "base": "0ccd03731c2acda612bfd50c2c26d5f6dcef7bff",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5681"
+    },
+    {
+      "number": 5852,
+      "head": "4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0",
+      "branch": "research/verify3-remote-consumer-cli-binding-20261110",
+      "base": "130bb4c9297a4fc2fa8eb7ea7c7197f06c7b694f",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5852"
+    },
+    {
+      "number": 5863,
+      "head": "80419fb63f00d1ce6c4a9796b399b6d9d2fec519",
+      "branch": "fix/act2-windows-fixture-identity-20261110",
+      "base": "378c06a898728a7fa60498ef051843e38d592e67",
+      "draft": true,
+      "state": "open",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5863"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "perc_summary",
+      "commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "path": "qualification/perc-semantic-owner-20261110/SUMMARY.json",
+      "git_blob": "07cdb84aaac4c10147972e0d73343f20cc4a112a",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/qualification/perc-semantic-owner-20261110/SUMMARY.json"
+    },
+    {
+      "id": "perc_benchmark",
+      "commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "path": "qualification/perc-semantic-owner-20261110/REPORT_BENCHMARK_V2.json",
+      "git_blob": "a84cb69ca84fa4b91648fa31664ce286b3b73062",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/qualification/perc-semantic-owner-20261110/REPORT_BENCHMARK_V2.json"
+    },
+    {
+      "id": "perc_owner",
+      "commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "path": "qualification/perc-semantic-owner-20261110/REPORT_OWNED_CLI.json",
+      "git_blob": "7704c72a9f3fb7c5b04e189822f99f0b4ddff26b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/qualification/perc-semantic-owner-20261110/REPORT_OWNED_CLI.json"
+    },
+    {
+      "id": "perc_source",
+      "commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "path": "qualification/perc-semantic-owner-20261110/SOURCE_FINAL.json",
+      "git_blob": "43f9fa5ba391e8d605a2f7c24914ae7abe6eb6db",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/qualification/perc-semantic-owner-20261110/SOURCE_FINAL.json"
+    },
+    {
+      "id": "perc_entry",
+      "commit": "2ec44e234a7164807f41af3a79e795dd71efa179",
+      "path": "scripts/perc1/__main__.py",
+      "git_blob": "fcfc759571bf36fa4e6b5f07800cd6ea156d8969",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2ec44e234a7164807f41af3a79e795dd71efa179/scripts/perc1/__main__.py"
+    },
+    {
+      "id": "act_manifest",
+      "commit": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "path": "qualification/act2-learning-20261110/run2/FROZEN_MANIFEST.json",
+      "git_blob": "83fc8493a649f8826f3880162d74408c3d6fd570",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/run2/FROZEN_MANIFEST.json"
+    },
+    {
+      "id": "act_result",
+      "commit": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "path": "qualification/act2-learning-20261110/run2/RESULT.json",
+      "git_blob": "b48b157717beb8d6506848df00f16c5a23c6775e",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/run2/RESULT.json"
+    },
+    {
+      "id": "act_review",
+      "commit": "0584b3344f70ed51d9e09224e105bfa4d1a4635f",
+      "path": "qualification/act2-learning-20261110/review/REVIEW.json",
+      "git_blob": "71ce825079a68846055c61f78182b59035b39db4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0584b3344f70ed51d9e09224e105bfa4d1a4635f/qualification/act2-learning-20261110/review/REVIEW.json"
+    },
+    {
+      "id": "act_handler",
+      "commit": "65c8f46f668eadf26da64d6455fd504af73a1186",
+      "path": "qualification/act2-continuation-20261110/HANDLER_GATES.json",
+      "git_blob": "7e0176423babd05d2a97dee51fa994505bf86cdb",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/65c8f46f668eadf26da64d6455fd504af73a1186/qualification/act2-continuation-20261110/HANDLER_GATES.json"
+    },
+    {
+      "id": "act_blockers",
+      "commit": "65c8f46f668eadf26da64d6455fd504af73a1186",
+      "path": "qualification/act2-continuation-20261110/BLOCKERS.json",
+      "git_blob": "cba41d0699c31c77528936a43f33a27875f2b719",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/65c8f46f668eadf26da64d6455fd504af73a1186/qualification/act2-continuation-20261110/BLOCKERS.json"
+    },
+    {
+      "id": "verify4_result",
+      "commit": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "path": "qualification/verify4-evidence-closure-20261110/RESULT.json",
+      "git_blob": "3b499f94a28a03034df7671778d7ea5e6281b81d",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88deb8a490565fd9b55851ba4581c9516fd1029f/qualification/verify4-evidence-closure-20261110/RESULT.json"
+    },
+    {
+      "id": "verify4_protocol",
+      "commit": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "path": "experiments/verification_cell_verify1/VERIFY4.md",
+      "git_blob": "db0e82c205f854febea44da1337b9bc884767040",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88deb8a490565fd9b55851ba4581c9516fd1029f/experiments/verification_cell_verify1/VERIFY4.md"
+    },
+    {
+      "id": "verify_matched",
+      "commit": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "path": "qualification/verify3-matched-20261109/README.md",
+      "git_blob": "6311eaab1546e2603242fb178df7c89f43ee0001",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88deb8a490565fd9b55851ba4581c9516fd1029f/qualification/verify3-matched-20261109/README.md"
+    },
+    {
+      "id": "verify_portability",
+      "commit": "88deb8a490565fd9b55851ba4581c9516fd1029f",
+      "path": "qualification/verify4-evidence-closure-20261110/PORTABILITY.json",
+      "git_blob": "de70cd1e6c8ff3776b6d2a3a545f9b201d0e8358",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/88deb8a490565fd9b55851ba4581c9516fd1029f/qualification/verify4-evidence-closure-20261110/PORTABILITY.json"
+    },
+    {
+      "id": "verify_dependency",
+      "commit": "4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0",
+      "path": "qualification/verify3-dependency-reconciliation-20261110/DEPENDENCY_PROPOSAL.md",
+      "git_blob": "b79f6d4732e3fd9fd25e8f97ffb5479a58a72622",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4010cc2631a993d76ce9ebbeca3bddbd1e8c83a0/qualification/verify3-dependency-reconciliation-20261110/DEPENDENCY_PROPOSAL.md"
+    },
+    {
+      "id": "pred_current",
+      "commit": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "path": "qualification/pred-owner-decision-20261110-9e31/CURRENT.json",
+      "git_blob": "6c993fe584317cb71e4e9429c7707406252f219b",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeb34582ac8a6bbb6c1e79b0722daead1aadb377/qualification/pred-owner-decision-20261110-9e31/CURRENT.json"
+    },
+    {
+      "id": "pred_fixture",
+      "commit": "aeb34582ac8a6bbb6c1e79b0722daead1aadb377",
+      "path": "qualification/pred-owner-decision-20261110-9e31/FIXTURE_RUN.json",
+      "git_blob": "a3666b9bb50f85141f9541a5ae9a1f4e48579d86",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/aeb34582ac8a6bbb6c1e79b0722daead1aadb377/qualification/pred-owner-decision-20261110-9e31/FIXTURE_RUN.json"
+    },
+    {
+      "id": "pred_189",
+      "commit": "a3aa398580cbd052f9decbc08af36deea25c6155",
+      "path": "qualification/pred-reexecution-20261110-4456/evidence/CONCLUSION.json",
+      "git_blob": "2f250aac4b6a110d870223f83fb1e31f58787138",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a3aa398580cbd052f9decbc08af36deea25c6155/qualification/pred-reexecution-20261110-4456/evidence/CONCLUSION.json"
+    },
+    {
+      "id": "pred_replay",
+      "commit": "a3aa398580cbd052f9decbc08af36deea25c6155",
+      "path": "qualification/pred-reexecution-20261110-4456/evidence/REPLAY_AUDIT.zh-CN.md",
+      "git_blob": "3a67b28e6a04ff85669771faf820b628304defbc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a3aa398580cbd052f9decbc08af36deea25c6155/qualification/pred-reexecution-20261110-4456/evidence/REPLAY_AUDIT.zh-CN.md"
+    }
+  ],
+  "additional_byte_checks": [
+    {
+      "file": "models.py",
+      "sha256": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+      "sha256_matches": true,
+      "git_blob": "a3aef75e6bb9e15e8e159d2d8c7a66ade47a852f",
+      "git_blob_matches": true
+    },
+    {
+      "file": "run.py",
+      "sha256": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+      "sha256_matches": true,
+      "git_blob": "9adda63641c29b1cf304980162916541f6959110",
+      "git_blob_matches": true
+    },
+    {
+      "file": "sqlite_destination.py",
+      "sha256": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4",
+      "sha256_matches": true,
+      "git_blob": "0ad66601612826c6a3eda731f0f62f4d950b45f4",
+      "git_blob_matches": true
+    },
+    {
+      "file": "scripts/perc1/__main__.py",
+      "sha256": "ed00b4a62eea9d00bb6d001b3dfddde1316cd40ba3abfab057619ba7b7f1d98f",
+      "sha256_matches": true,
+      "git_blob": "fcfc759571bf36fa4e6b5f07800cd6ea156d8969",
+      "git_blob_matches": true
+    }
+  ],
+  "verify4_original_decoded_logs": [
+    {
+      "path": "/workspace/scratch/c2fccbdb195e/p1-mem-ctrl/p1-adoption-readback/verify4-job-129928197715.decoded.log",
+      "bytes": 79805,
+      "sha256": "f8ded96709077558e778a7269d5c0aa7d084b5fb42a2ae300826ff0103539ae0",
+      "job_id": 129928197715,
+      "kind": "decoded UTF-8 original job log from connector; not ZIP bytes"
+    },
+    {
+      "path": "/workspace/scratch/c2fccbdb195e/p1-mem-ctrl/p1-adoption-readback/verify4-job-129928198576.decoded.log",
+      "bytes": 85730,
+      "sha256": "9ba6b9efb93a8883a69d642c37195de1a68ffa78346b7ac7224342f6ccc61e31",
+      "job_id": 129928198576,
+      "kind": "decoded UTF-8 original job log from connector; not ZIP bytes"
+    }
+  ]
+}

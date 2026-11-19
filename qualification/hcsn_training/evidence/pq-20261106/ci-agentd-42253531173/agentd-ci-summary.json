@@ -1,0 +1,163 @@
+{
+  "artifact": {
+    "artifact_id": 13526813253,
+    "created_at": "2026-11-06T17:56:55Z",
+    "expires_at": "2027-02-04T16:33:44Z",
+    "head_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+    "job_id": 128014547600,
+    "name": "hcsn-agentd-a20ea6a862e501d8a4993195c7da1ac52ca9a7be-1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_attempt": 1,
+    "run_id": 42253531173,
+    "sha256": "9f339af4602f67ee578dd45e6be0619fa55557d5cf6acf0c62b6f1c4d4441c7e",
+    "size_in_bytes": 432185,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13526813253"
+  },
+  "audit": "pq-host-audit.json",
+  "audit_sha256": "45a09c94b7cf8f3be134636abc07fd7e4529656106852fd60a692cf03598be07",
+  "backends": [
+    {
+      "backend": "value_kernel",
+      "cold_native_pid": 24538,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24527,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "retained_files_verified": 53,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "5341255bf0b71961e318b94b4da2dae70272cf1054d3dcc9360a22ccf553037d",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "cb31005282c6a8c2925e6753b8172140c30a0a6f204a67c27c4ec7352f768440",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "c78d4bfb408216223ba4123b48e4cb704b9dbcef50feaf5c5c14c5e1c8fbd0f8",
+        "process_id": 24535
+      }
+    },
+    {
+      "backend": "population_grid",
+      "cold_native_pid": 24562,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24551,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "retained_files_verified": 53,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "4b0631eeee62202e249cb25df5c75974b62f818fe27467745fb40f8cc8eaf96d",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "e15785f89288963b01c6869f106c4abc552a066c2e9cdbd76827139206388b31",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "1df54666cc5dff3fa73eeeea8d9fb00b7144dbde4de455326bcdeb02f2b84fc8",
+        "process_id": 24559
+      }
+    },
+    {
+      "backend": "population_age",
+      "cold_native_pid": 24589,
+      "consumed_nonces_verified_from_raw_claim_frames": 2,
+      "external_frontier_recomputed": true,
+      "final_outcomes": [
+        "failed",
+        "succeeded"
+      ],
+      "initial_observations": [
+        "indeterminate",
+        "indeterminate"
+      ],
+      "missing_expired_feed_terminal_readback_recorded": true,
+      "parent_pid": 24578,
+      "raw_terminal_bound_to_cold_receipts": true,
+      "retained_files_verified": 53,
+      "sqlite_receipts_match_exactly": true,
+      "sqlite_sha256": "dc98bd44f58b428355c39a999748a7e40f459a27ebdca2970cb364177c2f7f20",
+      "terminal_reason": "cancelled_worker_stopped",
+      "terminal_sha256": "c9cb30ca36f0b842e35346c9676157122e1033e59a6b269b0a5003074cd6a045",
+      "worker": {
+        "host_id": "26055c97a1de53eab20079009a9c6573d5512481ae13abbed3ea7361eeced3a3",
+        "incarnation": "185131821b713240ae4826ced4177c2f472477d1a0488fa800250dab99a56628",
+        "process_id": 24586
+      }
+    }
+  ],
+  "binary_identity_scope": "Build and native execution linkage recorded in CI; absent executable bytes are not rehashed offline. The digest equals the first run digest, and the subsequent repository commit changes only an independent JSON inventory. This audit independently binds the new process records and retained bytes to the new source/tree; digest equality alone is not used to prove new execution.",
+  "claim_limits": [
+    "23 selected tests do not imply all 192 Agentd test cases ran.",
+    "The single ignored real-worker acceptance entrypoint was separately executed for all three backends by exact-name wrappers; those outcomes are independently audited.",
+    "Cancelled process optimizer entry remains unproven; a separate one-step preflight is not evidence of that entry.",
+    "Fresh native-process cold recovery is proved by retained CI records; no Agentd daemon or AuthBus ingress was booted.",
+    "Production ML-DSA profile is exercised with local test trust services and keys, not independently provisioned production custody.",
+    "No production deployment or CUDA work.",
+    "Signed source inventory proves checked snapshots, not atomic filesystem/runtime custody."
+  ],
+  "exact_test_executable_sha256": "541fefe529d8010c5ace043f40b3070fb7649a7994442d8939f158981fb7d517",
+  "executable_bytes_in_artifact": false,
+  "host_tests": {
+    "failed": 0,
+    "passed": 23,
+    "skipped_by_filter_or_ignore": 169
+  },
+  "job_id": 128014547600,
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42253531173/job/128014547600",
+  "ordinary_non_test_library_check": "passed",
+  "protected_source_pins_verified": 11,
+  "recursive_python_source_files_verified": 54,
+  "retention": {
+    "all_185_original_members_preserved_byte_identical": true,
+    "bare_python_helpers_in_publication": false,
+    "complete_original_zip": "agentd-complete.zip",
+    "complete_original_zip_bytes": 432185,
+    "complete_original_zip_sha256": "9f339af4602f67ee578dd45e6be0619fa55557d5cf6acf0c62b6f1c4d4441c7e",
+    "excluded_compiled_binaries": [],
+    "filtered_archive": {
+      "path": "pq-host-raw-filtered.zip",
+      "sha256": "7ab4adce82adda78cc8b64754f827444b45dce64178fa4c3b2d39354d1c6d119",
+      "size": 434685
+    },
+    "helper_archive": "offline-audit-tools.tgz",
+    "helper_inventory": "offline-audit-tools-files.json",
+    "job_evidence_archive": "job-evidence-raw.tgz",
+    "job_evidence_inventory": "job-evidence-files.json",
+    "job_log_matches_decoded_tool_text_exactly": true,
+    "original_file_count": 185,
+    "raw_zip_and_extraction_deleted": false
+  },
+  "run_attempt": 1,
+  "run_id": 42253531173,
+  "schema": "hcsn.final-agentd-ci-summary.v1",
+  "scope": {
+    "agentd_daemon_booted": false,
+    "authbus_ingress_exercised": false,
+    "independent_production_custody_proven": false,
+    "live_proc_observation_repeated": false,
+    "native_ci_process_evidence_and_retained_bytes_cross_checked": true,
+    "new_tests_executed_in_this_audit": false,
+    "optimizer_entry_proven": false,
+    "production_deployment": false,
+    "runtime_and_source_atomic_custody_proven": false,
+    "signatures_reverified_offline": false
+  },
+  "scoped_clippy": "passed; warnings retained",
+  "source_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
+  "status": "passed",
+  "tracked_source_unchanged": true
+}

@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "from pathlib import Path\nimport datetime,hashlib,json,os,time\nb=Path('/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training');start=time.monotonic()\np=b/'campaign-v2-monitor/LATEST.json';raw=p.read_bytes();latest=json.loads(raw)\nplan=json.loads((b/'campaign-v2-plan.json').read_bytes());rows={}\nfor line in (b/'campaign-v2/commands.jsonl').read_bytes().splitlines():\n try:\n  r=json.loads(line);rows[r['name']]=r\n except json.JSONDecodeError:pass\nexpected={f'{arm}-s{seed}-lr{lr:g}' for arm in plan['arms'] if arm!='hcsn' for seed in plan['seeds'] for lr in plan['learning_rates']}\nterminal={'completed','failed','timed_out','launch_failed','evidence_failed','not_started_whole_budget'}\nfits=[]\nfor r in latest['fits']:\n x={k:r.get(k) for k in ['name','status','diagnostic_updates','main_updates','complete_epochs','last_event']}\n x['last_memorization_passed']=r.get('last_memorization',{}).get('passed')\n if 'last_epoch' in r:x['latest_D_F1']=r['last_epoch']['development']['macro_f1_11_classes']\n x['final']=r.get('final');fits.append(x)\nended={n for n in expected if rows.get(n,{}).get('status') in terminal}\nreport={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'latest_utc':latest['utc'],'latest_sha256':hashlib.sha256(raw).hexdigest(),'controller_pid':1487187,'controller_proc_exists':Path('/proc/1487187').exists(),'original_final_result_exists':(b/'campaign-v2/RESULT.json').exists(),'c1_output_exists':(b/'campaign-v2-continuation-c1').exists(),'c1_source_exists':(b/'run-source-c1-v1').exists(),'all_original36_baselines_terminal':ended==expected,'terminal_baseline_count':len(ended),'nonterminal_names':sorted(expected-ended),'fits':fits,'last_monitor_processes':latest['processes'],'outer_terminal_rows':[{k:r.get(k) for k in ['name','status','returncode','hard_wall_seconds','whole_process_wall_seconds','result_sha256']} for n,r in rows.items() if n in ended],'own_algorithm_wall_seconds':time.monotonic()-start,'own_process_cpu_seconds':time.process_time()}\nprint(json.dumps(report,sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1794328846006,
+    "cwd": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training",
+    "env_keys": [],
+    "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1c6555eb6-5074-aa",
+    "idempotency_key": "native-fresh42-status-reconcile-20261110-c385-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1c6555eb6-5074-aa",
+    "request_digest": "420776c8be00f5a4baceb813fcb3c56a462d93af120ddff8b2605f7790f8473e",
+    "request_fingerprint": 4757902135893489060,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1c6555eb6-5074-aa"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1c6555eb6-5074-aa"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

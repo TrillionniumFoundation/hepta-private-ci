@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-runtime-dependency-progress-observation-v1",
+  "recorded_at_utc": "2026-11-05 17:22:06 UTC",
+  "scope": "Selected non-sensitive fields from independently read atomic status files; downloaded artifacts are not installed runtime or model results.",
+  "host": "desktop",
+  "task_root": "/data/hcsn-cuda-170run-20261105-r1",
+  "raw_status_files_published": false,
+  "excluded_fields_scope": "Process-owner paths, cache inventories and command metadata are omitted; original full-file SHA256 retained.",
+  "numeric_ready_sha256": "74bd91aa38786f49beb3f4fc5be7ca9cf278f79d13d1246e02174d696ca9052f",
+  "observations": [
+    {
+      "source_file": "resumable-torch-stage-status.json",
+      "source_file_sha256": "616643b2bddc6ab30b4926d96a5f91baea4c59ddde88a77b04bbffbabfeccb43",
+      "source_file_bytes": 2481,
+      "fields": {
+        "schema": "hcsn-resumable-torch-install-v4-data",
+        "state": "download_verified_ranges",
+        "manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701",
+        "script_sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3",
+        "completed_bytes": 1223616653,
+        "total_bytes": 3918339031,
+        "completed_parts": 297,
+        "artifact_count": 25,
+        "started_at": "2026-11-05T17:00:26.006486+00:00",
+        "last_completed_at": "2026-11-05T17:19:51.087863+00:00",
+        "last_payload_at": "2026-11-05T17:20:36.491683+00:00",
+        "elapsed_seconds": 1210.5193389580818,
+        "wire_bytes_received_this_attempt": 302000564,
+        "workers": 8,
+        "filesystem_free_bytes": 34063704064,
+        "minimum_download_free_bytes": 6849195438,
+        "gpu_model_computation_performed": false
+      }
+    },
+    {
+      "source_file": "mamba-download-status.json",
+      "source_file_sha256": "67d88c3689610fba1d84081efb3c6fa4f053a87723f87f3e92e31e86275d4e43",
+      "source_file_bytes": 2651,
+      "fields": {
+        "schema": "hcsn-official-mamba-install-v3-data",
+        "state": "download_verified_ranges",
+        "manifest_sha256": "86f88c5d54c74e5baccdd99cace8f056a6ed6acc11f4bd8f633e122c951d5501",
+        "script_sha256": "c7d67ffd43c2939da304154976eafe22e4869f6507f0e3a7b379963a43c4317f",
+        "completed_bytes": 591772576,
+        "total_bytes": 706688727,
+        "completed_parts": 147,
+        "artifact_count": 17,
+        "started_at": "2026-11-05T17:00:54.848153+00:00",
+        "last_completed_at": "2026-11-05T17:20:24.330839+00:00",
+        "last_payload_at": "2026-11-05T17:20:33.225133+00:00",
+        "elapsed_seconds": 1178.4059631079435,
+        "wire_bytes_received_this_attempt": 148242432,
+        "workers": 8,
+        "filesystem_free_bytes": 34064527360,
+        "minimum_download_free_bytes": 13272496046,
+        "gpu_model_computation_performed": false
+      }
+    }
+  ],
+  "cuda_model_or_training_completion_claimed": false
+}

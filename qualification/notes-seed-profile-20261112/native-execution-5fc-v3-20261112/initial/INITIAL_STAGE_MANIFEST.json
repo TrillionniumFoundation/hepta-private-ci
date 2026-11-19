@@ -1,0 +1,119 @@
+{
+  "schema": "hepta.act6243.native-v3-initial-stages.evidence.v1",
+  "source_sha": "5fc34e1ac0f1cf7e98162c210414ad72845a6b4c",
+  "source_tree": "35d5a86106db8ced1c71ff447546cb9375f1ee47",
+  "job_id": "1a1cfbdbae4-2564-1a9a",
+  "stage_evidence": {
+    "source_clone": 0,
+    "source_fetch": 0,
+    "source_checkout": 0,
+    "v8_prepare": {
+      "exit_code": 0,
+      "elapsed_seconds": 24.93396119493991
+    },
+    "rustc_version": 0,
+    "caller_proof": "START record observed; no terminal retrieved at this observation",
+    "build": "No result retrieved",
+    "six_methods": "No result retrieved"
+  },
+  "resource_and_tools": "Actual resource floors and uid/euid1000 pass. Tool path/version match PLAN; four tools with registered expected hashes match. Other tool hashes are observed, not separately expected pins.",
+  "source_binding": "Actual saved REQUEST_PLAN is structurally equal to exact approved stdin. Original reviewed input table matches. Full SOURCE_BEFORE inventory and SOURCE_AFTER are not archived here.",
+  "v8": "Actual original driver record reports both exact release artifact sizes and SHA256. No 29MB binary archive is included in this evidence bundle.",
+  "owner_decision": null,
+  "qualification": "HOLD",
+  "artifacts": [
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/REQUEST_PLAN.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/REQUEST_PLAN.json",
+      "version": "66306:77118054:5731:1794486691295648735:1794486691295648735",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 5731,
+      "sha256": "c9866d30d6aea0dcf5f3098cffce0593e77fd09ad560b6e265837b9dd46e0e54",
+      "blob": "12f7b2bf3fb438174dc84aaaf4242a71011ca02e"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/RESOURCE_AT_START.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/RESOURCE_AT_START.json",
+      "version": "66306:77118055:373:1794486691297033617:1794486691297033617",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 373,
+      "sha256": "804ebc6f131805947aadbbd36cdec1f7ed74918f7579892402db6a3e556a7484",
+      "blob": "c03a448148a9237f7c9aa69e8e1d6832ef20c4bd"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/TOOLS.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/TOOLS.json",
+      "version": "66306:77118056:1927:1794486691381400111:1794486691381400111",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 1927,
+      "sha256": "4dee80f563ae7c591f150296f6bf5460047d60d7212fd62a29bf0d625c70f336",
+      "blob": "d50b5125ae7a2be9bbedef83095d39f6b8c1ad7a"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/REVIEWED_SOURCE_INPUTS.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/REVIEWED_SOURCE_INPUTS.json",
+      "version": "66306:77118693:1383:1794486700769606444:1794486700769606444",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 1383,
+      "sha256": "a6ce89f482f64d4f7dcbb6503bbe91bef12b27b8ac4569ea607b4aa53e7ae2bf",
+      "blob": "d5909c11761db138a8cfe3ddfbeeaa42485527a7"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/V8_ARTIFACTS.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/V8_ARTIFACTS.json",
+      "version": "66306:77118698:673:1794486725754780949:1794486725754780949",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 673,
+      "sha256": "cd6f3deb6f0d2d0f1061cc8c54fefe3446cb36611d9f1e04b6827b42e7954038",
+      "blob": "1e58e9dc02306f92b4ba244b869f081b72f9d447"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/v8-prepare-TERMINAL.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/v8-prepare-TERMINAL.json",
+      "version": "66306:77118697:170:1794486725704749417:1794486725704749417",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 170,
+      "sha256": "0739cb973d4c3c2a7bf31bae01eac6675f7055f9831336350eb52689c51490c8",
+      "blob": "554559e84a806309d8fe06ba5c9213ed7716e942"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/caller-proof-START.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/caller-proof-START.json",
+      "version": "66306:77118702:703:1794486725775343967:1794486725775343967",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 703,
+      "sha256": "fdafcedc30051834720cf6621344f85bf2ce06d817cb48e1ad3321794c5cdcaf",
+      "blob": "151f3da6981eb4ccdea673fe22ae5723c4aee999"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/LOCK_BEFORE.json",
+      "original_path": "/home/qq/neuro-act6243-native-862531d11598/5fc34e1ac0f1-v3/evidence/act2-notes-seed/LOCK_BEFORE.json",
+      "version": "66306:77118692:116:1794486700768968876:1794486700768968876",
+      "representation": "Complete original small-file bytes returned by h.read_multiple_files, independently size/SHA256 verified.",
+      "bytes": 116,
+      "sha256": "67ba83cf2693e0c1dd8656ca6f8aad4a101146661cd7f969b3a5ca2896ae6fe4",
+      "blob": "87de7b649ad7f912d981cbe5799fecc6a59578af"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/READBACK_ORIGINAL_SDK.json",
+      "representation": "Original h.read_multiple_files SDK text; not reserialized.",
+      "bytes": 14477,
+      "sha256": "faaafe3f19e5d5cb76b15124724fbe4a666d02765539d6e4ae3a3036cf07160f",
+      "blob": "54a8b1c3c5e73cc8e5b5855af68f37cf4fa3f80f"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/PROCESS_READ_0_ORIGINAL_SDK.json",
+      "representation": "Original bounded process-read SDK text; eof means currently observed stream end, not process completion.",
+      "bytes": 2837,
+      "sha256": "842f9ff3dac99f98ad880d016ba12efd1c2a42899c6433bf4d2e3c124856c54b",
+      "blob": "b2605582b68e83f1b7635a9e98ba00df55107fde"
+    },
+    {
+      "path": "qualification/notes-seed-profile-20261112/native-execution-5fc-v3-20261112/initial/PROCESS_STDOUT_0.jsonl",
+      "representation": "Original stdout bytes 0..817, independently checked against returned bytes_hex; partial execution log.",
+      "bytes": 817,
+      "sha256": "aa7811bc6fefea35567f7e394b85871a98ee47d00903d07461937839ca7ad797",
+      "blob": "5cb9919b84ae473296215ff931041a483d0fd2a0"
+    }
+  ]
+}

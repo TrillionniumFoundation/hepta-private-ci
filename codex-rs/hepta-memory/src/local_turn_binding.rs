@@ -323,7 +323,8 @@ mod tests {
     async fn prepared(temp: &TempDir, bound: bool) -> (LocalLeaseOutbox, LocalCompactExecutor) {
         let fleet_root = temp.path().join("fleet");
         fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet root");
+        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet root"))
+            .expect("fleet root");
         let owner = AgentId::parse("00000000-0000-4000-8000-000000000931").expect("owner");
         let store = CognitiveStore::open(&fleet.layout().agent(&owner))
             .await

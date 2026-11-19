@@ -4,8 +4,6 @@ use anyhow::Context;
 use anyhow::Result;
 use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_login::AuthDotJson;
 use codex_login::AuthKeyringBackendKind;
@@ -22,7 +20,7 @@ pub struct ChatGptAuthFixture {
     refresh_token: String,
     account_id: Option<String>,
     claims: ChatGptIdTokenClaims,
-    last_refresh: Option<Option<DateTime<Utc>>>,
+    last_refresh: Option<Option<codex_utils_time::Timestamp>>,
 }
 
 impl ChatGptAuthFixture {
@@ -66,7 +64,7 @@ impl ChatGptAuthFixture {
         self
     }
 
-    pub fn last_refresh(mut self, last_refresh: Option<DateTime<Utc>>) -> Self {
+    pub fn last_refresh(mut self, last_refresh: Option<codex_utils_time::Timestamp>) -> Self {
         self.last_refresh = Some(last_refresh);
         self
     }
@@ -157,7 +155,9 @@ pub fn write_chatgpt_auth(
         account_id: fixture.account_id,
     };
 
-    let last_refresh = fixture.last_refresh.unwrap_or_else(|| Some(Utc::now()));
+    let last_refresh = fixture
+        .last_refresh
+        .unwrap_or_else(|| Some(codex_utils_time::Timestamp::now()));
 
     let auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),

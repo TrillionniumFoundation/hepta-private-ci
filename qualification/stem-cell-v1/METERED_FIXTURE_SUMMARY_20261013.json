@@ -1,0 +1,78 @@
+{
+  "classes": 2,
+  "feature_dimension": 4,
+  "kind": "synthetic_encoder_real_tensor_training",
+  "model_capability_evidence": false,
+  "production_authorized": false,
+  "python_code_candidate": "a2ee85f7a4b52636cad67594ded483cb06e1bfb7",
+  "runs": [
+    {
+      "actual_bank_parameters": 672,
+      "arm_id": "shared_421m_head_no_ndu",
+      "cpu_ns": 1041908210,
+      "elapsed_ns_instrumented": 1045713792,
+      "inference_including_warmup_formula_flops": 5229,
+      "peak_rss_process_lifetime_bytes": 331190272,
+      "train_formula_flops": 86072,
+      "unknown_operators": {},
+      "zone_energy": {
+        "joules": null,
+        "reason": "counter_unavailable",
+        "scope": "rapl_zone"
+      }
+    },
+    {
+      "actual_bank_parameters": 672,
+      "arm_id": "shared_421m_sparse_fixed16_no_ndu",
+      "cpu_ns": 71551991,
+      "elapsed_ns_instrumented": 71549389,
+      "inference_including_warmup_formula_flops": 1029,
+      "peak_rss_process_lifetime_bytes": 331452416,
+      "train_formula_flops": 21760,
+      "unknown_operators": {},
+      "zone_energy": {
+        "joules": null,
+        "reason": "counter_unavailable",
+        "scope": "rapl_zone"
+      }
+    },
+    {
+      "actual_bank_parameters": 672,
+      "arm_id": "shared_421m_sparse_direct32_no_ndu",
+      "cpu_ns": 105171042,
+      "elapsed_ns_instrumented": 105166265,
+      "inference_including_warmup_formula_flops": 1137,
+      "peak_rss_process_lifetime_bytes": 331714560,
+      "train_formula_flops": 22888,
+      "unknown_operators": {},
+      "zone_energy": {
+        "joules": null,
+        "reason": "counter_unavailable",
+        "scope": "rapl_zone"
+      }
+    },
+    {
+      "actual_bank_parameters": 1344,
+      "arm_id": "shared_421m_sparse_direct32_64m_no_ndu",
+      "cpu_ns": 102308959,
+      "elapsed_ns_instrumented": 102310169,
+      "inference_including_warmup_formula_flops": 1461,
+      "peak_rss_process_lifetime_bytes": 331845632,
+      "train_formula_flops": 31456,
+      "unknown_operators": {},
+      "zone_energy": {
+        "joules": null,
+        "reason": "counter_unavailable",
+        "scope": "rapl_zone"
+      }
+    }
+  ],
+  "samples": {
+    "evaluation_requests": 2,
+    "training": 2,
+    "warmup": 1
+  },
+  "schema": "hepta.measured-fixture-summary.v1",
+  "units": "versioned_ATen_formula_FLOPs_not_hardware_instructions",
+  "width_units": 3
+}

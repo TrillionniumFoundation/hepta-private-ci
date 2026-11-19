@@ -1,0 +1,28 @@
+{
+  "name": "v8-sandbox-staged-false-wrong-expectation",
+  "cwd": "/data/hepta-cur-decoding-closure",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-v8-poc",
+    "--locked",
+    "--test-threads",
+    "2",
+    "--lib",
+    "-E",
+    "test(sandbox_feature_matches_linked_v8)"
+  ],
+  "baseSha": "12a4c2e3487476b54fc28e4fa3109604c498f566",
+  "workingDiffSha256": "7940c49b55f5a85c434da69aad98b1e92923b06246d2f34d6edcff9411861f4b",
+  "startedAt": "2026-10-23T20:06:39.104479+00:00",
+  "finishedAt": "2026-10-23T20:06:40.872936+00:00",
+  "elapsedSeconds": 1.7684458319563419,
+  "exitCode": 100,
+  "log": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/v8-sandbox-staged-false-wrong-expectation.log",
+  "environment": {
+    "CARGO_TARGET_DIR": "/data/hepta-v8-nosandbox-target",
+    "CARGO_BUILD_JOBS": "1",
+    "RUSTUP_TOOLCHAIN": "1.95.0"
+  }
+}

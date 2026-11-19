@@ -1,0 +1,13 @@
+{
+  "schema": "new-identity-controlled-copy-v1",
+  "upstream_commit": "fa25828fc4faee625c10db1f70add43f0074ff41",
+  "upstream_path": "qualification/hcsn_joint_dde/model.py",
+  "upstream_git_blob": "53196eb0d4056850d5642be3d7da666c87745a22",
+  "transformation": {
+    "from": "not 1e-14 <= atol",
+    "to": "not 1e-18 <= atol",
+    "occurrences": 1
+  },
+  "shared_source_changed": false,
+  "not_recovered_old_v3_source": true
+}

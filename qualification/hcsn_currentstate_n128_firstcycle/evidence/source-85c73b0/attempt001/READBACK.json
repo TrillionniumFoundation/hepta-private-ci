@@ -1,0 +1,64 @@
+{
+  "all_closed": false,
+  "artifact": {
+    "compressed_bytes": 3059964,
+    "git_blob_sha": "262381312b0e1ea4c6643ce87dda6b260ebfcc69",
+    "id": 13992774332,
+    "member_count": 16,
+    "sha256": "7b7a392a9e750503f28767be8e0d71a8380d1dd2b868a5273a16f79c0af3bb4e",
+    "uncompressed_member_bytes": 64281669
+  },
+  "capsule_sha256": {
+    "0": "fcc2f745323f28d842102dc5da8f53665c78d2cf6948877f872faeb8c648e8d9",
+    "1": "4e1755d2144415b42786d21d25f0a97a3d458d9479f2042e7f2794173ea523bf",
+    "2": "1323938aa7b55c6e6d0fb96221cb56258bd6d34118bc9579f83319647e3235e2",
+    "3": "806d803642950f8248d24e918a12249a2bf96fef58f648bd534ca1b05dcd943c",
+    "4": "833474bcdaf45c7787a2869fa86efbad2f8b22fdb0c88d0fbcbef1764f8a72a9"
+  },
+  "comparison": {
+    "candidate_coordinate_sha256": "2f35648c0fca465f95656e7940b04977ff83e14f117c35d6ca4f6027f9af329e",
+    "candidate_dynamic_segments": 11,
+    "candidate_expm_calls": 22,
+    "cold_containers_byte_exact": 5,
+    "coordinate_counts": [1376, 18528, 35680, 155702, 189992],
+    "failures": 0,
+    "independent_oracle_coordinate_sha256": "2f35648c0fca465f95656e7940b04977ff83e14f117c35d6ca4f6027f9af329e",
+    "independent_oracle_dynamic_segments": 11,
+    "independent_oracle_expm_calls": 22,
+    "max_abs_error": 0.0,
+    "optimizer_calls": 0,
+    "times": [0.0, 0.001, 0.02, 0.16, 0.2],
+    "torch_calls": 0,
+    "total_bitwise_equal": 401278,
+    "total_coordinates": 401278
+  },
+  "identity": "hcsn-n128-firstcycle-fullstate-20261112-c06d-001",
+  "job": {
+    "complete_log_git_blob_sha": "66d2671885737295b8a3a61f492ce40c29ab524d",
+    "id": 131563180145,
+    "run_id": 43327389327,
+    "status": "success"
+  },
+  "qualification": false,
+  "resources": {
+    "candidate_cpu_seconds": 12.220650268,
+    "candidate_max_rss_kib": 612596,
+    "candidate_wall_seconds": 12.224377852,
+    "host_mem_available_bytes": 15284137984,
+    "rlimit_as_bytes": 2147483648,
+    "wrapper_full_child_cpu_seconds": 12.661255,
+    "wrapper_full_child_max_rss_kib": 612596,
+    "wrapper_full_child_wall_seconds": 12.842931903999983
+  },
+  "scope": {
+    "after_generation_2_release": false,
+    "arbitrary_histories": false,
+    "full_network": false,
+    "n256": false,
+    "n512": false,
+    "production_adoption": false,
+    "through_time": 0.2
+  },
+  "source_sha": "85c73b040448bc58929e40118d533a5ea65705e2",
+  "status": "PASS_BOUNDED_N128_FIRSTCYCLE_ONLY"
+}

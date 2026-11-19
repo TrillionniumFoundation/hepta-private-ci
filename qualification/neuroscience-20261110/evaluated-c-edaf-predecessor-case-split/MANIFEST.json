@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.evaluated-c-predecessor-case-split.candidate.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+  "base_tree": "056ad664fecbafc0c901ebbdc228ea1f98b86b52",
+  "status": "STATIC_CANDIDATE_NOT_RUN",
+  "code": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_evaluated_next_use_receipt_tests.rs",
+      "base_blob": "320a6ce49e5d5016aa1af408a981c464f29e38af",
+      "post_blob": "316d35149c78e6c961a8d942fedb19e9c826e587",
+      "bytes": 20216,
+      "sha256": "bd0dfbca029fe2ad237a8687a0a4dbe5b11d42bb5d088e77f10d7d31eacc012a"
+    }
+  ],
+  "actual_failure": {
+    "source": "edaf1d9a420dc99336f36b24515eb9c65a97b0da",
+    "failure_excerpt_blob": "48c873e78aa594816c87537a45c7188ffdf577ea",
+    "timeout_seconds_reported": 60.012,
+    "earlier_286c_reported": 60.014,
+    "observations": "Two no-request original S exchanges ended Ok(false); no internal fixture phase timings. These lines do not establish exactly which phase consumed the remaining deadline."
+  },
+  "old_test": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+  "cases": [
+    {
+      "original_loop_value": "trainer",
+      "test_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_each_actual_original_predecessor_without_claim",
+      "mutation": "f.host.original.withdraw_original_dataset()",
+      "expected_error": "NextUseError::Evaluated(PublicationError::Training(OriginalCellQ24TrainingCommandErrorV1::CommitUncertain))",
+      "trainer_evaluator_read_counts": [
+        7,
+        6
+      ],
+      "selector_peer_result": "served = 0"
+    },
+    {
+      "original_loop_value": "evaluator",
+      "test_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_evaluator_without_claim",
+      "mutation": "f.host.retention_b.withdraw_target()",
+      "expected_error": "NextUseError::Evaluated(PublicationError::Evaluation(OriginalCellEvaluationCommandErrorV1::PredecessorUnavailable))",
+      "trainer_evaluator_read_counts": [
+        7,
+        7
+      ],
+      "selector_peer_result": "served = 0"
+    },
+    {
+      "original_loop_value": "selector",
+      "test_name": "runtime::tests::circuit_task_ingress::q24_tests::model_selection_owner::original::evaluation_provider::panel_members::evaluation_host::evaluated_publication::publication_fixture::receipt_tests::next_use_tests::evaluated_c_refuses_original_selector_without_claim",
+      "mutation": "original selection journal set_len(0)",
+      "expected_error": "NextUseError::Connection(LearningIterationRuntimeErrorV1::OwnerUnavailable(_))",
+      "trainer_evaluator_read_counts": [
+        8,
+        8
+      ],
+      "selector_peer_result": "Transport(InvalidRequest)"
+    }
+  ],
+  "denominator": {
+    "old_test_methods_in_file": 4,
+    "new_test_methods_in_file": 6,
+    "existing_test_names_removed": 0,
+    "new_test_names_added": 2,
+    "original_independent_faults": 3,
+    "new_independent_faults": 3,
+    "fixture_initializations": 3,
+    "real_c_executions": 3,
+    "denominator_policy": "The retained old method name now covers Trainer only; coverage of the original three-fault test requires all three named cases. Full ordinary-suite discovery includes them; a filter selecting only the old name must not claim all-three coverage."
+  },
+  "equivalence": {
+    "helper_body_exact_after": [
+      "remove only the loop's indentation",
+      "replace the three string case tags with a closed private enum",
+      "remove the now-unreachable wildcard arms"
+    ],
+    "body_comparison_verified": true,
+    "no_owner_shared_between_faults": true,
+    "all_original_guards_and_assertions_retained": true,
+    "protected_bytes": [
+      "original C receipt journal and witness via files.bytes()",
+      "actual CURRENT and retained-C publication journal/witness via f.publication_bytes()"
+    ],
+    "intentional_fault_files": "Exactly the original selected predecessor withdrawal/truncation remains; no extra mutations.",
+    "transport_cap_and_deadlines_unchanged": true,
+    "fixture_calls_and_effect_order_unchanged": true
+  },
+  "scope": {
+    "production_changes": 0,
+    "workflow_changes": 0,
+    "deadline_changes": 0,
+    "new_fake_owners": 0,
+    "root_permission_changes": 0,
+    "qualified_adoption": false
+  },
+  "validation": {
+    "rustfmt": "NOT_RUN",
+    "compile": "NOT_RUN",
+    "native": "NOT_RUN",
+    "source_checker": "NOT_RUN"
+  },
+  "owner_decision": null,
+  "science": "HOLD",
+  "source_inventory": {
+    "native_qa_blob": "8a09f0d775797b9ef4af26ba0fe5e32c2b4fd234",
+    "full56qa_scan_blob": "9c133311525bf3662e9ca71890ab6c6285c800c3",
+    "workflow_blob": "72d4b247d90dde972ac592b2d568cd6e470f97ff",
+    "observer_inventory_blob": "277cfe65e7255ac2dc12c4bf8603eb38dab21460",
+    "observer_inventory_test_blob": "10f56e97ffa8e5bb266f21d89f98e47fed6b87e1",
+    "all_original_native_markers_retained": true
+  },
+  "aggregate_time_budget": "Existing per-test timeout unchanged; three methods have separate budgets. The full roster may consume more aggregate elapsed time than the former one-method loop. No runtime speedup claim.",
+  "review": [
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/PATCH.diff",
+      "blob": "268030370eba3b061c6f968f06f3f92328262f25",
+      "bytes": 8484,
+      "sha256": "fa16b60daa643e2a79348fc4039048a0b7bf6526f48ee8793a4a535e01d01aca"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/SCOPE_SCAN.json",
+      "blob": "b95e201e5753459780d93ad05242a0b9942f4eb2",
+      "bytes": 19130,
+      "sha256": "33c17b4157925c9af2a1a8a444f7244687e9420fd7a1660ccb8609430d364892"
+    },
+    {
+      "path": "qualification/neuroscience-20261110/evaluated-c-edaf-predecessor-case-split/DIAGNOSIS.json",
+      "blob": "5f0005f604133d3767a7b56dffe71679c0ee75c0",
+      "bytes": 2811,
+      "sha256": "629c9fbe3474506cdace4d68b823c361fe5d2bfb20b3c1de10e58e3157d081ec"
+    }
+  ]
+}

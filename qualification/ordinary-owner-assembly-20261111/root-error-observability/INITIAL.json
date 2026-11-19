@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.root-initial-test-diagnostic-delta.v1",
+  "classification": "TEST_ONLY_DIAGNOSTIC_CONTEXT_UNEXECUTED",
+  "original_failure": {
+    "source": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "tree": "1122b8a0f3342b0944313a895b6f8838918fcddd",
+    "root_parents": 17,
+    "passed": 15,
+    "failed": 2,
+    "initial_seconds": 15.663,
+    "initial_failure": "Error: Resource temporarily unavailable (os error 11)",
+    "log_blob": "25319f8b638924e2cf507ef2d0595ac5767aebbe",
+    "log_bytes": 46301,
+    "log_sha256": "e11c42ce884d0b6a0fed01d3020e4008468468179eb9abbd2bbc7fecf3e5e669",
+    "junit_blob": "0cc7d2f7f17ef4b75f1490d640749654c8ceccfb",
+    "execution_blob": "d0375393546dc0f9b8f9e870e4f7b9e323ed4f2f",
+    "timed_out": false,
+    "output_limit_exceeded": false,
+    "source_clean_before_after": true
+  },
+  "base": {
+    "reference": "715a5726f5031e50ad963812d2a1270e8d0cf769",
+    "fixture_original_blob": "b7d5bf795d095f19e8137e73397e3d6b28da17ea",
+    "child_tested_blob": "ae0b152c62d28f338ca89fcd5322ef7ca12d9dbc",
+    "child_patch_preimage": "e1938112669ea6fe8373b6ed358931aced1dfee1",
+    "child_preimage_description": "Parent V16 native-formatted postimage, fetched by full Git blob; it is not relabelled as the tested child."
+  },
+  "findings": [
+    "Initial run_phase stores the original Root serve result, then registration.join()?? returns first; a registration control recv error can hide an earlier original Root serve error.",
+    "Initial parent control waits for ORIGINAL_INPUTS_READY, STABLE and DONE have no phase labels in the tested source.",
+    "The original shared ChildOwner Drop kills/waits but discards child stdout/stderr; only successful finish preserves output. Shared helper repair is owned by runtime_access and is not part of this delta.",
+    "The exact first underlying failed operation is not established by the existing EAGAIN-only output.",
+    "Original handoff send_packet sends SCM_RIGHTS via sendmsg only; it does not read an acknowledgement. No same-socket concurrent ACK-receive cause is claimed."
+  ],
+  "changes": [
+    "Keep every original operation, phase, timeout, lifetime, nonce assertion and denial branch.",
+    "Attach Initial parent/child phase and operation context to existing errors.",
+    "On registration-thread failure retain both its original error chain and the already-observed Root serve result.",
+    "Emit only three fixed stage markers per child phase, bounded by the unchanged six-phase component loop.",
+    "Do not wrap the controlled lost-ACK error before the original typed RootGenerationInitialUncertain assertion."
+  ],
+  "static_checks": {
+    "exact_edit_counts": true,
+    "reverse_exactops_reconstructs_preimages": true,
+    "assertion_occurrence_counts_unchanged": true,
+    "timeout_and_lifetime_occurrence_counts_unchanged": true,
+    "original_phase_sequence_unchanged": true,
+    "original_claim_and_publish_calls_unchanged": true
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_fixture_tests.rs",
+      "before_blob": "b7d5bf795d095f19e8137e73397e3d6b28da17ea",
+      "after_blob": "88374031ceb8467684db2d987054b7394de41f8b",
+      "before_bytes": 21829,
+      "before_sha256": "d853571c067eb78ee9200cdccedfeb2dde09cda9f6c224dd6f0f1b166efa5428",
+      "after_bytes": 23134,
+      "after_sha256": "a81a73eac2f244ff3951c509aecaedd8a2d96219710841c519f0a104e577ab3f",
+      "edits": [
+        {
+          "before": "use super::*;\n",
+          "after": "use super::*;\nuse anyhow::Context;\n",
+          "expected_count": 1
+        },
+        {
+          "before": "                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")?;",
+          "after": "                control(&self.offer, b\"ORIGINAL_INPUTS_READY\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting ORIGINAL_INPUTS_READY\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                    let registered = outcome?;",
+          "after": "                    let registered = outcome\n                        .with_context(|| format!(\"initial parent {phase:?}: registering original deployment\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                control(&self.offer, b\"STABLE\")?;",
+          "after": "                control(&self.offer, b\"STABLE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting STABLE\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                control(&self.offer, b\"DONE\")?;",
+          "after": "                control(&self.offer, b\"DONE\")\n                    .with_context(|| format!(\"initial parent {phase:?}: awaiting DONE\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)\n                    .map_err(io::Error::other)?;",
+          "after": "                crate::send_root_production_handoff(send.try_clone()?, &sealed, &root_pin, TIMEOUT)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending original production handoff\"))\n                    .map_err(io::Error::other)?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                    TIMEOUT,\n                )\n                .map_err(io::Error::other)?;\n                send_data(&send, &plan).map_err(io::Error::other)?;\n                send_target_files(&send, target_writer, witness_writer).map_err(io::Error::other)",
+          "after": "                    TIMEOUT,\n                )\n                .with_context(|| format!(\"initial parent {phase:?}: sending original initial handoff\"))\n                .map_err(io::Error::other)?;\n                send_data(&send, &plan)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending component plan\"))\n                    .map_err(io::Error::other)?;\n                send_target_files(&send, target_writer, witness_writer)\n                    .with_context(|| format!(\"initial parent {phase:?}: sending original target descriptors\"))\n                    .map_err(io::Error::other)",
+          "expected_count": 1
+        },
+        {
+          "before": "            registration\n                .join()\n                .map_err(|_| anyhow::anyhow!(\"initial registration thread\"))??;",
+          "after": "            let registered = registration\n                .join()\n                .map_err(|_| anyhow::anyhow!(\"initial registration thread panicked\"))\n                .and_then(|outcome| outcome);\n            if let Err(error) = registered {\n                return Err(error.context(format!(\n                    \"initial parent {phase:?}, controlled_ack_loss={}: original Root serve result: {served:?}\",\n                    self.drop_ack\n                )));\n            }",
+          "expected_count": 1
+        },
+        {
+          "before": "                served?;",
+          "after": "                served.with_context(|| format!(\"initial parent {phase:?}: original Root serving\"))?;",
+          "expected_count": 1
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_child_tests.rs",
+      "before_blob": "e1938112669ea6fe8373b6ed358931aced1dfee1",
+      "after_blob": "d15885d6b7ba946d0ff248f543a133d2e928408d",
+      "before_bytes": 8390,
+      "before_sha256": "afeb9ad8436631d6284f810d4dbc14ccce346988bb3c80bde267dd1643d176bf",
+      "after_bytes": 10446,
+      "after_sha256": "22476dae96b1fc8869817813daf28d5906d9a54a1b977baeef3f940275f9d241",
+      "edits": [
+        {
+          "before": "use super::*;\n",
+          "after": "use super::*;\nuse anyhow::Context;\n",
+          "expected_count": 1
+        },
+        {
+          "before": "        for phase in [Phase::Publish, Phase::ReserveExisting, Phase::Recover, Phase::RetiredSession, Phase::Corrupt, Phase::Restored] {\n",
+          "after": "        for phase in [Phase::Publish, Phase::ReserveExisting, Phase::Recover, Phase::RetiredSession, Phase::Corrupt, Phase::Restored] {\n            eprintln!(\"ROOT_INITIAL_CHILD phase={phase:?} stage=awaiting_original_handoffs\");\n",
+          "expected_count": 1
+        },
+        {
+          "before": "                crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)?;",
+          "after": "                crate::receive_root_production_handoff(socket.try_clone()?, LIFETIME)\n                    .with_context(|| format!(\"initial child {phase:?}: receiving original production handoff\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            let initial = crate::receive_root_generation_initial_handoff(socket.try_clone()?, LIFETIME)?;",
+          "after": "            let initial = crate::receive_root_generation_initial_handoff(socket.try_clone()?, LIFETIME)\n                .with_context(|| format!(\"initial child {phase:?}: receiving original initial handoff\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            let plan: Plan = data(&socket)?;",
+          "after": "            let plan: Plan = data(&socket)\n                .with_context(|| format!(\"initial child {phase:?}: receiving component plan\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            let (journal, witness) = receive_target_files(&socket)?;",
+          "after": "            let (journal, witness) = receive_target_files(&socket)\n                .with_context(|| format!(\"initial child {phase:?}: receiving original target descriptors\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                sealed, root_pin, &identity, TIMEOUT, LIFETIME,\n            ).await?;",
+          "after": "                sealed, root_pin, &identity, TIMEOUT, LIFETIME,\n            ).await.with_context(|| format!(\"initial child {phase:?}: opening original five-lane inputs\"))?;\n            eprintln!(\"ROOT_INITIAL_CHILD phase={phase:?} stage=original_five_lane_inputs_open\");",
+          "expected_count": 1
+        },
+        {
+          "before": "            let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)?;",
+          "after": "            let (artifacts, selected) = plan.artifacts.reopen(now_ms()?)\n                .with_context(|| format!(\"initial child {phase:?}: reopening original Artifact owner\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            let (model, bundle, definition) = material::load(&plan.model_directory)?;",
+          "after": "            let (model, bundle, definition) = material::load(&plan.model_directory)\n                .with_context(|| format!(\"initial child {phase:?}: loading actual model material\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                artifacts, Arc::new(production.device.clone()), production.session.clock(),\n            )?;",
+          "after": "                artifacts, Arc::new(production.device.clone()), production.session.clock(),\n            ).with_context(|| format!(\"initial child {phase:?}: binding original publication authorities\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            assert_eq!(socket.send(b\"ORIGINAL_INPUTS_READY\")?, 21);\n            let enrolled: bool = data(&socket)?;",
+          "after": "            assert_eq!(socket.send(b\"ORIGINAL_INPUTS_READY\")?, 21);\n            eprintln!(\"ROOT_INITIAL_CHILD phase={phase:?} stage=original_inputs_ready_sent\");\n            let enrolled: bool = data(&socket)\n                .with_context(|| format!(\"initial child {phase:?}: awaiting original enrollment result\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "            let initial = initial.connect(connection, TIMEOUT, LIFETIME).await?;",
+          "after": "            let initial = initial.connect(connection, TIMEOUT, LIFETIME).await\n                .with_context(|| format!(\"initial child {phase:?}: connecting original initial lane\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                let prepared = initial.prepare_feature(authorities, selected, target)?;",
+          "after": "                let prepared = initial.prepare_feature(authorities, selected, target)\n                    .with_context(|| format!(\"initial child {phase:?}: preparing original Feature CURRENT\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                let signed = production.grants.request_grant(&binding)?;",
+          "after": "                let signed = production.grants.request_grant(&binding)\n                    .with_context(|| format!(\"initial child {phase:?}: requesting original FinalUse grant\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                    let task = result?;",
+          "after": "                    let task = result\n                        .with_context(|| format!(\"initial child {phase:?}: publishing original Feature CURRENT\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "                let task = initial.recover_feature(authorities, selected, target)?;",
+          "after": "                let task = initial.recover_feature(authorities, selected, target)\n                    .with_context(|| format!(\"initial child {phase:?}: reading original published Feature\"))?;",
+          "expected_count": 1
+        },
+        {
+          "before": "control(&socket, b\"CHECKED\")?;",
+          "after": "control(&socket, b\"CHECKED\")\n                    .with_context(|| format!(\"initial child {phase:?}: awaiting parent CHECKED\"))?;",
+          "expected_count": 3
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "cargo": false,
+    "native": false,
+    "checker": false,
+    "behavior_pass_claimed": false,
+    "new_tests": 0,
+    "root_parent_count_changed": false,
+    "production_code_changed": false,
+    "registry_changed": false,
+    "refs_changed": false
+  },
+  "ordinary_complete_chains": 0,
+  "positive_adoption_chains": 0,
+  "ordinary_no_update_rollback_chains": 0
+}

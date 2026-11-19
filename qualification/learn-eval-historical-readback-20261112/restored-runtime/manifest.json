@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.restored-runtime-evidence.v1",
+  "artifact_scope": "Original failed native builds and completed scoped checks; no ordinary end-to-end acceptance claim",
+  "source_6e": {
+    "sha": "6e4842b5ed28ab6f948646c051651a6c75085085",
+    "tree": "f1eb1c883bc4751aec415409ec23102912022dc9"
+  },
+  "source_723": {
+    "sha": "723a2d763339a55833519417a5f99f4defa9f8e2",
+    "tree": "63b36ed30394d135b481813b1020548d8cf628c5"
+  },
+  "ordinary_acceptance_counts": {
+    "Adopt": 0,
+    "NoUpdate": 0,
+    "daemon_plus_Root_cold_restart": 0
+  },
+  "files": [
+    {
+      "path": "raw/native-6e-missing-header-run.json.xz",
+      "original_bytes": 1171,
+      "original_sha256": "8246972b547719a6ccd1c91c1e408690b2175ccd5a4e9c38a0c61c26fde5993a",
+      "archive_bytes": 684,
+      "archive_sha256": "92862f794194799a530308d8cf6019d3e4a699bfb2dd9f1875ae4717ad79bb71",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/native-6e-missing-header-command.log.xz",
+      "original_bytes": 52257,
+      "original_sha256": "74ced3b74038f9b2179d49a72dd04b21fbc7f297d4b7626e22475b057fcdde43",
+      "archive_bytes": 9388,
+      "archive_sha256": "bd2961329bfb4fd38e13606741ef792f88d94bdec6223c9ab065ed6bf409c1f6",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/native-6e-scope-type-run.json.xz",
+      "original_bytes": 1167,
+      "original_sha256": "f8a6fe54027121fc3792be86f3e102f25ba2fd413099a1c1de97a625e9e9eeca",
+      "archive_bytes": 684,
+      "archive_sha256": "9fa53cb795f6010e50cdbbd228531b2f60355a0a962b492e4cf07947ab94936b",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/native-6e-scope-type-command.log.xz",
+      "original_bytes": 60657,
+      "original_sha256": "967ed2626088a2ea3343fc2c1bd2d65b6c4afab94c643296531e8f54c3a1fa5a",
+      "archive_bytes": 10276,
+      "archive_sha256": "4cd65ba4c804e38531fa4d25592db1a759d3f6d2fb2ee687851e4b50ee408c58",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/native-723-fixture-type-run.json.xz",
+      "original_bytes": 1170,
+      "original_sha256": "669db31ca4413314c90610a700178d3c977d3b3dd6aadda934dcd76196a3af4d",
+      "archive_bytes": 688,
+      "archive_sha256": "5530bcf9f0f2ed07215b904b916c72b58c1b13d8938c06ae95f91aa3aa279a43",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/native-723-fixture-type-command.log.xz",
+      "original_bytes": 19356,
+      "original_sha256": "5f6909cdfe46c22e21cb0c4f5abe5a348b3a9e90c3c435ea9dd5915b8707d7c0",
+      "archive_bytes": 3100,
+      "archive_sha256": "65c620f5e347314b6dc8fdef71704fde311ec5989ae231d38729177fe4f5f7e3",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-caller-selftest.json.xz",
+      "original_bytes": 913,
+      "original_sha256": "f2b644b04300801031a10d983fa60e5764c83993869b0888f2733bc47eeeac42",
+      "archive_bytes": 560,
+      "archive_sha256": "96596f72d848ba101c7fdc229c1d82c5fc33fc19abd0c6f996eb6ef9cd20bf20",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-caller-selftest.log.xz",
+      "original_bytes": 48,
+      "original_sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "archive_bytes": 104,
+      "archive_sha256": "6c681dc5f10362b8eac0234b770a8b13bc582c96a95884806d7a008f4c1e39e6",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-root-source-qa.json.xz",
+      "original_bytes": 1000,
+      "original_sha256": "31a9a33db469a83f855c80142338d17fb47b940e12552c3195dfe5902479ff9d",
+      "archive_bytes": 596,
+      "archive_sha256": "82b5d0fdb05e4589953ab88ad7fcabb7f21a069a7d5290c47ca602415cc5a2d6",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-root-source-qa.log.xz",
+      "original_bytes": 4769,
+      "original_sha256": "5bbcf05202ad8992558073aef56ac1bf003c516b0a092a05486a67c70aa893e2",
+      "archive_bytes": 972,
+      "archive_sha256": "aec00ed64c8ce90715ac1924650eaab1cc6921879e5256184ffd4550045ac857",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-full-callers.json.xz",
+      "original_bytes": 907,
+      "original_sha256": "36463335e170efc09c50ec82c836dd6914272acb91f15761332910207130583b",
+      "archive_bytes": 560,
+      "archive_sha256": "ac19f4f5d56b1052bd61fba594177f6d807baefe0c24bca761463488c54ac0c8",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-6e-full-callers.log.xz",
+      "original_bytes": 118,
+      "original_sha256": "ccede2f753061e680187c3397bbf70da9f89169a3a44c7558ffa4f1d6b80d96f",
+      "archive_bytes": 176,
+      "archive_sha256": "d2027933419e396cbfa538e15ba2f5445b128b19a8a69b37b41fdb17c3e2152b",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-723-root-source-qa.json.xz",
+      "original_bytes": 999,
+      "original_sha256": "b9112e5c1def8aa14e7f41d501e1d229736d872362a8b07801dde04cfbec649f",
+      "archive_bytes": 600,
+      "archive_sha256": "b054876e17e21e016b6791813dcd562863598fc6aacf3c67edaed11a89c2c528",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-723-root-source-qa.log.xz",
+      "original_bytes": 4769,
+      "original_sha256": "e5a7215a297aeb6f0a21ccd968189dcaa7b8f5661691141e7d90a8af1619b074",
+      "archive_bytes": 972,
+      "archive_sha256": "e0ce01e9ee9937227d480ee0a6d6cf53da553cb3c6d46fa649255732fe7e8a4b",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-723-markers-protected.json.xz",
+      "original_bytes": 935,
+      "original_sha256": "646cd7c07943394101b2095a04b32f80b9e6922d9a97f55fee4ce81916f506ce",
+      "archive_bytes": 560,
+      "archive_sha256": "848489ff5c46e94157ce9c419f056c818dd19a87ef403dc3b0fbbfce59f94f5d",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/source-723-markers-protected.log.xz",
+      "original_bytes": 198,
+      "original_sha256": "d7476f428f45731b3dcc552b8ecdd2dbed00fd001b1b3346ca426172f3aa10bd",
+      "archive_bytes": 224,
+      "archive_sha256": "05a922cc2e00d7284427313b1498b1bc3d16771df707547e024e427d079d90a6",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/windows-6e-job.log.xz",
+      "original_bytes": 263502,
+      "original_sha256": "356ab1fef0846cbeafb0c276f7788da310c4b21da2661520358e55e19cfe1a3d",
+      "archive_bytes": 39652,
+      "archive_sha256": "17bc56235f224174de089be6446150f5aeaa80b6bfa8d3cc7c6da1e00e61a7ea",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/windows-6e-jobs.json.xz",
+      "original_bytes": 1825,
+      "original_sha256": "49a9b2566bc1a2c4aefe785a42038e0ed01dfb797901bb56e6d8c6b7906faafc",
+      "archive_bytes": 676,
+      "archive_sha256": "4668bba82d8f2a935bae075fec54996b64856810b6e70c78d96f05d0f4b07971",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    },
+    {
+      "path": "raw/windows-6e-runs.json.xz",
+      "original_bytes": 2560,
+      "original_sha256": "2f7ae64a82659b0638eb40346b3f7fd19d55d838755ccef0bbbc0867a06030ff",
+      "archive_bytes": 572,
+      "archive_sha256": "aa87ad6a4415662308ea91cb932368c4b7c13c558eb8bf6b97ef9fe317a95bf8",
+      "encoding": "XZ lossless; decompressed bytes are the named original file"
+    }
+  ]
+}

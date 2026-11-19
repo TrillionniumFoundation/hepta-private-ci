@@ -31,16 +31,25 @@ fn preview(command: &[String]) -> String {
     }
 }
 
-pub fn log_file_path_for_utc_date(base_dir: &Path, date: chrono::NaiveDate) -> PathBuf {
+pub fn log_file_path_for_utc_date(base_dir: &Path, date: jiff::civil::Date) -> PathBuf {
     base_dir.join(format!(
         "{LOG_FILE_PREFIX}.{}.{}",
-        date.format("%Y-%m-%d"),
+        date.strftime(if date.year() < 0 {
+            "%05Y-%m-%d"
+        } else {
+            "%Y-%m-%d"
+        }),
         LOG_FILE_SUFFIX
     ))
 }
 
 pub fn current_log_file_path(base_dir: &Path) -> PathBuf {
-    log_file_path_for_utc_date(base_dir, chrono::Utc::now().date_naive())
+    log_file_path_for_utc_date(
+        base_dir,
+        jiff::Timestamp::now()
+            .to_zoned(jiff::tz::TimeZone::UTC)
+            .date(),
+    )
 }
 
 pub fn current_log_file_path_for_codex_home(codex_home: &Path) -> PathBuf {
@@ -92,9 +101,20 @@ pub fn debug_log(msg: &str, base_dir: Option<&Path>) {
     }
 }
 
+fn format_local_timestamp(timestamp: &jiff::Zoned) -> String {
+    // The sign is separate from the four year digits in the existing format.
+    timestamp
+        .strftime(if timestamp.year() < 0 {
+            "%05Y-%m-%d %H:%M:%S%.3f"
+        } else {
+            "%Y-%m-%d %H:%M:%S%.3f"
+        })
+        .to_string()
+}
+
 // Unconditional note logging to the daily sandbox log.
 pub fn log_note(msg: &str, base_dir: Option<&Path>) {
-    let ts = chrono::Local::now().format("%Y-%m-%d %H:%M:%S%.3f");
+    let ts = format_local_timestamp(&jiff::Zoned::now());
     append_line(&format!("[{ts} {}] {}", exe_label(), msg), base_dir);
 }
 
@@ -139,7 +159,7 @@ mod tests {
 
     #[test]
     fn log_file_path_for_utc_date_matches_rolling_appender_name() {
-        let date = chrono::NaiveDate::from_ymd_opt(2026, 5, 21).expect("valid date");
+        let date = jiff::civil::date(2026, 5, 21);
 
         assert_eq!(
             log_file_path_for_utc_date(Path::new("logs"), date),

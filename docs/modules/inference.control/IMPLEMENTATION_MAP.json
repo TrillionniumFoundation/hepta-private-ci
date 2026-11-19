@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
+    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
@@ -148,5 +148,11 @@
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
-  ]
+  ],
+  "sourceObservationRebind": {
+    "ledger": "qualification/module-execution-dossiers/SOURCE_OBSERVATION_REBIND_20261027.json",
+    "record": "inference.control",
+    "previousMapBlob": "35c0b9d2745b09809c50e70b669b60cece74a90f",
+    "scope": "source_navigation_only_no_execution_evidence_transferred"
+  }
 }

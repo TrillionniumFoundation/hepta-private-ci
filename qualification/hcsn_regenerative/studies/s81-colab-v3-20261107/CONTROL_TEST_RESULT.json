@@ -1,0 +1,68 @@
+{
+  "aggregated_single_suite_claim": false,
+  "formal_training_fits_in_control_tests": 0,
+  "historical_freezer_control_run": {
+    "current_freezer_admission": "Actual fresh native evidence and all original frozen guard conditions passed during the sole native freeze.",
+    "independent_review_original_sha256": "abfd24c18f31e45b4635f925535f9c023ba8abffe6c8746a05169a3d32f662fc",
+    "methods_observed_in_session": 15,
+    "original_receipt_sha256": "3bfb3d40ae2fbab39f59f99c707f7a7e506cb73cce1c5b4565e8d113cabd18ba",
+    "raw_test_receipt_available_after_workspace_loss": false,
+    "raw_test_receipt_regenerated": false
+  },
+  "local_process_namespace_error_history_retained": true,
+  "model_execution_claim_from_control_tests": false,
+  "provider_requests_in_control_tests": 0,
+  "qualification_and_formal_results_recorded_separately": true,
+  "schema": "hcsn-colab-v3-public-control-test-summary-v2",
+  "separate_actual_test_runs": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "methods_run": 20,
+      "name": "qualification_helpers_native",
+      "receipt": {
+        "bytes": 1790,
+        "sha256": "33794749d27a1e6f3f159f060ee344d5f089b044f98a8a06fbc566c7607433bf"
+      },
+      "skipped": 0,
+      "source_scope": "Final five qualification helpers; includes three actual process ownership and descendant-stop cases."
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "methods_run": 17,
+      "name": "fixed_kernel_guard_native",
+      "receipt": {
+        "bytes": 4222,
+        "sha256": "4cf423c5fa83b5c35e9c66c8eae7c83129dfd82ef71dcd6085415be249f8af24"
+      },
+      "skipped": 0,
+      "source_scope": "Exact final guard and installed adapter sources with a fake provider; zero provider requests."
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "methods_run": 32,
+      "name": "execution_controls_before_added_launch_bridge",
+      "receipt": {
+        "bytes": 1418,
+        "sha256": "888a2c7ac8dd405abd52a46671c6fe3a4284ce58d3f517d096fbb22f0fe88d76"
+      },
+      "skipped": 0,
+      "source_scope": "Prior control snapshot: 15 execution-port methods and 17 guard methods; exact snapshot retained."
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "methods_run": 2,
+      "name": "final_launch_bridge_targeted",
+      "receipt": {
+        "bytes": 1372,
+        "sha256": "90bc3b96476658555398c59ce8a8c30821016dd49ebb110ca63c7f56db055128"
+      },
+      "skipped": 0,
+      "source_scope": "Only the two added native command/source bridge cases on final controls. No claim of a combined final-source 34-method suite."
+    }
+  ],
+  "status": "RECOVERED_ACTUAL_CONTROL_EVIDENCE_VERIFIED"
+}

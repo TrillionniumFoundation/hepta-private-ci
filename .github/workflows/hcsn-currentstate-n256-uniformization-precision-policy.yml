@@ -1,0 +1,26 @@
+name: hcsn-currentstate-n256-uniformization-precision-policy
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_uniformization_precision_policy/**"
+      - ".github/workflows/hcsn-currentstate-n256-uniformization-precision-policy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Assertions-enabled policy fixtures
+        run: python3 -m unittest qualification.hcsn_currentstate_n256_uniformization_precision_policy.test_precision_policy -v
+      - name: Optimized policy fixtures
+        run: python3 -O -m unittest qualification.hcsn_currentstate_n256_uniformization_precision_policy.test_precision_policy -v
+      - name: Compile source
+        run: python3 -m py_compile qualification/hcsn_currentstate_n256_uniformization_precision_policy/*.py
+      - name: Verify exact frozen policy and parents
+        run: python3 -m qualification.hcsn_currentstate_n256_uniformization_precision_policy.verify_source

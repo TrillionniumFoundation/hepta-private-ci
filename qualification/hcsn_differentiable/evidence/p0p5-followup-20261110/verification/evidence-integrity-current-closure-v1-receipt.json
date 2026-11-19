@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-current-evidence-integrity-check-v1",
+  "command": [
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-m",
+    "qualification.hcsn_differentiable.evidence_chain",
+    "--manifest",
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json",
+    "--manifest",
+    "qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json",
+    "--manifest",
+    "qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json",
+    "--markdown",
+    "qualification/hcsn_differentiable/CURRENT.md",
+    "--markdown",
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md",
+    "--markdown",
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md",
+    "--markdown",
+    "proposals/localization-v3/README.md",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/evidence-integrity-current-closure-v1.json"
+  ],
+  "returncode": 0,
+  "whole_process_wall_seconds": 0.4760749279994343,
+  "child_cpu_seconds": 0.42061699999999996,
+  "input_sha256": {
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json": "bc8721b37d4a69c28a25a028dd6375ebbeaaa41111bafc97a22b7239609f5bc6",
+    "qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json": "b86b90fdaf74122791818c18cd2aec0207a19b5be72ca15fab3cea0a98c3362a",
+    "qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json": "804150071e9142ff7d8ccd883b060522b241d8595622d25fd3e137d219252dec",
+    "qualification/hcsn_differentiable/CURRENT.md": "1ac67e067a180a9c6231b569b115bd8f1f4a4b98ba454ef726640d34703cf0f8",
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md": "9047c530ec6d837362b10befa6d2ccb35f203c7135113dc6d1db796220cffb38",
+    "qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md": "6e95b42e76af344cc3f1ea0ae297af32a12b1167d25c42bf86107a55153691c3",
+    "proposals/localization-v3/README.md": "1d329eb632407fc7dd2161cc2b202ffe7efadd3a74adb0f31d353fa5fc04024f"
+  },
+  "output_sha256": "bf56974172011a875bcb510935d633749572dc5ab620216a45025d027c30b4fe",
+  "current_source_head": "4113f10f9c2e86586b149336f58be7e8b51a0bab"
+}

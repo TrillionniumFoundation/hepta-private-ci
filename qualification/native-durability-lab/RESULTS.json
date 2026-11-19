@@ -1,0 +1,27 @@
+{
+  "schema": "native-durability-local-summary.v1",
+  "runtime_qualification": false,
+  "physical_execution_proven": false,
+  "scope": "Synthetic local Linux SIGKILL, SQLite and controlled-process races only",
+  "source_sha256": "9629e1e1aee5223655c3704f8e7ad7b16820054acc93fa93e8e290432bdd2187",
+  "tests_sha256": "5146441cc51df51e45300b48a50c0e9032d1277725502b05c375be17cb35a6ae",
+  "full_local_matrix_sha256": "c41f1017eb66b774856ce14b124e4a703b2b2a62b8c986e6bd1dce386eb177a0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "sqlite_version": "3.53.1",
+  "storage_settings": {"workflow.sqlite": {"journal_mode": "delete", "synchronous": 2}, "effect.sqlite": {"journal_mode": "delete", "synchronous": 2}},
+  "test_methods_passed": 13,
+  "matrix_scenarios": 39,
+  "sqlite_integrity_checks": 78,
+  "invalid_ledger_references": 0,
+  "hold_claim_regression": "Two simultaneous ready-state readers: one effect; reverting atomic claim gives two",
+  "unsafe_retention_ablation": "Deleting sink dedupe record then retrying unacknowledged operation produces two effects",
+  "expiry_limit": "Checked at authority-read linearization, not physical wall-clock commit deadline",
+  "hosted_ci": "NOT_RUN_FOR_PUBLISHED_SOURCE_YET",
+  "arm_observations": [
+    {"arm": "checkpoint_retry", "lost_ack_effects": 2, "recovery": "done", "revocation_race_effects": 1, "concurrent_effects": 2},
+    {"arm": "checkpoint_hold", "lost_ack_effects": 1, "recovery": "HOLD_UNKNOWN", "revocation_race_effects": 1, "concurrent_effects": null},
+    {"arm": "outbox_dedupe", "lost_ack_effects": 1, "recovery": "done", "revocation_race_effects": 1, "concurrent_effects": 1},
+    {"arm": "outbox_preflight", "lost_ack_effects": 1, "recovery": "done", "revocation_race_effects": 1, "concurrent_effects": 1},
+    {"arm": "outbox_final_use", "lost_ack_effects": 1, "recovery": "done", "revocation_race_effects": 0, "concurrent_effects": 1}
+  ]
+}

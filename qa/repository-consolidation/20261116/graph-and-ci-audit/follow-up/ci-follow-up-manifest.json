@@ -1,0 +1,1363 @@
+{
+  "schema": "hepta.ci-follow-up.artifact-manifest.v1",
+  "capturedUtc": "2026-11-16T15:00:36.018711+00:00",
+  "sourceTree": "c2edb469712d59a01005c97be0009db02d7762b7",
+  "maximumStoredBytes": 500000,
+  "originalEvidenceGroups": [
+    {
+      "source": "audit/ci_audit/callers-format-v1/overlay-162-manifest.json",
+      "originalBytes": 82389,
+      "originalSha256": "6225057fc928d1fad3fcd0f790a0112551587b3ec147fa02eda93f133dec9d7c",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-overlay-162-manifest.json.gz",
+          "offset": 0,
+          "originalBytes": 82389,
+          "storedBytes": 18967,
+          "storedSha256": "2e25de63bbc4172620e67589ebed26ffee83463321c489c472cd68bc010c578f",
+          "gitBlob": "6628a50653d79486c62c50a6fc4f1e452d0549c7"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/immutable-blob-upload-receipt.json",
+      "originalBytes": 418,
+      "originalSha256": "179ad339bbce6344b6eaf808e7be18cc7cd4d48ac9a0137bdcc5dc49823c6bc5",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-immutable-blob-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 418,
+          "storedBytes": 300,
+          "storedSha256": "4af3ae8a330aa36eea61facf8709d7f4d4b4c86019fab9bc872b0c1e74e7b6b5",
+          "gitBlob": "866f87849fe037a1e5b158fd7c351596abc2b654"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/immutable-blob-upload-journal.jsonl",
+      "originalBytes": 44846,
+      "originalSha256": "6c23524d8b4ca4644e2dfa840478a71bc004ef641680356f5b703f8f3abdbfd7",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-immutable-blob-journal.jsonl.gz",
+          "offset": 0,
+          "originalBytes": 44846,
+          "storedBytes": 14671,
+          "storedSha256": "a8b94d361e16aa73cea3f95f29806a79077f30bc081e21f09dd93a57946ce8a1",
+          "gitBlob": "8199c140f755fc0e2254342aaa17e57d1ac58608"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/candidate-closure-v2-before-gates.json",
+      "originalBytes": 12242,
+      "originalSha256": "d7810a4517eec149e411fcf8cc748afe1bc6ffd3929611a32c7ecfce965623aa",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-final-closure.json.gz",
+          "offset": 0,
+          "originalBytes": 12242,
+          "storedBytes": 2029,
+          "storedSha256": "d7ab05d44d076bc0e51ddebdc155c699a6e25529134a0d24dd306419f035734f",
+          "gitBlob": "79acee82ece6ec62cf8948d8899410eca53ea5ce"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/final-inputs-v2-sha256.json",
+      "originalBytes": 1992615,
+      "originalSha256": "a4ab995b80f5c5d1af3af20499e51e354a023c1fe0aacbfcdb98388c46b84e2a",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-final-inputs-sha256.json.part-0000.gz",
+          "offset": 0,
+          "originalBytes": 996307,
+          "storedBytes": 344469,
+          "storedSha256": "e42b2139c5dd5d813b4a8c222c3c6ec2066c3d5845096a873176ac69373b1ca7",
+          "gitBlob": "d34fb4cb03cae5ae551ca6f35c4a56dfb3f45248"
+        },
+        {
+          "path": "ci-evidence/source-final-inputs-sha256.json.part-0001.gz",
+          "offset": 996307,
+          "originalBytes": 996308,
+          "storedBytes": 334921,
+          "storedSha256": "f79447820e00ed4700d130de4655023ffb78637fb61962204cd68ad21fbaee63",
+          "gitBlob": "fd27ee7804cae06b45e7ad85b2b8bd0059e004a3"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/b4-reader-final-ast-equivalence.json",
+      "originalBytes": 238500,
+      "originalSha256": "4ce91cf4000382c77d976c45eaf1f1a65405825fa6bcd8d7f8af40bf84e80551",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-reader-ast-equivalence.json.gz",
+          "offset": 0,
+          "originalBytes": 238500,
+          "storedBytes": 39201,
+          "storedSha256": "88772298db5f8b6140bd2e9536101935bb823ea6ca24126b5d6dfc0d93338295",
+          "gitBlob": "98e56b9beb2a91d9b93c40662d291ac136448bfc"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/b4-loader-migration-plan.json",
+      "originalBytes": 33920,
+      "originalSha256": "51f424394c9d7a7c6cf757e0001c101df44700cca6200287cfcae969b0d0cd42",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-reader-migration-plan.json.gz",
+          "offset": 0,
+          "originalBytes": 33920,
+          "storedBytes": 1655,
+          "storedSha256": "d8b07cc578763b134b6a7054449dd98115d4a6bafa50cd1a0540d4c69039fa3c",
+          "gitBlob": "2cdc335be45086d303e24dbec2637512dd740b2e"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/review-core-v3.patch",
+      "originalBytes": 29714,
+      "originalSha256": "9279146f6d60da9ceb4368969b621db1a0f2700a5ff440bfad9ea63d67a2e6e2",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-core-v3.patch.gz",
+          "offset": 0,
+          "originalBytes": 29714,
+          "storedBytes": 7604,
+          "storedSha256": "ff3d32624b29a266a87e7f1cd7f5e7c28e163374a03985811025f293e43d31a5",
+          "gitBlob": "afa46ae494fc38228d58069ea05548ae0cd45529"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/CALLERS.original.toml",
+      "originalBytes": 2990722,
+      "originalSha256": "e85c1782b94bd6cf1dd0ff3c10490eacc674b6148530ad9741e027e48d56477f",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-original-callers.toml.gz",
+          "offset": 0,
+          "originalBytes": 2990722,
+          "storedBytes": 452429,
+          "storedSha256": "587f590df598f6a51afd7c2df5e8a5f34d37ce2e317bfaedc44307b971ad677b",
+          "gitBlob": "a3e9f12102776df3baec9c836ee61193c0a3541b"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-size-review-v1/report.json",
+      "originalBytes": 2805,
+      "originalSha256": "d5618afdce22af8120795a2bc2c3ed5761976ee47502c29e01c72f2ab2af1cbc",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-original-size-analysis.json.gz",
+          "offset": 0,
+          "originalBytes": 2805,
+          "storedBytes": 1097,
+          "storedSha256": "c7a05e738f97e97895aa5b56d4900026b5219b464d51207020bb00813dd792e3",
+          "gitBlob": "1fb89aef76283630a60b3d1f779b8b136fbecc57"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-size-review-v1/direct-consumers.json",
+      "originalBytes": 123202,
+      "originalSha256": "105b0747944276c3f9555d210607c06de829ec60501f92215cd63d66c11d789e",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-consumer-inventory.json.gz",
+          "offset": 0,
+          "originalBytes": 123202,
+          "storedBytes": 17343,
+          "storedSha256": "1b9aecd4443d74e7ba14271f4b0d2717933b8fe8765a93f9089a26f586c39cbb",
+          "gitBlob": "95c32010a4092b039b19d8f92f1a351faba8e492"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/storage-negative-tests-v1.json",
+      "originalBytes": 342,
+      "originalSha256": "ccc498d09e861c721bd820a8a159ee5867ba594023486a007e19cf36330c28f3",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-storage-negative-tests.json.gz",
+          "offset": 0,
+          "originalBytes": 342,
+          "storedBytes": 237,
+          "storedSha256": "02d25f929e58a0c02303b5da8506c4cd12ec0bcf96e6abef3138b41f8d190c4b",
+          "gitBlob": "8e593d9d467d750e538e68f96def66f01b4ebcba"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/storage-negative-tests-v1.log",
+      "originalBytes": 3021,
+      "originalSha256": "6162651e9c5052662afef96735f386adec5394f097bf6d50c2ef3193586bfe85",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-storage-negative-tests.log.gz",
+          "offset": 0,
+          "originalBytes": 3021,
+          "storedBytes": 589,
+          "storedSha256": "a76cebc18d9f2825a32e3cb41e77247a3e25fd631b20eaddc95dd338519983a9",
+          "gitBlob": "7f32d88acd086ddc8c9afeb369b35a34451257ff"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/cli-roundtrip-receipt.json",
+      "originalBytes": 1864,
+      "originalSha256": "f38bd3425451c2e6a41f1a071feb5aaef7d4e8acf9913e4cbc58b641eac95c33",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-cli-roundtrip.json.gz",
+          "offset": 0,
+          "originalBytes": 1864,
+          "storedBytes": 450,
+          "storedSha256": "a3235aeaf9fc0458c746d137384fadc3c7823b06a0656304a0302d1d12f580d8",
+          "gitBlob": "bee650c7f2851542b55508ac9dde82aa39963bfa"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/full-b4-invocation.json",
+      "originalBytes": 692,
+      "originalSha256": "0c5c57ce818a6493260417eb554ae82454650c44de1913ef628706a23a967def",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-full-b4-invocation.json.gz",
+          "offset": 0,
+          "originalBytes": 692,
+          "storedBytes": 439,
+          "storedSha256": "766dbd5e23f3c835dbec53dbb23d9bc0a072fe4fadce0417a4436d059da62b33",
+          "gitBlob": "f4ab41ead4a94125c873fd8f6dbe8a54194b887d"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/full-b4-receipt.json",
+      "originalBytes": 974,
+      "originalSha256": "810af6dd672ac6c306fd24589d87c580cca49a2ebea114b90148d15e047fe003",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-full-b4-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 974,
+          "storedBytes": 584,
+          "storedSha256": "b68e2bc2357009cdc7fb60c5a099be8b5435c6706b5930ef2a5788a346eba5fe",
+          "gitBlob": "256373fd32d4e3a1552c27c315737e0befe38adf"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/full-b4.log",
+      "originalBytes": 1434,
+      "originalSha256": "8c0b1c15d02cca82ed36c0c2a825715fde9f8ae074806be4613683d494f1d7aa",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-full-b4.log.gz",
+          "offset": 0,
+          "originalBytes": 1434,
+          "storedBytes": 68,
+          "storedSha256": "406145fd0296a7c57d86ddda35704847d7be7bb17b7dbe7a619a964717ddfffc",
+          "gitBlob": "58a83fb27bdf0985648566322197dd3cdd8b6a9c"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/caller-cli-invocation.json",
+      "originalBytes": 658,
+      "originalSha256": "a7fe526a85dbbb6b424b24fb3eac7a8eefa1c03d2c700a74dde9f353b3fd04b6",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-caller-cli-invocation.json.gz",
+          "offset": 0,
+          "originalBytes": 658,
+          "storedBytes": 424,
+          "storedSha256": "fbea703c39ac80d2652c30563ccd0a181388cb635732cafbc9cedf6ce5ecbcdf",
+          "gitBlob": "6b7b1487a6f59a248a8dd7739aaf689685a9c516"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/caller-cli-receipt.json",
+      "originalBytes": 135835,
+      "originalSha256": "58d623b89657c5bd26966f6a9818c1e774f72fe2b544711ff78e556b7e6ffad2",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-caller-cli-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 135835,
+          "storedBytes": 16451,
+          "storedSha256": "4e53ea568575ecd59c3731a5c381feceded828dc61445fda906c37d782e29fb1",
+          "gitBlob": "424f07c687da97f16bf9f52d787ed31c39f46889"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/caller-cli.log",
+      "originalBytes": 766890,
+      "originalSha256": "4b16ccec00d9aa2641713aba1491660b622665c1b181a2163b2408bf485ebdd8",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-caller-cli-proof.json.gz",
+          "offset": 0,
+          "originalBytes": 766890,
+          "storedBytes": 59136,
+          "storedSha256": "c39e94de6d4f702b1e263caf92c61a2b3cc36aba4e703bdcbec142de45cfa6cf",
+          "gitBlob": "2ff3f4311b6e38a06e5d01b07031a48d91e85f4d"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/run_final_source_gate.py",
+      "originalBytes": 2986,
+      "originalSha256": "410456eb295df6706626229a29cdb8b5f09f762bf7ded6c794f3d55cfe45e997",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-original-gate-runner.py.gz",
+          "offset": 0,
+          "originalBytes": 2986,
+          "storedBytes": 1260,
+          "storedSha256": "85db3a1b3cc10c8cb29eccc32b1195baf60b079a2d59cda5ce2a2b6b4bfed699",
+          "gitBlob": "3dc51f267dd297bc2e63142b8a47e5da6b443907"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/root-publication/whole_checkpoint_blob_size-v1.log",
+      "originalBytes": 160390,
+      "originalSha256": "fbdfc12136ea9f2257e25f64c74f3754ee2c66d83ca9629651724c1dee7cf4dc",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-original-blob-size-failure.log.gz",
+          "offset": 0,
+          "originalBytes": 160390,
+          "storedBytes": 18614,
+          "storedSha256": "d1bc27d4104f304c73c6a8ded4e5886ad4d67616509c661f2ff6b55b71d8a970",
+          "gitBlob": "f48134191006c17487cdba7f3246920c068fc149"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/whole-checkpoint-blob-size-receipt.json",
+      "originalBytes": 894,
+      "originalSha256": "b6d8e02a8a992341299546d38a05e96fd1a08b90891ceb2d7c76c0f82887cc74",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-blob-size-repaired-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 894,
+          "storedBytes": 459,
+          "storedSha256": "b5fa577cb45103ff789e232d28a9171fc8caec2b5997b2c899135b1e545afe6e",
+          "gitBlob": "c624977101e375ef14a6374e2059d94633b6f2bd"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/whole-checkpoint-blob-size.log",
+      "originalBytes": 176851,
+      "originalSha256": "9ef844b71c7306db9f1e55a957ddb51156592d143505c459ce03919ad898bb09",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-blob-size-repaired.log.gz",
+          "offset": 0,
+          "originalBytes": 176851,
+          "storedBytes": 20863,
+          "storedSha256": "10df52346f74c19117f0a8efaaa363ecd1cc2b3b23c3e286d8c95ef918430a69",
+          "gitBlob": "2b56e171a0b99015f8a2e47b4f2dd3ce810808aa"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/frozen-overlay-fmt-check-receipt.json",
+      "originalBytes": 441,
+      "originalSha256": "3fa59146a71faa45229df366f493d9ff91df1f8eee2435b331ef2048b081999b",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-frozen-format-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 441,
+          "storedBytes": 320,
+          "storedSha256": "35b8ddaf0280ab642a25a4e3d48284e6c62249901a4c15031d4c7e3df2f1516c",
+          "gitBlob": "a1b7478e422c559b5a8c78a1820d77da8b53aa6b"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/callers-format-v1/frozen-overlay-fmt-check.log",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-frozen-format.log.gz",
+          "offset": 0,
+          "originalBytes": 0,
+          "storedBytes": 20,
+          "storedSha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+          "gitBlob": "86e43ea3218b5890302b754bbf8927f94e79f7ee"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/branch_inventory/prepublication-review/callers-carrier-protected-prefix-proof.json",
+      "originalBytes": 803,
+      "originalSha256": "4453bd2f3e94a6d107ce6a590d4f92398a9b7c55207b39814959363bb133ed7a",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-carrier-protected-prefix.json.gz",
+          "offset": 0,
+          "originalBytes": 803,
+          "storedBytes": 473,
+          "storedSha256": "a910d7746a67217e687f8bcd98a1c21e1f0391017bc3cf4689d65a03666a788f",
+          "gitBlob": "6445867badc5492fd2de530e32d7c6ec60694d41"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/branch_inventory/prepublication-review/callers-independent-policy-and-format-summary.json",
+      "originalBytes": 16932,
+      "originalSha256": "fde4d8b55dc1b1ab86c00f0cc88f01ab25da28c147269d1ad7147dbf5ed15c79",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/source-independent-policy-review.json.gz",
+          "offset": 0,
+          "originalBytes": 16932,
+          "storedBytes": 2967,
+          "storedSha256": "c181be07cddd1c6f62ece86fe7fb737228ac2f496d9a6eab37ada17040f75207",
+          "gitBlob": "bcf15f8000f0a9f75291958daae2124dc6235739"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-invocation.json",
+      "originalBytes": 2041,
+      "originalSha256": "02c387c0797973686de05ec09a26320d2cdd6eb8144a442dac42020e563f0aa9",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-invocation.json.gz",
+          "offset": 0,
+          "originalBytes": 2041,
+          "storedBytes": 1117,
+          "storedSha256": "1c696dd74c13dd64c6a63d1c89ee51bfd756a87b46785405daa7d4ad9b0b9366",
+          "gitBlob": "3f35797e8cda0fa626942ed2c500eaeb9ae2f3da"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/combined-native-v7-result.json",
+      "originalBytes": 1013,
+      "originalSha256": "f5c7dae11abe67ccb36c59676c24458b8dc302502a4dc8b101c93370392f3adf",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-result.json.gz",
+          "offset": 0,
+          "originalBytes": 1013,
+          "storedBytes": 575,
+          "storedSha256": "4e8f8e190b81e38a87468d302e7f5a771a9d072b02cefdc9194859a315228cc3",
+          "gitBlob": "d879000c87b3cc1bff09096d1f6b241de48db685"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/combined-native-v7-tests.log",
+      "originalBytes": 128096,
+      "originalSha256": "dc707f3f7bbf934ab6e2c75290693bf16674ffa7b2a10c3c37aff1cab2aa46be",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7.log.gz",
+          "offset": 0,
+          "originalBytes": 128096,
+          "storedBytes": 18715,
+          "storedSha256": "4838ed0bb70928d59dab5c58919280fac76088069d229338a8f444e492deebc3",
+          "gitBlob": "80cc21fe05e54b6fb16a4d4eea67ba8a778d42e8"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/native-v7-exact-test-results.json",
+      "originalBytes": 10068,
+      "originalSha256": "18e7126944d97b9c9eac7a1ef905cfd2def18875b488cca0a6487115238c4f5d",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-exact-tests.json.gz",
+          "offset": 0,
+          "originalBytes": 10068,
+          "storedBytes": 1511,
+          "storedSha256": "a0b00661e1ef42f256236f256fd1d823bae05c6dd86050af840c8168d48d9c9a",
+          "gitBlob": "ae3665a38912918f059d634bd36bc0f64cc32bfb"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-input-sources.json",
+      "originalBytes": 986686,
+      "originalSha256": "cb07abfb0a55e0862248e574076305f4271623bfde45186728b27fe3bc01314e",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-inputs.json.gz",
+          "offset": 0,
+          "originalBytes": 986686,
+          "storedBytes": 363777,
+          "storedSha256": "ff62ca80e0b48f918616d11c235de99281a7d06a7edf47d5e760f42fe9323f05",
+          "gitBlob": "305e551ad9b4467f9a40bc9fda2bbb30e050f95d"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-source-materialization-receipt.json",
+      "originalBytes": 5775,
+      "originalSha256": "030a90ee7c2ea38492f3d801d19dc526f69be592e8921e9baa35f58d0ff11d63",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-materialization.json.gz",
+          "offset": 0,
+          "originalBytes": 5775,
+          "storedBytes": 2396,
+          "storedSha256": "9809e27d18677ee2bb8ee38c0bd1fc9235f3e37298a46e24f29260238854563a",
+          "gitBlob": "afd139d450b8eab454d8f26ff3ca46616addef55"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-binary-receipt.json",
+      "originalBytes": 535,
+      "originalSha256": "b44388d737122310edb70e07d5cbe632a2800c21961ec7e827f0267708272f0c",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-binary-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 535,
+          "storedBytes": 370,
+          "storedSha256": "66924e36ba0233fd56c3ab0fc72e0663d64cba71db6574de7dd8e15473d752ca",
+          "gitBlob": "5f4fb1ae18a41842da9ee4f437e2c23e4727a86d"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-just-fmt-result.json",
+      "originalBytes": 208,
+      "originalSha256": "88987dd2dc8f0512416a67891c2e13e4e906b2a8feddb287de2f10fedb23624d",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-initial-format-result.json.gz",
+          "offset": 0,
+          "originalBytes": 208,
+          "storedBytes": 177,
+          "storedSha256": "015d3f61753e074cdad30283ecce4806db6e2d3218048890a120143bc03acc15",
+          "gitBlob": "e72bb96b782ed7a9cb14c241060988dc7a9cb883"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-just-fmt.log",
+      "originalBytes": 298,
+      "originalSha256": "5949108b58d2076abdc18aeb756cecbd86eebef61b6e531bd09e7bd1f01c8db7",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-initial-format.log.gz",
+          "offset": 0,
+          "originalBytes": 298,
+          "storedBytes": 205,
+          "storedSha256": "51d1be28aec643d0cd86861935e9e5deee81995771fe5f92ab8a53b384c633b6",
+          "gitBlob": "9477f782658c0975815d754ef6dd0a61125dbc1a"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-just-fmt-check-v2.json",
+      "originalBytes": 526,
+      "originalSha256": "280143edea58bd6982c145ab40e5d524636d93f9161653ab897e8a53a24b8edf",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-format-check-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 526,
+          "storedBytes": 369,
+          "storedSha256": "fdde6e1fe2a2c5f3ae4b5d5302ad59dc51f227add94b4a0e4cab9ee43fa7e8f0",
+          "gitBlob": "839fbdbe542753c8479b2c4aac6c5222e910308b"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/native-v7-just-fmt-check-v2.log",
+      "originalBytes": 0,
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-format-check.log.gz",
+          "offset": 0,
+          "originalBytes": 0,
+          "storedBytes": 20,
+          "storedSha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+          "gitBlob": "86e43ea3218b5890302b754bbf8927f94e79f7ee"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/security-proposal-review-v1/security-four-independent-review-v1.json",
+      "originalBytes": 7697,
+      "originalSha256": "9f5622fabf943f49c97945678f9e1eb27462ebf58a3ec944bfec6682475657d6",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-independent-review.json.gz",
+          "offset": 0,
+          "originalBytes": 7697,
+          "storedBytes": 2886,
+          "storedSha256": "6717eb02c9b1873c418220572db7f21409935bcfae556fd093491c7dfddb7819",
+          "gitBlob": "301739cc7e3ed9351e896bed4fbc0058b01a9ba3"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/ci_audit/security-proposal-review-v1/security-final-four-complete.diff",
+      "originalBytes": 16628,
+      "originalSha256": "cffee466aa211a2c2b95e30457691dfccae15986064098a773c49f9471e54aab",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-complete-four-file.diff.gz",
+          "offset": 0,
+          "originalBytes": 16628,
+          "storedBytes": 4135,
+          "storedSha256": "ebe26926048e2721f6263892ab76667adcf69743340e152f82b47018d252767e",
+          "gitBlob": "c31722109dd09e5b64a4d1701860ad0eef56abf6"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/rust_review/security-validation-v1/native-source-manifest.json",
+      "originalBytes": 2943615,
+      "originalSha256": "6ec6b7f9ee7cdf5a9ea18978f326c64aa8d685f84992322cb92b511624cc34e2",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-native-source-manifest.json.part-0000.gz",
+          "offset": 0,
+          "originalBytes": 1471807,
+          "storedBytes": 338363,
+          "storedSha256": "853c0a7bf6fa08cc4738c7d17fa758aaaa7a42a16318f191e6c28d54e6c3ad2c",
+          "gitBlob": "0962cffb48e4134f138081e79cc4f545e82811ec"
+        },
+        {
+          "path": "ci-evidence/security-native-source-manifest.json.part-0001.gz",
+          "offset": 1471807,
+          "originalBytes": 1471808,
+          "storedBytes": 336327,
+          "storedSha256": "8be20563a11d52e4db4752dd0dd44136c78b92b4c47fb7f9b44c944544b79dbb",
+          "gitBlob": "9ff9e0b6ce7d90a8fca4ecaf708ae5b51b6ac19a"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/rust_review/security-validation-v1/source-kit-plan.json",
+      "originalBytes": 27496,
+      "originalSha256": "a30f508cfca0103cdc8730eff27d8428fce6ea1572765f3c6c72196daa7136e6",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-source-kit-plan.json.gz",
+          "offset": 0,
+          "originalBytes": 27496,
+          "storedBytes": 7881,
+          "storedSha256": "4bb635bc4788a6a8a719b2045ce0b34099326462c4102ac5404f864a721f5c8f",
+          "gitBlob": "1c0f58cbd9875783dcb37c627494794cb96f1753"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/rust_review/security-validation-v1/security-overlay-verified.json",
+      "originalBytes": 3530,
+      "originalSha256": "0ff03632abe4ca21499481134d4465aa17b470d6c04332b6632f6194f361a31b",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-security-overlay-verified.json.gz",
+          "offset": 0,
+          "originalBytes": 3530,
+          "storedBytes": 842,
+          "storedSha256": "c7bb329e664700e7e7a5f2ebb8a5ce2177b8f63648b326c151be31d72591ec1b",
+          "gitBlob": "f7cbec20412f5559d0eff1e5b4e453dfa54fbcf8"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/rust_review/security-validation-v1/native-proof-desktop-receipt.json",
+      "originalBytes": 1755,
+      "originalSha256": "bdefb2deba1001723c4402d2459e65ce3aa08ceeaadf8b2e0ccd325f7543724b",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/security-native-proof-desktop-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 1755,
+          "storedBytes": 584,
+          "storedSha256": "0f31a5e40f8f23f2d473109e2030b6bfdc21ead6ed122ad821074d8c7201d0c0",
+          "gitBlob": "7b845ec349e766921a3c7ffe417a5a73baccbd4b"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/rust_review/security-validation-v1/security-native-proof-v1.tar.gz",
+      "originalBytes": 368568,
+      "originalSha256": "602ea149bd7597141a6b61682060289e23714636c5b6afffdcdda0d629d4c381",
+      "encoding": "identity",
+      "parts": [
+        {
+          "path": "ci-evidence/security-native-proof-v1.tar.gz",
+          "offset": 0,
+          "originalBytes": 368568,
+          "storedBytes": 368568,
+          "storedSha256": "602ea149bd7597141a6b61682060289e23714636c5b6afffdcdda0d629d4c381",
+          "gitBlob": "a0f014e9187c0dc0de161b1df6574d17d87a38fc"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/root-provider-gdb-v7-single/receipt.json",
+      "originalBytes": 2232,
+      "originalSha256": "3c250e0ca289a2d9e34f2e4674e64adfba43b0b8799253e0df2291b7d62bbf45",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-single-debugger-receipt.json.gz",
+          "offset": 0,
+          "originalBytes": 2232,
+          "storedBytes": 1135,
+          "storedSha256": "bf7d981db91b57e0d948c9564834aa4dd41375c2a282919f88468e55fc2daac3",
+          "gitBlob": "d83fd9ee4fe65ac8cb457c07f0e1b5f1421cf0a3"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/root-provider-gdb-v7-single/events.jsonl",
+      "originalBytes": 10823,
+      "originalSha256": "275dd04d72597334b05092edefd28d9f7e3cc90dedad97a6ae644c6bcf5c7f2f",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-single-debugger-events.jsonl.gz",
+          "offset": 0,
+          "originalBytes": 10823,
+          "storedBytes": 2412,
+          "storedSha256": "f58171bf57832ba35c127ff7f8b5e973c22556d7b88583ce2608a3c5e93e2801",
+          "gitBlob": "d3db0ede6349a702e0f8e45ddf054a3a1b51b5a3"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/root-provider-gdb-v7-single/gdb-symbol-backtraces.log",
+      "originalBytes": 77973,
+      "originalSha256": "c406ecb6be83c675e0413dfbba30c7ee24efe93ca9fdba84ae13f6f5d347a734",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-single-debugger-gdb-symbol-backtraces.log.gz",
+          "offset": 0,
+          "originalBytes": 77973,
+          "storedBytes": 6752,
+          "storedSha256": "61e6dbedb440e61efbe680c9afdbbe4333c6c63a3157505a2af4508df93c66f2",
+          "gitBlob": "1d2beba18efce8f3e24b3c54192cdab4595c54f0"
+        }
+      ],
+      "roundTripVerified": true
+    },
+    {
+      "source": "audit/root-provider-gdb-v7-single-controller.py",
+      "originalBytes": 9142,
+      "originalSha256": "aaa7c6c1ba531f3e605616ba2bc5f4e3238bcd59e7c1a1018b2e060825c14872",
+      "encoding": "gzip",
+      "parts": [
+        {
+          "path": "ci-evidence/native-v7-single-debugger-controller.py.gz",
+          "offset": 0,
+          "originalBytes": 9142,
+          "storedBytes": 3708,
+          "storedSha256": "0ad2921a8b29e228217b437cf32cb7d61929217de38aab7d92394695b387a6cf",
+          "gitBlob": "8b44098b8995d8dc7925b3c977444b0f35c6ff71"
+        }
+      ],
+      "roundTripVerified": true
+    }
+  ],
+  "files": [
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-overlay-162-manifest.json.gz",
+      "relativePath": "ci-evidence/source-overlay-162-manifest.json.gz",
+      "bytes": 18967,
+      "sha256": "2e25de63bbc4172620e67589ebed26ffee83463321c489c472cd68bc010c578f",
+      "blob": "6628a50653d79486c62c50a6fc4f1e452d0549c7",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-overlay-162-manifest.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-immutable-blob-receipt.json.gz",
+      "relativePath": "ci-evidence/source-immutable-blob-receipt.json.gz",
+      "bytes": 300,
+      "sha256": "4af3ae8a330aa36eea61facf8709d7f4d4b4c86019fab9bc872b0c1e74e7b6b5",
+      "blob": "866f87849fe037a1e5b158fd7c351596abc2b654",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-immutable-blob-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-immutable-blob-journal.jsonl.gz",
+      "relativePath": "ci-evidence/source-immutable-blob-journal.jsonl.gz",
+      "bytes": 14671,
+      "sha256": "a8b94d361e16aa73cea3f95f29806a79077f30bc081e21f09dd93a57946ce8a1",
+      "blob": "8199c140f755fc0e2254342aaa17e57d1ac58608",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-immutable-blob-journal.jsonl.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-final-closure.json.gz",
+      "relativePath": "ci-evidence/source-final-closure.json.gz",
+      "bytes": 2029,
+      "sha256": "d7ab05d44d076bc0e51ddebdc155c699a6e25529134a0d24dd306419f035734f",
+      "blob": "79acee82ece6ec62cf8948d8899410eca53ea5ce",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-final-closure.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-final-inputs-sha256.json.part-0000.gz",
+      "relativePath": "ci-evidence/source-final-inputs-sha256.json.part-0000.gz",
+      "bytes": 344469,
+      "sha256": "e42b2139c5dd5d813b4a8c222c3c6ec2066c3d5845096a873176ac69373b1ca7",
+      "blob": "d34fb4cb03cae5ae551ca6f35c4a56dfb3f45248",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-final-inputs-sha256.json.part-0000.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-final-inputs-sha256.json.part-0001.gz",
+      "relativePath": "ci-evidence/source-final-inputs-sha256.json.part-0001.gz",
+      "bytes": 334921,
+      "sha256": "f79447820e00ed4700d130de4655023ffb78637fb61962204cd68ad21fbaee63",
+      "blob": "fd27ee7804cae06b45e7ad85b2b8bd0059e004a3",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-final-inputs-sha256.json.part-0001.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-reader-ast-equivalence.json.gz",
+      "relativePath": "ci-evidence/source-reader-ast-equivalence.json.gz",
+      "bytes": 39201,
+      "sha256": "88772298db5f8b6140bd2e9536101935bb823ea6ca24126b5d6dfc0d93338295",
+      "blob": "98e56b9beb2a91d9b93c40662d291ac136448bfc",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-reader-ast-equivalence.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-reader-migration-plan.json.gz",
+      "relativePath": "ci-evidence/source-reader-migration-plan.json.gz",
+      "bytes": 1655,
+      "sha256": "d8b07cc578763b134b6a7054449dd98115d4a6bafa50cd1a0540d4c69039fa3c",
+      "blob": "2cdc335be45086d303e24dbec2637512dd740b2e",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-reader-migration-plan.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-core-v3.patch.gz",
+      "relativePath": "ci-evidence/source-core-v3.patch.gz",
+      "bytes": 7604,
+      "sha256": "ff3d32624b29a266a87e7f1cd7f5e7c28e163374a03985811025f293e43d31a5",
+      "blob": "afa46ae494fc38228d58069ea05548ae0cd45529",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-core-v3.patch.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-original-callers.toml.gz",
+      "relativePath": "ci-evidence/source-original-callers.toml.gz",
+      "bytes": 452429,
+      "sha256": "587f590df598f6a51afd7c2df5e8a5f34d37ce2e317bfaedc44307b971ad677b",
+      "blob": "a3e9f12102776df3baec9c836ee61193c0a3541b",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-original-callers.toml.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-original-size-analysis.json.gz",
+      "relativePath": "ci-evidence/source-original-size-analysis.json.gz",
+      "bytes": 1097,
+      "sha256": "c7a05e738f97e97895aa5b56d4900026b5219b464d51207020bb00813dd792e3",
+      "blob": "1fb89aef76283630a60b3d1f779b8b136fbecc57",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-original-size-analysis.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-consumer-inventory.json.gz",
+      "relativePath": "ci-evidence/source-consumer-inventory.json.gz",
+      "bytes": 17343,
+      "sha256": "1b9aecd4443d74e7ba14271f4b0d2717933b8fe8765a93f9089a26f586c39cbb",
+      "blob": "95c32010a4092b039b19d8f92f1a351faba8e492",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-consumer-inventory.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-storage-negative-tests.json.gz",
+      "relativePath": "ci-evidence/source-storage-negative-tests.json.gz",
+      "bytes": 237,
+      "sha256": "02d25f929e58a0c02303b5da8506c4cd12ec0bcf96e6abef3138b41f8d190c4b",
+      "blob": "8e593d9d467d750e538e68f96def66f01b4ebcba",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-storage-negative-tests.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-storage-negative-tests.log.gz",
+      "relativePath": "ci-evidence/source-storage-negative-tests.log.gz",
+      "bytes": 589,
+      "sha256": "a76cebc18d9f2825a32e3cb41e77247a3e25fd631b20eaddc95dd338519983a9",
+      "blob": "7f32d88acd086ddc8c9afeb369b35a34451257ff",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-storage-negative-tests.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-cli-roundtrip.json.gz",
+      "relativePath": "ci-evidence/source-cli-roundtrip.json.gz",
+      "bytes": 450,
+      "sha256": "a3235aeaf9fc0458c746d137384fadc3c7823b06a0656304a0302d1d12f580d8",
+      "blob": "bee650c7f2851542b55508ac9dde82aa39963bfa",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-cli-roundtrip.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-full-b4-invocation.json.gz",
+      "relativePath": "ci-evidence/source-full-b4-invocation.json.gz",
+      "bytes": 439,
+      "sha256": "766dbd5e23f3c835dbec53dbb23d9bc0a072fe4fadce0417a4436d059da62b33",
+      "blob": "f4ab41ead4a94125c873fd8f6dbe8a54194b887d",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-full-b4-invocation.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-full-b4-receipt.json.gz",
+      "relativePath": "ci-evidence/source-full-b4-receipt.json.gz",
+      "bytes": 584,
+      "sha256": "b68e2bc2357009cdc7fb60c5a099be8b5435c6706b5930ef2a5788a346eba5fe",
+      "blob": "256373fd32d4e3a1552c27c315737e0befe38adf",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-full-b4-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-full-b4.log.gz",
+      "relativePath": "ci-evidence/source-full-b4.log.gz",
+      "bytes": 68,
+      "sha256": "406145fd0296a7c57d86ddda35704847d7be7bb17b7dbe7a619a964717ddfffc",
+      "blob": "58a83fb27bdf0985648566322197dd3cdd8b6a9c",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-full-b4.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-caller-cli-invocation.json.gz",
+      "relativePath": "ci-evidence/source-caller-cli-invocation.json.gz",
+      "bytes": 424,
+      "sha256": "fbea703c39ac80d2652c30563ccd0a181388cb635732cafbc9cedf6ce5ecbcdf",
+      "blob": "6b7b1487a6f59a248a8dd7739aaf689685a9c516",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-caller-cli-invocation.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-caller-cli-receipt.json.gz",
+      "relativePath": "ci-evidence/source-caller-cli-receipt.json.gz",
+      "bytes": 16451,
+      "sha256": "4e53ea568575ecd59c3731a5c381feceded828dc61445fda906c37d782e29fb1",
+      "blob": "424f07c687da97f16bf9f52d787ed31c39f46889",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-caller-cli-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-caller-cli-proof.json.gz",
+      "relativePath": "ci-evidence/source-caller-cli-proof.json.gz",
+      "bytes": 59136,
+      "sha256": "c39e94de6d4f702b1e263caf92c61a2b3cc36aba4e703bdcbec142de45cfa6cf",
+      "blob": "2ff3f4311b6e38a06e5d01b07031a48d91e85f4d",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-caller-cli-proof.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-original-gate-runner.py.gz",
+      "relativePath": "ci-evidence/source-original-gate-runner.py.gz",
+      "bytes": 1260,
+      "sha256": "85db3a1b3cc10c8cb29eccc32b1195baf60b079a2d59cda5ce2a2b6b4bfed699",
+      "blob": "3dc51f267dd297bc2e63142b8a47e5da6b443907",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-original-gate-runner.py.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-original-blob-size-failure.log.gz",
+      "relativePath": "ci-evidence/source-original-blob-size-failure.log.gz",
+      "bytes": 18614,
+      "sha256": "d1bc27d4104f304c73c6a8ded4e5886ad4d67616509c661f2ff6b55b71d8a970",
+      "blob": "f48134191006c17487cdba7f3246920c068fc149",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-original-blob-size-failure.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-blob-size-repaired-receipt.json.gz",
+      "relativePath": "ci-evidence/source-blob-size-repaired-receipt.json.gz",
+      "bytes": 459,
+      "sha256": "b5fa577cb45103ff789e232d28a9171fc8caec2b5997b2c899135b1e545afe6e",
+      "blob": "c624977101e375ef14a6374e2059d94633b6f2bd",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-blob-size-repaired-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-blob-size-repaired.log.gz",
+      "relativePath": "ci-evidence/source-blob-size-repaired.log.gz",
+      "bytes": 20863,
+      "sha256": "10df52346f74c19117f0a8efaaa363ecd1cc2b3b23c3e286d8c95ef918430a69",
+      "blob": "2b56e171a0b99015f8a2e47b4f2dd3ce810808aa",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-blob-size-repaired.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-frozen-format-receipt.json.gz",
+      "relativePath": "ci-evidence/source-frozen-format-receipt.json.gz",
+      "bytes": 320,
+      "sha256": "35b8ddaf0280ab642a25a4e3d48284e6c62249901a4c15031d4c7e3df2f1516c",
+      "blob": "a1b7478e422c559b5a8c78a1820d77da8b53aa6b",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-frozen-format-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-frozen-format.log.gz",
+      "relativePath": "ci-evidence/source-frozen-format.log.gz",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "blob": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-frozen-format.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-carrier-protected-prefix.json.gz",
+      "relativePath": "ci-evidence/source-carrier-protected-prefix.json.gz",
+      "bytes": 473,
+      "sha256": "a910d7746a67217e687f8bcd98a1c21e1f0391017bc3cf4689d65a03666a788f",
+      "blob": "6445867badc5492fd2de530e32d7c6ec60694d41",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-carrier-protected-prefix.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/source-independent-policy-review.json.gz",
+      "relativePath": "ci-evidence/source-independent-policy-review.json.gz",
+      "bytes": 2967,
+      "sha256": "c181be07cddd1c6f62ece86fe7fb737228ac2f496d9a6eab37ada17040f75207",
+      "blob": "bcf15f8000f0a9f75291958daae2124dc6235739",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/source-independent-policy-review.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-invocation.json.gz",
+      "relativePath": "ci-evidence/native-v7-invocation.json.gz",
+      "bytes": 1117,
+      "sha256": "1c696dd74c13dd64c6a63d1c89ee51bfd756a87b46785405daa7d4ad9b0b9366",
+      "blob": "3f35797e8cda0fa626942ed2c500eaeb9ae2f3da",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-invocation.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-result.json.gz",
+      "relativePath": "ci-evidence/native-v7-result.json.gz",
+      "bytes": 575,
+      "sha256": "4e8f8e190b81e38a87468d302e7f5a771a9d072b02cefdc9194859a315228cc3",
+      "blob": "d879000c87b3cc1bff09096d1f6b241de48db685",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-result.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7.log.gz",
+      "relativePath": "ci-evidence/native-v7.log.gz",
+      "bytes": 18715,
+      "sha256": "4838ed0bb70928d59dab5c58919280fac76088069d229338a8f444e492deebc3",
+      "blob": "80cc21fe05e54b6fb16a4d4eea67ba8a778d42e8",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-exact-tests.json.gz",
+      "relativePath": "ci-evidence/native-v7-exact-tests.json.gz",
+      "bytes": 1511,
+      "sha256": "a0b00661e1ef42f256236f256fd1d823bae05c6dd86050af840c8168d48d9c9a",
+      "blob": "ae3665a38912918f059d634bd36bc0f64cc32bfb",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-exact-tests.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-inputs.json.gz",
+      "relativePath": "ci-evidence/native-v7-inputs.json.gz",
+      "bytes": 363777,
+      "sha256": "ff62ca80e0b48f918616d11c235de99281a7d06a7edf47d5e760f42fe9323f05",
+      "blob": "305e551ad9b4467f9a40bc9fda2bbb30e050f95d",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-inputs.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-materialization.json.gz",
+      "relativePath": "ci-evidence/native-v7-materialization.json.gz",
+      "bytes": 2396,
+      "sha256": "9809e27d18677ee2bb8ee38c0bd1fc9235f3e37298a46e24f29260238854563a",
+      "blob": "afd139d450b8eab454d8f26ff3ca46616addef55",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-materialization.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-binary-receipt.json.gz",
+      "relativePath": "ci-evidence/native-v7-binary-receipt.json.gz",
+      "bytes": 370,
+      "sha256": "66924e36ba0233fd56c3ab0fc72e0663d64cba71db6574de7dd8e15473d752ca",
+      "blob": "5f4fb1ae18a41842da9ee4f437e2c23e4727a86d",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-binary-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-initial-format-result.json.gz",
+      "relativePath": "ci-evidence/native-v7-initial-format-result.json.gz",
+      "bytes": 177,
+      "sha256": "015d3f61753e074cdad30283ecce4806db6e2d3218048890a120143bc03acc15",
+      "blob": "e72bb96b782ed7a9cb14c241060988dc7a9cb883",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-initial-format-result.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-initial-format.log.gz",
+      "relativePath": "ci-evidence/native-v7-initial-format.log.gz",
+      "bytes": 205,
+      "sha256": "51d1be28aec643d0cd86861935e9e5deee81995771fe5f92ab8a53b384c633b6",
+      "blob": "9477f782658c0975815d754ef6dd0a61125dbc1a",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-initial-format.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-format-check-receipt.json.gz",
+      "relativePath": "ci-evidence/native-v7-format-check-receipt.json.gz",
+      "bytes": 369,
+      "sha256": "fdde6e1fe2a2c5f3ae4b5d5302ad59dc51f227add94b4a0e4cab9ee43fa7e8f0",
+      "blob": "839fbdbe542753c8479b2c4aac6c5222e910308b",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-format-check-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-format-check.log.gz",
+      "relativePath": "ci-evidence/native-v7-format-check.log.gz",
+      "bytes": 20,
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "blob": "86e43ea3218b5890302b754bbf8927f94e79f7ee",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-format-check.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-independent-review.json.gz",
+      "relativePath": "ci-evidence/security-independent-review.json.gz",
+      "bytes": 2886,
+      "sha256": "6717eb02c9b1873c418220572db7f21409935bcfae556fd093491c7dfddb7819",
+      "blob": "301739cc7e3ed9351e896bed4fbc0058b01a9ba3",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-independent-review.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-complete-four-file.diff.gz",
+      "relativePath": "ci-evidence/security-complete-four-file.diff.gz",
+      "bytes": 4135,
+      "sha256": "ebe26926048e2721f6263892ab76667adcf69743340e152f82b47018d252767e",
+      "blob": "c31722109dd09e5b64a4d1701860ad0eef56abf6",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-complete-four-file.diff.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-native-source-manifest.json.part-0000.gz",
+      "relativePath": "ci-evidence/security-native-source-manifest.json.part-0000.gz",
+      "bytes": 338363,
+      "sha256": "853c0a7bf6fa08cc4738c7d17fa758aaaa7a42a16318f191e6c28d54e6c3ad2c",
+      "blob": "0962cffb48e4134f138081e79cc4f545e82811ec",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-native-source-manifest.json.part-0000.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-native-source-manifest.json.part-0001.gz",
+      "relativePath": "ci-evidence/security-native-source-manifest.json.part-0001.gz",
+      "bytes": 336327,
+      "sha256": "8be20563a11d52e4db4752dd0dd44136c78b92b4c47fb7f9b44c944544b79dbb",
+      "blob": "9ff9e0b6ce7d90a8fca4ecaf708ae5b51b6ac19a",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-native-source-manifest.json.part-0001.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-source-kit-plan.json.gz",
+      "relativePath": "ci-evidence/security-source-kit-plan.json.gz",
+      "bytes": 7881,
+      "sha256": "4bb635bc4788a6a8a719b2045ce0b34099326462c4102ac5404f864a721f5c8f",
+      "blob": "1c0f58cbd9875783dcb37c627494794cb96f1753",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-source-kit-plan.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-security-overlay-verified.json.gz",
+      "relativePath": "ci-evidence/security-security-overlay-verified.json.gz",
+      "bytes": 842,
+      "sha256": "c7bb329e664700e7e7a5f2ebb8a5ce2177b8f63648b326c151be31d72591ec1b",
+      "blob": "f7cbec20412f5559d0eff1e5b4e453dfa54fbcf8",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-security-overlay-verified.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-native-proof-desktop-receipt.json.gz",
+      "relativePath": "ci-evidence/security-native-proof-desktop-receipt.json.gz",
+      "bytes": 584,
+      "sha256": "0f31a5e40f8f23f2d473109e2030b6bfdc21ead6ed122ad821074d8c7201d0c0",
+      "blob": "7b845ec349e766921a3c7ffe417a5a73baccbd4b",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-native-proof-desktop-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/security-native-proof-v1.tar.gz",
+      "relativePath": "ci-evidence/security-native-proof-v1.tar.gz",
+      "bytes": 368568,
+      "sha256": "602ea149bd7597141a6b61682060289e23714636c5b6afffdcdda0d629d4c381",
+      "blob": "a0f014e9187c0dc0de161b1df6574d17d87a38fc",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/security-native-proof-v1.tar.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-single-debugger-receipt.json.gz",
+      "relativePath": "ci-evidence/native-v7-single-debugger-receipt.json.gz",
+      "bytes": 1135,
+      "sha256": "bf7d981db91b57e0d948c9564834aa4dd41375c2a282919f88468e55fc2daac3",
+      "blob": "d83fd9ee4fe65ac8cb457c07f0e1b5f1421cf0a3",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-single-debugger-receipt.json.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-single-debugger-events.jsonl.gz",
+      "relativePath": "ci-evidence/native-v7-single-debugger-events.jsonl.gz",
+      "bytes": 2412,
+      "sha256": "f58171bf57832ba35c127ff7f8b5e973c22556d7b88583ce2608a3c5e93e2801",
+      "blob": "d3db0ede6349a702e0f8e45ddf054a3a1b51b5a3",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-single-debugger-events.jsonl.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-single-debugger-gdb-symbol-backtraces.log.gz",
+      "relativePath": "ci-evidence/native-v7-single-debugger-gdb-symbol-backtraces.log.gz",
+      "bytes": 6752,
+      "sha256": "61e6dbedb440e61efbe680c9afdbbe4333c6c63a3157505a2af4508df93c66f2",
+      "blob": "1d2beba18efce8f3e24b3c54192cdab4595c54f0",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-single-debugger-gdb-symbol-backtraces.log.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-evidence/native-v7-single-debugger-controller.py.gz",
+      "relativePath": "ci-evidence/native-v7-single-debugger-controller.py.gz",
+      "bytes": 3708,
+      "sha256": "0ad2921a8b29e228217b437cf32cb7d61929217de38aab7d92394695b387a6cf",
+      "blob": "8b44098b8995d8dc7925b3c977444b0f35c6ff71",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-evidence/native-v7-single-debugger-controller.py.gz"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-follow-up-audit.json",
+      "relativePath": "ci-follow-up-audit.json",
+      "bytes": 6784,
+      "sha256": "146965e652ee240a4ff8afd72a747a551cb467a4c2c7c73686028e05bc600f4d",
+      "blob": "2f5db49f6dcd4e9aecb5b116a689d68dd56ac1bd",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-follow-up-audit.json"
+    },
+    {
+      "path": "qa/repository-consolidation/20261116/graph-and-ci-audit/follow-up/ci-follow-up-readme.md",
+      "relativePath": "ci-follow-up-readme.md",
+      "bytes": 7382,
+      "sha256": "e1c9ecfbcf843f2eda43fa6a21c8e78253a0533f34b3ce0ec8f839a0ae984733",
+      "blob": "c1b978e6292ef16e4320574d170a4128992ad9e4",
+      "mode": "100644",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/ci_audit/follow-up-publication-v1/ci-follow-up-readme.md"
+    }
+  ],
+  "sourceReceiptsNeverRewritten": true
+}

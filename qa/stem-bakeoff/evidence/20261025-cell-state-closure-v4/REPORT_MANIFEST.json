@@ -1,0 +1,186 @@
+{
+  "schema": "hepta-v4-results-report-candidate:v2",
+  "intended_repository": "TrillionniumFoundation/hepta-private-ci",
+  "intended_path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4",
+  "executed_source_commit": "fa2a8f928dc41f8f3c48ea9bd0d45adf1e27ee09",
+  "run_seal_sha256": "a7dfa11a64deef982d0ebdc36dc746b2b3e31c3a0b7def28920d4ab070177346",
+  "original_input_sha256": {
+    "evaluation.json": "512104e3709b7c4916e621d7b8a46447785ad1fbf9733d6296e0fdee41473456",
+    "pre-unseal-audit.json": "1f99364a998fe6e33be55b9f04974bb3134396ab67aa65be3eb3ab0735cb9991",
+    "execution.json": "6824be16670c536fe72e2c39bbedfd789b1ad9add03b258e756f4e9ffe6a7fc9",
+    "cost-summary.json": "accf5e39b045b7d1be627e5f68f3bdb5ab875d33ae1b1b675831b8271f748e38",
+    "cost-collection-result.json": "71a58a48432fb9ad0345c6f95e091a78dab576532d641361eb739c571c8f139a",
+    "source-snapshot/protocol.json": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+    "source-snapshot/preregistration.md": "ae4be0a7c2c8807f286f8d96581c6efa51e3a9f935cec7c1e515dd18d146866b",
+    "prior-attempts/collector-v1-stderr.log": "ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8"
+  },
+  "files": [
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/README.md",
+      "sha256": "6ac1a0c98ad9504b6e5aefffe369517e5e12cf881ddc814f10d0ac36f11bbe7e",
+      "bytes": 24055
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/collect_v4_costs.py",
+      "sha256": "bbfd690a7ee81b2aabf71da95164208be1364cff019017ce46f8cb111aa2aa8d",
+      "bytes": 16838
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-artifact-inventory.csv",
+      "sha256": "09acb37f77b8052d13bb4e3615c0bf07a268ba20ee9525a9a1a401f89cdc9a1c",
+      "bytes": 356
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-collection-result.json",
+      "sha256": "71a58a48432fb9ad0345c6f95e091a78dab576532d641361eb739c571c8f139a",
+      "bytes": 564
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-feature-forwards.csv",
+      "sha256": "fae4ceb63b54592783e4b579b4ba0a7fbae06f30503cd8ebf18f65ba0a6127b6",
+      "bytes": 627
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-feature-stages.csv",
+      "sha256": "756c6d60d14ac0f59c2707640a388fcb4ed68c2d8889e1ef2c50f403d8d4e1b2",
+      "bytes": 176
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-map-state-by-head.csv",
+      "sha256": "66f02fabea78632b500e827dd1d16918208bb6215d187946e042e4e68b7306e4",
+      "bytes": 741
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-map-summary.csv",
+      "sha256": "5ed13696b5184cf5217cca0d97f0c831c1f71e7cacafda8278424ad51a7dbfcf",
+      "bytes": 554
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-reference-by-anchor.csv",
+      "sha256": "0aed5ecbb947011e12f06347c43518bd9ec5f2d771daea72e8b608edf5dacc02",
+      "bytes": 775
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-run-components.csv",
+      "sha256": "f02af181a973efc2ef7a2cbd370f4c13ab3d1c1c756d8647a3207dfee4f9a7b8",
+      "bytes": 461
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/cost-summary.json",
+      "sha256": "accf5e39b045b7d1be627e5f68f3bdb5ab875d33ae1b1b675831b8271f748e38",
+      "bytes": 29299
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/derive_summary.py",
+      "sha256": "3cb0ad96df3c15c6ad60dc9b4e4323aa226977d1dca5237cd8829e3a97c94210",
+      "bytes": 14245
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/derived-summary.json",
+      "sha256": "dc2b00d1702d408453167e2e9d0b2c27a6f2cfb064b71a2ee8ace79eb4309932",
+      "bytes": 42474
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/eight-step-response-mae.png",
+      "sha256": "3a647cd51bb35c347ca133674355581d6cc1b02fe787ae0675bc2db0ca734375",
+      "bytes": 190723
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/eight-step-response-mae.svg",
+      "sha256": "29d3acabbc7f0ab327aa4b7502236c1edefad14eb3d80c60eed124c5d1937e0d",
+      "bytes": 100945
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/evaluation.json",
+      "sha256": "512104e3709b7c4916e621d7b8a46447785ad1fbf9733d6296e0fdee41473456",
+      "bytes": 49113
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/execution.json",
+      "sha256": "6824be16670c536fe72e2c39bbedfd789b1ad9add03b258e756f4e9ffe6a7fc9",
+      "bytes": 808
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/mechanism-summary.csv",
+      "sha256": "d1a074156e4cab40efc6505a9a36954dab670b47e5a434e63be535f7058c2dff",
+      "bytes": 1103
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/per-step-response-mae.csv",
+      "sha256": "1160a24818c8fea8db9511c23dbd9e2df03666c7c6a429b715b921c97be5cccf",
+      "bytes": 2364
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/pre-unseal-audit.json",
+      "sha256": "1f99364a998fe6e33be55b9f04974bb3134396ab67aa65be3eb3ab0735cb9991",
+      "bytes": 61615
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/prior-attempts/README.md",
+      "sha256": "f83f7502d5cd97c47011585ef863fc5756d08368cd0bfea9cbb48121aaa89fe7",
+      "bytes": 1843
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/prior-attempts/collect_v4_costs_v1_failed.py",
+      "sha256": "4e696e23e955c383a9afc32c484440bcd233a5067855019266252e69da5f156e",
+      "bytes": 15524
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/prior-attempts/collector-v1-failure-metadata.json",
+      "sha256": "5cfc00a03c69ec1d7d27b853bd1aa993e59561e9924c024a3260ce9fd7678961",
+      "bytes": 1053
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/prior-attempts/collector-v1-stderr.log",
+      "sha256": "ddeb04123a638f3bbcb57075cdf14c8211e9964988e4eabb4e6e9425593a09e8",
+      "bytes": 550
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/protocol-identity-review.json",
+      "sha256": "b442bd473d70df061efbfbea3b7a355e295aa6e7500cd8c1655c64e6d512ce23",
+      "bytes": 3211
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/source-snapshot/preregistration.md",
+      "sha256": "ae4be0a7c2c8807f286f8d96581c6efa51e3a9f935cec7c1e515dd18d146866b",
+      "bytes": 5972
+    },
+    {
+      "path": "qa/stem-bakeoff/evidence/20261025-cell-state-closure-v4/source-snapshot/protocol.json",
+      "sha256": "fe0057c499c1a77ca7f5781a05425d83d59693b4250fb1560cab978afb4cd5b2",
+      "bytes": 6662
+    }
+  ],
+  "raw_archive": {
+    "included_in_this_report_package": false,
+    "bytes": 13267684,
+    "sha256": "c462a550e18baa63ba230c9dd6c076d676b5fcc0f281589c023b82251b0aa579",
+    "verified_by_actual_r2_collector": true
+  },
+  "preserved_prior_report_archive": {
+    "bytes": 210017,
+    "sha256": "2024d21ec8ce6295ee5a37ccc7ade69396b397af1678f9b3a7506302ce0ad724"
+  },
+  "changes": [
+    "Add original r2 cost receipt, seven cost CSVs and nested-cost narrative.",
+    "Correct protocol/preregistration citations to actual executed commit and include immutable source snapshots.",
+    "Preserve original failed collector source, exact stderr and failure metadata.",
+    "Include original three result receipts byte for byte."
+  ],
+  "unchanged": [
+    "Primary 0/6 results and all six paired intervals.",
+    "Mechanism/secondary/audit/five-stage cost numeric values.",
+    "Mechanism CSV bytes and both scientific figure files.",
+    "Frozen experimental source/protocol/raw evidence and source-access ledger."
+  ],
+  "validation": {
+    "twelve_derivatives_reproduced_byte_for_byte": true,
+    "all_narrative_SHA_pins_verified": true,
+    "all_local_markdown_links_resolve": true,
+    "pin_verification_sha256": "3e5e99a77614416ae5d495fef89e33fb113c88fadd8f0c506c64987919d29dc5",
+    "no_new_training_or_evaluation_or_model_or_raw_label_access": true,
+    "no_remote_actions": true
+  },
+  "authority": "DENY_ALL",
+  "production_authority": false
+}

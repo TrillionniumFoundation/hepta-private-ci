@@ -1,0 +1,157 @@
+{
+  "schema": "hepta.branch-fresh-refs-package.v1",
+  "observed_utc": "2026-11-16T19:52:36.836859+00:00",
+  "heads": 7318,
+  "protected_heads": 87,
+  "candidate": "59a450cc7b33a2f8d833043cc093b7fc92f2b7ab",
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "integration": "c0e525fd94e6eea2957bd1a12764627b86dd71ec",
+  "retained_original_eligible_heads": 1796,
+  "pending_original_eligible_heads": 5434,
+  "external_changes": [
+    {
+      "name": "codex/hia-union29-20261116-a90d",
+      "before": "a7a08eae570640c70dd902f81690eaf9d077d649",
+      "after": "16d52179819a0ad1994b67a422ebbd09b8f07bc2"
+    }
+  ],
+  "protected_marker_intersection": [],
+  "protected_head_intersection": [],
+  "remote_graph": {
+    "roots_count": 6931,
+    "roots_sha256": "269f7d79432892ad29a9e2cbd85a72f07fc076e5fa7baf6ef5990ef7faf0c3c5",
+    "commits": 76884,
+    "edges": 81364,
+    "canonical": {
+      "bytes": 6488168,
+      "sha256": "045ab862ea25b8dc26551711312bd3123068109bf240ec5b274e8b115ef700aa"
+    }
+  },
+  "augmented_graph": {
+    "roots_count": 6934,
+    "roots_sha256": "b260fc57a7476fcb8ebcaf5240bdf323a96aaa0d07633ce17891206c6dff46f2",
+    "commits": 76885,
+    "edges": 81365,
+    "canonical": {
+      "bytes": 6488250,
+      "sha256": "0ff577adda30b56d2a67aee00ae4377150178746611a428049dbe0d8a6c5ceba"
+    }
+  },
+  "restoration": "Decompress each named gzip, verify exact uncompressed length and SHA256 before parsing. The provenance tar contains only the listed regular relative files. Reconstruct the graph from the preserved 19:00 parent map and four added rows; do not count the unpublished candidate as a remote ref.",
+  "prior_snapshot": {
+    "path": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-before-checkpoint-1900/fresh-ref-protection.json",
+    "bytes": 752978,
+    "sha256": "3f7499f75425deb42ce0cd702fef79b1bb47479fbcd744695a5fe2c683d101d0"
+  },
+  "files": [
+    {
+      "path": "refs.raw.gz",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-after-hia-1953/publication/refs.raw.gz",
+      "bytes": 268887,
+      "sha256": "43972128197bf308b567d64106b0dfd1e396e7199dadfb713057f7cb5791bf23",
+      "git_blob": "22fde52d4932bf4ae52911b63bec60cfef089e73",
+      "restores": {
+        "name": "refs.raw",
+        "bytes": 722928,
+        "sha256": "0ef3a425593592f3f05ca55dc3faaf4ee51d16b0a347ed9bec8c0121d5f27803",
+        "git_blob": "7d03fce8f7b7b1be4cb52cdec5822f9de3bad41b"
+      }
+    },
+    {
+      "path": "fresh-ref-protection.json.gz",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-after-hia-1953/publication/fresh-ref-protection.json.gz",
+      "bytes": 6460,
+      "sha256": "492c083f557a78334f1edb3f78e0626b1d19ab3b9343950962fed39849dc92d2",
+      "git_blob": "40acf24f24b1fea0e8255dfe42b5dae4666d5860",
+      "restores": {
+        "name": "fresh-ref-protection.json",
+        "bytes": 51560,
+        "sha256": "e2606a0d3331524e2fecb9984ba3dbd2fd1bb6ffcdd52ded59cf96103fa6b7da",
+        "git_blob": "62d1eed9874da07aef19c373676fbabcde34a6c4"
+      }
+    },
+    {
+      "path": "graph-delta.json.gz",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-after-hia-1953/publication/graph-delta.json.gz",
+      "bytes": 335014,
+      "sha256": "18de56d128abb6a82ac1f0f99ba77f064d337d0a02ce517192b63b791be7bd74",
+      "git_blob": "ab7c4e9b4f4bb71420444b8bb8dcbd51bf6f6f48",
+      "restores": {
+        "name": "graph-delta.json",
+        "bytes": 667956,
+        "sha256": "7c01834731f8a197ec2ca3a453a82c15495e60e6361910cf5caba8e073cb25af",
+        "git_blob": "b54709dc79bb91324c0968c7c27be989259b69d6"
+      }
+    },
+    {
+      "path": "provenance.tar.gz",
+      "sourcePath": "/home/qian-qi/hepta-rust-consolidation-59d82a47a690-20261116/audit/branch_inventory/fresh-publication-refs-after-hia-1953/publication/provenance.tar.gz",
+      "bytes": 6129,
+      "sha256": "df23d615e5881b5a6a33bd9242eb3c8387930720b36da8b6ba885ec763d6ce24",
+      "git_blob": "3eb73577de3217afa141fd10f9ae503c9e4ee17e",
+      "restores": {
+        "name": "provenance.tar",
+        "bytes": 30720,
+        "sha256": "0f71993b2333f7a30fa61f261f3190025cb5128b875a1ea873fecb55ecc6515f",
+        "git_blob": "77d1bce5b68d3f563b962ca3c4b985c957baf258"
+      },
+      "members": [
+        {
+          "path": "capture-driver.py",
+          "bytes": 10644,
+          "sha256": "cfaed1d0dc34f6756726d624221665b66eb2aa8531a2aca593f02fbbfe39ae85",
+          "git_blob": "f526c2156e2cc4941dd98685fd865ef178dbb884"
+        },
+        {
+          "path": "root-comparison.json",
+          "bytes": 492,
+          "sha256": "d3447f4e7e26e1fd413d266b83d63615ed651ca098fe9dddf9618ec89fb5331f",
+          "git_blob": "cae86721cbcd4b212340a2946d4b05b8fb610413"
+        },
+        {
+          "path": "fetch.json",
+          "bytes": 842,
+          "sha256": "2f4ac6a0cc940a5e07e1d7cd4e4de26763e51eeb46bbc68ed5543fe329013399",
+          "git_blob": "1a786104b71721204ca8c8ede50c18dce0517e86"
+        },
+        {
+          "path": "fetch.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "fetch.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        {
+          "path": "raw-commits/16d52179819a0ad1994b67a422ebbd09b8f07bc2.commit",
+          "bytes": 522,
+          "sha256": "2e0c77a83f54587e946d4bb844fd2e9d3695d711a420e7e7a4cbdaca9328c852",
+          "git_blob": "44cd1df317866f99d654770993056350667fdb4a"
+        },
+        {
+          "path": "raw-commits/59a450cc7b33a2f8d833043cc093b7fc92f2b7ab.commit",
+          "bytes": 1140,
+          "sha256": "10b9b1a9ee0f2af888d56f75978c6e3c4aa07b44272c280df0714d0ff41a99ba",
+          "git_blob": "9415fa2b61910465eea6543b49874b365c8a4d0e"
+        },
+        {
+          "path": "raw-commits/9fd588b0ea450c7ed55fa9d82f1194a1a3d35b5a.commit",
+          "bytes": 944,
+          "sha256": "097c3bd0bd8afb6197cb6abb0151bcd080073e62a03b73dc0cc558fd6d429d58",
+          "git_blob": "c3e9dc66808b796138ffca76bb7d4d3bbea442df"
+        },
+        {
+          "path": "raw-commits/c0e525fd94e6eea2957bd1a12764627b86dd71ec.commit",
+          "bytes": 1364,
+          "sha256": "c9a56e694f22f26bbb14468f22ebe4b4952c395e0c62cf79323746958b69420f",
+          "git_blob": "2a19938e265029686a2f4db930a3fd6d53b957da"
+        }
+      ]
+    }
+  ],
+  "no_remote_ref_writes": true
+}

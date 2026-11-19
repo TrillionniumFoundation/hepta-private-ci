@@ -519,7 +519,13 @@ pub(super) async fn spawn_websocket_server_with_args(
             stderr_reader.next_line(),
         )
         .await
-        .context("timed out waiting for websocket app-server to report bound websocket address")?
+        .with_context(|| {
+            let pid = process.id();
+            let child_status = process.try_wait();
+            format!(
+                "timed out waiting for websocket app-server to report bound websocket address; phase=read_bound_address; pid={pid:?}; child_status={child_status:?}"
+            )
+        })?
         .context("failed to read websocket app-server stderr")?
         .context("websocket app-server exited before reporting bound websocket address")?;
         eprintln!("[websocket app-server stderr] {line}");

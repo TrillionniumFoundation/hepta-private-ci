@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.fashion-implementation.review.v1",
+  "scope": "New source/software only; no real TRAIN intake, fitting, heldout or generation study",
+  "reviewers": {
+    "data_and_no_TEST_interface": "/root/independent_data",
+    "model_full_feedback_and_stable_gradients": "/root/efficient_learning",
+    "transport_offline_score_boundary": "/root/audit_acceptance",
+    "complete_budget_and_once_only_guard": "/root/audit_runtime_costs"
+  },
+  "runtime_guard_findings_fixed": [
+    "Actual overrun distinguished from forecast refusal",
+    "50ms content bookkeeping reserve plus final actual cap",
+    "Policy150 and seed450 final checks including negative oracle path",
+    "Worker and supervisor post-receipt CPU/RSS/retention checks",
+    "Streaming step journal survives operation/cap exceptions",
+    "Atomic latch before measured intake; missingfiles/source preflight does not consume identity"
+  ],
+  "numerical_findings_fixed": [
+    "stableN log1p/expm1 and target complement",
+    "independentN/CE Decimal80 extreme tails",
+    "pairwise feedback posterior VJP: prior true-gradient0 vs expected1.735874863167526e-21",
+    "clip open interval derivative1, endpoints0; no smooth central difference at endpoints"
+  ],
+  "local_tests": 43,
+  "parent_dot_reference_checks_not_counted_as_local": 140,
+  "data_access_status": "Two official S3 TRAIN HEAD403; stopped, no retry/alternate endpoint; parent requesting lawful local files",
+  "method_probe_started": false,
+  "scientific_benefit_confirmed": false,
+  "remaining": [
+    "local verified official TRAIN files",
+    "actual frozenD probe terminal outcome",
+    "if D positive, parent review before strong-static families",
+    "future independent confirmation/errorcontrol required for science"
+  ]
+}

@@ -1,0 +1,364 @@
+name: HCSN differentiable qualification
+
+on:
+  pull_request:
+    paths:
+      - qualification/hcsn_differentiable/**
+      - qualification/hcsn_qvi/**
+      - qualification/hcsn_memory_controls/**
+      - proposals/hcsn_persistence_v1/**
+      - proposals/localization-v3/**
+      - .github/workflows/hcsn-differentiable.yml
+  push:
+    paths:
+      - qualification/hcsn_differentiable/**
+      - qualification/hcsn_qvi/**
+      - qualification/hcsn_memory_controls/**
+      - proposals/hcsn_persistence_v1/**
+      - proposals/localization-v3/**
+      - .github/workflows/hcsn-differentiable.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-differentiable-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cpu-qualification:
+    name: HCSN CPU qualification (${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source, event]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+    env:
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONHASHSEED: "0"
+      SOURCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_HEAD: ${{ matrix.lane == 'source' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      TEST_LANE: ${{ matrix.lane }}
+    steps:
+      - name: Check out the declared source or event commit
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Record source head and tested tree identities
+        id: identity
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          def git(ref):
+              return subprocess.check_output(["git", "rev-parse", "--verify", ref], text=True).strip()
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          out.mkdir()
+          source, tested = os.environ["SOURCE_HEAD"], git("HEAD")
+          source_tree, tested_tree = git(source + "^{tree}"), git("HEAD^{tree}")
+          record = {"schema": "hcsn-ci-identity-v1", "recorded_utc": datetime.now(timezone.utc).isoformat(),
+                    "source_head": source, "source_tree": source_tree, "tested_commit": tested,
+                    "tested_tree": tested_tree, "trees_equal": source_tree == tested_tree,
+                    "head_equals_source": tested == source,
+                    "event_sha": os.environ["GITHUB_SHA"], "event": os.environ["GITHUB_EVENT_NAME"],
+                    "run_id": os.environ["GITHUB_RUN_ID"], "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                    "lane": os.environ["TEST_LANE"], "expected_head": os.environ["EXPECTED_HEAD"],
+                    "evidence_scope": "tested_commit_tree_only; real-task benefit not asserted"}
+          with (out / "identity.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          assert tested == os.environ["EXPECTED_HEAD"], "checkout differs from the declared lane commit"
+          if os.environ["TEST_LANE"] == "source":
+              assert tested == source and source_tree == tested_tree, "exact source identity mismatch"
+          else:
+              assert tested == os.environ["GITHUB_SHA"], "event commit identity mismatch"
+          PY
+
+      - name: Verify P0 evidence-chain declarations (HOLDs are not passes)
+        id: provenance
+        run: |
+          python3 -m qualification.hcsn_differentiable.audit_evidence_chain \
+            --output "$RUNNER_TEMP/hcsn-differentiable/provenance.json"
+
+      - name: Set up pinned Python
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.3"
+
+      - name: Install and verify pinned CPU Torch
+        id: runtime
+        run: |
+          python -m pip install --disable-pip-version-check "torch==2.8.0+cpu" --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --disable-pip-version-check "numpy==2.5.4" "mpmath==1.3.0" "scipy==1.17.0"
+          python -m pip freeze --all > "$RUNNER_TEMP/hcsn-differentiable/pip-freeze.txt"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          import torch
+          import numpy
+          import mpmath
+          import scipy
+          runtime = {"python": sys.version, "torch": torch.__version__, "cuda_build": torch.version.cuda,
+                     "numpy": numpy.__version__, "mpmath": mpmath.__version__, "scipy": scipy.__version__}
+          (Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable/runtime.json").write_text(json.dumps(runtime, indent=2))
+          assert sys.version_info[:3] == (3, 12, 3)
+          assert torch.__version__ == "2.8.0+cpu" and torch.version.cuda is None
+          assert numpy.__version__ == "2.5.4" and mpmath.__version__ == "1.3.0"
+          assert scipy.__version__ == "1.17.0"
+          PY
+
+      - name: Discover and run every qualification test
+        id: qualification
+        run: |
+          trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/qualification.exit-code"; exit "$hcsn_rc"' EXIT
+          python -m qualification.hcsn_differentiable.run_qualification --threads 1 \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qualification.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/qualification.log"
+
+      - name: Verify crash-safe successor C2 receipts (no admission)
+        id: c2-recovery
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest discover -s qualification/hcsn_differentiable/recovery_v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/c2-recovery-tests.log"
+          python -m unittest discover -s qualification/hcsn_differentiable/c2_successor_v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/hcsn-differentiable/c2-successor-tests.log"
+
+      - name: Reject ambiguous recorded P1 posterior traces (evidence-only)
+        id: p1-trace-parser
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          from qualification.hcsn_differentiable.run_qualification import RecordedResult
+          from qualification.hcsn_differentiable import test_training_domain_strict_trace as module
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+          with (out / "p1-trace-parser-tests.log").open("x") as stream:
+              result = unittest.TextTestRunner(stream=stream, verbosity=2, resultclass=RecordedResult).run(suite)
+          report = {"schema": "hcsn-recorded-trace-parser-ci-v1", "tests_run": result.testsRun,
+                    "failures": len(result.failures), "errors": len(result.errors), "skipped": len(result.skipped),
+                    "scientific_admission": "HOLD_NO_GO", "whole_training_qualification": False,
+                    "source_head": os.environ["SOURCE_HEAD"], "tests": result.records}
+          (out / "p1-trace-parser-tests.json").write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")
+          print((out / "p1-trace-parser-tests.log").read_text())
+          raise SystemExit(0 if result.wasSuccessful() and result.testsRun > 0 and not result.skipped else 1)
+          PY
+
+      - name: Audit recorded-law projected flow Jacobians (no science admission)
+        id: p1-projected-gradients
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import unittest
+          from qualification.hcsn_differentiable.run_qualification import RecordedResult
+          from qualification.hcsn_differentiable import test_training_domain_projected_gradients as module
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+          with (out / "projected-gradient-tests.log").open("x") as stream:
+              result = unittest.TextTestRunner(stream=stream, verbosity=2, resultclass=RecordedResult).run(suite)
+          trace = getattr(module.ProjectedGradientTests, "trace_bytes", None)
+          if trace is not None:
+              (out / "projected-gradient-fixture-trace.jsonl").write_bytes(trace)
+          report = {"schema": "hcsn-recorded-flow-gradient-ci-v1", "tests_run": result.testsRun,
+                    "failures": len(result.failures), "errors": len(result.errors), "skipped": len(result.skipped),
+                    "scientific_admission": "HOLD_NO_GO", "whole_training_qualification": False,
+                    "source_head": os.environ["SOURCE_HEAD"], "tests": result.records,
+                    "fixture_trace_sha256": hashlib.sha256(trace).hexdigest() if trace is not None else None}
+          (out / "projected-gradient-tests.json").write_text(json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n")
+          print((out / "projected-gradient-tests.log").read_text())
+          raise SystemExit(0 if result.wasSuccessful() and result.testsRun > 0 and not result.skipped else 1)
+          PY
+
+      - name: Enforce the predeclared numerical error budget
+        id: budget
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
+        run: |
+          trap 'hcsn_rc=$?; printf "%s\n" "$hcsn_rc" > "$RUNNER_TEMP/hcsn-differentiable/error-budget.exit-code"; exit "$hcsn_rc"' EXIT
+          python -m qualification.hcsn_differentiable.error_budget \
+            --output "$RUNNER_TEMP/hcsn-differentiable/error-budget.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/error-budget.log"
+
+      - name: Check persistence successor and inherited synthetic fixtures
+        id: persistence
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' && steps.runtime.outcome == 'success' }}
+        run: |
+          trap 'hcsn_persistence_rc=$?; printf "%s\n" "$hcsn_persistence_rc" > "$RUNNER_TEMP/hcsn-differentiable/persistence.exit-code"; exit "$hcsn_persistence_rc"' EXIT
+          python -B -c 'import torch, numpy, mpmath'
+          python -B -m unittest -v \
+            proposals.hcsn_persistence_v1.test_atomic_io \
+            proposals.hcsn_persistence_v1.test_journal \
+            proposals.hcsn_persistence_v1.test_materialize \
+            proposals.hcsn_persistence_v1.test_runtime 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-tests.log"
+          python -B -m proposals.hcsn_persistence_v1.materialize \
+            --repository . \
+            --output "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-materialize.log"
+          python -B -m proposals.hcsn_persistence_v1.test_successor_terminal \
+            --successor "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-terminal-tests.log"
+          python -B -m proposals.hcsn_persistence_v1.run_successor_tests \
+            --successor "$RUNNER_TEMP/hcsn-differentiable/persistence-successor/source" \
+            --output "$RUNNER_TEMP/hcsn-differentiable/persistence-inherited-tests.json" 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/persistence-inherited-tests.log"
+
+      - name: Verify historical and current evidence integrity and links
+        id: evidence
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -B -m qualification.hcsn_differentiable.evidence_chain \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/LINK-CLOSURE-MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/localization-v2-20261108/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/math-closure-20261108/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/MANIFEST.json \
+            --manifest qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/MANIFEST.json \
+            --markdown qualification/hcsn_differentiable/CURRENT.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/terminal-bootstrap/program/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/program/STAGES.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/resource-core/review/native-H2/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-preparation-20261111/renderer/program/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-followup-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-closure-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-launch-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-ci-launch-closure-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/recovery/SCOPE.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/numerics/SCOPE.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/c2-resource-renderer-preparation-v2/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/math-recovery/rare-tail-review/NOTE-REVIEWED.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-recovery-20261111/rare-tail-context/sources/fixed-grid-NOTE.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/mathematical-diagnosis/NOTE.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/local-diagnosis/fixed48/REPORT.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-terminal-numerics-20261110/numerics-independent-review/REPORT.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-resource-replay-20261110/resource-analysis-v1/output-v1/REPORT.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-20261110/p1/width16-v6/INDEX.md \
+            --markdown proposals/localization-v3/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p1-fixed-grid-diagnosis-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-persistence-validation-20261111/README.md \
+            --markdown proposals/hcsn_persistence_v1/README.md \
+            --markdown qualification/hcsn_differentiable/evidence/p0p5-c2-terminal-reconcile-20261111/CODE-PATH-NOTE.md \
+            --output "$RUNNER_TEMP/hcsn-differentiable/evidence-integrity.json"
+
+      - name: Check the independent finite DP and QVI oracle
+        id: qvi
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest discover -s qualification/hcsn_qvi/tests -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/qvi-tests.log"
+          python -m qualification.hcsn_qvi.run_oracle \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qvi-oracle.json"
+          python -m qualification.hcsn_qvi.run_continuum \
+            --output "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"
+          cat "$RUNNER_TEMP/hcsn-differentiable/qvi-continuum.json"
+          python -m qualification.hcsn_differentiable.neural_control_study \
+            --output "$RUNNER_TEMP/hcsn-differentiable/neural-control.json"
+
+      - name: Check non-diffusion memory control semantics
+        id: controls
+        if: ${{ !cancelled() && steps.runtime.outcome == 'success' }}
+        run: |
+          python -m unittest qualification.hcsn_memory_controls.test_controls -v 2>&1 \
+            | tee "$RUNNER_TEMP/hcsn-differentiable/memory-controls-tests.log"
+
+      - name: Require an unchanged source and index
+        id: clean
+        if: ${{ always() && steps.checkout.outcome == 'success' }}
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Record terminal outcomes without granting failure exemptions
+        if: always()
+        env:
+          HCSN_STEPS: ${{ toJSON(steps) }}
+        run: |
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          import json
+          import os
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "hcsn-differentiable"
+          out.mkdir(exist_ok=True)
+          steps = json.loads(os.environ["HCSN_STEPS"])
+          required = ("checkout", "identity", "provenance", "python", "runtime", "qualification", "c2-recovery", "p1-trace-parser", "p1-projected-gradients", "budget", "persistence", "evidence", "qvi", "controls", "clean")
+          outcomes = {name: steps.get(name, {}).get("outcome", "missing") for name in required}
+          passed = all(value == "success" for value in outcomes.values())
+          codes = {name: int((out / (name + ".exit-code")).read_text())
+                   if (out / (name + ".exit-code")).exists() else None
+                   for name in ("qualification", "error-budget", "persistence")}
+          record = {"schema": "hcsn-ci-outcome-v1", "finished_utc": datetime.now(timezone.utc).isoformat(),
+                    "science_status": "PASSED_DECLARED_FIXTURES" if passed else "HOLD",
+                    "steps": outcomes, "step_exit_codes": codes, "rerun_of_old_evidence": False,
+                    "claim": "CPU fixture qualification only; no real-task or repository-wide pass."}
+          with (out / "outcome.json").open("x") as stream:
+              json.dump(record, stream, indent=2)
+          print(json.dumps(record))
+          raise SystemExit(0 if passed else 1)
+          PY
+
+      - name: Retain receipts on every outcome
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hcsn-differentiable-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hcsn-differentiable/
+          if-no-files-found: error
+          retention-days: 14
+
+  cpu-science-gate:
+    name: HCSN CPU science gate
+    needs: [cpu-qualification]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Require successful source and event qualifications
+        env:
+          HCSN_RESULT: ${{ needs.cpu-qualification.result }}
+        run: test "$HCSN_RESULT" = success

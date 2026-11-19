@@ -1,0 +1,21 @@
+{
+  "scope": "Partial only: cached current-V16 registry rows for these three new diagnostic postimages; not the official full 903b or later verifier",
+  "checker_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+  "protected_rows_checked": [
+    {
+      "index": 327,
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_initial_root.rs",
+      "status": "satisfied"
+    }
+  ],
+  "protected_rows_not_checked": 357,
+  "unchanged_definition_markers_present": [
+    "root_initial_executable_feature_prepare",
+    "root_initial_executable_feature_recover",
+    "root_initial_actual_feature_publish",
+    "root_initial_complete_configuration"
+  ],
+  "native_or_cargo_executed": false,
+  "full_boundary_scan_executed": false,
+  "callers_modified": false
+}

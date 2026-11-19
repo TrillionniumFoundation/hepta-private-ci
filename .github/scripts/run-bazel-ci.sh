@@ -130,6 +130,21 @@ print_bazel_test_log_tails() {
     "${bazel_info_args[@]}" \
     bazel-testlogs 2>/dev/null || echo bazel-testlogs)"
 
+  if [[ -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ]]; then
+    # Preserve materialized attempts before a later Bazel invocation replaces
+    # them. Existing artifact uploads include this directory. Evidence errors
+    # must not replace the original Bazel result.
+    python3 "$(dirname "${BASH_SOURCE[0]}")/collect_bazel_test_logs.py" \
+      --console-log "$console_log" \
+      --testlogs-root "$testlogs_dir" \
+      --output-root "$CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR" \
+      --bazel-exit-code "$2" \
+      || echo "::warning::Bazel attempt evidence is incomplete; inspect collector stderr and any manifest."
+  fi
+  if [[ "$2" -eq 0 ]]; then
+    return
+  fi
+
   local failed_targets=()
   while IFS= read -r target; do
     failed_targets+=("$target")
@@ -275,6 +290,40 @@ if [[ ${#bazel_args[@]} -eq 0 || ${#bazel_targets[@]} -eq 0 ]]; then
 fi
 
 post_config_bazel_args=()
+linux_target_platform="${CODEX_BAZEL_LINUX_TARGET_PLATFORM:-}"
+if [[ -n "$linux_target_platform" ]]; then
+  if [[ "${RUNNER_OS:-}" != "Linux" || "$linux_target_platform" != "@rules_rs//rs/platforms:x86_64-unknown-linux-musl" ]]; then
+    echo "CODEX_BAZEL_LINUX_TARGET_PLATFORM requires a Linux runner and the supported x86_64 musl platform." >&2
+    exit 1
+  fi
+  for arg in "${bazel_args[@]}"; do
+    case "$arg" in
+      --platforms | --platforms=*)
+        echo "Do not combine CODEX_BAZEL_LINUX_TARGET_PLATFORM with --platforms." >&2
+        exit 1
+        ;;
+    esac
+  done
+  # ci-linux selects the GNU RBE target. Override only the target after that
+  # config; keep the GNU host/exec platform for compiler tools and proc macros.
+  # The keyless Python fallback also preserves this explicit platform.
+  post_config_bazel_args+=(
+    "--platforms=${linux_target_platform}"
+    "--extra_toolchains=//:linux_musl_tests_on_gnu_host_toolchain"
+  )
+fi
+
+if [[ "${RUNNER_OS:-}" == "macOS" ]]; then
+  # Remote --jobs=800 also selects the local Skyframe executor parallelism.
+  # Hosted macOS runners exhausted native threads before completing the test
+  # roster. Keep this host at the repository's ordinary 30-job bound after the
+  # remote config. Each Rust test action already runs its own parallel suite;
+  # serialize those actions so subprocess startup and PTY deadlines measure
+  # the test itself instead of competition with unrelated suites. Preserve the
+  # full roster, Rust test parallelism, sandbox strategy and original deadlines.
+  post_config_bazel_args+=(--jobs=30 --local_test_jobs=1)
+fi
+
 if [[ "${RUNNER_OS:-}" == "Windows" && $windows_msvc_host_platform -eq 1 ]]; then
   has_host_platform_override=0
   for arg in "${bazel_args[@]}"; do
@@ -440,12 +489,14 @@ run_bazel_with_startup_args \
 bazel_status=${PIPESTATUS[0]}
 set -e
 
-if [[ ${bazel_status:-0} -ne 0 ]]; then
-  if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
-    print_bazel_action_failure_summary "$bazel_console_log"
-  fi
-  if [[ $print_failed_bazel_test_logs -eq 1 ]]; then
-    print_bazel_test_log_tails "$bazel_console_log"
-  fi
-  exit "$bazel_status"
+if [[ ${bazel_status:-0} -ne 0 && $print_failed_bazel_action_summary -eq 1 ]]; then
+  print_bazel_action_failure_summary "$bazel_console_log" \
+    || echo "::warning::Bazel action failure summary was unavailable."
 fi
+if [[ $print_failed_bazel_test_logs -eq 1 &&
+      ( $bazel_status -ne 0 || -n "${CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR:-}" ) ]]; then
+  # Final success may include failed attempts recovered by the original retries.
+  print_bazel_test_log_tails "$bazel_console_log" "$bazel_status" \
+    || echo "::warning::Bazel attempt log reporting was unavailable."
+fi
+exit "$bazel_status"

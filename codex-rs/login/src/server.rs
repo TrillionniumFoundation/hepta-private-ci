@@ -8,9 +8,9 @@
 //!   engineers to diagnose failed sign-ins
 //! - avoid persisting secrets or sensitive URL/query data into normal application logs
 //!
-//! This module therefore keeps the user-facing error path and the structured-log path separate.
-//! Returned `io::Error` values still carry the detail needed by CLI/browser callers, while
-//! structured logs only emit explicitly reviewed fields plus redacted URL/error values.
+//! External authentication error text is classified before it reaches terminal output, browser
+//! pages, structured logs, or returned errors. These surfaces retain fixed categories, actionable
+//! guidance, and HTTP status without copying arbitrary callback or response-body text.
 use std::io::Cursor;
 use std::io::Read;
 use std::io::Write;
@@ -24,6 +24,9 @@ use std::sync::LazyLock;
 use std::thread;
 use std::time::Duration;
 
+use self::oauth_diagnostics::is_missing_codex_entitlement_error;
+use self::oauth_diagnostics::oauth_callback_error_detail;
+use self::oauth_diagnostics::parse_token_endpoint_error;
 use crate::auth::AuthDotJson;
 use crate::auth::AuthKeyringBackendKind;
 use crate::auth::save_auth;
@@ -41,7 +44,6 @@ use crate::success_page::jwt_auth_claims;
 use crate::token_data::TokenData;
 use crate::token_data::parse_chatgpt_jwt_claims;
 use base64::Engine;
-use chrono::Utc;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_protocol::auth::AuthMode;
 use codex_utils_template::Template;
@@ -55,6 +57,9 @@ use tiny_http::StatusCode;
 use tracing::error;
 use tracing::info;
 use tracing::warn;
+
+#[path = "oauth_diagnostics.rs"]
+mod oauth_diagnostics;
 
 pub(super) const DEFAULT_ISSUER: &str = "https://auth.openai.com";
 const DEFAULT_PORT: u16 = 1455;
@@ -375,18 +380,18 @@ async fn process_request(
             }
             if let Some(error_code) = params.get("error") {
                 let error_description = params.get("error_description").map(String::as_str);
-                let message = oauth_callback_error_message(error_code, error_description);
-                eprintln!("OAuth callback error: {message}");
+                let detail = oauth_callback_error_detail(error_code, error_description);
+                eprintln!("OAuth callback error: {}", detail.message);
                 warn!(
-                    error_code,
+                    error_code = detail.error_code,
                     has_error_description = error_description.is_some_and(|s| !s.trim().is_empty()),
                     "oauth callback returned error"
                 );
                 return login_error_response(
-                    &message,
+                    detail.message,
                     io::ErrorKind::PermissionDenied,
-                    Some(error_code),
-                    error_description,
+                    Some(detail.error_code),
+                    detail.error_description,
                 );
             }
             let code = match params.get("code") {
@@ -701,19 +706,6 @@ pub(crate) struct ExchangedTokens {
     pub refresh_token: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct TokenEndpointErrorDetail {
-    error_code: Option<String>,
-    error_message: Option<String>,
-    display_message: String,
-}
-
-impl std::fmt::Display for TokenEndpointErrorDetail {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.display_message.fmt(f)
-    }
-}
-
 const REDACTED_URL_VALUE: &str = "<redacted>";
 const SENSITIVE_URL_QUERY_KEYS: &[&str] = &[
     "access_token",
@@ -802,10 +794,8 @@ fn sanitize_url_for_logging(url: &str) -> String {
 }
 /// Exchanges an authorization code for tokens.
 ///
-/// The returned error remains suitable for user-facing CLI/browser surfaces, so backend-provided
-/// non-JSON error text is preserved there. Structured logging stays narrower: it logs reviewed
-/// fields from parsed token responses and redacted transport errors, but does not log the final
-/// callback-layer `%err` string.
+/// Callback and device-login callers receive the same fixed diagnostic categories as the logs.
+/// External response bodies are used only for classification, never retained in an error source.
 pub(crate) async fn exchange_code_for_tokens(
     issuer: &str,
     client_id: &str,
@@ -864,8 +854,8 @@ pub(crate) async fn exchange_code_for_tokens(
         let detail = parse_token_endpoint_error(&body);
         warn!(
             %status,
-            error_code = detail.error_code.as_deref().unwrap_or("unknown"),
-            error_message = detail.error_message.as_deref().unwrap_or("unknown"),
+            error_code = detail.error_code.unwrap_or("unknown"),
+            error_message = detail.error_message.unwrap_or("unknown"),
             "oauth token exchange returned non-success status"
         );
         return Err(io::Error::other(format!(
@@ -911,7 +901,7 @@ pub(crate) async fn persist_tokens_async(
             auth_mode: Some(AuthMode::Chatgpt),
             openai_api_key: api_key,
             tokens: Some(tokens),
-            last_refresh: Some(Utc::now()),
+            last_refresh: Some(codex_utils_time::Timestamp::now()),
             agent_identity: None,
             personal_access_token: None,
             bedrock_api_key: None,
@@ -982,100 +972,6 @@ fn login_error_response(
         headers,
         body,
         result: Err(io::Error::new(kind, message.to_string())),
-    }
-}
-
-/// Returns true when the OAuth callback represents a missing Codex entitlement.
-fn is_missing_codex_entitlement_error(error_code: &str, error_description: Option<&str>) -> bool {
-    error_code == "access_denied"
-        && error_description.is_some_and(|description| {
-            description
-                .to_ascii_lowercase()
-                .contains("missing_codex_entitlement")
-        })
-}
-
-/// Converts OAuth callback errors into a user-facing message.
-fn oauth_callback_error_message(error_code: &str, error_description: Option<&str>) -> String {
-    if is_missing_codex_entitlement_error(error_code, error_description) {
-        return "Codex is not enabled for your workspace. Contact your workspace administrator to request access to Codex.".to_string();
-    }
-
-    if let Some(description) = error_description
-        && !description.trim().is_empty()
-    {
-        return format!("Sign-in failed: {description}");
-    }
-
-    format!("Sign-in failed: {error_code}")
-}
-
-/// Extracts token endpoint error detail for both structured logging and caller-visible errors.
-///
-/// Parsed JSON fields are safe to log individually. If the response is not JSON, the raw body is
-/// preserved only for the returned error path so the CLI/browser can still surface the backend
-/// detail, while the structured log path continues to use the explicitly parsed safe fields above.
-fn parse_token_endpoint_error(body: &str) -> TokenEndpointErrorDetail {
-    let trimmed = body.trim();
-    if trimmed.is_empty() {
-        return TokenEndpointErrorDetail {
-            error_code: None,
-            error_message: None,
-            display_message: "unknown error".to_string(),
-        };
-    }
-
-    let parsed = serde_json::from_str::<JsonValue>(trimmed).ok();
-    if let Some(json) = parsed {
-        let error_code = json
-            .get("error")
-            .and_then(JsonValue::as_str)
-            .filter(|error_code| !error_code.trim().is_empty())
-            .map(ToString::to_string)
-            .or_else(|| {
-                json.get("error")
-                    .and_then(JsonValue::as_object)
-                    .and_then(|error_obj| error_obj.get("code"))
-                    .and_then(JsonValue::as_str)
-                    .filter(|code| !code.trim().is_empty())
-                    .map(ToString::to_string)
-            });
-        if let Some(description) = json.get("error_description").and_then(JsonValue::as_str)
-            && !description.trim().is_empty()
-        {
-            return TokenEndpointErrorDetail {
-                error_code,
-                error_message: Some(description.to_string()),
-                display_message: description.to_string(),
-            };
-        }
-        if let Some(error_obj) = json.get("error")
-            && let Some(message) = error_obj.get("message").and_then(JsonValue::as_str)
-            && !message.trim().is_empty()
-        {
-            return TokenEndpointErrorDetail {
-                error_code,
-                error_message: Some(message.to_string()),
-                display_message: message.to_string(),
-            };
-        }
-        if let Some(error_code) = error_code {
-            return TokenEndpointErrorDetail {
-                display_message: error_code.clone(),
-                error_code: Some(error_code),
-                error_message: None,
-            };
-        }
-    }
-
-    // Preserve non-JSON token-endpoint bodies for the returned error so CLI/browser flows still
-    // surface the backend detail users and admins need, but keep that text out of structured logs
-    // by only logging explicitly parsed fields above and avoiding `%err` logging at the callback
-    // layer.
-    TokenEndpointErrorDetail {
-        error_code: None,
-        error_message: None,
-        display_message: trimmed.to_string(),
     }
 }
 
@@ -1174,9 +1070,9 @@ pub(crate) async fn obtain_api_key(
 mod tests {
     use pretty_assertions::assert_eq;
 
-    use super::TokenEndpointErrorDetail;
     use super::html_escape;
     use super::is_missing_codex_entitlement_error;
+    use super::oauth_diagnostics::TokenEndpointErrorDetail;
     use super::parse_token_endpoint_error;
     use super::redact_sensitive_query_value;
     use super::redact_sensitive_url_parts;
@@ -1184,7 +1080,7 @@ mod tests {
     use super::sanitize_url_for_logging;
 
     #[test]
-    fn parse_token_endpoint_error_prefers_error_description() {
+    fn parse_token_endpoint_error_classifies_without_echoing_error_description() {
         let detail = parse_token_endpoint_error(
             r#"{"error":"invalid_grant","error_description":"refresh token expired"}"#,
         );
@@ -1192,9 +1088,11 @@ mod tests {
         assert_eq!(
             detail,
             TokenEndpointErrorDetail {
-                error_code: Some("invalid_grant".to_string()),
-                error_message: Some("refresh token expired".to_string()),
-                display_message: "refresh token expired".to_string(),
+                error_code: Some("invalid_grant"),
+                error_message: Some(
+                    "Sign-in authorization is invalid or has expired. Return to Codex and sign in again."
+                ),
+                display_message: "Sign-in authorization is invalid or has expired. Return to Codex and sign in again.",
             }
         );
     }
@@ -1208,9 +1106,11 @@ mod tests {
         assert_eq!(
             detail,
             TokenEndpointErrorDetail {
-                error_code: Some("proxy_auth_required".to_string()),
-                error_message: Some("proxy authentication required".to_string()),
-                display_message: "proxy authentication required".to_string(),
+                error_code: Some("proxy_auth_required"),
+                error_message: Some(
+                    "Proxy authentication is required. Check your proxy configuration and try again."
+                ),
+                display_message: "Proxy authentication is required. Check your proxy configuration and try again.",
             }
         );
     }
@@ -1222,15 +1122,15 @@ mod tests {
         assert_eq!(
             detail,
             TokenEndpointErrorDetail {
-                error_code: Some("temporarily_unavailable".to_string()),
+                error_code: Some("temporarily_unavailable"),
                 error_message: None,
-                display_message: "temporarily_unavailable".to_string(),
+                display_message: "The sign-in service is temporarily unavailable. Try again later.",
             }
         );
     }
 
     #[test]
-    fn parse_token_endpoint_error_preserves_plain_text_for_display() {
+    fn parse_token_endpoint_error_omits_plain_text_from_display() {
         let detail = parse_token_endpoint_error("service unavailable");
 
         assert_eq!(
@@ -1238,7 +1138,7 @@ mod tests {
             TokenEndpointErrorDetail {
                 error_code: None,
                 error_message: None,
-                display_message: "service unavailable".to_string(),
+                display_message: "unknown error",
             }
         );
     }

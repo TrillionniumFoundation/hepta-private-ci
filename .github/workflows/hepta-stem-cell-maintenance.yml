@@ -1,0 +1,253 @@
+name: Hepta stem Cell final tests and maintenance
+
+on:
+  push:
+    branches:
+      - codex/cell-stem-routes-20261108-5e692
+    paths:
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-types/**"
+      - "scripts/hepta_cells/*.py"
+      - "scripts/hepta_cells/requirements.txt"
+      - "scripts/hepta_pred1/*.py"
+      - "scripts/test_hepta_cells_*.py"
+      - "scripts/qualify_hepta_cells.py"
+      - "scripts/qualify_hepta_semantic_serving.py"
+      - ".github/workflows/hepta-stem-cell-maintenance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-stem-cell-maintenance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  final-tests-and-maintenance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      BASE_SHA: "1eb72a1131285f5de98beeb7c95a27eab72d647e"
+      CARGO_BUILD_JOBS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact candidate
+        id: candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            codex-rs
+            scripts
+            .github/workflows
+
+      - name: Fetch only the pinned formatter comparison base
+        env:
+          READ_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import os
+          import subprocess
+          token = os.environ["READ_TOKEN"]
+          auth = base64.b64encode(("x-access-token:" + token).encode()).decode()
+          env = os.environ.copy()
+          env.pop("READ_TOKEN", None)
+          env.update(GIT_CONFIG_COUNT="1",
+                     GIT_CONFIG_KEY_0="http.https://github.com/.extraheader",
+                     GIT_CONFIG_VALUE_0="AUTHORIZATION: basic " + auth,
+                     GIT_TRACE="0", GIT_TRACE_CURL="0", GIT_CURL_VERBOSE="0")
+          result = subprocess.run(
+              ["git", "fetch", "--no-tags", "--depth=1", "origin", os.environ["BASE_SHA"]],
+              env=env, check=False)
+          raise SystemExit(result.returncode)
+          PY
+          git cat-file -e "$BASE_SHA^{commit}"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+
+      - name: Install exact CPU qualification dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv venv --python 3.12 "$RUNNER_TEMP/cell-tests-venv"
+          uv pip install --python "$RUNNER_TEMP/cell-tests-venv/bin/python" -r scripts/hepta_cells/requirements.txt
+          echo "$RUNNER_TEMP/cell-tests-venv/bin" >> "$GITHUB_PATH"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/cell-format-venv" >> "$GITHUB_ENV"
+
+      - name: Record original source identity and tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cell-maintenance"
+          git diff --exit-code
+          git diff --cached --exit-code
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          def git(*args):
+              return subprocess.check_output(["git", *args])
+          paths = git("diff", "--name-only", "--diff-filter=ACMR", "--no-renames",
+                      "-z", os.environ["BASE_SHA"], "HEAD", "--").split(b"\0")
+          files = {}
+          for raw in paths:
+              if raw:
+                  path = Path(os.fsdecode(raw))
+                  if path.is_file():
+                      files[path.as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+          expected = {
+              "scripts/hepta_pred1/models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7",
+              "scripts/hepta_pred1/__init__.py": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0",
+          }
+          if any(hashlib.sha256(Path(p).read_bytes()).hexdigest() != h for p, h in expected.items()):
+              raise SystemExit("Mechanical model import does not match its exact upstream source.")
+          record = {
+              "tested_commit": git("rev-parse", "HEAD").decode().strip(),
+              "tested_tree": git("rev-parse", "HEAD^{tree}").decode().strip(),
+              "comparison_base": os.environ["BASE_SHA"],
+              "materialized_changed_source_sha256": files,
+              "mechanical_import_expected_sha256": expected,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "cell-maintenance/source-before.json"
+          out.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n")
+          PY
+          python3 --version > "$RUNNER_TEMP/cell-maintenance/tools.txt"
+          just --version >> "$RUNNER_TEMP/cell-maintenance/tools.txt"
+          uv --version >> "$RUNNER_TEMP/cell-maintenance/tools.txt"
+          uv run --frozen --project scripts ruff --version >> "$RUNNER_TEMP/cell-maintenance/tools.txt"
+          (cd codex-rs && rustc --version && cargo --version && rustfmt --version && cargo clippy --version) >> "$RUNNER_TEMP/cell-maintenance/tools.txt"
+
+      - name: Test the Python Cell contracts
+        id: python_tests
+        env:
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_cells_*.py' -v 2>&1 | tee "$RUNNER_TEMP/cell-maintenance/python-tests.log"
+
+      - name: Run the source-bound CPU engineering probe
+        id: probe
+        env:
+          PYTHONPATH: scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/qualify_hepta_cells.py --output "$RUNNER_TEMP/cell-maintenance/probe" 2>&1 | tee "$RUNNER_TEMP/cell-maintenance/probe.log"
+
+      - name: Test native bundle and local-update contracts
+        id: native_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-learning-artifacts --lib --test-threads 2 2>&1 | tee "$RUNNER_TEMP/cell-maintenance/native-tests.log"
+
+      - name: Apply scoped Clippy fixes after all tests
+        id: fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fix -p codex-hepta-learning-artifacts --locked 2>&1 | tee "$RUNNER_TEMP/cell-maintenance/fix.log"
+
+      - name: Format committed task changes and local Clippy edits
+        id: format
+        shell: bash
+        run: |
+          set -euo pipefail
+          just fmt --base "$BASE_SHA" 2>&1 | tee "$RUNNER_TEMP/cell-maintenance/format.log"
+
+      # format.py selects both mechanical import files because they differ from
+      # BASE_SHA. Do not silently revert, exclude, or publish changed imports.
+      # A mismatch keeps the diagnostic patch but fails this job for root review.
+      - name: Preserve the exact upstream import constraint
+        id: import_identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          from pathlib import Path
+          expected = {
+              "scripts/hepta_pred1/models.py": "d39e2b2aac855d256c2f0071932b89ce43df4b5a73054a7d9290dfb42ebb41f7",
+              "scripts/hepta_pred1/__init__.py": "38cec1b3caecce48bd2a710e2e527eed5204888f5cec8867aa2c7aaea8b59ca0",
+          }
+          changed = [p for p, h in expected.items()
+                     if hashlib.sha256(Path(p).read_bytes()).hexdigest() != h]
+          if changed:
+              raise SystemExit("Formatter changed exact imported sources; root must resolve the constraint: "
+                               + ", ".join(changed))
+          PY
+
+      - name: Retain the actual maintenance delta and identities
+        if: always() && steps.candidate.outcome == 'success'
+        env:
+          PYTHON_TESTS: ${{ steps.python_tests.outcome }}
+          PROBE: ${{ steps.probe.outcome }}
+          NATIVE_TESTS: ${{ steps.native_tests.outcome }}
+          FIX: ${{ steps.fix.outcome }}
+          FORMAT: ${{ steps.format.outcome }}
+          IMPORT_IDENTITY: ${{ steps.import_identity.outcome }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cell-maintenance"
+          git diff --binary --full-index --no-ext-diff HEAD -- > "$RUNNER_TEMP/cell-maintenance/formatted.patch"
+          git diff --name-only -z HEAD -- > "$RUNNER_TEMP/cell-maintenance/changed-paths.nul"
+          git status --short > "$RUNNER_TEMP/cell-maintenance/worktree-status.txt"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          output = Path(os.environ["RUNNER_TEMP"]) / "cell-maintenance"
+          files = {}
+          for raw in (output / "changed-paths.nul").read_bytes().split(b"\0"):
+              if raw:
+                  path = Path(os.fsdecode(raw))
+                  if path.is_file():
+                      files[path.as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+          record = {
+              "head_commit": subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip(),
+              "comparison_base": os.environ["BASE_SHA"],
+              "patch_sha256": hashlib.sha256((output / "formatted.patch").read_bytes()).hexdigest(),
+              "maintenance_changed_source_sha256": files,
+              "outcomes": {name.lower(): os.environ[name] for name in
+                           ("PYTHON_TESTS", "PROBE", "NATIVE_TESTS", "FIX", "FORMAT", "IMPORT_IDENTITY")},
+              "tests_run_after_maintenance": False,
+              "automatic_commit_or_push": False,
+              "prettier": "not run; separate root-scoped optional maintenance",
+          }
+          (output / "source-after.json").write_text(json.dumps(record, sort_keys=True, indent=2) + "\n")
+          PY
+          git diff --check > "$RUNNER_TEMP/cell-maintenance/diff-check.log" 2>&1
+
+      - name: Upload original tests, probe, and reviewable formatting patch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-stem-maintenance-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cell-maintenance
+            codex-rs/target/nextest/local/junit.xml
+          if-no-files-found: error
+          retention-days: 14

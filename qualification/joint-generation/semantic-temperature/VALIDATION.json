@@ -1,0 +1,241 @@
+{
+  "public_boundary": "No private paths, weights, per-request predictions orrawmodelpolicy rows",
+  "qualification_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 7
+  },
+  "rust_checks": "Notrun: Python-only portable change",
+  "science_primary_gate": false,
+  "science_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 23
+  },
+  "scientific_contrasts": [
+    {
+      "claim": "calibrated_candidate_beats_calibrated_stronger_N",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "calibrated_candidate_NDU_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "candidate_calibration_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "prior_uncalibrated_strong_baseline_control",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "prior_uncalibrated_NDU_control",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "calibrated_independent_NDU_control",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 11
+    },
+    {
+      "claim": "independent_A_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "independent_N_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "candidate_A_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 11
+    },
+    {
+      "claim": "calibrated_candidate_beats_calibrated_stronger_N",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "calibrated_candidate_NDU_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "candidate_calibration_increment",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    },
+    {
+      "claim": "prior_uncalibrated_strong_baseline_control",
+      "gates": {
+        "joint_success_no_regression": false,
+        "pixel_MSE_no_regression": false,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": false
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "prior_uncalibrated_NDU_control",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    },
+    {
+      "claim": "calibrated_independent_NDU_control",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": false,
+        "text_greedy_no_regression": false,
+        "text_mass_no_regression": true
+      },
+      "passed": false,
+      "seed": 23
+    },
+    {
+      "claim": "independent_A_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    },
+    {
+      "claim": "independent_N_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    },
+    {
+      "claim": "candidate_A_calibration_effect",
+      "gates": {
+        "joint_success_no_regression": true,
+        "pixel_MSE_no_regression": true,
+        "rho_gain_at_least_005": true,
+        "text_greedy_no_regression": true,
+        "text_mass_no_regression": true
+      },
+      "passed": true,
+      "seed": 23
+    }
+  ],
+  "scope": "Independent static/savedrecord review; all18contrasts preserved, no parameter/gate change orreplay",
+  "source_sha256": {
+    "PLAN.md": "b9bd429e575f856c636445ff3fe45a8ad2ce1b358b4881c49a52c3c02653db05",
+    "RUN_PLAN.md": "16fa4221626edaeaa55f6842580b48b995fe2b52d4899da1dc36c6d4e67b1aeb",
+    "calibration.py": "867ac678e425f1893a416ff1dbbb3ba45cffa5d973a8aa5545443145bb37674d",
+    "test_calibration.py": "ee072472fee34895672873d3ad4c29a852dc4027b0be07ecef92c64f4ce41041"
+  },
+  "status": "QUALIFIED_SELF_CALIBRATION_POSITIVE_OVERALL_PRIMARY_FAILED"
+}

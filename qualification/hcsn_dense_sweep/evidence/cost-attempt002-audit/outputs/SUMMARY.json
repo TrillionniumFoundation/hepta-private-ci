@@ -1,0 +1,186 @@
+{
+  "identity": "right-tail-fixed-profile-retained-posterior-continuation-v1",
+  "status": "HOLD_NO_GO",
+  "persisted_source_commit": "1a532f58934b738df91220b0c91fb80c721d3982",
+  "profiles": {
+    "v2exp512": {
+      "positions": 14336,
+      "failures_at_unchanged_0_01": 0,
+      "non_cancelling_failures_at_unchanged_0_01": 0,
+      "maximum_scaled_total_error": 4.009563388424706e-06,
+      "median_scaled_total_error": 2.8571454657559305e-06,
+      "maximum_scaled_non_cancelling_error": 4.009592859123869e-06,
+      "maximum_absolute_migration": 1.0019987620957238e-05,
+      "maximum_absolute_discrete_operator_and_reset": 8.0536547404364e-06,
+      "maximum_absolute_upper_nonreturning_truncation": 9.311307280768233e-11,
+      "maximum_absolute_tail_only_total_contribution": 4.0770498438635166e-11,
+      "maximum_absolute_whole_far_cells_total_contribution": 1.4739246935446028e-05,
+      "maximum_decomposition_roundoff": 0.0
+    },
+    "near8001024": {
+      "positions": 14336,
+      "failures_at_unchanged_0_01": 0,
+      "non_cancelling_failures_at_unchanged_0_01": 0,
+      "maximum_scaled_total_error": 2.7436785274356708e-06,
+      "median_scaled_total_error": 8.81974529643648e-07,
+      "maximum_scaled_non_cancelling_error": 3.6970639085937757e-06,
+      "maximum_absolute_migration": 1.424056733156931e-05,
+      "maximum_absolute_discrete_operator_and_reset": 5.234844860702026e-06,
+      "maximum_absolute_upper_nonreturning_truncation": 9.311307280768233e-11,
+      "maximum_absolute_tail_only_total_contribution": 2.154874840846357e-11,
+      "maximum_absolute_whole_far_cells_total_contribution": 1.328921317069932e-05,
+      "maximum_decomposition_roundoff": 0.0
+    },
+    "near9601024": {
+      "positions": 14336,
+      "failures_at_unchanged_0_01": 0,
+      "non_cancelling_failures_at_unchanged_0_01": 0,
+      "maximum_scaled_total_error": 3.593897457556947e-05,
+      "median_scaled_total_error": 1.240877217054657e-05,
+      "maximum_scaled_non_cancelling_error": 4.877745904164187e-05,
+      "maximum_absolute_migration": 0.0001881074956164852,
+      "maximum_absolute_discrete_operator_and_reset": 6.89863680918279e-05,
+      "maximum_absolute_upper_nonreturning_truncation": 9.311307280768233e-11,
+      "maximum_absolute_tail_only_total_contribution": 2.715735579694921e-10,
+      "maximum_absolute_whole_far_cells_total_contribution": 0.00017436736912984088,
+      "maximum_decomposition_roundoff": 0.0
+    }
+  },
+  "profile_parts": {
+    "v2exp512": [
+      {
+        "file": "ALL_POSTERIORS_v2exp512_part000.npz",
+        "first_global_position": 0,
+        "positions": 7168,
+        "bytes": 747681,
+        "sha256": "0103973ed67c949d0a474f9173223d7384ae548d698892b9c95f59989e60e028"
+      },
+      {
+        "file": "ALL_POSTERIORS_v2exp512_part001.npz",
+        "first_global_position": 7168,
+        "positions": 7168,
+        "bytes": 744330,
+        "sha256": "bbb4c63dbabd6766cb384b1f57c16fe8c7781ee106ed625d34efa40f06f40426"
+      }
+    ],
+    "near8001024": [
+      {
+        "file": "ALL_POSTERIORS_near8001024_part000.npz",
+        "first_global_position": 0,
+        "positions": 7168,
+        "bytes": 819324,
+        "sha256": "ee8d4a2a490993f527a65c46a6cee452c9c36fbc1ab0736c190914f506d09792"
+      },
+      {
+        "file": "ALL_POSTERIORS_near8001024_part001.npz",
+        "first_global_position": 7168,
+        "positions": 7168,
+        "bytes": 814180,
+        "sha256": "e8cdbaed8df0ea79b5da201ede63606ec6f1f02684e5912cacc94239b376c390"
+      }
+    ],
+    "near9601024": [
+      {
+        "file": "ALL_POSTERIORS_near9601024_part000.npz",
+        "first_global_position": 0,
+        "positions": 7168,
+        "bytes": 829115,
+        "sha256": "e6ddbd25fc028c7fe9fe05204f2366b56f3e872488aaa3d0b9914648f22482e9"
+      },
+      {
+        "file": "ALL_POSTERIORS_near9601024_part001.npz",
+        "first_global_position": 7168,
+        "positions": 7168,
+        "bytes": 823460,
+        "sha256": "cabc11e0b221064431f56b0e6f716041c304d150ef44e42be770c893748f8fb3"
+      }
+    ]
+  },
+  "maximum_artifact_bytes": 1048576,
+  "posterior_positions": 14336,
+  "training_rows": 384,
+  "unique_actual_physics_reset_laws": 184,
+  "candidate_perpetual_calls": 552,
+  "training_executions": 0,
+  "filter_replays": 0,
+  "dde_rollouts": 0,
+  "original_scaled_continuation_gate": 0.01,
+  "threshold_unchanged": true,
+  "primary_gate_reference": "original published #6189 exact62f corpus, hash checked and arm/visit joined",
+  "arm_order_semantics": "Original root SUMMARY completion order, inherited by fa25828fc4faee625c10db1f70add43f0074ff41 audit_training_domain.py (Git blob04a650c5f676692f7ea316351bcbc3037f5cebcb) and enumerated by62f392a0ed953f2d04e9c62b4b243f5cceed2a98 audit_continuation.py. No lexical reordering.",
+  "maximum_new_vs_published_reference_difference": 3.552713678800501e-15,
+  "decomposition": "D-A=(D-C operator/reset)+(C-B migration)+(B-A upper nonreturning truncation); absolute sum prevents cancellation",
+  "C_semantics": "Finite continuum evaluated on the migrated initial law, retaining the same unquantized deterministic reset as B. Only initial-law lift is applied in C.",
+  "D_minus_C_semantics": "Combined discrete CTMC transport AND nodal randomization of the reset point; not a pure CTMC discretization error or a reset-matched comparison.",
+  "whole_far_cells_definition": "original uniform cells whose left edge is at least .5 (indices2..15) plus tail16; crossing cell1 is excluded, not silently apportioned",
+  "reference": "independent mpmath80 closed forms with explicit round-trip-decimal inputs, including actual journal mu=-.11999999999999998 rather than synthetic-.12; unquantized reset computed from actual recorded physics; tail retained to infinity",
+  "upper_semantics": "permanently_active_nonreturning_escape",
+  "input_sha256": {
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/SUMMARY.json": "c60378ffc2a51f580a9b7cfd11a09cec5f53d9a9cc37c03b81605bedc54b8715",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/ALL_VISITS_n512.published.npz": "af6bb4f42bc4a89f1e9fa4a42f824544b230e8342b5585f88d9459ead4292af9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b0/training.jsonl": "0fd1fa70b2428a0d50da547febefe480111a37359359a2f2d458473b2391f820",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c0_b1/training.jsonl": "b757b97f974aea32e0fe0366a252199003b1383f91a8b669eed9ca229b3dd93a",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b0/training.jsonl": "6c77fdba9cfbcf5743c4e8ddd5fdcdb3309b55156e8348f5e6a5c8a9d669e6e1",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed11-c1_b1/training.jsonl": "05b08cf28b066a7f86638c14f8bbe853c7bddb91986eaea4a12842fa7fd3d7b8",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b1/training.jsonl": "72251897aadb65f19e88d61746e6f682508db65055b5b4df3b2b08f3d1995741",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b0/training.jsonl": "8566fdcf6b0803a3a9c811960b5dbe0d36c8e45d1200fbefd6bdb794a21ba9dd",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c1_b1/training.jsonl": "4036de3db6428fa9ae0d2c240387b8b46fdcfdb3ff8c55d652c3bff8a4bbaed9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed23-c0_b0/training.jsonl": "6588e50a1df7dfef947a6ae6638166fbfc4a8ce6fdaa4e1543a2ef28f117090f",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b0/training.jsonl": "371bce4001b6c72733fc25c872630e4192fd25afc67757b67a4ee6a43837b8a3",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c1_b1/training.jsonl": "519d82e453bb3fdbdf12b1d67df5faea2012aab2a0cf84d649fb32f8b793c1d9",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b0/training.jsonl": "85b94839521504b2ea8648b8bcadd88eaabebc1d1d1745dd2061693ab34a410b",
+    "/workspace/scratch/c06d659c1e72/gradient-input-recovery/factorial-13904346161/experiment/seed37-c0_b1/training.jsonl": "2a9fc79e38311147451511c5b6ecc17449faa544cc38bcaab567e4f9cbe08517"
+  },
+  "inputs_unchanged": true,
+  "source_sha256_before": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py": "6f1ebd0899584d199b82a40a7ac41726a15190c31d5a093026d56779c6b2f73c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_reference.py": "cc7060653322c132eb7a10d5bd066eef9b210771ea1fd3946175607385624ba4",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/migration1024.py": "a83ed9101afc2b71e0aec2b8f62a7fffc7b1be172e528deaa3992d39444a163e",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_DEPENDENCIES.json": "212a817014bbad4414d288f45d2c9adac797d16ce7eb77d23f680a7c7685913f"
+  },
+  "source_sha256_after": {
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/profile.py": "dd0b77c7535e1ff4ac4ff7e14a13e036285679c96446407defe6fbfecf0a4abb",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_reproduction/controlled_core.py": "07c360508a8f5a30f5329856e6c19a36db6222854490eb401cfad12f15c79ec5",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_initial_law/migration.py": "0e85587433dee39f583fe2c1409e127c75498c96928640890936fadaa12de517",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_audit.py": "6f1ebd0899584d199b82a40a7ac41726a15190c31d5a093026d56779c6b2f73c",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/cost_reference.py": "cc7060653322c132eb7a10d5bd066eef9b210771ea1fd3946175607385624ba4",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/migration1024.py": "a83ed9101afc2b71e0aec2b8f62a7fffc7b1be172e528deaa3992d39444a163e",
+    "/workspace/scratch/c06d659c1e72/dense-v3-reproduction/qualification/hcsn_dense_sweep/COST_DEPENDENCIES.json": "212a817014bbad4414d288f45d2c9adac797d16ce7eb77d23f680a7c7685913f"
+  },
+  "output_sha256": {
+    "ALL_POSTERIORS_v2exp512_part000.npz": "0103973ed67c949d0a474f9173223d7384ae548d698892b9c95f59989e60e028",
+    "ALL_POSTERIORS_v2exp512_part001.npz": "bbb4c63dbabd6766cb384b1f57c16fe8c7781ee106ed625d34efa40f06f40426",
+    "ALL_POSTERIORS_near8001024_part000.npz": "ee8d4a2a490993f527a65c46a6cee452c9c36fbc1ab0736c190914f506d09792",
+    "ALL_POSTERIORS_near8001024_part001.npz": "e8cdbaed8df0ea79b5da201ede63606ec6f1f02684e5912cacc94239b376c390",
+    "ALL_POSTERIORS_near9601024_part000.npz": "e6ddbd25fc028c7fe9fe05204f2366b56f3e872488aaa3d0b9914648f22482e9",
+    "ALL_POSTERIORS_near9601024_part001.npz": "cabc11e0b221064431f56b0e6f716041c304d150ef44e42be770c893748f8fb3",
+    "BASIS_VALUES_near8001024.npz": "862046b0e918ae4d5056ad44b657a5b847f5956db65531285dab26c142c9b4f9",
+    "BASIS_VALUES_near9601024.npz": "599d6cc2776edc0b9aa40b641035cc149cf5796cde686999c36b9d5ffe7861c5",
+    "BASIS_VALUES_v2exp512.npz": "0037162ec0638f816aa36b0ae4c39b392c9fd0e8400ab2e303d05557dd05730e",
+    "BASIS_REFERENCE_MP80_v2exp512.json": "c0fe5970d93aae8447152321c9202e8a3f9e5b73d03adb09d4d86f5d582be0c4",
+    "BASIS_REFERENCE_MP80_near8001024.json": "509e9307730130ba0b6a4f3120abc069424c73b71d3b950beebc20aae994a840",
+    "GEOMETRY.json": "a6da1f63c4985a0bf0fb30ad72b9e9a043b00350eb3e6db28c2845115e0e4043",
+    "BASIS_REFERENCE_MP80_near9601024.json": "64685a8adf1a24becd789a09ac53f9d7d6308c626d4ef8238febc6491d6c13d7",
+    "LINEAGE.json": "ec30fa4a50306815e9b12f0261a322715620c00531a2a13743612d409366cd1d",
+    "PHYSICS.json": "f09fa908ac1671cd9b45139f66683f82cbe7e1ca84727fc05f695d1da3330dd4"
+  },
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "mpmath": "1.3.0",
+  "wall_seconds": 15.023757677000049,
+  "cpu_seconds": 14.942561875,
+  "peak_rss_kib": 128460,
+  "limits": "Fixed-law backward continuation only. Not actual filtered future trajectories, independent efficacy, gradients, training or production admission. Near/far profile differences do not isolate a single mechanism."
+}

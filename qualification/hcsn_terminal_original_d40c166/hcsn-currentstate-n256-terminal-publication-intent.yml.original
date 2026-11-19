@@ -1,0 +1,71 @@
+name: hcsn-currentstate-n256-terminal-publication-intent
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_terminal_publication_intent/**"
+      - ".github/workflows/hcsn-currentstate-n256-terminal-publication-intent.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-terminal-publication-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify fail-closed terminal publication source
+        run: |
+          set -euo pipefail
+          package=qualification/hcsn_currentstate_n256_terminal_publication_intent
+          mkdir -p "$package/ci-artifact"
+          /usr/bin/time -v python -m unittest "$package/test_terminal_publication.py" -v \
+            > "$package/ci-artifact/TEST_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_STDERR.txt"
+          /usr/bin/time -v python -O -m unittest "$package/test_terminal_publication.py" -v \
+            > "$package/ci-artifact/TEST_OPT_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_OPT_STDERR.txt"
+          python "$package/static_inspector.py" \
+            --source "$package/terminal_publication.py" \
+            --request "$package/REQUEST.json" \
+            > "$package/ci-artifact/REPORT.json"
+          python "$package/verify_source.py" > "$package/ci-artifact/VERIFY.txt"
+          python -m compileall -q "$package"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          package = Path("qualification/hcsn_currentstate_n256_terminal_publication_intent")
+          report = json.loads((package / "ci-artifact/REPORT.json").read_text())
+          if report["status"] != "PASS_TERMINAL_PUBLICATION_SOURCE_HOLD":
+              raise SystemExit("unexpected source-only status")
+          counts = {
+              "authentic_terminal_originals": 0,
+              "authentic_publications": 0,
+              "dynamic_runs": 0,
+              "matrix_exponential_actions": 0,
+              "oracle_calls": 0,
+              "provider_calls": 0,
+              "serializer_calls": 0,
+              "torch_calls": 0,
+              "optimizer_steps": 0,
+              "largegrid_qualification": False,
+              "all_closed": False,
+          }
+          (package / "ci-artifact/COUNTS.json").write_text(
+              json.dumps(counts, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-terminal-publication-source-${{ github.sha }}
+          path: qualification/hcsn_currentstate_n256_terminal_publication_intent/ci-artifact
+          if-no-files-found: error
+          retention-days: 30

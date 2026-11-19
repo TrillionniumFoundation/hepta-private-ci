@@ -1,0 +1,500 @@
+//! The actual original Root dispatch. Only derived preparation and the
+//! original one-operation publication may mutate CURRENT. Readback never does.
+
+use std::os::unix::net::UnixStream;
+use std::time::Instant;
+
+use crate::neuron_generation_current::types::Published;
+use codex_hepta_contracts::HostAuthorityPeerChannel;
+use codex_hepta_contracts::HostAuthorityPeerPolicy;
+
+use super::*;
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Request {
+    pub(crate) schema: u8,
+    pub(crate) purpose: String,
+    pub(crate) request_id: u64,
+    pub(crate) profile: String,
+    pub(crate) command: Command,
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub(crate) enum Command {
+    Observe,
+    CaptureRetiredTask {},
+    ReadFinalizedTask {},
+    IssueFinalUse {
+        expected: String,
+        intent: String,
+    },
+    Prepare {
+        expected: String,
+        intent: String,
+    },
+    Publish {
+        expected: String,
+        intent: String,
+        signed: SignedFinalUseGrant,
+        witness: VerifiedUseTokenWitnessV1,
+    },
+}
+
+#[derive(Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Response {
+    pub(crate) schema: u8,
+    pub(crate) purpose: String,
+    pub(crate) request_id: u64,
+    pub(crate) profile: PublicationProfile,
+    pub(crate) head: CurrentHead,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) successor: Option<RootCompletedSuccessorDataV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) grant: Option<SignedFinalUseGrant>,
+}
+
+impl HostAuthorityService {
+    pub(crate) fn serve_generation_publication(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+    ) -> io::Result<()> {
+        self.serve_generation_publication_with_end(
+            slot,
+            learning,
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+            /*original_end*/ None,
+        )
+    }
+
+    pub(crate) fn serve_generation_publication_until(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        end: Instant,
+    ) -> io::Result<()> {
+        self.serve_generation_publication_with_end(
+            slot,
+            learning,
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+            Some(end),
+        )
+    }
+
+    fn serve_generation_publication_with_end(
+        &self,
+        slot: &RegisteredGenerationPublication,
+        learning: &RegisteredHostLearningCheckpointV1,
+        config: &HostAuthorityServiceConfig,
+        registration: &HostAuthorityRegistration,
+        stream: UnixStream,
+        policy: HostAuthorityPeerPolicy,
+        owner: OwnedFd,
+        original_end: Option<Instant>,
+    ) -> io::Result<()> {
+        let version = PublicationVersion::from_purpose(&slot.profile.purpose)?;
+        let mut sequence = 1;
+        let pin = owner.try_clone()?;
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
+            .map_err(io::Error::other)?;
+        if let Some(end) = original_end {
+            HostAuthorityPeerChannel::limit_original_end(&mut channel, end)
+                .map_err(io::Error::other)?;
+        }
+        while channel
+            .exchange_with_original_deadline(|bytes, end| {
+                PublicationRefusal::inspect_with_acceptance(&slot.refusal, &slot.reserved, end, |retained_acceptance| {
+                    let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                    if matches!(&request.command, Command::IssueFinalUse { .. }) {
+                        return HostAuthorityService::issue_generation_publication_grant(
+                            self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
+                        ).map(|raw| (raw, None));
+                    }
+                    let mut successor_observed = None;
+                    let mut fresh_publication = None;
+                    let (raw, expected) = self.with_learning_profile(
+                    config,
+                    registration,
+                    &pin,
+                    &learning.profile,
+                    |initial, proof| {
+                        let scope = learning.profile.require_cell_scope(&initial)?;
+                        if slot.profile.initial != initial.head_digest.to_string()
+                            || slot.profile.scope != scope.binding().to_string()
+                            || slot.profile.writer != proof
+                            || slot.profile.identity
+                                != crate::neuron_generation_process_identity_digest_v1(
+                                    &self.identity,
+                                )
+                                .map_err(io::Error::other)?
+                                .to_string()
+                        {
+                            return Err(io::Error::other("original Root learning context changed"));
+                        }
+                        let request: Request =
+                            serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                        if request.schema != version.schema()
+                            || request.purpose != version.purpose()
+                            || request.request_id != sequence
+                            || (request.profile != slot.profile.binding
+                                && !(sequence == 1
+                                    && request.profile.is_empty()
+                                    && matches!(&request.command, Command::Observe)))
+                        {
+                            return Err(io::Error::other(
+                                "publication purpose/scope/sequence differs",
+                            ));
+                        }
+                        sequence = sequence
+                            .checked_add(1)
+                            .ok_or_else(|| io::Error::other("publication sequence exhausted"))?;
+                        slot.require_profile()?;
+                        slot.require_history(learning, &scope)?;
+                        slot.require_previous()?;
+                        let now = self
+                            .clock
+                            .refresh_projection()
+                            .map_err(io::Error::other)?
+                            .observed_unix_ms;
+                        slot.require_selection(now)?;
+                        let before = slot
+                            .current
+                            .original_broker_head()
+                            .map_err(io::Error::other)?;
+                        let original_revocations = self.issuer.revocations()?;
+                        let intent = &slot.profile.intent;
+                        let original_digest =
+                            intent.digest().map_err(io::Error::other)?.to_string();
+                        let mut after = before.clone();
+                        let mut fresh_grant = None;
+                        match &request.command {
+                            Command::IssueFinalUse { .. } => {
+                                return Err(io::Error::other("C grant requires its joint original context"));
+                            }
+                            Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {
+                                if version != PublicationVersion::DurableV2 || before.current != intent.target {
+                                    return Err(io::Error::other("original published V2 successor required"));
+                                }
+                                let record = before.published.as_ref().filter(|record| record.intent == *intent)
+                                    .ok_or_else(|| io::Error::other("exact original successor publication missing"))?;
+                                if slot.verify_retained(&record.signed, &record.witness)? != original_revocations {
+                                    return Err(io::Error::other("original successor FinalUse differs"));
+                                }
+                                slot.target.observe().map_err(io::Error::other)?;
+                                let successor = slot.successor.as_ref()
+                                    .ok_or_else(|| io::Error::other("original successor custody not registered"))?;
+                                let cut = RegisteredSuccessorData::observe_retired(successor, matches!(&request.command, Command::CaptureRetiredTask {}))?;
+                                successor_observed = Some(RegisteredSuccessorData::read_data(successor, cut)?);
+                            }
+                            Command::Observe => {
+                                if before.current == intent.target {
+                                    let record = before
+                                        .published
+                                        .as_ref()
+                                        .filter(|record| record.intent == *intent)
+                                        .ok_or_else(|| {
+                                            io::Error::other("original published record missing")
+                                        })?;
+                                    if slot.verify_retained(&record.signed, &record.witness)?
+                                        != original_revocations
+                                    {
+                                        return Err(io::Error::other(
+                                            "original published revocations differ",
+                                        ));
+                                    }
+                                    slot.target.observe().map_err(io::Error::other)?;
+                                } else if before.current == intent.previous {
+                                    slot.target
+                                        .require_original_unwritten_or_genesis()
+                                        .map_err(io::Error::other)?;
+                                } else {
+                                    return Err(io::Error::other("another CURRENT generation"));
+                                }
+                            }
+                            Command::Prepare {
+                                expected,
+                                intent: requested,
+                            } => {
+                                if *expected != head_digest(&before)?
+                                    || *requested != original_digest
+                                    || before.current != intent.previous
+                                    || before
+                                        .prepared
+                                        .as_ref()
+                                        .is_some_and(|value| value != intent)
+                                    || now / 1000 >= initial.request.envelope.expiry_unix_seconds
+                                {
+                                    return Err(io::Error::other(
+                                        "original preparation cut or deadline differs",
+                                    ));
+                                }
+                                slot.target
+                                    .require_original_unwritten_or_genesis()
+                                    .map_err(io::Error::other)?;
+                                after.prepared = Some(intent.clone());
+                            }
+                            Command::Publish {
+                                expected,
+                                intent: requested,
+                                signed,
+                                witness,
+                            } => {
+                                if *expected != head_digest(&before)?
+                                    || *requested != original_digest
+                                {
+                                    return Err(io::Error::other(
+                                        "original exact CURRENT required for publication",
+                                    ));
+                                }
+                                if before.current == intent.target {
+                                    let accepted = retained_acceptance.ok_or_else(|| io::Error::other(
+                                        "old Published without first acceptance cannot be completed",
+                                    ))?;
+                                    accepted.require_original(&slot.reserved)?;
+                                    let published = before.published.as_ref()
+                                        .ok_or_else(|| io::Error::other("original accepted Published missing"))?;
+                                    if accepted.original_current() != &before
+                                        || published.intent != *intent
+                                        || published.signed != *signed
+                                        || published.witness != *witness
+                                        || slot.verify_retained(signed, witness)? != original_revocations
+                                    {
+                                        return Err(io::Error::other("original accepted publication replay differs"));
+                                    }
+                                    // This branch only observes the original fact. It cannot
+                                    // call the CURRENT writer or refresh its verification time.
+                                    slot.target.observe().map_err(io::Error::other)?;
+                                } else {
+                                if before.current != intent.previous
+                                    || before.prepared.as_ref() != Some(intent)
+                                    || retained_acceptance.is_some()
+                                {
+                                    return Err(io::Error::other(
+                                        "original prepared CURRENT required for first publication",
+                                    ));
+                                }
+                                require_fresh_window(
+                                    now,
+                                    initial.request.envelope.expiry_unix_seconds,
+                                    signed,
+                                    witness,
+                                )?;
+                                if slot.verify_retained(signed, witness)? != original_revocations {
+                                    return Err(io::Error::other(
+                                        "original entered consumer and live issuer differ",
+                                    ));
+                                }
+                                slot.require_genesis()?;
+                                after.current = intent.target.clone();
+                                after.prepared = None;
+                                after.initial = None;
+                                after.published = Some(Published {
+                                    intent: intent.clone(),
+                                    signed: signed.clone(),
+                                    witness: witness.clone(),
+                                    signed_grant_digest:
+                                        crate::neuron_generation_current::signed_grant_digest(
+                                            signed,
+                                        )
+                                        .map_err(io::Error::other)?
+                                        .into_array(),
+                                });
+                                fresh_grant = Some((signed, witness));
+                                }
+                            }
+                        }
+                        let response = Response {
+                            schema: version.schema(),
+                            purpose: version.purpose().into(),
+                            request_id: request.request_id,
+                            profile: slot.profile.clone(),
+                            head: after.clone(),
+                            successor: successor_observed.clone(),
+                            grant: None,
+                        };
+                        // Check the exact success frame before crossing any CURRENT effect.
+                        let raw = serde_json::to_vec(&response).map_err(io::Error::other)?;
+                        if raw.len() > 16 * 1024 {
+                            return Err(io::Error::other("publication reply bound"));
+                        }
+                        match &request.command {
+                            Command::IssueFinalUse { .. } => {
+                                return Err(io::Error::other("C grant cannot mutate CURRENT"));
+                            }
+                            Command::Observe => {}
+                            Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {} => {}
+                            Command::Prepare { .. } => {
+                                slot.current
+                                    .original_broker_prepare(intent)
+                                    .map_err(io::Error::other)?;
+                            }
+                            Command::Publish {
+                                signed, witness, ..
+                            } => {
+                                if fresh_grant.is_some() {
+                                slot.current
+                                    .original_broker_publish(intent, signed, witness)
+                                    .map_err(io::Error::other)?;
+                                // Set only after the original exact CAS succeeded. The
+                                // full Root postchecks still precede acceptance production.
+                                fresh_publication = Some(before);
+                                }
+                            }
+                        }
+                        // There is no cross-owner transaction: any post-effect loss is
+                        // unavailable/uncertain and permanently closes the original lane.
+                        slot.require_profile()?;
+                        slot.require_history(learning, &scope)?;
+                        slot.require_previous()?;
+                        let after_time = self
+                            .clock
+                            .refresh_projection()
+                            .map_err(io::Error::other)?
+                            .observed_unix_ms;
+                        slot.require_selection(after_time)?;
+                        if let Some((signed, witness)) = fresh_grant {
+                            slot.require_genesis()?;
+                            require_fresh_window(
+                                after_time,
+                                initial.request.envelope.expiry_unix_seconds,
+                                signed,
+                                witness,
+                            )?;
+                            if slot.verify_retained(signed, witness)? != original_revocations {
+                                return Err(io::Error::other(
+                                    "consumer changed after original publication",
+                                ));
+                            }
+                        }
+                        if (matches!(&request.command, Command::Observe | Command::CaptureRetiredTask {} | Command::ReadFinalizedTask {})
+                            || matches!(&request.command, Command::Publish { .. }) && fresh_grant.is_none())
+                            && after.current == intent.target
+                        {
+                            let record = after.published.as_ref().ok_or_else(|| {
+                                io::Error::other("original published record missing after read")
+                            })?;
+                            if slot.verify_retained(&record.signed, &record.witness)?
+                                != original_revocations
+                            {
+                                return Err(io::Error::other(
+                                    "original consumer changed during retained read",
+                                ));
+                            }
+                            slot.target.observe().map_err(io::Error::other)?;
+                        }
+                        if self.issuer.revocations()? != original_revocations
+                            || slot
+                                .current
+                                .original_broker_head()
+                                .map_err(io::Error::other)?
+                                != after
+                        {
+                            return Err(io::Error::other(
+                                "original publication completion uncertain",
+                            ));
+                        }
+                        Ok((raw, after))
+                    },
+                )?;
+                    // Do not clear the durable arm until the complete actual Root
+                    // writer context has returned and the exact physical cut is read
+                    // again under this frame's original absolute deadline.
+                    slot.require_profile()?;
+                    if let Some(observed) = successor_observed {
+                        let successor = slot.successor.as_ref().ok_or_else(|| io::Error::other("original successor custody disappeared"))?;
+                        RegisteredSuccessorData::finish_observed(successor, &observed.cut)?;
+                        if RegisteredSuccessorData::read_data(successor, observed.cut.clone())? != observed {
+                            return Err(io::Error::other("original successor record changed after Root context"));
+                        }
+                    }
+                    slot.require_previous()?;
+                    slot.require_selection(
+                        self.clock
+                            .refresh_projection()
+                            .map_err(io::Error::other)?
+                            .observed_unix_ms,
+                    )?;
+                    if slot
+                        .current
+                        .original_broker_head()
+                        .map_err(io::Error::other)?
+                        != expected
+                    {
+                        return Err(io::Error::other(
+                            "original CURRENT changed after writer postchecks",
+                        ));
+                    }
+                    if expected.current == slot.profile.intent.target {
+                        slot.target.observe().map_err(io::Error::other)?;
+                    } else {
+                        slot.target
+                            .require_original_unwritten_or_genesis()
+                            .map_err(io::Error::other)?;
+                    }
+                    crate::authority_host_runtime::verify_pinned_process(
+                        registration,
+                        config.peer_uid,
+                        config.peer_gid,
+                        &pin,
+                        end,
+                    )?;
+                    refusal::require_end(end)?;
+                    let accepted = match fresh_publication {
+                        Some(prepared) if version == PublicationVersion::DurableV2 => Some(
+                            acceptance::PublicationAcceptance::observe_original_publish(self, slot, &prepared, &expected, end)?
+                        ),
+                        Some(_) | None => None,
+                    };
+                    crate::authority_host_runtime::verify_pinned_process(registration, config.peer_uid, config.peer_gid, &pin, end)?;
+                    refusal::require_end(end)?;
+                    Ok((raw, accepted))
+                })
+                .map_err(|_| codex_hepta_contracts::HostIssuerTransportError::Unavailable)
+            })
+            .map_err(|error| {
+                let _ = RegisteredGenerationPublication::refuse(slot);
+                io::Error::other(error)
+            })?
+        {}
+        Ok(())
+    }
+}
+
+pub(super) fn require_fresh_window(
+    now: u64,
+    work_expiry: u64,
+    signed: &SignedFinalUseGrant,
+    witness: &VerifiedUseTokenWitnessV1,
+) -> io::Result<()> {
+    if now < signed.grant.not_before_unix_ms
+        || now >= signed.grant.expires_at_unix_ms
+        || now / 1000 >= work_expiry
+        || witness.verified_at_unix_ms > now
+    {
+        return Err(io::Error::other(
+            "original live publication grant window differs",
+        ));
+    }
+    Ok(())
+}

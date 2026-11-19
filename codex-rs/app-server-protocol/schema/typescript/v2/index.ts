@@ -382,6 +382,8 @@ export type { PluginUninstallParams } from "./PluginUninstallParams";
 export type { PluginUninstallResponse } from "./PluginUninstallResponse";
 export type { PluginsMigration } from "./PluginsMigration";
 export type { ProcessExitedNotification } from "./ProcessExitedNotification";
+export type { ProcessIndeterminateNotification } from "./ProcessIndeterminateNotification";
+export type { ProcessIndeterminateReason } from "./ProcessIndeterminateReason";
 export type { ProcessOutputDeltaNotification } from "./ProcessOutputDeltaNotification";
 export type { ProcessOutputStream } from "./ProcessOutputStream";
 export type { ProcessTerminalSize } from "./ProcessTerminalSize";

@@ -1,0 +1,221 @@
+{
+  "attempt": "strict-clippy-f070-v1",
+  "cgroup_before": {
+    "cgroup.events": "populated 1\nfrozen 0\n",
+    "cpu.max": "800000 100000\n",
+    "cpu.stat": "usage_usec 136241\nuser_usec 65024\nsystem_usec 71217\nnice_usec 0\ncore_sched.force_idle_usec 0\nnr_periods 1\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+    "membership": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1c04e929d-5e21-9c8.service\n",
+    "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0\n",
+    "memory.max": "max\n",
+    "memory.peak": "40943616\n",
+    "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1c04e929d-5e21-9c8.service"
+  },
+  "command": [
+    "/usr/bin/python3",
+    "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/scripts/hepta_ci_v8.py",
+    "--run",
+    "just",
+    "clippy",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-intelligence",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-learning-ledger",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-prompt-registry",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "controller_sha256": "f10cb2cedf97d985c7b82cf80fe2bafad444524bc0d7e4f32dc9b40d33363003",
+  "cost_scope": "whole subprocess including compilation, lint, and child processes",
+  "cwd": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/codex-rs",
+  "energy_joules": null,
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_BUILD_JOBS": "8",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qq/hepta-cell-common-e1c98-20261109/target",
+    "CODEX_REPO_ROOT": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "LIBCLANG_PATH": "/usr/lib/llvm-21/lib",
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PATH": "/home/qq/hepta-learning-native-4f559bf-d9fb-20261108/transfer:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/home/qq/hepta-smollm2-weight-research-20261103/bootstrap-env/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "/home/qq/hepta-cell-common-e1c98-20261109/source-fresh/scripts:/home/qq/hepta-cell-common-e1c98-20261109/source-fresh",
+    "RUSTUP_HOME": "/home/qq/.rustup",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "TMPDIR": "/home/qq/hepta-cell-common-e1c98-20261109/tmp",
+    "UV_NO_PROGRESS": "1",
+    "UV_OFFLINE": "1"
+  },
+  "maintenance_worktree_inherits_no_test_pass_claim": true,
+  "phase": "clippy",
+  "plan_sha256": "d6367b21815a7c51659c058da00c881217c2c0d3ab3329ae689132097cab919e",
+  "provider_cost": null,
+  "schema": "hepta.common.maintenance-command.v1",
+  "source_before": {
+    "changed_files": [
+      {
+        "bytes": 9294,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+        "sha256": "dc494cc63fcf1be76c15747d1dd87346be133bb67bc8acb0f670d6b7c48137c4"
+      },
+      {
+        "bytes": 6535,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs",
+        "sha256": "7094e5f00b378a0d1f6e31f66a102302024b6dadfb57a34cbb9d02ed9664ac48"
+      },
+      {
+        "bytes": 12746,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "sha256": "2389c92b297476a044a2a28b9303281859f952d6c9d3e97652a8e80a8d92aab4"
+      },
+      {
+        "bytes": 12861,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs",
+        "sha256": "98873e80b7eac45c0ecb295cac37b0d8c81db5f7a5c22dbc8eedb3b795de6b80"
+      },
+      {
+        "bytes": 14525,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+        "sha256": "67fe2bd419c05493b8f4e38a545b0110ba697d7375118d580e8c16cd18db5a45"
+      },
+      {
+        "bytes": 14641,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs",
+        "sha256": "4fc1c4736bd7f03e8ea00a062f60e7c693e5485d2303e9b74d2e0409aa2eb369"
+      },
+      {
+        "bytes": 6116,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_profile_tests.rs",
+        "sha256": "b0eb0dc456aef0fedc6c0368928bc9b30aa41aa6fd416cd55249d2b74a0e9e17"
+      },
+      {
+        "bytes": 11658,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs",
+        "sha256": "b9ee85bc2cf0dcbf4c6365013c9eac1d6733ecc449c35a7b56e6800c4c41be8d"
+      },
+      {
+        "bytes": 12343,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+        "sha256": "af7e6ee2ace51c1c30f9ad63f8793771047e6d849e5f545582f1667144822f8b"
+      },
+      {
+        "bytes": 8490,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs",
+        "sha256": "be54d9364da857d98261e74d6e28b857f3a9e6114a34f16b75031cb5ab3429f8"
+      },
+      {
+        "bytes": 13584,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs",
+        "sha256": "50cfdb7b89315d7731a7d876e21859fee6d6760798918c8c7840fcc58a42e661"
+      },
+      {
+        "bytes": 54670,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs",
+        "sha256": "4b04f6c3e60fa60b8b4dadbc9765e60c4a6013a8417e95b5948758c0b8356be2"
+      },
+      {
+        "bytes": 8286,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+        "sha256": "49e4c9b0aabb23925c7f32f324ac02f10d3ce8666d25c0867f81ccfe9dd7c1c3"
+      },
+      {
+        "bytes": 11127,
+        "kind": "file",
+        "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs",
+        "sha256": "9d45bb5a931d3c971ac702d7a7958926b680650930ba3f626b9177effc536eae"
+      },
+      {
+        "bytes": 6952,
+        "kind": "file",
+        "path": "codex-rs/hepta-intelligence/src/outcome_credit_preflight_tests.rs",
+        "sha256": "fd68cb3f9ec0451915f3adc482bd78fc4ac58be1095556e8f70d7c29dfec30e8"
+      },
+      {
+        "bytes": 109869,
+        "kind": "file",
+        "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
+        "sha256": "2883d8f2dda7c8a1641a749f79effd9b20ed0bc29697ec877f89239457828e78"
+      },
+      {
+        "bytes": 12566,
+        "kind": "file",
+        "path": "scripts/cell_repo_mdv/compare.py",
+        "sha256": "366f9046656dce175ec31da6ff68ff26e36375e8bf7aa1216859f02ec2a44b57"
+      },
+      {
+        "bytes": 16513,
+        "kind": "file",
+        "path": "scripts/cell_repo_mdv/runner.py",
+        "sha256": "d284feeaa68d7dab52ac611e7d7b97b3f2910cac67d8ea3cf6e4a44aa7cad8c7"
+      },
+      {
+        "bytes": 8207,
+        "kind": "file",
+        "path": "scripts/cell_repo_mdv/test_compare.py",
+        "sha256": "acc803739c78dcd9d6f35e90321815556d347e0c2b20c2d271622e2e2e226ae2"
+      },
+      {
+        "bytes": 5535,
+        "kind": "file",
+        "path": "scripts/codex_package/test_v8.py",
+        "sha256": "702710cdb37b61bbc0b59c648b2294f763c6011bd7f092425bbec443695010b8"
+      },
+      {
+        "bytes": 25943,
+        "kind": "file",
+        "path": "scripts/research/smollm_learning_process_v1.py",
+        "sha256": "ab73b95e75c9139f1c02d6e2881a039bb0dcd3b2dc0b72a4f9ff973791d59bfa"
+      },
+      {
+        "bytes": 4852,
+        "kind": "file",
+        "path": "scripts/research/test_smollm_task_inputs.py",
+        "sha256": "faf4383749224e3b9118f96dfed4ceea4381c9c0f6d059746dda10c2709c4ebd"
+      }
+    ],
+    "head": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+    "index_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "status": " M codex-rs/hepta-agentd/src/authority_host_learning_profile.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_profile_tests.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_registration.rs\n M codex-rs/hepta-agentd/src/authority_host_learning_registration_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_ports_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_profile_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_scope_tests.rs\n M codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport_tests.rs\n M codex-rs/hepta-agentd/src/neuron_generation_real_learning_tests.rs\n M codex-rs/hepta-agentd/src/root_production_learning_inputs.rs\n M codex-rs/hepta-agentd/src/root_production_learning_inputs_tests.rs\n M codex-rs/hepta-intelligence/src/outcome_credit_preflight_tests.rs\n M codex-rs/hepta-prompt-registry/src/durable.rs\n M scripts/cell_repo_mdv/compare.py\n M scripts/cell_repo_mdv/runner.py\n M scripts/cell_repo_mdv/test_compare.py\n M scripts/codex_package/test_v8.py\n M scripts/research/smollm_learning_process_v1.py\n M scripts/research/test_smollm_task_inputs.py\n",
+    "tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+    "tree_is_committed_tree_not_dirty_worktree_digest": true,
+    "untracked": [],
+    "working_diff": {
+      "bytes": 77255,
+      "path": "/home/qq/hepta-cell-common-e1c98-20261109/maintenance/strict-clippy-f070-v1/before.patch",
+      "sha256": "c563731344f58ae74a0c3a903315a7ab64bd5f560145b5808aebfbbc8204a65b"
+    }
+  },
+  "started_unix": 1794227738.4426656,
+  "tested_runtime_commit": "f070113bb61cda492d2668b3afbbcda13e11fa52",
+  "tested_runtime_tree": "068b6a7749e94d7335c826d6c43c19198e02cc24",
+  "tests_executed_by_this_command": false
+}

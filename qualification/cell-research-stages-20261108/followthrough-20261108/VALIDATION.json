@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.cell-stage-followthrough.validation.v1",
+  "reviewed_parent": "705208fa958c0a8755b235b889d9d813dde044c1",
+  "source_scope": "partial source snapshot with exact per-file identities, not a complete git checkout",
+  "source": [
+    {
+      "path": "scripts/hepta_cell_joint_config.py",
+      "bytes": 23331,
+      "sha256": "6ee9ea0ca1536522e22453f0b763ff79238eb45ad615efdcc372260845ffb52c"
+    },
+    {
+      "path": "scripts/test_hepta_cell_joint_config.py",
+      "bytes": 27249,
+      "sha256": "88b7fdcfca0e6e820f4a82bdc0c6ef91b826cf86833c1864b9d99fe2047f918a"
+    },
+    {
+      "path": "scripts/hepta_cell_research_gate.py",
+      "bytes": 26570,
+      "sha256": "4292bb167484aa9a308c62fd2ab208e2649ac271292bef8e8ac1e7fc99bdd35c"
+    },
+    {
+      "path": "scripts/test_hepta_cell_research_gate.py",
+      "bytes": 24936,
+      "sha256": "e013794ea4e56205dc5b0c56cd1b850051bdfe91cd17049f716c7eb1999c5807"
+    },
+    {
+      "path": "scripts/hepta_cell_research_foundation.py",
+      "bytes": 5023,
+      "sha256": "6dde6ed39d50118a7aa77bee8865e459c67cb70090e7bd42a1fb781edcd2838d"
+    },
+    {
+      "path": "scripts/test_hepta_cell_research_successor.py",
+      "bytes": 13831,
+      "sha256": "5a40f818114d763970333734f0463ee71ff8599aa06ec8957fc678cfb584db25"
+    }
+  ],
+  "joint_configuration_tests": 23,
+  "research_gate_tests": 19,
+  "successor_binding_tests": 8,
+  "total_unique_test_methods": 50,
+  "tests": "PASS before formatting",
+  "formatter": "ruff 0.15.13",
+  "format_result": "6 files unchanged; AST equal",
+  "tests_rerun_after_format": false,
+  "scientific_experiments_rerun": 0,
+  "archive": {
+    "path": "gate-regressions.tar.gz",
+    "bytes": 82250,
+    "sha256": "f35f47fa20630ea2a88be702738f32da62ed9e6187278a47fb604ae9bb24836b"
+  },
+  "historical_red_attempts_retained": true,
+  "research_advancement": false,
+  "production_qualification": false,
+  "authority_granted": false,
+  "ci": "new source-head run must be observed independently after publication"
+}

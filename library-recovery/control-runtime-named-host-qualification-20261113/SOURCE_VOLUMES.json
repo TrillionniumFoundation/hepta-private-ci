@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.source-custody-volumes.v1",
+  "source_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+  "original_directory": "library-recovery/control-runtime-named-host-qualification-20261113",
+  "member_count": 3,
+  "member_bytes": 7193,
+  "source_executed": false,
+  "scientific_or_runtime_qualification": false,
+  "members": [
+    {
+      "path": "library-recovery/control-runtime-named-host-qualification-20261113/README.md",
+      "member": "README.md",
+      "mode": "100644",
+      "bytes": 1776,
+      "sha256": "d65d5681f4dbdd555ad4f27781ca8f73dcc548e7dc025d5ec2d54a798c4d988e",
+      "oid": "04eb7312db64c133480f4659e8a6e97634014c32",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/control-runtime-named-host-qualification-20261113/control-runtime-named-host-qualification.rs",
+      "member": "control-runtime-named-host-qualification.rs",
+      "mode": "100644",
+      "bytes": 3529,
+      "sha256": "5972eff44ea194a7defc6ac3830cae9eb03d0363f34b93c0e7fda646223335fd",
+      "oid": "2a72962d604b76a39973cf464f906437d52ca79a",
+      "surface": "container_only",
+      "volume": "source-custody-001.tar.gz"
+    },
+    {
+      "path": "library-recovery/control-runtime-named-host-qualification-20261113/manifest.json",
+      "member": "manifest.json",
+      "mode": "100644",
+      "bytes": 1888,
+      "sha256": "10d60f35fe5b258412e2c10b6da4992ce972c0672cece0d59683450ae3aea27b",
+      "oid": "ffd37ed479f9e565b7e96c12f26cd005a6cb3edf",
+      "surface": "retained_original",
+      "volume": "source-custody-001.tar.gz"
+    }
+  ],
+  "volumes": [
+    {
+      "path": "source-custody-001.tar.gz",
+      "bytes": 2858,
+      "sha256": "c374d495aee19ebef851472561c66425eab568c3277ec4c687a33edb2f38a83d",
+      "tar_bytes": 10240,
+      "tar_sha256": "3927913b1fe6629d8b0a65ee9178d1671c6ec71b2ce46cfe740295272100b1df",
+      "member_count": 3,
+      "member_bytes": 7193
+    }
+  ]
+}

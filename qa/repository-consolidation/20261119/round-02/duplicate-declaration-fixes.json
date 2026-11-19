@@ -1,0 +1,101 @@
+{
+  "base": "4c14246197df4c6ef5ae97ecd284d353d6a550e0",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "before_sha256": "7d7ab9f2b4838addc8a8b0432e9212122cecf3b3b7d812cfc2774edce5bc5657",
+      "before_blob": "8d4e90973ba97030393ceeba0aa08b67b62d0e89",
+      "after_sha256": "2935a8b9969d87e595c78990a3214583e985ffd30be75720248299a7e2fe577a",
+      "after_blob": "5f299b8a106ceb7367d8d01135a0e2ad13b0c1f4",
+      "decision": {
+        "removed_duplicate_modules": [
+          "generation_rollout",
+          "sngr_affine_shadow",
+          "sngr_graph_shadow",
+          "validated_scalarization"
+        ],
+        "removed_identical_duplicate_exports": [
+          "pub use sngr_affine_shadow::SngrAffineBoundaryShadowV1;",
+          "pub use sngr_affine_shadow::SngrAffineShadowError;",
+          "pub use sngr_affine_shadow::SngrAffineShootingReceiptShadowV1;",
+          "pub use sngr_affine_shadow::SngrAffineShootingRequestShadowV1;",
+          "pub use sngr_affine_shadow::SngrAffineSliceShadowV1;",
+          "pub use sngr_affine_shadow::naive_sngr_terminal_reset_shadow;",
+          "pub use sngr_affine_shadow::sngr_affine_continuation_shadow;",
+          "pub use sngr_affine_shadow::solve_sngr_affine_shadow;",
+          "pub use sngr_graph_shadow::SngrActionShadowV1;",
+          "pub use sngr_graph_shadow::SngrChanceShadowV1;",
+          "pub use sngr_graph_shadow::SngrGraphNodeShadowV1;",
+          "pub use sngr_graph_shadow::SngrGraphReceiptShadowV1;",
+          "pub use sngr_graph_shadow::SngrGraphShadowError;",
+          "pub use sngr_graph_shadow::SngrGraphShadowV1;",
+          "pub use sngr_graph_shadow::evaluate_sngr_graph_shadow;",
+          "pub use generation_rollout::GENERATION_ROLLOUT_MAX_BYTES;",
+          "pub use generation_rollout::GenerationRolloutError;",
+          "pub use generation_rollout::GenerationRolloutPinsV1;",
+          "pub use generation_rollout::GenerationRolloutReceiptV1;",
+          "pub use generation_rollout::evaluate_generation_rollout_v1;",
+          "pub use coefficient_profile::validate_ndu_coefficient_projection_v1;",
+          "pub use validated_scalarization::ValidatedScalarizationProfileV1;"
+        ],
+        "explicit_aliases": {
+          "evidence_v2::NduIterationReceiptV2": "NduMigratedIterationReceiptV2",
+          "evidence_v2::bind_solver_iteration_receipt_v2": "bind_legacy_solver_iteration_receipt_v2"
+        },
+        "semantic_reason": "Keep current protocol_v2 source-bound solve as the unchanged default API. Incoming evidence_v2 retains its distinct V1-migration contract under explicit aliases; no implementation, input requirement, digest or test changes."
+      },
+      "bytes": 14898
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "before_sha256": "9fd96bec4c068e4231d5752b34ddf14df97d66bbcb657584c0e21598f257465a",
+      "before_blob": "cc6e0beb747fdb4ff114817c08e686c81d539d64",
+      "after_sha256": "c9171daf5b93ebacae058177116073d4d81f052cd7d812fbc85fc32aeff220f7",
+      "after_blob": "5446091c1729e53412e5fac1c2fa0911616012c1",
+      "decision": {
+        "removed_second_declaration": "#[path = \"fenced_holdout_file_replay.rs\"]\nmod physical;\n",
+        "retained_first_identical_declaration": true
+      },
+      "bytes": 20538
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "before_sha256": "e8d5f614f8fd7248a837c5b486f0c2d11d7d1a5cc70a32c86374932eb93e3972",
+      "before_blob": "1de2bfb14d0330ec6476a03e2f90d633bfd36dfc",
+      "after_sha256": "582f65ad289c6d0fefaeffcc48ae9d5d4a11050103f6043ffbe847501baf810e",
+      "after_blob": "517fe5311863dc0674bc9982a23e662e1c94a123",
+      "decision": {
+        "removed_second_declaration": "#[cfg(target_os = \"linux\")]\n#[path = \"cell_q24_model_current_owner.rs\"]\nmod current;\n",
+        "retained_first_identical_declaration": true
+      },
+      "bytes": 15815
+    }
+  ],
+  "no_root_files_modified": true,
+  "owner_host_excluded": "Already fixed separately by CI/root.",
+  "scope": "Six redundant module declarations,22 exact duplicate exports,2 distinct legacy adapter aliases. No function/test body or permission changes.",
+  "validation": [
+    "Scoped rustfmt parse/format applied to all3 postimages; only blank-line cleanup beyond declared deletions/aliases.",
+    "All6 removed module declarations have an identical earlier same-path/same-cfg declaration.",
+    "All22 removed exports exactly duplicate existing unconditional exports.",
+    "Strict protocol_v2 default API and all existing function/test implementations remain unchanged.",
+    "Native compilation is delegated to the ROG CI validation; no native success claimed."
+  ],
+  "unchanged_CALLERS_protected_validation": {
+    "rows": 2,
+    "result": [
+      "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
+    ],
+    "manifest_changed": false,
+    "new_allowlist_entries": 0
+  },
+  "root_review": {
+    "base": "4c14246197df4c6ef5ae97ecd284d353d6a550e0",
+    "pre_post_hashes_verified": true,
+    "protected_guards_pass": 826,
+    "strict_default_api_preserved": true,
+    "native_validation": "pending ROG followup",
+    "reviewed_legacy_contract": "binds V1 then explicitly migrates; source-bound default implementation is unchanged"
+  }
+}

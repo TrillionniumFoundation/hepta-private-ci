@@ -1,0 +1,241 @@
+{
+  "automatic_retry": false,
+  "child_full_wall_seconds": 0.08517028500500601,
+  "child_peak_RSS_bytes": 15073280,
+  "child_system_CPU_seconds": 0.006887,
+  "child_user_CPU_seconds": 0.059525999999999996,
+  "child_wait4_CPU_seconds": 0.066413,
+  "command": [
+    "/workspace/scratch/c385a7439f8e/hcsn-env/bin/python",
+    "-B",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1/run_toys.py",
+    "--program",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-program-v1",
+    "--output",
+    "/workspace/scratch/c385a7439f8e/p1-short-time-toy-execution-v2/worker",
+    "--manifest-sha256",
+    "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+    "--wall-seconds",
+    "119.96656520000397"
+  ],
+  "cost_scope": "wait4 CPU and child wall include complete worker import/computation/serialization/exit. Per-case timers nest inside these. Launcher own CPU is separate; external GNU covers complete launcher plus waited child and overlaps those views.",
+  "error": null,
+  "exit_code": 0,
+  "fixed_case_admission_roster": [
+    {
+      "id": "active-n128-q16-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q16-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q32-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n128-q64-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q16-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q32-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-star1e-4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-star1e-2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-star1",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-star1e2",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-star1e4",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-h1e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "active-n256-q64-h8e-7",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "phase-ratio0.5",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "phase-ratio0.25",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "phase-ratio0.125",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "phase-ratio0.0625",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "tail-shift0",
+      "observed_execution_status": "computed_scalar_case"
+    },
+    {
+      "id": "tail-shift1",
+      "observed_execution_status": "computed_scalar_case"
+    }
+  ],
+  "memory_cap_bytes": 268435456,
+  "model_oracle_E_operations": 0,
+  "own_CPU_prefix_seconds": 0.051248372,
+  "own_peak_RSS_bytes": 12976128,
+  "pid": 8,
+  "process_started": true,
+  "program_manifest_sha256": "8b7015a93d3da6f158b11e330b3dc7e5af5d01a4521585e5f7578a7e1842e966",
+  "resource_stop_reason": null,
+  "roster_count": 48,
+  "sampled_combined_RSS_bytes": 27459584,
+  "schema": "hcsn-fixed48-whole-child-execution-v1",
+  "scientific_admission": "HOLD",
+  "source_unchanged": true,
+  "spawn_attempted": true,
+  "status": "admitted_scalar_execution_only",
+  "sum_of_per_process_peak_RSS_upper_bound_bytes": 28049408,
+  "training_domain_admission": "HOLD",
+  "whole_wall_cap_seconds": 120.0,
+  "whole_wall_prefix_seconds": 0.12202396400243742,
+  "worker_result_identity": {
+    "bytes": 75811,
+    "sha256": "39f562a371885c910a17ed51cd4d1ec1a7952849bc83257c8717f3dd5114f4e2"
+  }
+}

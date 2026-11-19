@@ -1,0 +1,49 @@
+{
+  "split": "dev",
+  "criterion": "mean_quality - 0.5 * CVaR_0.9; ties lower risk weight",
+  "chosen_risk_weight": 0.0,
+  "points": [
+    {
+      "method": "base",
+      "risk_weight": 0.5,
+      "quality": 0.8651041666666667,
+      "cvar": 0.5489583333333333,
+      "selection_score": 0.590625,
+      "seconds": 2.694972262156398
+    },
+    {
+      "method": "static_cells",
+      "risk_weight": 0.5,
+      "quality": 0.8765625,
+      "cvar": 0.5489583333333333,
+      "selection_score": 0.6020833333333333,
+      "seconds": 2.741596557437788
+    },
+    {
+      "method": "ndu",
+      "risk_weight": 0.0,
+      "quality": 0.8713541666666667,
+      "cvar": 0.4864583333333334,
+      "selection_score": 0.6281249999999999,
+      "seconds": 2.674000729344243
+    },
+    {
+      "method": "ndu",
+      "risk_weight": 0.5,
+      "quality": 0.8713541666666667,
+      "cvar": 0.4864583333333334,
+      "selection_score": 0.6281249999999999,
+      "seconds": 2.8484746107187675
+    },
+    {
+      "method": "ndu",
+      "risk_weight": 1.0,
+      "quality": 0.8713541666666667,
+      "cvar": 0.4864583333333334,
+      "selection_score": 0.6281249999999999,
+      "seconds": 2.7798958855310048
+    }
+  ],
+  "test_used": false,
+  "policy_weights_updated": false
+}

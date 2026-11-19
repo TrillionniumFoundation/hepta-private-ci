@@ -1,0 +1,2146 @@
+{
+  "schema_version": 1,
+  "purpose": "synthetic research qualification",
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2
+  },
+  "source_sha256": "7996234ed0df7e05bfcc33d60c97aa7f9666c897606a9122e0a01b8df57458e6",
+  "source_files_sha256": {
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "audit_population.py": "a77790f168ddb8d8ffaaa66ed25522ee5b05cad7968012565b3c00326d87d0fa",
+    "baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "benchmark.py": "49321c03169c700ff833ed56bd74824a9ffdb4425fdf79331bc56afb9157b876",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_benchmark.py": "00ec384f8608b279969c7dfb7da5c053e30f11afa6f5647bdbfe479378891ddb",
+    "tests/test_cells.py": "efa7459f38a3f9a8b1bdce5e18c259a4f77cc86c51e27f032b4eeea33c780740",
+    "tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+  },
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "machine": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpu_count": 5,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "device": "cuda:0",
+    "device_name": "AMD EPYC 9V74 80-Core Processor",
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": null,
+    "cuda_available": false
+  },
+  "protocol": {
+    "data_budget": "same steps, batch size, length and splits for every model",
+    "data_seed": 271828,
+    "selection": "validation only; one held-out test evaluation",
+    "parameter_matching": "same hidden width; actual parameter counts reported, not parameter matched",
+    "latency": "batch forward; two warmups; synchronize CUDA after each measurement",
+    "quality_scope": "synthetic tasks only; smoke scores do not establish learning superiority",
+    "optimization": "PyTorch eager; Transformer uses native SDPA dispatch",
+    "energy": "physical counters only; null when inaccessible; no TDP estimate"
+  },
+  "runs": [
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 0,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 1,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 2,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 3,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "seed": 4,
+      "status": "unavailable",
+      "training_status": "not_started",
+      "reason": "CUDA requested but unavailable; no CPU fallback"
+    }
+  ],
+  "datasets": {
+    "delayed_recall": {
+      "split_sha256": [
+        "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+        "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+        "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+      ],
+      "constant_predictor_test_mse": 0.3302898406982422
+    },
+    "adding": {
+      "split_sha256": [
+        "8009bf4b1cc4328fa96c0d7284cd2050f1495236cb5ebdd4af96c7addab39def",
+        "f0c87929ef12a3e35a5160bc43e8efce9f52980193210d945155d95e1e68d1f0",
+        "bd98a59e033169eebf03410b5f258a79702414851eef16de03cf9f3c329a5587"
+      ],
+      "constant_predictor_test_mse": 0.1640622913837433
+    }
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "ncps": "1.0.1",
+    "mamba-ssm": null,
+    "triton": null,
+    "causal-conv1d": null,
+    "nvidia-ml-py": null
+  },
+  "accounting": {
+    "requested": 170,
+    "unique_records": 170,
+    "completed": 0,
+    "failed": 0,
+    "unavailable": 170
+  },
+  "summary": [
+    {
+      "task": "adding",
+      "model": "adaptive_lif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "cfc",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "gru",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "hx_attention",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "hx_call",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "hx_dual",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "hx_fixed",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "hx_risk",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "lif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "mamba2",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "no_recovery",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "no_rollover",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "pif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "population_flux",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "population_flux_no_recovery",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "softplus",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "adding",
+      "model": "transformer",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "adaptive_lif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "cfc",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "gru",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_attention",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_call",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_dual",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_fixed",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "hx_risk",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "lif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "mamba2",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_recovery",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "no_rollover",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "pif",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "population_flux_no_recovery",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "softplus",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    },
+    {
+      "task": "delayed_recall",
+      "model": "transformer",
+      "completed_seeds": 0,
+      "failed_seeds": 0,
+      "unavailable_seeds": 5,
+      "execution_failure_rate": null,
+      "training_failure_rate": null,
+      "test_mse_mean": null,
+      "test_mse_seed_std": null,
+      "training_examples_per_second_mean": null,
+      "training_examples_per_second_seed_std": null,
+      "inference_examples_per_second_mean": null,
+      "inference_examples_per_second_seed_std": null,
+      "latency_p50_ms_mean": null,
+      "latency_p50_ms_seed_std": null,
+      "latency_p95_ms_mean": null,
+      "latency_p95_ms_seed_std": null
+    }
+  ],
+  "status": "partial",
+  "command": "/workspace/hepta-private-ci/work/hcsn-venv/bin/python -m qualification.hcsn.benchmark --config qualification/hcsn/configs/full.json --output qualification/hcsn/evidence/cloud-20261105/qualified-source/full.json"
+}

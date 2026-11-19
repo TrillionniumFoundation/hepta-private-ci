@@ -1,0 +1,3042 @@
+diff --git a/codex-rs/hepta-automation/BUILD.bazel b/codex-rs/hepta-automation/BUILD.bazel
+index 6c4ca023..1d39b308 100644
+--- a/codex-rs/hepta-automation/BUILD.bazel
++++ b/codex-rs/hepta-automation/BUILD.bazel
+@@ -6,6 +6,9 @@ codex_rust_crate(
+     name = "hepta-automation",
+     compile_data = glob(["migrations/**"]),
+     crate_name = "codex_hepta_automation",
++    integration_test_extra_srcs = {
++        "tests/action_skill_act1.rs": glob(["tests/action_skill_support/**/*.rs"]),
++    },
+ )
+ 
+ # Keep structural qualification out of the product library's feature set.
+diff --git a/codex-rs/hepta-automation/src/action_skill.rs b/codex-rs/hepta-automation/src/action_skill.rs
+new file mode 100644
+index 00000000..1698245a
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/action_skill.rs
+@@ -0,0 +1,221 @@
++//! Goal-checked skills on the existing authorized TaskFlow effect boundary.
++//!
++//! This module declares a policy identity, not a policy interpreter or another
++//! executor. Final-use authorization, durable attempts, writer fencing and
++//! recovery admission remain owned by `AutomationStore`.
++
++use std::future::Future;
++
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::Sha256Digest;
++use serde::Deserialize;
++use serde::Serialize;
++use thiserror::Error;
++
++pub const ACTION_SKILL_SCHEMA_VERSION: u32 = 1;
++
++#[derive(Clone, Copy, Debug, Error, Eq, PartialEq)]
++pub enum ActionSkillError {
++    #[error("invalid action skill contract")]
++    Contract,
++    #[error("invalid or mismatched action skill invocation")]
++    Invocation,
++    #[error("action skill observation unavailable or mismatched")]
++    Observation,
++    #[error("action skill encoding failed")]
++    Encoding,
++}
++
++/// Per-call limits only. The durable TaskFlow owner must enforce cumulative
++/// work, attempt and recovery budgets; recreating a driver grants none of them.
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionSkillBudgetV1 {
++    pub max_wire_bytes: u32,
++    pub provider_timeout_ms: u64,
++    pub observer_timeout_ms: u64,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum ActionSkillRecoveryV1 {
++    /// Query the original identity. This driver never retries or compensates.
++    ReconcileOriginalIdentity,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionSkillContractV1 {
++    pub schema_version: u32,
++    pub skill_id: String,
++    pub version: u32,
++    pub destination_id: String,
++    pub observer_id: String,
++    pub initiation_digest: Sha256Digest,
++    pub policy_digest: Sha256Digest,
++    pub termination_digest: Sha256Digest,
++    pub goal_digest: Sha256Digest,
++    pub budget: ActionSkillBudgetV1,
++    pub recovery: ActionSkillRecoveryV1,
++}
++
++impl ActionSkillContractV1 {
++    pub fn digest(&self) -> Result<Sha256Digest, ActionSkillError> {
++        if self.schema_version != ACTION_SKILL_SCHEMA_VERSION
++            || self.version == 0
++            || [&self.skill_id, &self.destination_id, &self.observer_id]
++                .into_iter()
++                .any(|id| id.is_empty() || id.len() > 128 || id.chars().any(char::is_whitespace))
++            || !(1..=1_048_576).contains(&self.budget.max_wire_bytes)
++            || !(1..=300_000).contains(&self.budget.provider_timeout_ms)
++            || !(1..=300_000).contains(&self.budget.observer_timeout_ms)
++            || [
++                &self.initiation_digest,
++                &self.policy_digest,
++                &self.termination_digest,
++                &self.goal_digest,
++            ]
++            .into_iter()
++            .any(|digest| Sha256Digest::parse(digest.as_str()).is_err())
++        {
++            return Err(ActionSkillError::Contract);
++        }
++        evidence_digest(b"hepta.action-skill.contract.v1\0", self)
++    }
++
++    /// Freeze these exact bytes into the existing TaskFlow payload/final-use
++    /// binding. The provider receives the whole envelope unchanged.
++    pub fn encode_invocation(&self, body: Vec<u8>) -> Result<Vec<u8>, ActionSkillError> {
++        let contract_digest = self.digest()?;
++        if body.len() > self.budget.max_wire_bytes as usize {
++            return Err(ActionSkillError::Invocation);
++        }
++        let invocation = ActionSkillInvocationV1 {
++            schema_version: ACTION_SKILL_SCHEMA_VERSION,
++            contract_digest,
++            destination_id: self.destination_id.clone(),
++            body,
++        };
++        let bytes = serde_json::to_vec(&invocation).map_err(|_| ActionSkillError::Encoding)?;
++        if bytes.len() > self.budget.max_wire_bytes as usize {
++            return Err(ActionSkillError::Invocation);
++        }
++        Ok(bytes)
++    }
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionSkillInvocationV1 {
++    pub schema_version: u32,
++    pub contract_digest: Sha256Digest,
++    pub destination_id: String,
++    pub body: Vec<u8>,
++}
++
++/// The durable effect intent digest includes the attempt, policy generation,
++/// operation, subject and scope. It does not confer current writer authority.
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionSkillBindingV1 {
++    pub provider_intent: ProviderEffectIntent,
++    pub effect_intent_digest: Sha256Digest,
++    pub contract_digest: Sha256Digest,
++    pub destination_id: String,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum ActionConditionV1 {
++    Met,
++    Unmet,
++    Unknown,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
++pub enum ActionExecutionStateV1 {
++    NotStarted,
++    Running,
++    WaitingForInput,
++    Returned { exit_code: Option<i32> },
++    Interrupted,
++    Unknown,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum ActionGoalStateV1 {
++    Satisfied,
++    Unsatisfied,
++    Partial,
++    Unknown,
++}
++
++#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(rename_all = "snake_case")]
++pub enum ActionCancellationStateV1 {
++    NotRequested,
++    Requested,
++    Confirmed,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionInitiationObservationV1 {
++    pub binding: ActionSkillBindingV1,
++    pub observer_id: String,
++    pub evidence_digest: Sha256Digest,
++    pub condition: ActionConditionV1,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(deny_unknown_fields)]
++pub struct ActionSkillObservationV1 {
++    pub binding: ActionSkillBindingV1,
++    pub provider_receipt_digest: Sha256Digest,
++    pub observer_id: String,
++    pub evidence_digest: Sha256Digest,
++    /// Independent proof of no effect and no possible late commit for this
++    /// identity. A missing row, process exit or cancellation ACK is not proof.
++    pub absence_proof_digest: Option<Sha256Digest>,
++    pub execution: ActionExecutionStateV1,
++    pub cancellation: ActionCancellationStateV1,
++    pub termination: ActionConditionV1,
++    pub goal: ActionGoalStateV1,
++}
++
++/// Trusted, independently provisioned, read-only destination observer. The
++/// host pins this implementation and its identity; matching a string is not
++/// authentication. Implementations evaluate the contract's predicates against
++/// authoritative state, never infer them from a tool return or echo a request.
++///
++/// Before returning, retain the evidence addressed by `evidence_digest`,
++/// including partial subeffects, input-reader identity/epoch and cancellation
++/// facts, in the destination observation owner. TaskFlow persists a digest, not
++/// these details. Lookup must be able to observe them after either owner restarts.
++/// Index initiation and subsequent evidence by the entire binding for recovery.
++pub trait ActionSkillObserver: Send + Sync {
++    fn observer_id(&self) -> &str;
++
++    fn check_initiation(
++        &self,
++        binding: &ActionSkillBindingV1,
++        body: &[u8],
++    ) -> impl Future<Output = Result<ActionInitiationObservationV1, ActionSkillError>> + Send;
++
++    fn observe(
++        &self,
++        binding: &ActionSkillBindingV1,
++        provider_receipt_digest: &Sha256Digest,
++    ) -> impl Future<Output = Result<ActionSkillObservationV1, ActionSkillError>> + Send;
++}
++
++pub(crate) fn evidence_digest<T: Serialize>(
++    domain: &[u8],
++    value: &T,
++) -> Result<Sha256Digest, ActionSkillError> {
++    let mut bytes = domain.to_vec();
++    bytes.extend(serde_json::to_vec(value).map_err(|_| ActionSkillError::Encoding)?);
++    Ok(Sha256Digest::for_bytes(&bytes))
++}
+diff --git a/codex-rs/hepta-automation/src/action_skill_driver.rs b/codex-rs/hepta-automation/src/action_skill_driver.rs
+new file mode 100644
+index 00000000..50cd4ff7
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/action_skill_driver.rs
+@@ -0,0 +1,294 @@
++//! An authorized driver decorator, not an authority or a durable executor.
++
++use std::time::Duration;
++
++use codex_hepta_contracts::ProviderEffectAdapter;
++use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::ProviderEffectKey;
++use codex_hepta_contracts::Sha256Digest;
++
++use crate::AsyncAuthorizedEffectDriver;
++use crate::AuthorizedEffectDriverError;
++use crate::AuthorizedEffectFuture;
++use crate::AuthorizedEffectOutcome;
++use crate::AuthorizedEffectPending;
++use crate::AuthorizedEffectProviderReceipt;
++use crate::AuthorizedProviderEffectLookup;
++use crate::AuthorizedProviderEffectRequest;
++use crate::ProviderEffectTaskFlowDriver;
++use crate::action_skill::ACTION_SKILL_SCHEMA_VERSION;
++use crate::action_skill::ActionConditionV1;
++use crate::action_skill::ActionExecutionStateV1;
++use crate::action_skill::ActionGoalStateV1;
++use crate::action_skill::ActionSkillBindingV1;
++use crate::action_skill::ActionSkillContractV1;
++use crate::action_skill::ActionSkillError;
++use crate::action_skill::ActionSkillInvocationV1;
++use crate::action_skill::ActionSkillObservationV1;
++use crate::action_skill::ActionSkillObserver;
++use crate::action_skill::evidence_digest;
++
++/// Use through `AutomationStore::execute_authorized_taskflow_effect_async`.
++/// The existing owner persists the intent, verifies final use and fences the
++/// result. This decorator neither authorizes dispatch nor retries it.
++pub struct GoalCheckedActionSkillDriver<A, O> {
++    contract: ActionSkillContractV1,
++    contract_digest: Sha256Digest,
++    provider: ProviderEffectTaskFlowDriver<A>,
++    observer: O,
++}
++
++impl<A: ProviderEffectAdapter, O: ActionSkillObserver> GoalCheckedActionSkillDriver<A, O> {
++    pub fn new(
++        contract: ActionSkillContractV1,
++        adapter: A,
++        observer: O,
++    ) -> Result<Self, ActionSkillError> {
++        let contract_digest = contract.digest()?;
++        if observer.observer_id() != contract.observer_id {
++            return Err(ActionSkillError::Contract);
++        }
++        let provider = ProviderEffectTaskFlowDriver::new(contract.destination_id.clone(), adapter)
++            .map_err(|_| ActionSkillError::Contract)?;
++        Ok(Self {
++            contract,
++            contract_digest,
++            provider,
++            observer,
++        })
++    }
++
++    fn bind_invocation(
++        &self,
++        effect_intent_digest: &Sha256Digest,
++        provider_intent: &ProviderEffectIntent,
++        wire_payload: &[u8],
++    ) -> Result<(ActionSkillBindingV1, ActionSkillInvocationV1), ActionSkillError> {
++        if wire_payload.len() > self.contract.budget.max_wire_bytes as usize
++            || provider_intent.validate().is_err()
++            || Sha256Digest::parse(effect_intent_digest.as_str()).is_err()
++            || Sha256Digest::for_bytes(wire_payload) != provider_intent.payload_sha256
++        {
++            return Err(ActionSkillError::Invocation);
++        }
++        let invocation: ActionSkillInvocationV1 =
++            serde_json::from_slice(wire_payload).map_err(|_| ActionSkillError::Invocation)?;
++        if invocation.schema_version != ACTION_SKILL_SCHEMA_VERSION
++            || invocation.contract_digest != self.contract_digest
++            || invocation.destination_id != self.contract.destination_id
++        {
++            return Err(ActionSkillError::Invocation);
++        }
++        Ok((
++            ActionSkillBindingV1 {
++                provider_intent: provider_intent.clone(),
++                effect_intent_digest: effect_intent_digest.clone(),
++                contract_digest: self.contract_digest.clone(),
++                destination_id: self.contract.destination_id.clone(),
++            },
++            invocation,
++        ))
++    }
++
++    /// Reuse the frozen original bytes, including after restart. This prevents
++    /// a new contract from reinterpreting the same durable pending payload.
++    /// Ordinary NotFound is unresolved: key/status capability alone cannot
++    /// prove that no in-flight dispatch can commit later.
++    pub async fn lookup(
++        &self,
++        pending: &AuthorizedEffectPending,
++        original_wire_payload: &[u8],
++    ) -> AuthorizedProviderEffectLookup {
++        let Ok(binding) = self.bind_pending(pending, original_wire_payload) else {
++            return AuthorizedProviderEffectLookup::Unresolved;
++        };
++        let Ok(AuthorizedProviderEffectLookup::Observed(provider)) = tokio::time::timeout(
++            Duration::from_millis(self.contract.budget.provider_timeout_ms),
++            self.provider.lookup(pending),
++        )
++        .await
++        else {
++            return AuthorizedProviderEffectLookup::Unresolved;
++        };
++        let receipt = self.check_goal(&binding, provider).await;
++        match receipt.outcome {
++            AuthorizedEffectOutcome::Succeeded | AuthorizedEffectOutcome::Failed => {
++                AuthorizedProviderEffectLookup::Observed(receipt)
++            }
++            AuthorizedEffectOutcome::Indeterminate => AuthorizedProviderEffectLookup::Unresolved,
++        }
++    }
++
++    /// Read current waiting, partial-effect and cancellation facts without
++    /// settling the durable attempt or granting another dispatch. When provider
++    /// status is unavailable, the provider digest records that unresolved query.
++    pub async fn observe_pending(
++        &self,
++        pending: &AuthorizedEffectPending,
++        original_wire_payload: &[u8],
++    ) -> Result<ActionSkillObservationV1, ActionSkillError> {
++        let binding = self.bind_pending(pending, original_wire_payload)?;
++        let provider = match tokio::time::timeout(
++            Duration::from_millis(self.contract.budget.provider_timeout_ms),
++            self.provider.lookup(pending),
++        )
++        .await
++        {
++            Ok(AuthorizedProviderEffectLookup::Observed(receipt)) => receipt,
++            _ => unresolved(&binding, &Sha256Digest::for_bytes(b"status_unresolved")),
++        };
++        self.read_observation(&binding, &provider.receipt_digest)
++            .await
++    }
++
++    fn bind_pending(
++        &self,
++        pending: &AuthorizedEffectPending,
++        wire_payload: &[u8],
++    ) -> Result<ActionSkillBindingV1, ActionSkillError> {
++        if pending.destination_id != self.contract.destination_id {
++            return Err(ActionSkillError::Invocation);
++        }
++        let logical_id = format!("taskflow:{}:{}", pending.run_id, pending.step_id);
++        let key = ProviderEffectKey::for_logical_effect(&pending.destination_id, &logical_id)
++            .map_err(|_| ActionSkillError::Invocation)?;
++        let intent = ProviderEffectIntent::new(key, pending.payload_digest.clone());
++        self.bind_invocation(&pending.intent_digest, &intent, wire_payload)
++            .map(|(binding, _)| binding)
++    }
++
++    async fn read_observation(
++        &self,
++        binding: &ActionSkillBindingV1,
++        provider_digest: &Sha256Digest,
++    ) -> Result<ActionSkillObservationV1, ActionSkillError> {
++        let observation = tokio::time::timeout(
++            Duration::from_millis(self.contract.budget.observer_timeout_ms),
++            self.observer.observe(binding, provider_digest),
++        )
++        .await
++        .map_err(|_| ActionSkillError::Observation)??;
++        if observation.binding != *binding
++            || observation.provider_receipt_digest != *provider_digest
++            || observation.observer_id != self.contract.observer_id
++            || Sha256Digest::parse(observation.evidence_digest.as_str()).is_err()
++            || observation
++                .absence_proof_digest
++                .as_ref()
++                .is_some_and(|digest| Sha256Digest::parse(digest.as_str()).is_err())
++        {
++            return Err(ActionSkillError::Observation);
++        }
++        Ok(observation)
++    }
++
++    async fn check_goal(
++        &self,
++        binding: &ActionSkillBindingV1,
++        provider: AuthorizedEffectProviderReceipt,
++    ) -> AuthorizedEffectProviderReceipt {
++        let Ok(observation) = self
++            .read_observation(binding, &provider.receipt_digest)
++            .await
++        else {
++            return unresolved(binding, &provider.receipt_digest);
++        };
++        let Ok(receipt_digest) =
++            evidence_digest(b"hepta.action-skill.observation.v1\0", &observation)
++        else {
++            return unresolved(binding, &provider.receipt_digest);
++        };
++        let terminal = matches!(
++            observation.execution,
++            ActionExecutionStateV1::Returned { .. } | ActionExecutionStateV1::Interrupted
++        );
++        // Exit code and cancellation requests do not determine business effect.
++        let outcome = if provider.outcome == AuthorizedEffectOutcome::Succeeded
++            && terminal
++            && observation.termination == ActionConditionV1::Met
++            && observation.goal == ActionGoalStateV1::Satisfied
++        {
++            AuthorizedEffectOutcome::Succeeded
++        } else if provider.outcome == AuthorizedEffectOutcome::Failed
++            && observation.absence_proof_digest.is_some()
++            && observation.goal == ActionGoalStateV1::Unsatisfied
++            && observation.termination == ActionConditionV1::Met
++            && (terminal || observation.execution == ActionExecutionStateV1::NotStarted)
++        {
++            AuthorizedEffectOutcome::Failed
++        } else {
++            AuthorizedEffectOutcome::Indeterminate
++        };
++        AuthorizedEffectProviderReceipt {
++            outcome,
++            receipt_digest,
++        }
++    }
++}
++
++impl<A: ProviderEffectAdapter, O: ActionSkillObserver> AsyncAuthorizedEffectDriver
++    for GoalCheckedActionSkillDriver<A, O>
++{
++    fn dispatch<'a>(
++        &'a mut self,
++        request: AuthorizedProviderEffectRequest<'a>,
++    ) -> AuthorizedEffectFuture<'a> {
++        Box::pin(async move {
++            if request.intent.destination_id != self.contract.destination_id
++                || self.provider.adapter().capability()
++                    != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
++            {
++                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
++            }
++            let (binding, invocation) = self
++                .bind_invocation(
++                    request.intent_digest,
++                    &request.provider_intent,
++                    request.wire_payload,
++                )
++                .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
++            let initiation = tokio::time::timeout(
++                Duration::from_millis(self.contract.budget.observer_timeout_ms),
++                self.observer.check_initiation(&binding, &invocation.body),
++            )
++            .await;
++            let Ok(Ok(initiation)) = initiation else {
++                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
++            };
++            if initiation.binding != binding
++                || initiation.observer_id != self.contract.observer_id
++                || initiation.condition != ActionConditionV1::Met
++                || Sha256Digest::parse(initiation.evidence_digest.as_str()).is_err()
++            {
++                return Err(AuthorizedEffectDriverError::BeforeProviderContact);
++            }
++            // No error after invoking the downstream driver can become local
++            // absence proof, including its own error or a dropped I/O future.
++            let provider = match tokio::time::timeout(
++                Duration::from_millis(self.contract.budget.provider_timeout_ms),
++                self.provider.dispatch(request),
++            )
++            .await
++            {
++                Ok(Ok(receipt)) => receipt,
++                _ => unresolved(&binding, &Sha256Digest::for_bytes(b"provider_unresolved")),
++            };
++            Ok(self.check_goal(&binding, provider).await)
++        })
++    }
++}
++
++fn unresolved(
++    binding: &ActionSkillBindingV1,
++    provider_digest: &Sha256Digest,
++) -> AuthorizedEffectProviderReceipt {
++    AuthorizedEffectProviderReceipt {
++        outcome: AuthorizedEffectOutcome::Indeterminate,
++        receipt_digest: evidence_digest(
++            b"hepta.action-skill.unresolved.v1\0",
++            &(binding, provider_digest),
++        )
++        .unwrap_or_else(|_| binding.effect_intent_digest.clone()),
++    }
++}
+diff --git a/codex-rs/hepta-automation/src/action_skill_tests.rs b/codex-rs/hepta-automation/src/action_skill_tests.rs
+new file mode 100644
+index 00000000..ebcb27b1
+--- /dev/null
++++ b/codex-rs/hepta-automation/src/action_skill_tests.rs
+@@ -0,0 +1,301 @@
++use std::sync::Arc;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++
++use codex_hepta_contracts::ProviderEffectAck;
++use codex_hepta_contracts::ProviderEffectAckStatus;
++use codex_hepta_contracts::ProviderEffectAdapter;
++use codex_hepta_contracts::ProviderEffectDispatch;
++use codex_hepta_contracts::ProviderEffectFuture;
++use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::ProviderEffectKey;
++use codex_hepta_contracts::ProviderEffectLookup;
++use codex_hepta_contracts::Sha256Digest;
++use pretty_assertions::assert_eq;
++
++use crate::*;
++
++struct ProbeProvider {
++    calls: Arc<AtomicUsize>,
++    status: ProviderEffectAckStatus,
++}
++
++impl ProviderEffectAdapter for ProbeProvider {
++    fn capability(&self) -> ProviderEffectIdempotencyCapability {
++        ProviderEffectIdempotencyCapability::KeyAndStatusLookup
++    }
++
++    fn dispatch<'a>(
++        &'a self,
++        intent: &'a ProviderEffectIntent,
++    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
++        self.calls.fetch_add(1, Ordering::SeqCst);
++        Box::pin(async move {
++            ProviderEffectDispatch::Ack(ProviderEffectAck::new(
++                intent.key.clone(),
++                intent.payload_sha256.clone(),
++                Sha256Digest::for_bytes(b"provider-operation"),
++                self.status,
++            ))
++        })
++    }
++
++    fn lookup<'a>(
++        &'a self,
++        _key: &'a ProviderEffectKey,
++    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
++        Box::pin(async { ProviderEffectLookup::NotFound })
++    }
++}
++
++#[derive(Clone, Copy)]
++enum ObservationCase {
++    Satisfied,
++    Error,
++    OldAttempt,
++    WrongContract,
++    WrongPayload,
++    Partial,
++    Waiting,
++}
++
++struct ProbeObserver(ObservationCase);
++
++impl ActionSkillObserver for ProbeObserver {
++    fn observer_id(&self) -> &str {
++        "independent-observer"
++    }
++
++    async fn check_initiation(
++        &self,
++        binding: &ActionSkillBindingV1,
++        _body: &[u8],
++    ) -> Result<ActionInitiationObservationV1, ActionSkillError> {
++        Ok(ActionInitiationObservationV1 {
++            binding: binding.clone(),
++            observer_id: self.observer_id().to_string(),
++            evidence_digest: Sha256Digest::for_bytes(b"initiation"),
++            condition: ActionConditionV1::Met,
++        })
++    }
++
++    async fn observe(
++        &self,
++        binding: &ActionSkillBindingV1,
++        provider_receipt_digest: &Sha256Digest,
++    ) -> Result<ActionSkillObservationV1, ActionSkillError> {
++        let mut observed = ActionSkillObservationV1 {
++            binding: binding.clone(),
++            provider_receipt_digest: provider_receipt_digest.clone(),
++            observer_id: self.observer_id().to_string(),
++            evidence_digest: Sha256Digest::for_bytes(b"goal"),
++            absence_proof_digest: None,
++            execution: ActionExecutionStateV1::Returned { exit_code: Some(0) },
++            cancellation: ActionCancellationStateV1::Requested,
++            termination: ActionConditionV1::Met,
++            goal: ActionGoalStateV1::Satisfied,
++        };
++        match self.0 {
++            ObservationCase::Satisfied => {}
++            ObservationCase::Error => return Err(ActionSkillError::Observation),
++            ObservationCase::OldAttempt => {
++                observed.binding.effect_intent_digest = Sha256Digest::for_bytes(b"old-attempt")
++            }
++            ObservationCase::WrongContract => {
++                observed.binding.contract_digest = Sha256Digest::for_bytes(b"other-skill")
++            }
++            ObservationCase::WrongPayload => {
++                observed.binding.provider_intent.payload_sha256 =
++                    Sha256Digest::for_bytes(b"other-payload")
++            }
++            ObservationCase::Partial => observed.goal = ActionGoalStateV1::Partial,
++            ObservationCase::Waiting => {
++                observed.execution = ActionExecutionStateV1::WaitingForInput
++            }
++        }
++        Ok(observed)
++    }
++}
++
++fn contract() -> ActionSkillContractV1 {
++    ActionSkillContractV1 {
++        schema_version: ACTION_SKILL_SCHEMA_VERSION,
++        skill_id: "create-task".to_string(),
++        version: 1,
++        destination_id: "automation-test".to_string(),
++        observer_id: "independent-observer".to_string(),
++        initiation_digest: Sha256Digest::for_bytes(b"initiate"),
++        policy_digest: Sha256Digest::for_bytes(b"policy"),
++        termination_digest: Sha256Digest::for_bytes(b"terminal"),
++        goal_digest: Sha256Digest::for_bytes(b"goal"),
++        budget: ActionSkillBudgetV1 {
++            max_wire_bytes: 4096,
++            provider_timeout_ms: 1000,
++            observer_timeout_ms: 1000,
++        },
++        recovery: ActionSkillRecoveryV1::ReconcileOriginalIdentity,
++    }
++}
++
++fn effect(wire: &[u8]) -> AuthorizedEffectIntent {
++    AuthorizedEffectIntent {
++        run_id: "run".to_string(),
++        step_id: "step".to_string(),
++        attempt: 1,
++        operation_id: "operation".to_string(),
++        subject_id: "agent".to_string(),
++        destination_id: "automation-test".to_string(),
++        payload_digest: Sha256Digest::for_bytes(wire),
++        final_use_scope_digest: Sha256Digest::for_bytes(b"scope"),
++        policy_generation: 1,
++        expected_predecessor_digest: None,
++        dependencies: Vec::new(),
++        compensation_for: None,
++    }
++}
++
++// Decorator-level probes only; the ACT-1 integration suite uses the durable
++// AutomationStore owner and independent final-use authority.
++async fn invoke(
++    driver: &mut GoalCheckedActionSkillDriver<ProbeProvider, ProbeObserver>,
++    intent: &AuthorizedEffectIntent,
++    wire: &[u8],
++) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
++    let digest = intent.digest().expect("intent");
++    let operation = intent.operation_intent_v1().expect("operation");
++    let binding = intent.final_use_binding().expect("binding");
++    let key = ProviderEffectKey::for_logical_effect(&intent.destination_id, "taskflow:run:step")
++        .expect("key");
++    driver
++        .dispatch(AuthorizedProviderEffectRequest {
++            operation_intent: &operation,
++            intent,
++            intent_digest: &digest,
++            binding: &binding,
++            provider_intent: ProviderEffectIntent::new(key, intent.payload_digest.clone()),
++            wire_payload: wire,
++        })
++        .await
++}
++
++#[tokio::test]
++async fn changed_skill_contract_is_rejected_before_provider_contact() {
++    let mut contract = contract();
++    let wire = contract
++        .encode_invocation(b"create".to_vec())
++        .expect("wire");
++    contract.policy_digest = Sha256Digest::for_bytes(b"changed-policy");
++    let calls = Arc::new(AtomicUsize::new(0));
++    let mut driver = GoalCheckedActionSkillDriver::new(
++        contract,
++        ProbeProvider {
++            calls: Arc::clone(&calls),
++            status: ProviderEffectAckStatus::Completed,
++        },
++        ProbeObserver(ObservationCase::Satisfied),
++    )
++    .expect("driver");
++    assert_eq!(
++        invoke(&mut driver, &effect(&wire), &wire).await,
++        Err(AuthorizedEffectDriverError::BeforeProviderContact)
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 0);
++}
++
++#[tokio::test]
++async fn unbound_or_nonterminal_evidence_never_closes_a_completed_provider_effect() {
++    for case in [
++        ObservationCase::Error,
++        ObservationCase::OldAttempt,
++        ObservationCase::WrongContract,
++        ObservationCase::WrongPayload,
++        ObservationCase::Partial,
++        ObservationCase::Waiting,
++    ] {
++        let contract = contract();
++        let wire = contract
++            .encode_invocation(b"create".to_vec())
++            .expect("wire");
++        let calls = Arc::new(AtomicUsize::new(0));
++        let mut driver = GoalCheckedActionSkillDriver::new(
++            contract,
++            ProbeProvider {
++                calls: Arc::clone(&calls),
++                status: ProviderEffectAckStatus::Completed,
++            },
++            ProbeObserver(case),
++        )
++        .expect("driver");
++        let receipt = invoke(&mut driver, &effect(&wire), &wire)
++            .await
++            .expect("contact is not absence");
++        assert_eq!(receipt.outcome, AuthorizedEffectOutcome::Indeterminate);
++        assert_eq!(calls.load(Ordering::SeqCst), 1);
++    }
++}
++
++#[tokio::test]
++async fn cancellation_and_rejection_do_not_erase_observed_effects() {
++    for (status, case, expected) in [
++        (
++            ProviderEffectAckStatus::Completed,
++            ObservationCase::Satisfied,
++            AuthorizedEffectOutcome::Succeeded,
++        ),
++        (
++            ProviderEffectAckStatus::Rejected,
++            ObservationCase::Partial,
++            AuthorizedEffectOutcome::Indeterminate,
++        ),
++        (
++            ProviderEffectAckStatus::Rejected,
++            ObservationCase::Satisfied,
++            AuthorizedEffectOutcome::Indeterminate,
++        ),
++    ] {
++        let contract = contract();
++        let wire = contract
++            .encode_invocation(b"create".to_vec())
++            .expect("wire");
++        let mut driver = GoalCheckedActionSkillDriver::new(
++            contract,
++            ProbeProvider {
++                calls: Arc::new(AtomicUsize::new(0)),
++                status,
++            },
++            ProbeObserver(case),
++        )
++        .expect("driver");
++        let intent = effect(&wire);
++        assert_eq!(
++            invoke(&mut driver, &intent, &wire)
++                .await
++                .expect("observed")
++                .outcome,
++            expected
++        );
++        let pending = AuthorizedEffectPending {
++            run_id: intent.run_id.clone(),
++            step_id: intent.step_id.clone(),
++            attempt: intent.attempt,
++            intent_digest: intent.digest().expect("intent"),
++            payload_digest: intent.payload_digest.clone(),
++            binding_digest: Sha256Digest::for_bytes(b"binding"),
++            destination_id: intent.destination_id.clone(),
++            authority_epoch: 1,
++            grant_id: "grant".to_string(),
++            started_at_ms: 1,
++        };
++        // A provider NotFound after contact never grants a new attempt.
++        assert_eq!(
++            driver.lookup(&pending, &wire).await,
++            AuthorizedProviderEffectLookup::Unresolved
++        );
++        let feedback = driver
++            .observe_pending(&pending, &wire)
++            .await
++            .expect("read-only feedback");
++        assert_eq!(feedback.cancellation, ActionCancellationStateV1::Requested);
++    }
++}
+diff --git a/codex-rs/hepta-automation/src/authorized_effect.rs b/codex-rs/hepta-automation/src/authorized_effect.rs
+index 203e3299..b9c97eb6 100644
+--- a/codex-rs/hepta-automation/src/authorized_effect.rs
++++ b/codex-rs/hepta-automation/src/authorized_effect.rs
+@@ -399,12 +399,11 @@ where
+                     None => AuthorizedProviderEffectLookup::Unresolved,
+                 }
+             }
+-            ProviderEffectLookup::NotFound => AuthorizedProviderEffectLookup::ProvenAbsent {
+-                proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
+-            },
+-            ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
+-                AuthorizedProviderEffectLookup::Unresolved
+-            }
++            // Key/status support does not fence an in-flight or late commit.
++            // An empty query cannot grant a new physical dispatch attempt.
++            ProviderEffectLookup::NotFound
++            | ProviderEffectLookup::Conflict { .. }
++            | ProviderEffectLookup::Unknown => AuthorizedProviderEffectLookup::Unresolved,
+         }
+     }
+ }
+diff --git a/codex-rs/hepta-automation/src/lib.rs b/codex-rs/hepta-automation/src/lib.rs
+index a1d7b873..4cb692c7 100644
+--- a/codex-rs/hepta-automation/src/lib.rs
++++ b/codex-rs/hepta-automation/src/lib.rs
+@@ -12,6 +12,11 @@
+ #[cfg(test)]
+ mod effect_executor;
+ 
++mod action_skill;
++mod action_skill_driver;
++#[cfg(test)]
++#[path = "action_skill_tests.rs"]
++mod action_skill_tests;
+ mod authorized_effect;
+ mod automation_taskflow;
+ mod circuit_admission;
+@@ -42,6 +47,21 @@ mod taskflow_recovery;
+ mod taskflow_step;
+ mod timer_lifecycle;
+ 
++pub use action_skill::ACTION_SKILL_SCHEMA_VERSION;
++pub use action_skill::ActionCancellationStateV1;
++pub use action_skill::ActionConditionV1;
++pub use action_skill::ActionExecutionStateV1;
++pub use action_skill::ActionGoalStateV1;
++pub use action_skill::ActionInitiationObservationV1;
++pub use action_skill::ActionSkillBindingV1;
++pub use action_skill::ActionSkillBudgetV1;
++pub use action_skill::ActionSkillContractV1;
++pub use action_skill::ActionSkillError;
++pub use action_skill::ActionSkillInvocationV1;
++pub use action_skill::ActionSkillObservationV1;
++pub use action_skill::ActionSkillObserver;
++pub use action_skill::ActionSkillRecoveryV1;
++pub use action_skill_driver::GoalCheckedActionSkillDriver;
+ pub use authorized_effect::AsyncAuthorizedEffectDriver;
+ pub use authorized_effect::AuthorizedEffectDependency;
+ pub use authorized_effect::AuthorizedEffectDispatchRequest;
+diff --git a/codex-rs/hepta-automation/tests/action_skill_act1.rs b/codex-rs/hepta-automation/tests/action_skill_act1.rs
+new file mode 100644
+index 00000000..4098837e
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_act1.rs
+@@ -0,0 +1,619 @@
++//! ACT-1: real destination effects through the authorized TaskFlow driver.
++//!
++//! Fault plans are private to the destination. Assertions use a separate
++//! connection to the business ledger, never the provider's success field.
++#![cfg(unix)]
++#![allow(
++    clippy::expect_used,
++    reason = "fault qualification fixtures fail loudly"
++)]
++
++mod action_skill_support;
++
++use std::io::BufRead;
++use std::path::Path;
++use std::process::Command;
++use std::process::Stdio;
++use std::time::Duration;
++use std::time::Instant;
++
++use codex_hepta_automation::ActionCancellationStateV1;
++use codex_hepta_automation::ActionExecutionStateV1;
++use codex_hepta_automation::ActionGoalStateV1;
++use codex_hepta_automation::AuthorizedEffectError;
++use codex_hepta_automation::AuthorizedProviderEffectLookup;
++use codex_hepta_automation::GoalCheckedActionSkillDriver;
++use codex_hepta_automation::TaskFlowReconcileOutcome;
++use codex_hepta_automation::TaskFlowRunState;
++use codex_hepta_automation::TaskFlowStepObservation;
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::ProviderEffectKey;
++
++use action_skill_support::KEY_ENV;
++use action_skill_support::ROOT_ENV;
++use action_skill_support::baselines::BASELINES;
++use action_skill_support::baselines::metric;
++use action_skill_support::baselines::oracle;
++use action_skill_support::destination::Destination;
++use action_skill_support::destination::Fault;
++use action_skill_support::destination::LookupAvailability;
++use action_skill_support::destination::facts;
++use action_skill_support::harness::Harness;
++use action_skill_support::harness::key;
++use action_skill_support::observer::Observer;
++use action_skill_support::observer::contract;
++use action_skill_support::observer::driver;
++use action_skill_support::observer::wire;
++
++#[tokio::test]
++async fn act1_shared_fault_matrix_preserves_truth_across_three_baselines() {
++    let cases = [
++        (
++            "no_fault",
++            Fault::None,
++            LookupAvailability::Available,
++            2,
++            true,
++        ),
++        (
++            "committed_ack_lost",
++            Fault::AckLost,
++            LookupAvailability::Available,
++            2,
++            true,
++        ),
++        (
++            "waiting_for_input",
++            Fault::WaitingInput,
++            LookupAvailability::Available,
++            0,
++            false,
++        ),
++        (
++            "partial_success",
++            Fault::Partial,
++            LookupAvailability::Available,
++            1,
++            false,
++        ),
++        (
++            "rejected_after_partial_effect",
++            Fault::RejectedPartial,
++            LookupAvailability::Available,
++            1,
++            false,
++        ),
++        (
++            "cancel_before_commit",
++            Fault::PauseBeforeCommit,
++            LookupAvailability::Available,
++            0,
++            false,
++        ),
++        (
++            "commit_before_cancel",
++            Fault::PauseAfterCommit,
++            LookupAvailability::Available,
++            2,
++            true,
++        ),
++        (
++            "exit_zero_without_effect",
++            Fault::ExitZero,
++            LookupAvailability::Available,
++            0,
++            false,
++        ),
++        (
++            "lookup_unavailable",
++            Fault::AckLost,
++            LookupAvailability::Unavailable,
++            2,
++            false,
++        ),
++    ];
++    for baseline in BASELINES {
++        for (scenario, fault, availability, events, expected_success) in cases {
++            let temp = tempfile::tempdir().expect("isolated case");
++            let root = temp.path().canonicalize().expect("canonical case root");
++            let destination = Destination::open(&root, fault)
++                .await
++                .with_lookup(availability);
++            let harness = Harness::create(&root, wire()).await;
++            let mut driver = driver(&root, destination.clone()).await;
++            let outcome = if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
++                let controller = async {
++                    tokio::time::timeout(Duration::from_secs(10), destination.reached.notified())
++                        .await
++                        .expect("destination reached the explicit race barrier");
++                    destination.cancel(&key()).await;
++                    destination.release.notify_one();
++                };
++                let (outcome, ()) = tokio::join!(baseline.run(&harness, &mut driver), controller);
++                outcome
++            } else {
++                baseline.run(&harness, &mut driver).await
++            };
++            let truth = oracle(&root).await;
++            assert_eq!(truth.business_events, events, "{baseline:?} {scenario}");
++            assert_eq!(
++                outcome.reported_success, expected_success,
++                "{baseline:?} {scenario}"
++            );
++            if matches!(fault, Fault::WaitingInput) {
++                wait_for_file(&root.join("input-reader.ready")).await;
++                assert!(destination.input_process_waits());
++            }
++            if matches!(fault, Fault::PauseBeforeCommit | Fault::PauseAfterCommit) {
++                assert!(
++                    facts(&destination.pool, &key())
++                        .await
++                        .expect("cancel facts")
++                        .cancel_received
++                );
++            }
++            if matches!(fault, Fault::ExitZero) {
++                assert_eq!(
++                    facts(&destination.pool, &key())
++                        .await
++                        .expect("process facts")
++                        .exit_code,
++                    Some(0)
++                );
++            }
++            metric(baseline, scenario, &outcome, &truth);
++            harness.store.close().await;
++        }
++    }
++}
++
++#[tokio::test]
++async fn act1_real_input_reader_resumes_original_job_then_verifies_goal() {
++    let temp = tempfile::tempdir().expect("root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::WaitingInput).await;
++    let harness = Harness::create(&root, wire()).await;
++    let mut driver = driver(&root, destination.clone()).await;
++    let first = harness.dispatch(&mut driver).await.expect("admission");
++    assert_eq!(
++        first.observation,
++        Some(TaskFlowStepObservation::Indeterminate)
++    );
++    wait_for_file(&root.join("input-reader.ready")).await;
++    assert!(
++        destination.input_process_waits(),
++        "input-waiting process has not returned"
++    );
++    assert_eq!(oracle(&root).await.business_events, 0);
++    let pending = harness.pending().await;
++    let feedback = driver
++        .observe_pending(&pending, &harness.wire)
++        .await
++        .expect("input feedback");
++    assert_eq!(
++        feedback.binding.provider_intent,
++        ProviderEffectIntent::new(key(), harness.effect.payload_digest.clone())
++    );
++    assert_eq!(
++        feedback.binding.effect_intent_digest,
++        harness.effect.digest().expect("original effect identity")
++    );
++    assert_eq!(feedback.execution, ActionExecutionStateV1::WaitingForInput);
++    assert_eq!(feedback.goal, ActionGoalStateV1::Unsatisfied);
++    assert!(feedback.absence_proof_digest.is_none());
++
++    destination.provide_input();
++    let recovered = harness
++        .recover(driver.lookup(&pending, &harness.wire).await)
++        .await
++        .expect("verified goal after explicit input");
++    assert_eq!(
++        recovered.final_outcome,
++        Some(TaskFlowReconcileOutcome::Succeeded)
++    );
++    let truth = oracle(&root).await;
++    assert!(truth.actual_business_success);
++    assert_eq!(
++        truth.dispatch_contacts, 1,
++        "input resumes the same destination job"
++    );
++    assert_eq!(truth.duplicate_effects, 0);
++}
++
++#[tokio::test]
++async fn act1_partial_completion_recovers_only_after_missing_subeffect_exists() {
++    let temp = tempfile::tempdir().expect("root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::Partial).await;
++    let harness = Harness::create(&root, wire()).await;
++    let mut driver = driver(&root, destination.clone()).await;
++    let first = harness
++        .dispatch(&mut driver)
++        .await
++        .expect("partial job returned");
++    assert_eq!(
++        first.observation,
++        Some(TaskFlowStepObservation::Indeterminate)
++    );
++    let pending = harness.pending().await;
++    let feedback = driver
++        .observe_pending(&pending, &harness.wire)
++        .await
++        .expect("partial feedback");
++    assert_eq!(
++        feedback.binding.provider_intent,
++        ProviderEffectIntent::new(key(), harness.effect.payload_digest.clone())
++    );
++    assert_eq!(
++        feedback.binding.effect_intent_digest,
++        harness.effect.digest().expect("original effect identity")
++    );
++    assert_eq!(
++        feedback.execution,
++        ActionExecutionStateV1::Returned { exit_code: Some(0) }
++    );
++    assert_eq!(feedback.goal, ActionGoalStateV1::Partial);
++    assert!(feedback.absence_proof_digest.is_none());
++    assert_eq!(oracle(&root).await.business_events, 1);
++    destination.finish(&key()).await;
++    let recovered = harness
++        .recover(driver.lookup(&pending, &harness.wire).await)
++        .await
++        .expect("all requested effects now observed");
++    assert_eq!(
++        recovered.final_outcome,
++        Some(TaskFlowReconcileOutcome::Succeeded)
++    );
++    let truth = oracle(&root).await;
++    assert!(truth.actual_business_success);
++    assert_eq!(truth.business_events, 2);
++    assert_eq!(
++        truth.duplicate_effects, 0,
++        "repair never repeats the first subeffect"
++    );
++    assert_eq!(truth.dispatch_contacts, 1);
++}
++
++#[tokio::test]
++async fn act1_cancellation_feedback_retains_both_commit_orders() {
++    for (fault, expected_goal, expected_cancel) in [
++        (
++            Fault::PauseBeforeCommit,
++            ActionGoalStateV1::Unsatisfied,
++            ActionCancellationStateV1::Confirmed,
++        ),
++        (
++            Fault::PauseAfterCommit,
++            ActionGoalStateV1::Satisfied,
++            ActionCancellationStateV1::Requested,
++        ),
++    ] {
++        let temp = tempfile::tempdir().expect("race root");
++        let root = temp.path().canonicalize().expect("canonical root");
++        let destination = Destination::open(&root, fault).await;
++        let harness = Harness::create(&root, wire()).await;
++        let mut driver = driver(&root, destination.clone()).await;
++        let controller = async {
++            tokio::time::timeout(Duration::from_secs(10), destination.reached.notified())
++                .await
++                .expect("race barrier");
++            let pending = harness.pending().await;
++            destination.cancel(&key()).await;
++            destination.release.notify_one();
++            pending
++        };
++        let (receipt, pending) = tokio::join!(harness.dispatch(&mut driver), controller);
++        receipt.expect("race settles as observed");
++        let feedback = driver
++            .observe_pending(&pending, &harness.wire)
++            .await
++            .expect("cancel feedback");
++        assert_eq!(
++            feedback.binding.provider_intent,
++            ProviderEffectIntent::new(key(), harness.effect.payload_digest.clone())
++        );
++        assert_eq!(
++            feedback.binding.effect_intent_digest,
++            harness.effect.digest().expect("original effect identity")
++        );
++        assert_eq!(feedback.goal, expected_goal);
++        assert_eq!(feedback.cancellation, expected_cancel);
++        assert!(
++            feedback.absence_proof_digest.is_none(),
++            "cancel ACK alone grants no absence proof"
++        );
++        assert_eq!(oracle(&root).await.dispatch_contacts, 1);
++    }
++}
++
++#[tokio::test]
++async fn act1_unknown_without_lookup_survives_reopen_without_resending() {
++    let temp = tempfile::tempdir().expect("root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::AckLost).await;
++    let harness = Harness::create(&root, wire()).await;
++    let mut original = driver(&root, destination.clone()).await;
++    let first = harness
++        .dispatch(&mut original)
++        .await
++        .expect("lost acknowledgement");
++    assert_eq!(
++        first.observation,
++        Some(TaskFlowStepObservation::Indeterminate)
++    );
++    harness.store.close().await;
++    // Closing SQLite does not release FinalUse's exclusive authority lock.
++    drop(harness);
++    drop(original);
++    let reopened = Harness::reopen(&root, wire()).await;
++    let mut unavailable = driver(
++        &root,
++        destination
++            .clone()
++            .with_lookup(LookupAvailability::Unavailable),
++    )
++    .await;
++    let pending = reopened.pending().await;
++    for _ in 0..2 {
++        assert!(matches!(
++            unavailable.lookup(&pending, &reopened.wire).await,
++            AuthorizedProviderEffectLookup::Unresolved
++        ));
++    }
++    assert!(reopened.dispatch(&mut unavailable).await.is_err());
++    let truth = oracle(&root).await;
++    assert!(
++        truth.actual_business_success,
++        "truth is known only to the independent test oracle"
++    );
++    assert_eq!(truth.dispatch_contacts, 1);
++    assert_eq!(truth.duplicate_effects, 0);
++}
++
++#[tokio::test]
++async fn act1_payload_and_contract_drift_are_rejected_before_destination_contact() {
++    let temp = tempfile::tempdir().expect("root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::AckLost).await;
++    let harness = Harness::create(&root, wire()).await;
++    let mut driver = driver(&root, destination.clone()).await;
++    let mut drifted = harness.wire.clone();
++    drifted.push(b' ');
++    assert!(matches!(
++        harness.dispatch_bytes(&mut driver, &drifted).await,
++        Err(AuthorizedEffectError::BindingMismatch)
++    ));
++    assert_eq!(destination.contact_count("dispatch").await, 0);
++    let first = harness
++        .dispatch(&mut driver)
++        .await
++        .expect("same grant still usable for original bytes");
++    assert_eq!(
++        first.observation,
++        Some(TaskFlowStepObservation::Indeterminate)
++    );
++    let pending = harness.pending().await;
++    assert!(matches!(
++        driver.lookup(&pending, &drifted).await,
++        AuthorizedProviderEffectLookup::Unresolved
++    ));
++    let mut changed = contract();
++    changed.version += 1;
++    let changed_driver = GoalCheckedActionSkillDriver::new(
++        changed,
++        destination.clone(),
++        Observer::open(&root).await,
++    )
++    .expect("individually valid changed contract");
++    assert!(matches!(
++        changed_driver.lookup(&pending, &harness.wire).await,
++        AuthorizedProviderEffectLookup::Unresolved
++    ));
++    assert_eq!(destination.contact_count("lookup").await, 0);
++    assert_eq!(destination.contact_count("dispatch").await, 1);
++    assert!(
++        harness
++            .recover(driver.lookup(&pending, &harness.wire).await)
++            .await
++            .is_some()
++    );
++}
++
++#[tokio::test]
++async fn act1_unsupported_destination_is_rejected_before_any_business_effect() {
++    let temp = tempfile::tempdir().expect("root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::None)
++        .await
++        .with_lookup(LookupAvailability::Unsupported);
++    let harness = Harness::create(&root, wire()).await;
++    let mut driver = driver(&root, destination).await;
++    assert!(harness.dispatch(&mut driver).await.is_err());
++    let truth = oracle(&root).await;
++    assert_eq!(truth.dispatch_contacts, 0);
++    assert_eq!(truth.business_events, 0);
++}
++
++#[tokio::test]
++async fn act1_durable_rejection_proves_failure_and_fences_late_effects() {
++    let temp = tempfile::tempdir().expect("rejection root");
++    let root = temp.path().canonicalize().expect("canonical root");
++    let destination = Destination::open(&root, Fault::RejectBeforeStart).await;
++    let harness = Harness::create(&root, wire()).await;
++    let mut checked = driver(&root, destination.clone()).await;
++    let controller = async {
++        tokio::time::timeout(Duration::from_secs(10), destination.reached.notified())
++            .await
++            .expect("durable tombstone before provider reply");
++        let pending = harness.pending().await;
++        destination.release.notify_one();
++        pending
++    };
++    let (receipt, pending) = tokio::join!(harness.dispatch(&mut checked), controller);
++    assert_eq!(
++        receipt.expect("proven rejection").observation,
++        Some(TaskFlowStepObservation::Failed)
++    );
++    assert_eq!(
++        harness
++            .store
++            .taskflow_run(&harness.effect.run_id)
++            .await
++            .expect("read run")
++            .expect("run exists")
++            .state,
++        TaskFlowRunState::Failed
++    );
++    let feedback = checked
++        .observe_pending(&pending, &harness.wire)
++        .await
++        .expect("rejection proof");
++    assert_eq!(
++        feedback.binding.provider_intent,
++        ProviderEffectIntent::new(key(), harness.effect.payload_digest.clone())
++    );
++    assert_eq!(feedback.goal, ActionGoalStateV1::Unsatisfied);
++    let proof = feedback
++        .absence_proof_digest
++        .expect("independent late-commit exclusion proof");
++    assert!(
++        root.join("observations")
++            .join(format!("{}.json", proof.as_str()))
++            .exists()
++    );
++    harness.store.close().await;
++    drop(harness);
++    drop(checked);
++    destination.pool.close().await;
++
++    let reopened_target = Destination::open(&root, Fault::None).await;
++    let reopened = Harness::reopen(&root, wire()).await;
++    let mut recovered_driver = driver(&root, reopened_target.clone()).await;
++    // A late target worker and an owner replay both preserve the tombstone.
++    reopened_target.finish(&key()).await;
++    assert!(reopened.dispatch(&mut recovered_driver).await.is_err());
++    let durable = facts(&reopened_target.pool, &key())
++        .await
++        .expect("durable rejection row");
++    assert_eq!(durable.phase, "rejected_tombstone");
++    assert_eq!(durable.payload, reopened.effect.payload_digest.as_str());
++    let after = recovered_driver
++        .observe_pending(&pending, &reopened.wire)
++        .await
++        .expect("reopened proof");
++    assert_eq!(after.absence_proof_digest, Some(proof));
++    let truth = oracle(&root).await;
++    assert_eq!(truth.business_events, 0);
++    assert_eq!(truth.dispatch_contacts, 1);
++    assert_eq!(truth.duplicate_effects, 0);
++}
++
++#[tokio::test]
++async fn act1_sigkill_after_commit_reopens_and_reconciles_all_baselines() {
++    for baseline in BASELINES {
++        let temp = tempfile::tempdir().expect("crash root");
++        let root = temp.path().canonicalize().expect("canonical root");
++        let mut child = Command::new(std::env::current_exe().expect("test executable"))
++            .args([
++                "--ignored",
++                "--exact",
++                "action_skill_crash_worker",
++                "--nocapture",
++            ])
++            .env(ROOT_ENV, &root)
++            .stdin(Stdio::null())
++            .stdout(Stdio::null())
++            .spawn()
++            .expect("spawn fresh execution owner");
++        let deadline = Instant::now() + Duration::from_secs(30);
++        while !root.join("destination.committed").exists() {
++            if let Some(status) = child.try_wait().expect("observe owner process") {
++                panic!("owner exited before committed kill barrier: {status}");
++            }
++            if Instant::now() >= deadline {
++                let _ = child.kill();
++                let _ = child.wait();
++                panic!("owner did not reach committed kill barrier");
++            }
++            tokio::time::sleep(Duration::from_millis(10)).await;
++        }
++        // Unix Child::kill sends SIGKILL. No graceful close or Rust destructors.
++        child
++            .kill()
++            .expect("kill owner after real destination commit");
++        assert!(!child.wait().expect("wait killed owner").success());
++        let destination = Destination::open(&root, Fault::None).await;
++        let reopened = Harness::reopen(&root, wire()).await;
++        let mut driver = driver(&root, destination).await;
++        assert!(matches!(
++            reopened.dispatch(&mut driver).await,
++            Err(AuthorizedEffectError::RecoveryRequired)
++        ));
++        let original = reopened.pending().await;
++        assert_eq!(
++            original.intent_digest,
++            reopened.effect.digest().expect("original intent")
++        );
++        assert_eq!(original.payload_digest, reopened.effect.payload_digest);
++        let outcome = baseline.resume(&reopened, &mut driver).await;
++        let truth = oracle(&root).await;
++        assert!(outcome.reported_success);
++        assert!(truth.actual_business_success);
++        metric(baseline, "sigkill_after_commit", &outcome, &truth);
++    }
++}
++
++async fn wait_for_file(path: &Path) {
++    tokio::time::timeout(Duration::from_secs(10), async {
++        while !path.exists() {
++            tokio::time::sleep(Duration::from_millis(10)).await;
++        }
++    })
++    .await
++    .expect("child process reached input-read boundary");
++}
++
++#[test]
++#[ignore = "only parent ACT-1 tests launch the real input-reading process"]
++fn action_skill_input_worker() {
++    let root = std::env::var_os(ROOT_ENV).expect("parent root");
++    let root = Path::new(&root);
++    let key = ProviderEffectKey::parse(std::env::var(KEY_ENV).expect("original operation key"))
++        .expect("valid provider key");
++    std::fs::write(root.join("input-reader.ready"), b"stdin reader attached")
++        .expect("reader barrier");
++    let mut line = String::new();
++    std::io::stdin()
++        .lock()
++        .read_line(&mut line)
++        .expect("wait for explicit stdin");
++    assert_eq!(line, "continue\n");
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()
++        .expect("runtime");
++    runtime.block_on(async {
++        Destination::open(root, Fault::None)
++            .await
++            .finish(&key)
++            .await;
++    });
++}
++
++#[test]
++#[ignore = "only parent ACT-1 tests SIGKILL this process after committed mutation"]
++fn action_skill_crash_worker() {
++    let root = std::env::var_os(ROOT_ENV).expect("parent root");
++    let root = Path::new(&root);
++    let runtime = tokio::runtime::Builder::new_current_thread()
++        .enable_all()
++        .build()
++        .expect("runtime");
++    runtime.block_on(async {
++        let destination = Destination::open(root, Fault::CrashAfterCommit).await;
++        let harness = Harness::create(root, wire()).await;
++        let mut driver = driver(root, destination).await;
++        let _ = harness.dispatch(&mut driver).await;
++        panic!("parent must kill owner before dispatch can return");
++    });
++}
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/README.md b/codex-rs/hepta-automation/tests/action_skill_support/README.md
+new file mode 100644
+index 00000000..2b5e665b
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/README.md
+@@ -0,0 +1,82 @@
++# ACT-1 native conformance experiment
++
++This fixture invokes the real `AutomationStore::execute_authorized_taskflow_effect_async`
++path, with a real prepared/claimed TaskFlow step and signed FinalUse grant. The
++new `GoalCheckedActionSkillDriver` wraps the existing provider driver. No test
++calls a destination mutation as a replacement for the authorized dispatch.
++
++The independent SQLite destination stores three different things: job execution
++facts, append-only business events, and transport contacts. Its fault schedule
++controls real mutation boundaries and delivery. The goal observer reads a
++separate connection and retains complete evidence by content digest. The test
++oracle uses another connection and directly queries business rows, independent
++of fault labels, provider ACKs, execution exit codes and observer judgments.
++
++## Matrix
++
++Each of the three baseline organizations runs these cases once with the same
++request, destination, observer, authorization, fence, limits and oracle:
++
++| Scenario | Injected boundary | Expected actual events | Reported success |
++| --- | --- | ---: | --- |
++| no_fault | Normal transaction and response | 2 | yes |
++| committed_ack_lost | Commit completes; dispatch returns unknown | 2 | after original-key lookup |
++| waiting_for_input | Real child process blocks on stdin | 0 | no |
++| partial_success | First requested event commits; job returns exit 0 | 1 | no |
++| rejected_after_partial_effect | Target reports rejected after first mutation | 1 | no |
++| cancel_before_commit | Cancellation writer wins before mutation | 0 | no |
++| commit_before_cancel | Mutation commits before cancel request | 2 | yes; cancel remains recorded |
++| exit_zero_without_effect | Job returns exit 0; no business events | 0 | no |
++| lookup_unavailable | Commit and lost ACK; status service unavailable | 2 | no; UNKNOWN retained |
++| sigkill_after_commit | Parent SIGKILLs execution owner before ACK | 2 | after reopen and original-key lookup |
++
++The target's completed ACK describes its job invocation lifecycle. The requested
++business goal separately requires the exact ordered event set. This deliberately
++exercises the difference without redefining a real provider contract.
++
++The three baseline implementations have distinct control organization: an
++explicit deterministic state machine, a parsed handwritten macro with lookup and
++assert opcodes, and a flat primitive verification loop. All use the durable
++TaskFlow owner, invoke once, and allow at most two lookup calls. These are
++**single-effect conformance baselines**. They do not establish a speed advantage,
++learned hierarchy, neural predictor benefit or generalization to held-out skill
++compositions. Equivalent behavior here is expected.
++
++`ACT1_METRIC` lines contain one JSON object per matrix run. Reported success is
++checked against the independent oracle; metrics include false success, actual
++business success, duplicate effects, UNKNOWN retention, physical dispatch
++contacts, recovery queries and the common dispatch/lookup budget. The suite
++produces 30 matrix rows, not 30 statistically independent task samples.
++
++Additional tests complete a real waiting stdin worker under its original
++operation, finish only a missing partial subeffect, reject changed wire bytes
++before target contact, reject recovery under a changed contract, reject an
++unsupported target before sending, and preserve UNKNOWN across reopen when
++status lookup is unavailable. Recovery does not allocate another dispatch.
++
++## Scope and limits
++
++- The target is a controlled local SQLite service, not an HTTP production service.
++- The subprocess tests are Unix-only and use the native test executable.
++- No universal exactly-once property is claimed. The controlled target has its own
++  durable key and dedupe transaction; an opaque target remains unresolved.
++- Per-call limits are 16 KiB wire bytes, 30 seconds provider timeout and 5 seconds
++  observer timeout. The harness enforces one dispatch and two lookups per run.
++  This does not claim a new durable global budget scheduler.
++- A real pipe is used for waiting input. Cross-session prompt/reader handoff and
++  arbitrary stale callbacks are not qualified by this fixture.
++- Reopen reuses the same TaskFlow fence. New-owner epoch transitions and
++  competing TaskFlow writers are covered by existing owner/fencing suites, not
++  newly proved here.
++- Cancellation is a destination-domain request, not the TaskFlow Cancel command.
++  Cancellation requests and effects coexist as separate facts. There is no
++  implicit rollback or compensating action.
++
++A separate positive failure test seals a rejection tombstone in the destination's
++writer transaction after checking zero business events. The observer supplies an
++absence proof only for that original key/payload and immutable tombstone, allowing
++normal `Failed` settlement. Reopen, a late target worker and an owner replay must
++leave the tombstone intact and business effects absent. This test is separate
++from the 30-row baseline matrix.
++
++Native compilation and execution are required before making result claims.
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/baselines.rs b/codex-rs/hepta-automation/tests/action_skill_support/baselines.rs
+new file mode 100644
+index 00000000..10eb57ce
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/baselines.rs
+@@ -0,0 +1,226 @@
++//! Three explicit organizations of the same bounded single-effect task.
++//! This is conformance coverage, not a performance or generalization ranking.
++
++use std::path::Path;
++
++use codex_hepta_automation::AuthorizedProviderEffectLookup;
++use codex_hepta_automation::TaskFlowReconcileOutcome;
++use codex_hepta_automation::TaskFlowStepObservation;
++use codex_hepta_automation::TaskFlowStepReceipt;
++use serde::Serialize;
++
++use super::destination::Desired;
++use super::destination::open_observation_pool;
++use super::harness::Harness;
++use super::harness::key;
++use super::observer::Driver;
++
++const LOOKUP_BUDGET: usize = 2;
++
++#[derive(Clone, Copy, Debug)]
++pub enum Baseline {
++    DurableWorkflow,
++    HandwrittenDsl,
++    FlatSkills,
++}
++
++pub const BASELINES: [Baseline; 3] = [
++    Baseline::DurableWorkflow,
++    Baseline::HandwrittenDsl,
++    Baseline::FlatSkills,
++];
++
++#[derive(Debug, Default)]
++pub struct Outcome {
++    pub reported_success: bool,
++    pub lookup_calls: usize,
++}
++
++fn success(receipt: &TaskFlowStepReceipt) -> bool {
++    receipt.observation == Some(TaskFlowStepObservation::Succeeded)
++        || receipt.final_outcome == Some(TaskFlowReconcileOutcome::Succeeded)
++}
++
++impl Baseline {
++    pub fn name(self) -> &'static str {
++        match self {
++            Self::DurableWorkflow => "deterministic_durable_workflow",
++            Self::HandwrittenDsl => "handwritten_dsl_macro",
++            Self::FlatSkills => "flat_skill_library",
++        }
++    }
++
++    pub async fn run(self, harness: &Harness, driver: &mut Driver) -> Outcome {
++        let receipt = harness
++            .dispatch(driver)
++            .await
++            .expect("authorized first dispatch");
++        if success(&receipt) {
++            return Outcome {
++                reported_success: true,
++                lookup_calls: 0,
++            };
++        }
++        self.resume(harness, driver).await
++    }
++
++    pub async fn resume(self, harness: &Harness, driver: &mut Driver) -> Outcome {
++        let pending = harness.pending().await;
++        let mut outcome = Outcome::default();
++        match self {
++            Self::DurableWorkflow => {
++                // Explicit durable-workflow states. Recovery always loads the
++                // owner's pending identity; it has no dispatch transition.
++                enum State {
++                    Reconcile,
++                    Verify,
++                    Stop,
++                }
++                let mut state = State::Reconcile;
++                let mut receipt = None;
++                loop {
++                    state = match state {
++                        State::Reconcile => {
++                            if outcome.lookup_calls == LOOKUP_BUDGET {
++                                State::Stop
++                            } else {
++                                outcome.lookup_calls += 1;
++                                receipt = harness
++                                    .recover(driver.lookup(&pending, &harness.wire).await)
++                                    .await;
++                                State::Verify
++                            }
++                        }
++                        State::Verify => {
++                            outcome.reported_success = receipt.as_ref().is_some_and(success);
++                            if outcome.reported_success {
++                                State::Stop
++                            } else {
++                                State::Reconcile
++                            }
++                        }
++                        State::Stop => break,
++                    };
++                }
++            }
++            Self::HandwrittenDsl => {
++                // The macro is parsed and interpreted, not renamed workflow
++                // states. Each opcode uses the same driver and effect owner.
++                let macro_source = "lookup\nassert_goal\nlookup\nassert_goal\nhalt";
++                let mut receipt = None;
++                for opcode in macro_source.lines() {
++                    match opcode {
++                        "lookup" => {
++                            assert!(outcome.lookup_calls < LOOKUP_BUDGET);
++                            outcome.lookup_calls += 1;
++                            receipt = harness
++                                .recover(driver.lookup(&pending, &harness.wire).await)
++                                .await;
++                        }
++                        "assert_goal" => {
++                            outcome.reported_success = receipt.as_ref().is_some_and(success);
++                            if outcome.reported_success {
++                                break;
++                            }
++                        }
++                        "halt" => break,
++                        _ => panic!("invalid hand-authored macro opcode"),
++                    }
++                }
++            }
++            Self::FlatSkills => {
++                // No parent option or macro: a flat list of bounded primitive
++                // verification skills is selected by its returned observation.
++                for _ in 0..LOOKUP_BUDGET {
++                    outcome.lookup_calls += 1;
++                    match driver.lookup(&pending, &harness.wire).await {
++                        AuthorizedProviderEffectLookup::Observed(receipt) => {
++                            let recovered = harness
++                                .recover(AuthorizedProviderEffectLookup::Observed(receipt))
++                                .await;
++                            outcome.reported_success = recovered.as_ref().is_some_and(success);
++                            if outcome.reported_success {
++                                break;
++                            }
++                        }
++                        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
++                        | AuthorizedProviderEffectLookup::Unresolved => {}
++                    }
++                }
++            }
++        }
++        outcome
++    }
++}
++
++#[derive(Debug, Serialize)]
++pub struct Oracle {
++    pub actual_business_success: bool,
++    pub business_events: usize,
++    pub duplicate_effects: usize,
++    pub dispatch_contacts: i64,
++    pub lookup_contacts: i64,
++}
++
++pub async fn oracle(root: &Path) -> Oracle {
++    // Separate connection and query path. This oracle never reads the
++    // provider ACK, execution phase, goal observer, or injected fault plan.
++    let pool = open_observation_pool(&root.join("destination.sqlite3")).await;
++    let rows: Vec<String> = sqlx::query_scalar(
++        "SELECT value FROM business_events WHERE effect_key = ? ORDER BY ordinal, event_id",
++    )
++    .bind(key().as_str())
++    .fetch_all(&pool)
++    .await
++    .expect("independent oracle rows");
++    let duplicates: i64 = sqlx::query_scalar(
++        "SELECT COALESCE(SUM(n - 1), 0) FROM
++            (SELECT COUNT(*) n FROM business_events GROUP BY effect_key, ordinal)",
++    )
++    .fetch_one(&pool)
++    .await
++    .expect("independent duplicate count");
++    let dispatch_contacts =
++        sqlx::query_scalar("SELECT COUNT(*) FROM contacts WHERE kind = 'dispatch'")
++            .fetch_one(&pool)
++            .await
++            .expect("actual dispatch contacts");
++    let lookup_contacts = sqlx::query_scalar("SELECT COUNT(*) FROM contacts WHERE kind = 'lookup'")
++        .fetch_one(&pool)
++        .await
++        .expect("actual recovery contacts");
++    pool.close().await;
++    Oracle {
++        actual_business_success: rows == Desired::standard().rows,
++        business_events: rows.len(),
++        duplicate_effects: usize::try_from(duplicates).expect("nonnegative duplicates"),
++        dispatch_contacts,
++        lookup_contacts,
++    }
++}
++
++pub fn metric(baseline: Baseline, scenario: &str, outcome: &Outcome, truth: &Oracle) {
++    assert!(
++        !outcome.reported_success || truth.actual_business_success,
++        "false business success"
++    );
++    assert_eq!(truth.duplicate_effects, 0);
++    assert_eq!(truth.dispatch_contacts, 1);
++    assert!(outcome.lookup_calls <= LOOKUP_BUDGET);
++    assert_eq!(
++        truth.lookup_contacts,
++        i64::try_from(outcome.lookup_calls).expect("bounded lookup count")
++    );
++    eprintln!(
++        "ACT1_METRIC {}",
++        serde_json::json!({
++            "baseline":baseline.name(), "scenario":scenario,
++            "evaluation":"single_effect_conformance", "oracle":truth,
++            "reported_success":outcome.reported_success,
++            "false_success":outcome.reported_success && !truth.actual_business_success,
++            "unknown_retained":!outcome.reported_success,
++            "recovery_queries":outcome.lookup_calls,
++            "dispatch_budget":1, "lookup_budget":LOOKUP_BUDGET,
++        })
++    );
++}
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/destination.rs b/codex-rs/hepta-automation/tests/action_skill_support/destination.rs
+new file mode 100644
+index 00000000..118c955c
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/destination.rs
+@@ -0,0 +1,501 @@
++//! A separate durable destination. Faults interrupt real SQLite effects and
++//! receipt delivery; neither the goal observer nor the oracle sees `Fault`.
++
++use std::io::Write;
++use std::path::Path;
++use std::path::PathBuf;
++use std::process::Child;
++use std::process::Command;
++use std::process::Stdio;
++use std::sync::Arc;
++use std::sync::Mutex;
++
++use codex_hepta_contracts::ProviderEffectAck;
++use codex_hepta_contracts::ProviderEffectAckStatus;
++use codex_hepta_contracts::ProviderEffectAdapter;
++use codex_hepta_contracts::ProviderEffectDispatch;
++use codex_hepta_contracts::ProviderEffectFuture;
++use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
++use codex_hepta_contracts::ProviderEffectIntent;
++use codex_hepta_contracts::ProviderEffectKey;
++use codex_hepta_contracts::ProviderEffectLookup;
++use codex_hepta_contracts::Sha256Digest;
++use codex_state::SqliteConfig;
++use codex_utils_absolute_path::AbsolutePathBuf;
++use serde::Deserialize;
++use serde::Serialize;
++use sqlx::Row;
++use sqlx::SqlitePool;
++use tokio::sync::Notify;
++
++#[derive(Clone, Copy, Debug)]
++pub enum Fault {
++    None,
++    AckLost,
++    WaitingInput,
++    Partial,
++    RejectedPartial,
++    RejectBeforeStart,
++    ExitZero,
++    PauseBeforeCommit,
++    PauseAfterCommit,
++    CrashAfterCommit,
++}
++
++#[derive(Clone, Copy)]
++pub enum LookupAvailability {
++    Available,
++    Unavailable,
++    Unsupported,
++}
++
++#[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
++pub struct Desired {
++    pub rows: Vec<String>,
++}
++
++impl Desired {
++    pub fn standard() -> Self {
++        Self {
++            rows: vec!["invoice:42".to_string(), "archive:42".to_string()],
++        }
++    }
++}
++
++#[derive(Deserialize)]
++struct Envelope {
++    body: Vec<u8>,
++}
++
++/// Only destination-owned facts; no injected-fault or expected-result field.
++#[derive(Debug, Serialize)]
++pub struct JobFacts {
++    pub payload: String,
++    pub desired: Desired,
++    pub phase: String,
++    pub exit_code: Option<i64>,
++    pub cancel_received: bool,
++    pub rows: Vec<String>,
++}
++
++#[derive(Clone)]
++pub struct Destination {
++    pub path: PathBuf,
++    pub pool: SqlitePool,
++    pub reached: Arc<Notify>,
++    pub release: Arc<Notify>,
++    fault: Fault,
++    lookup: LookupAvailability,
++    input_worker: Arc<Mutex<Option<InputWorker>>>,
++}
++
++struct InputWorker(Child);
++
++impl Drop for InputWorker {
++    fn drop(&mut self) {
++        let _ = self.0.kill();
++        let _ = self.0.wait();
++    }
++}
++
++pub async fn open_pool(path: &Path) -> SqlitePool {
++    sqlite_config(path)
++        .open_durable_evidence_pool(path)
++        .await
++        .expect("open destination SQLite")
++}
++
++pub async fn open_observation_pool(path: &Path) -> SqlitePool {
++    sqlite_config(path)
++        .open_durable_observation_pool(path)
++        .await
++        .expect("open existing destination for read-only observation")
++}
++
++fn sqlite_config(path: &Path) -> SqliteConfig {
++    let root = path.parent().expect("destination parent directory");
++    let sqlite_home =
++        AbsolutePathBuf::try_from(root.to_path_buf()).expect("absolute destination directory");
++    SqliteConfig::from_sqlite_home(sqlite_home)
++}
++
++impl Destination {
++    pub async fn open(root: &Path, fault: Fault) -> Self {
++        let path = root.join("destination.sqlite3");
++        let pool = open_pool(&path).await;
++        sqlx::query(
++            "CREATE TABLE IF NOT EXISTS jobs (
++                effect_key TEXT PRIMARY KEY, payload TEXT NOT NULL,
++                body BLOB NOT NULL, phase TEXT NOT NULL,
++                exit_code INTEGER, cancel_received INTEGER NOT NULL DEFAULT 0)",
++        )
++        .execute(&pool)
++        .await
++        .expect("create jobs");
++        sqlx::query(
++            "CREATE TABLE IF NOT EXISTS business_events (
++                event_id INTEGER PRIMARY KEY AUTOINCREMENT,
++                effect_key TEXT NOT NULL, ordinal INTEGER NOT NULL, value TEXT NOT NULL)",
++        )
++        .execute(&pool)
++        .await
++        .expect("create independent business ledger");
++        sqlx::query(
++            "CREATE TABLE IF NOT EXISTS contacts (
++                contact_id INTEGER PRIMARY KEY AUTOINCREMENT,
++                effect_key TEXT NOT NULL, kind TEXT NOT NULL)",
++        )
++        .execute(&pool)
++        .await
++        .expect("create transport history");
++        Self {
++            path,
++            pool,
++            reached: Arc::new(Notify::new()),
++            release: Arc::new(Notify::new()),
++            fault,
++            lookup: LookupAvailability::Available,
++            input_worker: Arc::new(Mutex::new(None)),
++        }
++    }
++
++    pub fn with_lookup(mut self, lookup: LookupAvailability) -> Self {
++        self.lookup = lookup;
++        self
++    }
++
++    async fn contact(&self, key: &ProviderEffectKey, kind: &str) {
++        sqlx::query("INSERT INTO contacts(effect_key, kind) VALUES (?, ?)")
++            .bind(key.as_str())
++            .bind(kind)
++            .execute(&self.pool)
++            .await
++            .expect("persist target contact");
++    }
++
++    pub async fn contact_count(&self, kind: &str) -> i64 {
++        sqlx::query_scalar("SELECT COUNT(*) FROM contacts WHERE kind = ?")
++            .bind(kind)
++            .fetch_one(&self.pool)
++            .await
++            .expect("transport contact count")
++    }
++
++    pub async fn cancel(&self, key: &ProviderEffectKey) {
++        self.contact(key, "cancel").await;
++        // Cancellation records a request; it cannot undo committed mutations.
++        sqlx::query("UPDATE jobs SET cancel_received = 1 WHERE effect_key = ?")
++            .bind(key.as_str())
++            .execute(&self.pool)
++            .await
++            .expect("record cancellation request");
++    }
++
++    pub fn input_process_waits(&self) -> bool {
++        self.input_worker
++            .lock()
++            .expect("input worker lock")
++            .as_mut()
++            .expect("spawned input worker")
++            .0
++            .try_wait()
++            .expect("observe waiting process")
++            .is_none()
++    }
++
++    pub fn provide_input(&self) {
++        let mut worker = self
++            .input_worker
++            .lock()
++            .expect("input worker lock")
++            .take()
++            .expect("input worker");
++        worker
++            .0
++            .stdin
++            .take()
++            .expect("input pipe")
++            .write_all(b"continue\n")
++            .expect("deliver explicit input");
++        assert!(worker.0.wait().expect("wait input worker").success());
++    }
++
++    pub async fn finish(&self, key: &ProviderEffectKey) {
++        self.contact(key, "resume").await;
++        self.apply(key, usize::MAX, "completed").await;
++    }
++
++    async fn reject(&self, key: &ProviderEffectKey) {
++        let mut tx = self.pool.begin().await.expect("begin rejection fence");
++        sqlx::query("UPDATE jobs SET phase = phase WHERE effect_key = ?")
++            .bind(key.as_str())
++            .execute(&mut *tx)
++            .await
++            .expect("same destination writer fence");
++        let effects: i64 =
++            sqlx::query_scalar("SELECT COUNT(*) FROM business_events WHERE effect_key = ?")
++                .bind(key.as_str())
++                .fetch_one(&mut *tx)
++                .await
++                .expect("check effects under rejection fence");
++        if effects == 0 {
++            // The existing primary-key row retains its original payload. All
++            // apply paths check this permanent tombstone under the same fence.
++            sqlx::query("UPDATE jobs SET phase = 'rejected_tombstone' WHERE effect_key = ?")
++                .bind(key.as_str())
++                .execute(&mut *tx)
++                .await
++                .expect("persist rejection tombstone");
++        }
++        tx.commit()
++            .await
++            .expect("commit rejection and late-commit exclusion");
++    }
++
++    async fn apply(&self, key: &ProviderEffectKey, count: usize, phase: &str) {
++        let mut tx = self.pool.begin().await.expect("begin destination effect");
++        // This write acquires the same SQLite writer fence used by cancel.
++        sqlx::query("UPDATE jobs SET phase = phase WHERE effect_key = ?")
++            .bind(key.as_str())
++            .execute(&mut *tx)
++            .await
++            .expect("destination writer fence");
++        let job = sqlx::query("SELECT body, phase, cancel_received FROM jobs WHERE effect_key = ?")
++            .bind(key.as_str())
++            .fetch_one(&mut *tx)
++            .await
++            .expect("accepted destination job");
++        let current: String = job.get("phase");
++        if matches!(
++            current.as_str(),
++            "completed" | "cancelled" | "rejected_tombstone"
++        ) {
++            tx.commit().await.expect("deduplicated no-op");
++            return;
++        }
++        if job.get::<i64, _>("cancel_received") == 1 {
++            sqlx::query("UPDATE jobs SET phase = 'cancelled' WHERE effect_key = ?")
++                .bind(key.as_str())
++                .execute(&mut *tx)
++                .await
++                .expect("cancel before mutation");
++        } else {
++            let desired: Desired = serde_json::from_slice(&job.get::<Vec<u8>, _>("body"))
++                .expect("stored domain request");
++            for (ordinal, value) in desired.rows.iter().enumerate().take(count) {
++                let present: i64 = sqlx::query_scalar(
++                    "SELECT COUNT(*) FROM business_events WHERE effect_key = ? AND ordinal = ?",
++                )
++                .bind(key.as_str())
++                .bind(i64::try_from(ordinal).expect("small ordinal"))
++                .fetch_one(&mut *tx)
++                .await
++                .expect("destination dedupe read");
++                if present == 0 {
++                    sqlx::query(
++                        "INSERT INTO business_events(effect_key, ordinal, value) VALUES (?, ?, ?)",
++                    )
++                    .bind(key.as_str())
++                    .bind(i64::try_from(ordinal).expect("small ordinal"))
++                    .bind(value)
++                    .execute(&mut *tx)
++                    .await
++                    .expect("actual domain mutation");
++                }
++            }
++            sqlx::query("UPDATE jobs SET phase = ?, exit_code = 0 WHERE effect_key = ?")
++                .bind(phase)
++                .bind(key.as_str())
++                .execute(&mut *tx)
++                .await
++                .expect("worker process completion");
++        }
++        tx.commit().await.expect("commit destination-owned facts");
++    }
++
++    async fn receive(&self, intent: &ProviderEffectIntent, wire: &[u8]) -> ProviderEffectDispatch {
++        self.contact(&intent.key, "dispatch").await;
++        if intent.payload_sha256 != Sha256Digest::for_bytes(wire) {
++            return ProviderEffectDispatch::NotDispatched {
++                reason_code: "payload_mismatch".to_string(),
++            };
++        }
++        let envelope: Envelope = serde_json::from_slice(wire).expect("validated skill envelope");
++        let _: Desired = serde_json::from_slice(&envelope.body).expect("domain request");
++        let inserted = sqlx::query(
++            "INSERT OR IGNORE INTO jobs(effect_key, payload, body, phase) VALUES (?, ?, ?, 'accepted')",
++        )
++        .bind(intent.key.as_str())
++        .bind(intent.payload_sha256.as_str())
++        .bind(envelope.body)
++        .execute(&self.pool)
++        .await
++        .expect("durable destination admission")
++        .rows_affected();
++        let accepted_facts = facts(&self.pool, &intent.key)
++            .await
++            .expect("accepted facts");
++        if accepted_facts.payload != intent.payload_sha256.as_str() {
++            return ProviderEffectDispatch::Unknown;
++        }
++        if inserted == 0 {
++            return ProviderEffectDispatch::Ack(ack(intent, &accepted_facts.phase));
++        }
++        if matches!(self.fault, Fault::PauseBeforeCommit) {
++            self.reached.notify_one();
++            self.release.notified().await;
++        }
++        match self.fault {
++            Fault::WaitingInput => {
++                sqlx::query("UPDATE jobs SET phase = 'waiting_input' WHERE effect_key = ?")
++                    .bind(intent.key.as_str())
++                    .execute(&self.pool)
++                    .await
++                    .expect("worker waits for input");
++                let child = Command::new(std::env::current_exe().expect("test executable"))
++                    .args([
++                        "--ignored",
++                        "--exact",
++                        "action_skill_input_worker",
++                        "--nocapture",
++                    ])
++                    .env(
++                        super::ROOT_ENV,
++                        self.path.parent().expect("destination directory"),
++                    )
++                    .env(super::KEY_ENV, intent.key.as_str())
++                    .stdin(Stdio::piped())
++                    .stdout(Stdio::null())
++                    .spawn()
++                    .expect("spawn real process awaiting input");
++                *self.input_worker.lock().expect("input worker lock") = Some(InputWorker(child));
++            }
++            Fault::Partial => self.apply(&intent.key, 1, "partial").await,
++            Fault::RejectedPartial => self.apply(&intent.key, 1, "rejected_partial").await,
++            Fault::RejectBeforeStart => {
++                self.reject(&intent.key).await;
++                self.reached.notify_one();
++                self.release.notified().await;
++            }
++            Fault::ExitZero => self.apply(&intent.key, 0, "exited").await,
++            Fault::None
++            | Fault::AckLost
++            | Fault::PauseBeforeCommit
++            | Fault::PauseAfterCommit
++            | Fault::CrashAfterCommit => {
++                self.apply(&intent.key, usize::MAX, "completed").await;
++            }
++        }
++        if matches!(self.fault, Fault::CrashAfterCommit) {
++            let marker = self.path.with_extension("committed");
++            std::fs::write(marker, b"destination transaction committed").expect("kill barrier");
++            std::future::pending::<()>().await;
++        }
++        if matches!(self.fault, Fault::PauseAfterCommit) {
++            self.reached.notify_one();
++            self.release.notified().await;
++        }
++        if matches!(self.fault, Fault::AckLost) {
++            return ProviderEffectDispatch::Unknown;
++        }
++        let final_facts = facts(&self.pool, &intent.key)
++            .await
++            .expect("final destination facts");
++        ProviderEffectDispatch::Ack(ack(intent, &final_facts.phase))
++    }
++}
++
++pub async fn facts(pool: &SqlitePool, key: &ProviderEffectKey) -> Option<JobFacts> {
++    let job = sqlx::query(
++        "SELECT payload, body, phase, exit_code, cancel_received FROM jobs WHERE effect_key = ?",
++    )
++    .bind(key.as_str())
++    .fetch_optional(pool)
++    .await
++    .expect("read independent target facts")?;
++    let rows = sqlx::query_scalar(
++        "SELECT value FROM business_events WHERE effect_key = ? ORDER BY ordinal, event_id",
++    )
++    .bind(key.as_str())
++    .fetch_all(pool)
++    .await
++    .expect("read actual business effects");
++    Some(JobFacts {
++        payload: job.get("payload"),
++        desired: serde_json::from_slice(&job.get::<Vec<u8>, _>("body")).expect("desired state"),
++        phase: job.get("phase"),
++        exit_code: job.get("exit_code"),
++        cancel_received: job.get::<i64, _>("cancel_received") == 1,
++        rows,
++    })
++}
++
++fn ack(intent: &ProviderEffectIntent, phase: &str) -> ProviderEffectAck {
++    // The destination acknowledges job execution. Goal verification is separate.
++    let status = match phase {
++        "completed" | "partial" | "exited" => ProviderEffectAckStatus::Completed,
++        "rejected_partial" | "rejected_tombstone" => ProviderEffectAckStatus::Rejected,
++        _ => ProviderEffectAckStatus::Accepted,
++    };
++    ProviderEffectAck::new(
++        intent.key.clone(),
++        intent.payload_sha256.clone(),
++        Sha256Digest::for_bytes(intent.key.as_str().as_bytes()),
++        status,
++    )
++}
++
++impl ProviderEffectAdapter for Destination {
++    fn capability(&self) -> ProviderEffectIdempotencyCapability {
++        match self.lookup {
++            LookupAvailability::Available | LookupAvailability::Unavailable => {
++                ProviderEffectIdempotencyCapability::KeyAndStatusLookup
++            }
++            LookupAvailability::Unsupported => ProviderEffectIdempotencyCapability::Unsupported,
++        }
++    }
++
++    fn dispatch<'a>(
++        &'a self,
++        _intent: &'a ProviderEffectIntent,
++    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
++        Box::pin(async {
++            ProviderEffectDispatch::NotDispatched {
++                reason_code: "exact_payload_required".to_string(),
++            }
++        })
++    }
++
++    fn dispatch_with_payload<'a>(
++        &'a self,
++        intent: &'a ProviderEffectIntent,
++        wire: &'a [u8],
++    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
++        Box::pin(self.receive(intent, wire))
++    }
++
++    fn lookup<'a>(
++        &'a self,
++        _key: &'a ProviderEffectKey,
++    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
++        Box::pin(async { ProviderEffectLookup::Unknown })
++    }
++
++    fn lookup_for_intent<'a>(
++        &'a self,
++        intent: &'a ProviderEffectIntent,
++    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
++        Box::pin(async move {
++            self.contact(&intent.key, "lookup").await;
++            if !matches!(self.lookup, LookupAvailability::Available) {
++                return ProviderEffectLookup::Unknown;
++            }
++            match facts(&self.pool, &intent.key).await {
++                Some(facts) if facts.payload == intent.payload_sha256.as_str() => {
++                    ProviderEffectLookup::Ack(ack(intent, &facts.phase))
++                }
++                Some(_) | None => ProviderEffectLookup::Unknown,
++            }
++        })
++    }
++}
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/harness.rs b/codex-rs/hepta-automation/tests/action_skill_support/harness.rs
+new file mode 100644
+index 00000000..5dd0d991
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/harness.rs
+@@ -0,0 +1,321 @@
++//! Fleet, FinalUse and durable TaskFlow fixtures, following authorized_effect.rs.
++
++use std::collections::BTreeSet;
++use std::os::unix::fs::PermissionsExt;
++use std::path::Path;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::Ordering;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use codex_hepta_automation::AsyncAuthorizedEffectDriver;
++use codex_hepta_automation::AuthorizedEffectDispatchRequest;
++use codex_hepta_automation::AuthorizedEffectError;
++use codex_hepta_automation::AuthorizedEffectIntent;
++use codex_hepta_automation::AuthorizedEffectPending;
++use codex_hepta_automation::AuthorizedEffectRecovery;
++use codex_hepta_automation::AuthorizedEffectRecoveryResult;
++use codex_hepta_automation::AuthorizedProviderEffectLookup;
++use codex_hepta_automation::AutomationStore;
++use codex_hepta_automation::TaskFlowCommand;
++use codex_hepta_automation::TaskFlowDefinition;
++use codex_hepta_automation::TaskFlowEdgeSpec;
++use codex_hepta_automation::TaskFlowFence;
++use codex_hepta_automation::TaskFlowNodeKind;
++use codex_hepta_automation::TaskFlowNodeSpec;
++use codex_hepta_automation::TaskFlowStepReceipt;
++use codex_hepta_automation::TaskFlowTransition;
++use codex_hepta_contracts::AgentId;
++use codex_hepta_contracts::FinalUseAuthority;
++use codex_hepta_contracts::FinalUseBinding;
++use codex_hepta_contracts::FinalUseGrant;
++use codex_hepta_contracts::FinalUseRevocations;
++use codex_hepta_contracts::ProviderEffectKey;
++use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_fleet::AgentManifest;
++use codex_hepta_fleet::FleetRegistry;
++use codex_hepta_fleet::ResourceBudget;
++use codex_hepta_fleet::WorkspaceBinding;
++use codex_hepta_paths::HeptaAgentLayout;
++use codex_hepta_paths::HeptaFleetRoot;
++use ed25519_dalek::Signer;
++use ed25519_dalek::SigningKey;
++use sha2::Digest;
++use sha2::Sha256;
++
++pub const DESTINATION: &str = "provider:act1";
++const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
++static NONCE: AtomicU64 = AtomicU64::new(1);
++
++pub struct Harness {
++    pub store: AutomationStore,
++    pub effect: AuthorizedEffectIntent,
++    pub wire: Vec<u8>,
++    pub fence: TaskFlowFence,
++    pub binding: FinalUseBinding,
++    pub authority: FinalUseAuthority,
++    pub grant: SignedFinalUseGrant,
++}
++
++pub fn layout(root: &Path) -> HeptaAgentLayout {
++    HeptaFleetRoot::parse(root.join("fleet"))
++        .expect("fleet root")
++        .layout()
++        .agent(&AgentId::parse(AGENT_ID).expect("agent id"))
++}
++
++pub fn key() -> ProviderEffectKey {
++    ProviderEffectKey::for_logical_effect(DESTINATION, "taskflow:act1-run:effect")
++        .expect("stable original operation key")
++}
++
++impl Harness {
++    pub async fn create(root: &Path, wire: Vec<u8>) -> Self {
++        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
++        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize fleet");
++        let workspace = root.join("workspace");
++        std::fs::create_dir(&workspace).expect("workspace");
++        registry
++            .register(
++                AgentManifest::new(
++                    AgentId::parse(AGENT_ID).expect("agent id"),
++                    WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
++                    ResourceBudget::local_default(),
++                )
++                .expect("manifest"),
++            )
++            .expect("register agent");
++        let harness = Self::reopen(root, wire).await;
++        let definition = TaskFlowDefinition::new(
++            "act1",
++            1,
++            "effect",
++            vec![
++                TaskFlowNodeSpec::effect("effect", "act1.write", "act1-write-v1"),
++                TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
++                TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
++            ],
++            vec![
++                TaskFlowEdgeSpec::new("effect", "success"),
++                TaskFlowEdgeSpec::new("effect", "failure"),
++            ],
++            vec!["act1.write".to_string()],
++            Sha256Digest::for_bytes(b"act1-policy"),
++        )
++        .expect("definition");
++        harness
++            .store
++            .register_taskflow_definition(&definition, &harness.fence, 10)
++            .await
++            .expect("register definition");
++        harness
++            .store
++            .create_taskflow_run(
++                &harness.effect.run_id,
++                &definition.workflow_id,
++                definition.version,
++                definition.definition_digest(),
++                "thread-act1",
++                10,
++            )
++            .await
++            .expect("create run");
++        let claimed = harness
++            .store
++            .claim_taskflow_run(&harness.effect.run_id, &harness.fence, 20, 1_000)
++            .await
++            .expect("claim run");
++        harness
++            .store
++            .apply_taskflow_command(
++                &TaskFlowCommand::new(
++                    &harness.effect.run_id,
++                    "act1-start",
++                    harness.fence.clone(),
++                    claimed.revision,
++                    TaskFlowTransition::Start,
++                    21,
++                )
++                .expect("start command"),
++            )
++            .await
++            .expect("start run");
++        let digest = harness.effect.digest().expect("effect digest");
++        harness
++            .store
++            .prepare_taskflow_step(
++                &harness.effect.run_id,
++                &harness.effect.step_id,
++                harness.effect.attempt,
++                &harness.fence,
++                &digest,
++                &harness.effect.payload_digest,
++                "act1-prepare",
++                22,
++            )
++            .await
++            .expect("durably prepare step");
++        harness
++            .store
++            .claim_taskflow_step(
++                &harness.effect.run_id,
++                &harness.effect.step_id,
++                harness.effect.attempt,
++                &harness.fence,
++                &digest,
++                &harness.effect.payload_digest,
++                "act1-claim",
++                23,
++            )
++            .await
++            .expect("durably claim step");
++        harness
++    }
++
++    pub async fn reopen(root: &Path, wire: Vec<u8>) -> Self {
++        let store = AutomationStore::open(&layout(root))
++            .await
++            .expect("open owner ledger");
++        let fence = TaskFlowFence::new(
++            AgentId::parse(AGENT_ID).expect("agent id"),
++            "act1-owner",
++            1,
++            1,
++            "act1-fence",
++        )
++        .expect("owner fence");
++        let effect = AuthorizedEffectIntent {
++            run_id: "act1-run".to_string(),
++            step_id: "effect".to_string(),
++            attempt: 1,
++            operation_id: "act1.write".to_string(),
++            subject_id: "agent-one".to_string(),
++            destination_id: DESTINATION.to_string(),
++            payload_digest: Sha256Digest::for_bytes(&wire),
++            final_use_scope_digest: Sha256Digest::for_bytes(b"act1-target-scope"),
++            policy_generation: 7,
++            expected_predecessor_digest: None,
++            dependencies: Vec::new(),
++            compensation_for: None,
++        };
++        let binding = effect.final_use_binding().expect("exact FinalUse binding");
++        let (authority, grant) = authority(root, binding.clone());
++        Self {
++            store,
++            effect,
++            wire,
++            fence,
++            binding,
++            authority,
++            grant,
++        }
++    }
++
++    pub async fn dispatch<D: AsyncAuthorizedEffectDriver>(
++        &self,
++        driver: &mut D,
++    ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
++        self.dispatch_bytes(driver, &self.wire).await
++    }
++
++    pub async fn dispatch_bytes<D: AsyncAuthorizedEffectDriver>(
++        &self,
++        driver: &mut D,
++        wire: &[u8],
++    ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
++        self.store
++            .execute_authorized_taskflow_effect_async(
++                &self.authority,
++                driver,
++                AuthorizedEffectDispatchRequest {
++                    intent: &self.effect,
++                    wire_payload: wire,
++                    fence: &self.fence,
++                    signed_grant: &self.grant,
++                    expected_binding: &self.binding,
++                    command_id: "act1-dispatch",
++                    now_ms: 30,
++                },
++            )
++            .await
++    }
++
++    pub async fn pending(&self) -> AuthorizedEffectPending {
++        let pending = self
++            .store
++            .pending_authorized_taskflow_effects(8)
++            .await
++            .expect("scan original operation");
++        assert_eq!(pending.len(), 1);
++        pending.into_iter().next().expect("pending operation")
++    }
++
++    pub async fn recover(
++        &self,
++        lookup: AuthorizedProviderEffectLookup,
++    ) -> Option<TaskFlowStepReceipt> {
++        let AuthorizedProviderEffectLookup::Observed(receipt) = lookup else {
++            return None;
++        };
++        let result = self
++            .store
++            .recover_authorized_taskflow_effect(
++                &self.effect.run_id,
++                &self.effect.step_id,
++                self.effect.attempt,
++                &self.fence,
++                AuthorizedEffectRecovery::Observed(receipt),
++                40,
++            )
++            .await
++            .expect("recover using owner evidence");
++        let AuthorizedEffectRecoveryResult::Observed(receipt) = result else {
++            panic!("observed recovery must retain receipt");
++        };
++        Some(*receipt)
++    }
++}
++
++fn authority(root: &Path, binding: FinalUseBinding) -> (FinalUseAuthority, SignedFinalUseGrant) {
++    let issuer = SigningKey::from_bytes(&[47; 32]);
++    let now = u64::try_from(
++        SystemTime::now()
++            .duration_since(UNIX_EPOCH)
++            .expect("wall clock")
++            .as_millis(),
++    )
++    .expect("milliseconds");
++    let nonce = NONCE.fetch_add(1, Ordering::Relaxed);
++    let grant = FinalUseGrant {
++        schema_version: 1,
++        signer_id: "security-owner".to_string(),
++        authority_epoch: 9,
++        grant_id: format!("act1-{}-{nonce}", std::process::id()),
++        nonce: Sha256::digest(format!("{}:{now}:{nonce}:{root:?}", std::process::id()).as_bytes())
++            .into(),
++        binding,
++        not_before_unix_ms: now.saturating_sub(1_000),
++        expires_at_unix_ms: now + 60_000,
++    };
++    let signature = issuer
++        .sign(&grant.signing_bytes().expect("grant bytes"))
++        .to_bytes()
++        .to_vec();
++    let state = root.join("final-use");
++    std::fs::create_dir_all(&state).expect("authority directory");
++    std::fs::set_permissions(&state, std::fs::Permissions::from_mode(0o700))
++        .expect("private authority permissions");
++    let authority = FinalUseAuthority::open_state_dir(
++        &state,
++        "security-owner".to_string(),
++        issuer.verifying_key().to_bytes(),
++        FinalUseRevocations {
++            authority_epoch: 9,
++            revision: 1,
++            revoked_grant_ids: BTreeSet::new(),
++        },
++    )
++    .expect("FinalUse authority");
++    (authority, SignedFinalUseGrant { grant, signature })
++}
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/mod.rs b/codex-rs/hepta-automation/tests/action_skill_support/mod.rs
+new file mode 100644
+index 00000000..833bc0c9
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/mod.rs
+@@ -0,0 +1,7 @@
++pub mod destination;
++pub mod harness;
++
++pub const ROOT_ENV: &str = "HEPTA_ACT1_ROOT";
++pub const KEY_ENV: &str = "HEPTA_ACT1_KEY";
++pub mod baselines;
++pub mod observer;
+diff --git a/codex-rs/hepta-automation/tests/action_skill_support/observer.rs b/codex-rs/hepta-automation/tests/action_skill_support/observer.rs
+new file mode 100644
+index 00000000..799207e7
+--- /dev/null
++++ b/codex-rs/hepta-automation/tests/action_skill_support/observer.rs
+@@ -0,0 +1,212 @@
++//! Independent goal observation and content-addressed evidence retention.
++
++use std::io::Write;
++use std::path::Path;
++use std::path::PathBuf;
++
++use codex_hepta_automation::ActionCancellationStateV1;
++use codex_hepta_automation::ActionConditionV1;
++use codex_hepta_automation::ActionExecutionStateV1;
++use codex_hepta_automation::ActionGoalStateV1;
++use codex_hepta_automation::ActionInitiationObservationV1;
++use codex_hepta_automation::ActionSkillBindingV1;
++use codex_hepta_automation::ActionSkillBudgetV1;
++use codex_hepta_automation::ActionSkillContractV1;
++use codex_hepta_automation::ActionSkillError;
++use codex_hepta_automation::ActionSkillObservationV1;
++use codex_hepta_automation::ActionSkillObserver;
++use codex_hepta_automation::ActionSkillRecoveryV1;
++use codex_hepta_automation::GoalCheckedActionSkillDriver;
++use codex_hepta_contracts::Sha256Digest;
++use sqlx::SqlitePool;
++
++use super::destination::Desired;
++use super::destination::Destination;
++use super::destination::facts;
++use super::destination::open_observation_pool;
++use super::harness::DESTINATION;
++
++const OBSERVER: &str = "act1-destination-reader-v1";
++pub type Driver = GoalCheckedActionSkillDriver<Destination, Observer>;
++
++pub fn contract() -> ActionSkillContractV1 {
++    ActionSkillContractV1 {
++        schema_version: 1,
++        skill_id: "act1.write-and-check".to_string(),
++        version: 1,
++        destination_id: DESTINATION.to_string(),
++        observer_id: OBSERVER.to_string(),
++        initiation_digest: Sha256Digest::for_bytes(b"destination exists; nonempty valid request"),
++        policy_digest: Sha256Digest::for_bytes(b"invoke once; reconcile original identity"),
++        termination_digest: Sha256Digest::for_bytes(b"worker exited or interruption confirmed"),
++        goal_digest: Sha256Digest::for_bytes(
++            b"business events equal ordered requested rows exactly",
++        ),
++        budget: ActionSkillBudgetV1 {
++            max_wire_bytes: 16_384,
++            provider_timeout_ms: 30_000,
++            observer_timeout_ms: 5_000,
++        },
++        recovery: ActionSkillRecoveryV1::ReconcileOriginalIdentity,
++    }
++}
++
++pub fn wire() -> Vec<u8> {
++    contract()
++        .encode_invocation(serde_json::to_vec(&Desired::standard()).expect("domain body"))
++        .expect("bound invocation")
++}
++
++pub async fn driver(root: &Path, destination: Destination) -> Driver {
++    GoalCheckedActionSkillDriver::new(contract(), destination, Observer::open(root).await)
++        .expect("goal-checked official driver")
++}
++
++pub struct Observer {
++    pool: SqlitePool,
++    evidence_dir: PathBuf,
++}
++
++impl Observer {
++    pub async fn open(root: &Path) -> Self {
++        let evidence_dir = root.join("observations");
++        std::fs::create_dir_all(&evidence_dir).expect("observation evidence directory");
++        Self {
++            pool: open_observation_pool(&root.join("destination.sqlite3")).await,
++            evidence_dir,
++        }
++    }
++
++    fn retain(&self, value: serde_json::Value) -> Sha256Digest {
++        let bytes = serde_json::to_vec(&value).expect("observation evidence bytes");
++        let digest = Sha256Digest::for_bytes(&bytes);
++        let path = self.evidence_dir.join(format!("{}.json", digest.as_str()));
++        match std::fs::OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .open(&path)
++        {
++            Ok(mut file) => {
++                file.write_all(&bytes).expect("retain complete evidence");
++                file.sync_all().expect("persist observation evidence");
++            }
++            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
++                assert_eq!(std::fs::read(path).expect("existing evidence"), bytes);
++            }
++            Err(error) => panic!("cannot retain observation evidence: {error}"),
++        }
++        digest
++    }
++}
++
++impl ActionSkillObserver for Observer {
++    fn observer_id(&self) -> &str {
++        OBSERVER
++    }
++
++    async fn check_initiation(
++        &self,
++        binding: &ActionSkillBindingV1,
++        body: &[u8],
++    ) -> Result<ActionInitiationObservationV1, ActionSkillError> {
++        let desired: Desired =
++            serde_json::from_slice(body).map_err(|_| ActionSkillError::Observation)?;
++        let tables: i64 = sqlx::query_scalar(
++            "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'business_events'",
++        )
++        .fetch_one(&self.pool)
++        .await
++        .map_err(|_| ActionSkillError::Observation)?;
++        let condition = if tables == 1 && !desired.rows.is_empty() {
++            ActionConditionV1::Met
++        } else {
++            ActionConditionV1::Unmet
++        };
++        let evidence_digest = self.retain(serde_json::json!({
++            "kind":"initiation", "binding":binding, "body":desired, "tables":tables,
++        }));
++        Ok(ActionInitiationObservationV1 {
++            binding: binding.clone(),
++            observer_id: OBSERVER.to_string(),
++            evidence_digest,
++            condition,
++        })
++    }
++
++    async fn observe(
++        &self,
++        binding: &ActionSkillBindingV1,
++        provider_receipt_digest: &Sha256Digest,
++    ) -> Result<ActionSkillObservationV1, ActionSkillError> {
++        let facts = facts(&self.pool, &binding.provider_intent.key)
++            .await
++            .ok_or(ActionSkillError::Observation)?;
++        if facts.payload != binding.provider_intent.payload_sha256.as_str() {
++            return Err(ActionSkillError::Observation);
++        }
++        let execution = match facts.phase.as_str() {
++            "waiting_input" => ActionExecutionStateV1::WaitingForInput,
++            "accepted" => ActionExecutionStateV1::Running,
++            "rejected_tombstone" => ActionExecutionStateV1::NotStarted,
++            "cancelled" => ActionExecutionStateV1::Interrupted,
++            "completed" | "partial" | "rejected_partial" | "exited" => {
++                ActionExecutionStateV1::Returned {
++                    exit_code: facts
++                        .exit_code
++                        .map(|code| i32::try_from(code).expect("exit code")),
++                }
++            }
++            _ => ActionExecutionStateV1::Unknown,
++        };
++        let goal = if facts.rows == facts.desired.rows {
++            ActionGoalStateV1::Satisfied
++        } else if facts.rows.is_empty() {
++            ActionGoalStateV1::Unsatisfied
++        } else {
++            ActionGoalStateV1::Partial
++        };
++        let termination = match execution {
++            ActionExecutionStateV1::Returned { .. } | ActionExecutionStateV1::Interrupted => {
++                ActionConditionV1::Met
++            }
++            ActionExecutionStateV1::NotStarted if facts.phase == "rejected_tombstone" => {
++                ActionConditionV1::Met
++            }
++            ActionExecutionStateV1::NotStarted
++            | ActionExecutionStateV1::Running
++            | ActionExecutionStateV1::WaitingForInput
++            | ActionExecutionStateV1::Unknown => ActionConditionV1::Unmet,
++        };
++        let cancellation = if facts.phase == "cancelled" {
++            ActionCancellationStateV1::Confirmed
++        } else if facts.cancel_received {
++            ActionCancellationStateV1::Requested
++        } else {
++            ActionCancellationStateV1::NotRequested
++        };
++        let absence_proof_digest = (facts.phase == "rejected_tombstone" && facts.rows.is_empty())
++            .then(|| {
++                self.retain(serde_json::json!({
++                    "kind":"destination_rejection_tombstone", "binding":binding,
++                    "payload":facts.payload, "phase":facts.phase, "business_events":facts.rows,
++                }))
++            });
++        let evidence_digest = self.retain(serde_json::json!({
++            "kind":"terminal_observation", "binding":binding,
++            "provider_receipt_digest":provider_receipt_digest,
++            "facts":facts, "execution":execution, "goal":goal,
++            "termination":termination, "cancellation":cancellation, "absence_proof_digest":absence_proof_digest,
++        }));
++        Ok(ActionSkillObservationV1 {
++            binding: binding.clone(),
++            provider_receipt_digest: provider_receipt_digest.clone(),
++            observer_id: OBSERVER.to_string(),
++            evidence_digest,
++            execution,
++            cancellation,
++            termination,
++            goal,
++            absence_proof_digest,
++        })
++    }
++}
+diff --git a/codex-rs/hepta-automation/tests/authorized_effect.rs b/codex-rs/hepta-automation/tests/authorized_effect.rs
+index a058eedb..c900b1b3 100644
+--- a/codex-rs/hepta-automation/tests/authorized_effect.rs
++++ b/codex-rs/hepta-automation/tests/authorized_effect.rs
+@@ -677,7 +677,7 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
+ }
+ 
+ #[tokio::test]
+-async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent() {
++async fn async_provider_unknown_is_quarantined_and_lookup_not_found_remains_unresolved() {
+     let fixture = Fixture::new();
+     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+     let (authority, signed, _authority_dir) = final_use(expected.clone(), "async-unknown");
+@@ -728,7 +728,7 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
+     assert_eq!(pending.len(), 1);
+     assert!(matches!(
+         driver.lookup(&pending[0]).await,
+-        AuthorizedProviderEffectLookup::ProvenAbsent { .. }
++        AuthorizedProviderEffectLookup::Unresolved
+     ));
+ }
+ 
+diff --git a/qualification/act1-action-cell-20261108/README.md b/qualification/act1-action-cell-20261108/README.md
+new file mode 100644
+index 00000000..a3a23b35
+--- /dev/null
++++ b/qualification/act1-action-cell-20261108/README.md
+@@ -0,0 +1,96 @@
++# ACT-1: tool and action Cell execution semantics
++
++This package develops the sixth Hepta Cell role: versioned, composable action
++skills whose success is checked against destination-owned effects. The starting
++candidate is `6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5`, tree
++`491eace326f335498334fb051c9e8f298ca7a04c`, on
++`fix/codex-v13-same-model-next-task-20261106`. It is distinct from the observed
++default branch `732e934ba496d90fbe042b8d41d479ef901643e5`.
++
++## Scope and authority
++
++The implementation extends the existing `automation.taskflow` authorized-effect
++path. It retains the producer-owned operation identity, exact immutable provider
++payload, FinalUse authority, durable dispatch-attempt ledger and reconciliation
++rules. It does not create another execution kernel or grant authority to a Cell
++proposal. The experimental destination is a controlled local service, not a
++production external account.
++
++The skill contract binds initiation, internal policy, termination, goal
++postcondition, version, bounded call resources and recovery. Registered, independently provisioned host observers actually evaluate initiation,
++termination and goal predicates. These are not automatically learned predicates;
++the policy digest pins an implementation identity rather than adding a policy interpreter. An envelope binds the skill contract and destination into the
++same bytes already covered by the provider payload digest and FinalUse grant.
++
++The goal-checked driver independently observes the destination after a provider
++completion claim and during recovery. Its durable receipt binds the original
++operation/key, payload, destination, skill contract and independent goal evidence.
++Transport completion, exit status and a cancellation request are separate from
++goal satisfaction. A partial effect never authorizes replay of the entire action.
++An unresolved operation keeps its original identity and is reconciled; neither
++silence nor a failed lookup proves absence. This change also fixes the existing
++`ProviderEffectTaskFlowDriver`: ordinary `NotFound` is now `Unresolved`, matching
++the provider contract journal, instead of granting `ProvenAbsent` retry rights.
++A fresh independent no-effect/no-late-commit proof is a stronger domain contract.
++
++Call bounds are not a claim of globally durable resource accounting. Cross-call
++and cross-restart expenditure belongs to the existing task/circuit owner. A
++future learned policy must consume that same persisted budget.
++
++## ACT-1 acceptance matrix
++
++| Injection | Independent destination fact | Required behavior |
++|---|---|---|
++| Effect committed, ACK lost | Effect row exists once | Keep identity, recover by lookup, no second mutation |
++| Waiting for input | Process is waiting and goal is absent | No false completion or duplicate process |
++| Partial success | Only a strict subset of required effects exists | Preserve partial evidence and remain unresolved |
++| Cancel before completion | No completed target effect | Cancellation delivery alone does not certify absence |
++| Completion before cancel | Target effect remains committed | Observed completion wins without erasing cancellation history |
++| Owner restart mid-operation | Durable attempt survives | Reconcile the original operation without redispatch |
++| Exit zero without target effect | Goal is absent despite successful exit | Reject the success claim |
++| Unobservable/unsupported destination | No trustworthy outcome can be recovered | Keep UNKNOWN, no blind retry |
++| Key, payload or contract drift | Observation belongs to different identity | Reject cross-binding evidence |
++
++The reliable baselines are deterministic persistent workflows, hand-authored DSL
++macros and flat skills. They must share the destination, oracle, fault schedule,
++observation capabilities and budget. A naive return-code policy may be a negative
++control, but beating it is not evidence of a Cell-specific learning benefit.
++
++## Evidence and interpretation
++
++Native gate records and exact counts are retained beside this file after the
++scoped run. They bind the executed source tree and the test log/JUnit run identity.
++Failed build/test attempts remain in the package. The cancellation injection is a destination cancellation request, not the
++TaskFlow run `Cancel` command. The SIGKILL test reopens the same owner fence;
++it is not a new-epoch/two-writer recovery proof. Input waiting uses an actual
++stdin reader and authoritative destination state; it is not RECEIPT syscall
++detection or a formal proof of input delivery order. The full product rollout,
++remote `runtime.codex` binding, real task distribution and learned hierarchy
++generalization require their own evidence; the local controlled ACT-1 run does
++not establish those claims.
++
++After the execution contract is fixed, compare learned hierarchy, proximal
++feedback prediction and residual-driven local adaptation. Freeze each policy's
++model, training/tuning opportunities and full budget. Hold out composition
++structures and task sources rather than merely changing identifiers. Count
++failure, cancellation and timeout episodes in the denominator. Report actual
++business success, false success, duplicate effects, unresolved outcomes, unsafe
++retry, recovery calls/time and all learning/inference costs.
++
++## Research basis, verified 2026-11-08
++
++* Perks et al., [Connectome analysis of a cerebellum-like circuit for sensory
++  prediction](https://www.nature.com/articles/s41586-026-10690-6), Nature,
++  2026-09-02. Connectomics, recording and constrained models motivate a
++  proximal-prediction/residual-adaptation hypothesis. They do not establish
++  software transaction correctness or an advantage for this implementation.
++* Harvey et al., [Unsupervised Hierarchical Skill Discovery, v2](https://arxiv.org/html/2601.23156v2), 2026-05-28. Structure discovery uses
++  unlabeled observational trajectories; grounding downstream executable policies
++  still uses action labels and initiation/termination mechanisms.
++* Physical Intelligence et al., [pi0.5](https://arxiv.org/abs/2504.16054),
++  2025-04-22. High-level semantic and low-level robotic actions motivate a
++  hierarchy comparison, not a software-recovery guarantee.
++* Yang et al., [RECEIPT, v1](https://arxiv.org/html/2611.01930v1), 2026-11-01.
++  Distinguishes return, input wait and actual task effect, and checks a bounded
++  intervention protocol. Its finite-model assumptions do not prove universal
++  exactly-once external execution.

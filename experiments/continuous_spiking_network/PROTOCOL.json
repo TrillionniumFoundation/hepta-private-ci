@@ -1,0 +1,189 @@
+{
+  "boundary_seeds": [
+    4401,
+    4402,
+    4403,
+    4404,
+    4405
+  ],
+  "common": {
+    "batch_size": 32,
+    "curve": "validation quality versus cumulative measured training CPU at the three fixed checkpoints",
+    "failure_policy": "preserve failed jobs and unchanged retries; source corrections require new seal and separate study",
+    "learning_rate": 0.003,
+    "optimizer": "AdamW; matrix weights decay 0.0001; vectors and declared no-weight-decay parameters excluded",
+    "selection": "minimum validation CE at quarter, half and final update; test scored once after reload",
+    "test_policy": "no test-driven architecture or hyperparameter reselection",
+    "test_size": 1024,
+    "timing": "all preparation/training/selection/serialization/reload/test charged separately; CPU is not Joules",
+    "val_size": 512
+  },
+  "data_seed": 7123,
+  "limits": [
+    "No natural synchronized audio-video corpus; image/audio pairs and four-token queries form a constructed benchmark.",
+    "Two heldout FSDD speakers do not establish broad speaker-population generalization.",
+    "Mamba is an equation-verified CPU reference, not fused CUDA performance.",
+    "The diffusion scale is task-trained, not independently calibrated uncertainty.",
+    "Task-value stopping is distinct from the cell natural firing threshold.",
+    "The cell uses frozen-interval FPT and mean-field recurrent propagation with interval-end reset.",
+    "Finite CPU scaling experiments are not foundation-model scaling-law evidence."
+  ],
+  "main_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "main_tree": "15c9d6ea07bf3832de82825a6cc1e8c958dd3d45",
+  "math_reference": "c32392367b7587d09806ca5cbc74678a168b4e16",
+  "mechanism": {
+    "architectures": [
+      "hcsn",
+      "single",
+      "no_adaptation",
+      "ordinary",
+      "continuous_rnn"
+    ],
+    "depth": 1,
+    "length": 32,
+    "match_continuous_rnn_to_hcsn_active_parameters": true,
+    "minimum_practical_effect": 0.01,
+    "primary_metric": "test_accuracy",
+    "tasks": [
+      "synthetic",
+      "multimodal_select"
+    ],
+    "train_size": 2048,
+    "uncertainty": "paired training seeds; fixed heldout sources; four comparisons per task; 98.75 percent Bonferroni intervals",
+    "updates": 160,
+    "width": 32
+  },
+  "mechanism_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105
+  ],
+  "representation": {
+    "architectures": [
+      "hcsn",
+      "lif_snn",
+      "continuous_rnn",
+      "two_gates",
+      "cfc",
+      "mamba1",
+      "transformer"
+    ],
+    "depth": 1,
+    "length": 32,
+    "scope": "same frontend, readout, seed, minibatches and optimizer recipe; equal width is not equal parameter count or compute",
+    "tasks": [
+      "mnist",
+      "fsdd",
+      "multimodal_select",
+      "long_memory"
+    ],
+    "train_size": 2048,
+    "updates": 240,
+    "width": 32
+  },
+  "representation_seeds": [
+    2201,
+    2202,
+    2203
+  ],
+  "runs_sha256": "2eadca5794f0354149b684db6add1f5b502f7e441e963a39c020621413544a01",
+  "scaling": {
+    "architectures": [
+      "hcsn",
+      "mamba1",
+      "transformer"
+    ],
+    "configurations": [
+      {
+        "axis": "center",
+        "depth": 1,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 32
+      },
+      {
+        "axis": "capacity",
+        "depth": 1,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 16
+      },
+      {
+        "axis": "capacity",
+        "depth": 2,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 64
+      },
+      {
+        "axis": "capacity",
+        "depth": 2,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 128
+      },
+      {
+        "axis": "capacity",
+        "depth": 3,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 256
+      },
+      {
+        "axis": "data",
+        "depth": 1,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 256,
+        "width": 32
+      },
+      {
+        "axis": "data",
+        "depth": 1,
+        "length": 32,
+        "task": "long_memory",
+        "train_size": 4096,
+        "width": 32
+      },
+      {
+        "axis": "context",
+        "depth": 1,
+        "length": 64,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 32
+      },
+      {
+        "axis": "context",
+        "depth": 1,
+        "length": 128,
+        "task": "long_memory",
+        "train_size": 1024,
+        "width": 32
+      },
+      {
+        "axis": "joint",
+        "depth": 2,
+        "length": 128,
+        "task": "multimodal_select",
+        "train_size": 4096,
+        "width": 64
+      }
+    ],
+    "scope": "capacity/data/context axes separated; multimodal joint length is null-step stress, long_memory length adds genuine distractors",
+    "updates": 160
+  },
+  "scaling_seeds": [
+    3301,
+    3302,
+    3303
+  ],
+  "version": "hcsn-four-layer-v1"
+}

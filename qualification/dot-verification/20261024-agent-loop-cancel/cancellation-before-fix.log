@@ -1,0 +1,335 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 0.63s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID a6ce5aa9-8bc1-4b93-9f78-4518d553782b with nextest profile: local
+    Starting 8 tests across 1 binary
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_skipped_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_skipped_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_skipped_revision' (108) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_unchanged_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_unchanged_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_unchanged_revision' (110) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_round_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_round_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_round_drift' (111) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_skipped_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_skipped_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_skipped_revision' (109) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_token_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_token_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_token_drift' (113) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_round_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_round_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_round_drift' (112) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_unchanged_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_unchanged_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_unchanged_revision' (115) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 1 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_token_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_token_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_token_drift' (114) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+   RETRY 2/2 [         ] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+  TRY 2 FAIL [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_skipped_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_skipped_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_skipped_revision' (125) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_token_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_token_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_token_drift' (127) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_token_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_token_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_token_drift' (126) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_skipped_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_skipped_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_skipped_revision' (124) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_unchanged_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_unchanged_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_unchanged_revision' (128) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_unchanged_revision ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_unchanged_revision
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_unchanged_revision' (129) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_round_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_intent_rejects_round_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_intent_rejects_round_drift' (130) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+  TRY 2 FAIL [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_round_drift ... FAILED
+
+    failures:
+
+    failures:
+        cancel_ack_rejects_round_drift
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'cancel_ack_rejects_round_drift' (131) panicked at hepta-agent-loop/tests/cancellation_successor.rs:123:5:
+    accepted invalid cancellation successor: Ok(Cancelled)
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.011s] 8 tests run: 0 passed, 8 failed, 0 skipped
+  TRY 2 FAIL [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+  TRY 2 FAIL [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+  TRY 2 FAIL [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+  TRY 2 FAIL [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

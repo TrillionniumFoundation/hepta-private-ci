@@ -36,6 +36,7 @@ class LaneAFoundationTruthTests(unittest.TestCase):
 
     def test_every_current_capability_has_one_evidence_mapping(self) -> None:
         verify.validate_capability_map(self.matrix, self.capability_map)
+        verify.validate_operations_source_evidence(self.operations_capability_map)
         declared = [
             (row["module"], capability)
             for row in self.matrix["modules"]
@@ -44,18 +45,10 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         mapped = [
             (entry["module"], entry["summary"])
             for entry in self.capability_map["entries"]
-            if entry["module"] != "kernel.operations"
         ]
-        mapped.extend(
-            ("kernel.operations", entry["summary"])
-            for entry in self.operations_capability_map["entries"]
-        )
-        mapped.append(
-            ("kernel.operations", verify.REFERENCE_OPERATIONS_SUMMARY)
-        )
         self.assertEqual(len(declared), len(set(declared)))
         self.assertEqual(len(mapped), len(set(mapped)))
-        self.assertCountEqual(mapped, declared)
+        self.assertEqual(mapped, declared)
         self.assertEqual(
             self.operations_capability_map["entryCount"],
             len(self.operations_capability_map["entries"]),
@@ -124,6 +117,69 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         with self.assertRaises(verify.VerificationError):
             verify.validate_capability_map(self.matrix, value)
 
+    def test_standalone_evidence_missing_extra_duplicate_or_reordered_is_rejected(
+        self,
+    ) -> None:
+        entries = self.operations_capability_map["entries"]
+        for invalid in (
+            entries[:-1],
+            [*entries, entries[0]],
+            [entries[0], entries[0], *entries[2:]],
+            [entries[1], entries[0], *entries[2:]],
+        ):
+            with self.subTest(ids=[row["capabilityId"] for row in invalid]):
+                value = deepcopy(self.operations_capability_map)
+                value["entries"] = invalid
+                value["entryCount"] = len(invalid)
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_operations_source_evidence(value)
+
+    def test_operations_owners_cannot_supply_each_others_evidence(self) -> None:
+        product = deepcopy(self.capability_map)
+        integrated = next(
+            row
+            for row in product["entries"]
+            if row["capabilityId"] == "kernel.operations.durable-owner.v1"
+        )
+        standalone = deepcopy(self.operations_capability_map)
+        original_product_anchors = integrated["sourceEvidence"]
+        integrated["sourceEvidence"] = standalone["entries"][0]["sourceEvidence"]
+        with self.assertRaisesRegex(verify.VerificationError, "product evidence owner"):
+            verify.validate_capability_map(self.matrix, product)
+        standalone["entries"][0]["sourceEvidence"] = original_product_anchors
+        with self.assertRaisesRegex(
+            verify.VerificationError, "standalone evidence owner"
+        ):
+            verify.validate_operations_source_evidence(standalone)
+
+    def test_standalone_scope_state_or_missing_anchors_cannot_grant_product_coverage(
+        self,
+    ) -> None:
+        for field, invalid in (
+            ("owner", "codex-rs/hepta-memory"),
+            ("role", "product_current_capabilities"),
+            ("productCapabilityCoverageContribution", 5),
+            ("productQualification", "passed"),
+        ):
+            with self.subTest(header=field):
+                value = deepcopy(self.operations_capability_map)
+                value[field] = invalid
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_operations_source_evidence(value)
+        for field, invalid in (
+            ("durability", "sqlite_wal_full_integrated_owner"),
+            ("activation", "product_activated"),
+            ("productionCaller", "agentd"),
+            ("sourceEvidence", []),
+            ("positiveTests", []),
+            ("negativeTests", []),
+        ):
+            with self.subTest(entry=field):
+                value = deepcopy(self.operations_capability_map)
+                value["entries"][0][field] = invalid
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_operations_source_evidence(value)
+
     def test_frozen_wire_vector_is_self_consistent(self) -> None:
         verify.validate_wire_vector()
 
@@ -135,8 +191,21 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(receipt["moduleCoverage"], 7)
         self.assertEqual(
             receipt["capabilityCoverage"],
-            self.capability_map["entryCount"]
-            + self.operations_capability_map["entryCount"],
+            self.capability_map["entryCount"],
+        )
+        standalone = receipt["standaloneOperationsSourceEvidence"]
+        self.assertEqual(
+            standalone["entryCount"], self.operations_capability_map["entryCount"]
+        )
+        self.assertEqual(standalone["productCapabilityCoverageContribution"], 0)
+        self.assertEqual(standalone["productQualification"], "not_granted")
+        self.assertEqual(standalone["owner"], "codex-rs/hepta-operations")
+        self.assertEqual(receipt["productOperationsOwner"], "codex-rs/hepta-memory")
+        self.assertEqual(
+            standalone["sha256"],
+            verify.hashlib.sha256(
+                verify.canonical(self.operations_capability_map)
+            ).hexdigest(),
         )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
@@ -179,13 +248,39 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         store = (ROOT / "codex-rs/hepta-operations/src/durable_store.rs").read_text(
             encoding="utf-8"
         )
+        dispatch = (
+            ROOT / "codex-rs/hepta-operations/src/durable_dispatch.rs"
+        ).read_text(encoding="utf-8")
         tests = (
             ROOT / "codex-rs/hepta-operations/src/durable_store_tests.rs"
         ).read_text(encoding="utf-8")
         self.assertIn('begin_with("BEGIN IMMEDIATE")', store)
         self.assertIn("recover_expired_leases_tx", store)
         self.assertIn("authority.claim(signed, &binding)?", store)
-        self.assertIn(".with_verified_use(token, &self.binding", store)
+        self.assertIn(
+            "self.execute_authorized_in_transaction(authorized, effect)", store
+        )
+        self.assertIn(
+            "Arc::ptr_eq(&self.dispatch_owner, &authorized.dispatch_owner)", dispatch
+        )
+        ordered = (
+            'begin_with("BEGIN IMMEDIATE")',
+            "require_current_lease(&mut tx, &claim, now_millis()?).await?",
+            "operation.intent != claim.intent || operation.writer_fence != claim.fence",
+            "operation.state != DurableOperationState::Dispatching",
+            "let token = authorized",
+            "let authority: &FinalUseAuthority = &authorized.authority;",
+            ".with_dispatch_boundary(token, &authorized.binding, || {",
+            "validate_claim_snapshot(&status, &claim, admitted_at)?",
+            "Ok((admitted_at, effect(&operation.intent)))",
+            "let (admitted_at, observation) = match entry",
+            "tx.commit().await.map_err(sqlx_error)?",
+        )
+        cursor = 0
+        for marker in ordered:
+            found = dispatch.find(marker, cursor)
+            self.assertGreaterEqual(found, 0, marker)
+            cursor = found + len(marker)
         self.assertIn(
             "crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
             tests,
@@ -210,11 +305,13 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         self.assertEqual(registry["schemaVersion"], 1)
         self.assertEqual(registry["lane"], "LANE-A-FOUNDATION")
         self.assertEqual(registry["authority"], "none")
+        verify.validate_protocol_registry(registry)
         self.assertEqual(
-            [row["module"] for row in registry["protocols"]],
-            verify.EXPECTED_MODULES,
+            [(row["module"], row["protocolId"]) for row in registry["protocols"]],
+            verify.PROTOCOL_IDENTITIES,
         )
-        self.assertEqual(len(registry["protocols"]), 7)
+        self.assertEqual(len(registry["protocols"]), 8)
+        self.assertEqual(len({row["protocolId"] for row in registry["protocols"]}), 8)
         for row in registry["protocols"]:
             self.assertTrue(row["protocolId"].startswith("hepta."))
             self.assertTrue(row["source"])
@@ -228,6 +325,29 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             operations["legacyProtocolId"],
             "hepta.kernel.operations.reference-model.v1",
         )
+
+    def test_protocol_missing_duplicate_reordered_or_cross_owner_is_rejected(
+        self,
+    ) -> None:
+        registry = verify.read_json(verify.PROTOCOL_REGISTRY_PATH)
+        rows = registry["protocols"]
+        for invalid in (
+            rows[:4] + rows[5:],
+            rows[:4] + [rows[3]] + rows[5:],
+            rows[:3] + [rows[4], rows[3]] + rows[5:],
+        ):
+            with self.subTest(ids=[row["protocolId"] for row in invalid]):
+                value = deepcopy(registry)
+                value["protocols"] = invalid
+                with self.assertRaises(verify.VerificationError):
+                    verify.validate_protocol_registry(value)
+        for index in (3, 4):
+            for field in ("owner", "scope", "source"):
+                with self.subTest(index=index, field=field):
+                    value = deepcopy(registry)
+                    value["protocols"][index][field] = rows[7 - index][field]
+                    with self.assertRaises(verify.VerificationError):
+                        verify.validate_protocol_registry(value)
 
     def test_native_observation_manifest_binds_current_candidate_blobs(self) -> None:
         bindings = json.loads(

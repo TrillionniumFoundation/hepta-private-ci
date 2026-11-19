@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.native-memory.failed-run-archive.v1",
+  "verdict": "FAILED original attempt; no retrospective success or production qualification",
+  "source": {
+    "head": "8a47cdd26574a85cd314fabce65cc395dbe316a8",
+    "tree": "e5fc7789c9bc74919cb6ac0d37894f688e09526d",
+    "archived_source_files_verified": 342,
+    "git_archive_comment_verified": true,
+    "build_invocation_wrapper_pins_match": true,
+    "final_driver_source_after_missing": true
+  },
+  "original_run": {
+    "path": "/tmp/hm-native-001",
+    "regular_files": 83,
+    "file_bytes": 4954052,
+    "full_byte_and_mode_preservation": true,
+    "all_directory_entries_preserved": true,
+    "empty_native_process_receipts_preserved": true,
+    "before_after_inventory_equal": true,
+    "final_after_archive_original_check_equal": true,
+    "original_sqlite_connections": 0,
+    "original_writes_or_chmod": 0
+  },
+  "execution": {
+    "wrapper_exit_code": 1,
+    "wrapper_wall_seconds": 77.66258329599987,
+    "daemon_probe_exit_code": 1,
+    "daemon_probe_wall_seconds": 0.0320871799995075,
+    "completed_training_updates": 96,
+    "actual_training_model_forwards": 96,
+    "derived_decoder_queries": 0,
+    "derived_native_feature_forwards": 0,
+    "research_controls_executed": 0,
+    "original_wrapper_actual_completed_model_calls": null,
+    "exact_command_ledger": "audit/command-ledger.json",
+    "phase_and_absence_evidence": "audit/phase-and-absence.json",
+    "control_flow_source": "original-run/executed-source.tar.gz",
+    "later_continuation_included": false
+  },
+  "executed_child_stages": [
+    "source-archive",
+    "prepare-source",
+    "prepare-owner",
+    "train-96",
+    "configure",
+    "daemon-probe"
+  ],
+  "costs": {
+    "training_subprocess_wall_seconds": 67.69840356999975,
+    "training_subprocess_user_seconds": 118.795261,
+    "training_subprocess_system_seconds": 3.085944,
+    "training_loop_seconds": 56.37101271500069,
+    "input_tokens": 7296,
+    "supervised_tokens": 192,
+    "shared_base_file_bytes": 271170520,
+    "shared_base_reported_st_blocks_bytes": 271187968,
+    "checkpoint_bytes_included_in_original_run": 1890112,
+    "adapter_file_bytes_included_in_checkpoint": 1858776,
+    "original_v1_executable_bytes": 479624264,
+    "base_model_files_in_archive": 0,
+    "executable_files_in_archive": 0,
+    "details": "audit/costs.json",
+    "timing_and_storage_categories_overlap": true,
+    "full_system_storage_and_peak_memory_measured": false
+  },
+  "base": {
+    "repository": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    "six_size_and_sha256_pins_rechecked": true,
+    "inventory": "audit/base-model-inventory.json"
+  },
+  "post_failure_candidate": {
+    "applied_to_original_run": false,
+    "bundle": "post-failure-candidate/prepare-close-candidate-raw.tar.xz",
+    "bundle_sha256": "e730415648b411de1859a244e3d86987a845abc884807f079a0c3ec888e1bb92",
+    "independent_review_sha256": "9d13a2c8860818fdae9e09dcea886aa51a475d930fe0494f6e7f667afeb1b400",
+    "runtime_verdict": "separate future qualification"
+  },
+  "archive": {
+    "filename": "failed-native-001-complete-raw.tar.xz",
+    "bytes": 2963452,
+    "sha256": "99c1c0e21eaf246812ab20f93ce12db2eac3a5dbf77ac861068b11724dbbcf07",
+    "regular_members": 106,
+    "directory_members": 39,
+    "all_regular_members_reread_and_compared": true,
+    "member_inventory_sha256": "9637f5813843f212af19d30362d97a67d1779de6b974a366be6831fa1234e282",
+    "original_before_inventory_sha256": "1007b83654737833a9cb790e2ed624869f6ddea95d7863a5aba21958dc9cc5eb",
+    "original_after_inventory_sha256": "1007b83654737833a9cb790e2ed624869f6ddea95d7863a5aba21958dc9cc5eb",
+    "raw_modes_preserved": true,
+    "tar_uid_gid_mtime_normalized": true,
+    "original_metadata_retained_in_inventories": true
+  },
+  "runtime_freeze": {
+    "sha256": "d7679c0e602ea0deedf39d02d09085c4d44953df8523f1b8fe45b899c4184e59",
+    "bytes": 478,
+    "method_receipt": "runtime/freeze-method.json",
+    "exact_freeze_argv_receipt_available": false
+  },
+  "capture": {
+    "new_model_calls": 0,
+    "rust_build_or_tests": 0,
+    "sqlite_connections": 0,
+    "source_writes_or_chmod": 0,
+    "repair_executions": 0,
+    "script": "audit/capture_failed_run.py"
+  },
+  "readme_sha256": "2930bb9055d39aa9cb40348c4b0adb7a9d1b046674d201dbfda016bf40bd5b32"
+}

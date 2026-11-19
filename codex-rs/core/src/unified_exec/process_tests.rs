@@ -1,6 +1,7 @@
 use super::process::UnifiedExecProcess;
 use crate::unified_exec::UnifiedExecError;
 use codex_exec_server::ExecProcess;
+use codex_exec_server::ExecProcessEvent;
 use codex_exec_server::ExecProcessEventReceiver;
 use codex_exec_server::ExecProcessFuture;
 use codex_exec_server::ExecServerError;
@@ -14,6 +15,7 @@ use pretty_assertions::assert_eq;
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use tokio::sync::broadcast;
 use tokio::sync::watch;
 
 struct MockExecProcess {
@@ -22,6 +24,7 @@ struct MockExecProcess {
     read_responses: Mutex<VecDeque<ReadResponse>>,
     terminate_error: Option<String>,
     wake_tx: watch::Sender<u64>,
+    events: broadcast::Sender<ExecProcessEvent>,
 }
 
 impl MockExecProcess {
@@ -60,7 +63,7 @@ impl ExecProcess for MockExecProcess {
     }
 
     fn subscribe_events(&self) -> ExecProcessEventReceiver {
-        ExecProcessEventReceiver::empty()
+        ExecProcessEventReceiver::from_receiver(self.events.subscribe())
     }
 
     fn read(
@@ -90,7 +93,18 @@ pub(super) async fn remote_process(
     terminate_error: Option<String>,
     sandbox_type: codex_sandboxing::SandboxType,
 ) -> UnifiedExecProcess {
+    remote_process_and_events(write_status, terminate_error, sandbox_type)
+        .await
+        .0
+}
+
+async fn remote_process_and_events(
+    write_status: WriteStatus,
+    terminate_error: Option<String>,
+    sandbox_type: codex_sandboxing::SandboxType,
+) -> (UnifiedExecProcess, broadcast::Sender<ExecProcessEvent>) {
     let (wake_tx, _wake_rx) = watch::channel(0);
+    let (events, _) = broadcast::channel(8);
     let started = StartedExecProcess {
         process: Arc::new(MockExecProcess {
             process_id: "test-process".to_string().into(),
@@ -100,23 +114,50 @@ pub(super) async fn remote_process(
             read_responses: Mutex::new(VecDeque::new()),
             terminate_error,
             wake_tx,
+            events: events.clone(),
         }),
         sandbox_type: Some(sandbox_type),
     };
 
-    UnifiedExecProcess::from_exec_server_started(started)
+    let process = UnifiedExecProcess::from_exec_server_started(started)
         .await
-        .expect("remote process should start")
+        .expect("remote process should start");
+    (process, events)
+}
+
+pub(super) async fn exited_remote_process(
+    write_status: WriteStatus,
+    terminate_error: Option<String>,
+    sandbox_type: codex_sandboxing::SandboxType,
+) -> anyhow::Result<UnifiedExecProcess> {
+    let (process, events) =
+        remote_process_and_events(write_status, terminate_error, sandbox_type).await;
+    events.send(ExecProcessEvent::Exited {
+        seq: 1,
+        exit_code: 0,
+        sandbox_denied: Some(false),
+    })?;
+    events.send(ExecProcessEvent::Closed { seq: 2 })?;
+    tokio::time::timeout(
+        std::time::Duration::from_secs(2),
+        process.cancellation_token().cancelled(),
+    )
+    .await?;
+    anyhow::ensure!(
+        process.has_exited(),
+        "the actual Exited event was not observed"
+    );
+    Ok(process)
 }
 
 #[tokio::test]
-async fn remote_write_unknown_process_marks_process_exited() {
-    let process = remote_process(
+async fn remote_write_unknown_process_marks_process_exited() -> anyhow::Result<()> {
+    let process = exited_remote_process(
         WriteStatus::UnknownProcess,
         /*terminate_error*/ None,
         codex_sandboxing::SandboxType::None,
     )
-    .await;
+    .await?;
 
     let err = process
         .write(b"hello")
@@ -125,16 +166,17 @@ async fn remote_write_unknown_process_marks_process_exited() {
 
     assert!(matches!(err, UnifiedExecError::WriteToStdin));
     assert!(process.has_exited());
+    Ok(())
 }
 
 #[tokio::test]
-async fn remote_write_closed_stdin_marks_process_exited() {
-    let process = remote_process(
+async fn remote_write_closed_stdin_marks_process_exited() -> anyhow::Result<()> {
+    let process = exited_remote_process(
         WriteStatus::StdinClosed,
         /*terminate_error*/ None,
         codex_sandboxing::SandboxType::None,
     )
-    .await;
+    .await?;
 
     let err = process
         .write(b"hello")
@@ -143,16 +185,17 @@ async fn remote_write_closed_stdin_marks_process_exited() {
 
     assert!(matches!(err, UnifiedExecError::WriteToStdin));
     assert!(process.has_exited());
+    Ok(())
 }
 
 #[tokio::test]
-async fn fail_and_terminate_preserves_failure_message() {
-    let process = remote_process(
+async fn fail_and_terminate_preserves_failure_message() -> anyhow::Result<()> {
+    let process = exited_remote_process(
         WriteStatus::Accepted,
         /*terminate_error*/ None,
         codex_sandboxing::SandboxType::None,
     )
-    .await;
+    .await?;
 
     process.fail_and_terminate("network denied".to_string());
     process.fail_and_terminate("second failure".to_string());
@@ -162,10 +205,11 @@ async fn fail_and_terminate_preserves_failure_message() {
         process.failure_message(),
         Some("network denied".to_string())
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn remote_terminate_confirmed_updates_state_on_success_only() {
+async fn remote_terminate_confirmed_updates_state_on_success_only() -> anyhow::Result<()> {
     let process = remote_process(
         WriteStatus::Accepted,
         Some("terminate unavailable".to_string()),
@@ -181,12 +225,12 @@ async fn remote_terminate_confirmed_updates_state_on_success_only() {
     assert!(matches!(err, UnifiedExecError::ProcessFailed { .. }));
     assert!(!process.has_exited());
 
-    let process = remote_process(
+    let process = exited_remote_process(
         WriteStatus::Accepted,
         /*terminate_error*/ None,
         codex_sandboxing::SandboxType::None,
     )
-    .await;
+    .await?;
 
     process
         .terminate_confirmed()
@@ -194,6 +238,7 @@ async fn remote_terminate_confirmed_updates_state_on_success_only() {
         .expect("terminate should succeed");
 
     assert!(process.has_exited());
+    Ok(())
 }
 
 #[tokio::test]

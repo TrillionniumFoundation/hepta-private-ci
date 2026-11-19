@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.mem7.test-results-summary.v1",
+  "source_sha": "4c3b1fb6d40de7c85aedd1964357e138fc7aa9d8",
+  "source_tree": "494fe36854e8d26cd9ae0b510e429fe931cef63d",
+  "ai395": {
+    "groups": [
+      {
+        "group": "integrity",
+        "passed": 34,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/integrity.json",
+        "log_member": "ai395/run001/integrity.json.4325cffde5144ed581b65616cea6ba6b.log",
+        "log_sha256": "9119061d7ea913861b76e56926e08ad828579a9c573bca48f8a3352cad25941a",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "candidate",
+        "passed": 17,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run002",
+        "receipt_member": "ai395/run002/candidate.json",
+        "log_member": "ai395/run002/candidate.json.857ba4d2d0494764957186d066a64950.log",
+        "log_sha256": "d66ab2f601d769a76d916fda9896416bd5b84d379fd1be9400e2ec11275343c2",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "selector",
+        "passed": 10,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/selector.json",
+        "log_member": "ai395/run001/selector.json.e57ffacfbdc04c31b3308cf16f70d080.log",
+        "log_sha256": "9fa8896030e66d74cf9dad7d7523c77e6606ba6f384042c99967075e0eb999a3",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "replay",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/replay.json",
+        "log_member": "ai395/run001/replay.json.c012e156988d44479a2bbcbf787c5564.log",
+        "log_sha256": "28699eae23b147312e2dacad9a559a13468de1dc00fa967a3906c019f1e2f7fd",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "trajectory",
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/trajectory.json",
+        "log_member": "ai395/run001/trajectory.json.2f506b49a4634eff824bd2387b9a30a1.log",
+        "log_sha256": "5c8d67a773a445dc1abd4052109cdd5c5bdf91540877091bc0a70d780ea94f6d",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "selector-study",
+        "passed": 15,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/selector-study.json",
+        "log_member": "ai395/run001/selector-study.json.07700b0c7bba41aa93440d59bf554652.log",
+        "log_sha256": "2a7e550322bce5fd879329cc25bedb6ccc21aa68fd85f9b92c44333e15b3edd8",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "candidate-runner",
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/candidate-runner.json",
+        "log_member": "ai395/run001/candidate-runner.json.c7f6b584cd8c43a082a9b5255e639070.log",
+        "log_sha256": "b8300c22ec53ce1de6319eb690a876abfb2193c6b18cc075135580464c6e6a09",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "composition",
+        "passed": 7,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run001",
+        "receipt_member": "ai395/run001/composition.json",
+        "log_member": "ai395/run001/composition.json.ab10d49dde1c4ffbb554d19ee86f6f06.log",
+        "log_sha256": "fb81bb42404bf1c28c7603a0644b12133fbf17cd3b98069a04c7d6cdb58f616c",
+        "clean_unchanged_source": true
+      },
+      {
+        "group": "mem6",
+        "passed": 51,
+        "failed": 0,
+        "skipped": 0,
+        "run": "run002",
+        "receipt_member": "ai395/run002/mem6.json",
+        "log_member": "ai395/run002/mem6.json.7390be3dc5ec4995892acd960b60558b.log",
+        "log_sha256": "c931a1426a3b9d2fe577313d9dd2a5bb461dfec893d683a8e730f72d31371621",
+        "clean_unchanged_source": true
+      }
+    ],
+    "all_nine_groups_passed": true,
+    "latest_group_observations": 152,
+    "unique_unittest_ids": 119,
+    "repeated_observations": 33,
+    "test_ids_verified_from_original_logs": true,
+    "original_run001": {
+      "passed_observations": 150,
+      "failed_observations": 2,
+      "job_id": "1a1c668c61c-5074-107",
+      "preserved": true
+    },
+    "environment_only_rerun002": {
+      "groups": [
+        "candidate",
+        "mem6"
+      ],
+      "passed": 68,
+      "failed": 0,
+      "job_id": "1a1c66de6a7-5074-11b",
+      "change": "Existing MEM5 OCR launcher directory prepended to PATH; pinned script bytes; source/model/assertions unchanged."
+    }
+  },
+  "local_integrity": {
+    "passed": 34,
+    "failed": 0,
+    "skipped": 0,
+    "receipt_member": "local-validation/remote-source-integrity-reconciled.json",
+    "log_member": "local-validation/remote-source-integrity-reconciled.json.5feb59614a0b44fd94840c96a3a4f899.log",
+    "log_sha256": "a777b54a075d8c3db123417188cf48d324e4a1efb0e221a89217b39f6ea36536",
+    "included_in_ai395_distinct_test_ids": true
+  },
+  "separate_post_update_campaign": {
+    "readers": 14,
+    "passed": 14,
+    "writers": 3,
+    "model_calls": 0,
+    "original_source_commit": "25165442af800067f4417b53df5dd7a55b5d32e5",
+    "byte_identical_source_tree": "494fe36854e8d26cd9ae0b510e429fe931cef63d",
+    "report_member": "local-validation/revocation-common-source/REPORT.json"
+  },
+  "limits": [
+    "Focused software regression qualification only; hosted required repository CI is separate.",
+    "Torch/OCR fixtures have synthetic inputs, not new real task outcome observations.",
+    "No new actor campaign, episodic model benefit, ordinary Rust owner integration or full owner/effect recovery is inferred."
+  ]
+}

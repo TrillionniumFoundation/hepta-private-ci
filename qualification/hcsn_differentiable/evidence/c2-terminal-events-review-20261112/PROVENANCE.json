@@ -1,0 +1,73 @@
+{
+  "schema": "c2-terminal-events-review-provenance-v1",
+  "parent": "faa7e47cfade6c54df75b8b731b690ae73b99918",
+  "tests": 33,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "model_executions": 0,
+  "independent_complete_training_replays_added": 0,
+  "scientific_admission": "HOLD_NO_GO",
+  "old_logs_preserved": true,
+  "same_session_independent_review": "original float/cap/empty-schedule/missing-commit counterexamples now rejected; producer schema checked against exact source",
+  "limitations": [
+    "checkpoint bytes opaque, no Torch decoding",
+    "no independent optimizer replay",
+    "no plateau stopping recomputation or best-checkpoint reselection",
+    "no external producer authentication"
+  ],
+  "files": {
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py": {
+      "bytes": 39398,
+      "sha256": "932739d439d87bdc8aee6ce49555aab118abb7ad0efcfaaf4c96ba612263d01b"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py": {
+      "bytes": 13199,
+      "sha256": "2441a203001e7c7d15e53284ba162a49dd5203754d19a65b4b561dd28a18de2e"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/TERMINAL-EVENT-ACCOUNTING.md": {
+      "bytes": 3240,
+      "sha256": "69ab84ef6120e5e9619b4695fd4ffca6aa623c7cefe99a0050cc727471c150b3"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/RED.json": {
+      "bytes": 706,
+      "sha256": "953309d04943a1dea88653ae6194ecae4b4b48a6f6a6de4d5ff0cd6396aaf659"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/FMT.json": {
+      "bytes": 206,
+      "sha256": "664c708fb3528b19b45f92532cea7e310f3231c7e77aa46b6ca681fbda2595b4"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/GREEN.json": {
+      "bytes": 671,
+      "sha256": "25eac2c21a86a400cee725793cbbf76b42e8f9e34499054ec907b742e53d666f"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/RED.stderr": {
+      "bytes": 16619,
+      "sha256": "0e5021cc31767f8714660c18c0a6baa8cb6a8ffb61005e7708906a861c5f47e2"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/FMT.stdout": {
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/FMT.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/RED.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/GREEN.stderr": {
+      "bytes": 5146,
+      "sha256": "0c7e1cebd9b71c9893aa27521001e2b0932f68252e0d1c482a4abbeafc4d5eec"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/GREEN.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "qualification/hcsn_differentiable/evidence/c2-terminal-events-review-20261112/SOURCE-COMPATIBILITY.json": {
+      "bytes": 985,
+      "sha256": "ba9a7db53f5a91dc218a44da79074a77e1131761b099718b72ca5d8691604b0a"
+    }
+  }
+}

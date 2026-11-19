@@ -1,0 +1,77 @@
+{
+  "scope": "Receipt timestamps, process exit, and an unsupported elapsed-duration field; receipt interval uses canonical UTC datetime strings, not floating elapsed duration.",
+  "probes": [
+    {
+      "field": "process_exit_code",
+      "value": "NaN",
+      "rejected": true,
+      "reason": "process exit code must be an integer"
+    },
+    {
+      "field": "process_exit_code",
+      "value": "Infinity",
+      "rejected": true,
+      "reason": "process exit code must be an integer"
+    },
+    {
+      "field": "process_exit_code",
+      "value": "-Infinity",
+      "rejected": true,
+      "reason": "process exit code must be an integer"
+    },
+    {
+      "field": "execution_started_at_utc",
+      "value": "NaN",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_started_at_utc"
+    },
+    {
+      "field": "execution_started_at_utc",
+      "value": "Infinity",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_started_at_utc"
+    },
+    {
+      "field": "execution_started_at_utc",
+      "value": "-Infinity",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_started_at_utc"
+    },
+    {
+      "field": "execution_completed_at_utc",
+      "value": "NaN",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_completed_at_utc"
+    },
+    {
+      "field": "execution_completed_at_utc",
+      "value": "Infinity",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_completed_at_utc"
+    },
+    {
+      "field": "execution_completed_at_utc",
+      "value": "-Infinity",
+      "rejected": true,
+      "reason": "noncanonical UTC timestamp: execution_completed_at_utc"
+    },
+    {
+      "field": "elapsed_duration_seconds",
+      "value": "NaN",
+      "rejected": true,
+      "reason": "execution receipt field set mismatch"
+    },
+    {
+      "field": "elapsed_duration_seconds",
+      "value": "Infinity",
+      "rejected": true,
+      "reason": "execution receipt field set mismatch"
+    },
+    {
+      "field": "elapsed_duration_seconds",
+      "value": "-Infinity",
+      "rejected": true,
+      "reason": "execution receipt field set mismatch"
+    }
+  ]
+}

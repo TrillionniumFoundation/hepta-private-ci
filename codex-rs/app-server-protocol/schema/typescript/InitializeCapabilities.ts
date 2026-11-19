@@ -12,6 +12,11 @@ export type InitializeCapabilities = {
  */
 experimentalApi: boolean,
 /**
+ * Accept `process/indeterminate` and its retained-owner, no-handle-reuse semantics.
+ * Required together with experimentalApi for `process/spawn`.
+ */
+processIndeterminate?: boolean,
+/**
  * Opt into `attestation/generate` requests for upstream `x-oai-attestation`.
  */
 requestAttestation: boolean,

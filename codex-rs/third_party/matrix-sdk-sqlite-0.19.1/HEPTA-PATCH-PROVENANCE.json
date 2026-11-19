@@ -1,0 +1,121 @@
+{
+  "base": "7b142f8478c711409e4a585a5c62c1ef0dff9ebb",
+  "commit": "fff45b076c78a6f7d94f05c4e2db3d4b08767c5a",
+  "tree": "9c1fec16a7b4385a4bf0f68eb512bd4884a9ce55",
+  "official_archive": "8d4271e06d52a17bc6ec39b5a2985b65dcced737969fac3678967783656edb34",
+  "official_file_count": 71,
+  "license_sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+  "license_git_blob": "f433b1a53f5b830a205fd2df78e2b34974656c7b",
+  "license_source_commit": "b18166c68bb958a21f0bca8b2d8320cb53583362",
+  "source_import_active_graph_changed": false,
+  "schema": "hepta.matrix-sqlite.compatibility-source.v1",
+  "crate": "matrix-sdk-sqlite",
+  "version": "0.19.1",
+  "edits": [
+    {
+      "path": "Cargo.toml",
+      "before_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
+      "after_sha256": "9b064d3430e4c42523a33bfcaeb93c2d3bd0e559ed14513dda61684d13a7de52"
+    },
+    {
+      "path": "Cargo.toml.orig",
+      "before_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
+      "after_sha256": "aa7c6850d0da90a007d7c45d08f2d0960bdef05d00279af3824f29d7303faa05"
+    },
+    {
+      "path": "src/connection.rs",
+      "before_sha256": "893957181ce82046d0375a934a2f1782c6485b447ffb281e25b964b6a0627de6",
+      "after_sha256": "3bf53ca5d57392f11971b522720ba71b21b37d121b6523d14cb0d7beefe16e3f",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/crypto_store.rs",
+      "before_sha256": "33f4d434c17b8da20fde72f0add8edcb37076d413bf6e7b776c715f7e6330d24",
+      "after_sha256": "5cbe3db29c628029925494e28c05bc51bee0fe02cbb517e46883f7256acb9b8a",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/error.rs",
+      "before_sha256": "751dabf38eddaae1651ba35705c349d66279d3652b929eb65cb95a434a39ab52",
+      "after_sha256": "79a91290b1341d406ad86760bb499013eddb81da21cbb2e1222902cfd5e376a9",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/event_cache_store.rs",
+      "before_sha256": "c563506ec52f1389a557d7b0fb49ab895c781f8b993e94073c6a1c0e9e2c8a1e",
+      "after_sha256": "2b1d8873675f63d9e04aef49bafaee9c68fc052c529002fdd78eef0068c59277",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/lib.rs",
+      "before_sha256": "9666501bedcd096186b925e3365993f9276f78c278bee68f340e773cbf0d041c",
+      "after_sha256": "f09e4b8f5e3d0fc1215cdcc7e10e78c7f2b5c919ef93881b3b91fdb85e1efafc",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/media_store.rs",
+      "before_sha256": "d27efeb8d30cede965533dbf66242da214f944cab887379feb251bf9a9b9ee00",
+      "after_sha256": "52ebd697aa1a409fc704ce9286e388c58e32a4e699955bd7141eae586c565f3e",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/state_store.rs",
+      "before_sha256": "1ff989781d3c2c95d996ce186477b5b77f7bd120c88d3b4bf46de9fb33bb5871",
+      "after_sha256": "235205d20b797777ab359d654ef34b06aa41dcb28ea06f52fb31af80060ff2b3",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    },
+    {
+      "path": "src/utils.rs",
+      "before_sha256": "e450cadd34ea04129b2da35076655bcddcf15a1b7ccd6be9b8077bcd31496616",
+      "after_sha256": "4d06d1b2838e1a3d44b048d980d11328315e4d6be670f62140362a8b551fe0e7",
+      "before_commit": "c2130629037b342e6e48154867b65acc8fc82434",
+      "kind": "formatting-only"
+    }
+  ],
+  "minimal_patch_sha256": "1177b9a6e78efadfdecfd719c9e40a9dd8890c9422fc4837dc7f4b12c6de88c9",
+  "all_other_archive_files_unchanged": false,
+  "storage_and_sql_implementation_unchanged": true,
+  "upstream_storage_migration_is_real": true,
+  "previous_provenance_record": {
+    "commit": "c2130629037b342e6e48154867b65acc8fc82434",
+    "git_blob": "995228ca5746c3bd6db039bdce065d3362637f90",
+    "sha256": "282fd7da12c314c9baa5348f66d10eeeced4d536110275b35fcc572b1a83b0cc",
+    "recorded_edits": [
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "d0714a65585690a924811221c55439663f7c16587e47b19d8c429e2af1143b30",
+        "after_sha256": "9ca466a289177dd71d0b37b1d3bc308023975de9e5df509e4c1539c349ae4488"
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "b3916f966a3974857b9be832e657a5a1be2e5a13c7e57726397c9b3cb5f1daa6",
+        "after_sha256": "9b7c78a6b13cde7d07fdcc46b27224e3e74d35882a0405f472a3243f31a557d2"
+      }
+    ],
+    "all_other_archive_files_unchanged_at_that_record": true
+  },
+  "current_followup_scope": "Current source identities include the explicitly listed repository-formatting changes. Original minimal patches retain their original bytes and original dependency-change scope.",
+  "formatting_provenance": {
+    "path": "HEPTA-FORMATTING-PROVENANCE.json",
+    "sha256": "4fe4adc5f7cb6df60781a165770a16fa1312c00f5e0222eaa589d4dbd038f665",
+    "base": "c2130629037b342e6e48154867b65acc8fc82434",
+    "formatted_source_commit": "f7353f648d4d59444d2496c0dbee3f0cd80479a2"
+  },
+  "preexisting_dependency_followup": {
+    "commit": "9967f09c8f4b1f731fd2337356e6217583469f1e",
+    "parents": [
+      "0c9ad49aa5db19b624e2b74abbb16ac9295775fc",
+      "a8df34d5da7562a9e54905b95d7487816c991039"
+    ],
+    "original_record_commit": "7c47b2b5fd341a872e3a8fe37fcabb0a4cc2e00a",
+    "change": "Both Cargo manifests already changed rusqlite =0.39.0 to =0.41.1 in the merge result; both parents retain the original pin. This formatting change leaves both manifests unchanged.",
+    "original_record_to_current_patch_sha256": "ce1a7178e0d6b90f6d840026eb87e21a4b6bcb00b26b94b774f227527ac60c77"
+  }
+}

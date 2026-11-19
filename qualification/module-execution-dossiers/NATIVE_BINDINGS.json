@@ -143,9 +143,12 @@
       "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
       "exports": [
         "CodexOperationIntent",
-        "AppServerObservation",
+        "AppServerRequestBinding",
         "CodexAdapterReceipt",
-        "adapt"
+        "adapt_request",
+        "adapt_observed_event",
+        "adapt_observed_server_rejection",
+        "adapt_observed_thread_read_reconciliation"
       ]
     },
     {

@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.perc1.source-audit.v1",
+  "verified_date": "2026-11-08",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "main": {
+    "commit": "732e934ba496d90fbe042b8d41d479ef901643e5",
+    "tree": "75dc1c1f65375c97da259d947c465a04f030461d"
+  },
+  "implementation_dependency": {
+    "branch": "fix/codex-v13-same-model-next-task-20261106",
+    "commit": "6ddfca2406e4d01416cd2f7ab1655a0dc16f8da5",
+    "tree": "491eace326f335498334fb051c9e8f298ca7a04c",
+    "merged_into_main": false,
+    "lib_blob": "fd503422051c375888c3da11a0d72b444261362f",
+    "cost_ledger_blob": "c73cb763cbf2bd753ae44ce74e33da0a3f951772"
+  },
+  "research": [
+    {
+      "title": "Higher-level spatial prediction in natural vision across mouse visual cortex",
+      "authors": "Micha Heilbron; Floris P. de Lange",
+      "venue": "PLOS Computational Biology",
+      "published": "2026-01-20",
+      "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1013136",
+      "engineering_inference": "Retain local evidence and test high-level predictive residuals as diagnostics.",
+      "limitation": "Observational neural analysis does not establish a unique implemented brain algorithm."
+    },
+    {
+      "title": "V-JEPA 2.1: Unlocking Dense Features in Video Self-Supervised Learning",
+      "identifier": "arXiv:2603.14482v3",
+      "first_submission": "2026-03-15",
+      "version_date": "2026-06-11",
+      "url": "https://arxiv.org/abs/2603.14482",
+      "engineering_inference": "Retain local tokens and source coordinates; compare global pooling and dense output from one frozen encoder.",
+      "limitation": "Reported model-family gains also involve tokenizer, model and data scaling; they are not an isolated dense-loss effect."
+    },
+    {
+      "title": "Real-World Reinforcement Learning of Active Perception Behaviors",
+      "method": "Asymmetric Advantage Weighted Regression (AAWR)",
+      "venue": "NeurIPS 2025",
+      "identifier": "arXiv:2512.01188v1",
+      "camera_ready_submission": "2025-12-01",
+      "url": "https://arxiv.org/abs/2512.01188",
+      "conference_url": "https://papers.nips.cc/paper_files/paper/2025/hash/aa1b1a959c80086cba61d0fd66de412f-Abstract-Conference.html",
+      "engineering_inference": "Separate privileged training/evaluation information from deployment observations and proposals.",
+      "limitation": "The experiments span simulated and real robot tasks; eight tasks must not be described as eight exclusively real-robot tasks."
+    }
+  ],
+  "existing_seams": [
+    "codex-rs/hepta-neuron/src/cell_types.rs: CellInputEncoderV1",
+    "codex-rs/hepta-neuron/src/cell.rs: prepare_cell_step and enter_cell_step",
+    "codex-rs/hepta-neuron/src/cell_inference.rs: infer_cell and read-only recovery",
+    "codex-rs/hepta-neuron/src/cell_task_cost.rs: CellTaskCostV2",
+    "codex-rs/hepta-context-compiler/src/v2.rs: verified context admission",
+    "codex-rs/hepta-automation/src/circuit_budget.rs: reserve and settle"
+  ],
+  "limits": [
+    "A source digest is not proof of correct source capture, task permission or teacher exclusion.",
+    "The perception encoder adapter does not authenticate an external learned checkpoint execution.",
+    "Existing Circuit model-latency settlement is not complete PERC-1 accounting.",
+    "A protocol test and a synthetic diagnostic do not establish final task benefit or production activation."
+  ]
+}

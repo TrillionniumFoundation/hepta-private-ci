@@ -1,0 +1,407 @@
+{
+  "kind": "independent_static_comparison_not_repository_test_execution",
+  "base_commit": "53b3227a8dff5af9e39ecef6356cfce702d80b1c",
+  "base_tree": "10cb49cee9c3ca8ed280a680fb262c7e7ce549a1",
+  "candidate_tree": "f5952294ad9399c5b751576a419987241997ef0e",
+  "leaf_hashes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_member_readback_tests.rs",
+      "base": null,
+      "post": {
+        "bytes": 3758,
+        "git_blob": "aa2dd66e647e0cf7a7351aaf7eea52ae162bc9b0",
+        "sha256": "84a45871a6f94603e3b3887a35774ce6858d0f22fc22fe4957e9b0462270b7fa"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_member_read_access_tests.rs",
+      "base": null,
+      "post": {
+        "bytes": 6346,
+        "git_blob": "052b61a9a030cacf87bc7ba94eecfdf97a6b683b",
+        "sha256": "dc4554f89a30c3853835934389283013b8e19294295d3bd8b2535acd8ee5d125"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "base": {
+        "bytes": 8712,
+        "git_blob": "0b328d77083060c943234ae0d8bf68088474bd6f",
+        "sha256": "ec290abe362c52d33320b0321e1dfc9c284092dd38481bcc6ead60e9a724af02"
+      },
+      "post": {
+        "bytes": 13872,
+        "git_blob": "f5ff6a3ed7f02e7cee5cc825656c6bd1d3962206",
+        "sha256": "35cc00872d03cc10057a113df16c4a866cec53eed24742a6a7c4647ea49c1295"
+      }
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_panel_training_transaction_source_closure.py",
+      "base": {
+        "bytes": 10749,
+        "git_blob": "980b7c9b8d364453e13cd0a220611600d6204891",
+        "sha256": "e182bb321b1ac9a31ea9567f3139e0212ee03b9d7be1218fdfc7c6d8ba3ada81"
+      },
+      "post": {
+        "bytes": 13432,
+        "git_blob": "4807f4f5aa158f885119d2cb394e2170e6842385",
+        "sha256": "6cb2478192d303d85cc94db92be8d71b9ca2a860e2081221ad07cfb1a1f9f2f4"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "base": {
+        "bytes": 12526,
+        "git_blob": "d8c8a62d8c82397aa23f5bcfd68fee34efe13096",
+        "sha256": "2a5a5324f2d706017b74e0ef9453eca9268c0a5afe4444ebf54f9424601541dd"
+      },
+      "post": {
+        "bytes": 12916,
+        "git_blob": "f5f74bba8822b567ec732225226d1e5dd2d2ec41",
+        "sha256": "7620897ea5d075a3add9811aabfa3c0f725b84fdabc9b40dedd3c2919070b3ac"
+      }
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_host_tests.rs",
+      "base": {
+        "bytes": 10961,
+        "git_blob": "c18766a6ab02eb4d9882df1224b12e093e7d0453",
+        "sha256": "53f27be194c4176efbec00746925c1200807b2d99dfe217c4ff22095141d7210"
+      },
+      "post": {
+        "bytes": 11187,
+        "git_blob": "d1f255a21ef9a590e7bbd536177df0b16875a8ea",
+        "sha256": "febd324dfd87c5fa16a35697082caf08e941e265836b97da8f3259e782923aff"
+      }
+    },
+    {
+      "path": "CALLERS.toml",
+      "base": {
+        "bytes": 1895095,
+        "git_blob": "73fdfb4db43bee14530701784ab163a64dbb5956",
+        "sha256": "5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f"
+      },
+      "post": {
+        "bytes": 1898908,
+        "git_blob": "f7f23187de3b243ae3331231722dce9b9a4e219b",
+        "sha256": "1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a"
+      }
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base": {
+        "bytes": 11847,
+        "git_blob": "65d0ebeb88239e283af3d1e3fd1c91685bce9fa4",
+        "sha256": "cbf36c921aa37e172e850985527a3582e6aa95e8740baca07cd6341180fbcb4a"
+      },
+      "post": {
+        "bytes": 11847,
+        "git_blob": "b4f6f957d9f523941d59d9e52d00c7dd0e7662cf",
+        "sha256": "7c5ebdb53998acbc944fb96e3b692c878b870ed6d2cad87b51bee84957b1bc6f"
+      }
+    }
+  ],
+  "callers": {
+    "old_boundaries": 628,
+    "new_boundaries": 629,
+    "all_old_boundary_objects_and_relative_order_preserved": true,
+    "added_boundary": {
+      "id": "learning_original_panel_training_readback_call",
+      "symbol": "OriginalPanelTrainingSourceV1::readback_call",
+      "receiver_type": "OriginalPanelTrainingSourceV1",
+      "definition_path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+      "definition_markers": [
+        "pub(super) fn readback_call("
+      ],
+      "product_callers": [
+        "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs"
+      ],
+      "caller_markers": []
+    },
+    "protected_file_occurrences_compared": 429,
+    "changed_protected_rows": [
+      {
+        "index": 345,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "old_function_count": 9,
+        "new_function_count": 9,
+        "forbidden_unchanged": true,
+        "original_file_requirements_retained": true
+      },
+      {
+        "index": 425,
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "old_function_count": 7,
+        "new_function_count": 9,
+        "forbidden_unchanged": true,
+        "original_file_requirements_retained": true
+      }
+    ],
+    "all_other_rows_and_top_level_values_preserved": true,
+    "old_functions": 1349,
+    "new_functions": 1351,
+    "local_literal_guard_checks": [
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn from_original_receipt_owner(",
+        "sequence_length": 21,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn completion(",
+        "sequence_length": 8,
+        "top_level": [
+          {
+            "marker": "if self.fenced",
+            "depth": 1
+          },
+          {
+            "marker": "let result =",
+            "depth": 1
+          },
+          {
+            "marker": "if result.is_err()",
+            "depth": 1
+          }
+        ],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_original_completion(",
+        "sequence_length": 43,
+        "top_level": [
+          {
+            "marker": "let started_at =",
+            "depth": 1
+          },
+          {
+            "marker": "context.authenticate(started_at)?",
+            "depth": 1
+          },
+          {
+            "marker": "let call = match action",
+            "depth": 1
+          },
+          {
+            "marker": "let before =",
+            "depth": 1
+          },
+          {
+            "marker": "let completed =",
+            "depth": 1
+          },
+          {
+            "marker": "let after =",
+            "depth": 1
+          },
+          {
+            "marker": "OriginalCellEvaluationReceiptOwnerV1::require_original_host_completed(",
+            "depth": 1
+          },
+          {
+            "marker": "self.authenticate_panel(&after, current)?",
+            "depth": 1
+          },
+          {
+            "marker": "let original = contract::authenticate_receipt(",
+            "depth": 1
+          },
+          {
+            "marker": "self.retained = Some(original.clone())",
+            "depth": 1
+          },
+          {
+            "marker": "Ok(original)",
+            "depth": 1
+          }
+        ],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_panel(",
+        "sequence_length": 2,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn authenticate_panel(",
+        "sequence_length": 6,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn current_time(",
+        "sequence_length": 2,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn now(",
+        "sequence_length": 2,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn require_clock(",
+        "sequence_length": 3,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+        "function": "fn read_panel_with_training(",
+        "sequence_length": 5,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn from_original_training_readback(",
+        "sequence_length": 3,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn readback_call(",
+        "sequence_length": 19,
+        "top_level": [
+          {
+            "marker": "match self",
+            "depth": 1
+          },
+          {
+            "marker": "if retention.is_empty()",
+            "depth": 1
+          },
+          {
+            "marker": "let slots =",
+            "depth": 1
+          },
+          {
+            "marker": "let members =",
+            "depth": 1
+          }
+        ],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn call(",
+        "sequence_length": 8,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn begin(",
+        "sequence_length": 8,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn read(",
+        "sequence_length": 23,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn finish(",
+        "sequence_length": 27,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn require_source(",
+        "sequence_length": 10,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn require_member_source(",
+        "sequence_length": 11,
+        "top_level": [
+          {
+            "marker": "self.require_source(trainer, config)?",
+            "depth": 1
+          },
+          {
+            "marker": "if self.config.plan != config.plan",
+            "depth": 1
+          },
+          {
+            "marker": "Ok(())",
+            "depth": 1
+          }
+        ],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_read_proof.rs",
+        "function": "fn authenticate(",
+        "sequence_length": 8,
+        "top_level": [],
+        "result": "LITERAL_ORDER_AND_DEPTH_MATCH_ONLY"
+      }
+    ]
+  },
+  "allowlist": {
+    "only_replacement": [
+      "sha256:5bcda8aceca56a0e6b82a710631f3c15713ea84732a5415b87e796e94a37590f CALLERS.toml",
+      "sha256:1cc8d5a4efd71caab28a28147e25f5c8f46adacf43ea87c704605fe475a5268a CALLERS.toml"
+    ],
+    "sole_active_CALLERS_pin": true
+  },
+  "qa_methods": {
+    "before": [
+      "test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls",
+      "test_actual_factory_binds_all_members_before_minting_private_source",
+      "test_first_and_last_reads_stay_in_the_original_physical_slots",
+      "test_call_identity_counter_and_immutable_signature_cannot_be_substituted",
+      "test_cohort_cells_qualification_and_receipt_tails_remain_real",
+      "test_original_effect_owner_and_transport_budgets_are_unchanged"
+    ],
+    "after": [
+      "test_private_proof_edges_have_exact_callers_and_reject_unregistered_calls",
+      "test_actual_factory_binds_all_members_before_minting_private_source",
+      "test_first_and_last_reads_stay_in_the_original_physical_slots",
+      "test_call_identity_counter_and_immutable_signature_cannot_be_substituted",
+      "test_cohort_cells_qualification_and_receipt_tails_remain_real",
+      "test_readonly_member_pins_are_local_ordered_and_execute_keeps_original_path",
+      "test_original_effect_owner_and_transport_budgets_are_unchanged"
+    ]
+  },
+  "unchanged_proof_function_text": [
+    {
+      "function": "fn from_original_training_readback(",
+      "bytes": 303,
+      "sha256": "49be3b09ed8aff25a1b1f732dd649f0c0dfda1859b79452366cd1cbae7cc1483"
+    },
+    {
+      "function": "fn require_source(",
+      "bytes": 918,
+      "sha256": "93b8fab35270ec225256109889a728459d851518347d3b619c131c3c6670a5be"
+    },
+    {
+      "function": "fn authenticate(",
+      "bytes": 520,
+      "sha256": "ab69ddc26e4211a9e7e727aafceaf64c37cb92177721b61891a7065d87318f39"
+    }
+  ],
+  "host_completion_other_than_call_selection_byte_equal": true,
+  "service_original_d076_pin_match": true,
+  "repository_checker_executed": false,
+  "rustfmt_or_rust_executed": false
+}

@@ -1,0 +1,219 @@
+name: Original diagnostic log evidence
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/hepta-original-log-evidence.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: original-log-evidence-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/organ-ci-log-evidence-20261105-v1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      COLLECTOR_HEAD: ${{ github.event.pull_request.head.sha }}
+      COLLECTOR_WORKFLOW_SHA: ${{ github.workflow_sha }}
+    steps:
+      - name: Preserve two completed original job logs without rerunning them
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/hepta-original-log-evidence
+          GH_READ_TOKEN: ${{ github.token }}
+        shell: python
+        run: |
+          import gzip
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
+          ORIGINAL_RUN = 41948353639
+          ORIGINAL_ATTEMPT = 1
+          ORIGINAL_HEAD = "34c547eac9a80988a1f35c68d500eba07e369b85"
+          JOBS = {
+              126986508649: "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+              126986508418: "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          }
+          MAX_JSON = 4 * 1024 * 1024
+          MAX_LOG = 128 * 1024 * 1024
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, request, fp, code, message, headers, new_url):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+          root = Path(os.environ["EVIDENCE_DIR"])
+          root.mkdir(parents=True, exist_ok=False)
+          records = []
+          manifest = {
+              "repository": REPOSITORY,
+              "original_run_id": ORIGINAL_RUN,
+              "original_run_attempt": ORIGINAL_ATTEMPT,
+              "original_head": ORIGINAL_HEAD,
+              "collector_head": os.environ["COLLECTOR_HEAD"],
+              "collector_workflow_sha": os.environ["COLLECTOR_WORKFLOW_SHA"],
+              "collector_run_id": os.environ["GITHUB_RUN_ID"],
+              "collector_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "complete": False,
+              "jobs": records,
+          }
+
+          def digest(path):
+              h = hashlib.sha256()
+              with path.open("rb") as stream:
+                  for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                      h.update(chunk)
+              return h.hexdigest()
+
+          def write_manifest():
+              (root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+          def api_request(path):
+              return urllib.request.Request(
+                  "https://api.github.com/repos/" + REPOSITORY + "/" + path,
+                  headers={
+                      "Authorization": "Bearer " + os.environ["GH_READ_TOKEN"],
+                      "Accept": "application/vnd.github+json",
+                      "Accept-Encoding": "identity",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "hepta-original-log-evidence",
+                  },
+              )
+
+          def read_api_json(path, filename):
+              with opener.open(api_request(path), timeout=30) as response:
+                  data = response.read(MAX_JSON + 1)
+              if len(data) > MAX_JSON:
+                  raise RuntimeError("GitHub metadata exceeded the evidence size bound")
+              value = json.loads(data)
+              (root / filename).write_bytes(data)
+              return value
+
+          def log_stream(job_id):
+              # The authenticated API request must never forward its token to a redirect.
+              try:
+                  return opener.open(api_request(f"actions/jobs/{job_id}/logs"), timeout=30)
+              except urllib.error.HTTPError as error:
+                  if error.code != 302:
+                      raise RuntimeError(f"log API failed with HTTP {error.code}") from None
+                  location = error.headers.get("Location", "")
+                  error.close()
+              parsed = urllib.parse.urlsplit(location)
+              if (
+                  parsed.scheme != "https"
+                  or parsed.username is not None
+                  or parsed.password is not None
+                  or parsed.port not in (None, 443)
+                  or not parsed.hostname
+                  or not parsed.hostname.endswith(".blob.core.windows.net")
+              ):
+                  raise RuntimeError("unexpected GitHub log download host")
+              # A separate unauthenticated request follows the checked signed blob URL.
+              # Further redirects fail closed; the signed URL is not recorded or printed.
+              return opener.open(
+                  urllib.request.Request(location, headers={"Accept-Encoding": "identity"}), timeout=30
+              )
+
+          write_manifest()
+          try:
+              collector = read_api_json(
+                  "git/commits/" + os.environ["COLLECTOR_HEAD"], "collector-source.json"
+              )
+              if collector.get("sha") != os.environ["COLLECTOR_HEAD"]:
+                  raise RuntimeError("collector source identity changed")
+              manifest["collector_tree"] = collector["tree"]["sha"]
+              run = read_api_json(f"actions/runs/{ORIGINAL_RUN}", "original-run.json")
+              if (
+                  run.get("id") != ORIGINAL_RUN
+                  or run.get("head_sha") != ORIGINAL_HEAD
+                  or run.get("run_attempt") != ORIGINAL_ATTEMPT
+                  or run.get("status") != "completed"
+              ):
+                  raise RuntimeError("original run identity or terminal state changed")
+              jobs = read_api_json(
+                  f"actions/runs/{ORIGINAL_RUN}/attempts/{ORIGINAL_ATTEMPT}/jobs?per_page=100",
+                  "original-jobs.json",
+              )
+              by_id = {job["id"]: job for job in jobs["jobs"]}
+              for job_id, expected_name in JOBS.items():
+                  job = by_id.get(job_id)
+                  if (
+                      job is None
+                      or job.get("run_id") != ORIGINAL_RUN
+                      or job.get("head_sha") != ORIGINAL_HEAD
+                      or job.get("run_attempt") != ORIGINAL_ATTEMPT
+                      or job.get("status") != "completed"
+                      or job.get("name") != expected_name
+                  ):
+                      raise RuntimeError(f"original job identity changed: {job_id}")
+                  destination = root / f"job-{job_id}.log.gz"
+                  sha = hashlib.sha256()
+                  size = 0
+                  with log_stream(job_id) as response, destination.open("xb") as raw:
+                      if response.status != 200:
+                          raise RuntimeError(f"unexpected log HTTP status: {job_id}")
+                      encoding = response.headers.get("Content-Encoding", "identity").strip().lower()
+                      if encoding != "identity":
+                          raise RuntimeError(f"unexpected log content encoding: {job_id}")
+                      lengths = response.headers.get_all("Content-Length", [])
+                      expected_length = None
+                      if lengths:
+                          if len(lengths) != 1:
+                              raise RuntimeError(f"ambiguous log content length: {job_id}")
+                          length = lengths[0].strip()
+                          if not length.isascii() or not length.isdigit():
+                              raise RuntimeError(f"invalid log content length: {job_id}")
+                          expected_length = int(length)
+                          if expected_length > MAX_LOG:
+                              raise RuntimeError(f"declared log exceeded size bound: {job_id}")
+                      with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=0) as compressed:
+                          for chunk in iter(lambda: response.read(1024 * 1024), b""):
+                              size += len(chunk)
+                              if size > MAX_LOG:
+                                  raise RuntimeError(f"original log exceeded size bound: {job_id}")
+                              sha.update(chunk)
+                              compressed.write(chunk)
+                      if expected_length is not None and size != expected_length:
+                          raise RuntimeError(f"incomplete original log body: {job_id}")
+                  records.append({
+                      "job_id": job_id,
+                      "name": expected_name,
+                      "original_conclusion": job["conclusion"],
+                      "log_bytes": size,
+                      "declared_content_length": expected_length,
+                      "content_encoding": encoding,
+                      "log_sha256": sha.hexdigest(),
+                      "gzip_file": destination.name,
+                      "gzip_bytes": destination.stat().st_size,
+                      "gzip_sha256": digest(destination),
+                  })
+                  write_manifest()
+                  print(f"Preserved original job {job_id}: {size} bytes", flush=True)
+              manifest["complete"] = len(records) == len(JOBS)
+              write_manifest()
+          finally:
+              write_manifest()
+
+      - name: Upload original source-bound log evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: original-logs-41948353639-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-original-log-evidence
+          if-no-files-found: error
+          retention-days: 7

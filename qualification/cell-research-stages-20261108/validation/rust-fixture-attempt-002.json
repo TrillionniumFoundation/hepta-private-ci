@@ -1,0 +1,293 @@
+{
+  "schema": "hepta.rust-ci-repair-helper-validation.v1",
+  "base_source_sha": "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3",
+  "input_sha256": "84d5ff2d48596298907ed5ebd5d7d854df2bd035f86fe970341b8b9c85569d28",
+  "candidate_source": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+  "candidate_commit": {
+    "sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+    "parents": [
+      "b86dcb2ac3c9ebcef480a78b06dd003881c87ba3"
+    ],
+    "paths": [
+      "codex-rs/core/tests/common/test_codex.rs",
+      "codex-rs/core/tests/suite/abort_tasks.rs",
+      "codex-rs/exec-server/Cargo.toml",
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_tests.rs"
+    ],
+    "local_only": true
+  },
+  "prior_hepta_attempt": {
+    "name": "hepta-targeted-tests",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-infer-core",
+      "-p",
+      "codex-hepta-neuron"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+    "state": "completed",
+    "started_unix": 1794139259.2569995,
+    "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-targeted-tests.log",
+    "exit_code": 100,
+    "wall_seconds": 15.542586101975758,
+    "log": {
+      "bytes": 40306,
+      "sha256": "5366bdbdf3c7880086e7984d47ac67eb6d296af8f5177df8a0897a00bcc2003f",
+      "git_blob": "59ee4b119279b16312f02490dd7509783b7274c7"
+    },
+    "locks_after": {
+      "codex-rs/Cargo.lock": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+      },
+      "MODULE.bazel.lock": {
+        "bytes": 1761877,
+        "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+        "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+      }
+    }
+  },
+  "reason": "Create a local validation commit containing exactly the approved nine-file candidate, prepare and pin its real helper with the official clean-source gate, and test the original two-package selection.",
+  "state": "completed",
+  "checks": [
+    {
+      "name": "candidate-stage",
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/hepta-infer-core/src/generation_control_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_current_tests.rs",
+        "codex-rs/hepta-neuron/src/cell_generation_test_support.rs",
+        "codex-rs/core/tests/common/test_codex.rs",
+        "codex-rs/core/tests/suite/abort_tasks.rs",
+        "codex-rs/exec-server/Cargo.toml",
+        "codex-rs/exec-server/tests/common/fake_bwrap.rs"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794140233.199157,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/candidate-stage.log",
+      "exit_code": 0,
+      "wall_seconds": 0.02956165897194296,
+      "log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    {
+      "name": "candidate-local-commit",
+      "command": [
+        "git",
+        "commit",
+        "-m",
+        "Local validation of reviewed Rust CI test repairs"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794140233.259598,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/candidate-local-commit.log",
+      "exit_code": 0,
+      "wall_seconds": 0.03532042895676568,
+      "log": {
+        "bytes": 130,
+        "sha256": "5c8d897cb3a70b3d13481f6801cdd5750fefcbc640f3d68468d4f89714c3d62c",
+        "git_blob": "3a8fa04c9e139e135b24a1044b98e9ddda125936"
+      }
+    },
+    {
+      "name": "helper-preparation",
+      "command": [
+        "/usr/bin/python3",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794140233.3272269,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-preparation.log",
+      "exit_code": 0,
+      "wall_seconds": 169.1103478349978,
+      "log": {
+        "bytes": 192,
+        "sha256": "ad0acbb3c7707ecdd53d157cde3a43fbbb44f104bc461ae1904006baf52862e6",
+        "git_blob": "ebb7a26df46e0c74deda745f7d7dd1f47c8a6b18"
+      }
+    },
+    {
+      "name": "helper-verification-before",
+      "command": [
+        "/usr/bin/python3",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification",
+        "--verify-only"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794140402.4706259,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-verification-before.log",
+      "exit_code": 0,
+      "wall_seconds": 0.0694322029594332,
+      "log": {
+        "bytes": 1148,
+        "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+        "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+      }
+    },
+    {
+      "name": "hepta-with-helper-tests",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-neuron"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+      "state": "completed",
+      "started_unix": 1794140402.5776932,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/hepta-with-helper-tests.log",
+      "exit_code": 0,
+      "wall_seconds": 9.05682009801967,
+      "log": {
+        "bytes": 31039,
+        "sha256": "edf37ca87a2076a92c63edc1f1adc2a900a10b3fdd4b79a33083fb74eb00847f",
+        "git_blob": "081ac22a1ea14ca3190715c511bbe9cfab09c2ff"
+      }
+    },
+    {
+      "name": "helper-verification-after",
+      "command": [
+        "/usr/bin/python3",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification",
+        "--verify-only"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source",
+      "state": "completed",
+      "started_unix": 1794140411.669085,
+      "log_path": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/logs/helper-verification-after.log",
+      "exit_code": 0,
+      "wall_seconds": 0.07277775398688391,
+      "log": {
+        "bytes": 1148,
+        "sha256": "1538cf3d040f1ed14a886ee7b8895b908307d8d9bbd8c750a5aa97f94b284942",
+        "git_blob": "0c4574383bfc0ac447b1f67b9970001747f59c90"
+      }
+    }
+  ],
+  "windows_execution": false,
+  "musl_rbe_execution": false,
+  "tests_after_format": false,
+  "published": false,
+  "helper_manifest": {
+    "schema_version": 1,
+    "source_sha": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "source_sha_after": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "source_status_before": "",
+    "source_status_after": "",
+    "workspace": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs",
+    "selected_packages": [
+      "codex-hepta-infer-worker-host"
+    ],
+    "builds": [
+      {
+        "package": "codex-hepta-infer-worker-host",
+        "binaries": [
+          "hepta-joint-propose"
+        ],
+        "command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--message-format=json-render-diagnostics",
+          "-p",
+          "codex-hepta-infer-worker-host",
+          "--bin",
+          "hepta-joint-propose"
+        ],
+        "stdout": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/codex-hepta-infer-worker-host.jsonl",
+        "stderr": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/codex-hepta-infer-worker-host.stderr.log",
+        "exit_code": 0,
+        "cargo_finished": true,
+        "complete": true
+      }
+    ],
+    "artifacts": {
+      "hepta-joint-propose": {
+        "package": "codex-hepta-infer-worker-host",
+        "package_id": "path+file:///home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+        "compiler_executable": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/cargo-target/debug/hepta-joint-propose",
+        "executable": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose",
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 1,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "sha256": "7a61bbfa6ee1bf625de0885453d92a1f282c76197f0689a6830b47bd315dd7b4",
+        "bytes": 6090640
+      }
+    },
+    "complete": true,
+    "exit_code": 0
+  },
+  "helper_environment": {
+    "CARGO_BIN_EXE_hepta-joint-propose": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose",
+    "CARGO_BIN_EXE_hepta_joint_propose": "/home/qian-qi/work/hepta-cell-ci-repair-20261108-304d/helper-qualification/bin/hepta-joint-propose"
+  },
+  "helper_manifest_binding": {
+    "bytes": 1912,
+    "sha256": "d5ce3861596735948c97e82f5a1e36996a97db98ba8d23ae652294c8bcd1f62f",
+    "git_blob": "e0ff156d1d5fe662404fd0c99f41e85f18ab381b"
+  },
+  "helper_environment_binding": {
+    "bytes": 285,
+    "sha256": "d02dd284d341c1a9baaba0e80dfabac75c13318f7b86e217bd0eacbbbe09b30c",
+    "git_blob": "ae00649129d5c948fc9e91e028bcb0c0e7f6a253"
+  },
+  "exit_code": 0,
+  "success": true,
+  "locks_after": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 417315,
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1761877,
+      "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+      "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+    }
+  },
+  "source_final": {
+    "head": "692a26dd8ac9ad3175a276d173dc6ad4fabffbc3",
+    "tree": "9352a943e5dd48798d1c6aa16cc0c0adcf340050",
+    "status": ""
+  }
+}

@@ -1,0 +1,353 @@
+{
+  "schema": "hepta.learn.final8bf-validation-carriers-independent-peer.v1",
+  "reviewer": "/root/learn_evaluator_budget",
+  "result": "NO_BLOCKING_FINDING_IN_REVIEWED_STATIC_SCOPE",
+  "source": {
+    "sha": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "tree": "c8730bab75eabe47a3b0b3260a6203a0d86d1443"
+  },
+  "execution": {
+    "H": false,
+    "Python": false,
+    "Rust": false,
+    "source_tests": false,
+    "native_tests": false,
+    "fullcaller": false,
+    "PR_or_production_changes": false,
+    "ordinary_acceptance": 0
+  },
+  "reviewed": {
+    "contract": {
+      "blob": "44d74103163b65621638b67d76db91e968648852",
+      "bytes": 14806,
+      "sha256": "f58a34bebe05585c85bf437ff224560b01dd57254f7fa600951222d36fcd2b8c"
+    },
+    "exact_edits": {
+      "blob": "e889915b15fe8ca453345a86bfdc2849d53b4e22",
+      "bytes": 29289,
+      "sha256": "1d4885a9047f9aef69835171b31f9f30f895cf1ed72d0735a00ae0aa2453d03a"
+    },
+    "inventory_delta": {
+      "blob": "db74a9ff7cf7e8ee3fd3ecb2a4d74635de2edae2",
+      "bytes": 1404,
+      "sha256": "21ea9c1009123c380c804d54b79c9fb2c935d85946dd220e38c20993dc3635a9"
+    },
+    "readme": {
+      "blob": "7b66a6f220aff8050b32b095d564de8d15605508",
+      "bytes": 3239,
+      "sha256": "7acd8ca640571b0ae11288cab5e8d8261da6bf400c227a4e2a8e092ce746bceb"
+    },
+    "source_runner": {
+      "blob": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+      "bytes": 71447,
+      "sha256": "522c37f67debe9ddf3b55608440f227977971623f28337a95cedbf337dee62ff"
+    },
+    "native_bound": {
+      "blob": "7b38fb189736532092d88f59da6a71dd63498ae3",
+      "bytes": 14371,
+      "sha256": "3afa05b3543896c6f87b7ce557a57bc46ff245dbc8f0d7540ac4065ce076d25a"
+    },
+    "outer_bound": {
+      "blob": "832bec9def487d219c51508a2e8816f4142fc2cb",
+      "bytes": 107760,
+      "sha256": "27563b4a3ad10a32df7881ea984b1e7a040ffe45d975bf31dda0386c496d04fd"
+    },
+    "main_request": {
+      "blob": "7c92fa060f463cacf52531512ca1c1c67656cac7",
+      "bytes": 112558,
+      "sha256": "f157d0e4dc22b57f7a5bd6926e52be026725e1701465a027f8f9448f2e52ef3c"
+    },
+    "fullcaller_recorder": {
+      "blob": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+      "bytes": 18927,
+      "sha256": "e1be76aafffdd65fcc36778ba4b00f2feb184cc39149f63791005e2c8d7582a0"
+    },
+    "fullcaller_wrapper": {
+      "blob": "dc3f1aa0852b93e22e7d65288fafdba55ccf02cb",
+      "bytes": 30466,
+      "sha256": "1658cacb17034130ab4e3a46a6678efccb3a59daf49f48673196d76f74ff282e"
+    },
+    "fullcaller_request": {
+      "blob": "30f3c79f9b19d962c4cedd9bc763fa4dc1d81cdb",
+      "bytes": 32962,
+      "sha256": "9c11aa1ff2c06e4da43fbc1f76b506871615c2c19c3d8575b6852f1bf42ae44a"
+    },
+    "actual_v3_result": {
+      "blob": "c67c20427461211dcd17af6cead26a1de73a2d0d",
+      "bytes": 12843,
+      "sha256": "1054be1b7545dd29dfa2058ae6d7c7b35180aac3ee838d2d8c7bbdbacf7fba3b"
+    },
+    "actual_v3_H_status": {
+      "blob": "6ebe5a037cb814678c63e75d1ce18e7ed846b903",
+      "bytes": 908,
+      "sha256": "edd9b8f591dc5ca4a1c80cc4d5535db293d55ab06eb447e5ab77c1b000f4c875"
+    },
+    "actual_v3_H_logs": {
+      "blob": "1f6c213209c27e76d3e95791b6b8aa164c2b381f",
+      "bytes": 3381,
+      "sha256": "5928d68c70e6725dae1da7fa888cffae6af917ce1820e76192d0479aaed9f696"
+    }
+  },
+  "replay": [
+    {
+      "before": "0397e37ba2f93117bede8ab547404a72b8f9946c",
+      "after": "b9ed6ad2bd778763901c3cc16f8544efb750c30c",
+      "before_metadata": true,
+      "after_metadata": true,
+      "count": 2,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "before": "21cb4ab3dc65c459d1bdb87b07c39c3c6c0c067c",
+      "after": "7b38fb189736532092d88f59da6a71dd63498ae3",
+      "before_metadata": true,
+      "after_metadata": true,
+      "count": 8,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "before": "ae3c3de05092b3ba49bc91ddbc3e9b566188a7ec",
+      "after": "832bec9def487d219c51508a2e8816f4142fc2cb",
+      "before_metadata": true,
+      "after_metadata": true,
+      "count": 27,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "before": "1e3f26115da3d0e101eafed24aa88549e7546d02",
+      "after": "79e985f8b5aed7c13e99eab4e7c19c44d32ba442",
+      "before_metadata": true,
+      "after_metadata": true,
+      "count": 4,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "before": "0bf2afcec7aab958a9f7d8f0244c7a58d701b05a",
+      "after": "dc3f1aa0852b93e22e7d65288fafdba55ccf02cb",
+      "before_metadata": true,
+      "after_metadata": true,
+      "count": 8,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "transition": "native",
+      "count": 1,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    },
+    {
+      "transition": "outer",
+      "count": 3,
+      "whole_forward_equal": true,
+      "whole_inverse_equal": true
+    }
+  ],
+  "embedded_and_request_checks": {
+    "native_binding": true,
+    "native_bound_only_first_line": true,
+    "outer_binding": true,
+    "embedded_native_full_byte_equal": true,
+    "embedded_source_full_byte_equal": true,
+    "native_original_tail_full_byte_equal": true,
+    "caller_embedded_full_byte_equal": true,
+    "main_request_fields": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "main_request_wrapper_equal": true,
+    "main_request_changes": [
+      "args",
+      "idempotency_key"
+    ],
+    "main_bound_request_only_args": [
+      "args"
+    ],
+    "main_argv_prefix": true,
+    "caller_request_fields": [
+      "host",
+      "executable",
+      "args",
+      "cwd",
+      "env",
+      "idempotency_key"
+    ],
+    "caller_request_wrapper_equal": true,
+    "caller_request_changes": [
+      "args",
+      "idempotency_key"
+    ],
+    "caller_argv_prefix": true,
+    "main_key": "learn-ce434-8bf3881afa8c-isolated-full-source-native-v1",
+    "caller_key": "learn-ce434-8bf3881afa8c-isolated-full-caller-v1",
+    "main_cwd": "/home/qian-qi",
+    "caller_cwd": "/home/qian-qi",
+    "outer_bound_exact_three_changes": true,
+    "main_argv_length_equal": true
+  },
+  "complete_request_inverse": {
+    "main_old_formatted_whole_restored": true,
+    "caller_old_formatted_whole_restored": true
+  },
+  "inventory": {
+    "before_count": 443,
+    "after_count": 445,
+    "before_modules": 62,
+    "after_modules": 62,
+    "old_full_array_equal": true,
+    "added": [
+      "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_dispatch_keeps_exact_fresh_cut_and_installed_gate",
+      "test_resident_candidate_stage_source_closure.ResidentCandidateStageClosureTests.test_private_adoption_never_replaces_generic_denials_or_actual_root_fences"
+    ],
+    "added_positions": [
+      379,
+      380
+    ],
+    "full_original_order_and_multiplicity": true,
+    "before_array_sha": "c4da0f7a675adca571123f72136c3dbf19bbb1793052131ab38065bf23e3c9b1",
+    "after_array_sha": "5344536a1a70ed0ac22360341a5b39e36196d13050e85baec0a751bc3ed3e840",
+    "source_actual_definitions": true
+  },
+  "manifest": {
+    "fixed_path_ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+    "fixed_path_sha": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "complete_cached_blob_sha": "95c8261a6c3eec23d038ba5aec754d618731d222",
+    "bytes": 1621149,
+    "sha256": "36dfcb45464a959bd2053e5c53f05fbc676ca8b8cc45d7e66d88aa64cb4b1a99",
+    "whole_manifest_cached_hash_equal": true,
+    "record_counts": {
+      "boundary": 737,
+      "protected_file": 506
+    },
+    "method": "Exact 8bf Git path metadata points to 95c; its previously fully fetched 1621149-byte content was independently rehashed to that blob. The complete previously parsed record collection remains 737 boundary and 506 protected_file records. No Python verifier execution is inferred."
+  },
+  "actual_creation": {
+    "actual_source": "4537458b51b6ca936264aecea7cfe384b941d0d1",
+    "actual_tree": "8cbd7b269c9c39df4ee3ffcefed8473060696184",
+    "bytes": 12843,
+    "bytes_within_original_16384": true,
+    "expected_schema": true,
+    "expected_state": true,
+    "source_before_after_equal": true,
+    "preserved_before_after_equal": true,
+    "archive_proof_before_after_equal": true,
+    "both_artifacts_metadata_equal": true,
+    "source_clean": true,
+    "root_identity": {
+      "device": 2067,
+      "inode": 47972373,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 3
+    },
+    "target_identity": {
+      "device": 2067,
+      "inode": 47972398,
+      "mode": "0o40700",
+      "uid": 1000,
+      "nlink": 2
+    },
+    "native_tests_executed": 0,
+    "terminal": {
+      "job": "1a1d0dc3eb7-2564-1bd4",
+      "state": "succeeded",
+      "exit_code": 0,
+      "complete": true,
+      "durable": true,
+      "timed_out": false,
+      "cancelled": false,
+      "automatic_retry": false
+    }
+  },
+  "findings": [
+    {
+      "topic": "Actual target binding",
+      "conclusion": "The bound header is the exact independently read successful c67 receipt size and full SHA256, within the original 16384-byte limit. Native freshly opens the exact attempt2 receipt with O_NOFOLLOW and stable before/open/after/path identities, rejects wrong exact size/hash/schema/state/provenance, and compares current canonical owned0700 root/target device/inode/uid/mode to that receipt. Creation source453/tree8cbd is separate from test source8bf/treec873. Neither original failed attempt nor historical v1/v2 receipts is rewritten."
+    },
+    {
+      "topic": "Exclusive new worktree and preservation",
+      "conclusion": "The outer preserves fixed clean a671 and453 worktrees before, after fetch, after new worktree creation, before tests and after completion. It retains actual directory identity checks and the original common-Git and checkout-space conditions. New8bf uses an exclusive0700 directory and original git worktree add --detach without force/reset/clean/removal. Failures keep actual paths and observations; the original Popen handle is waited and no new kill/replay behavior is introduced."
+    },
+    {
+      "topic": "Readiness and dispatch boundary",
+      "conclusion": "Exclusive worktree-ready.json is written only after the actual owned worktree-add command has returned integer0, new8bf SHA/tree/clean/common-Git/directory checks, both preserved source identities, all6777 tracked Rust files, exact inventory pin and complete embedded runner hashes. It is not native/source success. The carrier never launches fullcaller itself. Root must retrieve and verify the actual complete ready receipt before separately dispatching caller; ACK or fetch success alone is insufficient."
+    },
+    {
+      "topic": "Source and native inventory",
+      "conclusion": "Source0397 to b9ed has only the two existing method insertions at zero-based379/380 and the two443 count literals to445. All443 original IDs preserve exact order and multiplicity, modules remain62, and the two methods exist in the actual8bf QA blob40e. Actual8bf inventory is byte-identical3ac2; native private_environment-through-exit is entirely byte-identical21cb. All201 cases,43 groups,four packages,helper protocol,just test selector,threads2,retries0,minimum201,3600-second CI gate and inherited original timeout/output rules remain."
+    },
+    {
+      "topic": "Fullcaller",
+      "conclusion": "Recorder1e3 to79e differs only in SOURCE_SHA, SOURCE_TREE, CALLERS pin and EXPECTED_BOUNDARIES736 to737. Every other byte is identical, including codex source-roots6655,506 complete records,self-test300/verify4800,64MiB,10800 observation,no --base and no signals. The wrapper differs only in eight stamps including the complete matching recorder; actual owned child wait/result semantics remain. Launcher/recorder exit never substitutes for each started verifier phase original terminal evidence, and10800 observation does not extend4800 success."
+    },
+    {
+      "topic": "Typed requests",
+      "conclusion": "Both exact six-field requests preserve hostdesktop, /usr/bin/python3, cwd/home/qian-qi and bytecode-only env. Main retains original [-B,-c,complete_outer]; caller retains [-I,-S,-B,-c,complete_wrapper]. Only script argument and unique idempotency_key differ. Full embedded scripts and their derived hashes are equal to their independently fetched blobs. No supervisor timeout/resource override, extra native run, Root29, formatter or cleanup is added."
+    }
+  ],
+  "fixed_path_reads": [
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "scripts/verify_hepta_callers.py",
+      "blob": "c66fb1f90a61deaa6461f0c7155209ed32903e62",
+      "bytes": 38402,
+      "sha256": "16015483d2319a2dbf2f6ab13e4c3c5e5f3a5318ac85f70557004b7fcb450e3f"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "scripts/hepta_typed_callers.py",
+      "blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "bytes": 7672,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "scripts/hepta_ci_exec.py",
+      "blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "bytes": 12863,
+      "sha256": "9b2bfaa563fff018df4e4f10944f6fbc63d307fa4c4a7e167c392288edb5a5c1"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "blob": "380b6d50f871e7eaa5a8bbc12fb75e59d45b868d",
+      "bytes": 27362,
+      "sha256": "917566e873e93a169886e32f601ac581248e74523ebb0546ddca07b242dd847d"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "scripts/hepta_c_observer_coverage.py",
+      "blob": "3ac2aab7e5b9fba93cd2371085a6cf66e2b84c87",
+      "bytes": 34666,
+      "sha256": "c9dadbd57af416d9bd86d5d1b35f4d3c00651784a8331fbe9b3b4c616c214c08"
+    },
+    {
+      "ref": "8bf3881afa8cccff286fc58909995c96f3e0b260",
+      "path": "qa/b4-no-bypass/test_resident_candidate_stage_source_closure.py",
+      "blob": "40e257dfe3eaf926a95711e95949425fc4387ae9",
+      "bytes": 15584,
+      "sha256": "51bc33b415c72d028a761ad946638666e732e002fa54737834e24db82232bc64"
+    }
+  ],
+  "limits": [
+    "Full Git blob bytes and declared exact edits were read, independently hashed and replayed in V8. This is not Python parsing, source-suite execution, full typed caller verification or Rust/native execution.",
+    "The supplied actual v3 success proves target creation only; its own native_tests_executed is0. No8bf worktree-ready or validation runtime result exists in this review.",
+    "No previous source453 pass, a671 result, metadata fixture or gate qualification is transferred to8bf or to ordinary learning acceptance.",
+    "Root29 and final maintenance remain separate. No broad claim about unrelated background H work or whole-filesystem isolation is made."
+  ]
+}

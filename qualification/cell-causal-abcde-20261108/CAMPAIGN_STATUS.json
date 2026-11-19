@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.cell-causal.campaign-status.v1",
+  "code_commit": "1e9c2890fef92ea63dab472e1bdb0c444c9656b5",
+  "code_tree": "20f0836afc9c790fee23ddd150817a6d11550598",
+  "baseline_commit": "9c6c18cec8c56260d633de5a6adf321de2a4e3d4",
+  "experiments": {
+    "A": {"evidence_contract_implemented": true, "real_matched_architecture_experiment_completed": false},
+    "B": {
+      "matched_training_pilot_completed": true,
+      "same_checkpoint_deployment_state_ablation_completed": false,
+      "independent_training_repeats": 2,
+      "training_jobs_completed": 56,
+      "training_jobs_planned": 56,
+      "training_pairs_verified": 28,
+      "constructor_pairs_verified": 2,
+      "profile_candidates_complete": 80,
+      "tuning_records": 400,
+      "pilot_records": 960,
+      "descriptive_comparisons": 396,
+      "full_improvement_budget_complete": false
+    },
+    "C": {"evidence_contract_implemented": true, "real_complete_bundle_composition_experiment_completed": false},
+    "D": {"evidence_contract_implemented": true, "runtime_apply_and_recovery_primitives_exist": true, "real_matched_topology_experiment_completed": false},
+    "E": {"evidence_contract_implemented": true, "real_parent_descendant_improver_experiment_completed": false}
+  },
+  "original_jobs": {
+    "collection": "1a1ba616330-12894-1a37",
+    "training": "1a1ba880fd8-12894-1b64",
+    "training_return_verification": "1a1ba8fbbf0-12894-1b9b",
+    "evaluation_preparation": "1a1ba8b3baf-12894-1b7c",
+    "evaluation": "1a1ba90eccb-12894-1ba3",
+    "analysis": "1a1baa1acfc-12894-1c0d"
+  },
+  "actual_training_and_evaluation_backend": "ai395_native_cpu",
+  "scientific_acceptance": "HOLD",
+  "confirmation_access": false,
+  "adoption_authorized": false,
+  "merge_requested": false,
+  "complete_A_to_E_scientific_execution_claimed": false,
+  "snapshot_scope": "Completed bounded B engineering pilot and honest A/C/D/E capability/evidence gaps; the preregistration remains an unchanged historical artifact."
+}

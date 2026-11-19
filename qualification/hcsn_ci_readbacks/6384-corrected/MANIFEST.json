@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-n256-execution-receipt-publisher-corrected-ci-readback-v1",
+  "source_pr": 6384,
+  "prior_evidence_pr": 6385,
+  "source_head": "1025e5f0a46484e8c19eed47bd153c7649479853",
+  "source_tree": "90172e2c3b734864ef2b91d2efd0acd2c7f7652d",
+  "workflow_run_id": 43730512635,
+  "job_id": 132861685366,
+  "job_conclusion": "success",
+  "artifact_id": 14168376540,
+  "artifact_name": "hcsn-n256-execution-receipt-publisher-source-269454359f8975a9624805a188bab18a86bb3641",
+  "artifact_bytes": 2823,
+  "artifact_sha256": "ca367d9909ad4c8186da7426be977cf47567e0fbbf9bc2cf3b0025133d2e9653",
+  "artifact_git_blob": "9cffb1261e36136d9e61bc8b4bcda578740988aa",
+  "member_count": 7,
+  "uncompressed_bytes": 5609,
+  "members": {
+    "COUNTS.json": {
+      "bytes": 268,
+      "sha256": "02b12a554cbbdd6cb6e5a19352620c997c7ccccafd94cc185ea7038628a717bd"
+    },
+    "TEST_OPT_STDERR.txt": {
+      "bytes": 2324,
+      "sha256": "f81c32be6b696d42c5d1a143b8d3d87af81b3411f667a2c96020b0d94a642d80"
+    },
+    "REPORT.json": {
+      "bytes": 645,
+      "sha256": "6cf47866b326f8986179ee2cecd730ae4101e8d34a4e04001ef49b12a23a57fd"
+    },
+    "TEST_OPT_STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TEST_STDERR.txt": {
+      "bytes": 2322,
+      "sha256": "d43274dcba7f9319b341258123c32c83a61d7efb7eae2dcaa4ca8698f3f1fa97"
+    },
+    "VERIFY.txt": {
+      "bytes": 50,
+      "sha256": "63bf4ae9c280550e5721860176b5d988d12a1ec3bb3692f77e483ab39f488b08"
+    },
+    "TEST_STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "job_log_git_blob": "491ac0cfb6b60d434b3fcd855f9bb6537c074376",
+  "normal_tests": "6/6",
+  "optimized_tests": "6/6",
+  "boolean_exit_code_negative_control": true,
+  "authentic_receipts_published": 0,
+  "dynamic_runs": 0,
+  "provider_calls": 0,
+  "oracle_calls": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "c2_full_replay_completed": "0/6",
+  "hpca_status": "NO_UPDATE_EXTERNAL_CUSTODY_AND_SAME_BUDGET_BENEFIT_OPEN",
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

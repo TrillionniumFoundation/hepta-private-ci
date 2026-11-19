@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-10-23T06:14:57.514644+00:00",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "-E",
+    "test(production_composition::)"
+  ],
+  "cwd": "/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/original-package-attempt",
+  "exit_code": 101,
+  "stdout": "",
+  "stderr": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\nerror: failed to load manifest for workspace member `/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/original-package-attempt/codex-rs/aws-auth`\nreferenced by workspace at `/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/original-package-attempt/codex-rs/Cargo.toml`\n\nCaused by:\n  failed to read `/workspace/scratch/3d6a75235bcb/work/hepta-integration/production-composition/validation/original-package-attempt/codex-rs/aws-auth/Cargo.toml`\n\nCaused by:\n  No such file or directory (os error 2)\nerror: Recipe `test` failed on line 89 with exit code 101\n",
+  "source_sha256_before": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "source_sha256_after": {
+    "config.rs": "a5e08e510c106ec795b06c06cec144e8b67a7650b75a442d236162570d23fc4f",
+    "lib.rs": "17d994df31d925b82b312dd66c41def5714c286d67aed853f8b540edd3530009",
+    "production_authority.rs": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+    "production_authority_tests.rs": "dab3c288686685107d2248f4c207b7e2fbf30f0e7e9af11ffeefac642869bcce",
+    "production_composition.rs": "c34dc7bcbc2a6d625054d018f07eb6eca3e3382fea635a2b03133520551eaa95",
+    "production_composition_fixture.rs": "4a6269520527e2a92b310627909aebca3b6030ac882361fe94a97c31d4de3dc5",
+    "production_composition_notes_tests.rs": "64f49402ebb604f51178e810a1575acc40179912dbccc2d52c3573b5319b221e",
+    "production_composition_tests.rs": "b38ce61b97170dd9c2a8b3f230134fbf3aff7e09c3d89eacc5ddfca1c3acb3e1"
+  },
+  "scope": "Original Agentd package command with final composition and original Notes handoff tests; partial verified workspace plus overlays. Failed before compilation, no factory or Notes test executed."
+}

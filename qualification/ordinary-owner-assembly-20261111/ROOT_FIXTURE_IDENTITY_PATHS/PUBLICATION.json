@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "title": "Root publication fixture original-path accessibility repair",
+  "status": "fixed test-only draft; not native-tested",
+  "baseline": {
+    "commit": "2d3a240d48aaa733775b134877c43981db50b702",
+    "tree": "ad39b87c16dd6799ba16015ec70b7021ac9c1e16"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_fixture_tests.rs",
+      "preimage": {
+        "git_blob": "480426e7638af68de8a2cda666e72f0a597c41cc",
+        "bytes": 30230,
+        "sha256": "70d069653a0eee7b56539db8be375cbb6d72394002da7efb01fe0bd3975c7225"
+      },
+      "postimage": {
+        "git_blob": "8c5b2644f7ca39b20832850bd38b46352d89f785",
+        "bytes": 30620,
+        "sha256": "3327b2ed4daa904799a1746c9b1c7d30f3853fe47e610d89735f2ce277b4f9d1"
+      },
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true,
+      "exact_operations": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_publication_root_child_tests.rs",
+      "preimage": {
+        "git_blob": "c3030b6519c73bb1cfb4a8ec66069ef3b5db5801",
+        "bytes": 15383,
+        "sha256": "36fccbaf05db903fd928464527eb81a57a473e291f2fb80dd7e4df932067a9c8"
+      },
+      "postimage": {
+        "git_blob": "29b40417626ada0a4df3f07c3bbc4a3f54b54854",
+        "bytes": 15607,
+        "sha256": "38364ee24b4ec033d7473032373bbd1f84ef8620a87c1368a7cf44e7ca40d384"
+      },
+      "exact_replay": true,
+      "guard_and_timeout_tokens_equal": true,
+      "exact_operations": 2
+    }
+  ],
+  "artifacts": {
+    "source_delta": {
+      "git_blob": "40548b3ccce1069d2f971b99c33818723662e504",
+      "bytes": 4311,
+      "sha256": "a0c40ac977ac499b59ef72dc7e61d3f65d607a674fa2175206ab51b8cd953d64"
+    },
+    "diagnostic": {
+      "git_blob": "8b277719109e53255ed70975c78124df7432970c",
+      "bytes": 6858,
+      "sha256": "e6c8cf277f4e5efaa30ef05f6921130b15d0570f7b00511487160aad224ac3e8"
+    }
+  },
+  "invariants": [
+    "Root authority remains in its original private700 domain",
+    "No change to issuer, FinalUse, CURRENT, witness, trust or live identity protocol",
+    "No child write permission to Registry or original writer",
+    "Original child protected-directory negative assertion remains",
+    "No timeout/assertion/negative-case relaxation",
+    "Same actual Registry Starting and sealed registered identity constructors",
+    "No ordinary or cold-restart acceptance"
+  ],
+  "static_review": "Submitted to hepta_audit with exact postimages; independent review pending.",
+  "execution": "No Cargo, native/Root tests, h polling or ref changes performed for this repair.",
+  "supersedes": {
+    "manifest_git_blob": "22da0b5d49efdbf73485a9242a4ba37f8750ce5b",
+    "reason": "Use final0710 search-only ordinary directories. The earlier0750 draft is historical and must not be mixed into this candidate."
+  },
+  "final_permissions": {
+    "runtime_parent": {
+      "uid": 0,
+      "gid": 60001,
+      "mode": "02710",
+      "unchanged": true
+    },
+    "workspace": {
+      "uid": 0,
+      "gid": 60001,
+      "mode": "0710"
+    },
+    "fleet": {
+      "uid": 0,
+      "gid": 60001,
+      "mode": "0710"
+    },
+    "private_authority_and_internal_writer": "original0700/0600 modes unchanged; no recursive mutation"
+  }
+}

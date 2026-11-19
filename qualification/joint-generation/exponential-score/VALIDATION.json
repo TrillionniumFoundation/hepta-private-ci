@@ -1,0 +1,42 @@
+{
+  "blocked_unexecuted_v2_review_sha256": "4b44fe2c9011d7cd479e641559b1714bdb9d590062ad0f6c89573a4696c7abc2",
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 17
+  },
+  "measurements": {
+    "global": {
+      "complete_anchor_FD_coordinates": 8,
+      "max_complete_FD": 4.8792513730527495e-11,
+      "max_utility_FD": 5.890636473748637e-11,
+      "utility_FD_coordinates": 8
+    },
+    "legacy_group": {
+      "finite_difference_coordinates": 8,
+      "max_FD_error": 5.73196221390071e-11
+    },
+    "legacy_integration": {
+      "aligned_anchor_FD_coordinates": 8,
+      "aligned_group_utility_FD_coordinates": 8,
+      "maximum_aligned_anchor_FD_error": 3.481658852281383e-11,
+      "maximum_aligned_group_utility_FD_error": 3.346549345826415e-11
+    },
+    "score": {
+      "fullanchor_FD_coordinates": 8,
+      "max_fullanchor_FD": 2.808449336261752e-11,
+      "max_utility_FD": 2.1933067368600304e-11,
+      "utility_FD_coordinates": 8
+    }
+  },
+  "receipt_sha256": "693cd8745d1d08f8066eac411b5899b135ec67cc5ed5f1ca5895ce53b4fa33dd",
+  "result_sha256": "f8253b33e3dbba612ae9697211fea9e79adeb918108d8d53060da1d2821f4a86",
+  "saved_review_sha256": "6f3ddbc4e1d2674e16e7696f4a20ca27148fb5ec998ae45dd46b3644f1acd58c",
+  "source_review_sha256": "bfb920beb2a2e513ae7f9a6b6817d2ddade1a8b0dc854d5ff8fe35ef623ebdb8",
+  "source_sha256": {
+    "PLAN.md": "fd71adabbb23b8d14b08f7ca4cae4397d3e5ef83a80365a32e6b97f02f930294",
+    "exponential_score.py": "0dbdf078e30818e0f899fe9dfbe75142b5fecec03baf6fc80eb277d238dfacff",
+    "test_exponential_score.py": "e819f736d17ba0b1d2c896460c7136a1b89709b87393e95ea23ea7ccccfd86d3"
+  },
+  "status": "EXPONENTIAL_SCORE_LITERAL_PASS_NOT_SCIENCE"
+}

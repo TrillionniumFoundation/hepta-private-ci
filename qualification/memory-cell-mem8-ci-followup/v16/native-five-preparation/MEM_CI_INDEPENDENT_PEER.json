@@ -1,0 +1,100 @@
+{
+  "schema": "mem.native-five.independent-static-peer.v1",
+  "reviewer": "mem_ci_integration",
+  "reviewed_at": "2026-11-11T15:20:36.808173+00:00",
+  "verdict": "NO_STATIC_MUST_FIX_IN_FROZEN_TEMPLATE_SET",
+  "scope": "Frozen templates and builder only; no final source identity has yet been rendered or admitted.",
+  "preparation_manifest": {
+    "bytes": 2984,
+    "sha256": "5c221af4591edc0ef6db79ad1ce14e32f6375f9398e4296d7c8e3beb007fd0c4",
+    "git_blob": "2856dd32ae98e16a6841d04d094be0fa983a3fcb"
+  },
+  "reviewed_files": [
+    {
+      "path": "templates/mem_native_five.py",
+      "bytes": 23327,
+      "sha256": "13e5fa02446d716d04503bd79a305b67a5ef6525ad5d97f53d8557b300261db0",
+      "git_blob": "a524828dbc9de8bf65284fb96e1aab47ce2fd738"
+    },
+    {
+      "path": "templates/mem_native_five_support.py",
+      "bytes": 6574,
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136",
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595"
+    },
+    {
+      "path": "templates/hepta-mem-native-five.yml.in",
+      "bytes": 4310,
+      "sha256": "c924165f9bcea223faf5749ad5ef57aaa2769ded05b90b09cade39d8c812ccc9",
+      "git_blob": "05e1f939d75aeb91d4bd7809e6298480c744865d"
+    },
+    {
+      "path": "build_harness.py",
+      "bytes": 12084,
+      "sha256": "f49978a9491e0bd8623096f4d92db39e314e6f8ba537f6fafde7edb60dff51fd",
+      "git_blob": "7cfa742d67bbe360d9d98e1bb595a8a5f160a355"
+    },
+    {
+      "path": "check_preparation.py",
+      "bytes": 7851,
+      "sha256": "c1d0fd84db7552fc6749a236ebade9b5b6df5c0165c6234a11557f84113da646",
+      "git_blob": "a45a2f9fb9c6a411fdea26792092469dc36c32c9"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 8446,
+      "sha256": "8090723c98992cccf511eba9a8f7fa695084e93ec292f6128809f4f448a04c92",
+      "git_blob": "d936aaac9c423ffb56f2b7782e1d898b4b727779"
+    }
+  ],
+  "independent_checks": {
+    "all_ten_manifest_file_full_hashes": true,
+    "all_nineteen_reference_file_full_hashes": true,
+    "four_python_sources_ast_parsed": true,
+    "workflow_yaml_parsed": true,
+    "five_active_case_names_and_three_exact_binary_ids": true,
+    "core_integration_target_is_all_not_lib": true,
+    "ignored_setup_child_not_selected_by_nextest": true,
+    "critical_final_source_dependency_count": 26,
+    "source_and_harness_separate_checkout": true,
+    "only_exact_branch_push_template": true,
+    "single_job_minutes": 65,
+    "per_phase_budget_reset_absent": true,
+    "unchanged_capture_local_profile_100ms_leak_policy_and_zero_retries": true,
+    "preserved_physical_helper_artifact_binding": true,
+    "junit_original_workspace_path": "codex-rs/target/nextest/local/junit.xml"
+  },
+  "control_flow_review": {
+    "known_native_failure": "No subsequent native group; independent scoped lint allowed only after original exit acknowledgement and stable source, tools, helper binaries and both locks.",
+    "unknown_or_drift": "Missing original exit, missing integrity settlement, source rewrite or tool/helper/lock drift stops all later commands. Collection remains partial.",
+    "overall_success": "Requires all five exact accepted cases, three distinct fresh Nextest UUIDs and three clean scoped-fix phases; failed native cannot be upgraded by lint.",
+    "lint_rewrite": "Full original patch/postimages retained before clean gate fails; no commit/reset/restore or continuation after rewrite.",
+    "capture": "Original capture/profile remain; strict raw assessor rejects LEAK even when the process exit and JUnit look successful.",
+    "junit": "Original report absent before invocation; same-volume rename retains complete bytes/hash. UUID must match unique actual raw run ID and not repeat; timezone-aware timestamp within original command; exact case and binary roster; failure/error/skipped/flaky child cannot pass.",
+    "interruption": "One Actions job deadline is authoritative; no process cancellation/retry or manufactured terminal state. Failure after timeout/cancel can leave only intent and original logs."
+  },
+  "source_and_tool_review": [
+    "Builder requires actual commit readback plus a complete recursive tree whose independent Merkle identity equals the supplied tree; exact 26 local postimages are pinned to it.",
+    "Ten reviewed runner/configuration contracts are refused if their frozen blob changes; templates do not substitute V7 or the unformatted V8 input for final source.",
+    "Runtime checks the clean event harness, exact independent source HEAD/tree, original dependency bytes, all tracked and ignored-untracked paths, and both locks before/after commands.",
+    "Rust 1.96.0, Clippy 0.1.96, just 1.51.0, Nextest 0.9.103 and physical executable hashes are checked; python3 remains an actual prerequisite for the original hooks.",
+    "Real setup/runner PE helpers come from frozen Cargo compiler-artifact records under dev-small and preserve full original/sibling byte identity.",
+    "Provider/remote-test/skip configuration is rejected by environment variable name without exporting values; original provider smoke and ignored G cases are not selected."
+  ],
+  "evidence_limits": [
+    "This is static review. The author reports seven successful pure parser controls in STATIC_VALIDATION.json; this peer did not rerun them.",
+    "A final generated plan/workflow must still be tied to the actual final formatted source and reviewed before admission. No final source, harness commit, run or job identity is invented here.",
+    "The 65-minute cold-build envelope, availability of native python3, five actual Windows outcomes and three clean scoped-fix results remain unobserved.",
+    "native_case_count in a failed result is the length of accepted native_passed_cases, not a count of every attempted testcase; original per-group raw/JUnit are authoritative for attempted outcomes.",
+    "The ignored setup child is an internal process of its one active case, not an additional active Nextest selection.",
+    "This narrow validation does not settle independent elevated-delete failures or replace the full required repository CI."
+  ],
+  "execution_by_this_peer": {
+    "harness_rendered": false,
+    "parser_tests_rerun": 0,
+    "native_commands": 0,
+    "model_requests": 0,
+    "host_operations": 0,
+    "git_ref_changes": 0
+  }
+}

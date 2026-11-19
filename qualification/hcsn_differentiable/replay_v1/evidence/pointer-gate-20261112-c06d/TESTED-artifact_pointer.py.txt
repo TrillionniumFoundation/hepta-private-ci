@@ -1,0 +1,62 @@
+"""Validate the immutable original-data pointer before any model setup."""
+
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+
+from checkpoint_replay import require
+from cpu_migration import ARCHIVE_BYTES, ARCHIVE_SHA256, object_json
+
+
+def validate_pointer(raw):
+    pointer = object_json(raw)
+    require(
+        pointer.get("status") == "FROZEN",
+        "HOLD: immutable archive publication is not yet observed; zero model calls",
+    )
+    required = {"schema", "status", "repository", "manifest_path", "archive", "commit"}
+    require(required <= pointer.keys() <= required | {"claim"}, "pointer fields differ")
+    require(
+        pointer["schema"] == "hcsn-cpu-replay-artifact-pointer-v1",
+        "artifact pointer schema differs",
+    )
+    require(
+        pointer["repository"] == "TrillionniumFoundation/hepta-private-ci"
+        and pointer["manifest_path"]
+        == "qualification/hcsn_differentiable/replay_v1/artifact/EXPORT.json",
+        "artifact repository or manifest path differs",
+    )
+    require(
+        type(pointer["commit"]) is str
+        and re.fullmatch("[0-9a-f]{40}", pointer["commit"]) is not None,
+        "artifact commit must be a full lowercase Git SHA",
+    )
+    archive = pointer["archive"]
+    require(
+        type(archive) is dict
+        and archive.keys() == {"bytes", "sha256"}
+        and type(archive["bytes"]) is int
+        and archive == {"bytes": ARCHIVE_BYTES, "sha256": ARCHIVE_SHA256},
+        "original archive commitment differs",
+    )
+    require("claim" not in pointer or type(pointer["claim"]) is str, "invalid pointer claim")
+    return pointer
+
+
+def main():
+    pointer = validate_pointer(Path(__file__).with_name("CPU-ARTIFACT.json").read_bytes())
+    source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    require(re.fullmatch("[0-9a-f]{40}", source) is not None, "source commit differs")
+    identity = {"source_commit": source, "artifact_pointer": pointer}
+    output = Path(os.environ["RUNNER_TEMP"]) / "hcsn-cpu-source-identity.json"
+    with output.open("x") as stream:
+        json.dump(identity, stream, indent=2, allow_nan=False)
+        stream.write("\n")
+    with open(os.environ["GITHUB_OUTPUT"], "a") as stream:
+        stream.write("commit=" + pointer["commit"] + "\n")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,127 @@
+{
+  "scope": "Independent explicitly authorized metadata-only locator; not replay of old UNKNOWN probe",
+  "old_probe": {
+    "idempotency_key": "neuro4-next-assets-862531d11598-v1",
+    "state": "UNKNOWN_NO_JOB_ID",
+    "restarted": false
+  },
+  "request": {
+    "host": "ai395",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-c",
+      "import collections,json,os,signal,stat,time\nstarted=time.monotonic()\ndeadline=started+30.0\nwanted={\"FROZEN.json\",\"CHECKPOINT.json\",\"COLD_LOAD.json\"}\nstats={\"directories\":0,\"entries\":0,\"matches\":0,\"symlinks_skipped\":0,\"pruned\":0,\"errors\":0}\nroots=[]\nqueue=collections.deque()\nreason=\"complete\"\ndef emit(value):\n    print(json.dumps(value,sort_keys=True),flush=True)\ndef timed_out(signum,frame):\n    raise TimeoutError(\"30-second locator limit\")\ndef bounded():\n    if time.monotonic()>=deadline:\n        raise TimeoutError(\"30-second locator limit\")\n    if stats[\"entries\"]>=100000:\n        raise OverflowError(\"entry limit\")\ndef skip(name):\n    n=name.lower()\n    return n.startswith(\".\") or n==\"target\" or n==\"code\" or n.startswith(\"code-\") or n.startswith(\"code_\") or \"deps\" in n or \"ocr\" in n or n in {\"venv\",\"node_modules\"}\nsignal.signal(signal.SIGALRM,timed_out)\nsignal.setitimer(signal.ITIMER_REAL,30.0)\nemit({\"scope\":\"read-only filename/stat locator; no file content\",\"key\":\"neuro4-checkpoint-locator-862531d-v1\",\"max_directories\":3000,\"max_seconds\":30,\"max_entries\":100000,\"max_matches\":256})\ntry:\n    stats[\"directories\"]+=1\n    with os.scandir(\"/home/qq\") as entries:\n        for item in entries:\n            bounded()\n            stats[\"entries\"]+=1\n            if any(part in item.name.lower() for part in (\"ctrl\",\"macro\",\"ndu\",\"perc\")):\n                if item.is_symlink():\n                    stats[\"symlinks_skipped\"]+=1\n                elif item.is_dir(follow_symlinks=False) and not skip(item.name):\n                    roots.append(item.path)\n    queue.extend(sorted(roots))\n    emit({\"selected_roots\":sorted(roots)})\n    while queue:\n        bounded()\n        if stats[\"directories\"]>=3000:\n            reason=\"directory_limit\"\n            break\n        current=queue.popleft()\n        stats[\"directories\"]+=1\n        try:\n            with os.scandir(current) as entries:\n                for item in entries:\n                    bounded()\n                    stats[\"entries\"]+=1\n                    if item.is_symlink():\n                        stats[\"symlinks_skipped\"]+=1\n                        continue\n                    if item.is_dir(follow_symlinks=False):\n                        if skip(item.name):\n                            stats[\"pruned\"]+=1\n                        else:\n                            queue.append(item.path)\n                    elif item.name in wanted:\n                        info=item.stat(follow_symlinks=False)\n                        if stat.S_ISREG(info.st_mode):\n                            emit({\"path\":item.path,\"size\":info.st_size,\"mtime_ns\":info.st_mtime_ns,\"device\":info.st_dev,\"inode\":info.st_ino,\"mode\":oct(info.st_mode),\"link_count\":info.st_nlink})\n                            stats[\"matches\"]+=1\n                            if stats[\"matches\"]>=256:\n                                raise OverflowError(\"match limit\")\n        except OSError as error:\n            stats[\"errors\"]+=1\n            emit({\"unreadable_directory\":current,\"error_type\":type(error).__name__})\nexcept TimeoutError:\n    reason=\"time_limit\"\nexcept OverflowError as error:\n    reason=str(error).replace(\" \",\"_\")\nexcept OSError as error:\n    reason=\"root_unreadable\"\n    stats[\"errors\"]+=1\n    emit({\"error_type\":type(error).__name__})\nfinally:\n    signal.setitimer(signal.ITIMER_REAL,0)\n    emit({\"terminal\":True,\"reason\":reason,\"statistics\":stats,\"pending_directories\":len(queue),\"elapsed_seconds\":round(time.monotonic()-started,6),\"coverage_complete\":reason==\"complete\" and stats[\"errors\"]==0,\"coverage_scope\":\"selected roots, excluding pruned directories and symlinks\"})\n"
+    ],
+    "cwd": "/home/qq",
+    "idempotency_key": "neuro4-checkpoint-locator-862531d-v1"
+  },
+  "start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-85dd0fb4f587da852991bb5073183e0143886b7bb3baeacaf903a8e91f3f9220\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":2171,\"bytes_stored\":2171,\"capture_error\":null,\"created_unix_ms\":1794468352283,\"output_complete\":false,\"owner_pid\":3955337,\"pid\":3955338,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-85dd0fb4f587da852991bb5073183e0143886b7bb3baeacaf903a8e91f3f9220/output.log\",\"available_end\":2705,\"bytes_hex\":\"7b226b6579223a20226e6575726f342d636865636b706f696e742d6c6f6361746f722d383632353331642d7631222c20226d61785f6469726563746f72696573223a20333030302c20226d61785f656e7472696573223a203130303030302c20226d61785f6d617463686573223a203235362c20226d61785f7365636f6e6473223a2033302c202273636f7065223a2022726561642d6f6e6c792066696c656e616d652f73746174206c6f6361746f723b206e6f2066696c6520636f6e74656e74227d0d0a7b2273656c65637465645f726f6f7473223a205b222f686f6d652f71712f6374726c2d616e737765722d7265706169722d32303236313131302d653332332d7631222c20222f686f6d652f71712f6374726c2d636f7665726167652d32303236313131302d653830322d7631222c20222f686f6d652f71712f6374726c2d66697434302d6761702d32303236313131312d6637633064656438366263632d7631222c20222f686f6d652f71712f6374726c2d6761702d646961676e6f737469632d32303236313131302d653830322d7631222c20222f686f6d652f71712f6374726c2d6761702d726573756c742d32303236313131312d30383038222c20222f686f6d652f71712f6374726c2d6d6163726f2d32303236313131322d37333663222c20222f686f6d652f71712f6374726c2d6e61746976652d706169722d70696c6f742d32303236313131302d653332332d7631222c20222f686f6d652f71712f6374726c2d6e61746976652d706169722d70696c6f742d32303236313131302d653332332d7632222c20222f686f6d652f71712f6374726c2d6e61746976652d706169722d70696c6f742d32303236313131302d653830322d7634222c20222f686f6d652f71712f6374726c2d70726f66696c652d32303236313131312d73636f7065222c20222f686f6d652f71712f6374726c2d70726f73706563746976652d32303236313131322d37333663222c20222f686f6d652f71712f6374726c2d70726f73706563746976652d32303236313131322d373336632d7632222c20222f686f6d652f71712f6374726c2d7265616c2d706f6c6963792d32303236313131322d31333333222c20222f686f6d652f71712f6374726c2d7265616c2d706f6c6963792d32303236313131322d313333332d7632222c20222f686f6d652f71712f6374726c2d7265616c2d73747564792d32303236313131322d31333333222c20222f686f6d652f71712f6e64752d6172632d696e646570656e64656e742d76332d3830302d32303236313131302d7433222c20222f686f6d652f71712f6e64752d6172632d716e756c6c2d7431312d6631396134323161222c20222f686f6d652f71712f6e64752d6172632d736869667467756172642d32303236313131302d7631222c20222f686f6d652f71712f6e64752d6172632d736869667467756172642d32303236313131302d7632222c20222f686f6d652f71712f6e64752d69736f6c617465642d32303236313131302d7632222c20222f686f6d652f71712f6e64752d69736f6c617465642d6e61746976652d32303236313131302d32616630222c20222f686f6d652f71712f6e64752d69736f6c617465642d7472616e73706f72742d32303236313131302d32616630222c20222f686f6d652f71712f6e64752d706f7274666f6c696f2d66726f7a656e2d32303236313130392d65623032653839222c20222f686f6d652f71712f6e64752d7265616c2d6d6174657269616c732d32303236313130372d61756469742d6266666534306332222c20222f686f6d652f71712f6e64752d7265616c2d6d6174657269616c732d746f6f6c732d32303236313130372d61756469742d6266666534306332222c20222f686f6d652f71712f6e64752d7265616c2d72756e74696d652d32303236313130372d626332656661663130636430222c20222f686f6d652f71712f6e64752d72756e74696d652d6d657465722d76322d32303236313130372d363733373231303935343439222c20222f686f6d652f71712f6e64752d72756e74696d652d6d657465722d76322d32303236313130372d3637333732313039353434392d617474656d70743032222c20222f686f6d652f71712f6e64752d746578742d696d6167652d636f6e7472616374732d32303236313130372d6263326566616631306364302d363165386464663938386364222c20222f686f6d652f71712f6e64752d746578742d696d6167652d636f6e7472616374732d32303236313130372d6263326566616631306364302d663530346466353461613663222c20222f686f6d652f71712f6e64755f6172635f726172655f7461696c5f32303236313131305f7631222c20222f686f6d652f71712f6e64756172635f69736f6c617465645f61756469745f32303236313131305f76325f72756e31225d7d0d0a7b22646576696365223a2036363330362c2022696e6f6465223a2039353435323137302c20226c696e6b5f636f756e74223a20312c20226d6f6465223a2022306f313030363030222c20226d74696d655f6e73223a20313739343239363338303232363435343636312c202270617468223a20222f686f6d652f71712f6374726c2d616e737765722d7265706169722d32303236313131302d653332332d76312f46524f5a454e2e6a736f6e222c202273697a65223a203733377d0d0a7b22646576696365223a2036363330362c2022696e6f6465223a2034363730393031322c20226c696e6b5f636f756e74223a20312c20226d6f6465223a2022306f313030363030222c20226d74696d655f6e73223a20313739343436323232383934313638393030312c202270617468223a20222f686f6d652f71712f6374726c2d70726f73706563746976652d32303236313131322d373336632f72756e2d76312f46524f5a454e2e6a736f6e222c202273697a65223a203134363531387d0d0a7b22646576696365223a2036363330362c2022696e6f6465223a2035303630363533302c20226c696e6b5f636f756e74223a20312c20226d6f6465223a2022306f313030363030222c20226d74696d655f6e73223a20313739343436373638363935303738323232302c202270617468223a20222f686f6d652f71712f6374726c2d7265616c2d73747564792d32303236313131322d313333332f72756e2d76312f66726f7a656e2f46524f5a454e2e6a736f6e222c202273697a65223a203138393738307d0d0a7b22636f7665726167655f636f6d706c657465223a2066616c73652c2022636f7665726167655f73636f7065223a202273656c656374656420726f6f74732c206578636c7564696e67207072756e6564206469726563746f7269657320616e642073796d6c696e6b73222c2022656c61707365645f7365636f6e6473223a20302e3136303730322c202270656e64696e675f6469726563746f72696573223a2032383032332c2022726561736f6e223a20226469726563746f72795f6c696d6974222c202273746174697374696373223a207b226469726563746f72696573223a20333030302c2022656e7472696573223a2036303938332c20226572726f7273223a20302c20226d617463686573223a20332c20227072756e6564223a2036312c202273796d6c696e6b735f736b6970706564223a20367d2c20227465726d696e616c223a20747275657d0d0a\",\"chunk_sha256\":\"218ab0880f95fe9560aab35bff758cef2cfc8040f818eb8964d7170dc0e50bf0\",\"host\":\"ai395\",\"next_offset\":2705,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-85dd0fb4f587da852991bb5073183e0143886b7bb3baeacaf903a8e91f3f9220\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":2705,\"bytes_stored\":2705,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1794468352283,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":3955337,\"pid\":3955338,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"key\\\": \\\"neuro4-checkpoint-locator-862531d-v1\\\", \\\"max_directories\\\": 3000, \\\"max_entries\\\": 100000, \\\"max_matches\\\": 256, \\\"max_seconds\\\": 30, \\\"scope\\\": \\\"read-only filename/stat locator; no file content\\\"}\\r\\n{\\\"selected_roots\\\": [\\\"/home/qq/ctrl-answer-repair-20261110-e323-v1\\\", \\\"/home/qq/ctrl-coverage-20261110-e802-v1\\\", \\\"/home/qq/ctrl-fit40-gap-20261111-f7c0ded86bcc-v1\\\", \\\"/home/qq/ctrl-gap-diagnostic-20261110-e802-v1\\\", \\\"/home/qq/ctrl-gap-result-20261111-0808\\\", \\\"/home/qq/ctrl-macro-20261112-736c\\\", \\\"/home/qq/ctrl-native-pair-pilot-20261110-e323-v1\\\", \\\"/home/qq/ctrl-native-pair-pilot-20261110-e323-v2\\\", \\\"/home/qq/ctrl-native-pair-pilot-20261110-e802-v4\\\", \\\"/home/qq/ctrl-profile-20261111-scope\\\", \\\"/home/qq/ctrl-prospective-20261112-736c\\\", \\\"/home/qq/ctrl-prospective-20261112-736c-v2\\\", \\\"/home/qq/ctrl-real-policy-20261112-1333\\\", \\\"/home/qq/ctrl-real-policy-20261112-1333-v2\\\", \\\"/home/qq/ctrl-real-study-20261112-1333\\\", \\\"/home/qq/ndu-arc-independent-v3-800-20261110-t3\\\", \\\"/home/qq/ndu-arc-qnull-t11-f19a421a\\\", \\\"/home/qq/ndu-arc-shiftguard-20261110-v1\\\", \\\"/home/qq/ndu-arc-shiftguard-20261110-v2\\\", \\\"/home/qq/ndu-isolated-20261110-v2\\\", \\\"/home/qq/ndu-isolated-native-20261110-2af0\\\", \\\"/home/qq/ndu-isolated-transport-20261110-2af0\\\", \\\"/home/qq/ndu-portfolio-frozen-20261109-eb02e89\\\", \\\"/home/qq/ndu-real-materials-20261107-audit-bffe40c2\\\", \\\"/home/qq/ndu-real-materials-tools-20261107-audit-bffe40c2\\\", \\\"/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0\\\", \\\"/home/qq/ndu-runtime-meter-v2-20261107-673721095449\\\", \\\"/home/qq/ndu-runtime-meter-v2-20261107-673721095449-attempt02\\\", \\\"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd\\\", \\\"/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-f504df54aa6c\\\", \\\"/home/qq/ndu_arc_rare_tail_20261110_v1\\\", \\\"/home/qq/nduarc_isolated_audit_20261110_v2_run1\\\"]}\\r\\n{\\\"device\\\": 66306, \\\"inode\\\": 95452170, \\\"link_count\\\": 1, \\\"mode\\\": \\\"0o100600\\\", \\\"mtime_ns\\\": 1794296380226454661, \\\"path\\\": \\\"/home/qq/ctrl-answer-repair-20261110-e323-v1/FROZEN.json\\\", \\\"size\\\": 737}\\r\\n{\\\"device\\\": 66306, \\\"inode\\\": 46709012, \\\"link_count\\\": 1, \\\"mode\\\": \\\"0o100600\\\", \\\"mtime_ns\\\": 1794462228941689001, \\\"path\\\": \\\"/home/qq/ctrl-prospective-20261112-736c/run-v1/FROZEN.json\\\", \\\"size\\\": 146518}\\r\\n{\\\"device\\\": 66306, \\\"inode\\\": 50606530, \\\"link_count\\\": 1, \\\"mode\\\": \\\"0o100600\\\", \\\"mtime_ns\\\": 1794467686950782220, \\\"path\\\": \\\"/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/FROZEN.json\\\", \\\"size\\\": 189780}\\r\\n{\\\"coverage_complete\\\": false, \\\"coverage_scope\\\": \\\"selected roots, excluding pruned directories and symlinks\\\", \\\"elapsed_seconds\\\": 0.160702, \\\"pending_directories\\\": 28023, \\\"reason\\\": \\\"directory_limit\\\", \\\"statistics\\\": {\\\"directories\\\": 3000, \\\"entries\\\": 60983, \\\"errors\\\": 0, \\\"matches\\\": 3, \\\"pruned\\\": 61, \\\"symlinks_skipped\\\": 6}, \\\"terminal\\\": true}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "parsed_records": [
+    {
+      "key": "neuro4-checkpoint-locator-862531d-v1",
+      "max_directories": 3000,
+      "max_entries": 100000,
+      "max_matches": 256,
+      "max_seconds": 30,
+      "scope": "read-only filename/stat locator; no file content"
+    },
+    {
+      "selected_roots": [
+        "/home/qq/ctrl-answer-repair-20261110-e323-v1",
+        "/home/qq/ctrl-coverage-20261110-e802-v1",
+        "/home/qq/ctrl-fit40-gap-20261111-f7c0ded86bcc-v1",
+        "/home/qq/ctrl-gap-diagnostic-20261110-e802-v1",
+        "/home/qq/ctrl-gap-result-20261111-0808",
+        "/home/qq/ctrl-macro-20261112-736c",
+        "/home/qq/ctrl-native-pair-pilot-20261110-e323-v1",
+        "/home/qq/ctrl-native-pair-pilot-20261110-e323-v2",
+        "/home/qq/ctrl-native-pair-pilot-20261110-e802-v4",
+        "/home/qq/ctrl-profile-20261111-scope",
+        "/home/qq/ctrl-prospective-20261112-736c",
+        "/home/qq/ctrl-prospective-20261112-736c-v2",
+        "/home/qq/ctrl-real-policy-20261112-1333",
+        "/home/qq/ctrl-real-policy-20261112-1333-v2",
+        "/home/qq/ctrl-real-study-20261112-1333",
+        "/home/qq/ndu-arc-independent-v3-800-20261110-t3",
+        "/home/qq/ndu-arc-qnull-t11-f19a421a",
+        "/home/qq/ndu-arc-shiftguard-20261110-v1",
+        "/home/qq/ndu-arc-shiftguard-20261110-v2",
+        "/home/qq/ndu-isolated-20261110-v2",
+        "/home/qq/ndu-isolated-native-20261110-2af0",
+        "/home/qq/ndu-isolated-transport-20261110-2af0",
+        "/home/qq/ndu-portfolio-frozen-20261109-eb02e89",
+        "/home/qq/ndu-real-materials-20261107-audit-bffe40c2",
+        "/home/qq/ndu-real-materials-tools-20261107-audit-bffe40c2",
+        "/home/qq/ndu-real-runtime-20261107-bc2efaf10cd0",
+        "/home/qq/ndu-runtime-meter-v2-20261107-673721095449",
+        "/home/qq/ndu-runtime-meter-v2-20261107-673721095449-attempt02",
+        "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-61e8ddf988cd",
+        "/home/qq/ndu-text-image-contracts-20261107-bc2efaf10cd0-f504df54aa6c",
+        "/home/qq/ndu_arc_rare_tail_20261110_v1",
+        "/home/qq/nduarc_isolated_audit_20261110_v2_run1"
+      ]
+    },
+    {
+      "device": 66306,
+      "inode": 95452170,
+      "link_count": 1,
+      "mode": "0o100600",
+      "mtime_ns": 1794296380226454800,
+      "path": "/home/qq/ctrl-answer-repair-20261110-e323-v1/FROZEN.json",
+      "size": 737
+    },
+    {
+      "device": 66306,
+      "inode": 46709012,
+      "link_count": 1,
+      "mode": "0o100600",
+      "mtime_ns": 1794462228941689000,
+      "path": "/home/qq/ctrl-prospective-20261112-736c/run-v1/FROZEN.json",
+      "size": 146518
+    },
+    {
+      "device": 66306,
+      "inode": 50606530,
+      "link_count": 1,
+      "mode": "0o100600",
+      "mtime_ns": 1794467686950782200,
+      "path": "/home/qq/ctrl-real-study-20261112-1333/run-v1/frozen/FROZEN.json",
+      "size": 189780
+    },
+    {
+      "coverage_complete": false,
+      "coverage_scope": "selected roots, excluding pruned directories and symlinks",
+      "elapsed_seconds": 0.160702,
+      "pending_directories": 28023,
+      "reason": "directory_limit",
+      "statistics": {
+        "directories": 3000,
+        "entries": 60983,
+        "errors": 0,
+        "matches": 3,
+        "pruned": 61,
+        "symlinks_skipped": 6
+      },
+      "terminal": true
+    }
+  ]
+}

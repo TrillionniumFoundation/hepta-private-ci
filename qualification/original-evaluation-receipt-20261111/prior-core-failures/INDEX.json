@@ -1,0 +1,56 @@
+{
+  "head": "a15acbf4db6178523a9297033c86e3be0b2725a3",
+  "tree": "83d0bee5c868e2092bdf8bac45daf75d7c73190b",
+  "source": "GitHub Actions original job logs, CRLF normalized to LF for retention",
+  "logs": [
+    {
+      "path": "core-a15-architecture-merge-130248330796.log",
+      "sha256": "a2199724105ae29593cc5f3dc4e8cfa927a46d56f889e8f695e9717b9597cc30",
+      "bytes": 26632
+    },
+    {
+      "path": "core-a15-daemon-learning-130243533431.log.gz",
+      "sha256": "f390eeb910f62fc143090b0415e2c368406f85b5a66b83a95a5baff8d0cd9013",
+      "bytes": 1779476,
+      "encoding": "gzip",
+      "stored_bytes": 216721,
+      "stored_sha256": "55f38e54458b62d74ee334c2682835e34c9a698501b4d1951289ce76a9f5d71f"
+    },
+    {
+      "path": "core-a15-shared-cell-130243534094.log.gz",
+      "sha256": "9cb54cb5db622fdcdfaf1489a81909ccf9324dfe8fbe57139946f835e661bfbe",
+      "bytes": 119610,
+      "encoding": "gzip",
+      "stored_bytes": 23633,
+      "stored_sha256": "cd7df6f195829fc52e325bb2ae1ccc16f782132bccc3fdbcab2af5615d1aefe3"
+    },
+    {
+      "path": "core-a15-windows-130243534173.log.gz",
+      "sha256": "83718f02a37b983dd9a172fffe96b132a908f4494f63958e1ce59f86f502330a",
+      "bytes": 227846,
+      "encoding": "gzip",
+      "stored_bytes": 48105,
+      "stored_sha256": "98bb5c82b7fd88196d3fff39a8007d8d24cfd87c098489e658cf340a744bdac5"
+    }
+  ],
+  "failures": [
+    {
+      "jobs": [
+        130243534173,
+        130243534094,
+        130243533431
+      ],
+      "cause": "E0425: learning_iteration_recovery_tests.rs:667 references undefined pending; lib-test compilation fails before test execution",
+      "successor_fix": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b, included in Model5b633a85 and Evaluation9f5e5b99"
+    },
+    {
+      "job": 130248330796,
+      "cause": "Prospective merge exact-base guard rejected workflow base4073268 vs merge parent7225160; source parenta15 matched. Source-head matrix then cancelled; not native PASS."
+    }
+  ],
+  "status": "historical_failed_candidate_only",
+  "successor_core_head": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "not_current_qualification": true,
+  "log_storage_index": "../LOG_STORAGE.json",
+  "log_hashes_describe": "uncompressed original log bytes"
+}

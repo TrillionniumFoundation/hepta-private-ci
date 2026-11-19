@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.learn.qualification-artifacts.v1",
+  "hash_algorithm": "SHA-256",
+  "manifest_self_excluded": true,
+  "files": [
+    {
+      "path": "ASSEMBLY_GAPS.md",
+      "bytes": 16493,
+      "sha256": "840637c2eca234f2ed0de20cf94855159a8c6502afeedc9927acda437d085191"
+    },
+    {
+      "path": "INPUTS.json",
+      "bytes": 3053,
+      "sha256": "4c3a10605676bb8b59f6c02212fda3003df98877bd5a2eb0c9051d394dc523bf"
+    },
+    {
+      "path": "MAINTENANCE.json",
+      "bytes": 4636,
+      "sha256": "334e0396900b5df884676ab7c02cd54cffc52d8abff54fcc61eb3755ad59f9a8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9185,
+      "sha256": "1ae35fad1ba071e9417802734eab25fefb95a4bd6df4dcb1dfde3f66f28ea61c"
+    },
+    {
+      "path": "RESULT.json",
+      "bytes": 6297,
+      "sha256": "cb4ad10817213efb279f95966c8329151fe550e510ae7222c77b9c566ed3f387"
+    },
+    {
+      "path": "earlier-native-attempts.tar.gz",
+      "bytes": 86602,
+      "sha256": "4ad93ad8c0ab47820bdb3795567db08f85d6d279084bdd2ef2573f6278ef5cf4"
+    },
+    {
+      "path": "maintenance-1b49.tar.gz",
+      "bytes": 169480,
+      "sha256": "799f64c7517a0f4cc6924549e4309886a062f200961f61ca6f8e3cda8ba57400"
+    },
+    {
+      "path": "native-final-1b49.tar.gz",
+      "bytes": 207877,
+      "sha256": "c0dfe055f5e840f56cb76386785dfeca6e1e93ae934b36085b4b37312e3833ee"
+    },
+    {
+      "path": "post-maintenance-static.json",
+      "bytes": 13045,
+      "sha256": "a05a72b0f262fd0750a0d8cea63dcbdda5d14080b3e18fab0706ee5e62077a73"
+    },
+    {
+      "path": "source-checks.tar.gz",
+      "bytes": 16570,
+      "sha256": "6f97e892c80e16494360eddcfd7021298786dada1efb4dbefc4261b616c90bad"
+    }
+  ],
+  "verified_key_entries": [
+    {
+      "archive": "native-final-1b49.tar.gz",
+      "entry": "learn-final-1b49-v1/ordinary.xml",
+      "sha256": "91f1c69c27ed05e795ed0983d62a796a83a7be97cb855a42af7b099e92ae4f9e"
+    },
+    {
+      "archive": "native-final-1b49.tar.gz",
+      "entry": "learn-final-1b49-root-v2/root.xml",
+      "sha256": "0773b81fd7a70504d957eea756a5057c141a669a51871a88a4c99c0052d8b6de"
+    },
+    {
+      "archive": "native-final-1b49.tar.gz",
+      "entry": "drivers/run_final_qualification.py",
+      "sha256": "76ed1f42edc14d1f1983dcf8122e2b18afcdd5de83c1543aa087286c15210483"
+    },
+    {
+      "archive": "native-final-1b49.tar.gz",
+      "entry": "drivers/run_root_retry.py",
+      "sha256": "35afbb2835bf7c9dbb14316e781f6f35851309b67c39dcdbe7ac99999d604bd3"
+    },
+    {
+      "archive": "source-checks.tar.gz",
+      "entry": "source-checks/full-caller-proof-1b49-run1.json.e7934a64315b4beb9bbf7627b9d5398a.log",
+      "sha256": "5f9fcf022a627b90fbf5afe9e395cb562e8f6495675f63d9138306a3cb68edd8"
+    },
+    {
+      "archive": "maintenance-1b49.tar.gz",
+      "entry": "learn-maintenance-1b49-v1/maintenance.patch",
+      "sha256": "71b8bb2cdd2cd7218aacbdf746612ee0dd1439a88d23284c6c2006b67f6e8e4a"
+    },
+    {
+      "archive": "maintenance-1b49.tar.gz",
+      "entry": "drivers/run_maintenance.py",
+      "sha256": "831e7cbdf8241ad24ad9ee84b0b51f233bf4d02eb4aad79bdb1ae9df316d4107"
+    }
+  ],
+  "archive_regular_entries": {
+    "earlier-native-attempts.tar.gz": 29,
+    "maintenance-1b49.tar.gz": 48,
+    "native-final-1b49.tar.gz": 95,
+    "source-checks.tar.gz": 24
+  },
+  "integrity": {
+    "all_archived_regular_members_read": true,
+    "all_json_parsed": true,
+    "all_gzip_members_decompressed": true,
+    "all_junit_xml_parsed": true,
+    "final_learning_junit_passed": 161,
+    "final_root_junit_passed": 6,
+    "local_report_links_resolve": true,
+    "recognizable_private_credentials_found": false,
+    "behavior_tests_executed_during_artifact_verification": false
+  }
+}

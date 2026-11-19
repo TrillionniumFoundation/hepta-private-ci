@@ -1,0 +1,91 @@
+name: Hepta predictive-model guard (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**'
+      - '.github/workflows/hepta-ndu-predictive-guard.yml'
+      - '.github/scripts/hepta_artifact_fetch.py'
+      - '.github/scripts/test_hepta_artifact_fetch.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-model-guard:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Record candidate and numeric runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.3.5
+          mkdir -p "$RUNNER_TEMP/guard-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/guard-evidence/source.txt"
+          python --version >> "$RUNNER_TEMP/guard-evidence/source.txt"
+          python -m pip freeze >> "$RUNNER_TEMP/guard-evidence/source.txt"
+      - name: Authenticate to GitHub once, then fetch SHA-pinned signed blob without token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/scripts -p test_hepta_artifact_fetch.py -v
+          python .github/scripts/hepta_artifact_fetch.py --output "$RUNNER_TEMP/guard-original.zip"
+      - name: Actual source execution and independent exact/scalar review
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news
+          D="$P/opportunity/predictive_guard"
+          E="$RUNNER_TEMP/guard-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/guard-original.zip"
+          python "$P/material_news.py" --archive "$NEWS_ARCHIVE" --output "$RUNNER_TEMP/guard-material"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_guard.py -v 2>&1 | tee "$E/tests-$mode.log"
+            grep -F 'Ran 38 tests' "$E/tests-$mode.log"
+            python "${FLAGS[@]}" "$D/trial_guard.py" --material "$RUNNER_TEMP/guard-material" --output "$E/run-$mode"
+            python "${FLAGS[@]}" "$D/audit_guard.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/guard-material" --run "$E/run-$mode" --output "$E/audit-$mode.json"
+          done
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'guard-evidence'
+          runs=[json.loads((e/f'run-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def behavior(s):
+              if len(s['rows'])!=72:raise ValueError('incomplete guard cohort')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns','guard_scope')} for r in s['rows']]
+          if behavior(runs[0])!=behavior(runs[1]):raise ValueError('guard behavior drift')
+          for mode in ('normal','optimized'):
+              a=json.loads((e/f'audit-{mode}.json').read_text())
+              if (a['verified_lifecycles'],a['guard_vs_shared_pairs'],a['online_updates'])!=(72,24,264):
+                  raise ValueError('missing physical replay')
+              if (a['null_certificate']['terminal_paths'],a['null_certificate']['conditional_identities'])!=(1377,91):
+                  raise ValueError('incomplete exact null enumeration')
+              if a['task_accuracy_guaranteed'] or a['null_certificate']['fleet_wide_bound']:
+                  raise ValueError('invalid statistical guarantee')
+          PY
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ndu-predictive-guard-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/guard-evidence/
+          retention-days: 14
+          if-no-files-found: error

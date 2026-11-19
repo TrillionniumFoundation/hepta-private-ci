@@ -1,0 +1,340 @@
+{
+  "schema": "hepta.hosted-caller-gate-observations.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 5978,
+  "source": {
+    "ci_head": "130eaac29ef73259e10ae167744bda8320796216",
+    "ci_tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+    "actual_merge_checkout": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+    "actual_checkout_tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+    "actual_merge_parents": [
+      "be8adcbb5e9925f72e05330b8fb30509cba4544b",
+      "130eaac29ef73259e10ae167744bda8320796216"
+    ],
+    "native_tested_code_commit": "54de04371be6d625e1ecda49931c7d3585d0a2d0",
+    "native_tested_code_tree": "0003e1f9f859fda1ebbe1c756cce34d5ddc3a170",
+    "ci_only_change": {
+      "path": ".github/workflows/repo-checks.yml",
+      "git_blob": "48154e7d3f3fbf3f304490181d71facf623dcbd0",
+      "field": "jobs.build-test.timeout-minutes",
+      "before": 10,
+      "after": 30,
+      "commands_permissions_pins_unchanged": true
+    },
+    "tree_relation": "The CI-only child and its PR merge have the same tree; that tree differs from the native-tested 54de tree. No native test execution is reattributed to the CI-only child.",
+    "checkout_evidence": "Original job log records refs/remotes/pull/5978/merge and git log -1 resolving to the actual_merge_checkout.",
+    "commit_proof_urls": [
+      "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/130eaac29ef73259e10ae167744bda8320796216"
+    ]
+  },
+  "jobs": [
+    {
+      "run_id": 43045402540,
+      "job_id": 130609632531,
+      "name": "repo-checks / build-test",
+      "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43045402540/job/130609632531",
+      "head_sha": "130eaac29ef73259e10ae167744bda8320796216",
+      "actual_checkout": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T15:13:09Z",
+      "completed_at": "2026-11-11T15:24:53Z",
+      "raw_log": {
+        "path": "job-130609632531.log",
+        "git_blob": "0a5c4e181518f2d7d847adf7a5351adfddebe117",
+        "bytes": 282446,
+        "sha256": "5590b51221181d6c8148b285beca8d9259a85947c144c7cb27a41b348cccde41",
+        "utf8_bom": true,
+        "crlf": 0,
+        "lf": 3898
+      },
+      "full_caller_gate": {
+        "step": {
+          "name": "Verify Hepta privileged caller closed set",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T15:13:30Z",
+          "completed_at": "2026-11-11T15:23:56Z"
+        },
+        "command": "python3 scripts/verify_hepta_callers.py verify",
+        "scope": "Complete unfiltered verifier invocation against the original CALLERS.toml.",
+        "receipt": {
+          "schema": "hepta.caller-proof-receipt.v2",
+          "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+          "boundaries": 236,
+          "privileged_inventory": 236,
+          "protected_files": 229,
+          "rust_files_scanned": 6315,
+          "authority_granted": false
+        },
+        "receipt_representation": "Counts are derived by parsing the original timestamped raw log. The raw log is retained unchanged; no derived receipt is substituted for it.",
+        "self_test": {
+          "command": "python3 scripts/verify_hepta_callers.py self-test",
+          "status": "PASS_HEPTA_CALLER_PROOF_SELF_TEST",
+          "included_in_full_verifier_counts": false
+        },
+        "qa_suites_in_original_command_order": [
+          {
+            "command": "python3 -m unittest discover -s qa/b4-no-bypass -p 'test_*.py'",
+            "tests_reported": 206,
+            "elapsed_seconds": 17.144,
+            "status": "OK"
+          },
+          {
+            "command": "python3 -m unittest discover -s qa/fault-matrix -p 'test_*.py'",
+            "tests_reported": 5,
+            "elapsed_seconds": 0,
+            "status": "OK"
+          },
+          {
+            "command": "python3 -m unittest discover -s qa/performance -p 'test_*.py'",
+            "tests_reported": 5,
+            "elapsed_seconds": 0,
+            "status": "OK"
+          },
+          {
+            "command": "python3 -m unittest discover -s qa/vertical-slice -p 'test_*.py'",
+            "tests_reported": 5,
+            "elapsed_seconds": 0,
+            "status": "OK"
+          }
+        ]
+      },
+      "final_source_checks": [
+        {
+          "name": "Check formatting (run `just fmt` to fix)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T15:24:33Z",
+          "completed_at": "2026-11-11T15:24:46Z"
+        },
+        {
+          "name": "Prettier (run `pnpm run format:fix` to fix)",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T15:24:46Z",
+          "completed_at": "2026-11-11T15:24:48Z"
+        },
+        {
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-11T15:24:48Z",
+          "completed_at": "2026-11-11T15:24:48Z"
+        }
+      ],
+      "step_results": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Checkout repository",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run ./.github/actions/setup-ci",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Verify codex-rs Cargo manifests inherit workspace settings",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Test Cargo manifest migration boundaries",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Verify Hepta privileged caller closed set",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Verify codex-tui does not import codex-core directly",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Verify Bazel clippy flags match Cargo workspace lints",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Test Bazel wrapper regression suite",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 10,
+          "name": "Test Codex package builder",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 11,
+          "name": "Test standalone installer",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 12,
+          "name": "Test macOS notarization",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 13,
+          "name": "Setup pnpm",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 14,
+          "name": "Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 15,
+          "name": "Install dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 16,
+          "name": "Ensure root README.md contains only ASCII and certain Unicode code points",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 17,
+          "name": "Check root README ToC",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 18,
+          "name": "Install uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 19,
+          "name": "Check formatting (run `just fmt` to fix)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 20,
+          "name": "Prettier (run `pnpm run format:fix` to fix)",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 21,
+          "name": "Check for a clean worktree",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 39,
+          "name": "Post Install uv",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 40,
+          "name": "Post Setup Node.js",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 41,
+          "name": "Post Setup pnpm",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 42,
+          "name": "Post Checkout repository",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 43,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run_id": 43045402540,
+      "job_id": 130609383697,
+      "name": "Blob size policy / Blob size policy",
+      "head_sha": "130eaac29ef73259e10ae167744bda8320796216",
+      "workflow_merge": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "actual_checkout": null,
+      "conclusion": "failure",
+      "classification": "environment_gate_failed_before_checkout",
+      "reason": "Fence resident service exited before readiness: local_control_inventory_unavailable. Checkout and the blob-size scan did not run; missing local clean-worktree action and post-job mount evidence are consequential failures.",
+      "raw_log": {
+        "path": "job-130609383697.log",
+        "git_blob": "76484425994f350760c95d67fe5a362a123bd381",
+        "bytes": 3859,
+        "sha256": "f15e1316b3c8d1255298314d0acf4b7658c2856e4d0e277dda4d36173fc0266e",
+        "utf8_bom": true,
+        "crlf": 0,
+        "lf": 50
+      }
+    },
+    {
+      "run_id": 43045402540,
+      "job_id": 130609630986,
+      "name": "sdk / sdks",
+      "head_sha": "130eaac29ef73259e10ae167744bda8320796216",
+      "actual_checkout": "49ca46c5f706dc46d463e091e4c68a4a1f0da571",
+      "actual_checkout_tree": "56e2cd6fcec86e4fc059d9a25ce53440c7e3a144",
+      "conclusion": "failure",
+      "classification": "environment_dependency_download",
+      "reason": "Install Linux bwrap build dependencies failed while fetching libcap-dev: Temporary failure resolving azure.archive.ubuntu.com; apt exited 100 before SDK tests.",
+      "sdk_tests_started": false,
+      "raw_log": {
+        "path": "job-130609630986.log",
+        "git_blob": "6886771da7c9d55dd494ad0033de7286a88850ac",
+        "bytes": 23762,
+        "sha256": "0dafd2b03cb4b9971157ad6d0ed647afbfe017a6a52321f18131f4609c8649fe",
+        "utf8_bom": true,
+        "crlf": 0,
+        "lf": 259
+      }
+    }
+  ],
+  "qualification": {
+    "repo_checks_job_passed": true,
+    "full_caller_gate_passed": true,
+    "all_blocking_ci_passed": false,
+    "ordinary_learning_loop_established": false,
+    "ordinary_positive_adoption_established": false,
+    "ordinary_no_update_rollback_established": false,
+    "independent_final_use_established": false,
+    "whole_daemon_root_cold_restart_established": false,
+    "no_authority_grant": true,
+    "counts_policy": "Verifier boundaries, inventory entries, protected files, scanned Rust files, self-test status and the four QA suite counts describe different checks and are not summed. No component or source check is promoted to ordinary production qualification."
+  }
+}

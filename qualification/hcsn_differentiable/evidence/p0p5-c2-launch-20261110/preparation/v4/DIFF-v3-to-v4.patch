@@ -1,0 +1,70 @@
+--- v3/c2_controller.py
++++ v4/c2_controller.py
+@@ -95,6 +95,11 @@
+     terminal_incomplete = sorted(set(missing_terminal) | {
+         row['name'] for row in attempts if row.get('process_started') is not False
+         and row.get('terminal_evidence_complete') is not True})
++    unknown_updates = sorted(set(missing_terminal) | {
++        row['name'] for row in attempts if row.get('process_started') is not False
++        and (row.get('terminal_evidence_complete') is not True
++             or type(row.get('new_main_updates_completed')) is not int
++             or row['new_main_updates_completed'] < 0)})
+     return {'missing_terminal_attempt_names': missing_terminal,
+         'actual_continuations_started': sum(r.get('process_started') is True for r in attempts),
+         'launch_status_unknown_names': sorted(unknown_launch),
+@@ -110,6 +115,11 @@
+         'attempt_sums_are_lower_bounds': bool(incomplete),
+         'attempt_terminal_evidence_complete': not terminal_incomplete,
+         'incomplete_terminal_evidence_names': terminal_incomplete,
++        'sum_verified_new_main_updates_completed': sum(row['new_main_updates_completed']
++            for row in attempts if row.get('terminal_evidence_complete') is True
++            and type(row.get('new_main_updates_completed')) is int and row['new_main_updates_completed'] >= 0),
++        'new_main_update_sum_is_lower_bound': bool(unknown_updates),
++        'new_main_update_count_unknown_names': unknown_updates,
+         'terminal_evidence_scope': 'missing model evidence does not erase separately measured exit CPU or wall'}
+ 
+ 
+@@ -186,6 +196,9 @@
+                     'nonzero exit cannot claim completed training adequacy')
+             output['adequate'] = False
+         require(identity(path) == output['result'], 'terminal report changed while checking')
++        completed_updates = result.get('new_main_updates')
++        output['new_main_updates_completed'] = (completed_updates
++            if type(completed_updates) is int and completed_updates >= 0 else None)
+         output.update(terminal_evidence_complete=True,
+             status='timed_out' if output['hard_timeout_sent'] else 'completed' if output['returncode'] == 0 else 'failed')
+     except Exception:
+@@ -222,7 +235,7 @@
+     program_inputs = {}
+     report = {'schema': 'hcsn-c2-controller-v2', 'status': 'started', 'attempts': [],
+         'confirmation_access': False, 'scientific_admission': 'HOLD', 'energy_joules': None,
+-        'started_utc': datetime.now(timezone.utc).isoformat(), 'formal_fits_started': 0,
++        'started_utc': datetime.now(timezone.utc).isoformat(), 'fresh_independent_fits_started': 0,
+         'execution_requested': args.execute, 'calendar_scope': 'separate phase; may extend calendar past original 15000s',
+         'cpu_aggregation_scope': 'per-child wait4 exact and RUSAGE_CHILDREN aggregate are two views; do not add together',
+         'controller_setup_scope': 'all imports, source/data admission and launch bookkeeping charged separately once'}
+--- v3/c2_runner.py
++++ v4/c2_runner.py
+@@ -118,7 +118,9 @@
+         plan['rss_bytes'], contract['finalization_reserve_seconds'], study.peak_rss)
+     report = {'schema': 'hcsn-c2-soft-wall-continuation-v1', 'status': 'started',
+         'production_execution': production, 'scientific_admission': 'HOLD', 'numerical_admission': 'HOLD',
+-        'whole_training_domain': 'HOLD', 'confirmation_access': False, 'formal_fits_started': 0,
++        'whole_training_domain': 'HOLD', 'confirmation_access': False,
++        'fresh_independent_fits_started': 0, 'continuation_attempts_started': 1,
++        'optimizer_update_count_scope': 'new_main_updates counts completed optimizer.step calls in this continuation; any unclosed call remains in events.jsonl',
+         'parent': str(bound.parent), 'parent_status': prior['status'], 'parent_outer': bound.outer,
+         'parent_report': bound.inputs.get(str(bound.parent / 'result.json')),
+         'parent_full_outer_wall_charged': parent_wall, 'parent_full_process_cpu_seconds': None,
+--- v3/test_c2_execution.py
++++ v4/test_c2_execution.py
+@@ -156,6 +156,9 @@
+         result = self.run_candidate(bound, contract, policy, actual)
+         self.assertEqual(result['status'], 'completed_development', result.get('error'))
+         self.assertEqual(result['new_main_updates'], 6)
++        self.assertEqual(result['fresh_independent_fits_started'], 0)
++        self.assertEqual(result['continuation_attempts_started'], 1)
++        self.assertNotIn('formal_fits_started', result)
+         self.assertEqual(result['logical_main_updates'], 12)
+         self.assertEqual(result['actual_executed_main_updates_logged_all_phases'], 13)
+         self.assertEqual(result['parent_work']['completed_updates_after_anchor'], 1)

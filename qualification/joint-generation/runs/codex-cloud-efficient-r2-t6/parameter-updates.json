@@ -1,0 +1,272 @@
+[
+  {
+    "system": "supervised",
+    "seed": 11,
+    "updates": 380,
+    "refinement_updates": 38,
+    "parameter_delta_l2": {
+      "encoder": 12.093491620158694,
+      "bias": 0.6113855091178159,
+      "text": 4.600501926518944,
+      "text_bias": 0.1914056584454527,
+      "image": 4.736028933635364,
+      "image_bias": 0.18261466691529488,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "supervised",
+    "seed": 23,
+    "updates": 410,
+    "refinement_updates": 38,
+    "parameter_delta_l2": {
+      "encoder": 12.147805336300733,
+      "bias": 0.5917131924738224,
+      "text": 4.68668954539629,
+      "text_bias": 0.10711010425323951,
+      "image": 4.700831658129769,
+      "image_bias": 0.1463887887617486,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "supervised",
+    "seed": 47,
+    "updates": 393,
+    "refinement_updates": 38,
+    "parameter_delta_l2": {
+      "encoder": 12.421355565032284,
+      "bias": 0.6453201606590365,
+      "text": 4.610861637401193,
+      "text_bias": 0.17386465964712455,
+      "image": 4.716914626153427,
+      "image_bias": 0.13548386060138293,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "anchor",
+    "seed": 11,
+    "updates": 433,
+    "refinement_updates": 71,
+    "parameter_delta_l2": {
+      "encoder": 13.280314996310834,
+      "bias": 0.6715813315258797,
+      "text": 4.906806330612079,
+      "text_bias": 0.1824032244812338,
+      "image": 5.028170373325353,
+      "image_bias": 0.182723946766694,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "anchor",
+    "seed": 23,
+    "updates": 420,
+    "refinement_updates": 71,
+    "parameter_delta_l2": {
+      "encoder": 12.318932683066054,
+      "bias": 0.6201390307469432,
+      "text": 4.758540318593072,
+      "text_bias": 0.1206083814880708,
+      "image": 4.771074448722776,
+      "image_bias": 0.1479137088244941,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "anchor",
+    "seed": 47,
+    "updates": 421,
+    "refinement_updates": 71,
+    "parameter_delta_l2": {
+      "encoder": 13.06742673710975,
+      "bias": 0.6677091223662198,
+      "text": 4.794946405453963,
+      "text_bias": 0.16729894533313636,
+      "image": 4.916176036717281,
+      "image_bias": 0.13567420641059516,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "additive",
+    "seed": 11,
+    "updates": 357,
+    "refinement_updates": 59,
+    "parameter_delta_l2": {
+      "encoder": 12.248938685204225,
+      "bias": 0.9178160807725623,
+      "text": 7.498497606550834,
+      "text_bias": 0.22634839410531948,
+      "image": 7.537696087623528,
+      "image_bias": 0.2561986383676969,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "additive",
+    "seed": 23,
+    "updates": 341,
+    "refinement_updates": 59,
+    "parameter_delta_l2": {
+      "encoder": 11.397561241990593,
+      "bias": 0.7706527671513529,
+      "text": 7.290449180061975,
+      "text_bias": 0.14514259837542734,
+      "image": 7.356073129612927,
+      "image_bias": 0.18429981168103599,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "additive",
+    "seed": 47,
+    "updates": 363,
+    "refinement_updates": 59,
+    "parameter_delta_l2": {
+      "encoder": 12.232033625379282,
+      "bias": 0.8320805888323526,
+      "text": 7.267482174624017,
+      "text_bias": 0.1692569123604649,
+      "image": 7.324646843502028,
+      "image_bias": 0.17170132954094872,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu",
+    "seed": 11,
+    "updates": 350,
+    "refinement_updates": 53,
+    "parameter_delta_l2": {
+      "encoder": 12.362568911982432,
+      "bias": 0.945595621730196,
+      "text": 8.58479574820762,
+      "text_bias": 0.22456706916859104,
+      "image": 8.610955775546367,
+      "image_bias": 0.2597713547168299,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu",
+    "seed": 23,
+    "updates": 256,
+    "refinement_updates": 53,
+    "parameter_delta_l2": {
+      "encoder": 10.039326263398578,
+      "bias": 0.7270519447882166,
+      "text": 7.572041181699221,
+      "text_bias": 0.165370990036818,
+      "image": 7.660675694020587,
+      "image_bias": 0.18386276435525709,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu",
+    "seed": 47,
+    "updates": 349,
+    "refinement_updates": 53,
+    "parameter_delta_l2": {
+      "encoder": 12.094239408752353,
+      "bias": 0.8997231222509459,
+      "text": 8.431516554087558,
+      "text_bias": 0.16921963528112804,
+      "image": 8.515322704533677,
+      "image_bias": 0.20555108642184822,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu_control",
+    "seed": 11,
+    "updates": 164,
+    "refinement_updates": 0,
+    "parameter_delta_l2": {
+      "encoder": 7.939036744559816,
+      "bias": 0.5511743786257091,
+      "text": 5.967785904743632,
+      "text_bias": 0.12941942729889686,
+      "image": 5.986703181722119,
+      "image_bias": 0.15388282858590852,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu_control",
+    "seed": 23,
+    "updates": 172,
+    "refinement_updates": 0,
+    "parameter_delta_l2": {
+      "encoder": 8.000211720970592,
+      "bias": 0.5543712414910723,
+      "text": 6.224306620089726,
+      "text_bias": 0.15051735087434712,
+      "image": 6.318809546421496,
+      "image_bias": 0.16896444212454664,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  },
+  {
+    "system": "ndu_control",
+    "seed": 47,
+    "updates": 169,
+    "refinement_updates": 0,
+    "parameter_delta_l2": {
+      "encoder": 8.140495887300593,
+      "bias": 0.5614278131306383,
+      "text": 6.025069505698343,
+      "text_bias": 0.1265825583159079,
+      "image": 6.049931244887352,
+      "image_bias": 0.16577791937605635,
+      "decoder": 0.0,
+      "decoder_bias": 0.0
+    },
+    "all_content_parameters_changed": true,
+    "adaptation_decoder_unchanged": true
+  }
+]

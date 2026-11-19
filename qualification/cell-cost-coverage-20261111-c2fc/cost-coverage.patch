@@ -1,0 +1,214 @@
+--- a/scripts/hepta_cell_research_gate.py
++++ b/scripts/hepta_cell_research_gate.py
+@@ -335,6 +335,7 @@
+         defaultdict(list),
+         set(),
+     )
++    recorded_costs = defaultdict(list)
+     arms = {"candidate", *spec["baselines"]} if spec is not None else None
+     for row in rows:
+         shape(
+@@ -389,6 +390,7 @@
+         values = [row["costs"].get(key) for key in COST_CATEGORIES]
+         if any(number(value) < 0 for value in values if value is not None):
+             raise ValueError("costs must be nonnegative")
++        recorded_costs[arm].extend(value for value in values if value is not None)
+         if any(value is None for value in values):
+             blockers.add("UNMEASURED_COST")
+             costs[arm].append(None)
+@@ -427,6 +429,19 @@
+         arm: None if None in values else math.fsum(values)
+         for arm, values in costs.items()
+     }
++    partial_cost_report = {}
++    if grouped:
++        # Numeric records can cover only part of an unknown category. Likewise,
++        # an unobserved registered attempt has unknown cost, not zero expense.
++        # Preserve the supplied numbers separately without calling them totals.
++        totals.update({arm: None for arm in unit_review["incomplete_cost_arms"]})
++        recorded_subtotals = {
++            arm: math.fsum(recorded_costs[arm]) for arm in sorted(totals)
++        }
++        partial_cost_report = {
++            "recorded_cost_subtotals": recorded_subtotals,
++            "recorded_campaign_subtotal": math.fsum(recorded_subtotals.values()),
++        }
+     campaign_total = None if None in totals.values() else math.fsum(totals.values())
+     if document["evidence_kind"] != "real":
+         blockers.add("NON_REAL_EVIDENCE")
+@@ -545,6 +560,7 @@
+         "distinct_candidate_artifacts": len(candidate_artifacts),
+         "observed_cost_totals": totals,
+         "observed_campaign_total": campaign_total,
++        **partial_cost_report,
+         "comparisons": comparisons,
+         "blockers": sorted(
+             blockers
+--- a/scripts/hepta_cell_research_units.py
++++ b/scripts/hepta_cell_research_units.py
+@@ -135,7 +135,7 @@
+     coverage = document["cost_coverage"]
+     if not isinstance(coverage, dict) or set(coverage) - set(planned):
+         raise ValueError("cost coverage contains unregistered attempts")
+-    observed, counts, full_cost = set(), Counter(), True
++    observed, counts, incomplete_cost_arms = set(), Counter(), set()
+     for row in rows:
+         attempt_id = row["attempt_id"]
+         if attempt_id in observed or attempt_id not in planned:
+@@ -157,13 +157,13 @@
+             if status == "not_applicable" and value != 0:
+                 raise ValueError("inapplicable cost must be explicitly zero")
+             if status == "unknown" or value is None:
+-                full_cost = False
++                incomplete_cost_arms.add(row["arm"])
+     missing = sorted(set(planned) - observed)
+     counts["not_observed"] = len(missing)
+     if missing:
+         blockers.add("MISSING_PLANNED_ATTEMPTS")
+-        full_cost = False
+-    if not full_cost:
++        incomplete_cost_arms.update(planned[attempt]["arm"] for attempt in missing)
++    if incomplete_cost_arms:
+         blockers.add("INCOMPLETE_COST_COVERAGE")
+     used_initializations = {fit["initialization_sha256"] for fit in fits.values()}
+     groups = len(source_splits)
+@@ -191,7 +191,8 @@
+         "sample_count_is_product": False,
+         "independence_verified": False,
+         "source_exposure_verified": False,
+-        "full_cost_recorded": full_cost,
++        "full_cost_recorded": not incomplete_cost_arms,
++        "incomplete_cost_arms": sorted(incomplete_cost_arms),
+         "cost_authenticity_verified": False,
+         "blockers": sorted(blockers),
+     }
+--- a/scripts/test_hepta_cell_research_units.py
++++ b/scripts/test_hepta_cell_research_units.py
+@@ -252,7 +252,9 @@
+         for case in record["units"]["cases"]:
+             del case["task_artifact"]
+         legacy = self.screen(record)
+-        self.assertAlmostEqual(legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4)
++        self.assertAlmostEqual(
++            legacy["comparisons"]["rag"]["minimum_fit_mean_gain"], 0.4
++        )
+         self.assertFalse(legacy["new_milestone_eligible"])
+ 
+     def test_repeated_task_failures_keep_outcomes_costs_and_unknown_coverage(self):
+@@ -262,7 +264,9 @@
+             if row["case_id"] == "failed-repeat" and row["arm"] == "candidate":
+                 row.update(status="failed", net_utility=-0.3)
+         result = self.screen(record)
+-        self.assertAlmostEqual(result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25)
++        self.assertAlmostEqual(
++            result["comparisons"]["rag"]["minimum_fit_mean_gain"], -0.25
++        )
+         self.assertEqual(result["attempt_counts"], {"completed": 30, "failed": 2})
+         self.assertEqual(result["statistical_units"]["planned_attempts"], 32)
+         self.assertEqual(result["observed_campaign_total"], 896)
+@@ -272,7 +276,9 @@
+         for row in record["attempts"]["rows"]:
+             if row["status"] == "failed":
+                 row["costs"]["recovery"] = None
+-                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = "unknown"
++                record["units"]["cost_coverage"][row["attempt_id"]]["recovery"] = (
++                    "unknown"
++                )
+         incomplete = self.screen(record)
+         self.assertEqual(incomplete["attempt_counts"], result["attempt_counts"])
+         self.assertEqual(incomplete["attempt_denominator"], 32)
+@@ -417,7 +423,21 @@
+         row = record["attempts"]["rows"][0]
+         scope = record["units"]["cost_coverage"][row["attempt_id"]]
+         scope["recovery"] = "unknown"
+-        self.assertFalse(self.screen(record)["full_cost_records_complete"])
++        incomplete = self.screen(record)
++        self.assertFalse(incomplete["full_cost_records_complete"])
++        self.assertEqual(
++            incomplete["observed_cost_totals"],
++            {
++                "candidate": None,
++                "rag": 128,
++                "rag_uniform_replay": 128,
++                "recurrent": 128,
++            },
++        )
++        self.assertIsNone(incomplete["observed_campaign_total"])
++        self.assertEqual(incomplete["recorded_cost_subtotals"]["candidate"], 64)
++        self.assertEqual(incomplete["recorded_campaign_subtotal"], 448)
++        self.assertEqual(incomplete["comparisons"], {})
+         scope["recovery"] = "not_applicable"
+         for value in (None, 1):
+             row["costs"]["recovery"] = value
+@@ -428,6 +448,51 @@
+             self.screen(record)
+         row["costs"]["recovery"] = 0
+         self.assertTrue(self.screen(record)["full_cost_records_complete"])
++
++    def test_missing_opportunities_leave_arm_and_campaign_totals_unknown(self):
++        original = self.experiment()
++        for missing in ("one", "entire-arm"):
++            with self.subTest(missing=missing):
++                record = copy.deepcopy(original)
++                rows = record["attempts"]["rows"]
++                omitted = [row for row in rows if row["arm"] == "rag"]
++                if missing == "one":
++                    omitted = omitted[:1]
++                record["attempts"]["rows"] = [row for row in rows if row not in omitted]
++                result = self.screen(record)
++                self.assertEqual(
++                    result["observed_cost_totals"],
++                    {
++                        "candidate": 64,
++                        "rag": None,
++                        "rag_uniform_replay": 128,
++                        "recurrent": 128,
++                    },
++                )
++                self.assertIsNone(result["observed_campaign_total"])
++                self.assertEqual(
++                    result["recorded_cost_subtotals"]["rag"], 128 - 32 * len(omitted)
++                )
++                self.assertEqual(
++                    result["recorded_campaign_subtotal"], 448 - 32 * len(omitted)
++                )
++                self.assertEqual(result["statistical_units"]["planned_attempts"], 16)
++                self.assertEqual(
++                    result["statistical_units"]["observed_attempts"], 16 - len(omitted)
++                )
++                self.assertEqual(result["comparisons"], {})
++
++    def test_partial_numeric_measurements_are_retained_without_zero_imputation(self):
++        record = self.experiment()
++        row = record["attempts"]["rows"][0]
++        row["costs"]["recovery"] = None
++        result = self.screen(record)
++        self.assertIsNone(result["observed_cost_totals"]["candidate"])
++        self.assertIsNone(result["observed_campaign_total"])
++        self.assertEqual(result["recorded_cost_subtotals"]["candidate"], 63)
++        self.assertEqual(result["recorded_campaign_subtotal"], 447)
++        self.assertFalse(result["full_cost_records_complete"])
++        self.assertEqual(result["attempt_denominator"], 16)
+ 
+     def test_source_split_and_observed_unit_drift_refuse(self):
+         record = self.experiment()
+@@ -483,6 +548,19 @@
+         self.assertFalse(result["numerical_screen_ready"])
+         self.assertFalse(result["new_milestone_eligible"])
+         self.assertEqual(result["comparisons"], {})
++        self.assertEqual(
++            result["observed_cost_totals"],
++            {
++                arm: None
++                for arm in ("candidate", "rag", "rag_uniform_replay", "recurrent")
++            },
++        )
++        self.assertIsNone(result["observed_campaign_total"])
++        self.assertEqual(
++            result["recorded_cost_subtotals"],
++            {arm: 0 for arm in result["observed_cost_totals"]},
++        )
++        self.assertEqual(result["recorded_campaign_subtotal"], 0)
+         record["units"]["planned_attempts"] = []
+         with self.assertRaisesRegex(ValueError, "statistical-unit inventory is empty"):
+             self.screen(record)

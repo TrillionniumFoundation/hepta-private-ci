@@ -1,0 +1,61 @@
+{
+  "environment_bootstrap_log_sha256": "1996e0716ee7e5fcb2d4b639223b8e94721e0e7352f8c29f5229eec660fbf58c",
+  "environment_bootstrap_wall_seconds": 986.1022927080048,
+  "schema": "hepta.input-coverage-cost-components.v1",
+  "scope": "cold environment setup is separate from forward, fitting, retrieval and evaluation; public checkpoint was reused from its fixed existing cache",
+  "stages": [
+    {
+      "action": "complete",
+      "journal": "execution_journal.jsonl",
+      "receipt_sha256": "db5577c1c999eb0580866e917e49323ca27ca91d7d2751fd3a664a0b047cb7c7",
+      "returncode": 0,
+      "stage": "preparation",
+      "time_unix": 1792820087.6822379,
+      "wall_seconds": 24.087640588055365
+    },
+    {
+      "action": "complete",
+      "journal": "execution_journal.jsonl",
+      "returncode": 1,
+      "stage": "encoding",
+      "time_unix": 1792820121.3452334,
+      "wall_seconds": 33.659965769038536
+    },
+    {
+      "action": "complete",
+      "journal": "execution_journal_v2.jsonl",
+      "receipt_sha256": "2c554eabff42827f57b4a3a1b21c1d6f52d1059ed51b895dd2097d92b3b546c3",
+      "returncode": 0,
+      "stage": "checkpoint_parity",
+      "time_unix": 1792820710.7210915,
+      "wall_seconds": 38.47731281002052
+    },
+    {
+      "action": "complete",
+      "journal": "execution_journal_v2.jsonl",
+      "receipt_sha256": "4be0b97197633b4f68cd0744b28c05df0a968e24c058f6edd3034b2bc407f2d5",
+      "returncode": 0,
+      "stage": "encoding",
+      "time_unix": 1792821802.380303,
+      "wall_seconds": 1091.6581589379348
+    },
+    {
+      "action": "complete",
+      "journal": "execution_journal_v2.jsonl",
+      "receipt_sha256": "47c872451e9d11114b86c9b01048f7572e6680f8738afd74b8f7129e263a12c3",
+      "returncode": 0,
+      "stage": "fitting",
+      "time_unix": 1792821833.326214,
+      "wall_seconds": 30.945016186102293
+    },
+    {
+      "action": "complete",
+      "journal": "execution_journal_v2.jsonl",
+      "receipt_sha256": "d8815322cef532a42616872c9b3c0221543f81b43ce5650332d1357186964491",
+      "returncode": 0,
+      "stage": "scoring",
+      "time_unix": 1792821836.8558993,
+      "wall_seconds": 3.523267082986422
+    }
+  ]
+}

@@ -1,0 +1,226 @@
+{
+  "all_seed_warmup_gate_passed": false,
+  "audit": {
+    "controlled_panels": 3,
+    "failed_audit_attempts_retained": 2,
+    "models": 3,
+    "natural_internal_panels": 3,
+    "passed": true,
+    "report": "warmup-all-full-v3-report.json",
+    "sha256": "7a42e14c848d5cf42727a2ffafe929a57070cb77b925565287298db16b20b940",
+    "tensor_digests_independently_reconstructed": false,
+    "training_diagnostics": 99,
+    "training_receipts": 3
+  },
+  "closed_phases": [
+    "natural_continuation",
+    "feedback_training",
+    "fresh_evaluation"
+  ],
+  "completed_optimizer_updates": 24000,
+  "controlled_independent_groups": 32,
+  "encoder_parameters": 97441152,
+  "encoder_trained": false,
+  "fresh_scored": false,
+  "hosted_ci_consulted": false,
+  "official_validation_scored": false,
+  "process_totals": {
+    "cpu_ns": 403710768000,
+    "nested_costs_additive": false,
+    "wall_ns": 402114592345,
+    "warmup_peak_rss_kib": 1168744
+  },
+  "production_authorized": false,
+  "protocol": "BINDING_V5_PROTOCOL.md",
+  "reader_parameters": 38466,
+  "repeated_seeds_add_independent_examples": false,
+  "results": [
+    {
+      "fit_cpu_ns": 121575855567,
+      "fit_wall_ns": 121619047413,
+      "gate": {
+        "fresh_selection": false,
+        "passed": false,
+        "reasons": [
+          "accuracy",
+          "both_worlds_correct",
+          "all_four_correct"
+        ],
+        "scope": "complete_binding_train_only"
+      },
+      "metrics": {
+        "accuracy": 0.953125,
+        "all_four_correct": 0.90625,
+        "both_worlds_correct": 0.921875,
+        "cases": 128,
+        "evidence_switch_rate": 0.9375,
+        "groups": 32,
+        "independent_grammar_verified": true,
+        "independent_unit": "paired_world_group",
+        "mean_absolute_world_probability_gap": 0.9058893001913508,
+        "mean_truth_signed_world_probability_gap": 0.9042513794540843,
+        "paired_candidates": 64,
+        "positive_truth_gap_rate": 0.953125,
+        "prediction_rule": "raw_probability_strictly_greater_than_0.5",
+        "probability_CE": 0.06615159957258028,
+        "semantic_tasks_sha256": "7c6749ad957f386bbec469f8758ffc1c02fefdccce95bb5fde37cba8c2c9a52a",
+        "threshold_selected": false
+      },
+      "natural_internal": {
+        "accuracy": 0.47642079806529625,
+        "candidates": 827,
+        "exact_match": 0.07731958762886598,
+        "f1_a": 0.47515151515151516,
+        "f1_m": 0.40457297570699635,
+        "paragraphs": 16,
+        "questions": 194
+      },
+      "seed": 41,
+      "updates": 8000
+    },
+    {
+      "fit_cpu_ns": 124016025003,
+      "fit_wall_ns": 124024845102,
+      "gate": {
+        "fresh_selection": false,
+        "passed": false,
+        "reasons": [
+          "accuracy",
+          "both_worlds_correct",
+          "all_four_correct"
+        ],
+        "scope": "complete_binding_train_only"
+      },
+      "metrics": {
+        "accuracy": 0.9765625,
+        "all_four_correct": 0.9375,
+        "both_worlds_correct": 0.953125,
+        "cases": 128,
+        "evidence_switch_rate": 0.953125,
+        "groups": 32,
+        "independent_grammar_verified": true,
+        "independent_unit": "paired_world_group",
+        "mean_absolute_world_probability_gap": 0.9530890440164133,
+        "mean_truth_signed_world_probability_gap": 0.9530890440164133,
+        "paired_candidates": 64,
+        "positive_truth_gap_rate": 1.0,
+        "prediction_rule": "raw_probability_strictly_greater_than_0.5",
+        "probability_CE": 0.032511309543454374,
+        "semantic_tasks_sha256": "7c6749ad957f386bbec469f8758ffc1c02fefdccce95bb5fde37cba8c2c9a52a",
+        "threshold_selected": false
+      },
+      "natural_internal": {
+        "accuracy": 0.4788391777509069,
+        "candidates": 827,
+        "exact_match": 0.041237113402061855,
+        "f1_a": 0.47116564417177914,
+        "f1_m": 0.39334159540345104,
+        "paragraphs": 16,
+        "questions": 194
+      },
+      "seed": 47,
+      "updates": 8000
+    },
+    {
+      "fit_cpu_ns": 130321882254,
+      "fit_wall_ns": 130335188319,
+      "gate": {
+        "fresh_selection": false,
+        "passed": false,
+        "reasons": [
+          "accuracy",
+          "both_worlds_correct",
+          "all_four_correct"
+        ],
+        "scope": "complete_binding_train_only"
+      },
+      "metrics": {
+        "accuracy": 0.9765625,
+        "all_four_correct": 0.9375,
+        "both_worlds_correct": 0.96875,
+        "cases": 128,
+        "evidence_switch_rate": 0.984375,
+        "groups": 32,
+        "independent_grammar_verified": true,
+        "independent_unit": "paired_world_group",
+        "mean_absolute_world_probability_gap": 0.9543383538286463,
+        "mean_truth_signed_world_probability_gap": 0.9518199961195961,
+        "paired_candidates": 64,
+        "positive_truth_gap_rate": 0.984375,
+        "prediction_rule": "raw_probability_strictly_greater_than_0.5",
+        "probability_CE": 0.03328887054883091,
+        "semantic_tasks_sha256": "7c6749ad957f386bbec469f8758ffc1c02fefdccce95bb5fde37cba8c2c9a52a",
+        "threshold_selected": false
+      },
+      "natural_internal": {
+        "accuracy": 0.4921402660217654,
+        "candidates": 827,
+        "exact_match": 0.061855670103092786,
+        "f1_a": 0.5464362850971922,
+        "f1_m": 0.423622125297383,
+        "paragraphs": 16,
+        "questions": 194
+      },
+      "seed": 53,
+      "updates": 8000
+    }
+  ],
+  "runtime_source_sha256": {
+    "aten_work.py": "a922af68e249e610f3350e2a2052ac9d31b5de57f5393124a4981a44a692387d",
+    "binding_campaign.py": "7ce1c3a734a4178bd241f59aa720b77dfede313e51476a1435e052968715b3e1",
+    "binding_campaign_utils.py": "cd4d5e2177931782f5086c303d79a146aa8002363d8379883044b55281a8ace8",
+    "binding_continuation.py": "7e27ee8ae403f5a0c1180e1abda7b67f190f83012d2b21df1c01844abb55b52b",
+    "binding_evaluation.py": "27b28a890da080931b37c3f02098ff1e136debcc581b8f6320a8f4036ea1996b",
+    "binding_process.py": "c136d98cb44b1d267e01750f33fd12e19a0b6a7f858086aa3303db0532b0547e",
+    "binding_protocol.py": "4721e42e773452e1bd39a8bc77fdf23494ebdedb1212ae0dc81ee5fd9c7f9b9c",
+    "binding_training.py": "e6e1d8f232ab3dce42cf7bfc513574b981d1abc7f6b1c638306051f74df70cd2",
+    "execution_meter.py": "a0610030d3cb10cc9d264a20f900dd54c394f26cf3f2994303c932d096d0e069",
+    "group_critic.py": "a3c889188402d5a0c8ece4b32a659c38f8eeed876c04ebd86ffd0556d6d4fcfd",
+    "group_encoder.py": "0223af27c0146374c05408055016c3e3c03891d26ab0138fb1c0166960d6ccae",
+    "group_features.py": "98a8618e690da66df78b595205daa447836173845e8eb31121ba9527fd39f119",
+    "group_loop.py": "bfa53fc56ed8cb43e7191648447aac9494c2b52530eafa62b441315229322603",
+    "group_reader.py": "dd5d11ce4c958e418c31e9a52ca4c95552e1ea8bd6693743888e367484fb0eb3",
+    "group_reader_review.py": "9c0049001689ef89cdc6d7d0a13dfc018373f7ff74a401b8a287c4d4211b6c8f",
+    "group_reader_training.py": "df660d6b693820575415ad7e49262b1d4142fe32a2808adda1efb78a56661c86",
+    "hf_encoder_kernel.py": "44ed40c1fd2ea6fc6745e4d9a73247c754a5bf0eea608863ee8a231a50b6b88f",
+    "host_counters.py": "736fe55ca11a4b6cc93efb2a1145b5b1f8d80413056b505c5a4e0cd7c72e1bbf",
+    "multirc_data.py": "5aa357ed9308577801e5a0d6313404fa8ec7b338414cf9010e0fd61c5abeb7df",
+    "native_group_control.py": "1ca8813a9a92102bef6a41f90e700c735a60066a7bca984c1ed768f79baacfda",
+    "native_ndu_bridge.py": "ffeb2b81144c1aa7e86363966d7834b8a6b0792774ed6d79c544146c4a689d9b",
+    "ndu_continuation.py": "897217e61386d52aa2ae554cebe5474ab5fcf11b3a8483e05a6b62cb2ad22e57",
+    "next_round_matrix.py": "fb75d80a96764dd9e967d6a94845258cdda7dfd14c46f2da32bb1dda4d771d8f",
+    "paired_execution.py": "97d0126feb9a19984def009d9feaa8fd5b0506087c7641fbb14c192ec9162a7b",
+    "reader_budget.py": "c475cf673765474965a8c8ad11acb9647e721001c6603fc31342e04f5c108bd8",
+    "reader_calibration.py": "d2199046ce0f6441be7b1418b35cf3730405623b566065b0084d76eb02529d6e",
+    "reader_campaign.py": "15ce38049f60b894cb041d7a9fab055a362f5fc2e02268e4f49fe280523435dd",
+    "reader_campaign_utils.py": "a867cc2b69c0a4f4ce638110167acf298ac7ceae63620d2c1e95b2d7a7ae8fb5",
+    "reader_execution.py": "baf249223db87fddff6224eae0810ee9ab11f21cde69001186caaef0dc28d979",
+    "reader_features.py": "0eee35875d08646ad0ab38ceb4c899d8b2be14086036d95313c0cc1991f8c85b",
+    "reader_learnability.py": "81cb627dee811f0a344e98288d0e98ecc33ca2aecd44f4e15696ad3c04fa5e85",
+    "reader_prepare.py": "fa64fa2718b974435e9f9571eaf32699935695a25cde161b39467f13cad5002a",
+    "revision_execution.py": "26fbacb27adb6ff61dd1d6d59b4b4fb5c7b6fc70d808352b771b5d50253d44e2",
+    "revision_training.py": "176cf9836ace5a0d2e4998d13511ccea91494550b7b3e4622c70d7178a9e0849",
+    "system2_execution.py": "4ca5b45c5f83d44283e9774d5ac65040ff920645fdcf64d0b8354d337bed9e8d",
+    "token_binding_review.py": "fde8aa8eafb5eef99fb2b037b4d535527ab58a78b5aa56d99bba60571c74d3f0",
+    "token_calibration.py": "a1e34a58ec5159be840bca0dcef83f6cc5f5876323af7925b39f634b4bbf093f",
+    "token_campaign.py": "ebd9b6dd8d0b7b34a0f317d6de56ccd70a52aa83afe51b08dcdff685ce2e71c9",
+    "token_campaign_utils.py": "2fffcb6648def49ad782fd366234a0835b7b86078b8d8e1149e0edb756b977d0",
+    "token_execution.py": "7a65ada3d6b794e9be16ff3eb8656287deadb3902e80c9da17e920429bcb3750",
+    "token_features.py": "0946f43bae0280dfef16dcd02dba0f10f14e866fcc61e7c9a91cfd9287c7270c",
+    "token_prepare.py": "44e857fa90d9be9677f5b7d7d491843af3386bae0e3518028f2b4a30c094d56c",
+    "token_protocol.py": "58fc5cf2e8052e41c10d240965fa8bf171ec0479379495deaf3af87a52e5b6fe",
+    "token_reader.py": "e2aff67ace65554b90a45c3680f886f8cd7292067de0ea7c2d0cba986dd9612f",
+    "token_reader_training.py": "cb5038fef134a2e7ba27c297d30c9e9ebe052c6c065a86d9b46e37b17d7b6ac7",
+    "token_review.py": "b97137448acf8c5c7649cd6dba37ebde781c06ef930879f495c7b6e60c3d8112",
+    "token_selection_review.py": "2e567d58924b3fddc8013c3409a38cc358f3e4301332ee57ace1074e20a664e9",
+    "transformer_work.py": "f7ab1cf4f7fd796aaaf33899b37e6a59b28b4a636cc0bbec0af1e4eb3429aa7e"
+  },
+  "schema": "hepta.binding.research-result.v5",
+  "source_ref": "09843fa24e6ee72fea07618772df2401ec2a64fa",
+  "tests": {
+    "local_passed": 499,
+    "native_control_and_replay_supplied": true,
+    "skipped": 0
+  },
+  "training_candidate_exposures": 384000
+}

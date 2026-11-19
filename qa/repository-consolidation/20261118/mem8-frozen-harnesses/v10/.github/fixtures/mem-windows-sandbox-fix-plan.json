@@ -1,0 +1,180 @@
+{
+  "build_helpers": [
+    "codex-windows-sandbox-setup",
+    "codex-command-runner"
+  ],
+  "commit_readback": {
+    "bytes": 1472,
+    "git_blob": "3c63f41085673b756b0e82170be447a56b933021",
+    "sha256": "291c78589f015fd380b3eaaf88501b9b2054516a771d5614a2c8fcef6ce6544a"
+  },
+  "complete_tree_inventory": {
+    "bytes": 1659663,
+    "git_blob": "cd59d3e7f16e1299f643000c31254253e6101e9d",
+    "sha256": "3ff62a7457e2a5cb9ca7098dbe39eb0be1652b60a98d2a735502540b56a36890"
+  },
+  "complete_tree_leaf_count": 14053,
+  "execution_state": "PREPARED_NOT_ADMITTED_NOT_RUN",
+  "files": {
+    ".github/scripts/windows_current_ci.py": {
+      "bytes": 11926,
+      "git_blob": "161ed1149c8ffb5f2bb2a8272f555f8b91d729fe",
+      "mode": "100644",
+      "sha256": "cefa811a6cd39bb2dc6a3dfa23225832a55e5ff4a7c21bc6b05bb7effcc0a3fd"
+    },
+    "AGENTS.md": {
+      "bytes": 22519,
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "mode": "100644",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1788299,
+      "git_blob": "1565448430312c7fb7537a48f97e9cd2da945df3",
+      "mode": "100644",
+      "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+    },
+    "codex-rs/.cargo/config.toml": {
+      "bytes": 634,
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "mode": "100644",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80"
+    },
+    "codex-rs/.config/nextest.toml": {
+      "bytes": 6617,
+      "git_blob": "0904c42a41594d3ae4dc6f196e64f35f0b85bd2c",
+      "mode": "100644",
+      "sha256": "79f1b9777595512b715398a5691a5ea9968b750987acefda43ac7c8393faa158"
+    },
+    "codex-rs/Cargo.lock": {
+      "bytes": 421005,
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419",
+      "mode": "100644",
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+    },
+    "codex-rs/Cargo.toml": {
+      "bytes": 23385,
+      "git_blob": "75e83aa2161758c059de8e3965820fcfd65f8b58",
+      "mode": "100644",
+      "sha256": "29451688365bb14c7232338a9118cfdcbb59ddd7ca79738b641bf6f04cc72d6a"
+    },
+    "codex-rs/rust-toolchain.toml": {
+      "bytes": 78,
+      "git_blob": "917d2492264a35bc9c0feaef41878d8825870866",
+      "mode": "100644",
+      "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "bytes": 2438,
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "mode": "100644",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": {
+      "bytes": 11142,
+      "git_blob": "7dcfa0c3268af5720c27fe283a351db9de0f2e30",
+      "mode": "100644",
+      "sha256": "dab92a6a3283564c9f2ca10bae5255873bd3a54902f0236127831ddde4cd47a6"
+    },
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": {
+      "bytes": 21445,
+      "git_blob": "7532d191ead69f010f17ef48a8e0b90d2bca3e71",
+      "mode": "100644",
+      "sha256": "37746f520536d158c112b7ed2d0ec4d0fc868822d7bf6fab256864b5f4b685b8"
+    },
+    "codex-rs/windows-sandbox-rs/src/lib.rs": {
+      "bytes": 31313,
+      "git_blob": "22185fc9765823265a99b27e851cd142fcd80e6d",
+      "mode": "100644",
+      "sha256": "ffae596933c17603adf2255450fc022d84b914f381a2f2ab2e93beed1d057927"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup.rs": {
+      "bytes": 83555,
+      "git_blob": "58685b28175bf75fc78f94c13b744781199c55d4",
+      "mode": "100644",
+      "sha256": "60478c6a71edaceb0e79b60bf348ade1de9417d1c36cb944b275f271874587b0"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_process.rs": {
+      "bytes": 12409,
+      "git_blob": "1e112219d0844dfda16263b14404dc14ed27b6e6",
+      "mode": "100644",
+      "sha256": "602c989a1b3a7e32ebd78c327e1e1a2b260601626ee2fc9447b7cebc8c35d1ae"
+    },
+    "codex-rs/windows-sandbox-rs/src/setup_process_tests.rs": {
+      "bytes": 14212,
+      "git_blob": "5941d0337ddb2f1d86140a881fb9de5a51db41a0",
+      "mode": "100644",
+      "sha256": "4a4e74e38b1689236fabb7f739d7cf709fc476084f8f36e7f0877825c339b7ca"
+    },
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": {
+      "bytes": 49498,
+      "git_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+      "mode": "100644",
+      "sha256": "a0d63210b29e534b7f1ca822a5f254e7bdc2dd5cd9f4b12c1cecd6ed4683ae11"
+    },
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs": {
+      "bytes": 6813,
+      "git_blob": "ee46d664d9abd0f085958d1cb333baa155aceb5b",
+      "mode": "100644",
+      "sha256": "6ecb06e2b478a45764833917aa4600b3361a4c2d2a3ddcd6231eba00db61ec16"
+    },
+    "justfile": {
+      "bytes": 7838,
+      "git_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "mode": "100644",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124"
+    },
+    "scripts/just-shell.py": {
+      "bytes": 2030,
+      "git_blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "mode": "100644",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+    },
+    "scripts/run-nextest.py": {
+      "bytes": 10206,
+      "git_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "mode": "100644",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127"
+    }
+  },
+  "job_timeout_minutes": 65,
+  "model_boundary": "no test or model command; no original provider request or recovery operation",
+  "native_or_elevated_PASS_admission_dependency": false,
+  "native_test_commands": [],
+  "original_plan_dependency_correction": "Root explicitly authorized scoped lint independently of five-case PASS; no prior native result is a prerequisite or substituted result.",
+  "other_scopes_excluded": [
+    "core_test_support scoped fix",
+    "codex-core scoped fix",
+    "five native cases",
+    "Windows-current 167-case workflow"
+  ],
+  "schema": "mem-windows-sandbox-fix-frozen-plan-v1",
+  "scoped_fix_command": [
+    "just",
+    "fix",
+    "--locked",
+    "-p",
+    "codex-windows-sandbox"
+  ],
+  "source_guards": "before/after every command and final source, full tracked/untracked state, both locks, tool identities and actual helper/sibling bytes; any rewrite fails and retains full patch/postimages",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_only_qualification": {
+    "attempt": 1,
+    "boundary": "source-only qualification, not a new native result or an original owner recovery",
+    "formatted_delta": [],
+    "original_job": 130660630288,
+    "original_run": 43060276203,
+    "root_full_audit": {
+      "bytes": 1162,
+      "git_blob": "7ec42e5b814661be43e815788b3a16cfdd0cf6c7",
+      "sha256": "e0949b39fe15edfb012d11eee05de9c34215a30ccde10d06087421faf7302ac1"
+    }
+  },
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "tool_policy": {
+    "job_budget": "unchanged single 65-minute Actions job; no new per-stage allowance",
+    "just": "1.51.0",
+    "nextest_identity_only": "0.9.103",
+    "rust": "1.96.0"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.windows-cmd-causal-review.v1",
+  "recorded_at": "2026-11-19 17:18:53 UTC",
+  "native_observed_head": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "inspected_candidate_head": "275cbf2ad6f3f05a1d0e42b3f521f28b53a0dc08",
+  "native_evidence": "windows-10fb-native-summary.json",
+  "source_binding": {
+    ".github/scripts/windows-appcontainer-probe/probe.py": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
+    ".github/scripts/windows-appcontainer-probe/win32_api.py": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+    ".github/scripts/windows-appcontainer-probe/child_trace.py": "f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8",
+    ".github/scripts/windows-appcontainer-probe/child_trace.c": "c59a908daa1df6c827d5d3245de563c3952f9e28fb044555ea3417581e07d697",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs": "495e6eac7e999aa2f4daa30ab4f945279736170803935ad33704306dbc0f8150",
+    "codex-rs/windows-sandbox-rs/src/prepared_process_context.rs": "2df2c91a95023e84538c7d3e5f21ffda61e74c851f4e341efd8785dfe8e784b0",
+    "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+    "codex-rs/windows-sandbox-rs/src/token_full_restriction.rs": "7a492f1386fbb13d437e4b8fd22af1dc92cb5fb53ec8122b60753133868b8a0e",
+    "codex-rs/windows-sandbox-rs/src/process.rs": "1ccf3c4df428096866bd22000392b44e2ab0483db7f6fdb6232b6a486790148d"
+  },
+  "source_readback": "All nine working files matched git show of the exact inspected candidate. No production, workflow or test edits were made during this review.",
+  "observed_facts": {
+    "appcontainer_cmd": "Exit 22 after first child-created marker; child-delete.txt remains, attributes 32; stderr contains Access is denied. The unchanged batch's line 41 maps 22 to del's errorlevel.",
+    "lpac_cmd": "Exit 1 with both streams empty and no first marker. It did not reach the same observed phase as AppContainer cmd.",
+    "actual_c_children": "Both modes exited 0 and completed 35 diagnostic records. DELETE opens and DeleteFileW succeeded on the original allowed child and four inherited/explicit, Medium/Low comparison files; protected .git and outside NULL-DACL targets were denied.",
+    "security_boundary": "Workspace package allow mask is 0x1301bf, without FILE_DELETE_CHILD. The deliberate contaminated-parent control proves adding parent FILE_DELETE_CHILD permits deletion of the protected descendant.",
+    "fixture_path": "Both original cmd fixtures use C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-appcontainer-owned-...\\workspace.",
+    "scope": "The C results do not qualify original cmd, loader initialization, managed-account launch, IPC, or production admission."
+  },
+  "launch_comparison": {
+    "shared": [
+      "Common fixture() produces the original target ACLs and original CHILD_SCRIPT bytes.",
+      "Same SECURITY_CAPABILITIES shape: freshly created package SID, zero capabilities; same LPAC all-packages opt-out in LPAC mode.",
+      "Same explicit three-file stdio handle list, no inherited ambient handles, same STARTF_USESTDHANDLES and CreateProcessW flags.",
+      "Same validated LOCALAPPDATA and SystemRoot/TEMP/TMP/windir construction and workspace CWD.",
+      "Both query actual suspended-child package SID, user SID, Low integrity and zero capabilities, and independently check package access mode before resume."
+    ],
+    "differences": [
+      "The cmd child executes the system cmd.exe and original batch; the C child executes a separately compiled minimal native binary.",
+      "The cmd environment additionally contains ComSpec. The C environment is therefore not byte-identical.",
+      "The cmd path performs token impersonation controls before resume. Their mutation targets are distinct inside-*, matrix and contaminated-parent objects; they do not modify child-delete.txt, child-delete-dir or the original batch.",
+      "The trace adds four diagnostic files and its executable in its separate fixture; the two modes use different fresh profiles and separate fixture roots."
+    ],
+    "code_evidence": [
+      "probe.py:35-57 original batch; :74-280 fixture; :283-327 impersonation; :447-556 actual cmd lifecycle",
+      "win32_api.py:564-597 exact stdio; :609-716 actual cmd creation",
+      "child_trace.py:41-151 native creation; :154-246 separate fixture and actual token verification"
+    ]
+  },
+  "incoming_c52": {
+    "source_sha256": "c59a908daa1df6c827d5d3245de563c3952f9e28fb044555ea3417581e07d697",
+    "delta": "52 added C lines; all original C lines and original Python/probe predicates remain.",
+    "measures": [
+      "FindFirstFileW on child-delete.txt, child-probe.cmd and * using both relative and absolute forms; every valid search handle is closed.",
+      "CreateFileW(FILE_LIST_DIRECTORY) on relative and absolute CWD with FILE_FLAG_BACKUP_SEMANTICS and FILE_FLAG_OPEN_REPARSE_POINT.",
+      "GetFullPathNameW with bounded static buffer, followed by a nonmutating DELETE open of the original child using its absolute path."
+    ],
+    "status": "Not yet observed in a native run at receipt time. Do not report these operations as passed.",
+    "limits": "GetFullPathNameW constructs an absolute path without validating existence or converting short components to long components. Its success cannot prove GetLongPathNameW/GetShortPathNameW access."
+  },
+  "causal_hypotheses": [
+    {
+      "hypothesis": "Directory enumeration or an absolute-path access step used by the shell fails.",
+      "status": "C52 will discriminate the measured operations. Existing direct relative DeleteFileW success does not answer directory enumeration."
+    },
+    {
+      "hypothesis": "Short/long name conversion queries an ungranted ancestor such as the RUNNER~1 component.",
+      "status": "Plausible from the observed path and documented API requirements; no evidence yet that this cmd.exe version actually calls either conversion API. Not an authorization to grant ancestor read or list access."
+    },
+    {
+      "hypothesis": "LPAC cmd initialization or batch resolution requires a resource not used by the minimal C binary.",
+      "status": "The earlier LPAC failure phase supports separating initialization from batch execution; it does not identify a registry key, DLL or capability to grant."
+    }
+  ],
+  "next_evidence_decisions": [
+    {
+      "when": "C52 relative enumeration or FILE_LIST_DIRECTORY fails",
+      "step": "Use its exact operation, path, error and actual token/ACL evidence to investigate that failing access; preserve the original cmd and deletion boundary as gates."
+    },
+    {
+      "when": "Relative forms pass but absolute forms fail",
+      "step": "Inspect the exact converted path and parent-chain behavior using only read-only operation probes; do not broaden parent ACLs."
+    },
+    {
+      "when": "All C52 operations pass but original AppContainer cmd remains exit 22",
+      "step": "Add only bounded read-only GetLongPathNameW/GetShortPathNameW calls on the two existing target paths, or capture actual native cmd file-operation failures. A failing conversion narrows a hypothesis but is not proof that it caused cmd failure."
+    },
+    {
+      "when": "LPAC remains exit 1 before the first original marker",
+      "step": "Use a separate, fixed diagnostic cmd control with an expected distinct inline exit code, preserving the original batch test unchanged. If initialization works, compare a separate owned fixed batch with the same token/stdio/environment; query every actual child token. Do not add generic capabilities or extend original deadlines."
+    }
+  ],
+  "smallest_rust_qualification_step": {
+    "status": "Design only; no code added and no production route enabled.",
+    "step": "After original cmd behavior is understood, implement a private owned AppContainer launch experiment around the existing job, desktop and explicit stdio resources, then execute the unchanged original command and negative filesystem contracts under the original managed identity.",
+    "concrete_gap": [
+      "proc_thread_attr.rs currently owns only handle/job buffers and pseudoconsole; it has no SECURITY_CAPABILITIES or LPAC attribute owner. Any new attribute values/SID storage must outlive DeleteProcThreadAttributeList.",
+      "PreparedProcessContext owns PreparedFilesystemToken from CreateRestrictedToken with a required non-AppContainer base. This is not an AppContainer authority and cannot be reused by relabeling it as qualified.",
+      "elevated/runner_client.rs CreateProcessWithLogonW explicitly uses dwlogonflags=0; the current design intentionally does not load sandbox-user profile state.",
+      "CreateAppContainerProfile creates a per-user profile in the calling identity. The CI user's successful native profile lifecycle does not prove the managed sandbox user's profile/environment lifecycle.",
+      "FreshManagedRunnerBase remains parent-local and retains the original managed process/token/filesystem identity. A child-side reconstruction from wire SID/path/PID values is not equivalent.",
+      "process.rs currently runs CreateProcessAsUserW without a suspended actual-token admission check; a new experimental launch must observe and validate the actual child before resume while retaining its owners."
+    ],
+    "retained_gates": [
+      "All legacy and unqualified elevated APIs remain refused.",
+      "Original cmd env/output/exit, real read/deny-read, private setup state, IPC/transport and route cleanup tests remain.",
+      "Original four-cell delete oracle and protected descendant/NULL-DACL counterexamples remain.",
+      "No FILE_DELETE_CHILD grant to writable roots, broad capability addition, parent ACL widening or conversion of C diagnostic completion into production success."
+    ],
+    "architectural_limit": "A single production guard removal or raw token factory change cannot satisfy the retained contracts. A qualified composition and explicit API migration are required; the existing raw-token positive and raw-token refusal tests describe incompatible unconditional use without qualification."
+  },
+  "primary_sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfullpathnamew",
+      "claim": "Absolute-path construction does not validate the target and does not convert short names to long names."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getlongpathnamew",
+      "claim": "Long-name conversion can require querying parent directories and fail when that query is denied."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getshortpathnamew",
+      "claim": "Short-name conversion can also fail on a parent directory query."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-createappcontainerprofile",
+      "claim": "Profiles are per-user and per-app; creating for another user requires impersonating that user."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw",
+      "claim": "Process creation can succeed before DLL initialization completes and does not automatically load the target user's profile."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
+      "claim": "SECURITY_CAPABILITIES creates an AppContainer; attribute value storage must remain valid until attribute list destruction."
+    }
+  ]
+}

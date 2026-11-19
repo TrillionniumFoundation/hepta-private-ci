@@ -1,0 +1,184 @@
+{
+  "schema": "cancelled-private-scope-observation-v1",
+  "source_commit": "0a5c31b73667b3922d89643cf18f0482fa9a1b87",
+  "source_tree": "d49a133a75fa36eca4a101fcab2d8b67653216ba",
+  "job_id": 131505024543,
+  "run_id": 43310500983,
+  "conclusion": "cancelled",
+  "completed_at": "2026-11-12T21:44:46Z",
+  "original_partial_summaries": [
+    {
+      "line": 452,
+      "raw": "2026-11-12T21:30:16.8544100Z      Summary [   0.173s] 15 tests run: 15 passed, 5 skipped\r",
+      "text": "     Summary [   0.173s] 15 tests run: 15 passed, 5 skipped"
+    },
+    {
+      "line": 548,
+      "raw": "2026-11-12T21:30:34.7061389Z      Summary [   0.047s] 2 tests run: 2 passed, 26 skipped\r",
+      "text": "     Summary [   0.047s] 2 tests run: 2 passed, 26 skipped"
+    },
+    {
+      "line": 623,
+      "raw": "2026-11-12T21:30:57.0596771Z      Summary [   0.119s] 3 tests run: 3 passed, 147 skipped\r",
+      "text": "     Summary [   0.119s] 3 tests run: 3 passed, 147 skipped"
+    },
+    {
+      "line": 645,
+      "raw": "2026-11-12T21:30:58.7602883Z      Summary [   0.100s] 2 tests run: 2 passed, 148 skipped\r",
+      "text": "     Summary [   0.100s] 2 tests run: 2 passed, 148 skipped"
+    }
+  ],
+  "original_cancel_and_missing_artifact_lines": [
+    {
+      "line": 3082,
+      "raw": "2026-11-12T21:44:39.2586469Z ##[error]The operation was canceled.\r",
+      "text": "##[error]The operation was canceled."
+    },
+    {
+      "line": 3117,
+      "raw": "2026-11-12T21:44:41.4769393Z ##[warning]No files were found with the provided path: D:\\a\\_temp/private-state-acquisition. No artifacts will be uploaded.\r",
+      "text": "##[warning]No files were found with the provided path: D:\\a\\_temp/private-state-acquisition. No artifacts will be uploaded."
+    },
+    {
+      "line": 3136,
+      "raw": "2026-11-12T21:44:41.9897866Z ##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-learn-regressions/. No artifacts will be uploaded.\r",
+      "text": "##[error]No files were found with the provided path: D:\\a\\_temp/hepta-windows-learn-regressions/. No artifacts will be uploaded."
+    }
+  ],
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-12T21:28:43Z",
+      "completed_at": "2026-11-12T21:28:45Z"
+    },
+    {
+      "name": "Checkout immutable PR head without saved credentials",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-12T21:28:45Z",
+      "completed_at": "2026-11-12T21:29:02Z"
+    },
+    {
+      "name": "Install repository test runners",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-12T21:29:02Z",
+      "completed_at": "2026-11-12T21:29:10Z"
+    },
+    {
+      "name": "Verify exact source identity and pinned native compiler",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 4,
+      "started_at": "2026-11-12T21:29:10Z",
+      "completed_at": "2026-11-12T21:29:31Z"
+    },
+    {
+      "name": "Exercise private file handles, ACL, reparse and hardlink invariants",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-12T21:29:31Z",
+      "completed_at": "2026-11-12T21:30:16Z"
+    },
+    {
+      "name": "Exercise actual Prompt Registry Windows durable owner",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-12T21:30:16Z",
+      "completed_at": "2026-11-12T21:30:34Z"
+    },
+    {
+      "name": "Exercise signed final-use and authority-lease durable stores",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-12T21:30:34Z",
+      "completed_at": "2026-11-12T21:30:58Z"
+    },
+    {
+      "name": "Validate Agentd Prompt Runtime integration and reopened state",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "number": 8,
+      "started_at": "2026-11-12T21:30:58Z",
+      "completed_at": "2026-11-12T21:44:39Z"
+    },
+    {
+      "name": "Enforce source-level Rust formatting for durable owners",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 9,
+      "started_at": "2026-11-12T21:44:39Z",
+      "completed_at": "2026-11-12T21:44:39Z"
+    },
+    {
+      "name": "Prove directory acquisition rejects both original native attacks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 10,
+      "started_at": "2026-11-12T21:44:39Z",
+      "completed_at": "2026-11-12T21:44:39Z"
+    },
+    {
+      "name": "Exercise exact Windows LEARN file and CURRENT regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "number": 11,
+      "started_at": "2026-11-12T21:44:39Z",
+      "completed_at": "2026-11-12T21:44:39Z"
+    },
+    {
+      "name": "Confirm no generated or modified tracked source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 12,
+      "started_at": "2026-11-12T21:44:39Z",
+      "completed_at": "2026-11-12T21:44:40Z"
+    },
+    {
+      "name": "Preserve exact source and all acquisition qualification logs",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 13,
+      "started_at": "2026-11-12T21:44:40Z",
+      "completed_at": "2026-11-12T21:44:41Z"
+    },
+    {
+      "name": "Retain native LEARN logs, exact case coverage and original JUnit",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 14,
+      "started_at": "2026-11-12T21:44:41Z",
+      "completed_at": "2026-11-12T21:44:42Z"
+    },
+    {
+      "name": "Post Checkout immutable PR head without saved credentials",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 28,
+      "started_at": "2026-11-12T21:44:42Z",
+      "completed_at": "2026-11-12T21:44:44Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 29,
+      "started_at": "2026-11-12T21:44:44Z",
+      "completed_at": "2026-11-12T21:44:44Z"
+    }
+  ],
+  "interpretation": [
+    "The four observed summaries are separate 15, 2, 3 and 2 case scopes, each actually passed.",
+    "The prompt-runtime test command was active while compiling when cancellation occurred; its completed test denominator is not available.",
+    "No native LEARN 36-case result or JUnit collector result is claimed. The upload step reports missing native LEARN artifact files.",
+    "No manual cancellation, retry or rerun was requested by this agent."
+  ]
+}

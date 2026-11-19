@@ -1,0 +1,9 @@
+{"argv": ["cargo", "check", "--locked", "--offline", "-p", "codex-hepta-intelligence-eval", "--tests"]}
+error: failed to load source for dependency `crossterm`
+
+Caused by:
+  unable to update https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb95
+
+Caused by:
+  can't checkout from 'https://github.com/openai-oss-forks/crossterm': you are in the offline mode (--offline)
+{"exit_code": 101}

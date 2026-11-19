@@ -1,0 +1,271 @@
+2026-11-12T21:51:46.6324349Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:51:46.6324672Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:51:46.6324958Z ...
+2026-11-12T21:51:46.6325136Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:51:46.6325371Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6325508Z 
+2026-11-12T21:51:46.6325602Z warning: field `estimand` is never read
+2026-11-12T21:51:46.6325894Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:51:46.6326191Z    |
+2026-11-12T21:51:46.6326355Z 19 | pub(super) struct Checked {
+2026-11-12T21:51:46.6326572Z    |                   ------- field in this struct
+2026-11-12T21:51:46.6326803Z ...
+2026-11-12T21:51:46.6326971Z 23 |     pub estimand: Digest32,
+2026-11-12T21:51:46.6327173Z    |         ^^^^^^^^
+2026-11-12T21:51:46.6327281Z 
+2026-11-12T21:51:46.6327376Z warning: method `context` is never used
+2026-11-12T21:51:46.6327803Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:51:46.6328099Z    |
+2026-11-12T21:51:46.6328253Z 30 | impl Request {
+2026-11-12T21:51:46.6328457Z    | ------------ method in this implementation
+2026-11-12T21:51:46.6328683Z ...
+2026-11-12T21:51:46.6328896Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:51:46.6329169Z    |                   ^^^^^^^
+2026-11-12T21:51:46.6329290Z 
+2026-11-12T21:51:46.6329383Z warning: function `ledger` is never used
+2026-11-12T21:51:46.6329693Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:51:46.6330112Z    |
+2026-11-12T21:51:46.6330273Z 80 | pub(super) fn ledger(
+2026-11-12T21:51:46.6330461Z    |               ^^^^^^
+2026-11-12T21:51:46.6330575Z 
+2026-11-12T21:51:46.6330664Z warning: function `material` is never used
+2026-11-12T21:51:46.6330986Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:51:46.6331286Z     |
+2026-11-12T21:51:46.6331448Z 302 | pub(super) fn material(
+2026-11-12T21:51:46.6331648Z     |               ^^^^^^^^
+2026-11-12T21:51:46.6331758Z 
+2026-11-12T21:51:46.6331877Z warning: function `material_with_profile` is never used
+2026-11-12T21:51:46.6332219Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:51:46.6332519Z     |
+2026-11-12T21:51:46.6332691Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:51:46.6332911Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:51:46.6333060Z 
+2026-11-12T21:51:46.6333165Z warning: type alias `Selector` is never used
+2026-11-12T21:51:46.6333472Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:51:46.6333757Z    |
+2026-11-12T21:51:46.6334067Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:51:46.6334572Z    |                 ^^^^^^^^
+2026-11-12T21:51:46.6334723Z 
+2026-11-12T21:51:46.6334829Z warning: 13 warnings emitted
+2026-11-12T21:51:46.6334989Z 
+2026-11-12T21:51:46.6339861Z [38,903 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 76s remote, remote-cache ... (2 actions, 1 running)
+2026-11-12T21:51:48.5609234Z [38,905 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 78s remote, remote-cache
+2026-11-12T21:51:58.5557106Z [38,905 / 38,908] Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files); 88s remote, remote-cache
+2026-11-12T21:52:10.3474537Z INFO: From Compiling Rust bin //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin (971 files):
+2026-11-12T21:52:10.3475626Z warning: associated items `with_unlearning_authority` and `bytes` are never used
+2026-11-12T21:52:10.3476408Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:52:10.3476723Z     |
+2026-11-12T21:52:10.3476995Z  84 | impl LedgerFixture {
+2026-11-12T21:52:10.3477377Z     | ------------------ associated items in this implementation
+2026-11-12T21:52:10.3477858Z ...
+2026-11-12T21:52:10.3478187Z  89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:52:10.3478654Z     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3478972Z ...
+2026-11-12T21:52:10.3479257Z 171 |     pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+2026-11-12T21:52:10.3479561Z     |                   ^^^^^
+2026-11-12T21:52:10.3479747Z     |
+2026-11-12T21:52:10.3479981Z     = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+2026-11-12T21:52:10.3480193Z 
+2026-11-12T21:52:10.3480307Z warning: function `append_decision` is never used
+2026-11-12T21:52:10.3480624Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:177:15
+2026-11-12T21:52:10.3480897Z     |
+2026-11-12T21:52:10.3481201Z 177 | pub(super) fn append_decision(writer: &mut LedgerWriter, run: &StableId, episode: &StableId) {
+2026-11-12T21:52:10.3481551Z     |               ^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3481687Z 
+2026-11-12T21:52:10.3481777Z warning: function `closure` is never used
+2026-11-12T21:52:10.3482068Z    --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:212:15
+2026-11-12T21:52:10.3482339Z     |
+2026-11-12T21:52:10.3482514Z 212 | pub(super) fn closure(
+2026-11-12T21:52:10.3482719Z     |               ^^^^^^^
+2026-11-12T21:52:10.3482832Z 
+2026-11-12T21:52:10.3483005Z warning: associated function `with_unlearning_authority` is never used
+2026-11-12T21:52:10.3483582Z   --> hepta-agentd/src/circuit_credit_ledger_test_support.rs:89:19
+2026-11-12T21:52:10.3483860Z    |
+2026-11-12T21:52:10.3484028Z 84 | impl LedgerFixture {
+2026-11-12T21:52:10.3484279Z    | ------------------ associated function in this implementation
+2026-11-12T21:52:10.3484539Z ...
+2026-11-12T21:52:10.3484763Z 89 |     pub(super) fn with_unlearning_authority(domain: &str) -> Self {
+2026-11-12T21:52:10.3485044Z    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3485195Z 
+2026-11-12T21:52:10.3485304Z warning: variant `Unavailable` is never constructed
+2026-11-12T21:52:10.3485596Z   --> hepta-agentd/src/artifact_original_head_wire.rs:26:5
+2026-11-12T21:52:10.3485842Z    |
+2026-11-12T21:52:10.3486023Z 22 | pub(super) enum Status {
+2026-11-12T21:52:10.3486245Z    |                 ------ variant in this enum
+2026-11-12T21:52:10.3486457Z ...
+2026-11-12T21:52:10.3486615Z 26 |     Unavailable = 4,
+2026-11-12T21:52:10.3486796Z    |     ^^^^^^^^^^^
+2026-11-12T21:52:10.3486967Z    |
+2026-11-12T21:52:10.3487342Z    = note: `Status` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+2026-11-12T21:52:10.3487869Z 
+2026-11-12T21:52:10.3487965Z warning: field `at` is never read
+2026-11-12T21:52:10.3488262Z   --> hepta-agentd/src/cell_q24_material_receipt_support_tests.rs:93:16
+2026-11-12T21:52:10.3488551Z    |
+2026-11-12T21:52:10.3488718Z 91 | pub(super) struct Fixture {
+2026-11-12T21:52:10.3488952Z    |                   ------- field in this struct
+2026-11-12T21:52:10.3489184Z 92 |     root: PathBuf,
+2026-11-12T21:52:10.3489370Z 93 |     pub(super) at: u64,
+2026-11-12T21:52:10.3489559Z    |                ^^
+2026-11-12T21:52:10.3489669Z 
+2026-11-12T21:52:10.3489964Z warning: associated function `from_research_store` is never used
+2026-11-12T21:52:10.3490302Z    --> hepta-agentd/src/learning_iteration_checkpoint.rs:141:19
+2026-11-12T21:52:10.3490561Z     |
+2026-11-12T21:52:10.3490763Z 133 | impl LearningIterationCheckpointOwnerV1 {
+2026-11-12T21:52:10.3491096Z     | --------------------------------------- associated function in this implementation
+2026-11-12T21:52:10.3491394Z ...
+2026-11-12T21:52:10.3491580Z 141 |     pub(crate) fn from_research_store(
+2026-11-12T21:52:10.3491810Z     |                   ^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3491951Z 
+2026-11-12T21:52:10.3492037Z warning: field `estimand` is never read
+2026-11-12T21:52:10.3492341Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_member.rs:23:9
+2026-11-12T21:52:10.3492631Z    |
+2026-11-12T21:52:10.3492797Z 19 | pub(super) struct Checked {
+2026-11-12T21:52:10.3493015Z    |                   ------- field in this struct
+2026-11-12T21:52:10.3493243Z ...
+2026-11-12T21:52:10.3493416Z 23 |     pub estimand: Digest32,
+2026-11-12T21:52:10.3493624Z    |         ^^^^^^^^
+2026-11-12T21:52:10.3493730Z 
+2026-11-12T21:52:10.3493816Z warning: method `context` is never used
+2026-11-12T21:52:10.3494113Z   --> hepta-agentd/src/neuron_cell_evaluation_model_material_wire.rs:53:19
+2026-11-12T21:52:10.3494402Z    |
+2026-11-12T21:52:10.3494554Z 30 | impl Request {
+2026-11-12T21:52:10.3494751Z    | ------------ method in this implementation
+2026-11-12T21:52:10.3494980Z ...
+2026-11-12T21:52:10.3495186Z 53 |     pub(super) fn context(&self) -> Result<Digest32, Error> {
+2026-11-12T21:52:10.3495449Z    |                   ^^^^^^^
+2026-11-12T21:52:10.3495573Z 
+2026-11-12T21:52:10.3495666Z warning: function `ledger` is never used
+2026-11-12T21:52:10.3495977Z   --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:80:15
+2026-11-12T21:52:10.3496271Z    |
+2026-11-12T21:52:10.3496434Z 80 | pub(super) fn ledger(
+2026-11-12T21:52:10.3496623Z    |               ^^^^^^
+2026-11-12T21:52:10.3496742Z 
+2026-11-12T21:52:10.3496833Z warning: function `material` is never used
+2026-11-12T21:52:10.3497154Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:302:15
+2026-11-12T21:52:10.3497453Z     |
+2026-11-12T21:52:10.3497617Z 302 | pub(super) fn material(
+2026-11-12T21:52:10.3498107Z     |               ^^^^^^^^
+2026-11-12T21:52:10.3498229Z 
+2026-11-12T21:52:10.3498350Z warning: function `material_with_profile` is never used
+2026-11-12T21:52:10.3498698Z    --> hepta-agentd/src/circuit_model_selection_material_support_tests.rs:437:15
+2026-11-12T21:52:10.3498992Z     |
+2026-11-12T21:52:10.3499172Z 437 | pub(super) fn material_with_profile(
+2026-11-12T21:52:10.3499397Z     |               ^^^^^^^^^^^^^^^^^^^^^
+2026-11-12T21:52:10.3499535Z 
+2026-11-12T21:52:10.3499627Z warning: type alias `Selector` is never used
+2026-11-12T21:52:10.3499943Z   --> hepta-agentd/src/circuit_deep_training_readback_support_tests.rs:43:17
+2026-11-12T21:52:10.3500237Z    |
+2026-11-12T21:52:10.3500550Z 43 | pub(super) type Selector = OriginalCircuitSelectionCommandOwnerV1<FileAnchorWitnessStore>;
+2026-11-12T21:52:10.3500922Z    |                 ^^^^^^^^
+2026-11-12T21:52:10.3501038Z 
+2026-11-12T21:52:10.3501119Z warning: 13 warnings emitted
+2026-11-12T21:52:10.3501323Z 
+2026-11-12T21:52:10.3510739Z [38,906 / 38,908] [Prepa] runfiles for //codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test-bin
+2026-11-12T21:52:10.3813465Z INFO: Found 1296 targets...
+2026-11-12T21:52:10.6422094Z INFO: Elapsed time: 333.605s, Critical Path: 226.87s
+2026-11-12T21:52:10.6423325Z INFO: 38908 processes: 25944 remote cache hit, 12828 internal, 136 remote.
+2026-11-12T21:52:10.6423945Z INFO: Build completed successfully, 38908 total actions
+2026-11-12T21:52:10.6424315Z INFO: 
+2026-11-12T21:52:12.5646754Z INFO: 
+2026-11-12T21:52:15.2524526Z INFO: Streaming build results to: https://app.buildbuddy.io/invocation/11a543d4-f41e-4667-8f63-11f94f2dec7d
+2026-11-12T21:52:15.3346379Z ##[group]Run actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+2026-11-12T21:52:15.3346721Z with:
+2026-11-12T21:52:15.3346969Z   name: bazel-execution-logs-clippy-x86_64-unknown-linux-gnu
+2026-11-12T21:52:15.3347300Z   path: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:52:15.3347578Z   if-no-files-found: ignore
+2026-11-12T21:52:15.3348113Z   compression-level: 6
+2026-11-12T21:52:15.3348306Z   overwrite: false
+2026-11-12T21:52:15.3348492Z   include-hidden-files: false
+2026-11-12T21:52:15.3348698Z   archive: true
+2026-11-12T21:52:15.3348870Z env:
+2026-11-12T21:52:15.3349053Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:52:15.3349364Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:52:15.3349703Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:52:15.3349990Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:52:15.3350375Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:52:15.3350841Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43313237694-clippy
+2026-11-12T21:52:15.3351257Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:52:15.3351541Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:15.3351776Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:15.3352006Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:52:15.3353866Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:52:15.3354201Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:52:15.3354546Z ##[endgroup]
+2026-11-12T21:52:15.4657740Z With the provided path, there will be 1 file uploaded
+2026-11-12T21:52:15.4662448Z Artifact name is valid!
+2026-11-12T21:52:15.4662936Z Root directory input is valid!
+2026-11-12T21:52:15.8474420Z Uploading artifact: bazel-execution-logs-clippy-x86_64-unknown-linux-gnu.zip
+2026-11-12T21:52:15.8505507Z Beginning upload of artifact content to blob storage
+2026-11-12T21:52:17.0457326Z Uploaded bytes 8388608
+2026-11-12T21:52:17.3748157Z Uploaded bytes 15489951
+2026-11-12T21:52:17.4526647Z Finished uploading artifact content to blob storage!
+2026-11-12T21:52:17.4527461Z SHA256 digest of uploaded artifact is 0c2b363445b09229de7453d21f20b6230ac967105fe1371bd0a70567689a75ca
+2026-11-12T21:52:17.4528605Z Finalizing artifact upload
+2026-11-12T21:52:17.9857844Z Artifact bazel-execution-logs-clippy-x86_64-unknown-linux-gnu successfully finalized. Artifact ID 13988140300
+2026-11-12T21:52:17.9859017Z Artifact bazel-execution-logs-clippy-x86_64-unknown-linux-gnu has been successfully uploaded! Final size is 15489951 bytes. Artifact ID is 13988140300
+2026-11-12T21:52:17.9861754Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43313237694/artifacts/13988140300
+2026-11-12T21:52:18.0026814Z Prepare all required actions
+2026-11-12T21:52:18.0050475Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-12T21:52:18.0050749Z env:
+2026-11-12T21:52:18.0050949Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:52:18.0051279Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:52:18.0051618Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:52:18.0051909Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:52:18.0052287Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:52:18.0052765Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43313237694-clippy
+2026-11-12T21:52:18.0053201Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:52:18.0053487Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:18.0053735Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:18.0054009Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:52:18.0055902Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:52:18.0056251Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:52:18.0056599Z ##[endgroup]
+2026-11-12T21:52:18.0059518Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-12T21:52:18.0073806Z ##[group]Run set -euo pipefail
+2026-11-12T21:52:18.0074070Z [36;1mset -euo pipefail[0m
+2026-11-12T21:52:18.0074274Z [36;1m[0m
+2026-11-12T21:52:18.0074665Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-12T21:52:18.0075100Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-12T21:52:18.0075333Z [36;1m  exit 0[0m
+2026-11-12T21:52:18.0075510Z [36;1mfi[0m
+2026-11-12T21:52:18.0075678Z [36;1m[0m
+2026-11-12T21:52:18.0075992Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-12T21:52:18.0076359Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-12T21:52:18.0076577Z [36;1mexit 1[0m
+2026-11-12T21:52:18.0169587Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-12T21:52:18.0169881Z env:
+2026-11-12T21:52:18.0170090Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-12T21:52:18.0170421Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:52:18.0170752Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-12T21:52:18.0171051Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-12T21:52:18.0171413Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-12T21:52:18.0171881Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43313237694-clippy
+2026-11-12T21:52:18.0172311Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-12T21:52:18.0172605Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:18.0172843Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-12T21:52:18.0173085Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-12T21:52:18.0174983Z   BAZELISK_GITHUB_TOKEN: ***
+2026-11-12T21:52:18.0175325Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs
+2026-11-12T21:52:18.0175666Z ##[endgroup]
+2026-11-12T21:52:21.7778096Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=3769]
+2026-11-12T21:52:21.7871081Z Post job cleanup.
+2026-11-12T21:52:21.7874466Z ##[start-action display=Set up Bazel;id=__1ffd0da5-f4ed-424a-a279-94f6a0fefb97.__bazel-contrib_setup-bazel]
+2026-11-12T21:52:21.7912813Z Post job cleanup.
+2026-11-12T21:52:21.9252466Z ##[end-action id=__1ffd0da5-f4ed-424a-a279-94f6a0fefb97.__bazel-contrib_setup-bazel;outcome=success;conclusion=success;duration_ms=137]
+2026-11-12T21:52:21.9310070Z Post job cleanup.
+2026-11-12T21:52:22.0107393Z [command]/usr/bin/git version
+2026-11-12T21:52:22.0148783Z git version 2.56.0
+2026-11-12T21:52:22.0220774Z Temporarily overriding HOME='/home/runner/work/_temp/11f5655b-adb5-4278-9b28-177f652c9909' before making global git config changes
+2026-11-12T21:52:22.0221857Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T21:52:22.0222803Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T21:52:22.0224136Z Removing SSH command configuration
+2026-11-12T21:52:22.0238451Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T21:52:22.0275288Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T21:52:22.0539993Z Removing HTTP extra header
+2026-11-12T21:52:22.0545337Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T21:52:22.0582294Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T21:52:22.0841260Z Removing includeIf entries pointing to credentials config files
+2026-11-12T21:52:22.0851366Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T21:52:22.0895048Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T21:52:22.1272625Z Cleaning up orphan processes
+2026-11-12T21:52:22.1819424Z Terminate orphan process: pid (2412) (java.lang=ALL-UNNAMED)

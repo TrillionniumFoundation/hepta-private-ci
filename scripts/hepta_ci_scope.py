@@ -71,6 +71,17 @@ FILE_GROUPS = {
     },
 }
 
+# These integration fixtures cross production Bazel dependency boundaries
+# that Cargo's dev-dependency feature set does not fully exercise. Keep the
+# full Bazel matrix active for either source path.
+BAZEL_SENSITIVE_TESTS = frozenset(
+    {
+        "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+        "codex-rs/hepta-automation/tests/automation.rs",
+    }
+)
+
+
 CANONICAL_DOC_GROUPS = {
     "docs/modules/MODULES.json": {"lifecycle"},
     "docs/architecture/ARCHITECTURE.json": set(GROUPS),
@@ -91,14 +102,23 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             or path.startswith("/")
             or ".." in parts
             or "\\" in path
-            or "\x00" in path
+            or any(ord(char) < 32 or ord(char) == 127 for char in path)
         ):
             raise ValueError(f"invalid repository path: {path!r}")
 
-        if path in DERIVED_ONLY_DOCS or path.startswith(
-            "qualification/module-execution-dossiers/detail/"
-        ):
+        if path in DERIVED_ONLY_DOCS:
             derived = True
+            continue
+
+        if path.startswith("qualification/module-execution-dossiers/detail/"):
+            derived = True
+            # A generated markdown dossier is prose. An unfamiliar or
+            # executable input in this directory is NOT a derived-only view.
+            # Fail closed to full native CI rather than allowing its suffix
+            # to bypass the usual unknown-source fallback.
+            if PurePosixPath(path).suffix != ".md":
+                selected.update(GROUPS)
+                full_repo = True
             continue
 
         if path in {"README.md", "CONTRIBUTING.md"} or (
@@ -106,8 +126,15 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         ):
             continue
 
-        if path in CANONICAL_DOC_GROUPS:
-            selected.update(CANONICAL_DOC_GROUPS[path])
+        canonical_path = (
+            "CALLERS.toml"
+            if re.fullmatch(
+                r"scripts/hepta_callers_manifest_parts/part-[0-9]{4}\.toml\.gz", path
+            )
+            else path
+        )
+        if canonical_path in CANONICAL_DOC_GROUPS:
+            selected.update(CANONICAL_DOC_GROUPS[canonical_path])
             derived = True
             continue
 
@@ -135,6 +162,13 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(FILE_GROUPS[path])
             continue
 
+        if path in BAZEL_SENSITIVE_TESTS:
+            # Exercise the Bazel product dependency boundary as well as native
+            # owner tests; this fixture has a known Cargo/Bazel feature split.
+            selected.update(GROUPS)
+            full_repo = True
+            continue
+
         if len(parts) > 2 and parts[0] == "codex-rs":
             package = parts[1]
             if package in PACKAGE_GROUPS:
@@ -155,22 +189,28 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(GROUPS)
             continue
 
-        if path.startswith("scripts/hepta_ci_") or path.startswith(
-            ".github/workflows/"
+        if (
+            path == "scripts/hepta_caller_manifest.py"
+            or path.startswith("scripts/hepta_ci_")
+            or path.startswith(".github/workflows/")
         ):
             full_repo = True
             selected.update(GROUPS)
             derived = True
             continue
 
-        if (
-            path.startswith("scripts/hepta")
-            or path.startswith("scripts/test_hepta")
-            or (
-                len(parts) == 3
-                and path.startswith("scripts/tests/test_hepta")
-                and PurePosixPath(path).suffix == ".py"
+        # Only direct Python helpers may take the derived-only fast path.
+        # A nested module or non-Python executable whose name happens to
+        # begin with hepta/test_hepta must retain the full native fallback.
+        if PurePosixPath(path).suffix == ".py" and (
+            (
+                len(parts) == 2
+                and (
+                    path.startswith("scripts/hepta")
+                    or path.startswith("scripts/test_hepta")
+                )
             )
+            or (len(parts) == 3 and path.startswith("scripts/tests/test_hepta"))
         ):
             derived = True
             continue
@@ -222,17 +262,17 @@ def include_input_scope(
     base: str,
     head: str,
 ) -> dict[str, bool]:
-    """Join embedded-input impact using exact Cargo OWNERS, never name guesses.
+    """Join exact Cargo fallback and embedded-input impact, never name guesses.
 
     Inspect all otherwise-static inputs, including JSON/YAML, not just prose.
     Only embedded inputs (or consumers with computed includes) widen native
-    scope. Unrelated navigation documents remain lightweight. Native file-level
-    scope is retained; this pass does not re-expand unrelated source changes.
+    scope. Unrelated navigation documents remain lightweight. Bounded native
+    file-level scope is retained; full dependency plans use the existing whole lane.
     """
     if scope["full_repo"]:
         return scope
     static_paths = [path for path in paths if not select([path])["native"]]
-    if not static_paths:
+    if not static_paths and not scope["native"]:
         return scope
     from hepta_ci_dependencies import graph, select_packages
     import tomllib
@@ -248,6 +288,13 @@ def include_input_scope(
         tomllib.TOMLDecodeError,
     ):
         return select([], force_full=True)
+    # Reuse the original whole-repository lane whenever the exact dependency
+    # plan cannot safely stay bounded. In particular, build.rs and a resolver
+    # fallback must not reach deterministic_shard with four partial jobs.
+    if scope["native"] and select_packages(paths, before, after)["full_workspace"]:
+        return select([], force_full=True)
+    if not static_paths:
+        return scope
     embedded = {path for path, _ in before.external_inputs | after.external_inputs}
     affected = [path for path in static_paths if path in embedded]
     opaque = before.opaque_input_consumers | after.opaque_input_consumers

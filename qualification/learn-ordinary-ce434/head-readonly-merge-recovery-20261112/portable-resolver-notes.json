@@ -1,0 +1,23 @@
+{
+  "original_blob": "3b8cdab17acb7e9dbd0062777c82f76ec2e93cf9",
+  "changes": [
+    "Replace the three scratch paths and REFS literal header with required --worktree/--output and optional --base/--left/--right parameters.",
+    "Resolve requested refs with git rev-parse --verify --end-of-options and require exact frozen full SHAs.",
+    "Require audit output outside the source checkout; create it only after the original merge-base/HEAD/MERGE_HEAD assertions."
+  ],
+  "unchanged_resolver_body_verified_by_exact_text_round_trip": true,
+  "frozen_refs": {
+    "base": "dd4b6c17344986a3a9379e372bf19d282f812a30",
+    "left": "32c0160e60d377eb79983abc394832efce12c988",
+    "right": "57ffff832355d75937045f240fed2c2d48783029"
+  },
+  "not_a_generic_model_merge_resolver": true,
+  "execution_in_this_environment": "not executed; platform unavailable",
+  "usage": "python3 resolve_head_readonly_merge_portable_v5.py --worktree /home/qian-qi/hepta-learn-resumed-convergence-ce434-20261112-v1 --output /home/qian-qi/hepta-learn-ce434-evidence-20261111/head-readonly-merge-v5",
+  "ordinary_acceptance": {
+    "positive": 0,
+    "no_update_or_fallback": 0,
+    "fresh_session_c": 0,
+    "daemon_root_cold_restart": 0
+  }
+}

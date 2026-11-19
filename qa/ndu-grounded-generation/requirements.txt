@@ -1,0 +1,10 @@
+# CPU wheels are public; CI also installs these first from the official index.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.10.0+cpu
+torchvision==0.25.0+cpu
+transformers==5.20.2
+numpy==2.2.6
+Pillow==11.3.0
+tokenizers==0.23.3
+safetensors==0.8.0
+huggingface-hub==2.2.0

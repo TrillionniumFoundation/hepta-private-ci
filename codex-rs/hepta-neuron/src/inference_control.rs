@@ -18,6 +18,16 @@ use crate::canonical_model_output_digest_v1;
 /// implementation may dispatch to a local worker, but this module never depends
 /// on worker-private APIs or grants.
 pub trait NeuronInferenceControlPort {
+    /// Bind metadata from the Cell owner's original durable admission before
+    /// dispatch. This is not a new admission or execution capability. Existing
+    /// non-Cell ports may ignore it; concrete Cell controls must bind it exactly.
+    fn bind_cell_inference(
+        &mut self,
+        _admission: &crate::CellInferenceAdmissionV1,
+    ) -> Result<(), NeuronModelError> {
+        Ok(())
+    }
+
     fn execute_feature(
         &mut self,
         request: &NeuronFeatureRequestV1,

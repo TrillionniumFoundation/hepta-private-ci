@@ -1,0 +1,218 @@
+//! Shared journal and witness transaction for neuron execution.
+
+use super::*;
+use crate::SparseTick;
+use codex_hepta_types::AuthorityPosture;
+use std::time::Instant;
+
+impl<W: AnchorWitnessStore> NeuronRuntime<W> {
+    pub(super) fn tick_profile(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+    ) -> Result<ProfileOutput, NeuronRuntimeError> {
+        let model_request = self.model_request(&input)?;
+        let input_digest = model_request.input_digest;
+        if let Some(pending) = self.pending.clone() {
+            if pending.input_digest != input_digest {
+                return Err(NeuronRuntimeError::PendingReconciliation);
+            }
+            match self
+                .witness
+                .compare_and_swap(pending.expected, pending.next)
+            {
+                Ok(()) => {
+                    self.pending = None;
+                    return Ok(pending.output);
+                }
+                Err(error) => {
+                    return Err(NeuronRuntimeError::WitnessAfterCommit {
+                        anchor: pending.next,
+                        error,
+                    });
+                }
+            }
+        }
+
+        let current = self.journal.current()?;
+        let expected_checkpoint = current.map_or(Digest32::ZERO, crate::SparseCheckpoint::digest);
+        if input.checkpoint_digest != expected_checkpoint {
+            return Err(NeuronRuntimeError::CheckpointMismatch);
+        }
+        // Verify context against the journal's *registered* Scope/Objective,
+        // not against caller-provided digests. Wrong identity must never
+        // result in a model request, even for the very first tick.
+        let source_scope_digest = subject_scope_digest(&input.subject_id)?;
+        self.journal
+            .verify_owner_context(source_scope_digest, input.objective_digest)?;
+        // Validate the durable frontier BEFORE invoking the selected model.
+        // SparseJournal::commit used to discover these stale/future inputs only
+        // *after* model.execute(), wasting resources and potentially issuing
+        // an external invocation for a tick that can never be committed.
+        // Keep the same journal/mechanism error categories as sparse_tick.
+        if let Some(checkpoint) = current {
+            if checkpoint.sequence().checked_add(1) != Some(input.logical_sequence) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Sequence,
+                )));
+            }
+            if input.monotonic_time_micros <= checkpoint.monotonic_micros() {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::Clock,
+                )));
+            }
+            if checkpoint.body_digest() != body_digest(&self.config, &input) {
+                return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                    crate::SparseError::ScopeDrift,
+                )));
+            }
+        } else if input.logical_sequence != 1 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
+                crate::SparseError::Sequence,
+            )));
+        }
+        // A full journal cannot commit even a valid successor. Do not consume
+        // another model request until an authorized owner rolls the segment.
+        if self.journal.remaining_capacity()? == 0 {
+            return Err(NeuronRuntimeError::Journal(JournalError::Capacity));
+        }
+        let expected_anchor = current.map(|checkpoint| JournalAnchor {
+            sequence: checkpoint.sequence(),
+            checkpoint_digest: checkpoint.digest(),
+        });
+
+        let started = Instant::now();
+        let model_output = model.execute(&model_request)?;
+        validate_model_output(&self.config, &model_output)?;
+        let model_runtime_digest = digest_model_binding(&model_output)?;
+
+        let sparse_tick = SparseTick {
+            scope_digest: source_scope_digest,
+            objective_digest: input.objective_digest,
+            ndu_digest: input.ndu_snapshot_digest,
+            body_digest: body_digest(&self.config, &input),
+            input_digest,
+            sequence: input.logical_sequence,
+            monotonic_micros: input.monotonic_time_micros,
+            drive_q24: model_output.drive_q24.clone(),
+            prediction_q24: model_output.prediction_q24.clone(),
+        };
+        let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
+        let checkpoint = self
+            .journal
+            .current()?
+            .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
+        // Calibrated execution keeps the existing timing boundary: calibration
+        // contributes to measured execution before the unchanged resource gate.
+        let calibration = self
+            .calibrated
+            .as_ref()
+            .map(|config| calibrate(&config.calibration, &sparse_receipt, input.logical_sequence))
+            .transpose()?;
+        let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
+        let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
+            .map_err(|_| NeuronRuntimeError::Arithmetic)?;
+        let write_amplification_ppm = {
+            let numerator = u128::from(journal_bytes_written)
+                .checked_mul(1_000_000)
+                .ok_or(NeuronRuntimeError::Arithmetic)?;
+            let denominator = u128::from(checkpoint_bytes);
+            let rounded_up = numerator
+                .checked_add(denominator.saturating_sub(1))
+                .ok_or(NeuronRuntimeError::Arithmetic)?
+                / denominator;
+            u32::try_from(rounded_up).map_err(|_| NeuronRuntimeError::Arithmetic)?
+        };
+        let resource_exceeded = execution_micros > self.config.resource_envelope.p99_latency_micros
+            || model_output.transient_allocation_bytes
+                > self.config.resource_envelope.transient_allocation_bytes
+            || checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
+            || write_amplification_ppm > self.config.resource_envelope.write_amplification_ppm;
+        let active_indices = checkpoint
+            .activation_q24()
+            .iter()
+            .enumerate()
+            .filter(|(_, value)| **value > 0)
+            .map(|(index, _)| u32::try_from(index).map_err(|_| NeuronRuntimeError::Arithmetic))
+            .collect::<Result<Vec<_>, _>>()?;
+        let activation_digest = checkpoint.activation_digest();
+        let threshold_digest = checkpoint.threshold_digest();
+        let eligibility_digest = checkpoint.eligibility_digest();
+        let resource_receipt = NeuronResourceReceiptV1 {
+            execution_micros,
+            transient_allocation_bytes: model_output.transient_allocation_bytes,
+            checkpoint_bytes,
+            journal_bytes_written,
+            write_amplification_ppm,
+            saturation_count: sparse_receipt.projection_count,
+            queue_age_micros: model_output.queue_age_micros,
+        };
+        let output = if let Some((confidence_ppm, ood_ppm, abstain)) = calibration {
+            let abstain = abstain || resource_exceeded;
+            let tick_receipt = NeuronTickReceiptV1 {
+                tick_id: input.tick_id.clone(),
+                checkpoint_before: sparse_receipt.checkpoint_before,
+                checkpoint_after: sparse_receipt.checkpoint_after,
+                activation_digest,
+                active_indices,
+                sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                threshold_digest,
+                eligibility_digest,
+                prediction_error_q24: sparse_receipt.prediction_error_q24,
+                confidence_ppm,
+                ood_ppm,
+                abstain,
+                resource_receipt,
+            };
+            let signal = NeuronSignalReceiptV1 {
+                signal_set_id: input.tick_id,
+                model_runtime_digest,
+                temporal_state_digest: checkpoint.temporal_state_digest(),
+                signals_q24: sparse_receipt.activation_q24.clone(),
+                activation_sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                ood_ppm,
+                abstain,
+                authority: AuthorityPosture::DENY_ALL,
+            };
+            ProfileOutput::Calibrated(NeuronRuntimeOutputV1 {
+                tick: tick_receipt,
+                signal,
+                model_runtime: model_output.runtime_receipt,
+            })
+        } else {
+            ProfileOutput::Shadow(NeuronShadowOutputV1 {
+                tick_id: input.tick_id,
+                input_digest,
+                checkpoint_before: sparse_receipt.checkpoint_before,
+                checkpoint_after: sparse_receipt.checkpoint_after,
+                activation_digest,
+                temporal_state_digest: checkpoint.temporal_state_digest(),
+                model_runtime_digest,
+                signals_q24: sparse_receipt.activation_q24.clone(),
+                sparsity_ppm: sparse_receipt.active_fraction_ppm,
+                resource_receipt,
+                model_runtime: model_output.runtime_receipt,
+                abstain: true,
+                authority: AuthorityPosture::DENY_ALL,
+            })
+        };
+        let next_anchor = JournalAnchor {
+            sequence: input.logical_sequence,
+            checkpoint_digest: sparse_receipt.checkpoint_after,
+        };
+        if let Err(error) = self.witness.compare_and_swap(expected_anchor, next_anchor) {
+            self.pending = Some(PendingWitness {
+                input_digest,
+                expected: expected_anchor,
+                next: next_anchor,
+                output,
+            });
+            return Err(NeuronRuntimeError::WitnessAfterCommit {
+                anchor: next_anchor,
+                error,
+            });
+        }
+        Ok(output)
+    }
+}

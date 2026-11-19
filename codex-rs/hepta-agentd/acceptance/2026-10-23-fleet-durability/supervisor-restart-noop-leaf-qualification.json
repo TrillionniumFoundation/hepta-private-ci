@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "scope": "Independent supervisor durable restart no-op product leaf qualification",
+  "repository": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-owner-aggregate-perf",
+  "base_commit": "03fcfdcd347a7125e3f7dd77f083baa0543cda80",
+  "leaf_commit": "7a166d9b809c98230bb5bbabe2281aaa70e58610",
+  "leaf_parent": "03fcfdcd347a7125e3f7dd77f083baa0543cda80",
+  "tested_commit": "2d7f7a86e804ca898b0ce6ff3f8cc7a3fa816254",
+  "source_comparison": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "tested_blob": "059a7e01d52aeaa00d16446e0bdf7adebf89790d",
+      "leaf_blob": "059a7e01d52aeaa00d16446e0bdf7adebf89790d",
+      "equal": true,
+      "after_independent_fmt_blob": "059a7e01d52aeaa00d16446e0bdf7adebf89790d"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal_persistence_tests.rs",
+      "tested_blob": "efaeebf5682a85d9a1a92601212f6f3e418cf131",
+      "leaf_blob": "efaeebf5682a85d9a1a92601212f6f3e418cf131",
+      "equal": true,
+      "after_independent_fmt_blob": "efaeebf5682a85d9a1a92601212f6f3e418cf131"
+    }
+  ],
+  "durable_job": {
+    "id": "main/1a16a6952f8-1b6abb-3d71",
+    "idempotency_key": "organ-os4-owner-aggregate-restart-fd-and-fix-v1",
+    "authoritative_state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  "environment": {
+    "cargo_home": "/home/qian-qi/.cargo",
+    "cargo_target_dir": "/data/organ-hos2-recovery-memory-target-20261023",
+    "cargo_profile": "dev-small",
+    "cargo_build_jobs": 2,
+    "toolchain": "Rust1.95.0"
+  },
+  "tests": {
+    "command": "just test --locked --cargo-profile dev-small -p codex-hepta-supervisor --lib --test-threads 2 --retries 0 --success-output immediate -E 'test(restart)'",
+    "run": 21,
+    "passed": 21,
+    "skipped": 83,
+    "failed": 0,
+    "test_seconds": 3.334
+  },
+  "scoped_fix": {
+    "command": "just fix -p codex-hepta-supervisor -p codex-hepta-agentd --profile dev-small",
+    "exit_code": 0,
+    "duration_seconds": 448,
+    "source_changes": false,
+    "warnings": "Existing warnings remain; this is scopedfix success, not -D warnings qualification."
+  },
+  "logs": {
+    "tests": {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-restart-fd-v2.log",
+      "sha256": "dbd898a2c4878cb185ff11e6001f5618f3c2ce625e3d4a559eceeb1a4ec40ce5"
+    },
+    "scoped_fix": {
+      "absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/owner-aggregate-scoped-fix-v1.log",
+      "sha256": "49fb3b6a97fb22f2e56007256de56934a4202a1d570e3ac8fba159854d8a1718"
+    }
+  },
+  "qualification_limits": [
+    "Leaf contains byte-identical final product and regression files from the tested source; it excludes separate bootstrap and timing changes.",
+    "The complete original1068-test aggregate has not been rerun by this lane.",
+    "Fixtures exercise real file descriptors, publication/rename and file sync; injected directory-sync failure is an explicit fault fixture.",
+    "No deadline changes, no cross-tick/global cache and no production deployment claim."
+  ],
+  "format": {
+    "command": "just fmt",
+    "worktree": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/goal-supervisor-noop-format",
+    "commit": "7a166d9b809c98230bb5bbabe2281aaa70e58610",
+    "started_utc": "2026-10-23T20:30:13.490163+00:00",
+    "completed_utc": "2026-10-23T20:30:13.694810+00:00",
+    "elapsed_seconds": 0.20458784804213792,
+    "exit_code": 0,
+    "status_before": "",
+    "status_after": "",
+    "diff_check_exit_code": 0,
+    "log_absolute_path": "/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-4/work/supervisor-restart-noop-leaf-fmt.log",
+    "log_sha256": "5340d74245ef8c205a281efdd56abd9661047986da310fbaa89c4b744a369fa7",
+    "note": "Independent clean leaf worktree. No source modifications, no build or tests after formatting; active3d74 source untouched."
+  }
+}

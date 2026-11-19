@@ -1,0 +1,90 @@
+{
+  "schema": "hepta.buildbuddy-visibility-remediation.v1",
+  "base_commit": "57b5fe8e166c1357975c7edfce8d909ab38d3cd3",
+  "before_bazelrc_sha256": "cf2d7b0511a3b7872a0be581ce32a6010fdd2c40cff30905d6a9f96d1ca2b2b4",
+  "after_bazelrc_sha256": "4e19b3ad1003a20b8571f9207619dcdc9687fd3fe7610eb353da0ad8272f3cd7",
+  "exact_removed_lines": [
+    "common:ci --build_metadata=REPO_URL=https://github.com/openai/codex.git",
+    "common:ci --build_metadata=VISIBILITY=PUBLIC"
+  ],
+  "all_other_bazelrc_bytes_unchanged": true,
+  "preserved": [
+    "ROLE=CI",
+    "credential-based remote cache/BES/downloader/RBE selection",
+    "OpenAI tenant eligibility and generic fallback",
+    "all CI targets, tests, flags, and timeouts",
+    "plain local command default without remote endpoints"
+  ],
+  "scope": "Remove forced-public visibility and incorrect upstream repository attribution from future CI configuration. Historical invocation permissions and public access were not changed or tested.",
+  "original_ci_logs": [
+    {
+      "job_id": "132782016159",
+      "path": "original-ci-logs/132782016159.log.gz",
+      "uncompressed_bytes": 83973,
+      "uncompressed_sha256": "0ee362f85ac4f7b4a322a3563f0e3fa7f9ccb68e8dfeb4062f7189a1a22440c8",
+      "compressed_bytes": 16713,
+      "compressed_sha256": "a978c93a7795a586d42ca772dc54af59802177ccbddb0c81ede769699f7bdfeb",
+      "source_run_id": 43704268123,
+      "source_snapshot": "566aada; local ea28 tree"
+    },
+    {
+      "job_id": "132782016306",
+      "path": "original-ci-logs/132782016306.log.gz",
+      "uncompressed_bytes": 76342,
+      "uncompressed_sha256": "1718de59643ab13864b208648238dddfa03d94be278a9e3c0439172ba5bd6c76",
+      "compressed_bytes": 13476,
+      "compressed_sha256": "d4edef4c6acc0eadc866621b965e8c99f9105e0a7edd5e13ae7304470e610f5b",
+      "source_run_id": 43704268123,
+      "source_snapshot": "566aada; local ea28 tree"
+    },
+    {
+      "job_id": "132782016313",
+      "path": "original-ci-logs/132782016313.log.gz",
+      "uncompressed_bytes": 179671,
+      "uncompressed_sha256": "1e2fdc7d292c0d0a263e7a2e3468fe364eb73695ec9883834052345db52ec847",
+      "compressed_bytes": 22141,
+      "compressed_sha256": "f0feb72029b45c7e2907238d1b0dc5576c1e37745f97add8ad180bcb5b1b6751",
+      "source_run_id": 43704268123,
+      "source_snapshot": "566aada; local ea28 tree"
+    },
+    {
+      "job_id": "132782016372",
+      "path": "original-ci-logs/132782016372.log.gz",
+      "uncompressed_bytes": 96651,
+      "uncompressed_sha256": "fcad781d43676cfaa229b94d41a2c6dc7b8146bf7e1ee8d9ab3e3e689e7684d8",
+      "compressed_bytes": 16884,
+      "compressed_sha256": "d9b262015c5449011679fc56f5207154ef51e2edf4a51b1319d148020fbc9565",
+      "source_run_id": 43704268123,
+      "source_snapshot": "566aada; local ea28 tree"
+    }
+  ],
+  "primary_sources": [
+    {
+      "url": "https://www.buildbuddy.io/docs/guide-metadata/",
+      "relevant_section": "Visibility",
+      "finding": "Authenticated builds default to organization access; VISIBILITY=PUBLIC overrides that default."
+    },
+    {
+      "url": "https://www.buildbuddy.io/docs/rbe-github-actions/",
+      "relevant_section": "Visibility",
+      "finding": "Public visibility is an explicit opt-in for authenticated CI build result pages."
+    }
+  ],
+  "verification": "Original source comparison against base_commit and checkpoint comparison against checkpoint_application_base_commit both confirm exactly the same two .bazelrc line removals. No new test or remote build was run. Original CI log bytes and quoted runtime evidence are unchanged.",
+  "authorityGranted": false,
+  "repository_visibility_observation": {
+    "observed_at_utc": "2026-11-15 11:52:26 UTC",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci",
+    "method": "GET",
+    "full_name": "TrillionniumFoundation/hepta-private-ci",
+    "private": false,
+    "visibility": "public",
+    "description": "Private verification-only mirror for Hepta hosted CI",
+    "limitation": "Current repository metadata is distinct from the name/description and does not prove historical repository visibility or anonymous access to any BuildBuddy invocation.",
+    "raw_response_archive": "audit/privacy-repository-api-raw.json",
+    "raw_response_sha256": "dc7860ede700f49cefe0fe0a5db5887910da79925459056346b82084634d7a9f"
+  },
+  "checkpoint_application_base_commit": "ea28b2253ccf5ad8d05095d1aec9a6a116f4e145",
+  "original_source_fix_commit": "b55dfb116802c960d4c35560538996c957df8683",
+  "repository_policy_scope": "GitHub currently reports this repository as public. The name and description were not used as permission evidence. The change removes an explicit PUBLIC BuildBuddy override and an incorrect REPO_URL, independently of source repository visibility; GitHub visibility itself is unchanged."
+}

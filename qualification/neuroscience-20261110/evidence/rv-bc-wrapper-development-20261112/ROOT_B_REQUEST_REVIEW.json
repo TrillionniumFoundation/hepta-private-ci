@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.rv.root-b-request-review.v1",
+  "request_git_blob": "497359f14af4f6bc1fd4b18a534caf75d3c6f3f3",
+  "request_sha256": "aa16491cb7703a1ab6001708541f56c1cb0d67c24e8cd53812dab3469015756d",
+  "stdin_sha256": "baeafb061f0a8dccdd98cb347263160011e6515b483cea9feaffca8d465b42cd",
+  "driver_sha256": "e3d1e81c3f73cc748a197d31998c565e1afdbc5f879013f46d43edf408e0f3fb",
+  "changes": [
+    "args[2]: freeze -> B",
+    "stdin.stage: freeze -> B",
+    "stdin.expected_frozen_sha256: null -> actual raw FROZEN SHA",
+    "idempotency_key: freeze -> phase-b",
+    "timeout_seconds:180 ->600"
+  ],
+  "all_other_request_fields_identical": true,
+  "all_other_stdin_fields_identical": true,
+  "planned_actor_calls": 2,
+  "phase_C_not_dispatched": true,
+  "status": "APPROVED_EXACT_B_REQUEST",
+  "qualification": "HOLD",
+  "original_plans_and_four_deployments_verified": true
+}
