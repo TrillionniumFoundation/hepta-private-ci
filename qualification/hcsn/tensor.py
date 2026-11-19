@@ -375,6 +375,89 @@ def hx_equity(x, par, boundary=None, *, validate=True):
     return value
 
 
+@dataclass(frozen=True)
+class PreparedHXEquity:
+    """Parameter-only expressions owned by one forward/autograd graph.
+
+    Rebuild after parameter updates or backward; never persist this as a
+    module buffer or reuse it across optimizer steps. No tensor is detached.
+    """
+    params: HXParams
+    components: tuple
+    boundary: torch.Tensor
+    left_logs: tuple
+    coefficients: tuple
+
+
+def prepare_hx_equity(par, boundary=None, *, like=None, validate=True):
+    """Prepare unchanged HX roots, tail differences and boundary coefficients."""
+    p = _parameters(par, like=like, validate=validate)
+    components = _components(p)
+    a, z, zq, eta, gamma, s, fixed, coefficient, numerator, denominator = components
+    b = numerator / denominator if boundary is None else _inputs(boundary, p.r)[0]
+    if b.dtype != p.r.dtype or b.device != p.r.device:
+        raise ValueError("prepare the context with a like tensor matching the boundary")
+    if validate and (not bool(torch.isfinite(b).all()) or bool((b <= 0).any())):
+        raise ValueError("Boundary must be finite and positive")
+    running = p.delta*b - (1-p.tax)*p.coupon + p.recovery*b/p.maturity - p.p
+    if validate and boundary is None:
+        scale = p.delta*b + (1-p.tax)*p.coupon + p.recovery*b/p.maturity + p.p
+        if bool((running > 32*torch.finfo(b.dtype).eps*scale).any()):
+            raise ValueError("Formal HX boundary is locally inadmissible: negative equity near default")
+    left = []
+    for u in (a, -a, zq, -zq):
+        upper = _log_normal_tail_integral(u-z, u, s)
+        lower = _log_normal_tail_integral(z+u, u, s)
+        left.append(upper + torch.log(-torch.expm1(lower-upper)))
+    f1, f2 = _q_derivatives(a, a, s), _q_derivatives(-a, a, s)
+    g1, g2 = _q_derivatives(zq, a, s), _q_derivatives(-zq, a, s)
+    slope = torch.zeros_like(numerator) if boundary is None else 2/p.sigma**2*(b*denominator-numerator)
+    ec = [torch.zeros_like(slope), slope]
+    recovery_coefficient = p.recovery*b/p.maturity - p.c/p.q
+    for n in range(7):
+        flow = (running if n == 0 else
+                (p.delta*b-coefficient*(f1[n]+f2[n])+recovery_coefficient*(g1[n]+g2[n]))/math.factorial(n))
+        ec.append((p.r*ec[n]-p.mu*(n+1)*ec[n+1]-flow)/(p.sigma**2/2*(n+2)*(n+1)))
+    return PreparedHXEquity(p, components, b, tuple(left), tuple(ec))
+
+
+def prepared_hx_equity(x, prepared, *, validate=True):
+    """Evaluate the same closed equity and stable tail/near-boundary branches."""
+    if not isinstance(prepared, PreparedHXEquity):
+        raise TypeError("prepared must be PreparedHXEquity")
+    p, b = prepared.params, prepared.boundary
+    x, *_ = _inputs(x, p.r)
+    if x.dtype != p.r.dtype or x.device != p.r.device:
+        raise ValueError("margin must share the prepared FP32/FP64 dtype and device")
+    if validate and (not bool(torch.isfinite(x).all()) or bool((x < 0).any())):
+        raise ValueError("HX continuation equity requires finite x >= 0")
+    a, z, zq, eta, gamma, s, fixed, coefficient, *_ = prepared.components
+    small = x*(1+a.abs()+zq+1/s+eta) < (0.5 if x.dtype == torch.float32 else 0.12)
+    xr = torch.where(small, torch.full_like(x, 0.5), x)
+    resolvents = []
+    for u, constant in zip((a, -a, zq, -zq), prepared.left_logs):
+        shifted = u-xr/s**2
+        upper = _log_normal_tail_integral(u-z, shifted, s)
+        lower = _log_normal_tail_integral(z+u, shifted, s)
+        left = constant-gamma*xr
+        right = upper + torch.log(-torch.expm1(lower-upper)) - (a+u)*xr
+        resolvents.append(torch.exp(left)*(-torch.expm1(right-left))/(p.sigma**2*z))
+    rf, rg = resolvents[0]+resolvents[1], resolvents[2]+resolvents[3]
+    regular = b*(torch.expm1(xr)-torch.expm1(-gamma*xr))
+    regular = regular + fixed*torch.expm1(-gamma*xr)/p.r - coefficient*rf
+    regular = regular + (p.recovery*b/p.maturity-p.c/p.q)*rg
+    if bool(small.any()):
+        xx = torch.where(small, x, torch.zeros_like(x))
+        series = sum(value*xx**n for n, value in enumerate(prepared.coefficients))
+        value = torch.where(small, series, regular)
+    else:
+        value = regular
+    if validate and (not bool(torch.isfinite(value).all()) or
+                     bool((value < -64*torch.finfo(x.dtype).eps*(p.principal+b*torch.exp(x))).any())):
+        raise ValueError("Requested continuation value is nonfinite or economically inadmissible")
+    return value
+
+
 def evaluate(value, par, horizon, *, validate=True):
     """(V,theta,T) -> b,E_HX,F,G,f plus the explicit initial-boundary atom."""
     p = _parameters(par, like=value, validate=validate)

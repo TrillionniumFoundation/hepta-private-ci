@@ -219,7 +219,8 @@ class OfficialMamba2(nn.Module):
 def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1, *, population_checkpoint_steps=0):
     """Return the requested implementation, never a substituted optional baseline."""
     execution_policy(dict(population_checkpoint_steps=population_checkpoint_steps))
-    variants = {"hx_dual": {}, "hx_fixed": {"boundary": "fixed"},
+    variants = {"hx_dual": {}, "hx_dual_prepared": {"equity_evaluation": "prepared"},
+                "hx_fixed": {"boundary": "fixed"},
                 "hx_call": {"channel": "call"}, "hx_risk": {"channel": "risk"},
                 "no_rollover": {"kernel": "no_rollover"}, "softplus": {"kernel": "softplus"},
                 "no_recovery": {"recovery": False}}
