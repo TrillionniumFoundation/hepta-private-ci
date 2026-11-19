@@ -21,6 +21,8 @@ for variable in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "
 import numpy as np
 import torch
 
+from audit_adam import verify_first_adam
+
 
 HERE = Path(__file__).resolve().parent
 METRIC_ARITHMETIC_ABSOLUTE_BOUND = 1e-12
@@ -152,7 +154,7 @@ def logits_metrics(saved):
 
 
 def check_state(state, original, initial, trainable, updates, epochs, manifest_sha):
-    require(state.keys() in (original.keys(), original.keys() | {"continuation_cursor"}), "checkpoint full schema")
+    require(state.keys() in (original.keys(), original.keys() - {"continuation_cursor"}), "checkpoint full schema")
     require(state["model_configuration"] == original["model_configuration"] == initial["model_configuration"]
             and state["main_updates"] == updates and state["epochs_completed"] == epochs
             and state["data_manifest_sha256"] == manifest_sha, "checkpoint configuration and logical counters")
@@ -210,8 +212,8 @@ def fit_review(fit, bound, request, members, by_path, cold):
     steps, batch_size, micro = bound["steps_per_epoch"], plan["batch_size"], plan["micro_batch_size"]
     require(sum(event_counts.values()) == 89216 and sum(row["events"] for row in dev) == 31952
             and steps == math.ceil(len(ids) / batch_size), "full original population and batch count")
-    require(original["epochs_completed"] == fit["epoch"] and original["main_updates"] == fit["epoch"] * steps,
-            "original complete-epoch checkpoint counters")
+    require(original["epochs_completed"] == fit["epoch"] and original["main_updates"] == fit["main_updates"],
+            "original partial checkpoint counters")
     result = read("RESULT.json")
     require(digest(members[prefix + "INHERITED_BEST.pt"]) == fit["best_checkpoint_sha256"], "unchanged inherited strict-best bytes")
     inherited_validation = read("INHERITED_BEST_VALIDATION.json")
@@ -228,19 +230,27 @@ def fit_review(fit, bound, request, members, by_path, cold):
     require([row["new_phase_wall_seconds"] for row in events] == sorted(row["new_phase_wall_seconds"] for row in events),
             "monotone journal time")
     history, previous_commit = list(bound["inherited_history"]), bound["last_commit"]
-    old_directory = str(Path(bound["last_checkpoint"]).parent.parent)
+    old_directory = request["original_root"] + "/c2-native-execution-20261110-c385-v1/fits/" + fit["name"]
     admission = read_json(members[by_path[old_directory + "/ADMISSION.json"]])
     initial_identity = admission["inputs"][bound["missing_original_initial_path"]]
     require(len(initial_bytes) == initial_identity["bytes"] and digest(initial_bytes) == initial_identity["sha256"],
             "alternate original initial file exactly matches target original admission bytes")
     inherited_history = list(admission["boundary"]["logical_epochs"])
     inherited_previous = None
-    for number in range(bound["parent_retained_epochs"] + 1, fit["epoch"] + 1):
+    for number in range(bound["parent_retained_epochs"] + 1, fit["original_fit"]["epoch"] + 1):
         path = old_directory + f"/commits/epoch-{number:04d}.json"
         data = members[by_path[path]]; commit = read_json(data)
         require(commit["previous_commit"] == inherited_previous, "all original inherited commit links")
         inherited_history.append(commit["epoch"])
         require(plateau(inherited_history, request["stopping"])[0] == commit["stopping"], "every original inherited stopping state")
+        inherited_previous = {"path": path, "bytes": len(data), "sha256": digest(data)}
+    prior_directory = request["previous_continuation_root"] + "/RUN_OUTPUT/" + fit["name"]
+    for number in range(fit["original_fit"]["epoch"] + 1, fit["epoch"] + 1):
+        path = prior_directory + f"/commits/epoch-{number:04d}.json"
+        data = members[by_path[path]]; commit = read_json(data)
+        require(commit["previous_commit"] == inherited_previous, "prior independent continuation commit links")
+        inherited_history.append(commit["epoch"])
+        require(plateau(inherited_history, request["stopping"])[0] == commit["stopping"], "prior continuation stopping state")
         inherited_previous = {"path": path, "bytes": len(data), "sha256": digest(data)}
     require(inherited_history == history and inherited_previous == previous_commit, "inherited history independently rebuilt from original records")
     require(plateau(history, request["stopping"]) == (bound["stopping"], None), "inherited stopping state")
@@ -249,11 +259,23 @@ def fit_review(fit, bound, request, members, by_path, cold):
     order, objectives, last_update, last_epoch = None, [], restored, restored
     observed_checkpoints, changed_names, rng_hashes = set(), set(), set()
     latest_checkpoint_path = prefix + "RESUME_START.pt"
-    final_epoch_path = latest_checkpoint_path
+    final_epoch_path = by_path[bound["last_complete_epoch_checkpoint"]["path"]]
     last_committed = None
     for event in events:
         kind = event["kind"]
-        if kind == "epoch_started":
+        if kind == "partial_epoch_resumed":
+            cursor = original["continuation_cursor"]
+            require(epoch is None and pending is None and not completed and counts[kind] == 1,
+                    "one partial resume before new updates")
+            epoch, batch_index = cursor["current_epoch"], cursor["completed_effective_batches"]
+            order, objectives = list(cursor["episode_indices"]), list(cursor["completed_batch_objectives"])
+            require(cursor == bound["partial_cursor"] and sorted(order) == list(range(len(ids)))
+                    and event["epoch"] == len(history) + 1 == epoch
+                    and event["episode_order"] == cursor["episode_ids"] == [ids[index] for index in order]
+                    and event["already_completed_batches"] == batch_index == 5
+                    and event["next_episode_offset"] == cursor["next_episode_offset"] == batch_index * batch_size,
+                    "partial epoch order/objectives/next offset preserved without reshuffle or replay")
+        elif kind == "epoch_started":
             require(epoch is None and pending is None, "new epoch follows completed prior epoch")
             epoch, batch_index, objectives = event["epoch"], 0, []
             require(epoch == len(history) + 1, "contiguous new epoch")
@@ -423,12 +445,15 @@ def fit_review(fit, bound, request, members, by_path, cold):
             malformed.append({"line": number, "bytes": len(line), "sha256": digest(line)})
     require(malformed == bound["original_malformed_journal_lines"], "retained original malformed tail identity")
     old_updates = {row["number"]: row for row in old_events if row["kind"] == "optimizer_completed"
-                   and row.get("phase") == "main" and row["number"] > original["main_updates"]}
+                   and row.get("phase") == "main" and row["number"] > fit["original_fit"]["epoch"] * steps}
     require(len(old_updates) == bound["original_surviving_completed_after_checkpoint"], "original partial completed work count")
     comparisons = [{"logical_update": row["number"], "absolute_differences": {
         key: abs(row[key] - old_updates[row["number"]][key]) for key in ("loss", "gradient_norm", "events", "micro_forward_calls")}}
         for row in completed if row["number"] in old_updates]
-    return {"fit": fit["name"], "status": result["status"], "start_epoch": fit["epoch"], "last_complete_epoch": len(history),
+    first_adam = verify_first_adam(original,
+        load_state(members[prefix + f"updates/update-{fit['main_updates'] + 1:08d}.pt"]),
+        load_state(members[prefix + "FIRST_GRADIENTS.pt"])) if completed else None
+    return {"first_restored_adam_update": first_adam, "fit": fit["name"], "status": result["status"], "start_epoch": fit["epoch"], "last_complete_epoch": len(history),
             "stopping": stopping, "new_optimizer_completed": len(completed), "new_micro_forwards_started": counts["micro_forward_started"],
             "complete_epochs": len(history) - fit["epoch"], "checked_new_checkpoints": len(observed_checkpoints),
             "development_forwards_reported": result["development_forwards_started"], "complete_development_forwards_minimum": complete_development_forwards,
@@ -462,7 +487,10 @@ def main(archive, receipt_path):
         original_path = request["original_root"] + "/" + request["source_relative"] + "/" + relative
         require(digest(members[by_path[original_path]]) == expected, "actual original numerical source " + relative)
     native, terminal = [read_json(members[name]) for name in ("native/NATIVE_TERMINAL.json", "run/TERMINAL.json")]
-    require(native["job_id"] == "1a1f286aa59-ffbe-b5c" and native["terminal_publication_confirmed"] is True
+    launch = read_json(members["native/RUN_LAUNCH.json"])
+    require(native["job_id"] == launch["job"]["id"]
+            and launch["job"]["idempotency_key"] == request["identity"]
+            and native["terminal_publication_confirmed"] is True
             and native["output_complete"] is True and native["state"] in ("succeeded", "failed", "cancelled", "timed_out")
             and terminal["status"] not in ("RUNNING", "FINISHING"), "actual authoritative terminal")
     require(terminal["source_freeze"] == terminal["source_freeze_after"]
@@ -484,7 +512,7 @@ def main(archive, receipt_path):
             "independent_review_forward_calls": 0, "independent_review_optimizer_calls": 0,
             "metric_reader_arithmetic_absolute_bound": METRIC_ARITHMETIC_ABSOLUTE_BOUND,
             "metric_scope": "NumPy recomputation from saved logits/labels; no evaluation forward or independent model-inference/training replay. This arithmetic comparison does not change a scientific gate.",
-            "gradient_scope": "Recorded gradient norms and finite-gradient checks only; gradients are not independently regenerated.",
+            "gradient_scope": "First saved clipped gradients independently reproduce the first restored AdamW moment/parameter update with NumPy; gradient vectors are not independently regenerated by backward. All other checkpoints/ages/cursors are checked.",
             "rng_scope": "Full restored bytes and saved RNG representation checked; Python episode shuffles independently reproduced without model calls.",
             "dataset_scope": "Recorded episode SHA strings and roster identities are cross-checked. Episode payloads remain external and are not rehashed here; the frozen producer records their before/after verification.",
             "reader_runtime": {"python": platform.python_version(), "torch": torch.__version__, "numpy": np.__version__},

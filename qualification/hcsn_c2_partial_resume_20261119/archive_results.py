@@ -57,7 +57,9 @@ def main(native_status):
     require(native.get("terminal_publication_confirmed") is True and native.get("output_complete") is True
             and native.get("state") in ("succeeded", "failed", "cancelled", "timed_out"),
             "authoritative finished native process and complete logs are required")
-    require(native["job_id"] == "1a1f286aa59-ffbe-b5c", "unique actual continuation job")
+    launch = json.loads((HERE / "RUN_LAUNCH.json").read_text())
+    require(native["job_id"] == launch["job"]["id"] and launch["job"]["idempotency_key"] == request["identity"],
+            "unique actual separately identified continuation job")
     output = HERE / "RUN_OUTPUT"
     terminal = json.loads((output / "TERMINAL.json").read_text())
     require(terminal["identity"] == request["identity"] == freeze["identity"] == bindings["identity"],
@@ -85,7 +87,8 @@ def main(native_status):
     for name, expected in freeze["files"].items():
         add("source/" + name, HERE / name, "frozen_execution_source", {"sha256": expected})
     add("source/FREEZE.json", HERE / "FREEZE.json", "execution_freeze")
-    add("source/archive_results.py", Path(__file__), "postprocessing_only")
+    if "source/archive_results.py" not in members:
+        add("source/archive_results.py", Path(__file__), "postprocessing_only")
     add("native/NATIVE_TERMINAL.json", native_status, "authoritative_native_terminal")
     for name in ("RUN_LAUNCH.json", "NATIVE.stdout", "NATIVE.stderr"):
         add("native/" + name, HERE / name, "native_process_record")
