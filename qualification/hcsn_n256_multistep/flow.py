@@ -377,4 +377,3 @@ def _validate_roster(capsules, roster_dir, primitive):
         conceptual += count
     if len(capsules) != 14 or conceptual != 18_225_028:
         raise ValueError("complete N256 denominator")
-
