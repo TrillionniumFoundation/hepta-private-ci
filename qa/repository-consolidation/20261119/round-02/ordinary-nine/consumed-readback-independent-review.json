@@ -1,0 +1,18 @@
+{
+  "review": "independent source-only review by ci_audit",
+  "result": "APPROVED_WITH_EXPLICIT_SCOPE",
+  "postimage_pins_sha256": "27b55410d2f17c8e6eaa97e1213f129044842dc7df6669e0c089931872ade3f1",
+  "verified_postimages": 11,
+  "verified_historical_blobs": 190,
+  "historical_total_bytes": 1510945,
+  "readback_sha256": "30deb6e3929136b1ec3273a4a7cea86db511e7b8ee351fb92cf3ff106ef41e36",
+  "findings": [
+    "All 190 frozen files match exact Git blob identity, length and SHA256. Only four manifest overrides substitute separately archived original workflows/request into a new temporary view; live-current request and three successor workflows are separately fixed-hash validated.",
+    "Dense source run identity and artifact linkage are explicit; warm source run/job/artifact/head identity and original RED terminal are explicit. Both original review_actual.review results must equal archived full independent reports; warm1291 mismatches and69728 coordinates remain mandatory; all_closed/largegrid_qualification/production_adoption remain false.",
+    "Original N256 launchers/runners are never called as execution entry points by the successor workflow or WORKER. Worker forbids subprocess.Popen, rejects numerical imports in historical result review, and checks no RUN_OUTPUT. Existing frozen controls run under normal and optimized Python; warm tiny5-node numerical tests still execute and are not represented as new authentic N256 runs.",
+    "No continue-on-error or unconditional success branch is present. All child return codes, timeout results, byte drift, current rollback and final snapshot mutation checks propagate failure. Final PASS denotes consumed historical readback only, and preserves original numerical RED.",
+    "Review did not edit any worktree. Local behavioral normal/-O results were supplied by branch_scope and were not rerun by this independent reviewer. GitHub workflow execution remains a separate validation."
+  ],
+  "blocking_findings": [],
+  "scope_limit": "new_dynamic_steps=0 means no new consumed authentic N256 experiment; original tiny numerical controls do perform bounded synthetic calculations. This is not production or large-grid qualification."
+}
