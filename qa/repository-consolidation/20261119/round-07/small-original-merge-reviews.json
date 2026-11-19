@@ -1,0 +1,445 @@
+{
+  "scalar-merge-review.json": {
+    "observed_utc": "2026-11-19T16:01:56.608695+00:00",
+    "head": "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+    "tip": "1510cd776caf35e9d0589fdc07d42a8df0bddb82",
+    "tree": "bf7c855b028dd50fe9019ee2ab249950903712ca",
+    "delta": [
+      "A\texperiments/hcsn_hx_unified_v3/P0_GLOBAL_SCALAR_QVI_GATE.md",
+      "A\texperiments/hcsn_hx_unified_v3/global_scalar_qvi_gate.py",
+      "A\texperiments/hcsn_hx_unified_v3/test_global_scalar_qvi_gate.py",
+      "A\texperiments/hcsn_hx_unified_v3/test_global_scalar_qvi_integration.py"
+    ],
+    "original_postimages_identical": true,
+    "tracked_worktree_clean": true,
+    "unmerged_entries": 0,
+    "all416_protected_pins_excluded": true,
+    "parents": [
+      "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+      "1510cd776caf35e9d0589fdc07d42a8df0bddb82"
+    ],
+    "semantic_review": "New independent Decimal scalar-QVI audit and original tests/docs only; no existing runtime, workflow, Cargo/Bazel, learned-parameter, authority or evidence bytes altered. Safeguarded original exponential root, positive characteristic root, global exponential tangent inequality and generator upper bound checked. Guarded representability and optional observed-boundary comparison retain existing strict criteria. Original primary stopping.py remains unchanged.",
+    "tests": {
+      "command": "python -m unittest -v experiments.hcsn_hx_unified_v3.test_global_scalar_qvi_gate experiments.hcsn_hx_unified_v3.test_global_scalar_qvi_integration",
+      "total": 11,
+      "passed": 11,
+      "seconds": 0.187,
+      "retries": 0,
+      "source_integration_cases": 2
+    },
+    "prior_source_stopping_blob": "1e48342beccec14f30f30a650c215d5db2840a80",
+    "scope": "Historical research component integration; no production-wide CI qualification inferred."
+  },
+  "verify0268-merge-review.json": {
+    "reviewed_utc": "2026-11-19T16:45:46.406116+00:00",
+    "local_repository": "/workspace/scratch/724669789c83/branch-audit/integration",
+    "merge_commit": "5e495946e45e7f3821e96013572c8be625eefe5d",
+    "tree": "fe11858bb6ebd5d58ccb652f2aacba291cd68c2e",
+    "ordered_parents": [
+      "da3e00db1e8e2ac0f6a5231fbecb43987811080a",
+      "0268f9a4f4df6f1db57c89f489448e49c900af6e"
+    ],
+    "source_tip": "0268f9a4f4df6f1db57c89f489448e49c900af6e",
+    "true_three_way_merge": true,
+    "new_original_paths": 36,
+    "new_python_modules": 2,
+    "original_evidence_paths": 34,
+    "postimages": [
+      {
+        "path": "experiments/verification_cell_verify1/matched_qualification.py",
+        "git_blob": "8d5e7d9d227f52a0956059ca76b071950ce67708",
+        "bytes": 16825,
+        "sha256": "7bc6e21c589e85a2e7f3d99b6634083715555856d87b2c5e6500a6d985dd1738"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_matched_qualification.py",
+        "git_blob": "7a0a3f8a456dec372342dfb4347b95557c7c6a7b",
+        "bytes": 11367,
+        "sha256": "8b600d4c8724aae2ddb857a847eb90ec898bf311e0cd57b54f30d336aa7dddc7"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/ENGINEERING.zip",
+        "git_blob": "e7767331cae89c4f2e500d5d25a66e6f64e1a3a0",
+        "bytes": 359979,
+        "sha256": "be3607662e9e8571f3a4055ea43485f52de3b33662751f46d8fda558a9ad571e"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/INTEGRATION.json",
+        "git_blob": "7a09548dd7b58a4458b3a874f38e5a5ce85433a5",
+        "bytes": 3366,
+        "sha256": "a4bbafd825fa797f7607ffbca76386a5274a9e8668b7443d2a065bab3b3086f3"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/MANIFEST.json",
+        "git_blob": "7a507100dc99ac381f92efbd16ec4c115fbcb221",
+        "bytes": 1134,
+        "sha256": "0ca380b59981afcd89fa2729718d776ace271ae48796daa0eb7a7e1a9918d7e6"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/README.md",
+        "git_blob": "9a76cff84106fa28430d6c29887486dbff9545a6",
+        "bytes": 2325,
+        "sha256": "aba770cc6dfbb19630ea59094ce40691243f919c6dabffa2729bff3c2e91d776"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/RESULT.json",
+        "git_blob": "0c8358f81275c82a684c9ba966cdf32ae21bf823",
+        "bytes": 2373,
+        "sha256": "6d6dd48b7624c898fddb53e8059ceba05392c91938c7f8f3b568c22727404d57"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/SOURCE.json",
+        "git_blob": "519dc9f7685aba5933aa39b821974a6ee2247ac8",
+        "bytes": 15951,
+        "sha256": "bb6fb26ae65e0ebc80187cf0d042f7c7aea828a42d3055e1c0ae9a13298aad32"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/dispatch.log",
+        "git_blob": "46a68b4b111a7757e8988651655ef721407ad8b2",
+        "bytes": 69,
+        "sha256": "976677f1c7936ec8b8ced38c241221cedaec737d52cebf5a10bfa46e453d3568"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/format-and-lint.json",
+        "git_blob": "bfc57d8e2f46f9892419edb7f7466e4198ecc11e",
+        "bytes": 1451,
+        "sha256": "5fa1895fcd093b07c381e828599b8fe2fdd971cc0becb61033c8909fb4fd11bd"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/sqlite.log",
+        "git_blob": "a5ee06c133e34e16a89040c52d621c9d411626e9",
+        "bytes": 184,
+        "sha256": "b43f8c5c8070a70c3c478c42e0d4b6d14c1d019b66e3ed8ffff6f5f76119c42e"
+      },
+      {
+        "path": "qualification/verify3-common-candidate-20261110/tests.log",
+        "git_blob": "9e01b4ff7fe06d891c19ced8bb8558eca04e8937",
+        "bytes": 33044,
+        "sha256": "0e5d162163733e23350bdac6d0dcd641e2cf118989d88d9e37a45e06137449a0"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692219915.log.gz",
+        "git_blob": "f33eb74491c75f36701d54535b0e25e040f16be2",
+        "bytes": 177428,
+        "sha256": "2914ac3b95fd1a139f87c101ae32d807bc55b93fc6a4b449961ae270cb01fe32"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692219954.log.gz",
+        "git_blob": "baa8db3289e4c3d86f4ac6c326b3ab8a9757c332",
+        "bytes": 64407,
+        "sha256": "ce85f52fa4883ccc10342f0e4b9a0ba6afc930fbf70142bbac2ebed1afe9ef98"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692219959.log.gz",
+        "git_blob": "cfc3457b015e9e6c2844d5a4b0f532365ea6e2a1",
+        "bytes": 101163,
+        "sha256": "dda58c2d28b64862eaaf3e0f129435ff1e46bcf2980ae298141a0787ee24c932"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692219997.log.gz",
+        "git_blob": "38f5da4f689ba344917722a23437743be02dc5e0",
+        "bytes": 115301,
+        "sha256": "50d7c5dc804c176ee66cad5fb20c3be4ee1b7dbf59b838de3247dc01412231e6"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692220025.log.gz",
+        "git_blob": "d708a3ced8db77606678097882ca10625726c681",
+        "bytes": 126534,
+        "sha256": "e3990b266729ad66673fe8564e64601fccbf619713258b37c2c4067cf45a6c9c"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692220029.log.gz",
+        "git_blob": "a2a48ae5023a2039224d58ea48df5899ba812f3c",
+        "bytes": 108958,
+        "sha256": "3380be8447e19eb7add47d2c2888788ee647f26d3f46f91fdce9dd352034b6d0"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692220034.log.gz",
+        "git_blob": "df0148f483b79d1038578e8513b881381e0e6d3d",
+        "bytes": 175750,
+        "sha256": "37873c09b777c33fcfc3b5644ee085f7420d94fa03e0502acc6da5dbb455098f"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692220121.log.gz.part00",
+        "git_blob": "297748d25c56e3a7479265b2464095a2225ce817",
+        "bytes": 480000,
+        "sha256": "de27b45c46ad98a7c4c121569986f724d10d648debaa3aa2979d6145747514ac"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/129692220121.log.gz.part01",
+        "git_blob": "2fc77fff31b77f3c5194e738d5ba4d4bbf3981c8",
+        "bytes": 134808,
+        "sha256": "85b610e221f0a0f67711e9e76df3ba73afe8f551baf07c43d077b4d6d6d4313f"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/CLASSIFICATION.json",
+        "git_blob": "ff31e61ecbf4d8dd6214bde734b54bbb178a17fd",
+        "bytes": 37151,
+        "sha256": "a33665961ab7455c9783add63e479ee6aa7f9d2f94a54df980063e59499c9575"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/TRIAGE.json",
+        "git_blob": "9f2bfb86ad761a44136ec61f6d96018de9a152df",
+        "bytes": 56338,
+        "sha256": "67f5ce92fe3e99a8ff44394769b109667623ad7d7a5cc831a0a95bf677aadd23"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/jobs-42773881466.json",
+        "git_blob": "a4d141578d5855d76f630cc3bc573a299056caa9",
+        "bytes": 85813,
+        "sha256": "e17e4c91f73f3770c420762841c2bbf0706330ddb583c974be09553dafa8cd58"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/windows-cross-129698985158.log",
+        "git_blob": "3abf84e6f210806bf73a7ccca77b3a23f1b06e5c",
+        "bytes": 54133,
+        "sha256": "6c3ec132d88edd17da356adf041a37c7afa5afcd137f7e25e8549b6d8ec1e714"
+      },
+      {
+        "path": "qualification/verify3-common-ci-triage-20261110/windows-cross-RESULT-from-log.json",
+        "git_blob": "5acc094ec0338e4bb4f2d7b2a3564a6fabcb6320",
+        "bytes": 32129,
+        "sha256": "e161bb7eac9f56c5b16fbafd3fba87d52491c035537d019ccfee12374db88b0c"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/MANIFEST.json",
+        "git_blob": "71f963e10a8fa6d86521a08d088f2135e5091929",
+        "bytes": 1055,
+        "sha256": "8480a6075fb7dc36623581eae28a39bc5e215095977466387aa35a19a65d6cbb"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/README.md",
+        "git_blob": "8296ece9a53c31341857a1ed0d180529c86e9498",
+        "bytes": 2357,
+        "sha256": "4ea07f44095a492f49d98c0acc9fbd3fe4582bfe5781d73c94e69b772c3a8a30"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/RESULT.json",
+        "git_blob": "bf87f210db3d0e7fb01c26eeaf6ffef5cfa42028",
+        "bytes": 1872,
+        "sha256": "ade7f05c47e730353c2cddd6578ad027104da4e8391082ab52dbff3e47a509e6"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/after-full-package.log",
+        "git_blob": "fab538b2687d678b90726719e64c288740ea3095",
+        "bytes": 32835,
+        "sha256": "0afff41413f6e468a1cbdc66db1ec4bd894fb0d658c78a420a93ec9684218f7b"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/before-regressions.log",
+        "git_blob": "1f0b87bf8b9b32b856ca654c1bd1496dea2f185b",
+        "bytes": 3967,
+        "sha256": "3a1c97c91437a42f9f7efd28eb93362325293d43cd484f07233365bca4ac253f"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/counterexamples.json",
+        "git_blob": "1b0314b3f3a5fbd584f565978bfc4340a085dbcd",
+        "bytes": 2956,
+        "sha256": "88aa711c5599689dc9fce94d6db7e59275ce8e7ed6d339bce2cb999779e1a50e"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/executed-source.json",
+        "git_blob": "e55d6182d618bbde8538545a704a62ec8052a81c",
+        "bytes": 12751,
+        "sha256": "5f983fee5e4f6329e0c4b71f80acb044b7a3c93b9eb725cdb8b3c2e6867277cf"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/format-and-lint.json",
+        "git_blob": "fa94f0b81c13ccca5f7b7d519481a1a4cb233e5f",
+        "bytes": 1123,
+        "sha256": "47f66df630c5ddc232c63ee1c5e17fc6f9e8b4caa890e139032d70288b9003bd"
+      },
+      {
+        "path": "qualification/verify3-estimand-fix-20261110/published-source.json",
+        "git_blob": "260e5500750607f450c1cd3323edd77ccf8ecea7",
+        "bytes": 12751,
+        "sha256": "ed1c422b4884931a404c99df88dda4c549a4894165cd18ba50f11b8ecb98dcd0"
+      },
+      {
+        "path": "qualification/verify3-matched-20261109/README.md",
+        "git_blob": "6311eaab1546e2603242fb178df7c89f43ee0001",
+        "bytes": 4742,
+        "sha256": "af103f853370b643a08e866f068c7cc4abd062821ef4c7e53216051eda51a042"
+      }
+    ],
+    "existing_exact_postimages": {
+      "experiments/verification_cell_verify1/prospective.py": "3b1fc84e5e68c53f7425ff59b5c816558df1a195",
+      "experiments/verification_cell_verify1/test_prospective.py": "a23efc431818a861efcf94f7e2237669b5a87bda"
+    },
+    "semantics": [
+      "The added module is a scoring boundary with no executor, signer, dispatcher hook or automatic promotion. It returns scientific_admission=HOLD and production_authority=NONE in every result.",
+      "Frozen manifests bind task pairs, independently declared clusters, environment sessions, arm order, horizon, decision/label chronology, source/model/evaluator identities, loss table and criteria. Duplicate environments, stale labels and type-confused booleans are rejected.",
+      "Missing labels, costs and observations remain explicit and keep the planned denominator. Externally reviewable scoring requires complete original observations plus external receipt callbacks returning literal True; exceptions, missing callbacks and truthy strings fail closed.",
+      "Whole-cluster sign flips use each cluster contribution to the same pair-weighted gain reported to the reviewer, including unequal cluster sizes. Terminal-error reduction must be strictly positive even if the frozen minimum is zero. Exact enumeration is bounded to20clusters, with maximum1000pairs.",
+      "Historical engineering and CI archives retain their original failures, provenance and open gates; no historical CI/training result is relabeled as current integration qualification."
+    ],
+    "checks": {
+      "original_tests": {
+        "count": 22,
+        "failures": 0,
+        "skips": 0,
+        "seconds": 0.066,
+        "log": "verify0268-merged-tests.log",
+        "log_sha256": "4c581e30bb1b292d423530e9c5da1abb9441d62b280bea479f7ed89ca5695b91",
+        "all61_exact_test_source_files_match_merge": true
+      },
+      "codespell_2_4_1_repository_config": "pass all36changedpaths",
+      "repo_scoped_format_check": "pass; seven exact unchanged custody fixtures materialized solely for validator preconditions",
+      "blob_size_policy_512000": "pass all36paths without exception; maximum480000bytes",
+      "syntax": "all newly added Python/JSON parse",
+      "evidence": {
+        "manifests": [
+          {
+            "directory": "qualification/verify3-common-candidate-20261110",
+            "all_files_verified": 9
+          },
+          {
+            "directory": "qualification/verify3-estimand-fix-20261110",
+            "all_files_verified": 8
+          }
+        ],
+        "zip": {
+          "files": 179,
+          "crc": "all pass",
+          "historical_source_files_verified": 50,
+          "relative_paths_only": true,
+          "symlink_entries": 0
+        },
+        "gzip": [
+          {
+            "job_id": 129692219915,
+            "gzip_sha256": "2914ac3b95fd1a139f87c101ae32d807bc55b93fc6a4b449961ae270cb01fe32",
+            "gzip_bytes": 177428,
+            "original_bytes": 1012924,
+            "original_sha256": "817ac373379a894c6bc20885f7681c06d3e13afc7b3738642039fbf48a265f57",
+            "original_lines": 5167,
+            "parts": 0
+          },
+          {
+            "job_id": 129692219954,
+            "gzip_sha256": "ce85f52fa4883ccc10342f0e4b9a0ba6afc930fbf70142bbac2ebed1afe9ef98",
+            "gzip_bytes": 64407,
+            "original_bytes": 456636,
+            "original_sha256": "44c3329292e6a0c63ed51748efe3f4db67a03e16b36bc0b5338423bd1aa8287d",
+            "original_lines": 3980,
+            "parts": 0
+          },
+          {
+            "job_id": 129692219959,
+            "gzip_sha256": "dda58c2d28b64862eaaf3e0f129435ff1e46bcf2980ae298141a0787ee24c932",
+            "gzip_bytes": 101163,
+            "original_bytes": 713620,
+            "original_sha256": "2752fde2464bf160c79b5973104b227cf9523301cbae64e6869aa4a470c20912",
+            "original_lines": 5405,
+            "parts": 0
+          },
+          {
+            "job_id": 129692219997,
+            "gzip_sha256": "50d7c5dc804c176ee66cad5fb20c3be4ee1b7dbf59b838de3247dc01412231e6",
+            "gzip_bytes": 115301,
+            "original_bytes": 1093569,
+            "original_sha256": "cc688441c97720ecec54af79b016de13d0f436c343502b8f74f3f87a4183f7e0",
+            "original_lines": 10239,
+            "parts": 0
+          },
+          {
+            "job_id": 129692220025,
+            "gzip_sha256": "e3990b266729ad66673fe8564e64601fccbf619713258b37c2c4067cf45a6c9c",
+            "gzip_bytes": 126534,
+            "original_bytes": 750472,
+            "original_sha256": "2dff35c7f0a895bad7d61ada810825021c869c5d339cdee16cd83a0da96ab5a6",
+            "original_lines": 6418,
+            "parts": 0
+          },
+          {
+            "job_id": 129692220029,
+            "gzip_sha256": "3380be8447e19eb7add47d2c2888788ee647f26d3f46f91fdce9dd352034b6d0",
+            "gzip_bytes": 108958,
+            "original_bytes": 1069251,
+            "original_sha256": "10a3de4ba717e897af35caec9471459c6709e9ced29a58d7362d18070e4ab1b2",
+            "original_lines": 9998,
+            "parts": 0
+          },
+          {
+            "job_id": 129692220034,
+            "gzip_sha256": "37873c09b777c33fcfc3b5644ee085f7420d94fa03e0502acc6da5dbb455098f",
+            "gzip_bytes": 175750,
+            "original_bytes": 1481357,
+            "original_sha256": "b0c0828d321b318bbe2bc508bbd1d60435a638eb1587c89e4f240d8d3a991e29",
+            "original_lines": 11757,
+            "parts": 0
+          },
+          {
+            "job_id": 129692220121,
+            "gzip_sha256": "8445ff74f7519169028495776be38c281c7d229be88d0cd5953268c18fc4a46a",
+            "gzip_bytes": 614808,
+            "original_bytes": 3586259,
+            "original_sha256": "71b827a2687ac36ae7c24293cfa4344544c3e4e1f9f643376ae42d4e7a19e887",
+            "original_lines": 15234,
+            "parts": 2
+          }
+        ]
+      }
+    },
+    "protection_and_coverage": {
+      "census_observed": "2026-11-19 16:42:54 UTC",
+      "all_live_refs": 7647,
+      "protected_live_refs": 397,
+      "historical_pins": 417,
+      "new_pin": "70827abaa7fcb4abbd44d53466ce9a60244b405e",
+      "current_integration_ref_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+      "base": "da3e00db1e8e2ac0f6a5231fbecb43987811080a",
+      "incoming": "0268f9a4f4df6f1db57c89f489448e49c900af6e",
+      "protected_pin_ancestry_overlap": [],
+      "ordinary_names_added_by_incoming": [
+        "research/verify2-common-candidate-20261110",
+        "research/verify3-common-ci-triage-20261110",
+        "research/verify3-matched-admission-20261109-2140",
+        "research/verify3-matched-estimand-fix-20261110"
+      ],
+      "ordinary_tips_covered_by_local_staging": 2774,
+      "additional_verified_local_commit_parent_lists": {
+        "da3e00db1e8e2ac0f6a5231fbecb43987811080a": [
+          "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+          "1510cd776caf35e9d0589fdc07d42a8df0bddb82"
+        ],
+        "a4d8e4ba3a203a2437351cb478d131d5ca618266": [
+          "cafac72b479e26faa93753f137d97eeec6b704bd",
+          "890ffa58ca2e790541fc4a65a2f8c3b1fae11355"
+        ]
+      },
+      "note": "Local staging does not yet include current remote integration10fb; root normal-merges current remote separately."
+    },
+    "publication_preconditions": "Apply only these36 exact new postimages after the reviewed a4d8 union (or equivalent actual semantic merge); the two existing prospective blobs above must match. Preserve original0268 as a real merge parent. The local first parent already carries the separately reviewed1510 scalar branch; root must reconcile its current remote integration normally.",
+    "remaining": "Full pinned repository CI and final merge-to-main gate remain pending. No Rust, Cargo, Bazel, workflow or production caller changed in this delta."
+  },
+  "verify0268-fresh-protection-coverage.json": {
+    "census_observed": "2026-11-19 16:42:54 UTC",
+    "all_live_refs": 7647,
+    "protected_live_refs": 397,
+    "historical_pins": 417,
+    "new_pin": "70827abaa7fcb4abbd44d53466ce9a60244b405e",
+    "current_integration_ref_sha": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+    "base": "da3e00db1e8e2ac0f6a5231fbecb43987811080a",
+    "incoming": "0268f9a4f4df6f1db57c89f489448e49c900af6e",
+    "protected_pin_ancestry_overlap": [],
+    "ordinary_names_added_by_incoming": [
+      "research/verify2-common-candidate-20261110",
+      "research/verify3-common-ci-triage-20261110",
+      "research/verify3-matched-admission-20261109-2140",
+      "research/verify3-matched-estimand-fix-20261110"
+    ],
+    "ordinary_tips_covered_by_local_staging": 2774,
+    "additional_verified_local_commit_parent_lists": {
+      "da3e00db1e8e2ac0f6a5231fbecb43987811080a": [
+        "a4d8e4ba3a203a2437351cb478d131d5ca618266",
+        "1510cd776caf35e9d0589fdc07d42a8df0bddb82"
+      ],
+      "a4d8e4ba3a203a2437351cb478d131d5ca618266": [
+        "cafac72b479e26faa93753f137d97eeec6b704bd",
+        "890ffa58ca2e790541fc4a65a2f8c3b1fae11355"
+      ]
+    },
+    "note": "Local staging does not yet include current remote integration10fb; root normal-merges current remote separately."
+  }
+}
