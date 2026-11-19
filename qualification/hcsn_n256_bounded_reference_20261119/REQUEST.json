@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-n256-independent-bounded-reference-request-v1",
+  "identity": "hcsn-n256-bounded-reference-20261119-2f215-attempt001",
+  "owner": "/root/n256_closure",
+  "original_input_identity": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "original_time": "1/1000",
+  "coordinates": 69728,
+  "original_n256_identity_preserved": true,
+  "mathematical_target": "Exact real alpha_fp exp(RN(A_fp*dt_fp)) for independently assembled binary64 258/259 operators; complete original warm-1 state including signed content, 9 packet generators/alpha/output; scalar initial-upper occupation uses RN(rho_fp*dt_fp).",
+  "proof_components": [
+    "Exact integer RNE assembly from immutable FP64 inputs",
+    "Monotone signed fixed-point interval propagation through D=B+qI>=0",
+    "Total-variation times geometric bound on omitted positive majorant series",
+    "Positive exponential reciprocal enclosure with integer outward rounding",
+    "Duhamel l1 bound for entrywise time-scaling rounding only",
+    "Exact all-coordinate interval-to-binary64 comparison against preserved archive bytes"
+  ],
+  "precision_bits": [
+    256,
+    512,
+    768
+  ],
+  "highest_series_index": 2048,
+  "maximum_reference_actions": 6,
+  "early_stop": "Only if max interval width <= 2^-120 AND all 69728 coordinates have unique binary64 rounding",
+  "primary_reference_gate": "All 69728 intervals retained and maximum width <= 2^-120",
+  "unique_rounding_is_separate": true,
+  "no_interval_clipping": true,
+  "new_finite_matrix_absolute_diagnostics": {
+    "maximum_absolute_error": "1/1000000000000",
+    "sum_absolute_error": "1/1000000000"
+  },
+  "resource_envelope": {
+    "cpu_affinity": [
+      7
+    ],
+    "address_space_bytes": 4294967296,
+    "child_soft_cpu_seconds": 590,
+    "child_hard_cpu_seconds": 595,
+    "child_wall_deadline_seconds": 650,
+    "controller_cpu_limit_seconds": 5,
+    "artifact_cap_bytes": 16777216,
+    "threads": 1,
+    "authentic_attempts": 1,
+    "automatic_retry": false
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+    "reason_for_runtime": "Independent stdlib-only reference uses the currently available interpreter. It does not claim the original Python 3.12.3 numerical-runtime qualification."
+  },
+  "no_old_solver_calls": true,
+  "model_calls": 0,
+  "optimizer_calls": 0,
+  "scientific_read_inputs": "Exact current exported state and preserved dense/sparse output archives; no E labels or C2 model data.",
+  "original_sparse_dense_gate": "RED_UNCHANGED; 1291 mismatches of 69728; zero mismatch requirement untouched",
+  "original_full_roster_admission": false,
+  "continuum_qualification": false,
+  "all_closed": false,
+  "scope": "One retained warm-1 finite matrix target; no continuum/spatial assembly/AD/full-history or performance qualification.",
+  "created_unix_seconds": 1795091375.4197664
+}

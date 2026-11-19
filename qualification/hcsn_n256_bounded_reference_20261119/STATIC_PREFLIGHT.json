@@ -1,0 +1,42 @@
+{
+  "kind": "static_preflight",
+  "geometry": {
+    "generator_coordinates": 65536,
+    "initial_emitted_alpha_coordinates": 1280,
+    "output_coordinates": 256,
+    "both_archives_match_independent_assembly_bits": true,
+    "candidate_or_dense_values_used_for_assembly": false
+  },
+  "operators": [
+    {
+      "dimension": 258,
+      "q": 539,
+      "w_ceiling": 540,
+      "nonzeros": 767
+    },
+    {
+      "dimension": 259,
+      "q": 539,
+      "w_ceiling": 540,
+      "nonzeros": 1025
+    }
+  ],
+  "actual_n256_actions": 0,
+  "full_model_calls": 0,
+  "observed_python": "3.12.14",
+  "observed_python_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+  "allowed_cpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "body_wall_seconds": 0.8330828339967411,
+  "body_cpu_seconds": 0.827923922,
+  "whole_process_peak_rss_kib": 60312
+}
