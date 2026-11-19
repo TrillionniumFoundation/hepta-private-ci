@@ -3,7 +3,7 @@
 //! Calendar validation and arithmetic use `time`. This value preserves the
 //! existing signed epoch range, leap-second representation, relaxed serde
 //! input, and canonical 0/3/6/9 fractional digits used by signed cache files.
-//! Local presentation uses the maintained `jiff` system time-zone database.
+//! Local presentation retains the system time-zone policy over this full range.
 
 use serde::Deserialize;
 use serde::Deserializer;
@@ -17,7 +17,12 @@ use std::time::SystemTime;
 use time::Duration;
 use time::OffsetDateTime;
 
+mod local;
 mod parse;
+
+pub use local::LocalFormat;
+pub use local::LocalTimeError;
+pub use local::LocalTimestamp;
 
 const MIN_YEAR: i32 = -262_143;
 const MAX_YEAR: i32 = 262_142;
@@ -261,25 +266,6 @@ impl Timestamp {
             use_z,
         }
         .to_string()
-    }
-
-    pub fn local(&self) -> Option<jiff::Zoned> {
-        let nanos = i32::try_from(self.nanoseconds % 1_000_000_000).ok()?;
-        Some(
-            jiff::Timestamp::new(self.seconds, nanos)
-                .ok()?
-                .to_zoned(jiff::tz::TimeZone::system()),
-        )
-    }
-
-    pub fn format_local(&self, pattern: &str) -> String {
-        self.local()
-            .map(|local| local.strftime(pattern).to_string())
-            .unwrap_or_else(|| self.to_rfc3339())
-    }
-
-    pub fn local_date(&self) -> Option<jiff::civil::Date> {
-        self.local().map(|local| local.date())
     }
 }
 

@@ -127,9 +127,7 @@ pub fn format_relative_time(reference: Timestamp, ts: Timestamp) -> String {
     if hours < 24 {
         return format!("{hours}h ago");
     }
-    ts.local()
-        .map(|local| local.strftime("%b %e %H:%M").to_string())
-        .unwrap_or_else(|| ts.to_rfc3339())
+    ts.format_local(codex_utils_time::LocalFormat::MonthDayTime)
 }
 
 pub fn format_relative_time_now(ts: Timestamp) -> String {

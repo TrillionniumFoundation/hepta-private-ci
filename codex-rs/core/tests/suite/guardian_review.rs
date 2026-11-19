@@ -422,7 +422,7 @@ async fn guardian_session_prewarms_and_is_reused_for_first_review(
     let current_date =
         codex_utils_time::Timestamp::from_timestamp(CURRENT_TIME_AT, /*nanoseconds*/ 0)
             .expect("test timestamp should be valid")
-            .format_local("%Y-%m-%d");
+            .format_local(codex_utils_time::LocalFormat::Date);
     assert!(
         guardian_review
             .to_string()

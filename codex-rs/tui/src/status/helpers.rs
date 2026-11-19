@@ -182,11 +182,16 @@ pub(crate) fn format_reset_timestamp(
     dt: codex_utils_time::Timestamp,
     captured_at: codex_utils_time::Timestamp,
 ) -> String {
-    let time = dt.format_local("%H:%M");
-    if dt.local_date() == captured_at.local_date() {
+    let dt = dt.local();
+    let captured_at = captured_at.local();
+    let time = dt.format(codex_utils_time::LocalFormat::Time);
+    if dt.date() == captured_at.date() {
         time
     } else {
-        format!("{time} on {}", dt.format_local("%-d %b"))
+        format!(
+            "{time} on {}",
+            dt.format(codex_utils_time::LocalFormat::DayMonth)
+        )
     }
 }
 

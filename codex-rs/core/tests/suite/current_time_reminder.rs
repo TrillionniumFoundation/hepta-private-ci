@@ -156,7 +156,7 @@ async fn environment_context_uses_external_current_time_on_each_turn() -> Result
         let current_date =
             codex_utils_time::Timestamp::from_timestamp(timestamp, /*nanoseconds*/ 0)
                 .expect("test timestamp should be valid")
-                .format_local("%Y-%m-%d");
+                .format_local(codex_utils_time::LocalFormat::Date);
         assert!(request.message_input_texts("user").iter().any(|text| {
             text.contains("<environment_context>")
                 && text.contains(&format!("<current_date>{current_date}</current_date>"))

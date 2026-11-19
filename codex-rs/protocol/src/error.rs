@@ -750,28 +750,12 @@ fn retry_suffix_after_or(resets_at: Option<&codex_utils_time::Timestamp>) -> Str
 }
 
 fn format_retry_timestamp(resets_at: &codex_utils_time::Timestamp) -> String {
-    let (Some(local_reset), Some(local_now)) = (resets_at.local(), now_for_retry().local()) else {
-        return resets_at.to_rfc3339();
-    };
+    let local_reset = resets_at.local();
+    let local_now = now_for_retry().local();
     if local_reset.date() == local_now.date() {
-        local_reset.strftime("%-I:%M %p").to_string()
+        local_reset.format(codex_utils_time::LocalFormat::TwelveHourTime)
     } else {
-        let suffix = day_suffix(local_reset.day() as u32);
-        local_reset
-            .strftime(&format!("%b %-d{suffix}, %Y %-I:%M %p"))
-            .to_string()
-    }
-}
-
-fn day_suffix(day: u32) -> &'static str {
-    match day {
-        11..=13 => "th",
-        _ => match day % 10 {
-            1 => "st",
-            2 => "nd", // codespell:ignore
-            3 => "rd",
-            _ => "th",
-        },
+        local_reset.format(codex_utils_time::LocalFormat::OrdinalDateTime)
     }
 }
 
