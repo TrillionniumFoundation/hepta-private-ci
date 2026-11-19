@@ -1,0 +1,35 @@
+{
+  "E_access": false,
+  "body_cpu_seconds": 1.824593304,
+  "body_wall_seconds": 1.9195840829634108,
+  "cost_scope": "Main entry including NumPy/Torch imports; native process startup and orchestration not fully measured.",
+  "matched_models": 1,
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "optimizer_operations": 0,
+  "outputs": [
+    {
+      "bytes": 8954,
+      "file": "/home/qian-qi/hepta-c2-D-selection-parent-target-20261119-d741/hcsn-s211-lr0.003.json",
+      "name": "hcsn-s211-lr0.003",
+      "sha256": "003e879afc8f1c36972cef31a33ad9dadae0f5d44257a87d126bd6c3bcc939f2",
+      "status": "MATCHED"
+    }
+  ],
+  "peak_rss_kib": 218488,
+  "reader_runtime": {
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "numpy": "2.3.5",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "torch": "2.8.0+cpu"
+  },
+  "request_sha256": "48cf43200cc5b9d6051ce2c2041e3195f7f6277c170c1b86817ecb892707acc7",
+  "schema": "hcsn-D-only-actual-artifact-inventory-v1",
+  "selection_sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b",
+  "source_bytes_record_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+  "source_matched": 0,
+  "source_sha256": "748fe217c0366e37b3e77306e194232de5c77a424a666914a249788f9385079f",
+  "source_total": 0,
+  "status": "COMPLETE"
+}

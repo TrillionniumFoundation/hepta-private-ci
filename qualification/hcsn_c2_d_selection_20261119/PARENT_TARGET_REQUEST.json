@@ -1,0 +1,80 @@
+{
+  "E_payload_or_label_access": false,
+  "allowed_operations": [
+    "read exact selected checkpoint/logits/report bytes",
+    "weights_only deserialize stored tensors",
+    "hash model/config/order/source bytes",
+    "NumPy saved D logits arithmetic"
+  ],
+  "automatic_trigger": false,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "first_attempt_retained": true,
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 150,
+    "memory_max_bytes": 2147483648,
+    "threads": 1,
+    "wall_seconds": 180
+  },
+  "model_backward": false,
+  "model_construction": false,
+  "model_forward": false,
+  "models": [
+    {
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/development_logits.pt",
+        "sha256": "266271d344df152a4aea33f2becfbad6d9b134fe6563a2e318c43e21427c61b0"
+      },
+      "D_macro_f1": 0.3910932361454862,
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/best.pt",
+        "sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c"
+      },
+      "learning_rate": 0.003,
+      "model_configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 211,
+        "width": 16
+      },
+      "name": "hcsn-s211-lr0.003",
+      "report": {
+        "archive_member": "fits/hcsn-s211-lr0.003/result.json",
+        "bytes": 360283,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/result.json",
+        "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+      },
+      "seed": 211,
+      "selected_epoch": 40
+    }
+  ],
+  "optimizer_construct_restore_step": false,
+  "output_root": "/home/qian-qi/hepta-c2-D-selection-parent-target-20261119-d741",
+  "reconciliation": [
+    {
+      "expected_sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c",
+      "failed_child_copy_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/inherited-best.pt",
+      "original_parent_best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/best.pt",
+      "source": "Original CURVES fit hcsn-s211-lr0.003 strict-best epoch40 hash equals original C2 terminal best hash. Original expected hash and all selection values unchanged."
+    }
+  ],
+  "schema": "hcsn-D-only-actual-artifact-inventory-request-v1",
+  "selection_sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b",
+  "source_files": {}
+}

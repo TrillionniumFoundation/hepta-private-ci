@@ -1,0 +1,53 @@
+{
+  "body_wall_seconds": 3.760005347430706e-05,
+  "error": "missing or nonregular exact artifact: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/best.pt",
+  "error_type": "ValueError",
+  "expected": {
+    "D_logits": {
+      "bytes": 3071141,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/development_logits.pt",
+      "sha256": "d46b6e8b2ea022235e6de33d1d14ad08ba37bef3be087a41a472370eb8363087"
+    },
+    "D_macro_f1": 0.3498305888641129,
+    "arm": "hcsn",
+    "checkpoint": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/best.pt",
+      "sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe"
+    },
+    "learning_rate": 0.003,
+    "model_configuration": {
+      "arm": "hcsn",
+      "cache_frozen_tables": true,
+      "freeze_shared": true,
+      "hcsn_grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 307,
+      "width": 16
+    },
+    "name": "hcsn-s307-lr0.003",
+    "report": {
+      "archive_member": "fits/hcsn-s307-lr0.003/result.json",
+      "bytes": 436682,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/result.json",
+      "sha256": "720e09baa3bb77458c17af00025b53cfd93ee336ce6a4f6e23d7d776251bcd7a"
+    },
+    "seed": 307,
+    "selected_epoch": 62
+  },
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "name": "hcsn-s307-lr0.003",
+  "optimizer_operations": 0,
+  "status": "MISSING_OR_INCONSISTENT"
+}

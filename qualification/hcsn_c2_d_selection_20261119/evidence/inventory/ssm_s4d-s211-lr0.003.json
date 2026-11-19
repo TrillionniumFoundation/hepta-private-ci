@@ -1,0 +1,211 @@
+{
+  "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+  "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+  "D_labels_dtype": "int64",
+  "D_logits": {
+    "bytes": 3071293,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/development_logits.pt",
+    "sha256": "01027d402c65ba39c1ecf8c31531c5e6df18cbbfbd7e71558f26a09d1e56e6ce"
+  },
+  "D_logits_array_sha256": "970e6e5c6b5b6ee5095c884f4ebd721361fcb08ed41c57c4af50f69fafa6c245",
+  "D_logits_dtype": "float64",
+  "D_logits_shape": [
+    31952,
+    11
+  ],
+  "D_macro_f1_absolute_difference": 0.0,
+  "D_macro_f1_recomputed": 0.3941618595113974,
+  "body_wall_seconds": 0.06404447596287355,
+  "checkpoint": {
+    "bytes": 58920,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/best.pt",
+    "sha256": "47aea1b3530c6a15a1048a1c8d408a4e555575a301c53147e37d01493f1345e6"
+  },
+  "checkpoint_schema_keys": [
+    "data_manifest_sha256",
+    "epochs_completed",
+    "main_updates",
+    "model",
+    "model_configuration",
+    "optimizer",
+    "order_rng",
+    "torch_rng"
+  ],
+  "configuration_canonical_sha256": "1fc26e3985fa0229efe8ff793f93942f784f42f010a09f505aa516eea03d837f",
+  "expected": {
+    "D_logits": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/development_logits.pt",
+      "sha256": "01027d402c65ba39c1ecf8c31531c5e6df18cbbfbd7e71558f26a09d1e56e6ce"
+    },
+    "D_macro_f1": 0.3941618595113974,
+    "arm": "ssm_s4d",
+    "checkpoint": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/best.pt",
+      "sha256": "47aea1b3530c6a15a1048a1c8d408a4e555575a301c53147e37d01493f1345e6"
+    },
+    "learning_rate": 0.003,
+    "model_configuration": {
+      "arm": "ssm_s4d",
+      "cache_frozen_tables": false,
+      "freeze_shared": true,
+      "hcsn_grid": null,
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 211,
+      "width": 16
+    },
+    "name": "ssm_s4d-s211-lr0.003",
+    "report": {
+      "bytes": 171980,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/result.json",
+      "sha256": "03c23476b1be3fada1f813a8e4264ce40b45689c0d24f4a6969782559f547c99"
+    },
+    "seed": 211,
+    "selected_epoch": 139
+  },
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "model_tensor_manifest_sha256": "42dee478c83c42fbcaac892dc2c7d3d137ad7e0391d401fa527e6725fb0550e5",
+  "name": "ssm_s4d-s211-lr0.003",
+  "optimizer_operations": 0,
+  "producer_runtime_fields": {},
+  "raw_runtime_field_absence_is_not_imputed": true,
+  "report": {
+    "bytes": 171980,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/result.json",
+    "sha256": "03c23476b1be3fada1f813a8e4264ce40b45689c0d24f4a6969782559f547c99"
+  },
+  "saved_epoch": 139,
+  "saved_main_updates": 1668,
+  "saved_model_tensors": [
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "core.D",
+      "sha256": "6bf0011ef33b70b690fc89fef30c1b643376b1fafb08764854247d906855f3c5",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 1024,
+      "dtype": "float64",
+      "name": "core.kernel.A_imag",
+      "sha256": "fd709fd3e1e84c5b30306a41e8c7692f601caf08870ef52f4e99c996cd7aeee8",
+      "shape": [
+        16,
+        8
+      ]
+    },
+    {
+      "bytes": 2048,
+      "dtype": "float64",
+      "name": "core.kernel.C",
+      "sha256": "356b3a8af20c38c94445329aa245f5e2a66b6196dff6629a00223c1df98375f9",
+      "shape": [
+        16,
+        8,
+        2
+      ]
+    },
+    {
+      "bytes": 1024,
+      "dtype": "float64",
+      "name": "core.kernel.log_A_real",
+      "sha256": "5795c898835b8c6a718e6b69f89dbb6e83aa8451e02870271a1afbc4a3c1dc46",
+      "shape": [
+        16,
+        8
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "core.kernel.log_dt",
+      "sha256": "4e47bb4f26698c7c134bad65db6990be9db893bdc845b9206397691dae5453ed",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 256,
+      "dtype": "float64",
+      "name": "core.output_linear.0.bias",
+      "sha256": "acfc09f256dd7fdcc5bc7fd572a7281d91d7e2ff0a55c93516decf6084643424",
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 4096,
+      "dtype": "float64",
+      "name": "core.output_linear.0.weight",
+      "sha256": "741b141c556c4fb100629344cebf5ae94a895292a6c30c0bc26d651cb79b61f7",
+      "shape": [
+        32,
+        16,
+        1
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "frontend.0.bias",
+      "sha256": "5d7a8b568eb78069b77a37749b519cd3300fb29ae185317356f04cefd991e844",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 3200,
+      "dtype": "float64",
+      "name": "frontend.0.weight",
+      "sha256": "0739bec3d9b47ad43388e653c0af43d4576282eeb500f86322c6aa488a6ab3cd",
+      "shape": [
+        16,
+        25
+      ]
+    },
+    {
+      "bytes": 88,
+      "dtype": "float64",
+      "name": "head.bias",
+      "sha256": "e7680a93314ed7afc5b1baf5c901cd59bc9d3e60f9ae06c4d357761f0da5c8c2",
+      "shape": [
+        11
+      ]
+    },
+    {
+      "bytes": 1408,
+      "dtype": "float64",
+      "name": "head.weight",
+      "sha256": "11afdb3282f5d7fa342c372923fa11e7a189186b2e5ad3fda8b20d0db896e2e2",
+      "shape": [
+        11,
+        16
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "temporal_adapter.bias",
+      "sha256": "f98ab55019dbe510860fa4844971869403f906be9193d90116e6a54fb4540a5c",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 2048,
+      "dtype": "float64",
+      "name": "temporal_adapter.weight",
+      "sha256": "c891443e52438020a2ebe13e5eabc5931b62d3ef7cf6e523bab00d639658f84c",
+      "shape": [
+        16,
+        16
+      ]
+    }
+  ],
+  "status": "MATCHED"
+}

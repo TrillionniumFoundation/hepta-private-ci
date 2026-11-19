@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450552,
+    "sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/inherited-best.pt",
+  "checkpoint": {
+    "bytes": 450552,
+    "sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/checkpoints/epoch-0050.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 15478.471235961653,
+    "development": {
+      "accuracy": 0.6916937906860291,
+      "balanced_accuracy_present_classes": 0.4023789741781259,
+      "brier_half_sum": 0.23128975271629423,
+      "brier_mean_classes": 0.042052682312053495,
+      "confusion_matrix": [
+        [
+          6056,
+          0,
+          10,
+          0,
+          0,
+          277,
+          252,
+          7,
+          7,
+          0,
+          0
+        ],
+        [
+          71,
+          15,
+          0,
+          52,
+          0,
+          315,
+          11,
+          0,
+          167,
+          0,
+          0
+        ],
+        [
+          357,
+          0,
+          419,
+          38,
+          0,
+          130,
+          152,
+          5,
+          39,
+          0,
+          0
+        ],
+        [
+          3,
+          50,
+          177,
+          7806,
+          0,
+          1,
+          2227,
+          381,
+          855,
+          0,
+          0
+        ],
+        [
+          142,
+          0,
+          2,
+          0,
+          0,
+          146,
+          7,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          178,
+          0,
+          25,
+          2,
+          0,
+          4209,
+          465,
+          0,
+          9,
+          103,
+          0
+        ],
+        [
+          217,
+          0,
+          14,
+          562,
+          0,
+          0,
+          1841,
+          75,
+          536,
+          0,
+          9
+        ],
+        [
+          0,
+          0,
+          14,
+          273,
+          0,
+          32,
+          385,
+          259,
+          63,
+          0,
+          0
+        ],
+        [
+          0,
+          2,
+          0,
+          183,
+          0,
+          9,
+          200,
+          0,
+          1494,
+          0,
+          57
+        ],
+        [
+          76,
+          0,
+          0,
+          0,
+          0,
+          81,
+          39,
+          0,
+          0,
+          2,
+          0
+        ],
+        [
+          31,
+          0,
+          0,
+          15,
+          0,
+          0,
+          138,
+          0,
+          177,
+          0,
+          0
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.1317252042261882,
+      "events": 31952,
+      "macro_f1_11_classes": 0.3876091776849658,
+      "macro_f1_present_classes": 0.3876091776849658,
+      "nll": 1.0011439740630155
+    },
+    "epoch": 50,
+    "events": 89216,
+    "phase_process_cpu_seconds": 1100.201393849,
+    "phase_process_wall_seconds": 1101.521333556855,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 1.1315099230710832,
+    "training_weighted_loss_numerator": 53197.57031734005
+  },
+  "logical_main_updates": 600,
+  "previous_commit": {
+    "bytes": 3893,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/commits/epoch-0049.json",
+    "sha256": "546565b45cffaf57fb9ed5be1ed2524e5d68c005840295d682b9f3e318423fab"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.3910932361454862,
+    "best_epoch": 40,
+    "plateau_anchor": 0.3910932361454862,
+    "stale_epochs": 10
+  }
+}

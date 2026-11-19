@@ -1,0 +1,49 @@
+{
+  "E_access": false,
+  "body_cpu_seconds": 1.75401993,
+  "body_wall_seconds": 1.783718231949024,
+  "cost_scope": "Main entry including NumPy/Torch imports; native process startup and orchestration not fully measured.",
+  "matched_models": 2,
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "optimizer_operations": 0,
+  "outputs": [
+    {
+      "bytes": 9071,
+      "file": "/home/qian-qi/hepta-c2-D-selection-supplement-20261119-d741/hcsn-s101-lr0.003.json",
+      "name": "hcsn-s101-lr0.003",
+      "sha256": "20a27d1bdd9031ed5b220961dbc99b1894d4666d09253951bea814d29eff7f5d",
+      "status": "MATCHED"
+    },
+    {
+      "bytes": 2102,
+      "file": "/home/qian-qi/hepta-c2-D-selection-supplement-20261119-d741/hcsn-s211-lr0.003.json",
+      "name": "hcsn-s211-lr0.003",
+      "sha256": "0e059c770b0060d00f0e5edaf78ea5f23a663ef256684ee0755994632f318d0e",
+      "status": "MISSING_OR_INCONSISTENT"
+    },
+    {
+      "bytes": 9050,
+      "file": "/home/qian-qi/hepta-c2-D-selection-supplement-20261119-d741/hcsn-s307-lr0.003.json",
+      "name": "hcsn-s307-lr0.003",
+      "sha256": "41504c4b080e8d447c5928e2ed6350e9e2dc3f93aa56f4b94c9cdcd2d73e5279",
+      "status": "MATCHED"
+    }
+  ],
+  "peak_rss_kib": 219976,
+  "reader_runtime": {
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "numpy": "2.3.5",
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "torch": "2.8.0+cpu"
+  },
+  "request_sha256": "7fc18e99a6ddcb922ead8119e6df4669412789f42a713c035774aa6333319e45",
+  "schema": "hcsn-D-only-actual-artifact-inventory-v1",
+  "selection_sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b",
+  "source_bytes_record_sha256": "4017e8329325ecd9db2f0976d40aeb89ece4024e0060cac9e77a09ff69d6b592",
+  "source_matched": 3,
+  "source_sha256": "8825a05654a2f13033ba57af5e595f51a8d0c3b583c758e8e8d466b9e26661fa",
+  "source_total": 3,
+  "status": "INVENTORIED_WITH_GAPS"
+}

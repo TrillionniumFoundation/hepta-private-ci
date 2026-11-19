@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450552,
+    "sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0062.pt",
+  "checkpoint": {
+    "bytes": 450616,
+    "sha256": "31241e7158ef0b921fe80bd8f1ebc32614e3b6a8bc270ead1997ed49df93b2ee"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0072.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 22132.39835255593,
+    "development": {
+      "accuracy": 0.6460941412118177,
+      "balanced_accuracy_present_classes": 0.37011041966032127,
+      "brier_half_sum": 0.24636449085217393,
+      "brier_mean_classes": 0.044793543791304354,
+      "confusion_matrix": [
+        [
+          5983,
+          7,
+          52,
+          0,
+          0,
+          243,
+          52,
+          0,
+          99,
+          0,
+          173
+        ],
+        [
+          172,
+          55,
+          0,
+          37,
+          0,
+          163,
+          67,
+          0,
+          86,
+          0,
+          51
+        ],
+        [
+          328,
+          0,
+          526,
+          27,
+          0,
+          141,
+          67,
+          0,
+          1,
+          0,
+          50
+        ],
+        [
+          1,
+          1,
+          192,
+          8680,
+          0,
+          45,
+          2094,
+          251,
+          28,
+          0,
+          208
+        ],
+        [
+          202,
+          1,
+          0,
+          0,
+          0,
+          91,
+          2,
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          961,
+          4,
+          135,
+          0,
+          0,
+          3872,
+          19,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          221,
+          0,
+          250,
+          720,
+          0,
+          109,
+          1054,
+          121,
+          0,
+          0,
+          779
+        ],
+        [
+          0,
+          0,
+          71,
+          66,
+          0,
+          12,
+          594,
+          275,
+          4,
+          0,
+          4
+        ],
+        [
+          0,
+          17,
+          0,
+          136,
+          0,
+          31,
+          691,
+          0,
+          25,
+          0,
+          1045
+        ],
+        [
+          67,
+          0,
+          0,
+          0,
+          0,
+          130,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        [
+          41,
+          0,
+          0,
+          4,
+          0,
+          2,
+          140,
+          0,
+          0,
+          0,
+          174
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.04675209269537307,
+      "events": 31952,
+      "macro_f1_11_classes": 0.3420709669209788,
+      "macro_f1_present_classes": 0.3420709669209788,
+      "nll": 1.230042628000004
+    },
+    "epoch": 72,
+    "events": 89216,
+    "phase_process_cpu_seconds": 7751.791870696,
+    "phase_process_wall_seconds": 7755.428724260069,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 0.9538211039355916,
+    "training_weighted_loss_numerator": 44843.58838768126
+  },
+  "logical_main_updates": 864,
+  "previous_commit": {
+    "bytes": 3896,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/commits/epoch-0071.json",
+    "sha256": "cd91366633c2e70fae9d7b0deeb73babe47a56c8ec31f9d81a76debf0a5bab8a"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.3498305888641129,
+    "best_epoch": 62,
+    "plateau_anchor": 0.3498305888641129,
+    "stale_epochs": 10
+  }
+}
