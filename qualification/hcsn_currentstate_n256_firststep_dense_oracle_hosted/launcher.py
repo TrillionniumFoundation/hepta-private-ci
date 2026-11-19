@@ -158,6 +158,9 @@ def main():
         if request["maximum_attempts"] != 1 or not request["n256_numerical_execution_allowed"]:
             raise ValueError("request admission")
         nested, flat, runtime_sha = _runtime()
+        _write("RUNTIME_OBSERVATION.json", {
+            "runtime": nested, "runtime_sha256": runtime_sha,
+        })
         if runtime_sha != request["runtime_sha256"]:
             raise ValueError("hosted runtime identity")
         session = ":".join(os.environ.get(name, "") for name in (
