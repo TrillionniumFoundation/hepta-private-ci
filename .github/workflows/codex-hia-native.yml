@@ -71,8 +71,12 @@ permissions:
   contents: read
 
 jobs:
-  native-components:
+  native-shards:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        tranche: [early, late]
     timeout-minutes: 60
     env:
       PYTHONDONTWRITEBYTECODE: "1"
@@ -151,7 +155,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/unified-policy-configuration.log"
 
       - name: Verify complete unified formatter ABI and original components
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_unified_diff_abi.py \
@@ -163,7 +167,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/unified-component-gate.log"
 
       - name: Verify unified formatter source and archive receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -175,7 +179,7 @@ jobs:
 
       - name: Verify template parsing and atomic no-write contracts
         id: template_parse_abi
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_template_parse_abi.py \
@@ -186,7 +190,7 @@ jobs:
 
       - name: Verify template parser source and archive receipts
         id: template_parse_receipt
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -198,7 +202,7 @@ jobs:
 
       - name: Verify template rendering and atomic no-write contracts
         id: template_render_abi
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_template_render_abi.py \
@@ -209,7 +213,7 @@ jobs:
 
       - name: Verify template renderer source and archive receipts
         id: template_render_receipt
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -221,7 +225,7 @@ jobs:
 
       - name: Verify UUID byte matching and atomic no-write contracts
         id: uuid_abi
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_uuid_find_abi.py \
@@ -232,7 +236,7 @@ jobs:
 
       - name: Verify UUID source and archive receipts
         id: uuid_receipt
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -244,7 +248,7 @@ jobs:
 
       - name: Verify standalone continuation and no-write contracts
         id: standalone_abi
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_patch_standalone_abi.py \
@@ -254,7 +258,7 @@ jobs:
 
       - name: Verify standalone source and archive receipts
         id: standalone_receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -266,7 +270,7 @@ jobs:
 
       - name: Verify application continuation and no-write contracts
         id: application_abi
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_patch_application_abi.py \
@@ -277,7 +281,7 @@ jobs:
 
       - name: Verify application source and archive receipts
         id: application_receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -288,7 +292,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-application-receipt.log"
 
       - name: Verify summary continuation and no-write contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_patch_summary_abi.py \
@@ -297,7 +301,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-summary-abi.log"
 
       - name: Verify summary source and archive receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -308,7 +312,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-summary-receipt.log"
 
       - name: Verify patch-effect frames and committed-state contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_patch_effects_abi.py \
@@ -317,7 +321,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-abi.log"
 
       - name: Verify patch-effect source and archive receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -328,7 +332,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-effects-receipt.log"
 
       - name: Verify file-update frame and no-write contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_file_update_abi.py \
@@ -337,7 +341,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-abi.log"
 
       - name: Verify file-update source and archive receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -348,7 +352,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-receipt.log"
 
       - name: Verify pinned word-memory language contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: Hepta
         run: |
           set -euo pipefail
@@ -356,7 +360,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-word-memory.log"
 
       - name: Verify Cargo build receipts and reject stale artifacts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           test -x "$RUSTC"
@@ -367,7 +371,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-build-receipt.log"
 
       - name: Compare HIA search with original Rust implementation
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           test -x "$RUSTC"
@@ -378,7 +382,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-seek-sequence.log"
 
       - name: Verify typed scalar admission and unchanged Cargo receipt checks
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_scalar_build_admission.py \
@@ -393,7 +397,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-scalar-receipt.log"
 
       - name: Compare HIA UTF-8 boundaries with Rust and Core VM
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         env:
           CODEX_HIA_UTF8_SHARED: ${{ runner.temp }}/hia-native/utf8_boundaries.so
         run: |
@@ -419,7 +423,7 @@ jobs:
           PY
 
       - name: Test statically linked native patch caller and large inputs
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           libdir="$RUNNER_TEMP/hia-native"
@@ -433,7 +437,7 @@ jobs:
           } 2>&1 | tee "$RUNNER_TEMP/hia-patch-caller.log"
 
       - name: Compare native SourceFile with the complete original Rust owner
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_source_file_caller.py \
@@ -443,7 +447,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-source-file-caller.log"
 
       - name: Verify SourceFile frame and no-write contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_source_file_abi.py \
@@ -452,7 +456,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-source-file-abi.log"
 
       - name: Verify SourceFile archive and source admission
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -463,7 +467,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-source-file-receipt.log"
 
       - name: Compare native batch and streaming parsers with the complete original Rust owner
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_parser_caller.py \
@@ -473,7 +477,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-parser-caller.log"
 
       - name: Verify actual parser host dependencies and reject incomplete receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_parser_host_receipt.py \
@@ -482,7 +486,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-parser-host-receipt.log"
 
       - name: Verify parser framing and committed-error-state contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_parser_abi.py \
@@ -491,7 +495,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-parser-abi.log"
 
       - name: Verify parser archive and source admission
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_build_receipt.py \
@@ -502,7 +506,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-parser-receipt.log"
 
       - name: Verify streaming output line counts and atomic ABI errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
@@ -512,7 +516,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
       - name: Verify output-item budget literal frames and atomic ABI errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
@@ -522,7 +526,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
       - name: Verify environment display literal frames and bounded native streams
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
@@ -532,7 +536,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
       - name: Verify citation stream literal frames and atomic ABI errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
@@ -541,7 +545,7 @@ jobs:
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Verify proposed plan literal frames and atomic ABI errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
@@ -550,7 +554,7 @@ jobs:
             --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
       - name: Verify fuzzy match literal states and atomic ABI errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_fuzzy_match_abi.py \
@@ -560,7 +564,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-abi.log"
 
       - name: Test statically linked native string caller and allocation behavior
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           test -x "$RUSTC"
@@ -571,7 +575,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-string-caller.log"
 
       - name: Compare native metric sanitizer with the original Rust caller
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           test -x "$RUSTC"
@@ -582,7 +586,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-metric-caller.log"
 
       - name: Verify metric sanitizer streaming state and buffer contract
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_metric_tag_abi.py \
@@ -591,7 +595,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-metric-abi.log"
 
       - name: Compare native markdown location formatting with original Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           test -x "$RUSTC"
@@ -602,7 +606,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-markdown-caller.log"
 
       - name: Verify markdown location streaming and error contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_markdown_location_abi.py \
@@ -617,7 +621,7 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Test all four production crates with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -637,7 +641,7 @@ jobs:
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 and x["cargo_fresh"] for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
 
       - name: Test environment display public oracles with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -645,7 +649,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-native.log"
 
       - name: Test environment display public oracles with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -653,7 +657,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
       - name: Test citation and proposed plan public oracles with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -661,7 +665,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-native.log"
 
       - name: Test citation and proposed plan public oracles with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -669,7 +673,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default.log"
 
       - name: Lint citation and proposed plan owner with native and default features
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -680,7 +684,7 @@ jobs:
             -p codex-utils-stream-parser -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default-clippy.log"
       - name: Test fuzzy match public and decoder oracles with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -688,7 +692,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-native.log"
 
       - name: Test fuzzy match original public oracles with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -696,7 +700,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default.log"
 
       - name: Lint fuzzy match owner with native and default features
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -708,7 +712,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default-clippy.log"
 
       - name: Test existing fuzzy ranking and highlight callers with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -720,7 +724,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-native.log"
 
       - name: Test existing fuzzy ranking and highlight callers with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -732,7 +736,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-default.log"
 
       - name: Compare actual native and original ASCII JSON callers
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_ascii_json_caller.py \
@@ -742,7 +746,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-caller.log"
 
       - name: Verify ASCII JSON window and error contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_ascii_json_abi.py \
@@ -751,7 +755,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
 
       - name: Compare native truncation APIs with the original Rust source
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_truncate_caller.py \
@@ -761,7 +765,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-caller.log"
 
       - name: Verify truncation UTF-8, budgets and buffer contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_truncate_abi.py \
@@ -770,7 +774,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-abi.log"
 
       - name: Test consumers of native truncation and token budgets
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -779,7 +783,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
 
       - name: Test existing Core output-item callers with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -790,7 +794,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-native.log"
 
       - name: Test existing Core output-item callers with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -801,7 +805,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
 
       - name: Test existing Core citation and proposed plan consumers with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -818,7 +822,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-native.log"
 
       - name: Test existing Core citation and proposed plan consumers with default Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -834,7 +838,7 @@ jobs:
             -E "$citation_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-default.log"
       - name: Verify native scalar token arithmetic and invalid-mode traps
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_token_budget_abi.py \
@@ -843,7 +847,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-token-budget-abi.log"
 
       - name: Verify installed HIA apply_patch executable
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -879,7 +883,7 @@ jobs:
           bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
 
       - name: Test full Codex owners with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -887,7 +891,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
       - name: Test native template owner and all direct consumers
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -900,7 +904,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-native.log"
 
       - name: Test default template owner and all direct consumers
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -910,7 +914,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-default.log"
 
       - name: Verify installed full Codex executable
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -926,7 +930,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-installed-codex.log"
 
       - name: Verify default callers and truncation consumers require no HIA artifacts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -935,14 +939,14 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-default-crates.log"
 
       - name: Verify exact file-update dependency source admission
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_file_update_dependency_admission.py -v \
             2>&1 | tee "$RUNNER_TEMP/hia-file-update-dependency-admission.log"
 
       - name: Check out complete original file-update owner
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: a2014bc6bfa1c1c9957edb3f14f8ae7d9ddcc095
@@ -951,7 +955,7 @@ jobs:
 
       - name: Compare complete original and actual Cargo native UUID owners
         id: uuid_caller
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_uuid_find_caller.py \
@@ -965,7 +969,7 @@ jobs:
 
       - name: Compare complete original and actual Cargo native template parse and render owners
         id: template_parse_caller
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_template_parse_caller.py \
@@ -978,7 +982,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-caller.log"
 
       - name: Compare complete original and native file-update owners
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_file_update_caller.py \
@@ -991,7 +995,7 @@ jobs:
 
       - name: Compare complete original and native filesystem-effect owners
         id: effects_caller
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_patch_effects_caller.py \
@@ -1005,7 +1009,7 @@ jobs:
 
       - name: Compare complete original and native standalone programs
         id: standalone_caller
-        if: ${{ always() && steps.effects_caller.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.effects_caller.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_patch_standalone_caller.py \
@@ -1019,7 +1023,7 @@ jobs:
 
       - name: Compare complete original and native public patch application
         id: application_caller
-        if: ${{ always() && steps.effects_caller.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.effects_caller.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_patch_application_caller.py \
@@ -1032,7 +1036,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-patch-application-caller.log"
 
       - name: Compare complete original and native public summary writes
-        if: ${{ always() && steps.effects_caller.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.effects_caller.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_patch_summary_caller.py \
@@ -1046,7 +1050,7 @@ jobs:
 
       - name: Qualify actual checked and wrapping owner policy receipts
         id: unified_policy
-        if: ${{ always() && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_unified_diff_policy.py \
@@ -1058,7 +1062,7 @@ jobs:
 
       - name: Check out complete original unified formatter owner
         id: unified_original_checkout
-        if: ${{ always() && steps.unified_policy.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.unified_policy.outcome == 'success' }}
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: aeb88f596b83186456caac577080bcb2f253ad32
@@ -1067,7 +1071,7 @@ jobs:
 
       - name: Compare complete original and native unified formatter APIs
         id: unified_caller
-        if: ${{ always() && steps.unified_policy.outcome == 'success' && steps.unified_original_checkout.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.unified_policy.outcome == 'success' && steps.unified_original_checkout.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_unified_diff_caller.py \
@@ -1080,7 +1084,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/unified-public-gate.log"
 
       - name: Compare native execution policy matching with original Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_execpolicy_caller.py \
@@ -1090,7 +1094,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-caller.log"
 
       - name: Verify scalar count admission and closed object profile
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_prefix_admission_abi.py \
@@ -1103,7 +1107,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-prefix-scalar-admission.log"
 
       - name: Verify short-command matching requires no frame allocation
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_execpolicy_allocations.py \
@@ -1112,7 +1116,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-allocations.log"
 
       - name: Verify prefix matching buffer admission and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_prefix_match_abi.py \
@@ -1121,7 +1125,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-execpolicy-abi.log"
 
       - name: Verify complete policy summary ABI and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_policy_summary_abi.py \
@@ -1130,7 +1134,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-policy-summary-abi.log"
 
       - name: Compare complete policy reduction with original public Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_policy_summary.py \
@@ -1140,7 +1144,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-policy-summary.log"
 
       - name: Verify complete network domain ABI and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_domains_abi.py \
@@ -1149,7 +1153,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-network-domains-abi.log"
 
       - name: Compare complete network domain compilation with original public Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_network_domains.py \
@@ -1159,7 +1163,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-network-domains.log"
 
       - name: Verify complete allowed-prefix ABI and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_allowed_prefixes_abi.py \
@@ -1168,7 +1172,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-allowed-prefixes-abi.log"
 
       - name: Compare complete allowed prefixes with original public Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_allowed_prefixes.py \
@@ -1178,7 +1182,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-allowed-prefixes.log"
 
       - name: Verify complete command dispatcher continuation ABI
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_command_dispatch_abi.py \
@@ -1187,7 +1191,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-command-dispatch-abi.log"
 
       - name: Compare complete command dispatch with original public Rust
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_command_dispatch.py \
@@ -1197,7 +1201,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-command-dispatch.log"
 
       - name: Verify complete network-host ABI and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
@@ -1207,7 +1211,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
       - name: Compare network-host normalization with original Rust (two baselines)
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           # This checkout runs original/native34. The separate owner gate requires
@@ -1221,7 +1225,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
 
       - name: Verify installed execution policy command
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1238,7 +1242,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-installed-execpolicy.log"
 
       - name: Compare actual native and original UUID callers
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_uuid_caller.py \
@@ -1248,7 +1252,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-uuid-compat-public.log"
 
       - name: Verify UUID window progress and error contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_uuid_abi.py \
@@ -1257,7 +1261,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-uuid-window-legacy-abi.log"
 
       - name: Compare complete native and original template parsers
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_template_parser.py \
@@ -1267,7 +1271,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-parser.log"
 
       - name: Verify template parser window and error contracts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_template_parser_abi.py \
@@ -1276,7 +1280,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-window-legacy-abi.log"
 
       - name: Compare native and original template renderers
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_template_parser.py \
@@ -1287,7 +1291,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-render.log"
 
       - name: Compare native template collection and public API behavior
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_template_parser.py \
@@ -1298,7 +1302,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-placeholders.log"
 
       - name: Verify template index bounds, ordering and atomic errors
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_template_index_abi.py \
@@ -1307,7 +1311,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-index-abi.log"
 
       - name: Test actual agent execution policy integration with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1316,7 +1320,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-core-execpolicy.log"
 
       - name: Test actual Core network domain consumer with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1325,7 +1329,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-core-network-domains.log"
 
       - name: Test actual protocol allowed-prefix consumer with HIA enabled
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1334,7 +1338,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-protocol-allowed-prefixes.log"
 
       - name: Verify added Index and legacy raw-only archive receipts
-        if: ${{ always() && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           for module in template_index template_parser uuid_matches prefix_admission; do
@@ -1346,7 +1350,7 @@ jobs:
           done
 
       - name: Run strict native and default owner lint
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1382,7 +1386,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-default-owner-clippy.log"
 
       - name: Run scoped native owner fixes without source drift
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1408,7 +1412,7 @@ jobs:
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-after-fix-admission.json"
 
       - name: Fix native string and template owners with actual compiler evidence
-        if: ${{ always() && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -1441,7 +1445,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: codex-hia-current35-results
+          name: codex-hia-current35-${{ matrix.tranche }}-results
           retention-days: 14
           if-no-files-found: warn
           # The pinned original snapshot includes a tracked .gitattributes fixture.
@@ -1738,6 +1742,19 @@ jobs:
             {0}/hia-joint-*-receipt.json
             {0}/hia-joint-*-receipt.log
             {0}/hia-native/*.link', runner.temp) }}
+
+  native-components:
+    needs: native-shards
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require all exact-35 test tranches
+        env:
+          SHARDS_RESULT: ${{ needs.native-shards.result }}
+        run: |
+          set -euo pipefail
+          test "$SHARDS_RESULT" = success
 
   historical-native17:
     name: Exact 74d1 legacy ABI and original owner gates
