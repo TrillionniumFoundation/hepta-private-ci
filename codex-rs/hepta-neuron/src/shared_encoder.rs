@@ -25,6 +25,8 @@ pub struct SharedEncoderRequestV1 {
 /// not independently authenticate the backend or prove physical execution.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SharedEncoderOutputV1 {
+    pub request_id: StableId,
+    pub generation: Generation,
     pub encoder_digest: Digest32,
     pub input_digest: Digest32,
     pub feature_digest: Digest32,
@@ -34,6 +36,7 @@ pub struct SharedEncoderOutputV1 {
 /// Immutable feature artifact shared by every Cell in one invocation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SharedFeatureBatchV1 {
+    request_id: StableId,
     encoder_digest: Digest32,
     generation: Generation,
     input_digest: Digest32,
@@ -43,6 +46,11 @@ pub struct SharedFeatureBatchV1 {
 }
 
 impl SharedFeatureBatchV1 {
+    #[must_use]
+    pub fn request_id(&self) -> &StableId {
+        &self.request_id
+    }
+
     #[must_use]
     pub fn encoder_digest(&self) -> Digest32 {
         self.encoder_digest
@@ -102,6 +110,7 @@ impl StdError for SharedEncoderDriverError {}
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum SharedEncoderError {
     EmptyDigest(&'static str),
+    RequestBindingMismatch,
     InputDigestMismatch,
     EncoderBindingMismatch,
     GenerationMismatch,
@@ -204,6 +213,7 @@ where
         let feature_vector_q24 = Arc::from(output.feature_vector_q24.into_boxed_slice());
         let cell_ids = Arc::from(cell_ids.to_vec().into_boxed_slice());
         Ok(SharedFeatureBatchV1 {
+            request_id: request.request_id.clone(),
             encoder_digest: self.encoder_digest,
             generation: self.generation,
             input_digest: request.input_digest,
@@ -276,6 +286,12 @@ fn validate_output<D>(
     request: &SharedEncoderRequestV1,
     output: &SharedEncoderOutputV1,
 ) -> Result<(), SharedEncoderError> {
+    if output.request_id != request.request_id {
+        return Err(SharedEncoderError::RequestBindingMismatch);
+    }
+    if output.generation != request.generation || output.generation != owner.generation {
+        return Err(SharedEncoderError::GenerationMismatch);
+    }
     if output.encoder_digest != owner.encoder_digest {
         return Err(SharedEncoderError::EncoderBindingMismatch);
     }

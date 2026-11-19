@@ -21,6 +21,8 @@ impl SharedEncoderDriver for FakeDriver {
         request: &SharedEncoderRequestV1,
     ) -> Result<SharedEncoderOutputV1, SharedEncoderDriverError> {
         Ok(SharedEncoderOutputV1 {
+            request_id: request.request_id.clone(),
+            generation: request.generation,
             encoder_digest: request.encoder_digest,
             input_digest: request.input_digest,
             feature_digest: canonical_shared_encoder_feature_digest_v1(&self.output_features),
