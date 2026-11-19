@@ -28,3 +28,9 @@ All earlier failures are retained, including the first old-contract source failu
 The next actual run uses the original `just test --locked --offline` and unchanged native recorder/collector. Fresh source-bound test executables receive the minimal own-file descriptor-execution permission needed by the original capless UID60002 source process; private ancestor directories and original source-child credentials remain unchanged. Helper/product preparation, permission probes, compilation, component cases, the complete parent, cleanup and unsuccessful attempts retain their costs.
 
 Until the original full parent actually completes Training, independent B, evaluated NoUpdate, selected C and original process retirement under read64, this repair remains unqualified for complete native NoUpdate. Independent authenticated people/controllers, original-owner adoption, cold fresh D and complete physical/monetary costs remain separate open requirements.
+
+## Explicit original receiver follow-up
+
+The full original caller CLI for the first frozen candidate reported an unresolved temporary Live-ledger receiver after 434.792 seconds. A targeted scan then identified the inferred prepared receiver in delivery bootstrap. Both negatives are retained. The final spelling names the actual Live ledger before its existing UFCS operation call and explicitly borrows the actual prepared Cell value. It adds no clone, observation, authority or helper. The original typed verifier is unchanged.
+
+The coupled 143 source-mutation tests and all 892 protected rows remain mandatory. A focused scan of the six changed actual boundary inventories now passes; the complete 1,124-boundary CLI continues independently. These source results do not establish read64 business completion.

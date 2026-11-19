@@ -74,7 +74,8 @@ impl CellQ24PreparedLearningV1 {
             config.projection.clone(),
             tasks,
         )?;
-        OriginalDatasetLedgerV1::Live(ledger).with_original_ledger_operation(|operation| {
+        let original = OriginalDatasetLedgerV1::Live(ledger);
+        OriginalDatasetLedgerV1::with_original_ledger_operation(&original, |operation| {
             Self::finish_original(config, frozen, batch, publication, operation)
         })?
     }

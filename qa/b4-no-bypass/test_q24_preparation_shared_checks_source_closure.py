@@ -49,7 +49,8 @@ class PreparationSharedChecksSourceTests(unittest.TestCase):
             "require_configuration(", "frozen.receipt.snapshot.snapshot_id != config.snapshot_id",
             "frozen.receipt.snapshot.objective_digest != config.request.envelope.objective_digest",
             "CellQ24TrainingBatchV1::from_original_dataset(",
-            "OriginalDatasetLedgerV1::Live(ledger).with_original_ledger_operation(|operation|",
+            "let original = OriginalDatasetLedgerV1::Live(ledger)",
+            "OriginalDatasetLedgerV1::with_original_ledger_operation(&original, |operation|",
             "Self::finish_original(config, frozen, batch, publication, operation)", "})?"))
 
     def test_scope_uses_actual_native_batch_provenance_rule_and_postcheck(self):

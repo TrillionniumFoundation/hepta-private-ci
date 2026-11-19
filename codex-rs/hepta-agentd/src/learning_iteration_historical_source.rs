@@ -136,7 +136,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             .original_q24
             .as_ref()
             .ok_or_else(|| refused("actual assembled Q24 owners absent"))?;
-        let prepared = original.prepared();
+        let prepared: &CellQ24PreparedLearningV1 = original.prepared();
         let (key, journal) = prepared
             .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
                 source
