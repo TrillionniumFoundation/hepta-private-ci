@@ -1,0 +1,1507 @@
+{
+  "schema": "hcsn-zero-age-synthetic-review-v1",
+  "cases": [
+    {
+      "case": {
+        "name": "B1-T10",
+        "batch": 1,
+        "steps": 10
+      },
+      "tensor_comparisons": 65,
+      "tensor_coordinates": 3116,
+      "max_abs_difference": 0.0,
+      "same_source_law_equivalence_pass": true,
+      "differences": [
+        {
+          "field": "inputs",
+          "coordinates": 20,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "logits",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "input_gradient",
+          "coordinates": 20,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:0",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:1",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:2",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:3",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:4",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:5",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:6",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:7",
+          "coordinates": 90,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:8",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:9",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:10",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:11",
+          "coordinates": 90,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:12",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:13",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:14",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:15",
+          "coordinates": 135,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:16",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:17",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:18",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:19",
+          "coordinates": 135,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:20",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:21",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:22",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:23",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:24",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:25",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:26",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:27",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:28",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:29",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:30",
+          "coordinates": 90,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:31",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:32",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:33",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:34",
+          "coordinates": 90,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:35",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:36",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:37",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:38",
+          "coordinates": 135,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:39",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:40",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:41",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:42",
+          "coordinates": 135,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:43",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:44",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:45",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:46",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:47",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:48",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:49",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:50",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:51",
+          "coordinates": 9,
+          "max_abs": 0.0
+        }
+      ],
+      "measurements": {
+        "baseline": {
+          "median_wall_seconds": 0.08621871400100645,
+          "median_cpu_seconds": 0.08551095199999992,
+          "autograd_saved_payload_bytes_with_repeats": 651225,
+          "actual_forward_exponentials": 52,
+          "largest_exponential_dimension": 17,
+          "state_bytes": 20384
+        },
+        "candidate": {
+          "median_wall_seconds": 0.07672118399932515,
+          "median_cpu_seconds": 0.07672699999999999,
+          "autograd_saved_payload_bytes_with_repeats": 631065,
+          "actual_forward_exponentials": 40,
+          "largest_exponential_dimension": 17,
+          "state_bytes": 20384
+        }
+      },
+      "median_wall_ratio_baseline_over_candidate": 1.1237927975898396
+    },
+    {
+      "case": {
+        "name": "B1-T40",
+        "batch": 1,
+        "steps": 40
+      },
+      "tensor_comparisons": 65,
+      "tensor_coordinates": 24936,
+      "max_abs_difference": 0.0,
+      "same_source_law_equivalence_pass": true,
+      "differences": [
+        {
+          "field": "inputs",
+          "coordinates": 80,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "logits",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "input_gradient",
+          "coordinates": 80,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:0",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:1",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:2",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:3",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:4",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:5",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:6",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:7",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:8",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:9",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:10",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:11",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:12",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:13",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:14",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:15",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:16",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:17",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:18",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:19",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:20",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:21",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:22",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:23",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:24",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:25",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:26",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:27",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:28",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:29",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:30",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:31",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:32",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:33",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:34",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:35",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:36",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:37",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:38",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:39",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:40",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:41",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:42",
+          "coordinates": 450,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:43",
+          "coordinates": 2500,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:44",
+          "coordinates": 50,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:45",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:46",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:47",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:48",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:49",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:50",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:51",
+          "coordinates": 9,
+          "max_abs": 0.0
+        }
+      ],
+      "measurements": {
+        "baseline": {
+          "median_wall_seconds": 0.37686581600428326,
+          "median_cpu_seconds": 0.37642749799999997,
+          "autograd_saved_payload_bytes_with_repeats": 20271225,
+          "actual_forward_exponentials": 232,
+          "largest_exponential_dimension": 52,
+          "state_bytes": 193984
+        },
+        "candidate": {
+          "median_wall_seconds": 0.4775956169978599,
+          "median_cpu_seconds": 0.4775997329999999,
+          "autograd_saved_payload_bytes_with_repeats": 18773625,
+          "actual_forward_exponentials": 160,
+          "largest_exponential_dimension": 52,
+          "state_bytes": 193984
+        }
+      },
+      "median_wall_ratio_baseline_over_candidate": 0.7890897709096271
+    },
+    {
+      "case": {
+        "name": "B1-T80",
+        "batch": 1,
+        "steps": 80
+      },
+      "tensor_comparisons": 65,
+      "tensor_coordinates": 89096,
+      "max_abs_difference": 0.0,
+      "same_source_law_equivalence_pass": true,
+      "differences": [
+        {
+          "field": "inputs",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "logits",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "input_gradient",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:0",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:1",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:2",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:3",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:4",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:5",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:6",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:7",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:8",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:9",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:10",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:11",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:12",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:13",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:14",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:15",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:16",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:17",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:18",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:19",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:20",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:21",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:22",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:23",
+          "coordinates": 36,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:24",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:25",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:26",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:27",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:28",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:29",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:30",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:31",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:32",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:33",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:34",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:35",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:36",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:37",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:38",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:39",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:40",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:41",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:42",
+          "coordinates": 900,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:43",
+          "coordinates": 10000,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:44",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:45",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:46",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:47",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:48",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:49",
+          "coordinates": 8,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:50",
+          "coordinates": 9,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:51",
+          "coordinates": 9,
+          "max_abs": 0.0
+        }
+      ],
+      "measurements": {
+        "baseline": {
+          "median_wall_seconds": 1.3195711539956392,
+          "median_cpu_seconds": 1.3138963919999993,
+          "autograd_saved_payload_bytes_with_repeats": 141889465,
+          "actual_forward_exponentials": 472,
+          "largest_exponential_dimension": 102,
+          "state_bytes": 705984
+        },
+        "candidate": {
+          "median_wall_seconds": 0.9827861279991339,
+          "median_cpu_seconds": 0.9774924649999992,
+          "autograd_saved_payload_bytes_with_repeats": 129486265,
+          "actual_forward_exponentials": 320,
+          "largest_exponential_dimension": 102,
+          "state_bytes": 705984
+        }
+      },
+      "median_wall_ratio_baseline_over_candidate": 1.3426839435373086
+    },
+    {
+      "case": {
+        "name": "B64-T10",
+        "batch": 64,
+        "steps": 10
+      },
+      "tensor_comparisons": 65,
+      "tensor_coordinates": 68888,
+      "max_abs_difference": 0.0,
+      "same_source_law_equivalence_pass": true,
+      "differences": [
+        {
+          "field": "inputs",
+          "coordinates": 1280,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "weight:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "logits",
+          "coordinates": 640,
+          "max_abs": 0.0
+        },
+        {
+          "field": "input_gradient",
+          "coordinates": 1280,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:raw_cost",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.0.weight",
+          "coordinates": 16,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:flow.writers.1.weight",
+          "coordinates": 72,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.weight",
+          "coordinates": 160,
+          "max_abs": 0.0
+        },
+        {
+          "field": "gradient:readout.bias",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:0",
+          "coordinates": 2052,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:1",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:2",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:3",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:4",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:5",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:6",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:7",
+          "coordinates": 5130,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:8",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:9",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:10",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:11",
+          "coordinates": 5130,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:12",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:13",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:14",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:15",
+          "coordinates": 7695,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:16",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:17",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:18",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:19",
+          "coordinates": 7695,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:20",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:21",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:22",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:23",
+          "coordinates": 2052,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:24",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:25",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:26",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:27",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:28",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:29",
+          "coordinates": 1,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:30",
+          "coordinates": 5130,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:31",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:32",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:33",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:34",
+          "coordinates": 5130,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:35",
+          "coordinates": 100,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:36",
+          "coordinates": 10,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:37",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:38",
+          "coordinates": 7695,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:39",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:40",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:41",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:42",
+          "coordinates": 7695,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:43",
+          "coordinates": 225,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:44",
+          "coordinates": 15,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:45",
+          "coordinates": 4,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:46",
+          "coordinates": 576,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:47",
+          "coordinates": 576,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:48",
+          "coordinates": 512,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:49",
+          "coordinates": 512,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:50",
+          "coordinates": 513,
+          "max_abs": 0.0
+        },
+        {
+          "field": "state:51",
+          "coordinates": 513,
+          "max_abs": 0.0
+        }
+      ],
+      "measurements": {
+        "baseline": {
+          "median_wall_seconds": 0.08762034899700666,
+          "median_cpu_seconds": 0.08762719800000007,
+          "autograd_saved_payload_bytes_with_repeats": 17367897,
+          "actual_forward_exponentials": 52,
+          "largest_exponential_dimension": 17,
+          "state_bytes": 521360
+        },
+        "candidate": {
+          "median_wall_seconds": 0.08822469200094929,
+          "median_cpu_seconds": 0.08823135200000021,
+          "autograd_saved_payload_bytes_with_repeats": 17025177,
+          "actual_forward_exponentials": 40,
+          "largest_exponential_dimension": 17,
+          "state_bytes": 521360
+        }
+      },
+      "median_wall_ratio_baseline_over_candidate": 0.9931499562057283
+    }
+  ],
+  "models_executed_by_reader": 0,
+  "global_numerical_qualification": false,
+  "new_task_quality_measurement": false,
+  "controller": {
+    "children": [
+      {
+        "case": "B1-T10",
+        "engine": "baseline",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 3.180582366003364,
+        "child_cpu_seconds": 3.1213179999999996
+      },
+      {
+        "case": "B1-T10",
+        "engine": "candidate",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 15.338915151005494,
+        "child_cpu_seconds": 14.328134999999998
+      },
+      {
+        "case": "B1-T40",
+        "engine": "candidate",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 6.549521620996529,
+        "child_cpu_seconds": 6.296917
+      },
+      {
+        "case": "B1-T40",
+        "engine": "baseline",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 11.026307140993595,
+        "child_cpu_seconds": 10.687907000000003
+      },
+      {
+        "case": "B1-T80",
+        "engine": "baseline",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 9.161656382006186,
+        "child_cpu_seconds": 9.042160999999993
+      },
+      {
+        "case": "B1-T80",
+        "engine": "candidate",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 7.588147583002865,
+        "child_cpu_seconds": 7.511576000000003
+      },
+      {
+        "case": "B64-T10",
+        "engine": "candidate",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 2.4845558239976526,
+        "child_cpu_seconds": 2.4528069999999973
+      },
+      {
+        "case": "B64-T10",
+        "engine": "baseline",
+        "exit_code": 0,
+        "timed_out": false,
+        "child_wall_seconds": 2.4365616209979635,
+        "child_cpu_seconds": 2.4099759999999986
+      }
+    ],
+    "wall_seconds": 57.78346643700206,
+    "parent_cpu_seconds": 0.286751429,
+    "plan_sha256": "b80b513851731cd7d31147daca4ac18089ce31eb1c17ee01a01fb97df5e86748"
+  }
+}

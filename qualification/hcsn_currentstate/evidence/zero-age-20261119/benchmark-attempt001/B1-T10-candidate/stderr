@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/benchmark_zero_age.py", line 147, in <module>
+    child(json.loads(args.plan.read_text()), json.loads(args.plan.read_text())["cases"][args.case],
+  File "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/benchmark_zero_age.py", line 32, in child
+    from qualification.hcsn_network.benchmark_models import make_model
+ModuleNotFoundError: No module named 'qualification'
