@@ -140,6 +140,16 @@ jobs:
             --output "$RUNNER_TEMP/hia-native" \
             2>&1 | tee "$RUNNER_TEMP/hia-build.log"
 
+      - name: Compile and exercise example18 with the pinned B3 compiler
+        if: ${{ always() && matrix.tranche == 'late' && steps.build.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python3 -B codex/hia/tests/test_example_validation_native.py \
+            --hepta-root "$HEPTA_SOURCE" \
+            --native-dir "$RUNNER_TEMP/hia-native" \
+            --output-dir "$RUNNER_TEMP/example18-native" \
+            --report "$RUNNER_TEMP/hia-example18-native.json" \
+            2>&1 | tee "$RUNNER_TEMP/hia-example18-native.log"
       - name: Configure exact unified formatter compiler receipts
         id: unified_policy_config
         if: ${{ always() && steps.build.outcome == 'success' }}
@@ -1546,6 +1556,9 @@ jobs:
             {0}/hia-patch-effects-caller/public-observations/
             {0}/hia-patch-effects-caller/native-transport-report.json
             {0}/hia-patch-effects-caller/native-transport/fixtures/
+            {0}/hia-example18-native.json
+            {0}/hia-example18-native.log
+            {0}/example18-native/
             {0}/hia-toolchain.log
             {0}/hia-patch-caller.log
             {0}/hia-source-file-caller.json
