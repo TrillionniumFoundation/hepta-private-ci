@@ -1,0 +1,40 @@
+{
+  "schema": "mem8.v8.root-full-remote-replay.v1",
+  "status": "PASS_COMPLETE_REMOTE_ORIGINAL_SOURCE_EVIDENCE",
+  "immutable_commit": "c3914cdcc26bf1133c64ff97365ddd96c0f43421",
+  "all_12_part_bytes_remote_reassembled": true,
+  "all_28_archive_members_verified": true,
+  "original_zip": {
+    "bytes": 7072031,
+    "sha256": "52ef17f6debe6951b066d27adf00e98451c02359f1a50c3d7e03071e96051709",
+    "git_blob": "215827f3bfcee277e79e90144f3dd59a087a207b"
+  },
+  "zip_members": 383,
+  "original_tar": {
+    "bytes": 2022304,
+    "sha256": "b4678fb686c3ad765be4f131b69db40d3127c6ce85dc05c3d2392c31443265fb",
+    "git_blob": "041bf8372a4d3cd305620c87b0472261ff9afc2d"
+  },
+  "tar_members": 381,
+  "expanded_zip_equal_members": 375,
+  "expanded_zip_hidden_omissions_retained_in_original_tar": [
+    "base/.github/fixtures/windows-current-ci-scope.json",
+    "base/.github/workflows/hepta-mem-python.yml",
+    "post-format/.github/fixtures/windows-current-ci-scope.json",
+    "post-format/.github/workflows/hepta-mem-python.yml",
+    "pre-format/.github/fixtures/windows-current-ci-scope.json",
+    "pre-format/.github/workflows/hepta-mem-python.yml"
+  ],
+  "full_original_verifier_sha256": "6d7145a8dc4b47b807a3439969131367c8bdd79c15663a121f7a3dc34873da1e",
+  "full_original_result_equal": true,
+  "formatter_patch_byte_equal": true,
+  "source_gate_run": 43046107709,
+  "source_gate_job": 130610340916,
+  "python_pass": 18,
+  "overlay_paths": 116,
+  "rust_files": 6204,
+  "elapsed_seconds": 212.521569,
+  "all_three_merkle_trees_recomputed": true,
+  "exact_two_locks_unchanged": true,
+  "native_or_model_execution": 0
+}

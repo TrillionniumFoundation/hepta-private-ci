@@ -1,0 +1,24 @@
+--- a/.github/workflows/hepta-mem-python.yml
++++ b/.github/workflows/hepta-mem-python.yml
+@@ -241,7 +241,9 @@
+         run: |
+           set -euo pipefail
+           records="$RUNNER_TEMP/mem-native-records"
+-          junit="$CARGO_TARGET_DIR/nextest/local/junit.xml"
++          # Nextest 0.9.103 resolves store.dir under the Rust workspace;
++          # its report directory is independent of CARGO_TARGET_DIR.
++          junit="$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml"
+           test -f "$junit"
+           test ! -L "$junit"
+           test ! -e "$records/agentd-nextest.junit.xml"
+@@ -324,8 +326,8 @@
+           git diff --name-only --diff-filter=ACMRT -z HEAD > "$records/rewrite-paths.zlist"
+           git ls-files --others --exclude-standard -z >> "$records/rewrite-paths.zlist"
+           tar --null -T "$records/rewrite-paths.zlist" -czf "$records/changed-source-after.tar.gz"
+-          if [[ -f "${CARGO_TARGET_DIR:-$RUNNER_TEMP/absent-target}/nextest/local/junit.xml" ]]; then
+-            cp "$CARGO_TARGET_DIR/nextest/local/junit.xml" "$records/last-nextest.junit.xml"
++          if [[ -f "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" ]]; then
++            cp "$GITHUB_WORKSPACE/codex-rs/target/nextest/local/junit.xml" "$records/last-nextest.junit.xml"
+           fi
+           python3 - <<'PY'
+           import hashlib

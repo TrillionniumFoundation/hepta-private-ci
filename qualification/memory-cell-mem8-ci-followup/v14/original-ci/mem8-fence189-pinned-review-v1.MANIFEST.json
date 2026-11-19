@@ -1,0 +1,129 @@
+{
+  "schema": "hepta.mem8.immutable-evidence-archive.v1",
+  "name": "mem8-fence189-pinned-review-v1",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "source_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "scope": "Read-only review of 13 complete primary files and both actual Fence pre-checkout failures. No missing required inventory workflow input identified. Exact unavailable host input remains unknown. No policy or workflow change and no rerun.",
+  "members": [
+    {
+      "path": "BUNDLE_SOURCE_COMPARISON.json",
+      "bytes": 1288,
+      "sha256": "10d8edaa6d19ca6bda3886a450b9f1ac5474331ca5f99d0afbaa1a1d9ebf0214",
+      "git_blob": "8fb7b8e9744171cfcb721e005af14beeaa225cc5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 545,
+      "sha256": "c0304e20caaa13b35b6de358cb112ade110d66edd4065336cd4626da39d6ae84",
+      "git_blob": "d54e3dd06ca9e69106768db04a475beab417bf05"
+    },
+    {
+      "path": "READ_ONLY_REVIEW.json",
+      "bytes": 6064,
+      "sha256": "53cd8014cf0d1b935846ffab66e8dbe1630ea4a54d7642e1f1af3323514b174b",
+      "git_blob": "cc631e52be658de41e111de1b7b1f7b5716fe88f"
+    },
+    {
+      "path": "VERIFIED_SOURCE_INDEX.json",
+      "bytes": 4332,
+      "sha256": "00b71aece93b51eae34ca8ee11370b924c9237733d7a35494dbc40b71cb19f5b",
+      "git_blob": "1c683aca0dc5fa52cd6e4feb9ee46ac2e1b5a9ea"
+    },
+    {
+      "path": "inputs/0.json",
+      "bytes": 21056,
+      "sha256": "57e0c4d731247eb17c77b06c21d7dd8c2447f75d618313e736aa681d650e03e5",
+      "git_blob": "ce21f3fd33c215d31f6e297a15b4dc70ff3443de"
+    },
+    {
+      "path": "inputs/1.json",
+      "bytes": 7611,
+      "sha256": "149aa6f748364bd76e81cffce71e08fb9b223e51ec771dc2928a690a7d14be48",
+      "git_blob": "3ea351feac7999c35993e24d871aefe116fbb2db"
+    },
+    {
+      "path": "inputs/2.json",
+      "bytes": 2333,
+      "sha256": "0cad590a1dc6c7c4ed6c7802806948e67e9db4e17bede7018a5e539966fc7dd2",
+      "git_blob": "f582092b68f85d537c5cba6e21a93f38278c1b53"
+    },
+    {
+      "path": "inputs/action--bundle-manifest.json.json",
+      "bytes": 896,
+      "sha256": "e6062a3eb1dcd01b72659a7d4d82701d0d50d98e575ff4e1289f0425c37b04da",
+      "git_blob": "dec2e5dce26260c8614bc48cb03c8c82b7bd3639"
+    },
+    {
+      "path": "inputs/action.yml.json",
+      "bytes": 1769,
+      "sha256": "26bc81e9eb1f2e9efb40937a3ea96737491c258dc01103b5b225e1000817c66b",
+      "git_blob": "ad89d646897f895864569e1d57dbd49f9e8968da"
+    },
+    {
+      "path": "inputs/blocking-ci.yml.json",
+      "bytes": 9810,
+      "sha256": "703e371850b61b2d698ce4108cc7cf33556dbc023ce132398eea6e811b878a11",
+      "git_blob": "0a2c51bbfdafba41df4312d7a7cae5c2af2515f6"
+    },
+    {
+      "path": "inputs/config.json",
+      "bytes": 38259,
+      "sha256": "e74616166ad83387062c4c5a5db6ee600e6efcc87ea7df662363f5d7910dce23",
+      "git_blob": "e70b22eb6393076894b4a1e30df108551a081c86"
+    },
+    {
+      "path": "inputs/docs--troubleshooting.md.json",
+      "bytes": 2810,
+      "sha256": "7cc9369e4694c4e17923878b413dea3ee8f4482036df2f969781b6b310fb881a",
+      "git_blob": "56929a2c30e5f23b109b327dc1be362d9c3298d6"
+    },
+    {
+      "path": "inputs/lib.json",
+      "bytes": 107652,
+      "sha256": "d424e9a596497e6ac2aa54afd5d86456b3b3206dbff9022514ddac096b14e1d4",
+      "git_blob": "14b8051d01da10430450b7cf64bbc36c3b80f6ba"
+    },
+    {
+      "path": "inputs/local_control.json",
+      "bytes": 144632,
+      "sha256": "66eb03910bcb1e4f85de49ca6ce75a86d713da877a7c3d67222a2f666b61096d",
+      "git_blob": "cd0311ecba2998ba65ee30afdbea2748a85fbf07"
+    },
+    {
+      "path": "inputs/src--cli.rs.json",
+      "bytes": 12308,
+      "sha256": "9d83b1ec32189da4e534457cab6ed607b48dc5eb5fb0b71dc276079cb52bcf15",
+      "git_blob": "d3ea210a4ded1eb73cf6dd5160e314a128611fd5"
+    },
+    {
+      "path": "inputs/src--dns_mediator.rs.json",
+      "bytes": 492904,
+      "sha256": "8ef90187228e831be7280b91858f67dafec321060f3ef7be14a0170929e8cfdc",
+      "git_blob": "31646cf84799b831de6de7ff19813ef080df0039"
+    },
+    {
+      "path": "inputs/src--hosted_runner.rs.json",
+      "bytes": 35176,
+      "sha256": "1f234326e423630a8d84bdcf51d3076fcdd828ae771465ad575ae9da11b7d1c9",
+      "git_blob": "325c544abecfd637fe08c0f45de7bc2c5f4ec0f3"
+    },
+    {
+      "path": "original-job-attempt1.log",
+      "bytes": 3866,
+      "sha256": "48f9fc102e2c107a9bdcdae94d9484ab30532726292ffa5e4ea07a34500dc8d1",
+      "git_blob": "07d2af4fe0d37dab20ce7b43b50a426bc7998a6f"
+    },
+    {
+      "path": "original-job-attempt2.log",
+      "bytes": 3859,
+      "sha256": "6cb0c5b96b73f48dfb3f86098951207e42ffdea9015b348f5d289ec3ce88448b",
+      "git_blob": "9a8c238ff96cdf618724a8d3fd664e818ef91365"
+    },
+    {
+      "path": "verify_archive.py",
+      "bytes": 3419,
+      "sha256": "59a704c2eb03dcf4c282d4926d03c284f8d4662475a36ac79158035edb8ef90f",
+      "git_blob": "de2910b5989bd1aea83f48ad9ee2f8ed49bd37ab"
+    }
+  ]
+}

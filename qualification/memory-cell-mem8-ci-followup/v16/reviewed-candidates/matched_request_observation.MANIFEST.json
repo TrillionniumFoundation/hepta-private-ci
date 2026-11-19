@@ -1,0 +1,264 @@
+{
+  "schema": "frozen-source-candidate-evidence-package-v1",
+  "label": "matched_request_observation",
+  "base_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "base_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "source_directory": "mem-response-matcher-observation-b054-candidate",
+  "current_candidate": "candidate/; CANDIDATE_MANIFEST.json; HOOK_FAILURE_SAFE_TIMELINE_V2.json",
+  "historical_and_unknown_boundaries": [
+    "HOOK_FAILURE_SAFE_TIMELINE.json has historical LF-normalized per-line hashes; V2 restores exact original line-terminator hashes with an explicit erratum.",
+    "The complete original CI raw log remains referenced by SHA/path and the already-published V15 evidence; it is not copied into this package.",
+    "The real loopback regression is source only and has not run. Original hook timeout attribution remains non-unique."
+  ],
+  "state": "STATIC_CANDIDATE_WITH_INDEPENDENT_PEER_NOT_FORMATTED_NOT_COMPILED_NOT_EXECUTED",
+  "native_executions_for_candidate": 0,
+  "model_requests_for_candidate": 0,
+  "refs_changed": false,
+  "source_manifest": {
+    "path": "CANDIDATE_MANIFEST.json",
+    "bytes": 4952,
+    "sha256": "df18f678eeca3a36f94638bfb8643176b417f3d3ebae04072a5b5616bd1ed9a9",
+    "git_blob": "f34c5c4a5083e5ca6a0792284e9880bbe2bbf3fa"
+  },
+  "independent_peer": {
+    "path": "MEM_CI_INDEPENDENT_PEER.json",
+    "bytes": 4085,
+    "sha256": "9991783da82193f9d1ccfd31bfa25ad839d33c1a594fa60daf1b1874c7a00e8b",
+    "git_blob": "1d6f53404db769cd127106116be51057faad5eee"
+  },
+  "member_count_excluding_manifest": 33,
+  "files": [
+    {
+      "path": "ADDITIONAL_SOURCE_REFERENCES.json",
+      "mode": "0644",
+      "bytes": 527295,
+      "sha256": "8366723d6dca44d791c65340c37a9c161774e143fd61ed07b51be122a41d8c6b",
+      "git_blob": "206908ba5ab0211b5ac337eeeca3b8bfe88fa271"
+    },
+    {
+      "path": "CANDIDATE.patch",
+      "mode": "0644",
+      "bytes": 5570,
+      "sha256": "5fc82669b7926ce72927738a7b4f48d8fde02e58fedda6ae8e18baec3b8bce44",
+      "git_blob": "9644de86747124cb4db7a49f2ae887eaba20ccaa"
+    },
+    {
+      "path": "CANDIDATE_MANIFEST.json",
+      "mode": "0644",
+      "bytes": 4952,
+      "sha256": "df18f678eeca3a36f94638bfb8643176b417f3d3ebae04072a5b5616bd1ed9a9",
+      "git_blob": "f34c5c4a5083e5ca6a0792284e9880bbe2bbf3fa"
+    },
+    {
+      "path": "EXACT_SOURCE_REFERENCES.json",
+      "mode": "0644",
+      "bytes": 163738,
+      "sha256": "9eae6fe26df5ac536a219721d4f14c4a41217681087e4423530f777e66c247bc",
+      "git_blob": "15f06392eb88e533efaf8c9052197c0bc2a5cfba"
+    },
+    {
+      "path": "FINAL_SOURCE_INDEX.json",
+      "mode": "0644",
+      "bytes": 8107,
+      "sha256": "91c2edf479028bd47e03d8120d4a3226868b7f8bd2776c4c395a442c7a828b69",
+      "git_blob": "92c610fdb10a2444e39642e4681f75cd6c4429c7"
+    },
+    {
+      "path": "HOOK_FAILURE_SAFE_TIMELINE.json",
+      "mode": "0644",
+      "bytes": 11856,
+      "sha256": "1a4772b6c3493ddbf518af7ae545f23518ef86c53fb4859e18a882b880ec751f",
+      "git_blob": "b01ec96ded66968d5d86691a76ec6afc60b2ccb6"
+    },
+    {
+      "path": "HOOK_FAILURE_SAFE_TIMELINE_V2.json",
+      "mode": "0644",
+      "bytes": 13283,
+      "sha256": "851be2fbd59384e00278f9c82661202cdc56306a5d1b00add8426f1b4ce33a89",
+      "git_blob": "eaa063fad8fd1efa9d2a1aeb2212ea1527b91778"
+    },
+    {
+      "path": "MEM_CI_INDEPENDENT_PEER.json",
+      "mode": "0644",
+      "bytes": 4085,
+      "sha256": "9991783da82193f9d1ccfd31bfa25ad839d33c1a594fa60daf1b1874c7a00e8b",
+      "git_blob": "1d6f53404db769cd127106116be51057faad5eee"
+    },
+    {
+      "path": "ORIGINAL_EIGHT_BLOCK_AUDIT.json",
+      "mode": "0644",
+      "bytes": 93311,
+      "sha256": "e4e53e51efc8465633824f2737225f57cdef434a4b76fcbb3872351a7585e1c1",
+      "git_blob": "779a170d3a9936fb2f911a18a3b4fc2ab834be75"
+    },
+    {
+      "path": "PINNED_TOKIO_TUNGSTENITE_REFERENCE.json",
+      "mode": "0644",
+      "bytes": 3853,
+      "sha256": "766ebe552c3f9476333385cad9731f643bebc15923306f1178976d814f490d18",
+      "git_blob": "83db3884a7c7b1c193da9a96465b8e0bdf99e87a"
+    },
+    {
+      "path": "SOURCE_CAPSULE.json",
+      "mode": "0644",
+      "bytes": 129071,
+      "sha256": "7b70dc09af7c6b0d3f5885ecf9b2f4251c2e0fcffee7e1f659bb34cf40ce5b88",
+      "git_blob": "11b3982eb617412e74122274efd5f33063471ca2"
+    },
+    {
+      "path": "SOURCE_INDEX.json",
+      "mode": "0644",
+      "bytes": 7569,
+      "sha256": "a9b6a9d3a0f43581a9cbe90f436064c762ea2ba667b1094b8e4ff27c34e940ff",
+      "git_blob": "6febdc151525617f139d1fb008ec7fd6eb8f41b0"
+    },
+    {
+      "path": "STATIC_AUDIT.json",
+      "mode": "0644",
+      "bytes": 3110,
+      "sha256": "be2f0b3dd3c1dc8de61d2abf41e55629c623bc262e026e1c7d60b1775d730420",
+      "git_blob": "7c37b0925a351363e63f93a91d98346934013811"
+    },
+    {
+      "path": "candidate/codex-rs/core/tests/common/responses.rs",
+      "mode": "0644",
+      "bytes": 59390,
+      "sha256": "eb0a2f27af9f05a2ee984f30b872c796d6fdf7e54294b77a0f621b1fd4aacb6d",
+      "git_blob": "2285b1427a7ee93190d7b1f2f8c5fdb1d4ccabe6"
+    },
+    {
+      "path": "candidate/codex-rs/core/tests/common/responses_matcher_tests.rs",
+      "mode": "0644",
+      "bytes": 3837,
+      "sha256": "8e720ed7f816288968637f75c760d310c020ee59cb6e1f527be8597f8878a819",
+      "git_blob": "06478ad82022669240018435d6c1f432cf0331b0"
+    },
+    {
+      "path": "original/codex-rs/core/tests/common/responses.rs",
+      "mode": "0644",
+      "bytes": 59259,
+      "sha256": "7616935a3f5244c3640b416133ca56d8fe2614c29500c850f04db7312807fc91",
+      "git_blob": "defa0bffa903d1c9412880fb06322c8e69fabb98"
+    },
+    {
+      "path": "prepare_candidate_evidence.py",
+      "mode": "0644",
+      "bytes": 13554,
+      "sha256": "4a6154cb7e7d2f3b730cb1bbd7c41dc58dace936e48176e6ca91945de1064a1b",
+      "git_blob": "1e62cc216c7fc5dcccf9cc17abdbd57444b0b62e"
+    },
+    {
+      "path": "reference/LukeMathWalker/wiremock-rs/src/mock.rs",
+      "mode": "0644",
+      "bytes": 30433,
+      "sha256": "d36b306689348a02488aa84ea2c90a8e284325ee6b34b15cd24e8ebef7d961cd",
+      "git_blob": "aff076889c67c43f49451146ec102db6c4694f18"
+    },
+    {
+      "path": "reference/LukeMathWalker/wiremock-rs/src/mock_set.rs",
+      "mode": "0644",
+      "bytes": 8858,
+      "sha256": "52b74242726ec9fd4a731b17ba6e7dbcc801b4f3e7d0fa08b75688b03c478d6c",
+      "git_blob": "64753dcd1f7657a4b1214ac60745450ea3b817c2"
+    },
+    {
+      "path": "reference/LukeMathWalker/wiremock-rs/src/mounted_mock.rs",
+      "mode": "0644",
+      "bytes": 3592,
+      "sha256": "fa4cf018a3773a31a1cd8be56ff1805d17437a2914bd3e59c200ec0892ac04d8",
+      "git_blob": "7bed339bad4401e0b8491790672190848f54891d"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/AGENTS.md",
+      "mode": "0644",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/Cargo.lock",
+      "mode": "0644",
+      "bytes": 421005,
+      "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+      "git_blob": "025813e20504f31d12dae2092a0807a1a4066419"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/Cargo.toml",
+      "mode": "0644",
+      "bytes": 23385,
+      "sha256": "29451688365bb14c7232338a9118cfdcbb59ddd7ca79738b641bf6f04cc72d6a",
+      "git_blob": "75e83aa2161758c059de8e3965820fcfd65f8b58"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/Cargo.toml",
+      "mode": "0644",
+      "bytes": 6185,
+      "sha256": "3a2576956d2844516f1e38554a207c50e44503dd0c49cd8612fb630d3c6eb5f4",
+      "git_blob": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/common/BUILD.bazel",
+      "mode": "0644",
+      "bytes": 208,
+      "sha256": "4a836e66362096237412d7bddcca222c2ba3ed343c7e9ea8e1fa8ef3391172c1",
+      "git_blob": "f41a727b72209b3417fb12a15cb87bd81e95e370"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/common/Cargo.toml",
+      "mode": "0644",
+      "bytes": 1677,
+      "sha256": "f96f988488fa3b982ae33ab11365b534a1d4d542d5b0cb1140eb3a43e3d4e5ef",
+      "git_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/common/lib.rs",
+      "mode": "0644",
+      "bytes": 23401,
+      "sha256": "34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9",
+      "git_blob": "f4e0d11e0b440b57faeba5c400e343975a0506d3"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/common/responses.rs",
+      "mode": "0644",
+      "bytes": 59259,
+      "sha256": "7616935a3f5244c3640b416133ca56d8fe2614c29500c850f04db7312807fc91",
+      "git_blob": "defa0bffa903d1c9412880fb06322c8e69fabb98"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/common/test_codex.rs",
+      "mode": "0644",
+      "bytes": 52412,
+      "sha256": "9eaa4d9f3ab772bd3ea02571bad0c4bba94e087857accd1bac5004c2eb89ac02",
+      "git_blob": "099ec8eb226394c2fc0543188e27d7c146a813c7"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/codex-rs/core/tests/suite/subagent_notifications.rs",
+      "mode": "0644",
+      "bytes": 106352,
+      "sha256": "6a8c3c88b7e126ffd116b18fdeed193e43d4bbfd7e0fa6bd6d098511012be928",
+      "git_blob": "3b429cac96b5f0bc21dc2121ae65de5477020e07"
+    },
+    {
+      "path": "reference/TrillionniumFoundation/hepta-private-ci/defs.bzl",
+      "mode": "0644",
+      "bytes": 35682,
+      "sha256": "49fad93588cc168dc1c1f773404c23d6c6fc43c2e2ed13e49b7c543569ec5037",
+      "git_blob": "99f0085a8095f4f5fe41ace52d0dff021be95949"
+    },
+    {
+      "path": "reference/openai-oss-forks/tokio-tungstenite/Cargo.toml",
+      "mode": "0644",
+      "bytes": 3325,
+      "sha256": "1bb36f490668711ad63b88c5805c64f25ea16101bea4c924858b874a35521290",
+      "git_blob": "b3bd4ba0dc4b7d1c6651cf67a15a6def4fdc8407"
+    },
+    {
+      "path": "reference/snapview/tokio-tungstenite/Cargo.toml",
+      "mode": "0644",
+      "bytes": 3077,
+      "sha256": "e95a318cc337820d9252e528ae4d17691afe2d1fa8f1bfe27d2900d04ad23373",
+      "git_blob": "59c2f4b187a41636fe9c72498d928a8a938a9bf3"
+    }
+  ],
+  "privacy_scope": "Repository source, pinned upstream source, candidate source, reviewed metadata and safe original observations only. No complete original core hook request/prompt log is included."
+}

@@ -1,0 +1,391 @@
+﻿2026-11-11T16:52:16.1031976Z Current runner version: '2.338.2'
+2026-11-11T16:52:16.1065363Z ##[group]Runner Image Provisioner
+2026-11-11T16:52:16.1066739Z Hosted Compute Agent
+2026-11-11T16:52:16.1067770Z Version: 20261028.624
+2026-11-11T16:52:16.1068753Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-11T16:52:16.1070088Z Build Date: 2026-10-28T21:51:42Z
+2026-11-11T16:52:16.1071292Z Worker ID: {229d364f-d998-4f37-84c3-f52f8602cb49}
+2026-11-11T16:52:16.1072492Z Region: eastus
+2026-11-11T16:52:16.1073851Z Cloud: Azure
+2026-11-11T16:52:16.1074811Z ##[endgroup]
+2026-11-11T16:52:16.1077871Z ##[group]Operating System
+2026-11-11T16:52:16.1078941Z Ubuntu
+2026-11-11T16:52:16.1079811Z 24.04.5
+2026-11-11T16:52:16.1080822Z LTS
+2026-11-11T16:52:16.1081779Z ##[endgroup]
+2026-11-11T16:52:16.1083134Z ##[group]Runner Image
+2026-11-11T16:52:16.1084280Z Image: ubuntu-24.04
+2026-11-11T16:52:16.1085285Z Version: 20261101.360.1
+2026-11-11T16:52:16.1087532Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-11T16:52:16.1090461Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-11T16:52:16.1092250Z ##[endgroup]
+2026-11-11T16:52:16.1094694Z ##[group]GITHUB_TOKEN Permissions
+2026-11-11T16:52:16.1097558Z Contents: read
+2026-11-11T16:52:16.1098762Z Metadata: read
+2026-11-11T16:52:16.1099781Z ##[endgroup]
+2026-11-11T16:52:16.1102689Z Secret source: Actions
+2026-11-11T16:52:16.1104727Z Cache mode: write
+2026-11-11T16:52:16.1106331Z Prepare workflow directory
+2026-11-11T16:52:16.1579103Z Prepare all required actions
+2026-11-11T16:52:16.1651294Z Getting action download info
+2026-11-11T16:52:16.3524141Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-11T16:52:16.6136950Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/sdk.yml@refs/pull/5935/merge (a49776ffdea3547ed407a710bb19e93377b29535)
+2026-11-11T16:52:16.6141935Z Complete job name: sdk / python-sdk
+2026-11-11T16:52:16.7038792Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-11T16:52:16.7039882Z with:
+2026-11-11T16:52:16.7040348Z   persist-credentials: false
+2026-11-11T16:52:16.7040974Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:16.7046333Z   token: ***
+2026-11-11T16:52:16.7046803Z   ssh-strict: true
+2026-11-11T16:52:16.7047255Z   ssh-user: git
+2026-11-11T16:52:16.7047699Z   clean: true
+2026-11-11T16:52:16.7048223Z   sparse-checkout-cone-mode: true
+2026-11-11T16:52:16.7048834Z   fetch-depth: 1
+2026-11-11T16:52:16.7049286Z   fetch-tags: false
+2026-11-11T16:52:16.7049742Z   show-progress: true
+2026-11-11T16:52:16.7050194Z   lfs: false
+2026-11-11T16:52:16.7050627Z   submodules: false
+2026-11-11T16:52:16.7051090Z   set-safe-directory: true
+2026-11-11T16:52:16.7051952Z ##[endgroup]
+2026-11-11T16:52:17.4059520Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.4061868Z ##[group]Getting Git version info
+2026-11-11T16:52:17.4063238Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T16:52:17.4065510Z [command]/usr/bin/git version
+2026-11-11T16:52:17.4165934Z git version 2.56.0
+2026-11-11T16:52:17.4204208Z ##[endgroup]
+2026-11-11T16:52:17.4217897Z Temporarily overriding HOME='/home/runner/work/_temp/bc219379-651b-43b9-b554-bef215bcebb0' before making global git config changes
+2026-11-11T16:52:17.4224287Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:52:17.4227457Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:52:17.4286783Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-11T16:52:17.4298423Z ##[group]Initializing the repository
+2026-11-11T16:52:17.4314409Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:52:17.4428053Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-11T16:52:17.4431167Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-11T16:52:17.4433313Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-11T16:52:17.4434825Z hint: call:
+2026-11-11T16:52:17.4435518Z hint:
+2026-11-11T16:52:17.4436377Z hint: 	git config --global init.defaultBranch <name>
+2026-11-11T16:52:17.4437885Z hint:
+2026-11-11T16:52:17.4438893Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-11T16:52:17.4440741Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-11T16:52:17.4442693Z hint:
+2026-11-11T16:52:17.4443977Z hint: 	git branch -m <name>
+2026-11-11T16:52:17.4444952Z hint:
+2026-11-11T16:52:17.4445812Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-11T16:52:17.4447602Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-11T16:52:17.4457810Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:17.4513322Z ##[endgroup]
+2026-11-11T16:52:17.4514707Z ##[group]Disabling automatic garbage collection
+2026-11-11T16:52:17.4520006Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-11T16:52:17.4557417Z ##[endgroup]
+2026-11-11T16:52:17.4558990Z ##[group]Setting up auth
+2026-11-11T16:52:17.4560258Z Removing SSH command configuration
+2026-11-11T16:52:17.4567506Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:17.4613454Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:52:17.5061247Z Removing HTTP extra header
+2026-11-11T16:52:17.5069455Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:17.5121765Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:52:17.5357527Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:17.5365201Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:17.5410099Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:52:17.5655454Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-11T16:52:17.5715574Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:17.5758462Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:17.5804035Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:17.5845942Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:17.5884035Z ##[endgroup]
+2026-11-11T16:52:17.5884911Z ##[group]Fetching the repository
+2026-11-11T16:52:17.5892698Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a49776ffdea3547ed407a710bb19e93377b29535:refs/remotes/pull/5935/merge
+2026-11-11T16:52:22.5868215Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-11T16:52:22.5870805Z  * [new ref]         a49776ffdea3547ed407a710bb19e93377b29535 -> pull/5935/merge
+2026-11-11T16:52:22.5876851Z ##[endgroup]
+2026-11-11T16:52:22.5877896Z ##[group]Determining the checkout info
+2026-11-11T16:52:22.5879009Z ##[endgroup]
+2026-11-11T16:52:22.5884428Z [command]/usr/bin/git sparse-checkout disable
+2026-11-11T16:52:22.5950644Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-11T16:52:22.5990829Z ##[group]Checking out the ref
+2026-11-11T16:52:22.5994354Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/5935/merge
+2026-11-11T16:52:23.6438009Z Updating files:  95% (13355/14053)
+2026-11-11T16:52:23.6559790Z Updating files:  96% (13491/14053)
+2026-11-11T16:52:23.6661690Z Updating files:  97% (13632/14053)
+2026-11-11T16:52:23.6762368Z Updating files:  98% (13772/14053)
+2026-11-11T16:52:23.6861273Z Updating files:  99% (13913/14053)
+2026-11-11T16:52:23.6862232Z Updating files: 100% (14053/14053)
+2026-11-11T16:52:23.6893114Z Updating files: 100% (14053/14053), done.
+2026-11-11T16:52:23.7017339Z Note: switching to 'refs/remotes/pull/5935/merge'.
+2026-11-11T16:52:23.7018349Z 
+2026-11-11T16:52:23.7020426Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-11T16:52:23.7021308Z changes and commit them, and you can discard any commits you make in this
+2026-11-11T16:52:23.7022175Z state without impacting any branches by switching back to a branch.
+2026-11-11T16:52:23.7022664Z 
+2026-11-11T16:52:23.7033414Z If you want to create a new branch to retain commits you create, you may
+2026-11-11T16:52:23.7034352Z do so (now or later) by using -c with the switch command. Example:
+2026-11-11T16:52:23.7034843Z 
+2026-11-11T16:52:23.7035033Z   git switch -c <new-branch-name>
+2026-11-11T16:52:23.7035359Z 
+2026-11-11T16:52:23.7035537Z Or undo this operation with:
+2026-11-11T16:52:23.7035900Z 
+2026-11-11T16:52:23.7036102Z   git switch -
+2026-11-11T16:52:23.7036349Z 
+2026-11-11T16:52:23.7037133Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-11T16:52:23.7037779Z 
+2026-11-11T16:52:23.7038415Z HEAD is now at a49776f Merge d0f6507e08f7f5c5855f5164d07c049a34d1a6d9 into 96038ccf0660154fac143ba6cbe4be81e00813e8
+2026-11-11T16:52:23.7075446Z ##[endgroup]
+2026-11-11T16:52:23.7144873Z [command]/usr/bin/git log -1 --format=%H
+2026-11-11T16:52:23.7184266Z a49776ffdea3547ed407a710bb19e93377b29535
+2026-11-11T16:52:23.7197506Z ##[group]Removing auth
+2026-11-11T16:52:23.7203651Z Removing SSH command configuration
+2026-11-11T16:52:23.7205480Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:52:23.7250874Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:52:23.7541128Z Removing HTTP extra header
+2026-11-11T16:52:23.7547770Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:52:23.7595638Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:52:23.7870230Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:52:23.7875248Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:52:23.7909717Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:23.7910872Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:23.7911514Z includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:23.7911981Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:23.7920924Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-11T16:52:23.7954538Z /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.7969821Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8031978Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-11T16:52:23.8069646Z /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8084194Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8130115Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-11T16:52:23.8163552Z /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8185255Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8250775Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-11T16:52:23.8283730Z /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8292559Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config
+2026-11-11T16:52:23.8341215Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:52:23.8619909Z Removing credentials config '/home/runner/work/_temp/git-credentials-877d03be-fbfa-4ebc-b462-97d2913e47bf.config'
+2026-11-11T16:52:23.8631474Z ##[endgroup]
+2026-11-11T16:52:23.8843876Z ##[group]Run set -euo pipefail
+2026-11-11T16:52:23.8844277Z [36;1mset -euo pipefail[0m
+2026-11-11T16:52:23.8844525Z [36;1m[0m
+2026-11-11T16:52:23.8844860Z [36;1m# Run inside a glibc Linux image so dependency resolution exercises[0m
+2026-11-11T16:52:23.8845396Z [36;1m# the pinned manylinux runtime wheel that users install.[0m
+2026-11-11T16:52:23.8845862Z [36;1m# Run inside a glibc Linux image so dependency resolution exercises[0m
+2026-11-11T16:52:23.8846360Z [36;1m# the pinned manylinux runtime wheel that users install. The tests[0m
+2026-11-11T16:52:23.8846867Z [36;1m# also exercise the real zstd CLI, so pin it in this ephemeral image.[0m
+2026-11-11T16:52:23.8847403Z [36;1mdocker build --tag codex-python-sdk-test --file - /tmp <<'DOCKERFILE'[0m
+2026-11-11T16:52:23.8847823Z [36;1mFROM python:3.12-slim[0m
+2026-11-11T16:52:23.8848093Z [36;1mRUN apt-get update \[0m
+2026-11-11T16:52:23.8848433Z [36;1m    && apt-get install -y --no-install-recommends zstd \[0m
+2026-11-11T16:52:23.8848856Z [36;1m    && rm -rf /var/lib/apt/lists/*[0m
+2026-11-11T16:52:23.8849150Z [36;1mDOCKERFILE[0m
+2026-11-11T16:52:23.8849357Z [36;1m[0m
+2026-11-11T16:52:23.8849550Z [36;1mdocker run --rm \[0m
+2026-11-11T16:52:23.8849802Z [36;1m  --user "$(id -u):$(id -g)" \[0m
+2026-11-11T16:52:23.8850117Z [36;1m  -e HOME=/tmp/codex-python-sdk-home \[0m
+2026-11-11T16:52:23.8850427Z [36;1m  -e UV_LINK_MODE=copy \[0m
+2026-11-11T16:52:23.8850733Z [36;1m  -v "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}" \[0m
+2026-11-11T16:52:23.8851082Z [36;1m  -w "${GITHUB_WORKSPACE}/sdk/python" \[0m
+2026-11-11T16:52:23.8851392Z [36;1m  codex-python-sdk-test \[0m
+2026-11-11T16:52:23.8851663Z [36;1m  sh -euxc '[0m
+2026-11-11T16:52:23.8851894Z [36;1m    python -m venv /tmp/uv[0m
+2026-11-11T16:52:23.8852207Z [36;1m    /tmp/uv/bin/python -m pip install uv==0.11.3[0m
+2026-11-11T16:52:23.8852557Z [36;1m    /tmp/uv/bin/uv sync --group dev --frozen[0m
+2026-11-11T16:52:23.8853352Z [36;1m    /tmp/uv/bin/uv run --frozen --no-sync ruff check --output-format=github .[0m
+2026-11-11T16:52:23.8853868Z [36;1m    /tmp/uv/bin/uv run --frozen --no-sync ruff format --check .[0m
+2026-11-11T16:52:23.8854276Z [36;1m    /tmp/uv/bin/uv run --frozen --no-sync pytest[0m
+2026-11-11T16:52:23.8854583Z [36;1m  '[0m
+2026-11-11T16:52:23.8878795Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:52:23.8879161Z ##[endgroup]
+2026-11-11T16:52:24.7162954Z #0 building with "default" instance using docker driver
+2026-11-11T16:52:24.7163859Z 
+2026-11-11T16:52:24.7164172Z #1 [internal] load build definition from Dockerfile
+2026-11-11T16:52:24.7165373Z #1 transferring dockerfile: 174B 0.0s done
+2026-11-11T16:52:24.7166316Z #1 DONE 0.0s
+2026-11-11T16:52:24.7166730Z 
+2026-11-11T16:52:24.7167290Z #2 [auth] library/python:pull token for registry-1.docker.io
+2026-11-11T16:52:24.7168448Z #2 DONE 0.0s
+2026-11-11T16:52:24.7168762Z 
+2026-11-11T16:52:24.7169274Z #3 [internal] load metadata for docker.io/library/python:3.12-slim
+2026-11-11T16:52:24.8538616Z #3 DONE 0.3s
+2026-11-11T16:52:24.9827697Z 
+2026-11-11T16:52:24.9828234Z #4 [internal] load .dockerignore
+2026-11-11T16:52:24.9829137Z #4 transferring context: 2B done
+2026-11-11T16:52:24.9830783Z #4 DONE 0.0s
+2026-11-11T16:52:24.9830996Z 
+2026-11-11T16:52:24.9831682Z #5 [1/2] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+2026-11-11T16:52:24.9834231Z #5 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b done
+2026-11-11T16:52:24.9835450Z #5 sha256:78976a69c067520ef8be34cde307ef9f6fea6dcefa50edb57039773d241ca0db 5.66kB / 5.66kB done
+2026-11-11T16:52:24.9836678Z #5 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 26.21MB / 29.86MB 0.1s
+2026-11-11T16:52:24.9837977Z #5 sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 1.29MB / 1.29MB 0.1s done
+2026-11-11T16:52:24.9839821Z #5 sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 12.12MB / 12.12MB 0.1s done
+2026-11-11T16:52:24.9840741Z #5 sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b 248B / 248B 0.1s done
+2026-11-11T16:52:24.9841616Z #5 sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 10.37kB / 10.37kB done
+2026-11-11T16:52:24.9842469Z #5 sha256:05a994d2344eb364cc186910f4fc8786a38215f39f00d0acc25bff33a08f4177 1.75kB / 1.75kB done
+2026-11-11T16:52:25.1353452Z #5 sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 29.86MB / 29.86MB 0.1s done
+2026-11-11T16:52:25.1354809Z #5 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 0.1s
+2026-11-11T16:52:25.9463139Z #5 extracting sha256:37fb86c2a767b88d500c6872195f88078f64765fe0d2f9cc375cc2efbd4c0a41 0.9s done
+2026-11-11T16:52:25.9464965Z #5 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9
+2026-11-11T16:52:26.0466268Z #5 extracting sha256:68bced9e0afa4479df17c3646e27c7c7e9ce9ba70c0e6c73b6826487b89037d9 0.1s done
+2026-11-11T16:52:26.8357205Z #5 extracting sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085
+2026-11-11T16:52:27.6040903Z #5 extracting sha256:2dc99d2d0a39fce31e37615eb4c932e16dcc4c2b0ce9993714280081b5dbe085 0.5s done
+2026-11-11T16:52:27.6041856Z #5 extracting sha256:05e0eee5572e9c9f50408a2132590133b830a668a1cf2ff2b150f19c57707e2b done
+2026-11-11T16:52:27.6042455Z #5 DONE 2.6s
+2026-11-11T16:52:27.6042596Z 
+2026-11-11T16:52:27.6043361Z #6 [2/2] RUN apt-get update     && apt-get install -y --no-install-recommends zstd     && rm -rf /var/lib/apt/lists/*
+2026-11-11T16:52:27.6339347Z #6 0.181 Hit:1 http://deb.debian.org/debian trixie InRelease
+2026-11-11T16:52:27.6340667Z #6 0.181 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+2026-11-11T16:52:27.8605296Z #6 0.183 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+2026-11-11T16:52:27.8606518Z #6 0.199 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9678 kB]
+2026-11-11T16:52:27.8608871Z #6 0.256 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [1108 B]
+2026-11-11T16:52:27.8610872Z #6 0.258 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [302 kB]
+2026-11-11T16:52:28.3767524Z #6 0.923 Fetched 10.1 MB in 1s (13.3 MB/s)
+2026-11-11T16:52:28.9740329Z #6 0.923 Reading package lists...
+2026-11-11T16:52:29.4810611Z #6 1.541 Reading package lists...
+2026-11-11T16:52:29.6210241Z #6 2.041 Building dependency tree...
+2026-11-11T16:52:29.6211168Z #6 2.169 Reading state information...
+2026-11-11T16:52:29.7746049Z #6 2.322 The following NEW packages will be installed:
+2026-11-11T16:52:29.7747231Z #6 2.322   zstd
+2026-11-11T16:52:29.9217258Z #6 2.350 0 upgraded, 1 newly installed, 0 to remove and 1 not upgraded.
+2026-11-11T16:52:29.9218117Z #6 2.350 Need to get 756 kB of archives.
+2026-11-11T16:52:29.9218727Z #6 2.350 After this operation, 2376 kB of additional disk space will be used.
+2026-11-11T16:52:29.9219712Z #6 2.350 Get:1 http://deb.debian.org/debian trixie/main amd64 zstd amd64 1.5.7+dfsg-1 [756 kB]
+2026-11-11T16:52:29.9220698Z #6 2.469 debconf: unable to initialize frontend: Dialog
+2026-11-11T16:52:29.9221242Z #6 2.469 debconf: (TERM is not set, so the dialog frontend is not usable.)
+2026-11-11T16:52:29.9222068Z #6 2.469 debconf: falling back to frontend: Readline
+2026-11-11T16:52:30.0777138Z #6 2.470 debconf: unable to initialize frontend: Readline
+2026-11-11T16:52:30.0785536Z #6 2.470 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 1.)
+2026-11-11T16:52:30.0788308Z #6 2.470 debconf: falling back to frontend: Teletype
+2026-11-11T16:52:30.0789302Z #6 2.475 debconf: unable to initialize frontend: Teletype
+2026-11-11T16:52:30.0789854Z #6 2.475 debconf: (This frontend requires a controlling tty.)
+2026-11-11T16:52:30.0790307Z #6 2.475 debconf: falling back to frontend: Noninteractive
+2026-11-11T16:52:30.4489287Z #6 2.997 Fetched 756 kB in 0s (30.4 MB/s)
+2026-11-11T16:52:30.5579559Z #6 3.010 Selecting previously unselected package zstd.
+2026-11-11T16:52:30.5580381Z #6 3.010 (Reading database ... 
+2026-11-11T16:52:30.5580940Z (Reading database ... 5%
+2026-11-11T16:52:30.5581448Z (Reading database ... 10%
+2026-11-11T16:52:30.5581929Z (Reading database ... 15%
+2026-11-11T16:52:30.5582343Z (Reading database ... 20%
+2026-11-11T16:52:30.5583072Z (Reading database ... 25%
+2026-11-11T16:52:30.5583565Z (Reading database ... 30%
+2026-11-11T16:52:30.5584065Z (Reading database ... 35%
+2026-11-11T16:52:30.5584606Z (Reading database ... 40%
+2026-11-11T16:52:30.5585141Z (Reading database ... 45%
+2026-11-11T16:52:30.5586264Z (Reading database ... 50%
+2026-11-11T16:52:30.5588762Z (Reading database ... 55%
+2026-11-11T16:52:30.5589964Z (Reading database ... 60%
+2026-11-11T16:52:30.5591009Z (Reading database ... 65%
+2026-11-11T16:52:30.5591900Z (Reading database ... 70%
+2026-11-11T16:52:30.5592601Z (Reading database ... 75%
+2026-11-11T16:52:30.5593655Z (Reading database ... 80%
+2026-11-11T16:52:30.5594341Z (Reading database ... 85%
+2026-11-11T16:52:30.5595008Z (Reading database ... 90%
+2026-11-11T16:52:30.5595694Z (Reading database ... 95%
+2026-11-11T16:52:30.5596379Z (Reading database ... 100%
+2026-11-11T16:52:30.5597244Z (Reading database ... 5658 files and directories currently installed.)
+2026-11-11T16:52:30.5597992Z #6 3.016 Preparing to unpack .../zstd_1.5.7+dfsg-1_amd64.deb ...
+2026-11-11T16:52:30.5598507Z #6 3.017 Unpacking zstd (1.5.7+dfsg-1) ...
+2026-11-11T16:52:30.5598959Z #6 3.069 Setting up zstd (1.5.7+dfsg-1) ...
+2026-11-11T16:52:30.5599374Z #6 DONE 3.1s
+2026-11-11T16:52:30.7095835Z 
+2026-11-11T16:52:30.7097491Z #7 exporting to image
+2026-11-11T16:52:30.7098461Z #7 exporting layers
+2026-11-11T16:52:31.0045183Z #7 exporting layers 0.4s done
+2026-11-11T16:52:31.0238666Z #7 writing image sha256:688ec895c72ccb41941e3728d351dbe1e150728383fec03de1af699dcce4365f done
+2026-11-11T16:52:31.0239881Z #7 naming to docker.io/library/codex-python-sdk-test done
+2026-11-11T16:52:31.0241098Z #7 DONE 0.5s
+2026-11-11T16:52:31.2138059Z + python -m venv /tmp/uv
+2026-11-11T16:52:34.1935125Z + /tmp/uv/bin/python -m pip install uv==0.11.3
+2026-11-11T16:52:35.3599657Z Collecting uv==0.11.3
+2026-11-11T16:52:35.4213249Z   Downloading uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+2026-11-11T16:52:35.4445358Z Downloading uv-0.11.3-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (24.6 MB)
+2026-11-11T16:52:35.6355903Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 24.6/24.6 MB 162.3 MB/s eta 0:00:00
+2026-11-11T16:52:35.6616250Z Installing collected packages: uv
+2026-11-11T16:52:35.9151823Z Successfully installed uv-0.11.3
+2026-11-11T16:52:36.0265409Z 
+2026-11-11T16:52:36.0266068Z [notice] A new release of pip is available: 25.0.1 -> 26.3
+2026-11-11T16:52:36.0266887Z [notice] To update, run: python -m pip install --upgrade pip
+2026-11-11T16:52:36.0852118Z + /tmp/uv/bin/uv sync --group dev --frozen
+2026-11-11T16:52:36.2768100Z Using CPython 3.12.16 interpreter at: /usr/local/bin/python3
+2026-11-11T16:52:36.2768562Z Creating virtual environment at: .venv
+2026-11-11T16:52:36.2874328Z    Building openai-codex @ file:///home/runner/work/hepta-private-ci/hepta-private-ci/sdk/python
+2026-11-11T16:52:36.3645096Z Downloading pygments (1.2MiB)
+2026-11-11T16:52:36.3725409Z Downloading pydantic-core (2.0MiB)
+2026-11-11T16:52:36.3748321Z Downloading ruff (10.8MiB)
+2026-11-11T16:52:36.3753818Z Downloading black (1.7MiB)
+2026-11-11T16:52:36.3757858Z Downloading openai-codex-cli-bin (114.4MiB)
+2026-11-11T16:52:36.6204465Z  Downloaded pydantic-core
+2026-11-11T16:52:36.7029589Z  Downloaded ruff
+2026-11-11T16:52:36.7560318Z  Downloaded black
+2026-11-11T16:52:36.8436056Z  Downloaded pygments
+2026-11-11T16:52:36.8560452Z       Built openai-codex @ file:///home/runner/work/hepta-private-ci/hepta-private-ci/sdk/python
+2026-11-11T16:52:37.9089847Z  Downloaded openai-codex-cli-bin
+2026-11-11T16:52:37.9092365Z Prepared 29 packages in 1.62s
+2026-11-11T16:52:38.0708866Z Installed 29 packages in 161ms
+2026-11-11T16:52:38.0709987Z  + annotated-types==0.7.0
+2026-11-11T16:52:38.0711018Z  + argcomplete==3.6.3
+2026-11-11T16:52:38.0711947Z  + black==26.3.1
+2026-11-11T16:52:38.0713114Z  + click==8.3.3
+2026-11-11T16:52:38.0714221Z  + datamodel-code-generator==0.64.0
+2026-11-11T16:52:38.0715473Z  + genson==1.3.0
+2026-11-11T16:52:38.0715990Z  + inflect==7.5.0
+2026-11-11T16:52:38.0716467Z  + iniconfig==2.3.0
+2026-11-11T16:52:38.0716984Z  + isort==6.1.0
+2026-11-11T16:52:38.0717446Z  + jinja2==3.1.6
+2026-11-11T16:52:38.0717923Z  + markupsafe==3.0.3
+2026-11-11T16:52:38.0718431Z  + more-itertools==11.0.2
+2026-11-11T16:52:38.0718926Z  + mypy-extensions==1.1.0
+2026-11-11T16:52:38.0719676Z  + openai-codex==0.0.0.dev0 (from file:///home/runner/work/hepta-private-ci/hepta-private-ci/sdk/python)
+2026-11-11T16:52:38.0720453Z  + openai-codex-cli-bin==0.147.0
+2026-11-11T16:52:38.0720902Z  + packaging==26.2
+2026-11-11T16:52:38.0721285Z  + pathspec==1.1.1
+2026-11-11T16:52:38.0721669Z  + platformdirs==4.9.6
+2026-11-11T16:52:38.0722067Z  + pluggy==1.6.0
+2026-11-11T16:52:38.0722477Z  + pydantic==2.13.4
+2026-11-11T16:52:38.0723166Z  + pydantic-core==2.46.4
+2026-11-11T16:52:38.0723694Z  + pygments==2.20.0
+2026-11-11T16:52:38.0724079Z  + pytest==9.0.3
+2026-11-11T16:52:38.0724446Z  + pytokens==0.4.1
+2026-11-11T16:52:38.0724815Z  + pyyaml==6.0.3
+2026-11-11T16:52:38.0725177Z  + ruff==0.15.12
+2026-11-11T16:52:38.0725548Z  + typeguard==4.5.1
+2026-11-11T16:52:38.0725939Z  + typing-extensions==4.15.0
+2026-11-11T16:52:38.0726378Z  + typing-inspection==0.4.2
+2026-11-11T16:52:38.0773766Z + /tmp/uv/bin/uv run --frozen --no-sync ruff check --output-format=github .
+2026-11-11T16:52:38.2655483Z + /tmp/uv/bin/uv run --frozen --no-sync ruff format --check .
+2026-11-11T16:52:38.2981265Z 76 files already formatted
+2026-11-11T16:52:38.3002296Z + /tmp/uv/bin/uv run --frozen --no-sync pytest
+2026-11-11T16:53:12.0934517Z ........................................................................ [ 37%]
+2026-11-11T16:53:36.9294892Z ........................................................................ [ 75%]
+2026-11-11T16:53:37.0973892Z ........ssssssssssssssssssssssssssssssssssssss                           [100%]
+2026-11-11T16:53:37.0974636Z 152 passed, 38 skipped in 57.72s
+2026-11-11T16:53:37.7119929Z Prepare all required actions
+2026-11-11T16:53:37.7164516Z ##[group]Run ./.github/actions/check-clean-worktree
+2026-11-11T16:53:37.7164850Z ##[endgroup]
+2026-11-11T16:53:37.7226846Z ##[start-action display=Check for a clean worktree;id=__self.__run]
+2026-11-11T16:53:37.7259392Z ##[group]Run set -euo pipefail
+2026-11-11T16:53:37.7259700Z [36;1mset -euo pipefail[0m
+2026-11-11T16:53:37.7259948Z [36;1m[0m
+2026-11-11T16:53:37.7260416Z [36;1mstatus="$(git -C "${GITHUB_WORKSPACE}" status --porcelain=v1 --untracked-files=normal --ignore-submodules=none)"[0m
+2026-11-11T16:53:37.7260972Z [36;1mif [[ -z "${status}" ]]; then[0m
+2026-11-11T16:53:37.7261227Z [36;1m  exit 0[0m
+2026-11-11T16:53:37.7261420Z [36;1mfi[0m
+2026-11-11T16:53:37.7261604Z [36;1m[0m
+2026-11-11T16:53:37.7261961Z [36;1mecho "::error::CI job left tracked changes or untracked files in the repository worktree"[0m
+2026-11-11T16:53:37.7262406Z [36;1mprintf '%s\n' "${status}"[0m
+2026-11-11T16:53:37.7262692Z [36;1mexit 1[0m
+2026-11-11T16:53:37.7283920Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:53:37.7284273Z ##[endgroup]
+2026-11-11T16:53:38.2644407Z ##[end-action id=__self.__run;outcome=success;conclusion=success;duration_ms=541]
+2026-11-11T16:53:38.2771696Z Post job cleanup.
+2026-11-11T16:53:38.3669691Z [command]/usr/bin/git version
+2026-11-11T16:53:38.3715842Z git version 2.56.0
+2026-11-11T16:53:38.3760743Z Temporarily overriding HOME='/home/runner/work/_temp/5191244e-00a5-4db1-a534-57ad0bc41276' before making global git config changes
+2026-11-11T16:53:38.3762405Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-11T16:53:38.3767689Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-11T16:53:38.3803053Z Removing SSH command configuration
+2026-11-11T16:53:38.3809984Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-11T16:53:38.3849615Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-11T16:53:38.4131871Z Removing HTTP extra header
+2026-11-11T16:53:38.4139136Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-11T16:53:38.4181352Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-11T16:53:38.4493644Z Removing includeIf entries pointing to credentials config files
+2026-11-11T16:53:38.4505093Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-11T16:53:38.4552556Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-11T16:53:38.5046160Z Cleaning up orphan processes

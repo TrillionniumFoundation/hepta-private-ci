@@ -1,0 +1,67 @@
+﻿2026-11-11T16:54:26.1286219Z Current runner version: '2.338.2'
+2026-11-11T16:54:26.1307579Z ##[group]Runner Image Provisioner
+2026-11-11T16:54:26.1308344Z Hosted Compute Agent
+2026-11-11T16:54:26.1308856Z Version: 20261028.624
+2026-11-11T16:54:26.1309410Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-11T16:54:26.1310082Z Build Date: 2026-10-28T21:51:42Z
+2026-11-11T16:54:26.1310681Z Worker ID: {6f582020-64e2-439f-b803-bd770eadd543}
+2026-11-11T16:54:26.1311308Z Region: eastus
+2026-11-11T16:54:26.1311805Z Cloud: Azure
+2026-11-11T16:54:26.1312331Z ##[endgroup]
+2026-11-11T16:54:26.1313772Z ##[group]Operating System
+2026-11-11T16:54:26.1314326Z Ubuntu
+2026-11-11T16:54:26.1314836Z 24.04.5
+2026-11-11T16:54:26.1315314Z LTS
+2026-11-11T16:54:26.1315797Z ##[endgroup]
+2026-11-11T16:54:26.1316310Z ##[group]Runner Image
+2026-11-11T16:54:26.1316834Z Image: ubuntu-24.04
+2026-11-11T16:54:26.1317317Z Version: 20261101.360.1
+2026-11-11T16:54:26.1318441Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-11T16:54:26.1319788Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-11T16:54:26.1320600Z ##[endgroup]
+2026-11-11T16:54:26.1321598Z ##[group]GITHUB_TOKEN Permissions
+2026-11-11T16:54:26.1323586Z Contents: read
+2026-11-11T16:54:26.1324200Z Metadata: read
+2026-11-11T16:54:26.1324710Z ##[endgroup]
+2026-11-11T16:54:26.1326401Z Secret source: Actions
+2026-11-11T16:54:26.1327246Z Cache mode: write
+2026-11-11T16:54:26.1327908Z Prepare workflow directory
+2026-11-11T16:54:26.1635755Z Prepare all required actions
+2026-11-11T16:54:26.1748369Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/rust-ci.yml@refs/pull/5935/merge (a49776ffdea3547ed407a710bb19e93377b29535)
+2026-11-11T16:54:26.1754926Z Complete job name: rust-ci / CI results (required)
+2026-11-11T16:54:26.2990129Z ##[group]Run set -euo pipefail
+2026-11-11T16:54:26.2990924Z [36;1mset -euo pipefail[0m
+2026-11-11T16:54:26.2991977Z [36;1m# Missing outputs from failed/cancelled detection are not "no changes".[0m
+2026-11-11T16:54:26.2993488Z [36;1m[[ "$CHANGED_RESULT" == 'success' ]] || { echo 'change detection did not succeed'; exit 1; }[0m
+2026-11-11T16:54:26.2995257Z [36;1mfor flag in "$NEEDS_CHANGED_OUTPUTS_CODEX" "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE"; do[0m
+2026-11-11T16:54:26.2996983Z [36;1m  [[ "$flag" == 'true' || "$flag" == 'false' ]] || { echo 'invalid change-detection output'; exit 1; }[0m
+2026-11-11T16:54:26.2998005Z [36;1mdone[0m
+2026-11-11T16:54:26.2998519Z [36;1m[0m
+2026-11-11T16:54:26.2999982Z [36;1mif [[ "$NEEDS_CHANGED_OUTPUTS_CODEX" == 'false' && "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" == 'false' && "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE" == 'false' ]]; then[0m
+2026-11-11T16:54:26.3001732Z [36;1m  echo 'No relevant changes -> CI not required.'[0m
+2026-11-11T16:54:26.3002662Z [36;1m  exit 0[0m
+2026-11-11T16:54:26.3003190Z [36;1mfi[0m
+2026-11-11T16:54:26.3003680Z [36;1m[0m
+2026-11-11T16:54:26.3004502Z [36;1mif [[ "$NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE" == 'true' ]]; then[0m
+2026-11-11T16:54:26.3005869Z [36;1m  [[ "$ARGPKG_RESULT" == 'success' ]] || { echo 'argument_comment_lint_package failed'; exit 1; }[0m
+2026-11-11T16:54:26.3006809Z [36;1mfi[0m
+2026-11-11T16:54:26.3007319Z [36;1m[0m
+2026-11-11T16:54:26.3008248Z [36;1mif [[ "$NEEDS_CHANGED_OUTPUTS_CODEX" == 'true' || "$NEEDS_CHANGED_OUTPUTS_WORKFLOWS" == 'true' ]]; then[0m
+2026-11-11T16:54:26.3009637Z [36;1m  [[ "$MANIFEST_RESULT" == 'success' ]] || { echo 'workspace_manifest failed'; exit 1; }[0m
+2026-11-11T16:54:26.3010870Z [36;1m  [[ "$GENERAL_RESULT" == 'success' ]] || { echo 'general failed'; exit 1; }[0m
+2026-11-11T16:54:26.3012082Z [36;1m  [[ "$BENCHMARK_RESULT" == 'success' ]] || { echo 'benchmark_smoke failed'; exit 1; }[0m
+2026-11-11T16:54:26.3013431Z [36;1m  [[ "$SHEAR_RESULT" == 'success' ]] || { echo 'cargo_shear failed'; exit 1; }[0m
+2026-11-11T16:54:26.3014348Z [36;1mfi[0m
+2026-11-11T16:54:26.3601998Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-11T16:54:26.3603573Z env:
+2026-11-11T16:54:26.3604139Z   CHANGED_RESULT: success
+2026-11-11T16:54:26.3604777Z   MANIFEST_RESULT: success
+2026-11-11T16:54:26.3605408Z   GENERAL_RESULT: success
+2026-11-11T16:54:26.3606016Z   BENCHMARK_RESULT: success
+2026-11-11T16:54:26.3606628Z   SHEAR_RESULT: success
+2026-11-11T16:54:26.3607222Z   ARGPKG_RESULT: skipped
+2026-11-11T16:54:26.3607849Z   NEEDS_CHANGED_OUTPUTS_CODEX: true
+2026-11-11T16:54:26.3608552Z   NEEDS_CHANGED_OUTPUTS_WORKFLOWS: true
+2026-11-11T16:54:26.3609392Z   NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE: false
+2026-11-11T16:54:26.3610212Z ##[endgroup]
+2026-11-11T16:54:26.3882120Z Cleaning up orphan processes

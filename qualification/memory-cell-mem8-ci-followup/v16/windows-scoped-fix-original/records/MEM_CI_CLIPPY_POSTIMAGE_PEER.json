@@ -1,0 +1,89 @@
+{
+  "schema": "mem8.actual-scoped-clippy-independent-static-peer.v1",
+  "reviewer": "/root/mem_ci_integration",
+  "reviewed_at": "2026-11-11T15:04:11.778758+00:00",
+  "verdict": "NO_STATIC_MUST_FIX_FOUND",
+  "source_head": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "patch": {
+    "bytes": 2279,
+    "sha256": "48509db81e65fae15fd0c452cab0d60b310a67b3e2856117c4f80025a6e7f32c",
+    "git_blob": "4faaf425bc23e55e4940e786ca24ec09f41f31c2"
+  },
+  "files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "before": {
+        "bytes": 11083,
+        "sha256": "be25bc4eff5f02d5243cec71b865c548fc531e3114ed7fa498e9201ac32c8b30",
+        "git_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18"
+      },
+      "after": {
+        "bytes": 11145,
+        "sha256": "d8d4561eafefa4cd63f4b26eaf921097f23e696c494a9d930221599269b294d2",
+        "git_blob": "7f4c84e566250831293392d6b85f6e0a3b236a23"
+      },
+      "mode": "100644",
+      "group": "actual-scoped-clippy-postimage"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "before": {
+        "bytes": 6825,
+        "sha256": "4fc839000767f9b8e625565ec95420b74f4d06a9b322e53214d5a19770f13ef2",
+        "git_blob": "346155207c2c726eca0d0e4d761f530b45bbf64e"
+      },
+      "after": {
+        "bytes": 6817,
+        "sha256": "f4035ccd79119eb328c800bfd6c3b541225e7d909cab659a5dc6a714a645c6b6",
+        "git_blob": "3f8a8f401b71b72c274daae62f744060b4d58cbf"
+      },
+      "mode": "100644",
+      "group": "actual-scoped-clippy-postimage"
+    }
+  ],
+  "additional_exact_reference": {
+    "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "bytes": 31313,
+    "sha256": "ffae596933c17603adf2255450fc022d84b914f381a2f2ab2e93beed1d057927",
+    "git_blob": "22185fc9765823265a99b27e851cd142fcd80e6d"
+  },
+  "independent_static_checks": {
+    "all_preimages_and_postimages_size_sha_git": "PASS",
+    "preimages_and_token_definition_match_complete_b054_tree": "PASS",
+    "git_apply_check": "PASS",
+    "entire_patch_replay_byte_identical_postimages": "PASS",
+    "entire_patch_reverse_byte_identical_preimages": "PASS",
+    "production_file_exactly_two_method_item_substitutions": "PASS",
+    "fixture_file_exactly_one_nested_if_to_let_chain_substitution": "PASS",
+    "all_existing_assertion_macros_and_other_source_bytes_unchanged": "PASS"
+  },
+  "semantic_findings": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "finding": "Both Option<&WindowsSandboxCancellationToken>::is_some_and calls replace a zero-capture closure by the same inherent fn(&self)->bool method item. The existing outer cancellation callbacks, evaluation timing, read_frame/wait_for_exit calls, error propagation and runner reconciliation remain unchanged. super::super resolves from the nested windows_impl module to the crate-root token definition. No token privileges, ACL, lifetime, process-spawn argument, retry, timeout or permission selection changes."
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "finding": "The let chain preserves left-to-right short-circuiting: manifest lookup only executes when RUNFILES_MANIFEST_FILE is present, propagates the identical Result error via ?, returns the same resolved PathBuf only for Some, and otherwise reaches the unchanged bail. find_exact_manifest_runfile and all test bodies, exact-match/path guards/resource checks/assertions are byte-identical. No fallback, skip, count, threshold or wait-budget changes."
+    }
+  ],
+  "actual_phase_boundary": {
+    "result_file": {
+      "bytes": 1201,
+      "sha256": "fe4e0c0925d8e0f85d8e3ccf2887c6d23af2d242a7e1f88872b4981e50d2b4de",
+      "git_blob": "27079b946559906ec992c914fc5cca621844a3ad"
+    },
+    "phase_3_file": {
+      "bytes": 1703,
+      "sha256": "5dbe7ebe011ba65711883b85af7ce92f9c643b689aabe9f2cee0f39c312a4a26",
+      "git_blob": "8a76d544b4ec603a6a25eac9d484f4640243f4ef"
+    },
+    "meaning": "The supplied original receipts retain the strict third-phase dirty-source failure after Clippy rewrites; this static peer does not convert that run into a clean-source pass."
+  },
+  "limitations": [
+    "No formatter, compiler, just fix/test, native, model, host operation, CI trigger or ref mutation was executed by this peer.",
+    "The two actual postimages remain new source candidates requiring the parent-coordinated formatting/source qualification and exact-source validation.",
+    "This review covers only the2279-byte two-path Clippy diff. It does not close the independent elevated delete-boundary or LEAK failures."
+  ]
+}

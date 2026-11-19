@@ -1,0 +1,414 @@
+{
+  "schema": "mem9bd2.windows-private-original-offline-audit.v1",
+  "status": "passed",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "run_id": 43021840252,
+  "job_id": 130526674042,
+  "run_attempt": 1,
+  "job_started": "2026-11-11T12:36:48Z",
+  "job_completed": "2026-11-11T13:01:26Z",
+  "main_six_selections": {
+    "actual_executions": 34,
+    "unique_package_case_ids": 34,
+    "passed": 34,
+    "failed": 0,
+    "summaries": [
+      {
+        "executed": 15,
+        "passed": 15,
+        "failed": 0,
+        "reported_skipped": 5
+      },
+      {
+        "executed": 2,
+        "passed": 2,
+        "failed": 0,
+        "reported_skipped": 26
+      },
+      {
+        "executed": 3,
+        "passed": 3,
+        "failed": 0,
+        "reported_skipped": 147
+      },
+      {
+        "executed": 2,
+        "passed": 2,
+        "failed": 0,
+        "reported_skipped": 148
+      },
+      {
+        "executed": 11,
+        "passed": 11,
+        "failed": 0,
+        "reported_skipped": 260
+      },
+      {
+        "executed": 1,
+        "passed": 1,
+        "failed": 0,
+        "reported_skipped": 270
+      }
+    ],
+    "named_rows": [
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::directory::api_tests::exclusive_child_creation_preserves_an_existing_private_file"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::directory::api_tests::exclusive_creation_refuses_existing_and_racing_directories"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::directory::api_tests::existing_directory_open_never_initializes_missing_state"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::security_tests::native_creation_rejects_nul_without_creating_a_prefix_path"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::security_tests::new_directory_and_child_have_explicit_token_user_ownership"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::security_tests::opening_existing_objects_never_rewrites_their_security"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::security_tests::relative_root_uses_one_absolute_spelling_for_create_and_open"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::hard_link_is_rejected"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::malformed_ace_sid_bounds_fail_closed"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::malformed_getace_spans_fail_closed"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::public_read_access_is_not_private"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::retained_directory_opens_private_single_link_children"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-utils-path",
+        "case": "private_state_windows::tests::retained_directory_pins_root_and_ancestor_until_drop"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-prompt-registry",
+        "case": "durable::windows::tests::full_private_registry_roundtrip_reopens_without_resetting_owner_history"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-prompt-registry",
+        "case": "durable::windows::tests::hard_link_is_rejected_before_registry_bytes_are_read"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-contracts",
+        "case": "final_use::store::windows::tests::windows_final_use_denies_issuer_or_epoch_substitution"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-contracts",
+        "case": "final_use::store::windows::tests::windows_final_use_rejects_hardlinked_claims_before_nonce_replay"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-contracts",
+        "case": "final_use::store::windows::tests::windows_nonce_burn_persists_across_real_private_store_reopen"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-contracts",
+        "case": "authority_lease::windows::tests::hardlink_alias_of_authority_state_is_rejected_before_reopen"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-contracts",
+        "case": "authority_lease::windows::tests::private_authority_lease_roundtrip_reopens_with_exact_frontier"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::windows_prompt_runtime_existing_insecure_directory_is_never_repaired"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "prompt_runtime::tests::windows_prompt_runtime_private_owner_reopens_without_reset_or_acl_waiver"
+      },
+      {
+        "status": "PASS",
+        "package": "codex-hepta-agentd",
+        "case": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+      }
+    ]
+  },
+  "extra_acquisition_positive_replay": {
+    "actual_executions": 2,
+    "passed": 2,
+    "case_ids_already_in_main_selection": true
+  },
+  "acquisition_mutants": {
+    "actual_executions": 4,
+    "expected_passes": 2,
+    "expected_failures": 2,
+    "not_counted_as_source_head_passes": true,
+    "lanes": [
+      {
+        "lane": "positive",
+        "exit_code": 0,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=false"
+        },
+        "log_sha256": "c19d4b8e86311a3e1cb8f702fe75b32d42d7b890adf620caf483b6f39aa11d57"
+      },
+      {
+        "lane": "unchecked-create",
+        "exit_code": 1,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "PASS",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "FAIL"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=true redirected=false",
+          "creation": "denied=true created=true"
+        },
+        "log_sha256": "c12b4fde4d5c5e052d7cb126db13147fd2eb944f9b9db93e0bd421669f88c13a"
+      },
+      {
+        "lane": "path-check-open",
+        "exit_code": 1,
+        "statuses": {
+          "private_state_windows::directory::tests::rejects_ancestor_substitution_at_retained_open": "FAIL",
+          "private_state_windows::directory::tests::rejects_junction_before_creating_private_leaf": "PASS"
+        },
+        "observations": {
+          "substitution": "swapped=true denied=false redirected=true",
+          "creation": "denied=true created=false"
+        },
+        "log_sha256": "1acd326c748e120c804067b39306e2102599c89afcb8023dd9a6a1493024cece"
+      }
+    ]
+  },
+  "credit_receipt": {
+    "after": {
+      "commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "dirty": false,
+      "parents": [
+        "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+      ],
+      "tree": "c77785ecb368c44ea699769001a47402c9f50591"
+    },
+    "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+    "before": {
+      "commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "dirty": false,
+      "parents": [
+        "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2"
+      ],
+      "tree": "c77785ecb368c44ea699769001a47402c9f50591"
+    },
+    "case": "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "-E",
+      "test(=circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append)",
+      "--test-threads",
+      "1",
+      "--no-tests",
+      "fail",
+      "--retries",
+      "0"
+    ],
+    "command_exit_code": 0,
+    "elapsed_seconds": 320.4689999999998,
+    "exit_code": 0,
+    "finished_at": "2026-11-11T13:01:18.372575+00:00",
+    "job": "windows-secure-private-state",
+    "lane": "source-head",
+    "log_bytes": 43815,
+    "log_file": "credit-fixture.log",
+    "log_sha256": "92019cedb754e47eb28356f013fd05f2653439ae357146ebc98f16578bb568d3",
+    "minimum_tests": 1,
+    "named_pass_rows": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 1,
+    "run_attempt": "1",
+    "run_id": "43021840252",
+    "schema": "mem8.windows-credit-fixture.v1",
+    "source_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "started_at": "2026-11-11T12:55:57.909876+00:00",
+    "status": "passed",
+    "supervision": "Existing Windows Actions job timeout; no POSIX process-group claim.",
+    "tested_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "working_directory": "D:\\a\\hepta-private-ci\\hepta-private-ci\\codex-rs"
+  },
+  "all_artifacts": [
+    {
+      "artifact_id": 13856668179,
+      "bytes": 13529,
+      "sha256": "053eb3b3c63555db3182d168df2bf3b673250e108c221d71e0cd045d283b7697",
+      "members": [
+        {
+          "path": "manifest.json",
+          "bytes": 3166,
+          "sha256": "d6bfda27de860f53771a0b7cf39bb729df7513f28d9ff9621efb5ba9dba9023e"
+        },
+        {
+          "path": "path-check-open.log",
+          "bytes": 8215,
+          "sha256": "1acd326c748e120c804067b39306e2102599c89afcb8023dd9a6a1493024cece"
+        },
+        {
+          "path": "path-check-open.patch",
+          "bytes": 962,
+          "sha256": "102a2659d4e6d6b3bc0316ce2d2966f5045b4c8578ed3cbb257c502afebbc4d3"
+        },
+        {
+          "path": "path-check-open.rs",
+          "bytes": 6191,
+          "sha256": "01787b0a9cf467436ad0cc35aa47b7c05e24ec5dae9b562c2382d1e7c56acdd4"
+        },
+        {
+          "path": "positive.log",
+          "bytes": 7484,
+          "sha256": "c19d4b8e86311a3e1cb8f702fe75b32d42d7b890adf620caf483b6f39aa11d57"
+        },
+        {
+          "path": "positive.rs",
+          "bytes": 5855,
+          "sha256": "21600c6d3b738afbd53db9fffd088944fb7fe1fbc947efde9520fc49e439e1ac"
+        },
+        {
+          "path": "unchecked-create.log",
+          "bytes": 8135,
+          "sha256": "c12b4fde4d5c5e052d7cb126db13147fd2eb944f9b9db93e0bd421669f88c13a"
+        },
+        {
+          "path": "unchecked-create.patch",
+          "bytes": 694,
+          "sha256": "f55d66d0a5b10e98b6ba1ebb60a56081e6027eff85068e01107c3a1e7ea4f74c"
+        },
+        {
+          "path": "unchecked-create.rs",
+          "bytes": 6231,
+          "sha256": "a1aa002dc62686156f92071c1ff572987559c73230bf1c4acc3ea072739d400e"
+        }
+      ]
+    },
+    {
+      "artifact_id": 13856453481,
+      "bytes": 6625,
+      "sha256": "e6a3f33df8a14035cc5ff0922791a04ac2ada9fcfd683c2029ee4bef0060b100",
+      "members": [
+        {
+          "path": "credit-fixture.json",
+          "bytes": 1938,
+          "sha256": "04cd3c4e9732cabb91d7b912a528c97503a367e6084f62a080e118d373b184b4"
+        },
+        {
+          "path": "credit-fixture.log",
+          "bytes": 43815,
+          "sha256": "92019cedb754e47eb28356f013fd05f2653439ae357146ebc98f16578bb568d3"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "No JUnit was retained by this original workflow; raw nextest case rows and summaries were checked.",
+    "Reported skipped counts remain separate; the 34 selected cases are not a whole-package or whole-Windows pass.",
+    "The enabled core apply-patch hardlink case is in a separate failing Bazel job and is not closed by these private-store cases.",
+    "Positive replay of two acquisition cases is not counted as two new unique source capabilities."
+  ]
+}

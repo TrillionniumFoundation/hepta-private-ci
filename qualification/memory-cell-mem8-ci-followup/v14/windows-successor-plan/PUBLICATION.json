@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.windows-successor-review-archive.v1",
+  "path": "windows-native-successor-9bd2-review.tar.xz",
+  "bytes": 51076,
+  "sha256": "ae0ff064a232591ad330a9d5b8debd12e696c7ec4191542ba7ab70112e5efc79",
+  "gitBlob": "11a0ce75307c9d3088370a0de5fdc1be8610f4ee",
+  "members": 23,
+  "memberManifestSha256": "40c6fe3711003b202a88976ebc1457048ce9fe4f51ead064b7b33c9dbaec8b24",
+  "nativeTestsExecuted": 0,
+  "newCITriggers": 0,
+  "sourceRefsChanged": false,
+  "scope": "Static conditional successor plan, original167 preserved; actual current workflow still167, not170",
+  "objects": [
+    {
+      "name": "archive",
+      "gitBlob": "11a0ce75307c9d3088370a0de5fdc1be8610f4ee",
+      "actualCreate": true
+    },
+    {
+      "name": "PLAN.json",
+      "gitBlob": "6b79186445d3f7afcdf91c0fa76724104363830d",
+      "actualCreate": true,
+      "fullReadbackVerified": true
+    },
+    {
+      "name": "REPORT.md",
+      "gitBlob": "8ec88664ba4c9230aa63d42de644d679f9d9143c",
+      "actualCreate": true,
+      "fullReadbackVerified": true
+    }
+  ],
+  "binaryReadback": "Actual Git blob created. Full remote binary readback will use an immutable commit path with base64; direct fetch_blob is known to UTF-8-decode XZ and was not retried.",
+  "archiveLocalFullMemberByteReplay": true,
+  "offlineVerifier": "PASS_OFFLINE_STATIC_PLAN_CONSISTENCY_ONLY",
+  "planSourceHead": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "actualCurrentRunExpectedCases": 167,
+  "conditionalProposedCases": 170,
+  "newWindowsProcesses": 0,
+  "newNativeTests": 0
+}
