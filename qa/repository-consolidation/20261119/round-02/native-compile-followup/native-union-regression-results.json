@@ -1,0 +1,305 @@
+{
+  "base": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "tree": "353ad1ea243601ac30eb956cdbed0ccb2476200a",
+  "target": "x86_64-unknown-linux-gnu",
+  "rustc": "1.96.0 (ac68faa20 2026-05-25)",
+  "cargo_profile": "dev-small",
+  "cargo_lock_sha256": "3b87221ff5ae147a333b3242296648d2ffecfa8440274bba2d609e5d7e53bde5",
+  "build_jobs": 4,
+  "test_retries": 0,
+  "passed_total": 2529,
+  "discovery_skipped_total": 1,
+  "phases": [
+    {
+      "phase": "context_and_learning_artifacts",
+      "job": "1a1f40e37cc-ffbe-ecd",
+      "host": "rog",
+      "summary": [
+        "Summary [   0.567s] 235 tests run: 235 passed, 1 skipped"
+      ],
+      "passed": 235,
+      "skipped": 1,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-context-artifacts-raw.stderr.log",
+      "stderr_bytes": 66966,
+      "stderr_sha256": "9f79445f2fff1103ad0d2ea4a2112b34be7d96967233daceb187b7ac81f9da8a",
+      "job_overall_exit": 101,
+      "limitation": "Prerequisite tests passed; subsequent Agentd compilation stopped this job. No Agentd timing result in this phase."
+    },
+    {
+      "phase": "ndu_and_control_plane",
+      "job": "1a1f413be4e-ffbe-ee0",
+      "host": "rog",
+      "summary": [
+        "Summary [   3.662s] 318 tests run: 318 passed, 0 skipped",
+        "Summary [   0.911s] 185 tests run: 185 passed, 0 skipped"
+      ],
+      "passed": 503,
+      "skipped": 0,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-followup-raw.stderr.log",
+      "stderr_bytes": 129144,
+      "stderr_sha256": "79deb7f894d6b71abded6a8a8fb805a489ba1c32f042317f6faffd7274e7f3fe",
+      "job_overall_exit": 101,
+      "limitation": "Prerequisite tests passed; subsequent Agentd compilation stopped this job. No Agentd timing result in this phase."
+    },
+    {
+      "phase": "prompt_optimizer",
+      "job": "1a1f4198e3d-ffbe-eee",
+      "host": "rog",
+      "summary": [
+        "Summary [   0.073s] 54 tests run: 54 passed, 0 skipped"
+      ],
+      "passed": 54,
+      "skipped": 0,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-prompt-raw.stderr.log",
+      "stderr_bytes": 50272,
+      "stderr_sha256": "d0ee9dd455488f9413af620eb2df42b9d5563862413227a2c159215d7a303306",
+      "job_overall_exit": 101,
+      "limitation": "Prerequisite tests passed; subsequent Agentd compilation stopped this job. No Agentd timing result in this phase."
+    },
+    {
+      "phase": "authbus",
+      "job": "1a1f424e719-ffbe-f19",
+      "host": "rog",
+      "summary": [
+        "Summary [   1.744s] 51 tests run: 51 passed, 0 skipped"
+      ],
+      "passed": 51,
+      "skipped": 0,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-enum-raw.stderr.log",
+      "stderr_bytes": 69409,
+      "stderr_sha256": "9189c48ab2e4f618eeb47d96e56257d2c8cca9b72a77c12e11ca65d081cd2820",
+      "job_overall_exit": 101,
+      "limitation": "AuthBus all 51 lib tests passed. Agentd production lib compiled; subsequent Agentd lib-test compilation exposed 19 existing fixture union errors. Timing tests did not execute in this phase."
+    },
+    {
+      "job": "1a1f42ffca5-ffbe-f31",
+      "host": "rog",
+      "job_overall_exit": 100,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-fixture-raw.stderr.log",
+      "stderr_bytes": 150574,
+      "stderr_sha256": "297b9d92f1bc515e2d1981da825339a49ddfb4cd51dfce178d56462d0b5900d1",
+      "source_inventory": "ci-evidence/musl-rog-native-08-source-inventory.json",
+      "source_inventory_sha256": "1199a5b4b913b84d1d069acc22a12514a490077ba3fdf0cee2546f40f0267577",
+      "phase": "agentd_original_deadline",
+      "summary": [
+        "Summary [  22.132s] 12 tests run: 12 passed, 1711 skipped"
+      ],
+      "passed": 12,
+      "failed": 0,
+      "runner_skipped": 1711,
+      "selection": "test(next_use_command)",
+      "original_evidence_deadline_ms": 500,
+      "observed_evidence_elapsed_us": 135650,
+      "observed_command_elapsed_us": 124591,
+      "limitation": "GNU run; not musl qualification. Runner skipped count includes unselected tests."
+    },
+    {
+      "job": "1a1f42ffca5-ffbe-f31",
+      "host": "rog",
+      "job_overall_exit": 100,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-fixture-raw.stderr.log",
+      "stderr_bytes": 150574,
+      "stderr_sha256": "297b9d92f1bc515e2d1981da825339a49ddfb4cd51dfce178d56462d0b5900d1",
+      "source_inventory": "ci-evidence/musl-rog-native-08-source-inventory.json",
+      "source_inventory_sha256": "1199a5b4b913b84d1d069acc22a12514a490077ba3fdf0cee2546f40f0267577",
+      "phase": "agentd_affected_fixture_consumers",
+      "summary": [
+        "Summary [  13.353s] 114 tests run: 113 passed, 1 failed, 1609 skipped"
+      ],
+      "passed": 113,
+      "failed": 1,
+      "runner_skipped": 1609,
+      "selection": "test(authbus) | test(objective) | test(deployment_text) | test(notes_thread_human) | test(signed_credit) | test(ordinary_source) | test(original_evaluator) | test(original_panel) | test(hcsn) | test(task_reaches_durable_terminal) | test(lost_claim_ack) | test(lost_circuit_completion_ack) | test(delayed_feedback_waits) | test(elapsed_task_deadline) | test(circuit_deadline_wakes)",
+      "failing_tests": [
+        "native_memory_current_tests::objective_lifecycle_and_trust_revoke_an_existing_current_context"
+      ],
+      "failure": "RevocationFrontierMismatch",
+      "repair_pending": "Replace arbitrary initial fixture frontier with actual authority.revocation_head_sha256(); production comparison/epochs/assertions unchanged. Native job 10 running whole native_memory_current_tests."
+    },
+    {
+      "phase": "kernel_evidence_product",
+      "job": "1a1f439828d-ffbe-f45",
+      "host": "rog",
+      "job_overall_exit": 0,
+      "summary": [
+        "Summary [   0.381s] 3 tests run: 3 passed, 0 skipped"
+      ],
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-kernel-raw.stderr.log",
+      "stderr_bytes": 34875,
+      "stderr_sha256": "03196ee0e250f8178ac30f31d4bb93defe5011b2ee7da781b37ffb63705c58bc",
+      "source_inventory": "ci-evidence/musl-rog-native-08-source-inventory.json"
+    },
+    {
+      "phase": "native_memory_current_full_group_after_frontier_fixture_repair",
+      "job": "1a1f43fbbaf-ffbe-f55",
+      "host": "rog",
+      "job_overall_exit": 0,
+      "summary": [
+        "Summary [   0.511s] 5 tests run: 5 passed, 1718 skipped"
+      ],
+      "passed": 5,
+      "failed": 0,
+      "runner_skipped": 1718,
+      "selection": "test(native_memory_current_tests)",
+      "source_inventory": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-10-source-inventory.json",
+      "source_inventory_sha256": "6274fee78a59a11bbaf077250545a5e02b9fb64e0d839003477692686b42e241",
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-frontier-raw.stderr.log",
+      "stderr_bytes": 44602,
+      "stderr_sha256": "10e1ab7f7e835fdd025bcc8effb31f4d76c332479b5434dee121e188b0e13d0d",
+      "repair": "Only initial fixture revocation_frontier_digest now uses Digest32::from_array(authority.revocation_head_sha256()?). All original production guards, trust epochs, test actions and assertions unchanged."
+    },
+    {
+      "phase": "full_agentd_lib_before_companion_binary_metadata",
+      "job": "1a1f4477cbe-ffbe-f6e",
+      "host": "rog",
+      "job_overall_exit": 100,
+      "summary": [
+        "Summary [ 198.045s] 1552 tests run: 1546 passed (1 slow), 6 failed, 171 skipped"
+      ],
+      "passed": 1546,
+      "failed": 6,
+      "runner_skipped": 171,
+      "selection": "All default Agentd lib tests, no explicit filter. Original ignored workers remain ignored.",
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-full-agentd-raw.stderr.log",
+      "stderr_bytes": 322815,
+      "stderr_sha256": "313a8db89d7d5f77cef31535e15b0433f19c57ec138bdbc69edb70760dca6294",
+      "source_inventory": "ci-evidence/musl-rog-native-10-source-inventory.json",
+      "failing_tests": [
+        "codex-hepta-agentd neuron_generation_process_bootstrap::tests::actual_joint_reopens_the_same_clock_journal_prefix_and_original_result",
+        "codex-hepta-agentd neuron_generation_process_bootstrap::tests::actual_opened_files_reject_raced_aliases_and_non_regular_assets",
+        "codex-hepta-agentd neuron_generation_process_bootstrap::tests::paths_reject_aliases_and_reopen_never_falls_back_to_creation",
+        "codex-hepta-agentd neuron_generation_process_bootstrap::tests::identity_assets_clock_and_descriptor_are_checked_before_any_owner_creation",
+        "codex-hepta-agentd neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen",
+        "codex-hepta-agentd production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement"
+      ],
+      "root_cause": "Five tests lack actual hepta-joint-propose binary metadata; episodic child lacks actual codex binary metadata. None reached the relevant behavior assertion. Build exact-source binaries and rerun unchanged tests."
+    },
+    {
+      "phase": "episodic_actual_codex_companion",
+      "job": "1a1f450ace8-ffbe-f7b",
+      "host": "rog",
+      "job_overall_exit": 0,
+      "passed": 1,
+      "failed": 0,
+      "runner_skipped": 1722,
+      "summary": [
+        "Summary [   8.460s] 1 test run: 1 passed, 1722 skipped"
+      ],
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-episodic-raw.stderr.log",
+      "stderr_bytes": 97864,
+      "stderr_sha256": "f8e411bfebe675f2f5c769e0a59f404f8b8fca0a1afe5d7b89dd0a2a17936a2a",
+      "source_inventory": "ci-evidence/musl-rog-native-10-source-inventory.json",
+      "source_changed": false,
+      "repair": "Built actual same-source companion binaries and supplied explicit CARGO_BIN_EXE paths; no source/test/deadline/guard modifications.",
+      "companion_binaries": [
+        {
+          "actual_codex_binary": "/home/qian-qi/ci-agentd-musl-test-target-20261119/dev-small/codex",
+          "bytes": 387733648,
+          "sha256": "d2e2c62bda66e0e8af36326aed57b9b65eedc8742341a8ae70f56de6e6a5499c"
+        }
+      ]
+    },
+    {
+      "phase": "all_six_actual_companion_regressions",
+      "job": "1a1f457a68d-ffbe-f8c",
+      "host": "rog",
+      "job_overall_exit": 0,
+      "passed": 6,
+      "failed": 0,
+      "runner_skipped": 1717,
+      "summary": [
+        "Summary [  10.632s] 6 tests run: 6 passed, 1717 skipped"
+      ],
+      "stderr_path": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-companion-raw.stderr.log",
+      "stderr_bytes": 91133,
+      "stderr_sha256": "efdaef9c21726fbdeb39aa10ea36b599f4b76407f3ba39b4939e2fa4041710e8",
+      "source_inventory": "ci-evidence/musl-rog-native-10-source-inventory.json",
+      "source_changed": false,
+      "repair": "Built actual same-source companion binaries and supplied explicit CARGO_BIN_EXE paths; no source/test/deadline/guard modifications.",
+      "companion_binaries": [
+        {
+          "actual_binary": "/home/qian-qi/ci-agentd-musl-test-target-20261119/dev-small/codex",
+          "bytes": 387733648,
+          "sha256": "d2e2c62bda66e0e8af36326aed57b9b65eedc8742341a8ae70f56de6e6a5499c"
+        },
+        {
+          "actual_binary": "/home/qian-qi/ci-agentd-musl-test-target-20261119/dev-small/hepta-joint-propose",
+          "bytes": 1020824,
+          "sha256": "81ad9bebb0cc47f42a895a276be02e99f67d4d0acc2ab30b513c39bddd5f74a4"
+        }
+      ]
+    }
+  ],
+  "patch_sequence": [
+    {
+      "manifest": "agentd-native-compile-fixes-combined.json",
+      "patch_sha256": "da1194440245a5d2838eebe026fe5fd0268cb8da4eb45db40e09835856025291"
+    },
+    {
+      "manifest": "agentd-native-compile-followup.json",
+      "patch_sha256": "d6691e1a60da3b8b147af435ccb4ec67e317e3a56300eb4f6a0b0584f7a40256"
+    },
+    {
+      "manifest": "prompt-optimizer-module-fix.json",
+      "patch_sha256": "4cfd8b41058ef42557136f40ca892ee4a5bde16d43bc9a835b25fa4f3f269d2f"
+    },
+    {
+      "manifest": "agentd-native-enum-import-fixes.json",
+      "patch_sha256": "60732c6bc299b67db7a603db4f69b4a18bd8884db1081f7d17876b4a9172b49f"
+    },
+    {
+      "manifest": "agentd-native-fixture-client-fixes.json",
+      "patch_sha256": "f28e30ddb4e82e2f514244e2b83331e3222b3413d1a1f2080ebda0b6a297d620"
+    },
+    {
+      "manifest": "agentd-native-frontier-fixture-fix.json",
+      "patch_sha256": "22b02275764885876188588eb92cfbf13b770313f7a3dd7c0f0db94ae2226de2"
+    }
+  ],
+  "expected_modified_files_after_phase_06": {
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": "645a351d4a0219a586f8e05a94796b2eb111c94d56a0dd6dd7ac2c17edf715a9",
+    "codex-rs/hepta-context-compiler/src/v2.rs": "18898707f5b49ff91dc56930092886b99ffd4aa0d6bc511a16ae6ae9028145fd",
+    "codex-rs/hepta-ndu/src/lib.rs": "d60ae06450c3fd1debb2264b827d25ff3090b0a4ec2874d9b8df0b425337dfc0",
+    "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs": "c9171daf5b93ebacae058177116073d4d81f052cd7d812fbc85fc32aeff220f7",
+    "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs": "582f65ad289c6d0fefaeffcc48ae9d5d4a11050103f6043ffbe847501baf810e",
+    "codex-rs/hepta-ndu/src/legacy_protocol.rs": "6cc0035cca4554f5f3cca60f5e7e86fe580aae291bf3894c6000f549f1077d2b",
+    "codex-rs/hepta-ndu/src/protocol_v2_tests.rs": "03393214694d841fbeecf68241012ece908530038bcda55ce10d3eb191eeae3d",
+    "codex-rs/hepta-control-plane/src/lib.rs": "13a8f561a26a1760ef99705be40aa3c2210658320ae01792a635eb1d0cc7fbc5",
+    "codex-rs/hepta-prompt-optimizer/src/lib.rs": "279ac6d61e77ea1710254cac7a180f3d20d59e3c93ca9cd67b53e513372bfc76"
+  },
+  "skip_reason": "owner_host_process_fault_worker is explicitly ignored because owner_host_process_kill_reopen_matrix invokes that exact worker with --ignored --exact and the required environment. Parent process-kill/reopen matrix passed 0.089s. The runner discovery count remains one skipped.",
+  "status": "IN_PROGRESS",
+  "remaining": "GNU observed selected/default Agentd cases all have passing executions with38-source closure. Actual musl runtime remains pending; complete Bazel profile target/action qualification separately passed on db0757 canonical graph.",
+  "failed_execution_total": 7,
+  "counting_note": "Counts are test executions on the explicit phase source closures, not unique final-tree tests. Selection skips are recorded per phase and are not summed with the one explicit ignored worker.",
+  "latest_completed_source_inventory": "/workspace/scratch/2f490fb85225/ci-evidence/musl-rog-native-10-source-inventory.json",
+  "unresolved_observed_native_test_failures": 0,
+  "failure_resolution": [
+    {
+      "job": "1a1f42ffca5-ffbe-f31",
+      "test": "native_memory_current_tests::objective_lifecycle_and_trust_revoke_an_existing_current_context",
+      "resolved_by_job": "1a1f43fbbaf-ffbe-f55",
+      "original_failure_retained": true,
+      "whole_group_tests_passed": 5
+    },
+    {
+      "job": "1a1f4477cbe-ffbe-f6e",
+      "failed": 6,
+      "resolved_by_job": "1a1f457a68d-ffbe-f8c",
+      "original_failures_retained": true,
+      "source_unchanged": true,
+      "actual_same_build_binaries": true
+    }
+  ],
+  "deduplicated_logical_test_names": {
+    "all_observed": 2398,
+    "with_passing_execution": 2398,
+    "with_historical_failed_execution": 7,
+    "limit": "Logical binary+test names across phase versions. Agentd full run and companions reruns use identical38-source closure; earlier prerequisite phases retain their explicit source version. Not final root dependency graph qualification.",
+    "events_path": "/workspace/scratch/2f490fb85225/native-union-test-executions.json",
+    "events_sha256": "e06a5e1e7f90890c2a9dda5b45e5930236f5395ce223d60a85c9e1758871688e"
+  }
+}
