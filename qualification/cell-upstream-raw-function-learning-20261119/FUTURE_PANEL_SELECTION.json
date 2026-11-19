@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.raw-function-future-panel-selection.v1",
+  "parent_training_source_commit": "2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82",
+  "parent_training_protocol_sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
+  "scope": "prospective material selection appendix only; no change to running training, frozen weights, loss, A data or generation budget",
+  "candidate_repositories_in_order": [
+    "python-trio/outcome",
+    "python-trio/sniffio",
+    "jmespath/jmespath.py",
+    "lepture/mistune",
+    "davidhalter/parso",
+    "pallets/itsdangerous",
+    "facelessuser/wcmatch",
+    "pallets/click",
+    "pallets/werkzeug",
+    "jaraco/more-itertools",
+    "python-babel/babel",
+    "pallets/jinja"
+  ],
+  "read_candidate_content_only_after_both_real_weights_frozen": true,
+  "use_student_outputs_to_select_or_exclude_candidates": false,
+  "select_and_freeze_panel_before_inspecting_new_A_model_outputs": true,
+  "per_repository": {
+    "freeze_original_upstream_HEAD_and_repository_identity_before_traversal": true,
+    "history_order_command": "git rev-list --no-merges --max-count=50 <frozen_HEAD>",
+    "incomplete_history_or_missing_original_blob_is_not_eligible": true,
+    "first_qualifying_commit_in_declared_order": true,
+    "commit_parent_rule": "exactly one parent; BEFORE is that original parent, AFTER is the original commit",
+    "maximum_selected_tasks": 1,
+    "record_renames_redirects_and_canonical_repository_identity_without_silently_substituting_a_different_project": true
+  },
+  "panel_size": 4,
+  "stop_when_four_tasks_qualify": true,
+  "eligibility": [
+    "Explicit retained upstream license permits this authorized internal research and redistribution of retained original materials with required notices; keep the exact license blobs and no invented consent.",
+    "Actual upstream regression repair and unchanged upstream regression tests; one allowed top-level function, unchanged signature/decorators, and only a separately declared bounded literal module constant when required.",
+    "Reference complete-function output reconstructs exact permitted maintainer AFTER bytes from the bound BEFORE source; other source and all tests stay immutable.",
+    "Complete first and second-generation contexts with reserve fit the common 8192-input, 2048-output and 32768-native limits without truncation; exact reference payload fits the same output container.",
+    "Original BEFORE fails at least one original case and exact reference AFTER passes the same declared original case set under the real no-network, no-host-credential, read-only-dependency/test sandbox.",
+    "No new network permission, host credential, unsafe model-code capability or broader source/test mutation is introduced.",
+    "Repository/function/test identity does not overlap any prior A/B/B2/B3 panel or previously accepted task; all old-panel source identities are frozen in a dedup inventory before content traversal."
+  ],
+  "deduplication": {
+    "canonical_repository_and_source_controller_or_maintainer_identity_recorded": true,
+    "original_before_after_git_blobs_recorded": true,
+    "normalized_function_AST_and_original_test_AST_hashes_recorded": true,
+    "exact_duplicates_or_mirrors_excluded": true,
+    "known_derived_duplicate_tasks_excluded": true,
+    "shared_maintenance_organizations_reported_separately_not_counted_as_authenticated_independent_controllers": true,
+    "authenticated_users": 0,
+    "pretraining_contamination_eliminated": false
+  },
+  "retention": {
+    "candidate_repository_list_and_frozen_HEADs": true,
+    "all_fifty_or_available_nonmerge_commit_ids_per_visited_repo": true,
+    "every_inspected_candidate_and_rejection_reason": true,
+    "all_attempted_native_reference_tests_failures_timeouts_and_costs": true,
+    "no_model_calls_during_selection": true,
+    "no_positive_model_result_required_for_panel_inclusion": true
+  },
+  "if_pool_insufficient": "Retain exact exhausted candidates and reasons; publish a new prospective sequence before looking at replacements. Do not retrospectively choose favorable tasks.",
+  "future_call_cap": 32,
+  "global_new_generation_cap": 56,
+  "no_old_B_B2_B3_relabeling": true,
+  "previous_research_NoUpdate_unchanged": true,
+  "native_adoption": false
+}
