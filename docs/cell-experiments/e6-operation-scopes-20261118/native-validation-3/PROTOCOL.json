@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.e6.native-scope-regressions.v3",
+  "scope": "Prospective exact eleven native regression cases after actual read65 preparation/delivery source repair; no full NoUpdate or adoption qualification.",
+  "source": "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+  "tree": "1f2195dc5eee9a66b5c750d768ed43c4900a3db1",
+  "source_inventory_sha256": "fbe5f12a7db184a46937748d411100c6e0c46eb177dec55c2582e9871b9467ff",
+  "source_files": 15634,
+  "source_freeze_result": "read65-frozen-source-6fa338/RESULT.json",
+  "source_freeze_result_sha256": "cbf0f8d381b38c1c66f1ab57de922412f4acb516b5a6021d3d700e938b21e13b",
+  "frozen_at_ns": "1795059583608296155",
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_preparation_) | test(source_operation_) | test(training_source_operation_) | test(post_a_owner_open_) | test(post_a_signing_files_)"
+  ],
+  "expected_cases": [
+    "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+    "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner"
+  ],
+  "roster_prior_original_result_sha256": "d302707cddbea96ebf1378c1cf1f71e9d11c8cd13c7ffcc855fc7ee16b889fc0",
+  "original_environment_file_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "libclang_sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+  "stddef_sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+  "cargo_build_jobs": 2,
+  "timeout_seconds": 1800,
+  "automatic_retry": false,
+  "required_result": "One fresh original nextest XML, exact 11 case names, no failure/error/skip, actual command exit zero, unchanged full source/compiler inputs.",
+  "prior_actual_full_noupdate_attempts": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "prior_native11_reused_as_current_pass": false,
+  "qualified_claims_excluded": [
+    "complete native NoUpdate",
+    "native owner adoption",
+    "fresh C and cold fresh D",
+    "independent user/controller identity",
+    "learning gain",
+    "FinalUse or settlement"
+  ],
+  "original_read_budget": 64,
+  "deadlines_renewed": false,
+  "verifier_changed": false,
+  "typed_contract": "All 49 affected boundaries passed the unchanged verifier before the complete 1124-boundary CLI. Complete CLI result remains a separate required gate for the full NoUpdate parent.",
+  "cost_scope": "Whole actual command including compilation and test descendants; retained failed preparation costs remain separate; owner and nested child intervals must not be added.",
+  "unknown_costs": [
+    "whole-system concurrency",
+    "physical energy",
+    "physical network bytes",
+    "physical storage byte-seconds",
+    "provider charges"
+  ]
+}

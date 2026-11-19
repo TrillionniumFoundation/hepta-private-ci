@@ -1,0 +1,149 @@
+{
+  "source": "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+  "tree": "1f2195dc5eee9a66b5c750d768ed43c4900a3db1",
+  "stages": [
+    {
+      "name": "head-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.001418599858880043
+    },
+    {
+      "name": "fetch-exact-frozen",
+      "argv": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+        "0cdb2a4985c91327e0ae3d59ceead35b950b16e9"
+      ],
+      "exit": 0,
+      "wall_seconds": 4.559078991878778
+    },
+    {
+      "name": "tree-exact",
+      "argv": [
+        "git",
+        "rev-parse",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819^{tree}"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0015647448599338531
+    },
+    {
+      "name": "frozen-tree",
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.010138093028217554
+    },
+    {
+      "name": "save-original-index",
+      "argv": [
+        "git",
+        "write-tree"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.009546463843435049
+    },
+    {
+      "name": "install-frozen-index",
+      "argv": [
+        "git",
+        "read-tree",
+        "--reset",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.01988952001556754
+    },
+    {
+      "name": "materialize-metadata",
+      "argv": [
+        "git",
+        "checkout-index",
+        "--force",
+        "-z",
+        "--stdin"
+      ],
+      "exit": 0,
+      "wall_seconds": 8.3549181278795
+    },
+    {
+      "name": "detach-frozen-head",
+      "argv": [
+        "git",
+        "update-ref",
+        "--no-deref",
+        "HEAD",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+        "3f312ec469331660ec7a8f42f6f091f5436dbe64"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0019117931369692087
+    },
+    {
+      "name": "clean-frozen-source",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.039947894867509604
+    },
+    {
+      "name": "head-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0024422139395028353
+    },
+    {
+      "name": "actual-pr-range-blob-gate",
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "0cdb2a4985c91327e0ae3d59ceead35b950b16e9",
+        "--head",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit": 0,
+      "wall_seconds": 3.1080502530094236
+    }
+  ],
+  "business_cases": 0,
+  "compile": false,
+  "scanned_inputs_byte_identical": true,
+  "scanned_paths": 11591,
+  "metadata_paths": [
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/README.md",
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/source-closure-5/RESULT.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/source-closure-5/full-caller-proof.stderr"
+  ],
+  "source_files": 15634,
+  "source_inventory_sha256": "fbe5f12a7db184a46937748d411100c6e0c46eb177dec55c2582e9871b9467ff",
+  "frozen_at_ns": "1795059583608296155",
+  "source_clean": true,
+  "successful": true
+}
