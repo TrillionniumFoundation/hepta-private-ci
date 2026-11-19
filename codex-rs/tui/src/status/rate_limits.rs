@@ -10,12 +10,12 @@ use crate::chatwidget::limit_label_for_window;
 use crate::text_formatting::capitalize_first;
 
 use super::helpers::format_reset_timestamp;
-use time::Duration as TimeDuration;
 use codex_app_server_protocol::CreditsSnapshot as CoreCreditsSnapshot;
 use codex_app_server_protocol::RateLimitSnapshot;
 use codex_app_server_protocol::RateLimitWindow;
 use codex_app_server_protocol::SpendControlLimitSnapshot as CoreSpendControlLimitSnapshot;
 use codex_protocol::num_format::format_with_separators;
+use time::Duration as TimeDuration;
 
 const STATUS_LIMIT_BAR_SEGMENTS: usize = 20;
 const STATUS_LIMIT_BAR_FILLED: &str = "█";
@@ -74,10 +74,9 @@ pub(crate) struct RateLimitWindowDisplay {
 
 impl RateLimitWindowDisplay {
     fn from_window(window: &RateLimitWindow, captured_at: codex_utils_time::Timestamp) -> Self {
-        let resets_at_utc = window
-            .resets_at
-            .and_then(|seconds| codex_utils_time::Timestamp::from_timestamp(seconds, 0))
-            .map(|dt| dt);
+        let resets_at_utc = window.resets_at.and_then(|seconds| {
+            codex_utils_time::Timestamp::from_timestamp(seconds, /*nanoseconds*/ 0)
+        });
         let resets_at = resets_at_utc.map(|dt| format_reset_timestamp(dt, captured_at));
 
         Self {
@@ -182,8 +181,11 @@ impl SpendControlLimitSnapshotDisplay {
             percent_remaining: f64::from(value.remaining_percent.clamp(0, 100)),
             used: format_credit_amount(&value.used)?,
             limit: format_credit_amount(&value.limit)?,
-            resets_at: codex_utils_time::Timestamp::from_timestamp(value.resets_at, 0)
-                .map(|dt| format_reset_timestamp(dt, captured_at)),
+            resets_at: codex_utils_time::Timestamp::from_timestamp(
+                value.resets_at,
+                /*nanoseconds*/ 0,
+            )
+            .map(|dt| format_reset_timestamp(dt, captured_at)),
         })
     }
 }

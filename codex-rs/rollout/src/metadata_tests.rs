@@ -214,7 +214,7 @@ fn builder_from_items_falls_back_to_filename() {
     let builder = builder_from_items(items.as_slice(), path.as_path()).expect("builder");
     let created_at = codex_utils_time::Timestamp::parse_filename_timestamp("2026-01-27T12-34-56")
         .expect("timestamp")
-        .with_nanosecond(0)
+        .with_nanosecond(/*nanoseconds*/ 0)
         .expect("nanosecond");
     let expected = ThreadMetadataBuilder::new(
         ThreadId::from_string(&uuid.to_string()).expect("thread id"),

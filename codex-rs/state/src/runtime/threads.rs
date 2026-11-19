@@ -1681,7 +1681,8 @@ mod tests {
             (oldest_unpinned, 1_700_000_000, None),
         ] {
             let mut metadata = test_thread_metadata(&codex_home, thread_id, codex_home.clone());
-            metadata.recency_at = codex_utils_time::Timestamp::from_timestamp(recency_at, 0).unwrap();
+            metadata.recency_at =
+                codex_utils_time::Timestamp::from_timestamp(recency_at, /*nanoseconds*/ 0).unwrap();
             if thread_id == oldest_pinned {
                 metadata.preview = Some(String::new());
                 metadata.first_user_message = None;
@@ -2048,10 +2049,16 @@ mod tests {
             ThreadId::from_string("00000000-0000-0000-0000-000000000002").expect("valid thread id");
         let newer_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000003").expect("valid thread id");
-        let older_updated_at =
-            codex_utils_time::Timestamp::from_timestamp(1_700_000_100, 0).expect("valid older timestamp");
-        let newer_updated_at =
-            codex_utils_time::Timestamp::from_timestamp(1_700_000_200, 0).expect("valid newer timestamp");
+        let older_updated_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_000_100,
+            /*nanoseconds*/ 0,
+        )
+        .expect("valid older timestamp");
+        let newer_updated_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_000_200,
+            /*nanoseconds*/ 0,
+        )
+        .expect("valid newer timestamp");
 
         for (thread_id, updated_at) in [
             (older_id, older_updated_at),
@@ -2096,8 +2103,10 @@ mod tests {
         assert_eq!(
             page.next_anchor,
             Some(Anchor {
-                ts: codex_utils_time::Timestamp::from_timestamp_millis(1_700_000_200_000)
-                    .expect("valid timestamp"),
+                ts: codex_utils_time::Timestamp::from_timestamp_millis(
+                    /*milliseconds*/ 1_700_000_200_000
+                )
+                .expect("valid timestamp"),
                 id: None,
             })
         );
@@ -2152,7 +2161,8 @@ mod tests {
         ] {
             let mut metadata = test_thread_metadata(&codex_home, thread_id, cwd);
             metadata.updated_at =
-                codex_utils_time::Timestamp::from_timestamp(updated_at, 0).expect("valid timestamp");
+                codex_utils_time::Timestamp::from_timestamp(updated_at, /*nanoseconds*/ 0)
+                    .expect("valid timestamp");
             runtime
                 .upsert_thread(&metadata)
                 .await
@@ -2188,8 +2198,10 @@ mod tests {
         assert_eq!(
             first_page.next_anchor,
             Some(Anchor {
-                ts: codex_utils_time::Timestamp::from_timestamp_millis(1_700_000_300_000)
-                    .expect("valid timestamp"),
+                ts: codex_utils_time::Timestamp::from_timestamp_millis(
+                    /*milliseconds*/ 1_700_000_300_000
+                )
+                .expect("valid timestamp"),
                 id: None,
             })
         );
@@ -2259,7 +2271,11 @@ mod tests {
             PathBuf::from("/workspace/two"),
         ];
         let anchor = Anchor {
-            ts: codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0).expect("valid timestamp"),
+            ts: codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_700_000_000,
+                /*nanoseconds*/ 0,
+            )
+            .expect("valid timestamp"),
             id: None,
         };
         for (sort_key, visible_index, cwd_index) in [
@@ -2358,7 +2374,8 @@ mod tests {
         ] {
             let mut metadata = test_thread_metadata(&codex_home, thread_id, codex_home.clone());
             metadata.created_at =
-                codex_utils_time::Timestamp::from_timestamp(created_at, 0).expect("valid timestamp");
+                codex_utils_time::Timestamp::from_timestamp(created_at, /*nanoseconds*/ 0)
+                    .expect("valid timestamp");
             metadata.updated_at = metadata.created_at;
             if thread_id == first_child_id {
                 metadata.preview = None;
@@ -2836,7 +2853,11 @@ mod tests {
             .expect("initial upsert should succeed");
 
         let updated_at = datetime_to_epoch_millis(
-            codex_utils_time::Timestamp::from_timestamp(1_700_000_100, 0).expect("timestamp"),
+            codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_700_000_100,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
         );
         sqlx::query(
             "UPDATE threads SET updated_at = ?, updated_at_ms = ?, tokens_used = ?, first_user_message = ?, preview = ? WHERE id = ?",
@@ -2898,7 +2919,11 @@ mod tests {
         existing.tokens_used = 123;
         existing.first_user_message = Some("newer preview".to_string());
         existing.preview = Some("newer preview".to_string());
-        existing.updated_at = codex_utils_time::Timestamp::from_timestamp(1_700_000_100, 0).expect("timestamp");
+        existing.updated_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_000_100,
+            /*nanoseconds*/ 0,
+        )
+        .expect("timestamp");
         runtime
             .upsert_thread(&existing)
             .await
@@ -2908,7 +2933,11 @@ mod tests {
         fallback.tokens_used = 0;
         fallback.first_user_message = None;
         fallback.preview = None;
-        fallback.updated_at = codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0).expect("timestamp");
+        fallback.updated_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_000_000,
+            /*nanoseconds*/ 0,
+        )
+        .expect("timestamp");
 
         let inserted = runtime
             .insert_thread_if_absent(&fallback)
@@ -2991,7 +3020,11 @@ mod tests {
             .await
             .expect("initial upsert should succeed");
 
-        let touched_at = codex_utils_time::Timestamp::from_timestamp(1_700_001_111, 0).expect("timestamp");
+        let touched_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_001_111,
+            /*nanoseconds*/ 0,
+        )
+        .expect("timestamp");
         let touched = runtime
             .touch_thread_updated_at(thread_id, touched_at)
             .await
@@ -3030,8 +3063,10 @@ mod tests {
             .await
             .expect("initial upsert should succeed");
 
-        let touched_at =
-            codex_utils_time::Timestamp::from_timestamp_millis(1_700_001_111_123).expect("timestamp");
+        let touched_at = codex_utils_time::Timestamp::from_timestamp_millis(
+            /*milliseconds*/ 1_700_001_111_123,
+        )
+        .expect("timestamp");
         assert!(
             runtime
                 .touch_thread_recency_at(thread_id, touched_at)
@@ -3039,8 +3074,10 @@ mod tests {
                 .expect("touch should succeed")
         );
 
-        metadata.updated_at =
-            codex_utils_time::Timestamp::from_timestamp_millis(1_700_001_222_456).expect("timestamp");
+        metadata.updated_at = codex_utils_time::Timestamp::from_timestamp_millis(
+            /*milliseconds*/ 1_700_001_222_456,
+        )
+        .expect("timestamp");
         metadata.title = "updated metadata".to_string();
         assert_eq!(metadata.recency_at, original_recency_at);
         runtime
@@ -3089,8 +3126,10 @@ mod tests {
             ThreadId::from_string("00000000-0000-0000-0000-000000000794").expect("valid thread id");
         let third_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000795").expect("valid thread id");
-        let recency_at =
-            codex_utils_time::Timestamp::from_timestamp_millis(1_700_002_000_456).expect("timestamp");
+        let recency_at = codex_utils_time::Timestamp::from_timestamp_millis(
+            /*milliseconds*/ 1_700_002_000_456,
+        )
+        .expect("timestamp");
 
         for thread_id in [first_id, second_id, third_id] {
             let mut metadata = test_thread_metadata(&codex_home, thread_id, codex_home.clone());
@@ -3219,8 +3258,10 @@ mod tests {
             ThreadId::from_string("00000000-0000-0000-0000-000000000902").expect("valid thread id");
         let older_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000903").expect("valid thread id");
-        let updated_at =
-            codex_utils_time::Timestamp::from_timestamp_millis(1_700_001_111_123).expect("timestamp millis");
+        let updated_at = codex_utils_time::Timestamp::from_timestamp_millis(
+            /*milliseconds*/ 1_700_001_111_123,
+        )
+        .expect("timestamp millis");
         let mut first = test_thread_metadata(&codex_home, first_id, codex_home.clone());
         first.updated_at = updated_at;
         first.recency_at = updated_at;
@@ -3280,8 +3321,10 @@ mod tests {
             )
         );
 
-        let older_updated_at =
-            codex_utils_time::Timestamp::from_timestamp_millis(1_700_001_100_123).expect("timestamp millis");
+        let older_updated_at = codex_utils_time::Timestamp::from_timestamp_millis(
+            /*milliseconds*/ 1_700_001_100_123,
+        )
+        .expect("timestamp millis");
         let mut older = test_thread_metadata(&codex_home, older_id, codex_home.clone());
         older.updated_at = older_updated_at;
         runtime
@@ -3357,8 +3400,11 @@ mod tests {
                 rate_limits: None,
             },
         ))];
-        let override_updated_at =
-            codex_utils_time::Timestamp::from_timestamp(1_700_001_234, 0).expect("timestamp");
+        let override_updated_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_001_234,
+            /*nanoseconds*/ 0,
+        )
+        .expect("timestamp");
 
         runtime
             .apply_rollout_items(

@@ -480,7 +480,8 @@ async fn thread_list_respects_provider_filter() -> Result<()> {
     let thread = &data[0];
     assert_eq!(thread.preview, "X");
     assert_eq!(thread.model_provider, "other_provider");
-    let expected_ts = codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T11:00:00Z")?.timestamp();
+    let expected_ts =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T11:00:00Z")?.timestamp();
     assert_eq!(thread.created_at, expected_ts);
     assert_eq!(thread.updated_at, expected_ts);
     assert_eq!(thread.cwd, test_absolute_path("/"));
@@ -2093,7 +2094,11 @@ async fn thread_list_sort_recency_at_uses_state_db_order_with_provider_filter() 
     state_db
         .touch_thread_recency_at(
             ThreadId::from_string(&id_new)?,
-            codex_utils_time::Timestamp::from_timestamp(1_800_000_000, 0).expect("timestamp"),
+            codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_800_000_000,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
         )
         .await?;
 

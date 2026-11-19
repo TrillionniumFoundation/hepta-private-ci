@@ -28,15 +28,13 @@ pub(super) fn reset_credit_options(
         .take(detail_limit)
         .map(|credit| {
             let expiration = match credit.expires_at {
-                Some(expires_at) => codex_utils_time::Timestamp::from_timestamp(expires_at, 0)
-                    .map(|expires_at| {
-                        format!(
-                            "Expires {}",
-                            expires_at
-                                .format_local("%H:%M on %-d %b %Y")
-                        )
-                    })
-                    .unwrap_or_else(|| "Expiration unavailable".to_string()),
+                Some(expires_at) => {
+                    codex_utils_time::Timestamp::from_timestamp(expires_at, /*nanoseconds*/ 0)
+                        .map(|expires_at| {
+                            format!("Expires {}", expires_at.format_local("%H:%M on %-d %b %Y"))
+                        })
+                        .unwrap_or_else(|| "Expiration unavailable".to_string())
+                }
                 None => "Does not expire".to_string(),
             };
             let reset_title = credit

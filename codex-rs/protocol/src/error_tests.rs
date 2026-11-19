@@ -1,12 +1,12 @@
 use super::*;
 use crate::exec_output::StreamOutput;
 use crate::protocol::RateLimitWindow;
-use time::Duration as TimeDuration;
 use codex_http_client::HttpResponse;
 use http::Response as RawHttpResponse;
 use http::StatusCode;
 use pretty_assertions::assert_eq;
 use std::time::Duration;
+use time::Duration as TimeDuration;
 
 #[test]
 fn codex_err_debug_preserves_legacy_shape() {
@@ -70,12 +70,18 @@ fn retryability_preserves_error_details_distinctions() {
 }
 
 fn rate_limit_snapshot() -> RateLimitSnapshot {
-    let primary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 1, 0, 0)
-        .unwrap()
-        .timestamp();
-    let secondary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 2, 0, 0)
-        .unwrap()
-        .timestamp();
+    let primary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 1, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap()
+    .timestamp();
+    let secondary_reset_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 2, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap()
+    .timestamp();
     RateLimitSnapshot {
         limit_id: None,
         limit_name: None,
@@ -315,7 +321,11 @@ fn usage_limit_reached_error_formats_default_when_none() {
 
 #[test]
 fn usage_limit_reached_error_formats_team_plan() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -423,7 +433,11 @@ fn usage_limit_reached_error_formats_default_for_other_plans() {
 
 #[test]
 fn usage_limit_reached_error_formats_pro_plan_with_reset() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -443,7 +457,11 @@ fn usage_limit_reached_error_formats_pro_plan_with_reset() {
 
 #[test]
 fn usage_limit_reached_error_hides_upsell_for_non_codex_limit_name() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::hours(1);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -470,7 +488,11 @@ fn usage_limit_reached_error_hides_upsell_for_non_codex_limit_name() {
 
 #[test]
 fn usage_limit_reached_includes_minutes_when_available() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::minutes(5);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -614,7 +636,11 @@ fn unexpected_status_includes_identity_auth_details() {
 
 #[test]
 fn usage_limit_reached_includes_hours_and_minutes() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::hours(3) + TimeDuration::minutes(32);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -634,7 +660,11 @@ fn usage_limit_reached_includes_hours_and_minutes() {
 
 #[test]
 fn usage_limit_reached_includes_days_hours_minutes() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at =
         base + TimeDuration::days(2) + TimeDuration::hours(3) + TimeDuration::minutes(5);
     with_now_override(base, move || {
@@ -653,7 +683,11 @@ fn usage_limit_reached_includes_days_hours_minutes() {
 
 #[test]
 fn usage_limit_reached_less_than_minute() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::seconds(30);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);
@@ -671,7 +705,11 @@ fn usage_limit_reached_less_than_minute() {
 
 #[test]
 fn usage_limit_reached_with_promo_message() {
-    let base = codex_utils_time::Timestamp::from_ymd_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    let base = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2024, /*month*/ 1, /*day*/ 1, /*hour*/ 0, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .unwrap();
     let resets_at = base + TimeDuration::seconds(30);
     with_now_override(base, move || {
         let expected_time = format_retry_timestamp(&resets_at);

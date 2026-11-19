@@ -294,8 +294,8 @@ WHERE id IN (
     }
 
     pub(crate) async fn run_logs_startup_maintenance(&self) -> anyhow::Result<()> {
-        let Some(cutoff) =
-            codex_utils_time::Timestamp::now().checked_sub(time::Duration::days(LOG_RETENTION_DAYS))
+        let Some(cutoff) = codex_utils_time::Timestamp::now()
+            .checked_sub(time::Duration::days(LOG_RETENTION_DAYS))
         else {
             return Ok(());
         };
@@ -462,7 +462,9 @@ fn format_feedback_log_line(
 ) -> String {
     let nanos = u32::try_from(ts_nanos).unwrap_or(0);
     let timestamp = match codex_utils_time::Timestamp::from_timestamp(ts, nanos) {
-        Some(dt) => dt.to_rfc3339_opts(codex_utils_time::SecondsFormat::Micros, true),
+        Some(dt) => {
+            dt.to_rfc3339_opts(codex_utils_time::SecondsFormat::Micros, /*use_z*/ true)
+        }
         None => format!("{ts}.{ts_nanos:09}Z"),
     };
     let mut line = format!("{timestamp} {level:>5} {feedback_log_body}");

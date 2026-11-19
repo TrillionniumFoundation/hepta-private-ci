@@ -1963,10 +1963,14 @@ fn row_from_app_server_thread(thread: Thread) -> Option<Row> {
         },
         thread_id: Some(thread_id),
         thread_name: thread.name,
-        created_at: codex_utils_time::Timestamp::from_timestamp(thread.created_at, 0)
-            .map(|dt| dt),
-        updated_at: codex_utils_time::Timestamp::from_timestamp(thread.updated_at, 0)
-            .map(|dt| dt),
+        created_at: codex_utils_time::Timestamp::from_timestamp(
+            thread.created_at,
+            /*nanoseconds*/ 0,
+        ),
+        updated_at: codex_utils_time::Timestamp::from_timestamp(
+            thread.updated_at,
+            /*nanoseconds*/ 0,
+        ),
         cwd: Some(thread.cwd.to_path_buf()),
         git_branch: thread.git_info.and_then(|git_info| git_info.branch),
     })
@@ -2008,9 +2012,7 @@ fn paths_match(a: &Path, b: &Path) -> bool {
 
 #[cfg_attr(not(test), allow(dead_code))]
 fn parse_timestamp_str(ts: &str) -> Option<codex_utils_time::Timestamp> {
-    codex_utils_time::Timestamp::parse_from_rfc3339(ts)
-        .map(|dt| dt)
-        .ok()
+    codex_utils_time::Timestamp::parse_from_rfc3339(ts).ok()
 }
 
 fn draw_picker(tui: &mut Tui, state: &PickerState, screen_size: Size) -> std::io::Result<()> {
@@ -2787,7 +2789,9 @@ fn render_comfortable_session_lines(
         return lines;
     }
 
-    let reference = state.relative_time_reference.unwrap_or_else(codex_utils_time::Timestamp::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let created = format_relative_time(reference, row.created_at);
     let updated = format_relative_time(reference, row.updated_at.or(row.created_at));
     let branch = row.git_branch.as_deref();
@@ -2844,7 +2848,9 @@ fn render_dense_session_lines(
     width: u16,
 ) -> Vec<Line<'static>> {
     let marker = selection_marker(is_selected, is_expanded);
-    let reference = state.relative_time_reference.unwrap_or_else(codex_utils_time::Timestamp::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let created = format_relative_time(reference, row.created_at);
     let updated = format_relative_time(reference, row.updated_at.or(row.created_at));
     let date = match state.sort_key {
@@ -3183,7 +3189,9 @@ fn render_expanded_session_details(
     state: &PickerState,
     width: u16,
 ) -> Vec<Line<'static>> {
-    let reference = state.relative_time_reference.unwrap_or_else(codex_utils_time::Timestamp::now);
+    let reference = state
+        .relative_time_reference
+        .unwrap_or_else(codex_utils_time::Timestamp::now);
     let session = match (row.thread_name.as_deref(), row.thread_id) {
         (Some(thread_name), Some(thread_id)) => format!("{thread_name} ({thread_id})"),
         (Some(thread_name), None) => thread_name.to_string(),
@@ -3352,7 +3360,10 @@ fn expanded_time_detail_line(
     expanded_detail_line(label, &value, width)
 }
 
-fn format_relative_time(reference: codex_utils_time::Timestamp, ts: Option<codex_utils_time::Timestamp>) -> String {
+fn format_relative_time(
+    reference: codex_utils_time::Timestamp,
+    ts: Option<codex_utils_time::Timestamp>,
+) -> String {
     let Some(ts) = ts else {
         return "-".to_string();
     };
@@ -3375,7 +3386,10 @@ fn format_relative_time(reference: codex_utils_time::Timestamp, ts: Option<codex
     format!("{days}d ago")
 }
 
-fn format_relative_time_long(reference: codex_utils_time::Timestamp, ts: codex_utils_time::Timestamp) -> String {
+fn format_relative_time_long(
+    reference: codex_utils_time::Timestamp,
+    ts: codex_utils_time::Timestamp,
+) -> String {
     let seconds = (reference - ts).whole_seconds().max(0);
     if seconds == 0 {
         return "now".to_string();
@@ -3436,13 +3450,13 @@ fn render_empty_state_line(state: &PickerState) -> Line<'static> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use time::Duration;
     use codex_app_server_protocol::ThreadItem;
     use codex_app_server_protocol::ThreadSourceKind;
     use codex_config::CONFIG_TOML_FILE;
     use codex_protocol::ThreadId;
     use codex_utils_absolute_path::test_support::PathBufExt;
     use codex_utils_absolute_path::test_support::test_path_buf;
+    use time::Duration;
 
     use crossterm::event::KeyCode;
     use crossterm::event::KeyEvent;

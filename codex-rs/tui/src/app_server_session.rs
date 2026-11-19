@@ -1627,7 +1627,10 @@ fn model_preset_from_api_model(model: ApiModel) -> ModelPreset {
                 .as_ref()
                 .and_then(|info| info.retirement_at)
                 .and_then(|retirement_at| {
-                    codex_utils_time::Timestamp::from_timestamp(retirement_at, 0)
+                    codex_utils_time::Timestamp::from_timestamp(
+                        retirement_at,
+                        /*nanoseconds*/ 0,
+                    )
                 }),
         }
     });

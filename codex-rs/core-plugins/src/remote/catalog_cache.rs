@@ -185,11 +185,15 @@ fn cache_path(codex_home: &Path, cache_key: &RemotePluginCatalogCacheKey) -> Pat
         .join(format!("{cache_key_hash:016x}.json"))
 }
 
-fn is_fresh(fetched_at: Option<codex_utils_time::Timestamp>, now: codex_utils_time::Timestamp) -> bool {
+fn is_fresh(
+    fetched_at: Option<codex_utils_time::Timestamp>,
+    now: codex_utils_time::Timestamp,
+) -> bool {
     let Some(fetched_at) = fetched_at else {
         return false;
     };
-    let Some(ttl) = codex_utils_time::duration_from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL) else {
+    let Some(ttl) = codex_utils_time::duration_from_std(REMOTE_PLUGIN_CATALOG_DISK_CACHE_TTL)
+    else {
         return false;
     };
     let age = now.signed_duration_since(fetched_at);

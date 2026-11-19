@@ -11,13 +11,13 @@ use crate::update_versions::is_source_build_version;
 use crate::updates_cache::VersionInfo;
 use crate::updates_cache::read_version_info;
 use crate::updates_cache::version_filepath;
-use time::Duration;
 use codex_http_client::ClientRouteClass;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::RouteAwareClientPool;
 use codex_login::default_client::default_headers;
 use serde::Deserialize;
 use std::path::Path;
+use time::Duration;
 
 use crate::version::CODEX_CLI_VERSION;
 
@@ -34,7 +34,9 @@ pub fn get_upgrade_version(config: &Config) -> Option<String> {
 
     if match &info {
         None => true,
-        Some(info) => info.last_checked_at < codex_utils_time::Timestamp::now() - Duration::hours(20),
+        Some(info) => {
+            info.last_checked_at < codex_utils_time::Timestamp::now() - Duration::hours(20)
+        }
     } {
         let http_client_factory = config.http_client_factory();
         // Refresh the cached latest version in the background so TUI startup

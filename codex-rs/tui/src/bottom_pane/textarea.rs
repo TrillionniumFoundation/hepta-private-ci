@@ -4289,7 +4289,8 @@ mod tests {
         // keeps the fuzz test deterministic within a day while still varying
         // day-to-day to improve coverage.
         let pst_today_seed: u64 = (codex_utils_time::Timestamp::now() - time::Duration::hours(8))
-            .calendar().date()
+            .calendar()
+            .date()
             .with_hms(0, 0, 0)
             .unwrap()
             .assume_utc()

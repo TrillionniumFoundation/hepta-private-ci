@@ -20,8 +20,9 @@ fn cursor_to_anchor_normalizes_timestamp_format() {
     let cursor = parse_cursor(ts_str).expect("cursor should parse");
     let anchor = cursor_to_anchor(Some(&cursor)).expect("anchor should parse");
 
-    let expected_ts = codex_utils_time::Timestamp::parse_filename_timestamp(ts_str).expect("ts should parse")
-        .with_nanosecond(0)
+    let expected_ts = codex_utils_time::Timestamp::parse_filename_timestamp(ts_str)
+        .expect("ts should parse")
+        .with_nanosecond(/*nanoseconds*/ 0)
         .expect("nanosecond");
 
     assert_eq!(anchor.ts, expected_ts);

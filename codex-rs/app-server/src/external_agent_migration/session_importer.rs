@@ -1,8 +1,3 @@
-use std::collections::BTreeMap;
-use std::collections::BTreeSet;
-use std::io::ErrorKind;
-use std::path::PathBuf;
-use std::sync::Arc;
 use codex_arg0::Arg0DispatchPaths;
 use codex_core::ThreadManager;
 use codex_core::config::ConfigOverrides;
@@ -39,6 +34,11 @@ use codex_thread_store::ThreadPersistenceMetadata;
 use codex_thread_store::ThreadStore;
 use codex_thread_store::UpdateThreadMetadataParams;
 use futures::StreamExt;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::io::ErrorKind;
+use std::path::PathBuf;
+use std::sync::Arc;
 use tokio::sync::Semaphore;
 
 use crate::config_manager::ConfigManager;
@@ -508,8 +508,12 @@ impl ExternalAgentSessionImporter {
             })
             .and_then(|(created_at, updated_at)| {
                 Some((
-                    codex_utils_time::Timestamp::from_timestamp(created_at, /*nsecs*/ 0)?,
-                    codex_utils_time::Timestamp::from_timestamp(updated_at, /*nsecs*/ 0)?,
+                    codex_utils_time::Timestamp::from_timestamp(
+                        created_at, /*nanoseconds*/ 0,
+                    )?,
+                    codex_utils_time::Timestamp::from_timestamp(
+                        updated_at, /*nanoseconds*/ 0,
+                    )?,
                 ))
             })
             .unwrap_or((now, now));

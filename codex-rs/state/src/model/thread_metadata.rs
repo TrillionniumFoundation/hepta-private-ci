@@ -638,7 +638,9 @@ pub(crate) fn anchor_from_item(
         SortKey::CreatedAt => item.created_at,
         SortKey::UpdatedAt => item.updated_at,
         SortKey::RecencyAt => item.recency_at,
-        SortKey::SectionPosition => codex_utils_time::Timestamp::from_timestamp_millis(item.section_position?)?,
+        SortKey::SectionPosition => {
+            codex_utils_time::Timestamp::from_timestamp_millis(item.section_position?)?
+        }
     };
     Some(Anchor {
         ts,
@@ -670,7 +672,7 @@ pub(crate) fn epoch_millis_to_datetime(value: i64) -> Result<codex_utils_time::T
 }
 
 pub(crate) fn epoch_seconds_to_datetime(value: i64) -> Result<codex_utils_time::Timestamp> {
-    codex_utils_time::Timestamp::from_timestamp(value, 0)
+    codex_utils_time::Timestamp::from_timestamp(value, /*nanoseconds*/ 0)
         .ok_or_else(|| anyhow::anyhow!("invalid unix timestamp seconds: {value}"))
 }
 
@@ -738,9 +740,21 @@ mod tests {
             id: ThreadId::from_string("00000000-0000-0000-0000-000000000123")
                 .expect("valid thread id"),
             rollout_path: PathBuf::from("/tmp/rollout-123.jsonl"),
-            created_at: codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0).expect("timestamp"),
-            updated_at: codex_utils_time::Timestamp::from_timestamp(1_700_000_100, 0).expect("timestamp"),
-            recency_at: codex_utils_time::Timestamp::from_timestamp(1_700_000_100, 0).expect("timestamp"),
+            created_at: codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_700_000_000,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
+            updated_at: codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_700_000_100,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
+            recency_at: codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_700_000_100,
+                /*nanoseconds*/ 0,
+            )
+            .expect("timestamp"),
             source: "cli".to_string(),
             history_mode: ThreadHistoryMode::Legacy,
             thread_source: None,

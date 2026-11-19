@@ -194,7 +194,13 @@ fn jwt_expiration_parses_exp_claim() {
     }));
 
     let expires_at = parse_jwt_expiration(&fake_jwt).expect("should parse");
-    assert_eq!(expires_at, codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0));
+    assert_eq!(
+        expires_at,
+        codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_700_000_000,
+            /*nanoseconds*/ 0
+        )
+    );
 }
 
 #[test]

@@ -66,6 +66,6 @@ impl BackfillStatus {
 }
 
 fn epoch_seconds_to_datetime(secs: i64) -> Result<codex_utils_time::Timestamp> {
-    codex_utils_time::Timestamp::from_timestamp(secs, 0)
+    codex_utils_time::Timestamp::from_timestamp(secs, /*nanoseconds*/ 0)
         .ok_or_else(|| anyhow::anyhow!("invalid unix timestamp: {secs}"))
 }

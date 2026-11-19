@@ -1,7 +1,7 @@
 use super::*;
-use time::Duration as TimeDelta;
 use codex_login::AuthHeaders;
 use pretty_assertions::assert_eq;
+use time::Duration as TimeDelta;
 
 #[test]
 fn catalog_cache_freshness_honors_ttl() {

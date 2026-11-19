@@ -252,7 +252,9 @@ mod tests {
             .expect("duplicate backfill claim");
         assert_eq!(duplicate_claim, false);
 
-        let stale_updated_at = codex_utils_time::Timestamp::now().timestamp().saturating_sub(10_000);
+        let stale_updated_at = codex_utils_time::Timestamp::now()
+            .timestamp()
+            .saturating_sub(10_000);
         sqlx::query(
             r#"
 UPDATE backfill_state

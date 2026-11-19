@@ -1,5 +1,3 @@
-use std::path::Path;
-use std::path::PathBuf;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::GitInfo;
 use codex_protocol::protocol::SessionSource;
@@ -10,6 +8,8 @@ use codex_rollout::append_rollout_item_to_path;
 use codex_rollout::append_thread_name;
 use codex_rollout::read_session_meta_line;
 use codex_state::ThreadMetadataBuilder;
+use std::path::Path;
+use std::path::PathBuf;
 use tracing::warn;
 
 use super::LocalThreadStore;

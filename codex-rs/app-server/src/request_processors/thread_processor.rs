@@ -5664,7 +5664,7 @@ fn thread_backwards_cursor_for_sort_key(
         SortDirection::Asc => timestamp.checked_add(TimeDuration::milliseconds(1))?,
         SortDirection::Desc => timestamp.checked_sub(TimeDuration::milliseconds(1))?,
     };
-    Some(timestamp.to_rfc3339_opts(SecondsFormat::Millis, true))
+    Some(timestamp.to_rfc3339_opts(SecondsFormat::Millis, /*use_z*/ true))
 }
 
 struct ThreadTurnsPage {
@@ -6218,12 +6218,12 @@ fn summary_from_stored_thread(
         timestamp: Some(
             thread
                 .created_at
-                .to_rfc3339_opts(SecondsFormat::Millis, true),
+                .to_rfc3339_opts(SecondsFormat::Millis, /*use_z*/ true),
         ),
         updated_at: Some(
             thread
                 .updated_at
-                .to_rfc3339_opts(SecondsFormat::Millis, true),
+                .to_rfc3339_opts(SecondsFormat::Millis, /*use_z*/ true),
         ),
         model_provider: if thread.model_provider.is_empty() {
             fallback_provider.to_string()
@@ -6294,10 +6294,10 @@ fn summary_from_thread_metadata(metadata: &ThreadMetadata) -> ConversationSummar
         metadata.preview.clone(),
         metadata
             .created_at
-            .to_rfc3339_opts(SecondsFormat::Secs, true),
+            .to_rfc3339_opts(SecondsFormat::Secs, /*use_z*/ true),
         metadata
             .updated_at
-            .to_rfc3339_opts(SecondsFormat::Secs, true),
+            .to_rfc3339_opts(SecondsFormat::Secs, /*use_z*/ true),
         metadata.model_provider.clone(),
         metadata.cwd.clone(),
         metadata.cli_version.clone(),

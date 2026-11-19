@@ -495,7 +495,11 @@ async fn section_moves_preserve_entry_order_and_renumber_exhausted_ranks() {
     runtime
         .touch_thread_recency_at(
             first,
-            codex_utils_time::Timestamp::from_timestamp(1_800_000_000, 0).unwrap(),
+            codex_utils_time::Timestamp::from_timestamp(
+                /*seconds*/ 1_800_000_000,
+                /*nanoseconds*/ 0,
+            )
+            .unwrap(),
         )
         .await
         .unwrap();

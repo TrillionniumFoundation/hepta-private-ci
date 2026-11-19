@@ -127,7 +127,8 @@ pub fn format_relative_time(reference: Timestamp, ts: Timestamp) -> String {
     if hours < 24 {
         return format!("{hours}h ago");
     }
-    ts.local().map(|local| local.strftime("%b %e %H:%M").to_string())
+    ts.local()
+        .map(|local| local.strftime("%b %e %H:%M").to_string())
         .unwrap_or_else(|| ts.to_rfc3339())
 }
 

@@ -10,7 +10,8 @@ use codex_protocol::ThreadId;
 
 use crate::config::CurrentTimeReminderConfig;
 
-pub type TimeFuture<'a> = Pin<Box<dyn Future<Output = Result<codex_utils_time::Timestamp>> + Send + 'a>>;
+pub type TimeFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<codex_utils_time::Timestamp>> + Send + 'a>>;
 pub type SleepFuture<'a> = Pin<Box<dyn Future<Output = Result<()>> + Send + 'a>>;
 
 /// Host integration boundary for reading and waiting on the current time.

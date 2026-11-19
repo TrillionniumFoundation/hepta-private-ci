@@ -3,8 +3,6 @@
 //! These types are serialized across core, TUI, app-server, and SDK boundaries, so field defaults
 //! are used to preserve compatibility when older payloads omit newly introduced attributes.
 
-use std::fmt;
-use std::str::FromStr;
 use schemars::JsonSchema;
 use schemars::r#gen::SchemaGenerator;
 use schemars::schema::InstanceType;
@@ -18,6 +16,8 @@ use serde::Serialize;
 use serde::Serializer;
 use serde::de::DeserializeOwned;
 use serde::de::Error;
+use std::fmt;
+use std::str::FromStr;
 use strum_macros::Display;
 use strum_macros::EnumIter;
 use tracing::warn;
@@ -671,8 +671,7 @@ where
     Ok(value
         .as_ref()
         .and_then(serde_json::Value::as_str)
-        .and_then(|value| codex_utils_time::Timestamp::parse_from_rfc3339(value).ok())
-        .map(|value| value))
+        .and_then(|value| codex_utils_time::Timestamp::parse_from_rfc3339(value).ok()))
 }
 
 impl From<&ModelUpgrade> for ModelInfoUpgrade {

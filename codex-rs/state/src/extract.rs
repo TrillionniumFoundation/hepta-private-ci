@@ -678,7 +678,11 @@ mod tests {
 
     fn metadata_for_test() -> ThreadMetadata {
         let id = ThreadId::from_string(&Uuid::from_u128(42).to_string()).expect("thread id");
-        let created_at = codex_utils_time::Timestamp::from_timestamp(1_735_689_600, 0).expect("timestamp");
+        let created_at = codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_735_689_600,
+            /*nanoseconds*/ 0,
+        )
+        .expect("timestamp");
         ThreadMetadata {
             id,
             rollout_path: PathBuf::from("/tmp/a.jsonl"),

@@ -175,9 +175,9 @@ fn rollout_summary_file_stem_from_parts(
                 .get_timestamp()
                 .and_then(|uuid_timestamp| {
                     let (seconds, nanos) = uuid_timestamp.to_unix();
-                    i64::try_from(seconds).ok().and_then(|secs| {
-                        codex_utils_time::Timestamp::from_timestamp(secs, nanos)
-                    })
+                    i64::try_from(seconds)
+                        .ok()
+                        .and_then(|secs| codex_utils_time::Timestamp::from_timestamp(secs, nanos))
                 })
                 .unwrap_or(source_updated_at);
             let short_hash_seed = (thread_uuid.as_u128() & 0xFFFF_FFFF) as u32;

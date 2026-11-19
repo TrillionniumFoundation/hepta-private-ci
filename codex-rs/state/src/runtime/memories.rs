@@ -9,11 +9,11 @@ use crate::model::Stage1Output;
 use crate::model::Stage1RecallCandidate;
 use crate::model::Stage1StartupClaimParams;
 use crate::model::ThreadRow;
-use time::Duration;
 use sqlx::Executor;
 use sqlx::QueryBuilder;
 use sqlx::Sqlite;
 use std::future::Future;
+use time::Duration;
 use uuid::Uuid;
 
 const JOB_KIND_MEMORY_STAGE1: &str = "memory_stage1";
@@ -166,9 +166,12 @@ WHERE kind = ? AND job_key = ?
 
         let worker_id = current_thread_id;
         let current_thread_id = worker_id.to_string();
-        let max_age_cutoff = (codex_utils_time::Timestamp::now() - Duration::days(max_age_days.max(0))).timestamp_millis();
-        let idle_cutoff =
-            (codex_utils_time::Timestamp::now() - Duration::hours(min_rollout_idle_hours.max(0))).timestamp_millis();
+        let max_age_cutoff = (codex_utils_time::Timestamp::now()
+            - Duration::days(max_age_days.max(0)))
+        .timestamp_millis();
+        let idle_cutoff = (codex_utils_time::Timestamp::now()
+            - Duration::hours(min_rollout_idle_hours.max(0)))
+        .timestamp_millis();
 
         let mut builder = QueryBuilder::<Sqlite>::new(
             r#"
@@ -522,7 +525,8 @@ WHERE threads.id = ? AND threads.memory_mode = 'enabled'
             return Ok(0);
         }
 
-        let cutoff = (codex_utils_time::Timestamp::now() - Duration::days(max_unused_days.max(0))).timestamp();
+        let cutoff = (codex_utils_time::Timestamp::now() - Duration::days(max_unused_days.max(0)))
+            .timestamp();
         let rows_affected = sqlx::query(
             r#"
 DELETE FROM stage1_outputs
@@ -571,7 +575,8 @@ WHERE thread_id IN (
         if n == 0 {
             return Ok(Vec::new());
         }
-        let cutoff = (codex_utils_time::Timestamp::now() - Duration::days(max_unused_days.max(0))).timestamp();
+        let cutoff = (codex_utils_time::Timestamp::now() - Duration::days(max_unused_days.max(0)))
+            .timestamp();
 
         let page_size = n.clamp(1, PHASE2_INPUT_SELECTION_PAGE_SIZE);
         let page_size_i64 = i64::try_from(page_size).unwrap_or(i64::MAX);
@@ -1582,7 +1587,7 @@ fn stage1_output_from_row_and_thread(
 }
 
 fn datetime_from_epoch_seconds(secs: i64) -> anyhow::Result<codex_utils_time::Timestamp> {
-    codex_utils_time::Timestamp::from_timestamp(secs, 0)
+    codex_utils_time::Timestamp::from_timestamp(secs, /*nanoseconds*/ 0)
         .ok_or_else(|| anyhow::anyhow!("invalid unix timestamp: {secs}"))
 }
 
@@ -1825,13 +1830,13 @@ mod tests {
     use crate::model::Phase2JobClaimOutcome;
     use crate::model::Stage1JobClaimOutcome;
     use crate::model::Stage1StartupClaimParams;
-    use time::Duration;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::ThreadHistoryMode;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
     use sqlx::Row;
     use std::sync::Arc;
+    use time::Duration;
     use uuid::Uuid;
 
     fn stable_thread_id(value: &str) -> ThreadId {
@@ -1844,7 +1849,11 @@ mod tests {
 
     async fn age_phase2_success_beyond_cooldown(runtime: &StateRuntime) {
         sqlx::query("UPDATE jobs SET finished_at = ? WHERE kind = ? AND job_key = ?")
-            .bind(codex_utils_time::Timestamp::now().timestamp() - PHASE2_SUCCESS_COOLDOWN_SECONDS - 1)
+            .bind(
+                codex_utils_time::Timestamp::now().timestamp()
+                    - PHASE2_SUCCESS_COOLDOWN_SECONDS
+                    - 1,
+            )
             .bind(JOB_KIND_MEMORY_CONSOLIDATE_GLOBAL)
             .bind(MEMORY_CONSOLIDATION_JOB_KEY)
             .execute(memory_pool(runtime))
@@ -5220,9 +5229,21 @@ VALUES (?, ?, ?, ?, ?)
 
         let now = codex_utils_time::Timestamp::now().timestamp();
         for (thread_id, source_updated_at, summary) in [
-            (thread_a, now - Duration::days(60).whole_seconds(), "stale-a"),
-            (thread_b, now - Duration::days(50).whole_seconds(), "stale-b"),
-            (thread_c, now - Duration::days(40).whole_seconds(), "stale-c"),
+            (
+                thread_a,
+                now - Duration::days(60).whole_seconds(),
+                "stale-a",
+            ),
+            (
+                thread_b,
+                now - Duration::days(50).whole_seconds(),
+                "stale-b",
+            ),
+            (
+                thread_c,
+                now - Duration::days(40).whole_seconds(),
+                "stale-c",
+            ),
         ] {
             let claim = runtime
                 .try_claim_stage1_job(

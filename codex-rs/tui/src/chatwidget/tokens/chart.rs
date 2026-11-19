@@ -8,13 +8,13 @@ mod palette;
 
 use std::collections::BTreeMap;
 
-use time::Duration;
-use time::Date;
 use codex_app_server_protocol::GetAccountTokenUsageResponse;
 use ratatui::style::Style;
 use ratatui::style::Stylize;
 use ratatui::text::Line;
 use ratatui::text::Span;
+use time::Date;
+use time::Duration;
 
 use crate::render::highlight::foreground_style_for_scopes;
 use crate::status::format_tokens_compact;

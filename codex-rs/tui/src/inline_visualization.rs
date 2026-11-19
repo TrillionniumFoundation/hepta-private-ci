@@ -87,7 +87,8 @@ impl InlineVisualizationContext {
         let uuid = Uuid::parse_str(&thread_id).ok()?;
         let timestamp = uuid.get_timestamp()?;
         let (seconds, nanos) = timestamp.to_unix();
-        let created_at = codex_utils_time::Timestamp::from_timestamp(i64::try_from(seconds).ok()?, nanos)?;
+        let created_at =
+            codex_utils_time::Timestamp::from_timestamp(i64::try_from(seconds).ok()?, nanos)?;
         let visualizations_dir = codex_home.join("visualizations");
         let granted_thread_dirs = writable_roots
             .into_iter()

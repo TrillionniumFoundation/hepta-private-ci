@@ -1,5 +1,3 @@
-use std::time::Duration;
-use std::time::Instant;
 use codex_git_utils::collect_git_info;
 use codex_git_utils::get_git_repo_root;
 use codex_protocol::ThreadId;
@@ -13,6 +11,8 @@ use codex_protocol::protocol::strip_user_message_prefix;
 use codex_protocol::protocol::user_message_preview;
 use codex_rollout::RolloutItem;
 use codex_state::ThreadMetadata;
+use std::time::Duration;
+use std::time::Instant;
 
 use crate::CreateThreadParams;
 use crate::GitInfoPatch;
@@ -359,9 +359,7 @@ fn parse_memory_mode(value: &str) -> Option<ThreadMemoryMode> {
 
 fn parse_session_timestamp(value: &str) -> Option<codex_utils_time::Timestamp> {
     codex_utils_time::Timestamp::parse_from_rfc3339(value)
-        .or_else(|_| {
-            codex_utils_time::Timestamp::parse_filename_timestamp(value)
-        })
+        .or_else(|_| codex_utils_time::Timestamp::parse_filename_timestamp(value))
         .ok()
 }
 

@@ -50,11 +50,20 @@ fn reset_credit_with_title(id: &str, expires_at: Option<i64>, title: &str) -> Ra
 
 fn expiry_timestamp(day: u32, hour: u32, minute: u32) -> i64 {
     let civil = jiff::civil::DateTime::new(
-        2026, 6, i8::try_from(day).expect("valid day"), i8::try_from(hour).expect("valid hour"),
-        i8::try_from(minute).expect("valid minute"), 0, 0,
-    ).expect("valid test timestamp");
-    jiff::tz::TimeZone::system().to_ambiguous_timestamp(civil).unambiguous()
-        .expect("unambiguous test timestamp").as_second()
+        2026,
+        6,
+        i8::try_from(day).expect("valid day"),
+        i8::try_from(hour).expect("valid hour"),
+        i8::try_from(minute).expect("valid minute"),
+        0,
+        0,
+    )
+    .expect("valid test timestamp");
+    jiff::tz::TimeZone::system()
+        .to_ambiguous_timestamp(civil)
+        .unambiguous()
+        .expect("unambiguous test timestamp")
+        .as_second()
 }
 
 fn show_rate_limit_reset_confirmation_from_event(

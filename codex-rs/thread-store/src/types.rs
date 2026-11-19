@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-use std::sync::Arc;
 use codex_app_server_protocol::CodexErrorInfo;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
@@ -22,6 +20,8 @@ use serde::Deserialize;
 use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
+use std::path::PathBuf;
+use std::sync::Arc;
 
 mod optional_option {
     use super::*;

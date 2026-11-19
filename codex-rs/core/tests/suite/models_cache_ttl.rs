@@ -81,7 +81,9 @@ async fn renews_cache_ttl_on_matching_models_etag() -> Result<()> {
         .await;
 
     let cache_path = config.codex_home.join(CACHE_FILE);
-    let stale_time = codex_utils_time::Timestamp::from_timestamp(0, 0).expect("valid epoch");
+    let stale_time =
+        codex_utils_time::Timestamp::from_timestamp(/*seconds*/ 0, /*nanoseconds*/ 0)
+            .expect("valid epoch");
     rewrite_cache_timestamp(&cache_path, stale_time).await?;
 
     // Trigger responses with matching ETag, which should renew the cache TTL without another /models.
@@ -182,7 +184,11 @@ async fn matching_models_etag_does_not_rewrite_recent_cache() -> Result<()> {
         .await;
 
     let cache_path = test.config.codex_home.join(CACHE_FILE);
-    rewrite_cache_timestamp(&cache_path, codex_utils_time::Timestamp::now() - time::Duration::seconds(60)).await?;
+    rewrite_cache_timestamp(
+        &cache_path,
+        codex_utils_time::Timestamp::now() - time::Duration::seconds(60),
+    )
+    .await?;
     let original_contents = tokio::fs::read(&cache_path).await?;
     let original_modified = tokio::fs::metadata(&cache_path).await?.modified()?;
 
@@ -441,7 +447,10 @@ async fn refreshes_when_cache_version_differs() -> Result<()> {
     Ok(())
 }
 
-async fn rewrite_cache_timestamp(path: &Path, fetched_at: codex_utils_time::Timestamp) -> Result<()> {
+async fn rewrite_cache_timestamp(
+    path: &Path,
+    fetched_at: codex_utils_time::Timestamp,
+) -> Result<()> {
     let mut cache = read_cache(path).await?;
     cache.fetched_at = fetched_at;
     write_cache(path, &cache).await?;

@@ -110,9 +110,10 @@ clock_source = "external"
             .iter()
             .any(|text| text == CURRENT_TIME_REMINDER)
     );
-    let current_date = codex_utils_time::Timestamp::from_timestamp(CURRENT_TIME_AT, 0)
-        .expect("test timestamp should be valid")
-        .format_local("%Y-%m-%d");
+    let current_date =
+        codex_utils_time::Timestamp::from_timestamp(CURRENT_TIME_AT, /*nanoseconds*/ 0)
+            .expect("test timestamp should be valid")
+            .format_local("%Y-%m-%d");
     assert!(request.message_input_texts("user").iter().any(|text| {
         text.contains("<environment_context>")
             && text.contains(&format!("<current_date>{current_date}</current_date>"))
