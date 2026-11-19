@@ -1,0 +1,88 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02",
+  "tree": "da7576365ab1da6b4208d4e83fd046660549996d",
+  "status": "SOURCE_PREPARED_NATIVE_VALIDATION_PENDING",
+  "changed_paths": [
+    "M\tcodex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "A\tcodex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+    "M\tcodex-rs/hepta-automation/src/action_skill_tests.rs",
+    "M\tcodex-rs/hepta-automation/src/authorized_effect.rs",
+    "M\tcodex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "M\tcodex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+    "A\tcodex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+    "M\tcodex-rs/hepta-automation/src/store.rs"
+  ],
+  "stat": ".../hepta-agentd/src/automation_effect_host.rs     |  49 ++++-\n .../0023_effect_dispatch_recovery_material.sql     |  36 ++++\n .../hepta-automation/src/action_skill_tests.rs     |   4 +\n codex-rs/hepta-automation/src/authorized_effect.rs |  27 +++\n .../hepta-automation/src/effect_dispatch_ledger.rs |  87 ++++++++-\n .../hepta-automation/src/hcsn_taskflow_tests.rs    |   6 +\n .../src/provider_recovery_migration_tests.rs       | 198 +++++++++++++++++++++\n codex-rs/hepta-automation/src/store.rs             |  10 +-\n 8 files changed, 398 insertions(+), 19 deletions(-)",
+  "diff_check_exit": 0,
+  "migration_original_blob": "c5240481c83f294470dc9b6045fbc8b7bdc1165d",
+  "migration_original_sha384": "5c66583577702593208b7345b41aa6750a7b4ff7c9a367c7526e9857075f84021dc2e2bd37e2116620af08ade3188f61",
+  "schema_version": 20,
+  "source_records": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "blob": "569873d0281fe15f421c856e110cfc39f4f6cb54",
+      "sha256": "b569a4d4ba1c772102fdc878e78b5726784bf735e3247feb83fce55e28c2e394",
+      "bytes": 65988
+    },
+    {
+      "path": "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+      "blob": "c5240481c83f294470dc9b6045fbc8b7bdc1165d",
+      "sha256": "299c71a605c00df1ca4243b15a60b704b7f1572b84ee56ad50149ec17b398aa2",
+      "bytes": 1499
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/action_skill_tests.rs",
+      "blob": "8fb1926a6ddc6a6926a4977e73883b172b12a88e",
+      "sha256": "92bd39aa95cf8989ab6b1b4528aa97d8e32f0d2567a5a7c0707bf18e002a5ebd",
+      "bytes": 16009
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "blob": "fc5ee139159cb1b66e40b9def9cbd2e12a664f5b",
+      "sha256": "43f5d4a46e78dfa0d4b58e014acd00dd4e370cef76372a4879497e23542c11d6",
+      "bytes": 66353
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "blob": "d3e64f1ee9e52dfe67fac41d72b68990822334d6",
+      "sha256": "9623f84924cca18b29ba211ccbe75cdb0a55b32c3b09d9b432ce58858ed98ed4",
+      "bytes": 28127
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "blob": "8cf1880e03efb519ab83b9434acaddafba11cd5c",
+      "sha256": "04f4d2627d3ee11bdd09207dc58ab0e050896db38dc09b62366a3d646b254c72",
+      "bytes": 9757
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "blob": "f3c13c82480f9621ce872ff90a554be665fd7163",
+      "sha256": "911e4a16ce23b21f36749d126c6a82579cbfcb17b394e37e87e5e884b733d896",
+      "bytes": 11444
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+      "blob": "b697247afde31137ecc8c8547fe93dfab40e2860",
+      "sha256": "2cdeb61e19702adc3422785f5813d9d864a2194ffa9aa3b664bf0c5a7f8b9616",
+      "bytes": 7075
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "blob": "23e84cfe488263db515e84e5ad6a5d8f067d32b6",
+      "sha256": "896f8a899fb9a31192f0c8cb1af4cb4365e403ea6c39d76b6e591c79bf63132c",
+      "bytes": 59092
+    }
+  ],
+  "required_tests": [
+    "provider_recovery_migration_tests (5 tests including 3 corruption cases)",
+    "existing migration_convergence_tests",
+    "effect_dispatch_ledger and authorized_effect integration suites",
+    "hcsn_taskflow_tests and action_skill_tests",
+    "Agentd automation effect and HCSN authority boundary tests"
+  ],
+  "native_tests_executed": false,
+  "rustfmt_exit": 0,
+  "build_data": "existing migrations/** and src/**/*.rs globs cover the new migration and regression module",
+  "refs_changed": false
+}

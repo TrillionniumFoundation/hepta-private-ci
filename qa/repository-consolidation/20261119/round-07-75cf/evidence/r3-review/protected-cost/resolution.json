@@ -1,0 +1,71 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "da1edb7f1fb5e64a6bce6509979b85aa605edaca",
+  "merge_base": "96777483395f33a581081dfe9d3c16956e73d182",
+  "genuine_merge_tree_preview": "401c00a6da55c21b9775225fea35736b389b5d13",
+  "genuine_merge_exit": 1,
+  "resolved_tree": "3cef0335f7a643c8e4e6c2f889c26bc6ae36b79d",
+  "changed_paths": [
+    "M\texperiments/ndu_mgp_gates/paired_superiority.py",
+    "M\texperiments/ndu_mgp_gates/test_paired_superiority.py"
+  ],
+  "selected_blobs": {
+    "experiments/ndu_mgp_gates/paired_superiority.py": "f293bdde77961e35de85c20894a50c4a05412b37",
+    "experiments/ndu_mgp_gates/test_paired_superiority.py": "267753f679530f31884d5d12150e8c86c2c889de"
+  },
+  "protected_ancestor_pins": [],
+  "protection_evidence": "small-merge-review/missing-retry-02/previews/da1edb7f1fb5e64a6bce6509979b85aa605edaca/preview.json",
+  "source_region_decisions": [
+    {
+      "region": 1,
+      "decision": "Preserve incoming physical-cost-unit allowlist and current preregistered per-seed source coverage plus absolute quality/completion floors. A nonempty proxy unit is no longer sufficient."
+    },
+    {
+      "region": 2,
+      "decision": "Keep current per-seed >=8 independent protected-source requirement and service metrics; this implies incoming at least-one protected observation per seed. Preserve frozen labels and all current cohort tests."
+    },
+    {
+      "region": 3,
+      "decision": "Keep current bootstrapped cost-noninferiority margin. Merge incoming per-protected-world loss, quality, ambiguity and inconsistency direction-specific no-regression checks, which current quality-only comparison was missing."
+    }
+  ],
+  "nonconflicting_source_change": "Preserve incoming lowercase SHA-256 shape checks for selection/model/decoder/objective/actuator digests. Comments explicitly state that syntax is not source/lock authentication.",
+  "tests": {
+    "retained_current_suite": true,
+    "incoming_exact_test_bodies_added": [
+      "test_protected_loss_regression_rejected_despite_global_tail_gain",
+      "test_protected_inconsistency_regression_is_not_hidden_by_global_mean",
+      "test_proxy_mac_not_accepted_as_measured_total_cost",
+      "test_nonhex_identity_digest_rejected"
+    ],
+    "incoming_empty_seed_test": "Covered by current test_missing_protected_cohort_in_one_training_seed_denied, which updates the frozen fixture labels then rejects too few independent protected source groups. The separate label-manifest rejection tests retain posthoc tampering coverage."
+  },
+  "unchanged_research_authority": [
+    "HOLD_NO_GO",
+    "DENY_ALL",
+    "LOCAL_RESEARCH_UNAUTHENTICATED",
+    "scientific_superiority_proven=False"
+  ],
+  "verification_status": "PASS_SCOPED_SEMANTIC: all 62 actual paired-superiority unit regressions passed, including four exact incoming adversarial bodies. No Rust production tree changed. Full combined candidate CI remains parent-owned.",
+  "validation": {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".",
+      "-p",
+      "test_paired_superiority.py",
+      "-v"
+    ],
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "passed": 62,
+    "failed": 0,
+    "duration_seconds": 19.32,
+    "log": "/workspace/scratch/75cf41417dcc/r3-review/protected-cost/paired-superiority-tests.log",
+    "log_sha256": "798d9e7c8028047b66dc6fb0dc1dcff69c54839ab468a1894c2a7acabbc8a3dd",
+    "git_diff_check": true
+  },
+  "auto_merged_other_paths": "The genuine merge preview differs from the base at exactly the two reported conflict paths. All other 47 incoming paths produce the current base bytes through standard three-way merging without strategy overrides."
+}

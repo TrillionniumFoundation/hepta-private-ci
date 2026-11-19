@@ -1,0 +1,40 @@
+{
+  "tip": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02",
+  "prior": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+  "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "approved_tree": "e4020d30bb749f489593360bb7285ed98f602533",
+  "fixed_automatic_tree": "cb4404399c4e7dfeb39b5e7124d450ca9460ed37",
+  "actual_automatic_tree": "dcdc27dc13ee44f610f8d1e6c16a678e7e82369a",
+  "fixed_exit": 1,
+  "actual_exit": 1,
+  "actual_conflicts": [
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/lib.rs"
+  ],
+  "resolution_paths": [
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+    "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+    "codex-rs/hepta-automation/src/action_skill_tests.rs",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+    "codex-rs/hepta-automation/src/lib.rs",
+    "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+    "codex-rs/hepta-automation/src/store.rs"
+  ],
+  "changes_from_review_base": [
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+    "codex-rs/hepta-automation/src/action_skill_tests.rs",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+    "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+    "codex-rs/hepta-automation/src/store.rs"
+  ],
+  "resolved_tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+  "expected_composed_tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+  "commit": "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+  "reason": "Persist the exact provider occurrence key and wire bytes before external contact while retaining prepare_claim and inherited recovery semantics. Preserve original provider-recovery migration SQL bytes at 0023; relocate legacy v20 only on exact original checksum, clean history and an unoccupied target in one immediate transaction. Existing Circuit migrations remain byte-identical. Original Automation package tests pass on the documented old graph with exact matching caller files; final combined-head CI is still required."
+}

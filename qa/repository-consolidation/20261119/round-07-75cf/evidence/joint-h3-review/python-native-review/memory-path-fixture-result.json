@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory",
+    "-v"
+  ],
+  "exit": 0,
+  "wall_seconds": 0.15610384941101074,
+  "base_tree": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b",
+  "fixture_fixed_tree": "f8eab319c3871c4a10fcf6c4c399f9df62c79b8b",
+  "verified_source_records": 182,
+  "exact_original_records": 181,
+  "fixed_fixture_sha256": "c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189",
+  "all_before_after_sources_unchanged": true,
+  "scope": "single original stdlib process receipt test; full tensor/TCP suite remains blocked by transformers HybridCache API incompatibility",
+  "logs": {
+    "memory-path-fixture.stdout.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "memory-path-fixture.stderr.log": {
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stderr.log",
+      "bytes": 265,
+      "sha256": "187f4ee6942a892d66e0bf31c96ee546d40b8dbd5f27d0b2acdacd0666efaaae"
+    }
+  }
+}

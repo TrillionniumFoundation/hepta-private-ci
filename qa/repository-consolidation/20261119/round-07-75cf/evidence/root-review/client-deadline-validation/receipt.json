@@ -1,0 +1,29 @@
+{
+  "source_head": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_post_a_deadline_source_closure.py",
+    "-v"
+  ],
+  "exit": 0,
+  "source_hashes_before": {
+    "codex-rs/hepta-agentd/src/client_control.rs": "bf314e068e37faa54ea1b4b0ff82bf5ab67fdff68a3eea066ac62f9d292a418b",
+    "qa/b4-no-bypass/test_post_a_deadline_source_closure.py": "9e64af1447b1554e08b5638d7a23b1d0c3b39f23a650ff5842f8ec60b9517d4e",
+    "scripts/verify_hepta_callers.py": "d879b6642f023befcfd984e39b413ceed21d527c4d64c6d828864b0e767b49b8",
+    "CALLERS.toml": "e561dae61d88cc8d24bdc3d12660a789e2c5f70fa2db6d56bbc33cc12f9eb83b"
+  },
+  "source_hashes_after": {
+    "codex-rs/hepta-agentd/src/client_control.rs": "bf314e068e37faa54ea1b4b0ff82bf5ab67fdff68a3eea066ac62f9d292a418b",
+    "qa/b4-no-bypass/test_post_a_deadline_source_closure.py": "9e64af1447b1554e08b5638d7a23b1d0c3b39f23a650ff5842f8ec60b9517d4e",
+    "scripts/verify_hepta_callers.py": "d879b6642f023befcfd984e39b413ceed21d527c4d64c6d828864b0e767b49b8",
+    "CALLERS.toml": "e561dae61d88cc8d24bdc3d12660a789e2c5f70fa2db6d56bbc33cc12f9eb83b"
+  },
+  "unchanged": true,
+  "qualification": "PYTHON_SOURCE_MUTATION_GUARDS_ONLY_NOT_NATIVE_TRANSPORT"
+}

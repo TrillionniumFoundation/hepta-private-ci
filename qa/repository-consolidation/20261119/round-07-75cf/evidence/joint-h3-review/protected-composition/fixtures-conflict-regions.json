@@ -1,0 +1,117 @@
+[
+  {
+    "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let fleet_root = std::fs::create_dir_all(&fleet_root)\n            .and_then(|()| fleet_root.canonicalize())\n            .expect(\"fleet root\");\n=======\n        std::fs::create_dir_all(&fleet_root).expect(\"fleet root\");\n        // Resolve temporary-directory aliases before the store's canonical-root\n        // guard; the provider workspace below has its own PathUri wire identity.\n        let fleet_root = fleet_root.canonicalize().expect(\"canonical fleet root\");\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let canonical_workspace = workspace.canonicalize().expect(\"canonical workspace\");\n        let workspace_uri =\n            PathUri::from_host_native_path(&canonical_workspace).expect(\"workspace uri\");\n        // Grant and physical send use the same native path carried by the turn URI.\n        let workspace = workspace_uri.to_path_buf();\n        assert!(\n            workspace.is_absolute() && workspace.is_dir(),\n            \"provider workspace must identify an absolute directory\"\n        );\n        assert!(\n            workspace\n                .canonicalize()\n                .expect(\"round-trip canonical workspace\")\n                == canonical_workspace,\n            \"provider workspace URI must preserve the canonical path\"\n=======\n        let workspace = workspace.canonicalize().expect(\"canonical workspace\");\n        // Model observations carry a PathUri, which is rendered back to a native\n        // path at the attachment boundary. On Windows, the canonical \\\\?\\ prefix\n        // may be normalized during this round trip. Grant the exact workspace\n        // identity used at physical-send time; do not weaken the scope check.\n        let workspace_uri = PathUri::from_host_native_path(&workspace).expect(\"workspace uri\");\n        let workspace = workspace_uri.to_path_buf();\n        assert!(\n            workspace.is_absolute(),\n            \"provider workspace must stay absolute\"\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "region": 3,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                    cwd: workspace_uri,\n=======\n                    cwd: workspace_uri.clone(),\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n}\n\n#[tokio::test]\nasync fn historical_sqlite_shim_keeps_parallel_owner_fixtures_isolated() {\n    let (canonical_root, canonical) = historical_pool(false).await;\n    let (displaced_root, displaced) = historical_pool(true).await;\n    assert_ne!(canonical_root.path(), displaced_root.path());\n    assert!(canonical_root.path().join(\"historical.sqlite3\").is_file());\n    assert!(displaced_root.path().join(\"historical.sqlite3\").is_file());\n\n    let original_displaced: Vec<Vec<u8>> =\n        sqlx::query_scalar(\"SELECT checksum FROM _sqlx_migrations ORDER BY version\")\n            .fetch_all(&displaced)\n            .await\n            .expect(\"independent displaced migration history\");\n    sqlx::query(\"UPDATE _sqlx_migrations SET checksum = x'00' WHERE version = 4\")\n        .execute(&canonical)\n        .await\n        .expect(\"corrupt only the canonical test fixture\");\n    let still_displaced: Vec<Vec<u8>> =\n        sqlx::query_scalar(\"SELECT checksum FROM _sqlx_migrations ORDER BY version\")\n            .fetch_all(&displaced)\n            .await\n            .expect(\"unchanged independent migration history\");\n    assert_eq!(still_displaced, original_displaced);\n\n    canonical.close().await;\n    displaced.close().await;\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let (directory, pool) = historical_pool(displaced).await;\n=======\n        let (_fixture_directory, pool) = historical_pool(displaced).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "region": 3,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let (directory, pool) = historical_pool(true).await;\n=======\n        let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "region": 4,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let (directory, pool) = historical_pool(displaced).await;\n=======\n    let (_fixture_directory, pool) = historical_pool(displaced).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "region": 5,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let (directory, pool) = historical_pool(/*displaced*/ true).await;\n=======\n    let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        assert_eq!(\n            ledger.admit_host(HostObservation {\n                host_id: \"host-one\".into(),\n                failure_domain_id: \"rack-one\".into(),\n                generation: 1,\n                observed_at_ms: 1_000,\n                valid_until_ms: 10_000,\n                capacity: Resources {\n                    cpu_millis: 1_000,\n                    memory_bytes: 1 << 20,\n                    accelerator_millis: 1_000,\n                },\n            }),\n            Ok(()),\n            \"valid host fixture must be admitted\"\n        );\n        ledger\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() {\n        let directory = tempfile::tempdir().unwrap_or_else(|error| panic!(\"{error:?}\"));\n        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!(\"{error:?}\")),\n            Arc::new(FixedClock(2_000)),\n        )\n        .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        registry\n            .put_lease(\n                AuthorityLease {\n                    schema_version: 1,\n                    lease_id: \"fleet-issue-one\".into(),\n                    authority_epoch: 7,\n                    revision: 1,\n                    binding,\n                    issued_at_unix_ms: 1_000,\n                    expires_at_unix_ms: 8_000,\n                },\n                0,\n            )\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let port = FleetAuthorityPort::new(registry.verifier());\n        let mut ledger = ledger();\n        let (receipt, witness) = port\n            .issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n=======\n        ledger.admit_host(HostObservation {\n            host_id: \"host-one\".into(),\n            failure_domain_id: \"rack-one\".into(),\n            generation: 1,\n            observed_at_ms: 1_000,\n            valid_until_ms: 10_000,\n            capacity: Resources {\n                cpu_millis: 1_000,\n                memory_bytes: 1 << 20,\n                accelerator_millis: 1_000,\n            },\n        })?;\n        Ok(ledger)\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> FixtureResult<()> {\n        let directory = tempfile::tempdir()?;\n        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7)?,\n            Arc::new(FixedClock(2_000)),\n        )?;\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)?;\n        registry.put_lease(\n            AuthorityLease {\n                schema_version: 1,\n                lease_id: \"fleet-issue-one\".into(),\n                authority_epoch: 7,\n                revision: 1,\n                binding,\n                issued_at_unix_ms: 1_000,\n                expires_at_unix_ms: 8_000,\n            },\n            0,\n        )?;\n        let port = FleetAuthorityPort::new(registry.verifier());\n        let mut ledger = ledger()?;\n        let (receipt, witness) =\n            port.issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())?;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        registry\n            .revoke(\"fleet-issue-one\", 1, [9; 32])\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err()\n                .unwrap_or_else(|| panic!(\"revoked lease must be rejected\")),\n            FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)\n=======\n        registry.revoke(\"fleet-issue-one\", 1, [9; 32])?;\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err(),\n            Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+    "region": 3,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let first_binding = FleetAuthorityPort::binding_for_issue(&first)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n=======\n        let first_binding = FleetAuthorityPort::binding_for_issue(&first)?;\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)?;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n            // The oracle exercises overlap isolation, not lexical path rejection.\n            // Windows canonicalize() may add a verbatim disk prefix (\\\\\\\\?\\\\).\n            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)\n=======\n            let canonical = path.canonicalize()?;\n            let binding = WorkspaceBinding::new(&canonical, &fleet.root)?;\n            assert_eq!(binding.as_path(), canonical.as_path());\n            Ok(binding)\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\nuse codex_state::SqliteConfig;\nuse codex_utils_absolute_path::AbsolutePathBuf;\n\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    // Use the central SQLite shim and the same durable evidence profile as\n    // the owner. Keep this private fixture independent of owner database bytes.\n    let temp = tempfile::tempdir().expect(\"schema fixture directory\");\n    let home = AbsolutePathBuf::try_from(temp.path().canonicalize().expect(\"fixture path\"))\n        .expect(\"absolute fixture path\");\n    let pool = SqliteConfig::new_for_testing(home)\n        .open_durable_evidence_pool(&temp.path().join(\"schema-oracle.sqlite\"))\n=======\n    let directory = tempfile::tempdir().expect(\"reference SQLite directory\");\n    let sqlite_home =\n        AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect(\"absolute SQLite home\");\n    let pool = SqliteConfig::from_sqlite_home(sqlite_home)\n        .open_durable_evidence_pool(&directory.path().join(\"schema.sqlite3\"))\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19\"\n=======\n        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\"\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-supervisor/src/tick.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                // Preserve the existing queue event and expose the durable\n                // automatic-attempt identity to typed observers.\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-supervisor/src/tick.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                // Add a typed terminal observation without removing the\n                // existing TickReport fault or resetting the durable budget.\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-supervisor/src/tick.rs",
+    "region": 3,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n=======\n                // Keep the operator-visible fault rather than silently\n                // acknowledging an exhausted restart budget as a clean tick.\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let budget_fault = SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string();\n    assert_eq!(\n        supervisor.tick(now),\n        TickReport {\n            faults: vec![AgentFault {\n                agent_id: agent_id.clone(),\n                message: budget_fault.clone(),\n            }],\n        }\n=======\n    let exhausted = supervisor.tick(now);\n    // Budget exhaustion is both a durable typed event and a fail-closed\n    // operator-visible fault; never claim the exhausted tick was healthy.\n    assert_eq!(exhausted.faults.len(), 1);\n    assert_eq!(exhausted.faults[0].agent_id, agent_id);\n    assert!(\n        exhausted.faults[0]\n            .message\n            .contains(\"exhausted its restart budget\")\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let budget_fault = SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string();\n    assert_eq!(\n        supervisor.tick(now),\n        TickReport {\n            faults: vec![AgentFault {\n                agent_id: agent_id.clone(),\n                message: budget_fault.clone(),\n            }],\n        }\n=======\n    // Exhaustion is an operator-visible fail-closed fault, not an empty tick.\n    let report = supervisor.tick(now);\n    assert_eq!(report.faults.len(), 1);\n    assert_eq!(report.faults[0].agent_id, agent_id);\n    assert!(\n        report.faults[0]\n            .message\n            .contains(\"exhausted its restart budget\")\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\npretty_assertions = { workspace = true }\ntempfile = { workspace = true }\n=======\nassert_cmd = { workspace = true }\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+    "region": 1,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n/// In `cargo nextest`, `NEXTEST_BIN_EXE_*` env vars are absolute runtime paths.\n/// This helper allows callers to transparently support these runners.\n/// Explicit Cargo/Bazel metadata takes precedence over nextest metadata, including\n/// when an explicit path is invalid. No path is inferred from the build directory.\n/// Missing binary metadata is returned as `CargoBinError::NotFound`, so callers\n/// can handle unavailable optional helpers through the normal `Result` API.\n=======\n/// This helper allows callers to transparently support both.\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  },
+  {
+    "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+    "region": 2,
+    "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    Err(CargoBinError::NotFound {\n        name: name.to_owned(),\n        env_keys,\n        fallback: \"Cargo/Bazel binary metadata is unavailable\".to_owned(),\n    })\n=======\n    // Bazel exposes declared binaries through the env keys checked above.\n    // Do not resolve an undeclared optional binary through Cargo's sibling\n    // layout, which is outside Bazel's declared runfiles.\n    if runfiles_available() {\n        return Err(CargoBinError::NotFound {\n            name: name.to_owned(),\n            env_keys,\n            fallback: \"binary was not declared in the Bazel test runfiles environment\".to_owned(),\n        });\n    }\n    // Legacy Cargo tests place binaries beside the test executable, or one\n    // level above its deps directory. Resolve that bounded location directly:\n    // assert_cmd 2.2 panics when an optional binary is absent.\n    let mut path =\n        std::env::current_exe().map_err(|source| CargoBinError::CurrentExe { source })?;\n    path.pop();\n    if path.ends_with(\"deps\") {\n        path.pop();\n    }\n    path.push(format!(\"{name}{}\", std::env::consts::EXE_SUFFIX));\n    if path.is_file() {\n        Ok(path)\n    } else {\n        Err(CargoBinError::NotFound {\n            name: name.to_owned(),\n            env_keys,\n            fallback: format!(\"Cargo binary was not found at {}\", path.display()),\n        })\n    }\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  }
+]
