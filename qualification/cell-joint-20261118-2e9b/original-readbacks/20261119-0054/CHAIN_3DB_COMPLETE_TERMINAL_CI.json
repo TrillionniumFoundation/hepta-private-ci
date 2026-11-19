@@ -1,0 +1,1889 @@
+{
+  "schema": "chain-original-3db-complete-ci-terminal-readback-v1",
+  "head": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+  "all_final": true,
+  "runs": 26,
+  "automatic_runs": 25,
+  "job_denominator": 205,
+  "run_conclusions": {
+    "success": 15,
+    "failure": 11
+  },
+  "job_conclusions": {
+    "success": 156,
+    "failure": 41,
+    "skipped": 7,
+    "cancelled": 1
+  },
+  "failed_job_logs": 42,
+  "all_failed_job_logs_full_bytes_verified": true,
+  "api_failures": 0,
+  "snapshot": {
+    "path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/automatic-ci-1/SNAPSHOT.json",
+    "bytes": 2687480,
+    "sha256": "0bba1da882a254b30ca5a4d707cc83e5b12eda266a4a583c5eacca3ef5472c90"
+  },
+  "collector_cost": {
+    "ended_utc": "2026-11-19T05:27:04.972748+00:00",
+    "total_wall_seconds": 6564.650439937017,
+    "aggregate_child_user_cpu_seconds": 42.822611,
+    "aggregate_child_system_cpu_seconds": 10.497413
+  },
+  "provider_duration_ms_sum": 29408000,
+  "provider_duration_sum_is_not_cpu_or_money": true,
+  "monetary_cost": null,
+  "full_physical_cost_closed": false,
+  "rows": [
+    {
+      "run_id": 44451670848,
+      "name": "PoN owned process cleanup",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 8,
+      "job_conclusions": {
+        "success": 8
+      },
+      "artifacts": 8,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 6,
+            "job_runs": [
+              {
+                "job_id": 135316872735,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316872948,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873071,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873137,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873154,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873235,
+                "duration_ms": 0
+              }
+            ]
+          },
+          "MACOS": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316873120,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873228,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 247000
+      }
+    },
+    {
+      "run_id": 44451670885,
+      "name": "PoN work and time contract V1",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 2,
+      "job_conclusions": {
+        "success": 2
+      },
+      "artifacts": 2,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316873325,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873811,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 178000
+      }
+    },
+    {
+      "run_id": 44451670905,
+      "name": "trnm-required-baseline",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 21,
+      "job_conclusions": {
+        "failure": 8,
+        "success": 13
+      },
+      "artifacts": 25,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873320,
+          "name": "repository-truth",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873320-log.stdout",
+          "bytes": 141155,
+          "sha256": "e64c3176219619cf520a5945a41fd3ae5d65bd57a9a0cdf56a963c507e97befa"
+        },
+        {
+          "job_id": 135316873675,
+          "name": "prospective-merge (repository-truth)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873675-log.stdout",
+          "bytes": 142372,
+          "sha256": "264b0419aa7ad9c1a545b2a6c113243ce87bf7076abee9008967de27ea6957b1"
+        },
+        {
+          "job_id": 135316873679,
+          "name": "prospective Rust shard (runtime)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873679-log.stdout",
+          "bytes": 959873,
+          "sha256": "9102d2a53be4a2fdc0be5d8dbe749e69519f1eb16d2d1f82c3da932aafb2ed1a"
+        },
+        {
+          "job_id": 135316873728,
+          "name": "protocol-contract",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873728-log.stdout",
+          "bytes": 358155,
+          "sha256": "eb0ab7c1b475c3216a766fc91d03148d1ef04bbce719b51b4ee26b052280c275"
+        },
+        {
+          "job_id": 135316873774,
+          "name": "prospective-merge (protocol-contract)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873774-log.stdout",
+          "bytes": 360849,
+          "sha256": "98d34fb6b8253cdb61fb26c9b2bd419cc7081170a0b0963b5b05a34252fbcbcc"
+        },
+        {
+          "job_id": 135316873880,
+          "name": "rust-baseline shard (runtime)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873880-log.stdout",
+          "bytes": 955709,
+          "sha256": "82cd27d2b74724aa1fcf5846ce1f959ef7835d6b21a119863a60665941d3e11a"
+        },
+        {
+          "job_id": 135353728984,
+          "name": "prospective-merge (rust-baseline)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135353728984-log.stdout",
+          "bytes": 40422,
+          "sha256": "26a6475267e519bee6a914c6a178f1f3eccf94cd421c9ee3b53105ef372a306b"
+        },
+        {
+          "job_id": 135358992366,
+          "name": "rust-baseline",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135358992366-log.stdout",
+          "bytes": 38268,
+          "sha256": "054d744902df5fa65185d45d949957c400626740de9168419dfc634df6f9af08"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 21,
+            "job_runs": [
+              {
+                "job_id": 135316873320,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873582,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873628,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873635,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873650,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873655,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873675,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873679,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873680,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873683,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873724,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873728,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873771,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873774,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873780,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873879,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873880,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873920,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320322611,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135353728984,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135358992366,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 6874000
+      }
+    },
+    {
+      "run_id": 44451670914,
+      "name": "PoN recent batch exact-source acceptance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "failure": 4
+      },
+      "artifacts": 4,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873073,
+          "name": "recent batch (ubuntu-24.04-arm, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873073-log.stdout",
+          "bytes": 369517,
+          "sha256": "86d6b15a406f2a06ddc1dfe3a64eb8a339a6e642c490e9f4b50ce74ffc9c537b"
+        },
+        {
+          "job_id": 135316873255,
+          "name": "recent batch (ubuntu-24.04, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873255-log.stdout",
+          "bytes": 368630,
+          "sha256": "778af6a61bf683f68b01ff94f2fb7fef36aedc468a4fd4e43221078123f565e9"
+        },
+        {
+          "job_id": 135316873401,
+          "name": "recent batch (ubuntu-24.04, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873401-log.stdout",
+          "bytes": 369757,
+          "sha256": "14540fc4acfa9ec7dbe937a65fd1e7e5af85dbe10fb81600f944c1793f2cc0f3"
+        },
+        {
+          "job_id": 135316873524,
+          "name": "recent batch (ubuntu-24.04-arm, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873524-log.stdout",
+          "bytes": 368420,
+          "sha256": "48bd4f9bac58e5928c1627c4dd7114675757f597b9f667082e8834578c592b41"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316873073,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873255,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873401,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873524,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1029000
+      }
+    },
+    {
+      "run_id": 44451670921,
+      "name": "PoN classical and quantum credit contract",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 2,
+      "job_conclusions": {
+        "success": 2
+      },
+      "artifacts": 2,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316873399,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874074,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 300000
+      }
+    },
+    {
+      "run_id": 44451670930,
+      "name": "PoN W1 transparent candidate observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 2,
+      "job_conclusions": {
+        "success": 2
+      },
+      "artifacts": 2,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316873383,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873614,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 313000
+      }
+    },
+    {
+      "run_id": 44451670943,
+      "name": "Release finality reference and native baseline",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "success": 4
+      },
+      "artifacts": 4,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316873646,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873978,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874021,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874022,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 483000
+      }
+    },
+    {
+      "run_id": 44451670945,
+      "name": "CodeQL exact-source analysis and SARIF retention",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 6,
+      "job_conclusions": {
+        "success": 6
+      },
+      "artifacts": 6,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 6,
+            "job_runs": [
+              {
+                "job_id": 135316873345,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873577,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873634,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873670,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873688,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873912,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1181000
+      }
+    },
+    {
+      "run_id": 44451670977,
+      "name": "PoN W1 work security observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 23,
+      "job_conclusions": {
+        "failure": 2,
+        "success": 20,
+        "skipped": 1
+      },
+      "artifacts": 22,
+      "failed_job_logs": [
+        {
+          "job_id": 135316874110,
+          "name": "W1 fresh challenge service (x64, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874110-log.stdout",
+          "bytes": 83086,
+          "sha256": "79407656fad3e55d0724fbd867e0e78ce16ef5e6a78205906e222b454631464a"
+        },
+        {
+          "job_id": 135316874680,
+          "name": "W1 fresh challenge service (x64, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874680-log.stdout",
+          "bytes": 83897,
+          "sha256": "7e538c6168c047272d7ee1f7889a33b86d983c78d471dd0ff1ecc48b4ac117aa"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 23,
+            "job_runs": [
+              {
+                "job_id": 135316874110,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874392,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874437,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874438,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874449,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874483,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874485,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874521,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874539,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874545,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874596,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874605,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874611,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874616,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874621,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874623,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874640,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874641,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874665,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874680,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874683,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874717,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316931156,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1582000
+      }
+    },
+    {
+      "run_id": 44451671002,
+      "name": "PoN next architecture exact-source observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "success": 4
+      },
+      "artifacts": 4,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316874268,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874363,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874386,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874477,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1235000
+      }
+    },
+    {
+      "run_id": 44451671017,
+      "name": "CodeQL exact-source analysis export",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 1,
+      "job_conclusions": {
+        "failure": 1
+      },
+      "artifacts": 1,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873587,
+          "name": "export",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873587-log.stdout",
+          "bytes": 41787,
+          "sha256": "e3caa51796048727b5c42a04614ff93329a87ac4cbefe8dddecd8e0f56983127"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 1,
+            "job_runs": [
+              {
+                "job_id": 135316873587,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1265000
+      }
+    },
+    {
+      "run_id": 44451671020,
+      "name": "PoN W1 QROM implementation observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 3,
+      "job_conclusions": {
+        "success": 3
+      },
+      "artifacts": 3,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 3,
+            "job_runs": [
+              {
+                "job_id": 135316873669,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874005,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874115,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 107000
+      }
+    },
+    {
+      "run_id": 44451671028,
+      "name": "W1 QROM proof-chain observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 2,
+      "job_conclusions": {
+        "success": 2
+      },
+      "artifacts": 2,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316874018,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874248,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 109000
+      }
+    },
+    {
+      "run_id": 44451671031,
+      "name": "PoN original budget component controls",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "failure": 3,
+        "success": 1
+      },
+      "artifacts": 4,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873472,
+          "name": "Original budget controls (budget-before-v2)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873472-log.stdout",
+          "bytes": 57922,
+          "sha256": "1e858e4f9a62d2f6d47f2fa7f26914ac1a9d3513c7365732b2d115853bfd7099"
+        },
+        {
+          "job_id": 135316873754,
+          "name": "Original budget controls (pool-scan-before)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873754-log.stdout",
+          "bytes": 57789,
+          "sha256": "ec7d1fc815c75c0ad0665cd1ba61aaa9624a1529cc24e72fc0d119e3ae915a5f"
+        },
+        {
+          "job_id": 135316873805,
+          "name": "Original budget controls (pool-before-v2)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873805-log.stdout",
+          "bytes": 57876,
+          "sha256": "65c4ccf1397cfb7832c34bcdb7a71df08cf682374af64510263ed55429dd17d6"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316873472,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873754,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316873805,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874013,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 881000
+      }
+    },
+    {
+      "run_id": 44451671077,
+      "name": "hia-native-migration",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 54,
+      "job_conclusions": {
+        "success": 39,
+        "failure": 10,
+        "skipped": 4,
+        "cancelled": 1
+      },
+      "artifacts": 52,
+      "failed_job_logs": [
+        {
+          "job_id": 135316876061,
+          "name": "source-and-archive",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876061-log.stdout",
+          "bytes": 125930,
+          "sha256": "e7f9783900ef35c7c8c1fb5096a7008bfbf5f2bde6264b46845f24dd81e1eca1"
+        },
+        {
+          "job_id": 135316876209,
+          "name": "native-prefix-3",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876209-log.stdout",
+          "bytes": 50813,
+          "sha256": "a47456260aadb510b6c7435bf63c1cc33c9ce5c92b84cf4a90d7de5276bd38b1"
+        },
+        {
+          "job_id": 135316876231,
+          "name": "native-node-settings",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876231-log.stdout",
+          "bytes": 53546,
+          "sha256": "8b9861bbe8f5bd4d18e2c6694f075e7678bc8d2e538a4c95998f4bda7fb9fb1a"
+        },
+        {
+          "job_id": 135316876306,
+          "name": "native-prefix-0",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876306-log.stdout",
+          "bytes": 50813,
+          "sha256": "c408493131296a1415964c7684d3d77243fd1204d870ba23c2e7e5a37b9422d9"
+        },
+        {
+          "job_id": 135316876364,
+          "name": "native-batch-physical",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876364-log.stdout",
+          "bytes": 50904,
+          "sha256": "a6c2cc86d7a08cc485e35e77d784868389cc4ec55f874bcd2c8ecf4bdd41e7cd"
+        },
+        {
+          "job_id": 135316876420,
+          "name": "native-batch-semantic",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876420-log.stdout",
+          "bytes": 51151,
+          "sha256": "58b13cee6779101acd1b10365a388fa1fd7c9e0360b2ce5db2490ed8cd99cdc7"
+        },
+        {
+          "job_id": 135316876487,
+          "name": "native-prefix-2",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876487-log.stdout",
+          "bytes": 50814,
+          "sha256": "e5d1b3e129a1c2e59fd21707e032bd90e24ab54325a01aa04e64bb13b6c76f7c"
+        },
+        {
+          "job_id": 135316876583,
+          "name": "native-prefix-1",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876583-log.stdout",
+          "bytes": 48998,
+          "sha256": "c9b8db0b1a35fa5a15da59038118ab0636f944edb519a74b697d5edd58d1ab8d"
+        },
+        {
+          "job_id": 135316876695,
+          "name": "native-prefix-scoped",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316876695-log.stdout",
+          "bytes": 50938,
+          "sha256": "342bb7e13fdb0bceb411070ae00cbbda20f59d1b846ad54c24025d518a8b7750"
+        },
+        {
+          "job_id": 135320960017,
+          "name": "native-node-pool-original-m05",
+          "conclusion": "cancelled",
+          "exit_code": 0,
+          "file": "job-135320960017-log.stdout",
+          "bytes": 58087,
+          "sha256": "46d07be7f56f34ce0ae6b0ab7a200bef000c98c434a9119bbfdcb6421226ad3a"
+        },
+        {
+          "job_id": 135322270582,
+          "name": "native-work-owner-original",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135322270582-log.stdout",
+          "bytes": 40951,
+          "sha256": "7fd995c3393dff75f4ef1a88be04b4b1ad9b54629b77e9e043fa25ddafcb5f58"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 54,
+            "job_runs": [
+              {
+                "job_id": 135316875533,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875873,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875989,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876031,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876055,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876061,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876069,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876103,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876124,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876126,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876172,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876197,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876199,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876209,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876231,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876238,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876241,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876243,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876248,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876254,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876261,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876275,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876286,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876306,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876312,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876316,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876343,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876364,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876368,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876383,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876391,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876420,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876448,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876468,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876487,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876508,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876553,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876583,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316876695,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135319060091,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320178397,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320392504,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320540644,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320931276,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135320960017,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135321209138,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135321927473,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135321927560,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135322159378,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135322270582,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135326212495,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135326737775,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135326738075,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135328795658,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 2103000
+      }
+    },
+    {
+      "run_id": 44451671088,
+      "name": "PoN W1 QROM closure observations",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 3,
+      "job_conclusions": {
+        "success": 3
+      },
+      "artifacts": 3,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 3,
+            "job_runs": [
+              {
+                "job_id": 135316874109,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874306,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874452,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 168000
+      }
+    },
+    {
+      "run_id": 44451671093,
+      "name": "PoN baseline diagnostic readback",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 6,
+      "job_conclusions": {
+        "success": 5,
+        "skipped": 1
+      },
+      "artifacts": 5,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 6,
+            "job_runs": [
+              {
+                "job_id": 135316873851,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874155,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874195,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874203,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874222,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875701,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 597000
+      }
+    },
+    {
+      "run_id": 44451671100,
+      "name": "Chain Hepta closure evidence contracts",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 6,
+      "job_conclusions": {
+        "success": 6
+      },
+      "artifacts": 0,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 6,
+            "job_runs": [
+              {
+                "job_id": 135316873871,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874045,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874061,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874202,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874247,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874387,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 214000
+      }
+    },
+    {
+      "run_id": 44451671106,
+      "name": "PoN priority acceptance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 14,
+      "job_conclusions": {
+        "failure": 3,
+        "success": 10,
+        "skipped": 1
+      },
+      "artifacts": 12,
+      "failed_job_logs": [
+        {
+          "job_id": 135316874028,
+          "name": "retained-pressure-failure",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874028-log.stdout",
+          "bytes": 4109,
+          "sha256": "4988ef333c6dbe77853c2c1f7f5188d3741f8cc77d04d4d02549b222e98daa70"
+        },
+        {
+          "job_id": 135316874168,
+          "name": "native priorities (ubuntu-24.04, prospective-merge, history)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874168-log.stdout",
+          "bytes": 46657,
+          "sha256": "1868f91672c9c515e8e80c3adee3b7a558bd91ad649df3d6f1f4e5821941733c"
+        },
+        {
+          "job_id": 135316874324,
+          "name": "native priorities (ubuntu-24.04, head, history)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874324-log.stdout",
+          "bytes": 45883,
+          "sha256": "868a490c81a311bbf0372a0bfd6d4c172519b21b16b6fef8cd373c08a856b5ec"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 14,
+            "job_runs": [
+              {
+                "job_id": 135316874028,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874168,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874225,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874256,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874266,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874324,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874326,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874329,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874399,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874410,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874422,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874474,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874504,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875816,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 3455000
+      }
+    },
+    {
+      "run_id": 44451671128,
+      "name": "PoN native full relation and path controls",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 1,
+      "job_conclusions": {
+        "success": 1
+      },
+      "artifacts": 1,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 1,
+            "job_runs": [
+              {
+                "job_id": 135316874103,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 402000
+      }
+    },
+    {
+      "run_id": 44451671148,
+      "name": "PoN original large-state CPU acceptance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 8,
+      "job_conclusions": {
+        "success": 8
+      },
+      "artifacts": 8,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 8,
+            "job_runs": [
+              {
+                "job_id": 135316874261,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874522,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874569,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874579,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874676,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874681,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874720,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874743,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 719000
+      }
+    },
+    {
+      "run_id": 44451671150,
+      "name": "PoN four-axis throughput evidence controls",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 2,
+      "job_conclusions": {
+        "failure": 1,
+        "success": 1
+      },
+      "artifacts": 2,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873822,
+          "name": "evidence-controls",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873822-log.stdout",
+          "bytes": 106498,
+          "sha256": "34b16d195d4d2662fc2f6b7e1a18800c7eb3d7ac8ba4dc7e0ddbd7c54c4d885f"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 2,
+            "job_runs": [
+              {
+                "job_id": 135316873822,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874368,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1067000
+      }
+    },
+    {
+      "run_id": 44451671161,
+      "name": "PoN branch encoding exact-source acceptance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "failure": 4
+      },
+      "artifacts": 4,
+      "failed_job_logs": [
+        {
+          "job_id": 135316873808,
+          "name": "branch encoding (ubuntu-24.04-arm, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316873808-log.stdout",
+          "bytes": 187622,
+          "sha256": "78a52650eaca442403d2ca8c2df600fe935e41fe186d0263620d8b0d76c4999a"
+        },
+        {
+          "job_id": 135316874226,
+          "name": "branch encoding (ubuntu-24.04-arm, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874226-log.stdout",
+          "bytes": 188366,
+          "sha256": "ccc83e8504520bc9e4c521f1bf84c49eb389d3f5fc80a21454e6e8c505b5566b"
+        },
+        {
+          "job_id": 135316874230,
+          "name": "branch encoding (ubuntu-24.04, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874230-log.stdout",
+          "bytes": 188045,
+          "sha256": "9e5ab3ad17bc508a888f38f9bce9b1212e1b48ee6cd1598dd87bf9916b6d8bef"
+        },
+        {
+          "job_id": 135316874255,
+          "name": "branch encoding (ubuntu-24.04, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874255-log.stdout",
+          "bytes": 188978,
+          "sha256": "73a283143912853d0b4e67f293bf901a1776ac98d08d865d7b7f9fc329de4960"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316873808,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874226,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874230,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874255,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 1449000
+      }
+    },
+    {
+      "run_id": 44451671191,
+      "name": "PoN original workspace test-profile CPU acceptance",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "job_denominator": 4,
+      "job_conclusions": {
+        "success": 4
+      },
+      "artifacts": 4,
+      "failed_job_logs": [],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 4,
+            "job_runs": [
+              {
+                "job_id": 135316874949,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875185,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875237,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316875443,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 2112000
+      }
+    },
+    {
+      "run_id": 44451671192,
+      "name": "PoN PQ network and rollback witness",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 16,
+      "job_conclusions": {
+        "success": 12,
+        "failure": 4
+      },
+      "artifacts": 16,
+      "failed_job_logs": [
+        {
+          "job_id": 135316874415,
+          "name": "PQ network and witness (ubuntu-24.04, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874415-log.stdout",
+          "bytes": 40010,
+          "sha256": "81d850639bd258bc29e4c12fa503daa447175d6d6b65d8be50096179057d7dfa"
+        },
+        {
+          "job_id": 135316874697,
+          "name": "PQ network and witness (ubuntu-24.04, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874697-log.stdout",
+          "bytes": 40729,
+          "sha256": "843ae15123df9216e3e890879316cade58251cc30b245ae42f486d5d461a2710"
+        },
+        {
+          "job_id": 135316874751,
+          "name": "PQ network and witness (ubuntu-24.04-arm, prospective-merge)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874751-log.stdout",
+          "bytes": 40648,
+          "sha256": "6f06ee27859205caf8e09de54a62b535f65cd163bbfae3415a9143ff284f9990"
+        },
+        {
+          "job_id": 135316874786,
+          "name": "PQ network and witness (ubuntu-24.04-arm, head)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135316874786-log.stdout",
+          "bytes": 39920,
+          "sha256": "13f5269da622fc80a89a2fb2f2dd1ac7fe316f3cb86ca9a84da4b9ddc99b0704"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 16,
+            "job_runs": [
+              {
+                "job_id": 135316874172,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874374,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874382,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874415,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874433,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874460,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874530,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874540,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874560,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874580,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874644,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874675,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874697,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874701,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874751,
+                "duration_ms": 0
+              },
+              {
+                "job_id": 135316874786,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 815000
+      }
+    },
+    {
+      "run_id": 44451798839,
+      "name": "PoN fixed Host ROOT F0 diagnostic",
+      "event": "workflow_dispatch",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_denominator": 1,
+      "job_conclusions": {
+        "failure": 1
+      },
+      "artifacts": 1,
+      "failed_job_logs": [
+        {
+          "job_id": 135317303807,
+          "name": "F0 (x64, head, one baseline and one ROOT phase)",
+          "conclusion": "failure",
+          "exit_code": 0,
+          "file": "job-135317303807-log.stdout",
+          "bytes": 133850,
+          "sha256": "36ea24cdc416d4a084cc20bddb3715842856e18b37763da3b1ad15a646751cf9"
+        }
+      ],
+      "timing": {
+        "billable": {
+          "UBUNTU": {
+            "total_ms": 0,
+            "jobs": 1,
+            "job_runs": [
+              {
+                "job_id": 135317303807,
+                "duration_ms": 0
+              }
+            ]
+          }
+        },
+        "run_duration_ms": 523000
+      }
+    }
+  ]
+}

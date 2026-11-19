@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-19T04:55:19Z",
+  "observed_at_utc": "2026-11-19T05:59:08Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T23:55:19-05:00",
+  "observed_at_user_timezone": "2026-11-19T00:59:08-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -1513,7 +1513,7 @@
       "execution_tree": "e0e9e3494ab8560259ff4bb50668d3f287612b73",
       "prospective_protocol_sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
       "root": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b",
-      "status": "Both32-step training arms and original weight audit completed; fixed-order future candidate native BEFORE/AFTER selection active; zero new model generations",
+      "status": "Both32-step weights frozen;2 fixed-order future native reference pairs satisfy unchanged context/codec/dedup and retained original notices; final4-task panel incomplete, zero new model generations",
       "owner_session": "dpty-6c6be2c6d50ab70f860e9a0dc5c285905b2d01c74724fab4cc931d70fa5910b4",
       "idempotency_key": "e123-raw-function-matched-training-2b85ea-2e9b-001",
       "exclusive_owner": "e123_learning",
@@ -1559,18 +1559,134 @@
         "max_per_project": 1,
         "first_eligible_projects": 4,
         "current_agent_report": {
-          "outcome_first50_rejected": true,
-          "sniffio_first50_rejected": true,
-          "jmespath_first50_no_eligible_function": true,
-          "mistune_first50_collected": true,
-          "mistune_original_native_pairs_in_progress": true,
-          "mistune_first_before_and_after_both_exit2_api_mismatch": true,
-          "parso_fixed_order_collection_in_progress": true,
-          "qualified_future_tasks": 0,
+          "replaced_by_root_original_pair_readbacks": true,
+          "qualified_final_future_panel": 0,
           "new_model_generations": 0,
           "reference_candidate_outputs_not_model_outputs": true
         },
-        "original_native_helper_publication_commit": "2642840600615a61f8064232247badbb39b87321"
+        "original_native_helper_publication_commit": "2642840600615a61f8064232247badbb39b87321",
+        "appended_pool": {
+          "prospective_commit": "dfc8e89e9e6046b6edf51df707d73e8a5babdd94",
+          "ordered_projects": [
+            "jquast/wcwidth",
+            "scrapy/w3lib",
+            "python-validators/validators",
+            "mido/mido",
+            "un33k/python-slugify",
+            "bottlepy/bottle",
+            "python-hyper/hyperframe",
+            "python-hyper/hpack",
+            "pallets/markupsafe",
+            "dateutil/dateutil",
+            "kjd/idna",
+            "netaddr/netaddr"
+          ],
+          "prospective_before_candidate_content": true,
+          "same_50_nonmerge_first_eligible_project_and_no_output_selection": true
+        },
+        "root_original_pair_readbacks": [
+          {
+            "repository": "lepture/mistune",
+            "commit": "15ad4b0551d5e3b26639a2f156e29487a3a4bd10",
+            "parent": "d449488ce6baf5bcc386186cc01c40bf2afdc82c",
+            "index": 8,
+            "function": "parse_footnote_item",
+            "path": "src/mistune/plugins/footnotes.py",
+            "cases": 280,
+            "before_failures": 3,
+            "after_failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "timeout": false,
+            "same_original_case_set": true,
+            "model_calls": 0,
+            "candidate_selected": false,
+            "result_sha256": "37870292f6778129133f53f3f5f750956139a78a692d276446ecab183cf67d39",
+            "root_full_result_bytes_and_hash_verified": true
+          },
+          {
+            "repository": "python-babel/babel",
+            "commit": "d8ea801854b0372b367f7c1b5359e3c68e59c746",
+            "parent": "8fb9b188cbed6329a6e213fa63608a6816b3f071",
+            "index": 40,
+            "function": "unquote_string",
+            "path": "babel/messages/jslexer.py",
+            "cases": 29,
+            "before_failures": 23,
+            "after_failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "timeout": false,
+            "same_original_case_set": true,
+            "model_calls": 0,
+            "candidate_selected": false,
+            "result_sha256": "d97ac97a481d41e239a5bca032a686f32f2fdd8ceab0d7b49d911fef74a767b9",
+            "root_full_result_bytes_and_hash_verified": true
+          },
+          {
+            "repository": "pallets/jinja",
+            "commit": "2eb4542cbab101910d220229a8f09c94f76c19d1",
+            "parent": "20be10e566a505cc47bdec5fa6ad56d5fbdfb4ae",
+            "index": 41,
+            "function": "do_int",
+            "path": "src/jinja2/filters.py",
+            "cases": 132,
+            "before_failures": 1,
+            "after_failures": 0,
+            "errors": 0,
+            "skipped": 0,
+            "timeout": false,
+            "same_original_case_set": true,
+            "model_calls": 0,
+            "candidate_selected": false,
+            "result_sha256": "83cf6b60b9dd525577eac38d80570d3d34561bebf6ab459a58e6b584fe4843b0",
+            "root_full_result_bytes_and_hash_verified": true
+          }
+        ],
+        "current_context_gates": {
+          "recipe_commit": "9fe42b84503f3386f48c16c91fea422ee227af13",
+          "recipe_sha256": "cf3e7d0e207b5553618d6eee436b2550d6205c76151b655296c4e193d1a7fbbc",
+          "Mistune": {
+            "status": "CODEC_CONTEXT_DEDUP_PASSED_PENDING_LICENSE",
+            "first_tokens": 1661,
+            "planned_second_total": 6013,
+            "result_sha256": "2670acdf435b8b28bf92424cce2589d7a6796427ee91effcae9e8793c5e898e9",
+            "license_retention_reviewed": true
+          },
+          "Babel": {
+            "status": "CODEC_CONTEXT_DEDUP_PASSED_PENDING_LICENSE",
+            "first_tokens": 1426,
+            "planned_second_total": 5778,
+            "result_sha256": "fefc362286d636c68ed226cba6c905e8637f89d065df8f38ca91fb913179d5e6",
+            "license_retention_reviewed": true
+          },
+          "Jinja": {
+            "status": "PREPARATION_REJECTED",
+            "reason": "complete fixed context/reference plus shared planning reserves does not fit; no truncation permitted",
+            "result_sha256": "e89c95788d4702275ce396dba6de60724201632ba9f0a3525719a34fec2a2231"
+          },
+          "final_panel_frozen": false,
+          "native_pair_child_CPU_scope_under_review": false,
+          "physical_cost_qualified": false,
+          "original_native_CPU_scope": "outer RUSAGE_CHILDREN delta around bwrap wait; does not measure inner pytest CPU; original values preserved and not full native CPU"
+        },
+        "original_license_review": {
+          "result_sha256": "5fea20f520906bdc8340e32c71a77c7e95851edee3b15c571567dbc92ca366e0",
+          "root_full_review_read": true,
+          "distinct_original_texts": 6,
+          "revision_bound_notices": 18,
+          "root_distinct_notice_texts_all_bytes_verified": true,
+          "authenticated_users": 0,
+          "independent_human_controller": false
+        },
+        "cost_observation_v5_agent_report": {
+          "commit": "a7b4eea3cebb10477ffc6748e5330810be31dab3",
+          "future_native_sha256": "a36a3880753aea81019cdecb35554af859839c7b7d7941f7a5e0e07c08bbafaa",
+          "changed_scoring_or_deadlines": false,
+          "old_pairs_repeated": false,
+          "inner_self_and_completed_children_recorded_separately": true,
+          "root_source_review_pending": true
+        }
       },
       "inference_budget": {
         "new_generations": 56,
@@ -3003,7 +3119,7 @@
       "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
       "original_executor_mutated": false,
       "original_target_used": false,
-      "status": "NoUpdate5 failed at historical request65/64; diagnostic bc16 passed all source gates; native6 executes after preserving prior readonly ELF",
+      "status": "NoUpdate6 still fails65/64; startup13-file composition has223 source mutations and892 protected rows passing; two caller-type tails being made explicit before full1137 scan, native7 not yet run",
       "source_changes": [
         "cell_q24_prepared_learning.rs",
         "production_post_a_q24_owners.rs"
@@ -3422,10 +3538,119 @@
           "automatic_retry": false,
           "complete_NoUpdate": false
         }
+      },
+      "latest_native6": {
+        "source": "bc16f808000d797accafca1c29206d4bce5249e0",
+        "result_sha256": "37a4a84f25c751c12e51fd95e399233fafd97af71046ce7a65ca8749b547ada5",
+        "junit_sha256": "6522dfc7c963a732d87566b2d22a4bd466193f7d150d9be4a9bb39aecf09115b",
+        "cases": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "command_wall_seconds": 73.54352555098,
+        "owner_wall_seconds": 74.7234523741,
+        "child_user_cpu_seconds": 91.912055,
+        "child_system_cpu_seconds": 5.118253,
+        "component_only": true
+      },
+      "latest_complete_NoUpdate6": {
+        "source": "bc16f808000d797accafca1c29206d4bce5249e0",
+        "result_sha256": "10b86cd366bb6077841fafc585a01ab8d4bfc45e101623e3ac3ce5cabd4fbe82",
+        "junit_sha256": "813e96fd3dd4c953255b6e0627ec1d3bec5eda7bfcc8afa03dabf7945fefe1c5",
+        "native_cases": 1,
+        "failed": 1,
+        "skipped": 0,
+        "case_wall_seconds": 67.718,
+        "command_wall_seconds": 68.6101528420113,
+        "owner_wall_seconds": 132.227212806,
+        "original_read_limit": 64,
+        "refused_request": 65,
+        "stage": "Training admission before work;58 startup exchanges plus Restore/Experience/Dataset reach64",
+        "complete": false,
+        "unchanged_source_and_pins": true,
+        "mount_cleanup": true,
+        "full_cost_known": false
+      },
+      "startup_composition": {
+        "base": "bc16f808000d797accafca1c29206d4bce5249e0",
+        "production_files": 13,
+        "frozen_candidate": null,
+        "scope": [
+          "original Task/Ledger/Preparation inside one actual Root borrow",
+          "original freeze create/recover/authorize/materialize inside one synchronous original owner operation",
+          "historical successor context and slot registration inside same actual prepared operation",
+          "historical source and delivery bootstrap construction inside same original prepared operation",
+          "Restore plus already initialized Experience/Dataset receipt and checkpoint readback; separate Training/B/C operations remain"
+        ],
+        "original_max_reads": 64,
+        "deadlines_unchanged": true,
+        "async_and_durable_claim_checks_retained": true,
+        "pre_witness_physical_postreads_retained": true,
+        "cargo_lib_bins_check_exit": 0,
+        "compile_result_sha256": "c901dce97174c0150b2e549cdfe53c00146defe1e5cd5971c4d7fc54ac4ee37e",
+        "new_closed_boundaries": 13,
+        "total_closed_boundaries": 1137,
+        "protected_rows": 892,
+        "protected_rows_passed": true,
+        "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896",
+        "verifier_changed": false,
+        "original_source_probe1": {
+          "tests": 207,
+          "failures": 2,
+          "errors": 127,
+          "result_sha256": "4251b74726d07a1f42b7f868d94c83db57c1c6e471a4cc0dfcccc50dedacb0ec",
+          "retained": true
+        },
+        "original_source_probe2": {
+          "tests": 223,
+          "failures": 6,
+          "errors": 2,
+          "skips": 0,
+          "caller_rows": 251,
+          "caller_failures": 4,
+          "result_sha256": "47a5d4070aee35d11108ba9db96b6bf52ba60abf0c015166eec399d946032db1",
+          "retained": true
+        },
+        "current_manifest_sha256": "809cb64f0fe353b211a93896992fd1e492b8b26de9a275e2446f03705bc9a6aa",
+        "current_original_source_probe3": "completed; source tests pass, two actual caller type diagnostics retained",
+        "native_cases": 0,
+        "NoUpdate_pass": false,
+        "original_source_probe3": {
+          "tests": 223,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "protected_rows": 892,
+          "protected_passed": true,
+          "caller_rows": 251,
+          "caller_failures": 2,
+          "result_sha256": "f8f11d823dc378c5c7cddda880b0feaaff1ae744cf5a561a952f727a35d7c41b",
+          "full_original_CLI_started": false
+        }
+      },
+      "complete_original_archives": {
+        "published_commit": "ebb805baa373271bdff58a8c0774438a8b769e4e",
+        "tree": "ff0fa35328267beed92079c1919e40510e174964",
+        "source_archive": {
+          "files": 190,
+          "bytes": 3006828,
+          "sha256": "b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee"
+        },
+        "native4_NoUpdate5_archive": {
+          "files": 1202,
+          "bytes": 59040488,
+          "sha256": "33b9191d52c59bcd57185e46d756299bb0aec92fb094ab0306b3e6153cf08bf0",
+          "exact_parts": 7,
+          "all_chunks_and_total_root_verified": true
+        },
+        "NoUpdate6_result_xml_stdout_published": true,
+        "NoUpdate6_complete_archive_pending": true,
+        "blob_limit_unchanged": 512000,
+        "exact_hash_exceptions": 8
       }
     },
     "cold_fresh_D_implementation": {
-      "status": "Original cold D product transaction integrated; current native component controls passed; actual Root-store controls running; zero D/FinalUse",
+      "status": "Complete D parent harness compiled and root-reviewed; actual protected Root store component passed with two original Armed operations and separate same-identity registry; zero full D/FinalUse execution",
       "root": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/source",
       "base": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
       "stage1_local_commit": "9d3fbbcfa717e511ada483acba195faa899f3b0e",
@@ -3500,6 +3725,41 @@
         "scope": "Pass explicit original CaptureRetired or ReadFinalized mode into the existing original capture-plus-independent-read comparison; no absent mode or learning handoff admitted",
         "cargo_check_exit_agent_report": 0,
         "actual_D_executions": 0
+      },
+      "latest": {
+        "source": "ce154d42c9ced937f17d1b3bc2b6d1f55de75d30",
+        "tree": "01681bf98a79791f8a8ea6095b517417e0eec275",
+        "harness_stage4_source": "b417cec0c86e837a27884d013349bd83acdebd8d",
+        "stage4_full_diff_sha256": "9640f407a1fd687236a74902a1060ee8a208e80f24527c163bf2c409e0b976ed",
+        "stage4_full_root_reviewed": true,
+        "compile4_result_sha256": "2e56a96c29a8ab2d8a78a7622d7578412764e18d18447d508c5a87e71a835159",
+        "compile4_seconds": 82.930134258,
+        "stage6_diff_sha256": "8d152131a74caaf2fa5cdc8569a1823705623fd055f3a3e0eb00d0c98c70515f",
+        "stage6_root_reviewed": true,
+        "native_root_store5": {
+          "result_sha256": "70e0426afab89ca0b360c710253d4c6f997cf4015b225b526299ae848897af10",
+          "junit_sha256": "e894b7726c540d3714ebfeeafa3797a34fe2bd1bc7314434ab6ed28796d987ca",
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "retries": 0,
+          "owner_wall_seconds": 93.4258949230425,
+          "child_user_cpu_seconds": 87.977911,
+          "child_system_cpu_seconds": 7.980821,
+          "source_unchanged": true,
+          "mount_cleanup": true,
+          "original_same_state_reopen_StateLocked_failure_retained": true
+        },
+        "new_D_executions": 0,
+        "FinalUse_issuer_calls": 0,
+        "human_independent_controller_authentications": 0,
+        "Adopt_artifact_expiry_blocker": {
+          "post_A_CURRENT_lifetime_seconds": 240,
+          "original_retirement_wait_seconds": 300,
+          "NoUpdate_initial_CURRENT_lifetime_seconds": 600,
+          "limits_changed": false,
+          "original_owner_reauthorization_required": true
+        }
       }
     }
   },
@@ -4328,7 +4588,7 @@
       }
     },
     "native_operation_graph_followup": {
-      "status": "Original3db F0 failed; own next candidate reproduces and repairs cost-observer lock-loss; native owned-append controls passed but no new F0 executed",
+      "status": "Next native append source e8b published in draft970 and original unique F0 failed; complete original26 CI terminal and byte-verified; next original bottleneck repair in progress",
       "root": "/home/qq/work/chain-native-operation-readback-20261119-2e9b/source",
       "base": "f088f1d4f8a50aff0c5ecd465480b2aeee6e5e94",
       "original_baseline_imports": 10,
@@ -4428,11 +4688,28 @@
         "total_runs": 26,
         "automatic_runs": 25,
         "unique_F0_runs": 1,
-        "snapshot_jobs": 199,
-        "snapshot_failed_logs": 24,
-        "snapshot_original_automatic_runs_still_active": 1,
-        "terminal_collection_continues": true,
-        "active_count_agent_report": true
+        "all_terminal": true,
+        "jobs": 205,
+        "run_conclusions": {
+          "success": 15,
+          "failure": 11
+        },
+        "job_conclusions": {
+          "success": 156,
+          "failure": 41,
+          "skipped": 7,
+          "cancelled": 1
+        },
+        "failed_or_cancelled_full_logs": 42,
+        "all_logs_SHA_verified": true,
+        "summary_sha256": "3df84447086721e13573d58baaa2a75fc77285aead58ee40b3a82116705b9aab",
+        "snapshot_sha256": "0bba1da882a254b30ca5a4d707cc83e5b12eda266a4a583c5eacca3ef5472c90",
+        "collector_wall_seconds": 6564.650439937017,
+        "collector_child_user_cpu_seconds": 42.822611,
+        "collector_child_system_cpu_seconds": 10.497413,
+        "provider_duration_ms_sum": 29408000,
+        "provider_duration_is_not_CPU_or_money": true,
+        "full_physical_cost_closed": false
       },
       "next_work": "Preserve separate actual SQL transactions/frontiers; investigate first full graph and per-operation Host physical checks; repair current exact source-lock. Equal average CPU cap/refill alone is not an impossibility proof: cap-before-debit, actual initial2s, reservations and maximum unobserved debit need exact analysis. Original depletion excludes initial-zero credit.",
       "full_physical_cost_closed": false,
@@ -4464,16 +4741,586 @@
       },
       "native_append_candidate": {
         "base": "f0a8364118df01113c14d6a81fbb6fdb6210e4ff",
-        "frozen_source": null,
+        "frozen_source": "e8b0ec93ab6a6a1ff5e36cfcf9d1179e030a5975",
         "production_patch_sha256": "80a4dd5bd62a7e6c01be72988b40ba1d57518979e55eacbf841d5a271f4601dc",
         "native_append_source_sha256": "26c6cfdf3646f88d4f79c7705fb611bcb0273bc5396e04a4b89ede2b36a1abb0",
         "result_sha256": "1ad1995c16c7f89bbf870a792b5e148092e1b47fec34a191c02b39437257fbd0",
         "actual_original_postwrite_command_exit": 0,
         "original49_plus_new6_cases_passed_agent_report": 55,
         "ignored_agent_report": 0,
-        "root_full_diff_review_pending": true,
+        "root_full_diff_review_pending": false,
         "no_cross_SQL_transaction_frontier": true,
-        "no_new_F0": true
+        "no_new_F0": false,
+        "tree": "c896826d4f376d6643b05c15486f573e9aff6546",
+        "pr": 970,
+        "root_full_diff_reviewed": true,
+        "original133_all_passed": true,
+        "original133_result_sha256": "c58344e87d6db817353675e85095ca6cd58386e82234446c995d9a189cde38ea",
+        "public512_controls": {
+          "passed": 294,
+          "failed": 1,
+          "ignored": 2,
+          "original512_bad_products_cpu_ns": 298399949,
+          "unchanged_allowance_ns": 400000000,
+          "remaining_ns": 101600051,
+          "minimum_start_reserve_ns": 100000000,
+          "forced_cpu_or_budget_changes": false
+        },
+        "unique_original_F0": {
+          "all_planned_business_packets": [
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 0,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 1,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 2,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 3,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 4,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 5,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 6,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 7,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 8,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 9,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 10,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 11,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 12,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 13,
+              "phase": "baseline",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 14,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 15,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 16,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 17,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 18,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 19,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 20,
+              "phase": "baseline",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 0,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 1,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 2,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 3,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 4,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 5,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 1,
+              "packet_index": 6,
+              "phase": "valid-work-root",
+              "timely_network_ack": true
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 7,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 8,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 9,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 10,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 11,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 12,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 13,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 14,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 15,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 16,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 17,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 18,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 19,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            },
+            {
+              "ack_is_not_confirmation": true,
+              "observed_attempts": 0,
+              "packet_index": 20,
+              "phase": "valid-work-root",
+              "timely_network_ack": false
+            }
+          ],
+          "all_planned_rounds": [
+            {
+              "actual_ended_ns": 18899795997,
+              "actual_started_ns": 1000539523,
+              "confirmed_inside_original_window": true,
+              "elapsed_from_scheduled_ns": 17899795997,
+              "end_lateness_from_four_second_deadline_ns": 13899795997,
+              "four_second_slo_met": false,
+              "observed_exactly_once": true,
+              "phase": "baseline",
+              "round": 0,
+              "scheduled_offset_ns": 1000000000,
+              "start_lateness_from_schedule_ns": 539523
+            },
+            {
+              "actual_ended_ns": 30001070512,
+              "actual_started_ns": 18899811560,
+              "confirmed_inside_original_window": false,
+              "elapsed_from_scheduled_ns": 25001070512,
+              "end_lateness_from_four_second_deadline_ns": 21001070512,
+              "four_second_slo_met": false,
+              "observed_exactly_once": true,
+              "phase": "baseline",
+              "round": 1,
+              "scheduled_offset_ns": 5000000000,
+              "start_lateness_from_schedule_ns": 13899811560
+            },
+            {
+              "actual_ended_ns": null,
+              "actual_started_ns": null,
+              "confirmed_inside_original_window": false,
+              "elapsed_from_scheduled_ns": null,
+              "end_lateness_from_four_second_deadline_ns": null,
+              "four_second_slo_met": false,
+              "observed_exactly_once": false,
+              "phase": "baseline",
+              "round": 2,
+              "scheduled_offset_ns": 9000000000,
+              "start_lateness_from_schedule_ns": null
+            },
+            {
+              "actual_ended_ns": 30055385009,
+              "actual_started_ns": 1053566843,
+              "confirmed_inside_original_window": false,
+              "elapsed_from_scheduled_ns": 29055385009,
+              "end_lateness_from_four_second_deadline_ns": 25055385009,
+              "four_second_slo_met": false,
+              "observed_exactly_once": true,
+              "phase": "valid-work-root",
+              "round": 0,
+              "scheduled_offset_ns": 1000000000,
+              "start_lateness_from_schedule_ns": 53566843
+            },
+            {
+              "actual_ended_ns": null,
+              "actual_started_ns": null,
+              "confirmed_inside_original_window": false,
+              "elapsed_from_scheduled_ns": null,
+              "end_lateness_from_four_second_deadline_ns": null,
+              "four_second_slo_met": false,
+              "observed_exactly_once": false,
+              "phase": "valid-work-root",
+              "round": 1,
+              "scheduled_offset_ns": 5000000000,
+              "start_lateness_from_schedule_ns": null
+            },
+            {
+              "actual_ended_ns": null,
+              "actual_started_ns": null,
+              "confirmed_inside_original_window": false,
+              "elapsed_from_scheduled_ns": null,
+              "end_lateness_from_four_second_deadline_ns": null,
+              "four_second_slo_met": false,
+              "observed_exactly_once": false,
+              "phase": "valid-work-root",
+              "round": 2,
+              "scheduled_offset_ns": 9000000000,
+              "start_lateness_from_schedule_ns": null
+            }
+          ],
+          "all_services_known_empty": true,
+          "archive_bytes": 18781500,
+          "archive_sha256": "6f0550eff271a1f6b2328595cf75b2099b5b34963460df16bd7220412f84d46b",
+          "artifact_id": 14501973522,
+          "business_pass": false,
+          "confirmed_in_original_thirty_second_phases": 1,
+          "controller_resource_summary": {
+            "complete": true,
+            "observed_boundary_samples": 6,
+            "per_actor_rss_qualified": false,
+            "phases": [
+              {
+                "cpu_usage_delta_usec": 2034512,
+                "expected_phase_actors": 0,
+                "observations": [
+                  {
+                    "cpu_usage_usec": 6326553,
+                    "ended_monotonic_ns": 444991445249,
+                    "live_actors": 0,
+                    "memory_current_bytes": 50196480,
+                    "memory_peak_lifetime_bytes": 57884672,
+                    "stage": "before_launch",
+                    "started_monotonic_ns": 444991224863
+                  },
+                  {
+                    "cpu_usage_usec": 6705123,
+                    "ended_monotonic_ns": 449527301238,
+                    "live_actors": 0,
+                    "memory_current_bytes": 75427840,
+                    "memory_peak_lifetime_bytes": 76500992,
+                    "stage": "actors_ready",
+                    "started_monotonic_ns": 449527097377
+                  },
+                  {
+                    "cpu_usage_usec": 8361065,
+                    "ended_monotonic_ns": 480083489917,
+                    "live_actors": 0,
+                    "memory_current_bytes": 58220544,
+                    "memory_peak_lifetime_bytes": 80760832,
+                    "stage": "after_reap",
+                    "started_monotonic_ns": 480083252987
+                  }
+                ],
+                "phase": "baseline"
+              },
+              {
+                "cpu_usage_delta_usec": 3408901,
+                "expected_phase_actors": 24,
+                "observations": [
+                  {
+                    "cpu_usage_usec": 8369935,
+                    "ended_monotonic_ns": 480105494930,
+                    "live_actors": 0,
+                    "memory_current_bytes": 61841408,
+                    "memory_peak_lifetime_bytes": 80760832,
+                    "stage": "before_launch",
+                    "started_monotonic_ns": 480105279793
+                  },
+                  {
+                    "cpu_usage_usec": 8809098,
+                    "ended_monotonic_ns": 484553406924,
+                    "live_actors": 24,
+                    "memory_current_bytes": 121651200,
+                    "memory_peak_lifetime_bytes": 121720832,
+                    "stage": "actors_ready",
+                    "started_monotonic_ns": 484546471204
+                  },
+                  {
+                    "cpu_usage_usec": 11778836,
+                    "ended_monotonic_ns": 516686643774,
+                    "live_actors": 0,
+                    "memory_current_bytes": 107274240,
+                    "memory_peak_lifetime_bytes": 132562944,
+                    "stage": "after_reap",
+                    "started_monotonic_ns": 516686356129
+                  }
+                ],
+                "phase": "valid-work-root"
+              }
+            ],
+            "planned_boundary_samples": 6,
+            "planned_phases": 2,
+            "schema": "fixed-host-root-controller-resources-v1",
+            "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+          },
+          "four_second_slo_successes": 0,
+          "full_physical_cost_closed": false,
+          "head": "e8b0ec93ab6a6a1ff5e36cfcf9d1179e030a5975",
+          "manifest_files_checked": 443,
+          "native_binary_sha256": "1c52b6e307a9d346e64bab659f637fc3c60fa6e097855fcb13cb147946cd6aa5",
+          "native_exit_code": 101,
+          "original_business_gate": {
+            "passed": false,
+            "refusal": "BASELINE_MUST_PASS",
+            "value": null
+          },
+          "original_config_source": {
+            "files": [
+              {
+                "bytes": 7793,
+                "git_blob": "f7d8dba05cd0267b716834d76774a7ce94a1276b",
+                "path": "config/pon/ledger-v1.json",
+                "sha256": "6755e36aab0ab9f4743da331a8dcd3374d657ff80f027ecf28db922e6d5ea39a"
+              },
+              {
+                "bytes": 1596,
+                "git_blob": "54e43139d3691b62f76f9e8976e1d2a974e8524b",
+                "path": "config/pon/work-profile-v1.json",
+                "sha256": "03f7537b2fc3fa0c2f7036dd73d7088ba1ce50eafe6f2c907087d30385320880"
+              },
+              {
+                "bytes": 1383,
+                "git_blob": "9a931f21ca86563cf7e5c6415acd20a0ced7da68",
+                "path": "config/pon/model-family-v1.json",
+                "sha256": "30b250db074e7fbb5776c1474371258a6110cc1742e0e9970232a799ab790ca1"
+              },
+              {
+                "bytes": 1964,
+                "git_blob": "a60f403b2f0e7343aed61170ca2aef875a787790",
+                "path": "config/pon/devnet-v1.json",
+                "sha256": "4491b96ead11a020e8d71f27713368b65e663eef5cfc6fd0800a166b0c2a20d4"
+              },
+              {
+                "bytes": 890,
+                "git_blob": "23b0861700b07067cdc54e02081e6d4487450f6b",
+                "path": "config/pon/evaluation-round-v1.json",
+                "sha256": "f65de29ae87bbcdb1cfb3a54bba22323e68d7decfd2976395468c1ba559f5d33"
+              }
+            ],
+            "head": "e8b0ec93ab6a6a1ff5e36cfcf9d1179e030a5975"
+          },
+          "original_four_second_gate": {
+            "passed": false,
+            "refusal": "F0_ALL_SIX_SCHEDULED_FOUR_SECOND_TARGETS_REQUIRED",
+            "value": null
+          },
+          "original_numeric_depletion_gate": {
+            "passed": false,
+            "refusal": "NUMERIC_DEPLETION_REQUIRED",
+            "value": null
+          },
+          "original_preparation_controls": 7,
+          "original_reader_source_sha256": {
+            "formal/pon-nakamoto-v1/bounded_process.py": "16fa98206e75db5e925a31508e889df9d1968c32f518554f52c2a0711047b356",
+            "formal/pon-nakamoto-v1/contract_wire.py": "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+            "scripts/ci/fixed_root_f0_ownership.py": "a6376e43166cd782a90ac782c1619ef6ec6cd5cbb8d25093aedaf870c2d5dba1",
+            "scripts/ci/fixed_root_f0_resources.py": "43b86bdab5715917cd7e7140765099a75178815e730a66d438b820b9cb370a4a",
+            "scripts/ci/public_host_ci_observation.py": "cc0facf46d14bc113d6a83d6b1215afe91c7b5cf22d65892f34921c8f1b983e3",
+            "scripts/ci/run_fixed_root_phase_host.py": "f572b12727d119f7d1c1490d2a8c70de69e596155e20a837ebf94d19e24911e7",
+            "scripts/pon_public_v3_phase_read.py": "f2dd54ec905117e26fc7128218acb74c36a3ae7c16229d56c7cc04dae1a5ef41",
+            "scripts/pon_public_v3_policy_read.py": "89c45bebc01691bf42fcd65bc19625797b32d4112907f3d24ada094c6b9d698a",
+            "scripts/pon_w1_cost_matrix_reader.py": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa",
+            "scripts/read_original_native_campaign.py": "4381e3af6dac9ea2301cb78ff1761628a3b0e236750d1f291f4d51118c31b417",
+            "scripts/run_fixed_host_root_f0.py": "abf75f729dcb54d7c2bebf2c54c253c5164e801b7ebcc642bb8ba58290518cca",
+            "scripts/run_pon_w1_native_campaign.py": "eff0930837331f08882a0d69a6909e8f8dda2b23dad58cf0e6bc60d175f0a431"
+          },
+          "planned_confirmations": 6,
+          "planned_packet_exposures": 42,
+          "production_activation": false,
+          "readback_source_sha256": "ba0ea6366f038f380609f0ea34902620b0fa5b1b3cc111ef25b4c56e537f4483",
+          "run_id": 44465153982,
+          "schema": "chain-fixed-root-f0-independent-current-readback-v1",
+          "timely_network_ack_exposures": 21,
+          "tree": "c896826d4f376d6643b05c15486f573e9aff6546",
+          "unattempted_exposures": 21,
+          "unknown_cost_dimensions": [
+            "compiler/dependency acquisition CPU",
+            "concurrent whole-system RSS",
+            "physical storage I/O",
+            "storage byte-seconds",
+            "physical network bytes",
+            "GPU activity",
+            "energy",
+            "provider charges"
+          ]
+        },
+        "F0_readout_sha256": "f1ef86cd439b3456d1d33f30a126b5938c43accc7b454c75b32c8d22bd25b29d",
+        "full_physical_cost_closed": false
       }
     }
   },
@@ -5284,7 +6131,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "6a8d0ca8b0859db6560075ccbeeb08500ba6c6c8",
+  "previous_evidence_commit": "fbeeef0670219efe0a3939a9ccf982967feafb90",
   "next_actual_student_collection": {
     "status": "Finish both raw-function weights; freeze four unseen projects before reading new A outputs; execute predeclared current-policy/common-prefix comparisons",
     "new_candidate_pr": 6737,
@@ -5591,6 +6438,125 @@
       "original_path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/native-append-controls-4/RESULT.json",
       "sha256": "1ad1995c16c7f89bbf870a792b5e148092e1b47fec34a191c02b39437257fbd0",
       "bytes": 2076,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_NATIVE6_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-6/RESULT.json",
+      "sha256": "37a4a84f25c751c12e51fd95e399233fafd97af71046ce7a65ca8749b547ada5",
+      "bytes": 9061,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_NOUPDATE6_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-6/result.json",
+      "sha256": "10b86cd366bb6077841fafc585a01ab8d4bfc45e101623e3ac3ce5cabd4fbe82",
+      "bytes": 31863,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_STARTUP_COMPILE6_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-startup-edit-6/RESULT.json",
+      "sha256": "c901dce97174c0150b2e549cdfe53c00146defe1e5cd5971c4d7fc54ac4ee37e",
+      "bytes": 2586,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_STARTUP_CONTRACT1_FAILURE.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-startup-contract-edit-1/RESULT.json",
+      "sha256": "8eaf2972e5e20bc1d5a8d3596255b9fd6c5d79bd037f4240347d84243740ac51",
+      "bytes": 5293,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_STARTUP_CONTRACT2_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-startup-contract-edit-2/RESULT.json",
+      "sha256": "eedeb7caf4726f131ee7f83a5a992acb18a6f55f1fbb7b429dd03b1a03cf86d8",
+      "bytes": 885,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_COLD_D_HARNESS_COMPILE4_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/harness-compile-4/RESULT.json",
+      "sha256": "2e56a96c29a8ab2d8a78a7622d7578412764e18d18447d508c5a87e71a835159",
+      "bytes": 778,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_COLD_ROOT_STORE4_FAILURE.json",
+      "original_path": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/native-root-store-4/result.json",
+      "sha256": "b5a3231c9ab0a2e653a62cdfa0aee796d147eb762fd2977a02a4c4219881655e",
+      "bytes": 14978,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/E6_COLD_ROOT_STORE5_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/native-root-store-5/result.json",
+      "sha256": "70e0426afab89ca0b360c710253d4c6f997cf4015b225b526299ae848897af10",
+      "bytes": 15268,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/CHAIN_E8B_F0_READOUT.json",
+      "original_path": "/home/qian-qi/work/chain-native-owned-append-f0-20261119-2e9b/f0-independent-readback.json",
+      "sha256": "f1ef86cd439b3456d1d33f30a126b5938c43accc7b454c75b32c8d22bd25b29d",
+      "bytes": 17067,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/CHAIN_3DB_COMPLETE_TERMINAL_CI.json",
+      "original_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/automatic-ci-final-readback-2/SUMMARY.json",
+      "sha256": "3df84447086721e13573d58baaa2a75fc77285aead58ee40b3a82116705b9aab",
+      "bytes": 51370,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/MISTUNE_NATIVE_PAIR_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/03-lepture--mistune/native-qualification-08-00-2/RESULT.json",
+      "sha256": "37870292f6778129133f53f3f5f750956139a78a692d276446ecab183cf67d39",
+      "bytes": 87372,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/MISTUNE_CONTEXT_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/03-lepture--mistune/native-qualification-08-00-2/task-preparation-1/RESULT.json",
+      "sha256": "2670acdf435b8b28bf92424cce2589d7a6796427ee91effcae9e8793c5e898e9",
+      "bytes": 674,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/BABEL_NATIVE_PAIR_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/10-python-babel--babel/native-qualification-40-00-1/RESULT.json",
+      "sha256": "d97ac97a481d41e239a5bca032a686f32f2fdd8ceab0d7b49d911fef74a767b9",
+      "bytes": 17543,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/BABEL_CONTEXT_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/10-python-babel--babel/native-qualification-40-00-1/task-preparation-1/RESULT.json",
+      "sha256": "fefc362286d636c68ed226cba6c905e8637f89d065df8f38ca91fb913179d5e6",
+      "bytes": 675,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/JINJA_NATIVE_PAIR_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/11-pallets--jinja/native-qualification-41-00-2/RESULT.json",
+      "sha256": "83cf6b60b9dd525577eac38d80570d3d34561bebf6ab459a58e6b584fe4843b0",
+      "bytes": 38371,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/JINJA_CONTEXT_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/11-pallets--jinja/native-qualification-41-00-2/task-preparation-1/RESULT.json",
+      "sha256": "e89c95788d4702275ce396dba6de60724201632ba9f0a3525719a34fec2a2231",
+      "bytes": 1116,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261119-0054/FUTURE_LICENSE_REVIEW.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-license-review-1/LICENSE_REVIEW.json",
+      "sha256": "5fea20f520906bdc8340e32c71a77c7e95851edee3b15c571567dbc92ca366e0",
+      "bytes": 12404,
       "root_full_original_read_and_hash_checked": true
     }
   ]

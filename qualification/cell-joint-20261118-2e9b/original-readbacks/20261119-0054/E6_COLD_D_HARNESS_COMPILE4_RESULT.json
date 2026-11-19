@@ -1,0 +1,34 @@
+{
+  "head": "b417cec0c86e837a27884d013349bd83acdebd8d",
+  "tree": "2849fbee8dd743a5ea0471b3532158f9663999e8",
+  "command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "--list-type",
+    "binaries-only",
+    "--message-format",
+    "json"
+  ],
+  "exit": 0,
+  "seconds": 82.93013425800018,
+  "source_unchanged": true,
+  "actual_D_executions": 0,
+  "authority_issuances": 0,
+  "native_tests": 0,
+  "artifacts": {
+    "compile.stdout.log": {
+      "bytes": 1530,
+      "sha256": "6f2d851452a87a879739a1f833db18f6656e283dac5618538964a11520d9eddf"
+    },
+    "compile.stderr.log": {
+      "bytes": 22995,
+      "sha256": "477ccd2df53435ee85bfafc2486c49f786ccca5188916014f190fdde8bb0ebae"
+    }
+  }
+}
