@@ -1,0 +1,857 @@
+{
+  "schema": "hepta.verify.common-ci-failure-classification.v1",
+  "source": "TRIAGE.json plus original decoded GitHub logs; read-only diagnosis, no source/test/rerun changes.",
+  "groups": [
+    {
+      "id": "tui_windows_native_vs_verbatim_expected_path",
+      "observed": "The corruption fixture reports a normal D-drive path but compares it to a verbatim-prefixed canonical expected path. The macOS canonicalization adjustment does not yet cover this Windows spelling.",
+      "scope": "Concrete literal comparison mismatch; preserve corrupt bytes and CLI-recovery assertions when repairing it.",
+      "evidence": [
+        {
+          "job_id": 129692220025,
+          "lines_1_based": [
+            4224,
+            4231
+          ],
+          "excerpt": [
+            {
+              "line": 4224,
+              "text": "2026-11-10T07:50:52.7763268Z ---- tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4225,
+              "text": "2026-11-10T07:50:52.7763552Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4226,
+              "text": "2026-11-10T07:50:52.7763825Z thread 'tests::embedded_state_db_corruption_preserves_failed_database_for_cli_recovery' (8300) panicked at tui/src/lib.rs:3265:9:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4227,
+              "text": "2026-11-10T07:50:52.7764251Z assertion failed: `(left == right)`",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4228,
+              "text": "2026-11-10T07:50:52.7764378Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4229,
+              "text": "2026-11-10T07:50:52.7764449Z Diff < left / right > :",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4230,
+              "text": "2026-11-10T07:50:52.7764645Z <\"D:\\\\tmp\\\\.tmpfiYTEB\\\\sqlite-home\\\\logs_2.sqlite\"",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4231,
+              "text": "2026-11-10T07:50:52.7764891Z >\"\\\\\\\\?\\\\D:\\\\tmp\\\\.tmpfiYTEB\\\\sqlite-home\\\\logs_2.sqlite\"",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "automation_store_initialization_invalid",
+      "observed": "Nine circuit-admission and eight circuit-store tests fail at normal AutomationStore opening/migrations with Invalid on macOS ARM/Intel and Windows shard1.",
+      "scope": "The log establishes the rejected fixture stage, not a unique underlying SQL/schema/owner cause.",
+      "evidence": [
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            1521,
+            1523
+          ],
+          "excerpt": [
+            {
+              "line": 1521,
+              "text": "2026-11-10T07:42:44.4259710Z thread 'circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority' (51314) panicked at hepta-automation/src/circuit_admission_tests.rs:18:6:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 1522,
+              "text": "2026-11-10T07:42:44.4260760Z normal AutomationStore migrations: Invalid",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 1523,
+              "text": "2026-11-10T07:42:44.4261130Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            1567,
+            1568
+          ],
+          "excerpt": [
+            {
+              "line": 1567,
+              "text": "2026-11-10T07:42:44.4569410Z thread 'circuit_store_tests::bounded_circuit_migration_coexists_with_existing_v1_definition' (51348) panicked at hepta-automation/src/circuit_store_tests.rs:18:6:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 1568,
+              "text": "2026-11-10T07:42:44.4570150Z normal AutomationStore open/migrations: Invalid",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692219954,
+          "lines_1_based": [
+            2879,
+            2881
+          ],
+          "excerpt": [
+            {
+              "line": 2879,
+              "text": "2026-11-10T07:49:25.3332388Z thread 'circuit_admission::tests::cancellation_before_a_computation_claim_never_manufactures_execution_authority' (2028) panicked at hepta-automation/src\\circuit_admission_tests.rs:18:6:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2880,
+              "text": "2026-11-10T07:49:25.3343186Z normal AutomationStore migrations: Invalid",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2881,
+              "text": "2026-11-10T07:49:25.3346938Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "agentd_circuit_fixture_invalid",
+      "observed": "Nine circuit-cell tests fail at circuit_cell_test_support fixture construction with Invalid on macOS ARM and Windows shard3.",
+      "scope": "Do not count this as nine demonstrated independent root causes.",
+      "evidence": [
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            8764,
+            8765
+          ],
+          "excerpt": [
+            {
+              "line": 8764,
+              "text": "2026-11-10T07:48:38.5452030Z thread 'circuit_cell::tests::all_join_materializes_frozen_reference_bytes_for_the_next_native_cell' (61797) panicked at hepta-agentd/src/circuit_cell_test_support.rs:17:23:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 8765,
+              "text": "2026-11-10T07:48:38.5452620Z fixture failed: Invalid",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220025,
+          "lines_1_based": [
+            3301,
+            3302
+          ],
+          "excerpt": [
+            {
+              "line": 3301,
+              "text": "2026-11-10T07:50:19.0191191Z thread 'circuit_cell::tests::actual_cost_overrun_is_recorded_and_routes_to_budget_fallback' (6276) panicked at hepta-agentd/src\\circuit_cell_test_support.rs:17:23:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3302,
+              "text": "2026-11-10T07:50:19.0192807Z fixture failed: Invalid",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "macos_control_socket_path_length",
+      "observed": "A real infer-worker-host test receives InvalidInput: path must be shorter than SUN_LEN for its full private/var/folders temporary control socket, on both macOS jobs.",
+      "scope": "Explicit OS/path rejection; other host timeout/mock failures remain separate observations.",
+      "evidence": [
+        {
+          "job_id": 129692220034,
+          "lines_1_based": [
+            11568,
+            11568
+          ],
+          "excerpt": [
+            {
+              "line": 11568,
+              "text": "2026-11-10T07:49:53.1115520Z Error: \"isolated native host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone failed (exit status: 101): \\nrunning 1 test\\nError: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \\\"probe existing agentd control socket\\\", path: \\\"/private/var/folders/20/jp1_0n3n7kndh6rnbqb5344m0000gn/T/hepta-cognitive-worker-e2e-1794296356215725000/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl\\\", source: Error { kind: InvalidInput, message: \\\"path must be shorter than SUN_LEN\\\" } } })\\ntest native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED\\n\\nfailures:\\n\\nfailures:\\n    native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\\n\\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 49 filtered out; finished in 5.59s\\n\\n\"",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            14866,
+            14866
+          ],
+          "excerpt": [
+            {
+              "line": 14866,
+              "text": "2026-11-10T07:54:28.7804050Z Error: \"isolated native host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone failed (exit status: 101): \\nrunning 1 test\\nError: Io(Custom { kind: InvalidInput, error: AgentdIoContext { operation: \\\"probe existing agentd control socket\\\", path: \\\"/private/var/folders/2s/vty41l455yv698g4xkgfv7z00000gn/T/hepta-cognitive-worker-e2e-1794296680551900000/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl\\\", source: Error { kind: InvalidInput, message: \\\"path must be shorter than SUN_LEN\\\" } } })\\ntest native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED\\n\\nfailures:\\n\\nfailures:\\n    native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone\\n\\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 49 filtered out; finished in 0.72s\\n\\n\"",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "macos_paired_release_source_symlink_guard",
+      "observed": "Both paired-process tests fail because release source program must be a non-symlink regular file, on both macOS jobs.",
+      "scope": "Preserve the source-program guard. Fixture/source resolution needs a matched repair.",
+      "evidence": [
+        {
+          "job_id": 129692220034,
+          "lines_1_based": [
+            11598,
+            11602
+          ],
+          "excerpt": [
+            {
+              "line": 11598,
+              "text": "2026-11-10T07:49:53.2462390Z ---- five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11599,
+              "text": "2026-11-10T07:49:53.2463740Z Error: invalid fleet control value: release source program must be a non-symlink regular file",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11600,
+              "text": "2026-11-10T07:49:53.2464610Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11601,
+              "text": "2026-11-10T07:49:53.2465080Z ---- two_real_pairs_restart_one_without_peer_pid_churn stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11602,
+              "text": "2026-11-10T07:49:53.2466950Z Error: invalid fleet control value: release source program must be a non-symlink regular file",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            15089,
+            15093
+          ],
+          "excerpt": [
+            {
+              "line": 15089,
+              "text": "2026-11-10T07:54:28.8252550Z ---- five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 15090,
+              "text": "2026-11-10T07:54:28.8253120Z Error: invalid fleet control value: release source program must be a non-symlink regular file",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 15091,
+              "text": "2026-11-10T07:54:28.8253420Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 15092,
+              "text": "2026-11-10T07:54:28.8253560Z ---- two_real_pairs_restart_one_without_peer_pid_churn stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 15093,
+              "text": "2026-11-10T07:54:28.8253970Z Error: invalid fleet control value: release source program must be a non-symlink regular file",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "macos_checkpoint_recovery_root",
+      "observed": "The protected checkpoint crash/recovery test reports Unavailable: cognitive recovery root does not exist on macOS ARM.",
+      "scope": "Original path/recovery evidence only; no successful replay inferred.",
+      "evidence": [
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            8368,
+            8370
+          ],
+          "excerpt": [
+            {
+              "line": 8368,
+              "text": "2026-11-10T07:48:38.5120850Z thread 'production_writer::objective_sender::protected_checkpoint_tests::observation_tests::crash::protected_checkpoint_current_recovers_after_polling_and_process_kill_without_replay' (60634) panicked at hepta-memory/src/cognitive_checkpoint_observation_tests.rs:280:10:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 8369,
+              "text": "2026-11-10T07:48:38.5121990Z original exact-cut recovery from the pre-poll retained test-host receipt: Unavailable(\"cognitive recovery root does not exist\")",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 8370,
+              "text": "2026-11-10T07:48:38.5122540Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "generation_receipt_projection_mismatch",
+      "observed": "The real remember/recall/correct/forget physical-send test fails current projection rows did not match their generation receipt on GNU, musl, and both macOS jobs.",
+      "scope": "This business-path evidence failure is not closed by installing OpenSSH.",
+      "evidence": [
+        {
+          "job_id": 129692219997,
+          "lines_1_based": [
+            9995,
+            9996
+          ],
+          "excerpt": [
+            {
+              "line": 9995,
+              "text": "2026-11-10T08:23:10.7986688Z ---- real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9996,
+              "text": "2026-11-10T08:23:10.7987825Z Error: current projection rows did not match their generation receipt",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220034,
+          "lines_1_based": [
+            11315,
+            11316
+          ],
+          "excerpt": [
+            {
+              "line": 11315,
+              "text": "2026-11-10T07:49:53.0611710Z ---- real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11316,
+              "text": "2026-11-10T07:49:53.0613430Z Error: current projection rows did not match their generation receipt",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220121,
+          "lines_1_based": [
+            14415,
+            14416
+          ],
+          "excerpt": [
+            {
+              "line": 14415,
+              "text": "2026-11-10T07:54:28.7464150Z ---- real_agentd_remember_recall_correct_and_forget_revalidate_physical_sends stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 14416,
+              "text": "2026-11-10T07:54:28.7464580Z Error: current projection rows did not match their generation receipt",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linux_original_path_bwrap_unavailable",
+      "observed": "Capability discovery and preserved-PATH filesystem helper tests fail because real bubblewrap is unavailable on the original PATH.",
+      "scope": "A process environment observation. The active remote image filesystem/package state is not uniquely established.",
+      "evidence": [
+        {
+          "job_id": 129692219997,
+          "lines_1_based": [
+            9828,
+            9829
+          ],
+          "excerpt": [
+            {
+              "line": 9828,
+              "text": "2026-11-10T08:23:10.7747243Z ---- sandboxed_discovery_batches_roots_without_combining_different_permissions stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9829,
+              "text": "2026-11-10T08:23:10.7748252Z Error: real bubblewrap must be available on the original PATH",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692219997,
+          "lines_1_based": [
+            9956,
+            9967
+          ],
+          "excerpt": [
+            {
+              "line": 9956,
+              "text": "2026-11-10T08:23:10.7951766Z test shared::file_system_write_file_writes_bytes::test_case_6_remote_sandboxed_no_follow ... ok",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9957,
+              "text": "2026-11-10T08:23:10.7952830Z test shared::path_uri_join_and_parent_preserve_lexical_paths ... ok",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9958,
+              "text": "2026-11-10T08:23:10.7953886Z test shared::sandbox_context_from_profile_preserves_workspace_write_read_only_subpaths ... ok",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9959,
+              "text": "2026-11-10T08:23:10.7955277Z test shared::sandboxed_file_operations_cannot_read_helper_siblings ... ok",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9960,
+              "text": "2026-11-10T08:23:10.7955942Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9961,
+              "text": "2026-11-10T08:23:10.7956225Z failures:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9962,
+              "text": "2026-11-10T08:23:10.7956558Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9963,
+              "text": "2026-11-10T08:23:10.7957350Z ---- sandboxed_file_system_helper_finds_bwrap_on_preserved_path stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9964,
+              "text": "2026-11-10T08:23:10.7958302Z Error: real bubblewrap must be available on the original PATH",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9965,
+              "text": "2026-11-10T08:23:10.7958893Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9966,
+              "text": "2026-11-10T08:23:10.7959048Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9967,
+              "text": "2026-11-10T08:23:10.7959333Z failures:",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "linux_openssh_unavailable",
+      "observed": "Eleven operator signing fixtures fail because ssh-keygen is not found in the platform directory or absolute PATH, on GNU and musl; 14 pass.",
+      "scope": "Known RBE/OpenSSH gate remains open until the original target runs in qualified execution environment.",
+      "evidence": [
+        {
+          "job_id": 129692219997,
+          "lines_1_based": [
+            10041,
+            10043
+          ],
+          "excerpt": [
+            {
+              "line": 10041,
+              "text": "2026-11-10T08:23:10.8078061Z thread 'g5_trust::tests::exact_head_and_predecessor_binding_is_required' (16) panicked at codex-rs/hepta-operator-acceptance/src/test_support.rs:42:17:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 10042,
+              "text": "2026-11-10T08:23:10.8079552Z signing fixtures require OpenSSH ssh-keygen; not found in platform directory or absolute PATH",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 10043,
+              "text": "2026-11-10T08:23:10.8080569Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windows_operator_generation_failure",
+      "observed": "Ten native operator key-generation fixtures return exit255 with empty stderr under D-temp private-state paths. The separate four-case Python diagnostic passes all executable/key path spellings.",
+      "scope": "Prefixes alone did not reproduce failure in Python/default-C-temp/DEVNULL; Rust process construction, D-temp/private permissions and generation inherited stdin remain unmatched.",
+      "evidence": [
+        {
+          "job_id": 129692219915,
+          "lines_1_based": [
+            2728,
+            2730
+          ],
+          "excerpt": [
+            {
+              "line": 2728,
+              "text": "2026-11-10T07:48:47.0954793Z thread 'g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance' (3864) panicked at codex-rs/hepta-operator-acceptance/src\\g5_trust_tests.rs:280:9:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2729,
+              "text": "2026-11-10T07:48:47.1249929Z generate test-only Ed25519 key at \\\\?\\D:\\tmp\\.tmpQmg1in\\private\\operator-key: status=ExitStatus(ExitStatus(255)), stderr=",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2730,
+              "text": "2026-11-10T07:48:47.1319274Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windows_generation_owner_file_lock",
+      "observed": "Several neuron, agentd generation/evaluation, and infer-core generation fixtures fail with OS error33: another process has locked a portion of the file.",
+      "scope": "Multiple fixture failures may share a file-lock protocol issue; no unique owner/fault or retry remedy established.",
+      "evidence": [
+        {
+          "job_id": 129692220025,
+          "lines_1_based": [
+            2854,
+            2858
+          ],
+          "excerpt": [
+            {
+              "line": 2854,
+              "text": "2026-11-10T07:46:58.6787065Z ---- durable_control::generation::tests::exact_binding_payload_deadline_and_size_fail_without_writing stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2855,
+              "text": "2026-11-10T07:46:58.6893438Z Error: Io(\"The process cannot access the file because another process has locked a portion of the file. (os error 33)\")",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2856,
+              "text": "2026-11-10T07:46:58.7077399Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2857,
+              "text": "2026-11-10T07:46:58.7118046Z ---- durable_control::generation::tests::original_result_and_cancel_survive_reopen_without_redispatch stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 2858,
+              "text": "2026-11-10T07:46:58.7247562Z Error: Io(\"The process cannot access the file because another process has locked a portion of the file. (os error 33)\")",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220025,
+          "lines_1_based": [
+            3008,
+            3010
+          ],
+          "excerpt": [
+            {
+              "line": 3008,
+              "text": "2026-11-10T07:50:18.4802871Z thread 'cell_generation_control::tests::invalid_scope_and_invalid_worker_proposals_never_become_terminal_records' (2724) panicked at hepta-neuron/src\\cell_test_support.rs:12:23:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3009,
+              "text": "2026-11-10T07:50:18.4822337Z fixture failed: Os { code: 33, kind: Uncategorized, message: \"The process cannot access the file because another process has locked a portion of the file.\" }",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3010,
+              "text": "2026-11-10T07:50:18.4834385Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "windows_legacy_sandbox_fail_closed",
+      "observed": "Filesystem/process/unit tests reject legacy Windows isolation because ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; other tests report disabled Windows sandbox level cannot launch a sandbox session.",
+      "scope": "Defensive rejection evidence. Do not weaken sandbox/permission checks to make tests pass; qualify a replacement or align fixture expectations.",
+      "evidence": [
+        {
+          "job_id": 129692219915,
+          "lines_1_based": [
+            4859,
+            4863
+          ],
+          "excerpt": [
+            {
+              "line": 4859,
+              "text": "2026-11-10T08:06:47.8532688Z ---- shared::file_system_walk_honors_read_sandbox::test_case_1_local stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4860,
+              "text": "2026-11-10T08:06:47.8533855Z Error: mode=local",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4861,
+              "text": "2026-11-10T08:06:47.8534070Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4862,
+              "text": "2026-11-10T08:06:47.8534196Z Caused by:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 4863,
+              "text": "2026-11-10T08:06:47.8535819Z     fs sandbox helper failed with status exit code: 1: windows sandbox failed: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692219959,
+          "lines_1_based": [
+            3136,
+            3138
+          ],
+          "excerpt": [
+            {
+              "line": 3136,
+              "text": "2026-11-10T07:53:38.1884639Z thread 'spawn_prep::tests::legacy_spawn_env_applies_offline_network_rewrite' (1436) panicked at windows-sandbox-rs/src\\spawn_prep.rs:549:10:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3137,
+              "text": "2026-11-10T07:53:38.1886809Z legacy env prep: legacy Windows sandbox isolation is unavailable: ambient parent FILE_DELETE_CHILD can bypass deletion boundaries; no qualified replacement preserves this read policy",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3138,
+              "text": "2026-11-10T07:53:38.1888400Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692219959,
+          "lines_1_based": [
+            3332,
+            3333
+          ],
+          "excerpt": [
+            {
+              "line": 3332,
+              "text": "2026-11-10T07:54:32.2611840Z thread 'sandbox_fetches_and_enforces_cloud_managed_permission_profile' (7180) panicked at cli/tests/sandbox_cloud_config.rs:148:5:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 3333,
+              "text": "2026-11-10T07:54:32.2613893Z cloud-managed sandbox profile was not enforced: status=Some(1); stdout=; stderr=windows sandbox failed: disabled Windows sandbox level cannot launch a sandbox session",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "other_timeout_mock_and_approval_failures",
+      "observed": "Further failed targets include Wine root-turn history assertion, Windows app-server mock expectations, macOS executor-skill and zsh-fork approval/command tests, Intel forward deadline, and Intel agentd/memory 300-second timeouts.",
+      "scope": "Full failed-test names, target statuses, retry observations and raw logs are retained in TRIAGE.json and compressed logs. Failure counts are not summed across retry/tail repetitions. Windows shard1 core-unit is FLAKY rather than a third final failed target.",
+      "evidence": [
+        {
+          "job_id": 129692220034,
+          "lines_1_based": [
+            11108,
+            11110
+          ],
+          "excerpt": [
+            {
+              "line": 11108,
+              "text": "2026-11-10T07:49:27.6611020Z //codex-rs/hepta-agentd:hepta-agentd-unit-tests                         TIMEOUT in 300.3s",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11109,
+              "text": "2026-11-10T07:49:27.6613600Z   /Users/runner/.cache/codex-ci/o/execroot/_main/bazel-out/darwin_x86_64-fastbuild/testlogs/codex-rs/hepta-agentd/hepta-agentd-unit-tests/test.log",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11110,
+              "text": "2026-11-10T07:49:27.6616160Z //codex-rs/hepta-memory:hepta-memory-unit-tests                         TIMEOUT in 300.4s",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692220034,
+          "lines_1_based": [
+            11262,
+            11269
+          ],
+          "excerpt": [
+            {
+              "line": 11262,
+              "text": "2026-11-10T07:49:53.0538900Z ---- forwarder_runs_commands_and_transfers_files stdout ----",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11263,
+              "text": "2026-11-10T07:49:53.0540060Z Error: deadline has elapsed",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11264,
+              "text": "2026-11-10T07:49:53.0540630Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11265,
+              "text": "2026-11-10T07:49:53.0540640Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11266,
+              "text": "2026-11-10T07:49:53.0540900Z failures:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11267,
+              "text": "2026-11-10T07:49:53.0542060Z     forwarder_runs_commands_and_transfers_files",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11268,
+              "text": "2026-11-10T07:49:53.0542860Z ",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 11269,
+              "text": "2026-11-10T07:49:53.0543760Z test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 32.97s",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        },
+        {
+          "job_id": 129692219997,
+          "lines_1_based": [
+            9801,
+            9806
+          ],
+          "excerpt": [
+            {
+              "line": 9801,
+              "text": "2026-11-10T08:23:10.7717112Z thread 'suite::abort_tasks::root_turn_suspension_preserves_unfinished_turn_history' (1559) panicked at core/tests/suite/abort_tasks.rs:211:5:",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9802,
+              "text": "2026-11-10T08:23:10.7718254Z assertion `left == right` failed",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9803,
+              "text": "2026-11-10T08:23:10.7721850Z   left: [TurnEnvironmentSelection { environment_id: \"remote\", cwd: PathUri(Url { scheme: \"file\", cannot_be_a_base: false, username: \"\", password: None, host: None, port: None, path: \"/%00/bad/path/L0M6L2NvZGV4LWNvcmUtdGVzdC1jd2QtMTU1OC0y\", query: None, fragment: None }), workspace_roots: [PathUri(Url { scheme: \"file\", cannot_be_a_base: false, username: \"\", password: None, host: None, port: None, path: \"/buildbuddy-execroot/bazel-out/rbe-fastbuild/bin/codex-rs/core/core-all-wine-exec-test.runfiles/_main/codex-rs\", query: None, fragment: None })], config: FromThread }]",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9804,
+              "text": "2026-11-10T08:23:10.7727707Z  right: [TurnEnvironmentSelection { environment_id: \"remote\", cwd: PathUri(Url { scheme: \"file\", cannot_be_a_base: false, username: \"\", password: None, host: None, port: None, path: \"/C:/codex-core-test-cwd-1558-2\", query: None, fragment: None }), workspace_roots: [PathUri(Url { scheme: \"file\", cannot_be_a_base: false, username: \"\", password: None, host: None, port: None, path: \"/C:/codex-core-test-cwd-1558-2\", query: None, fragment: None })], config: FromThread }]",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9805,
+              "text": "2026-11-10T08:23:10.7731191Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+              "line_truncated_in_excerpt": false
+            },
+            {
+              "line": 9806,
+              "text": "2026-11-10T08:23:10.7731888Z ",
+              "line_truncated_in_excerpt": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "windows_crossed_existing_diagnostic": {
+    "pr": 5659,
+    "source_sha": "68e9e6c80b9139d5a4b081e4cdd41341fc951142",
+    "run_id": 42777387975,
+    "job_id": 129698985158,
+    "workflow_conclusion": "success",
+    "artifact_id": 13744367581,
+    "artifact_bytes_from_original_upload_log": 14092,
+    "artifact_archive_downloaded_in_this_triage": false,
+    "result_acquisition": "Complete JSON emitted on original job stdout, retained separately with the complete decoded job log. It is not represented as a downloaded artifact RESULT.",
+    "cases": [
+      {
+        "name": "drive",
+        "status": "ALL_STAGES_OBSERVED",
+        "executable_verbatim_argv": false,
+        "key_verbatim_argv": false
+      },
+      {
+        "name": "verbatim",
+        "status": "ALL_STAGES_OBSERVED",
+        "executable_verbatim_argv": false,
+        "key_verbatim_argv": true
+      },
+      {
+        "name": "verbatim-executable-drive",
+        "status": "ALL_STAGES_OBSERVED",
+        "executable_verbatim_argv": true,
+        "key_verbatim_argv": false
+      },
+      {
+        "name": "verbatim-executable-verbatim",
+        "status": "ALL_STAGES_OBSERVED",
+        "executable_verbatim_argv": true,
+        "key_verbatim_argv": true
+      }
+    ],
+    "operations": 24,
+    "expected_exits_observed": true,
+    "wrong_namespace_refusals": 4,
+    "same_executable_sha256_before_after": "c9dc170cd161db87e75eb6cf282f1325005b9e35628b9a36cb19883a8be1a34f",
+    "identity_unchanged": true,
+    "original_operator_target_qualified": false,
+    "production_authority": "NONE"
+  },
+  "gate_status": "HOLD",
+  "production_authority": "NONE"
+}
