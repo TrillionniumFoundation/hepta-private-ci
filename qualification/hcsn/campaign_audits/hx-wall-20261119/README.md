@@ -81,3 +81,11 @@ This study addresses the cost and usefulness of **HX equity/V and first-passage 
 The paired prepared evaluator retains the complete HX expression and gradients, and its scientific source remains frozen at `7f86d02273ab665b9789c3058613ca350f9919d7`. The default direct arm remains direct. No later far-tail fix is included in these runs. Four targeted tests passed, including actual optimizer updates followed by rejected late validation and rejected late checkpoint copies. A static cross-review found no late selection or held-out-test leakage. The earlier canonical 112-test suite applies to the fixed-update source; the prepared evaluator has its separately retained equivalence evidence.
 
 `WALL_BUDGET.json` supplies complete per-seed measurements and paired differences. `wall-budget-originals.tar.gz` retains all 36 original fits, the separate diagnostic, checkpoints, immutable attempts, logs, exact frozen Python source/config and the archive script. Its internal `MANIFEST.json` binds every archived file. Verification checked complete identities, source/split hashes, checkpoint SHA256, eligible deadlines, process return codes and reaped children without rerunning models.
+
+## Reusable comparison figure
+
+![All retained seed outcomes for fixed updates and filled wall budgets](budget-comparison.png)
+
+`budget-comparison.svg` is the vector version. `budget-comparison-data.json` retains all 66 plotted observations, arithmetic means, source hashes and explicit missing prepared-arm cells in the fixed-update protocol. The initial-checkpoint Call-only observation is retained and annotated; the separate diagnostic is excluded. Shared log axes and per-seed markers avoid hiding the three-seed variation behind a mean or invalid negative error bar.
+
+Regenerate with `python qualification/hcsn/campaign_audits/hx-wall-20261119/plot_budget_comparison.py`. This reporting script was added after the experiments; it reads the two archived result JSON files and does not import model code, rerun a fit or alter frozen experiment sources.
