@@ -1,0 +1,132 @@
+{
+  "base": "a244bf61d922eb94abd7a4d6cc41ec9b07828535",
+  "original_source_commit": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+  "original_source_blob": "6740841eebb1c4a540971989cf1e6dcf0db3deb6",
+  "problem": "Incoming strict V1 layout and receipt domain conflict with the retained historical V1 golden. A ZERO field would only hide compile failure and fail runtime provenance checks.",
+  "decision": "Keep default strict V1/V2 and incoming migration unchanged; recover the historical advisory V1 adapter under an explicit Legacy type/API, with no conversion to strict receipts.",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-ndu/src/legacy_protocol.rs",
+      "before_blob": null,
+      "before_sha256": null,
+      "after_blob": "20210ade31901b5603dc6e1a65cd0fb44970361c",
+      "after_sha256": "6cc0035cca4554f5f3cca60f5e7e86fe580aae291bf3894c6000f549f1077d2b",
+      "bytes": 4286
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "before_blob": "5f299b8a106ceb7367d8d01135a0e2ad13b0c1f4",
+      "before_sha256": "2935a8b9969d87e595c78990a3214583e985ffd30be75720248299a7e2fe577a",
+      "after_blob": "9f724712940f248c9503af2b1743c470aa3d361c",
+      "after_sha256": "d60ae06450c3fd1debb2264b827d25ff3090b0a4ec2874d9b8df0b425337dfc0",
+      "bytes": 15100
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_v2_tests.rs",
+      "before_blob": "9977b973a56c3ad66e213d0d151d0ceb1bd0c85d",
+      "before_sha256": "d2c557696e948fd59b8080666278ec191b20ce74789f7081ac39310667dbd185",
+      "after_blob": "ede18f4b0510f9ae7c18366c11cb3b2a8da58f3c",
+      "after_sha256": "03393214694d841fbeecf68241012ece908530038bcda55ce10d3eb191eeae3d",
+      "bytes": 13404
+    }
+  ],
+  "legacy_field_layout_exact": true,
+  "legacy_function_byte_proofs": [
+    {
+      "name": "bind_solver_iteration_receipt_v1",
+      "exact_original_bytes": true,
+      "sha256": "893dd94a568ad7bb1bc32c6adb497b55e51c3edb736a370df2f86c9336973da1"
+    },
+    {
+      "name": "require_digest",
+      "exact_original_bytes": true,
+      "sha256": "53fa92856d03c83a0feed474e1746e4624c50e2e89aeef6ba8f800be8c898fd3"
+    },
+    {
+      "name": "digest_receipt",
+      "exact_original_bytes": true,
+      "sha256": "2b3e03c914df357eb6fd6adf4ac15ce46335947eca1894edb8a304e70d92c17c"
+    },
+    {
+      "name": "push_id",
+      "exact_original_bytes": true,
+      "sha256": "d3b91f7214f826682781b3ed2dbbf8f066040116fcf65ae895bcc1a7acd23c7b"
+    }
+  ],
+  "old_test_functions_unchanged": [
+    "id",
+    "digest",
+    "context",
+    "target",
+    "initial",
+    "legacy_v1_layout_and_digest_remain_compatible",
+    "v2_digest_matches_source_bound_input_and_preserves_denial",
+    "v2_preserves_the_legacy_numerical_result_and_target_order",
+    "v2_rejects_context_rebinding",
+    "v2_source_identity_changes_with_each_numerical_input",
+    "v2_rejects_invalid_context_state_and_dimension",
+    "v2_zero_step_termination_has_no_step_evidence",
+    "v2_validation_detects_changed_sealed_fields"
+  ],
+  "old_test_function_count": 13,
+  "original_assertions_retained": 21,
+  "final_assertion_count": 25,
+  "existing_test_import_changes_only": [
+    "NduLegacyIterationReceiptV1 as NduIterationReceiptV1",
+    "bind_legacy_solver_iteration_receipt_v1 as bind_solver_iteration_receipt_v1"
+  ],
+  "added_behavior_test": "explicit_legacy_binding_does_not_upgrade_an_unbound_step",
+  "strict_sources_unchanged": [
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol.rs",
+      "sha256": "a19056037d1d38a7e17676638e312bb23ea4aba7005630d59444aec8c46c4b1a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+      "sha256": "517be98fc891ed5a7a5b5af5c31d99d9a6c48fa4381c94594d5bf99e94b7bc28"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_v2.rs",
+      "sha256": "941b8d00f9bfd86558aaeaac44c424680d255caa58c2b6a24aed02dd684f75c4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs",
+      "sha256": "fe2e8326123b635b0e9d9719657a110a159bb8ad3f43a100315e425310383b56"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference.rs",
+      "sha256": "59ade43a8045790e653207ac0ee6949cf3f199ec7675b7576840f3686dac423d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference_receipts.rs",
+      "sha256": "51bf16da00b4d45d890c2d1833ef179c2b3bada8a5e5d9642d46a8a09f44f146"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+      "sha256": "825208c765c4d14d3d6e5fbd68e38721c47eac21ec2ddc9e50c90c43e1ec11c7"
+    }
+  ],
+  "conversion_review": [
+    "Legacy output is a distinct Rust nominal type in a private module, with only explicit public Legacy aliases.",
+    "No From/TryFrom, Deserialize, or other conversion is implemented into either default strict receipt type.",
+    "Default V2 has private fields and accepts only NduSourceBoundSolverIterationReceiptV2; the legacy output cannot satisfy the argument type.",
+    "Incoming migration/validator accepts protocol::NduIterationReceiptV1, not legacy_protocol::NduIterationReceiptV1. Its guards and hashing remain unchanged.",
+    "Existing strict V1 itself exposes public fields; this patch does not claim that data-only strict V1 receipts prove cryptographic provenance or prevent a caller fabricating a fresh strict V1 object. No new conversion or validator exception is added."
+  ],
+  "consumer_review": "All Rust consumers searched. Only protocol_v2_tests used the historical context-free V1 behavior; its two imports are explicitly redirected. Protocol tests, evidence_v2, preference validation tests, and public_api_compat retain default strict V1 APIs unchanged.",
+  "CALLERS_manifest_affected_rows": 0,
+  "no_cargo_or_bazel_changes": true,
+  "no_remote_or_root_mutations": true,
+  "validation": [
+    "All four original legacy functions and the original receipt field layout are exact e344 source bytes.",
+    "All original test/helper function bodies and assertions are exact current source bytes; one behavioral test appended.",
+    "Scoped rustfmt parse/format PASS.",
+    "Root will run repository just fmt after applying; CI agent will run real ROG just test -p codex-hepta-ndu. Native execution not yet claimed."
+  ],
+  "root_verification": {
+    "all_pre_post_hashes_match": true,
+    "strict_sources_unchanged": true,
+    "protected_guards_pass": 826,
+    "native_result": "pending ROG actual tests"
+  }
+}

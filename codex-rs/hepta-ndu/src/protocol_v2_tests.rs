@@ -13,10 +13,10 @@ use pretty_assertions::assert_ne;
 use crate::AxisValue;
 use crate::NduError;
 use crate::NduIterationContextV1;
-use crate::NduIterationReceiptV1;
+use crate::NduLegacyIterationReceiptV1 as NduIterationReceiptV1;
 use crate::PreferenceState;
 use crate::SubjectClass;
-use crate::bind_solver_iteration_receipt_v1;
+use crate::bind_legacy_solver_iteration_receipt_v1 as bind_solver_iteration_receipt_v1;
 use crate::bind_solver_iteration_receipt_v2;
 use crate::solve_preference_target;
 use crate::solve_preference_target_with_context_v2;
@@ -395,4 +395,29 @@ fn v2_validation_detects_changed_sealed_fields() {
         Err(NduError::InvalidSolverReceipt("V2 receipt digest"))
     );
     must(receipt.validate());
+}
+
+#[test]
+fn explicit_legacy_binding_does_not_upgrade_an_unbound_step() {
+    let context = context();
+    let (_, _, steps) = must(solve_preference_target(
+        initial(FixedQ32::ZERO),
+        target(FixedQ32::ONE),
+        FixedQ32::from_raw(/*raw*/ 1_i64 << 30),
+    ));
+    let step = steps.first().expect("a context-free solver step");
+    let before = step.clone();
+    let legacy = must(bind_solver_iteration_receipt_v1(&context, step));
+    assert_eq!(step, &before);
+    assert_eq!(legacy.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(
+        crate::bind_solver_iteration_receipt_v1(&context, step),
+        Err(NduError::InvalidSolverReceipt(
+            "solve context mismatch or unbound legacy step"
+        ))
+    );
+    assert_eq!(
+        crate::bind_legacy_solver_iteration_receipt_v2(&context, step),
+        Err(crate::NduEvidenceV2Error::ContextMismatch)
+    );
 }
