@@ -130,7 +130,6 @@ pub use organ_hierarchy::CompiledOrganDriverV1;
 pub use organ_hierarchy::OrganDriverBindingV1;
 pub use organ_hierarchy::OrganPathV1;
 pub use organ_hierarchy::OrganSystemV1;
-pub use organ_hierarchy::cns_route_digest_v1;
 pub use organ_registry::OrganHandlerFactoryV1;
 pub use organ_registry::OrganHandlerRegistryError;
 pub use organ_registry::OrganHandlerRegistryV1;
