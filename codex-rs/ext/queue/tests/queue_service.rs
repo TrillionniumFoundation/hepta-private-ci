@@ -238,7 +238,7 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
     );
 }
 
-fn write_rejecting_prompt_hook(home: &Path) {
+fn write_python_rejecting_prompt_hook(home: &Path) {
     let script_path = home.join("queue_prompt_hook.py");
     let log_path = home.join("queue_prompt_hook.log");
     let script = format!(
@@ -270,12 +270,73 @@ if payload["prompt"] == "blocked":
         .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
 }
 
+#[cfg(windows)]
+fn write_rejecting_prompt_hook(home: &Path) {
+    let script_path = home.join("queue_prompt_hook.ps1");
+    let log_path = home.join("queue_prompt_hook.log");
+    let script = format!(
+        r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+[IO.File]::AppendAllText('{log_path}', $payload.prompt + "`n")
+if ($payload.prompt -eq 'blocked') {{
+    @{{ decision = 'block'; reason = 'blocked by queue hook' }} | ConvertTo-Json -Compress
+}}
+"#,
+        log_path = log_path.display().to_string().replace('\'', "''"),
+    );
+    std::fs::write(&script_path, script)
+        .unwrap_or_else(|error| panic!("write queue hook script: {error}"));
+    let hooks = serde_json::json!({
+        "hooks": {
+            "UserPromptSubmit": [{
+                "hooks": [{
+                    "type": "command",
+                    "command": prompt_hook_command(&script_path),
+                }]
+            }]
+        }
+    });
+    std::fs::write(home.join("hooks.json"), hooks.to_string())
+        .unwrap_or_else(|error| panic!("write queue hooks: {error}"));
+}
+
+#[cfg(not(windows))]
+fn write_rejecting_prompt_hook(home: &Path) {
+    write_python_rejecting_prompt_hook(home);
+}
+
 fn write_blocking_prompt_hook(home: &Path) {
-    let script_path = home.join("queue_blocking_prompt_hook.py");
+    let script_path = home.join(if cfg!(windows) {
+        "queue_blocking_prompt_hook.ps1"
+    } else {
+        "queue_blocking_prompt_hook.py"
+    });
     let entered_path = home.join("queue_blocking_prompt_hook.entered");
     let release_path = home.join("queue_blocking_prompt_hook.release");
-    let script = format!(
-        r#"import json
+    let script = if cfg!(windows) {
+        format!(
+            r#"$ErrorActionPreference = 'Stop'
+$payload = [Console]::In.ReadToEnd() | ConvertFrom-Json
+if ($payload.prompt -in @('delay exact persistence', 'delay exact rejection')) {{
+    [IO.File]::WriteAllText('{entered_path}', 'entered')
+    $deadline = [DateTime]::UtcNow.AddSeconds(20)
+    while (-not [IO.File]::Exists('{release_path}')) {{
+        if ([DateTime]::UtcNow -ge $deadline) {{
+            throw 'timed out waiting to release queue persistence hook'
+        }}
+        Start-Sleep -Milliseconds 10
+    }}
+    if ($payload.prompt -eq 'delay exact rejection') {{
+        @{{ decision = 'block'; reason = 'delayed queue rejection' }} | ConvertTo-Json -Compress
+    }}
+}}
+"#,
+            entered_path = entered_path.display().to_string().replace('\'', "''"),
+            release_path = release_path.display().to_string().replace('\'', "''"),
+        )
+    } else {
+        format!(
+            r#"import json
 from pathlib import Path
 import sys
 import time
@@ -291,9 +352,10 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
     if payload["prompt"] == "delay exact rejection":
         print(json.dumps({{"decision": "block", "reason": "delayed queue rejection"}}))
 "#,
-        entered_path = entered_path.display(),
-        release_path = release_path.display(),
-    );
+            entered_path = entered_path.display(),
+            release_path = release_path.display(),
+        )
+    };
     std::fs::write(&script_path, script)
         .unwrap_or_else(|error| panic!("write blocking queue hook script: {error}"));
     let hooks = serde_json::json!({
@@ -301,7 +363,7 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
             "UserPromptSubmit": [{
                 "hooks": [{
                     "type": "command",
-                    "command": queue_python_hook_command(&script_path),
+                    "command": prompt_hook_command(&script_path),
                 }]
             }]
         }
@@ -310,10 +372,27 @@ if payload["prompt"] in ["delay exact persistence", "delay exact rejection"]:
         .unwrap_or_else(|error| panic!("write blocking queue hooks: {error}"));
 }
 
+fn prompt_hook_command(script_path: &Path) -> String {
+    if cfg!(windows) {
+        // Preserve the incoming PowerShell fixture without expanding a path
+        // containing `$` when Core selects PowerShell as its environment shell.
+        let script = if codex_core::shell::default_user_shell().name() == "powershell" {
+            format!("'{}'", script_path.to_string_lossy().replace('\'', "''"))
+        } else {
+            format!("\"{}\"", script_path.display())
+        };
+        format!(
+            "powershell.exe -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File {script}"
+        )
+    } else {
+        queue_python_hook_command(script_path)
+    }
+}
+
 #[test]
 fn rejecting_queue_hook_runs_with_real_platform_python() -> anyhow::Result<()> {
     let home = tempfile::tempdir()?;
-    write_rejecting_prompt_hook(home.path());
+    write_python_rejecting_prompt_hook(home.path());
     let script_path = home.path().join("queue_prompt_hook.py");
     let hooks: serde_json::Value =
         serde_json::from_slice(&std::fs::read(home.path().join("hooks.json"))?)?;
@@ -2926,6 +3005,35 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         drop(observer);
         assert!(test.codex.pending_admission_fence_completion().is_some());
 
+        // Repeated notifications for the same captured owner must share one
+        // queued callback. Otherwise they exhaust Core's bounded scheduler and
+        // steal capacity from other contributors while the owner is fenced.
+        for _ in 0..64 {
+            emit_idle(queue.as_ref(), thread_id).await;
+        }
+        for _ in 0..31 {
+            let completion = test
+                .codex
+                .pending_admission_fence_completion()
+                .expect("the original cleanup owner remains held");
+            test.codex.defer_idle_work(
+                IdleWorkPriority::AutomaticContinuation,
+                completion,
+                async {},
+            )?;
+        }
+        assert!(
+            test.codex
+                .defer_idle_work(
+                    IdleWorkPriority::AutomaticContinuation,
+                    test.codex
+                        .pending_admission_fence_completion()
+                        .expect("the original cleanup owner remains held"),
+                    async {},
+                )
+                .is_err()
+        );
+
         // A positively pre-routing refusal releases only that attempt's lease.
         // Repeating it must not encounter ambiguous authority from either the
         // deferred lifecycle wake or the earlier rejected manual attempt.
@@ -2959,29 +3067,31 @@ async fn registered_queue_waits_for_terminal_cleanup_without_admitting_other_cal
         assert_eq!(vec![queued.clone()], queue.list(thread_id).await?);
         assert_eq!(1, responses.requests().len());
 
-        // Core publishes A's TurnComplete before entering its idle callbacks.
-        // Consume that exact completion while the gate still holds, so the
-        // next observed completion proves that the deferred B actually ran.
-        // The shared event helper also waits for the finish owner. This raw
-        // observation must return while our idle gate still holds that owner.
-        let initial_turn_id = loop {
-            let event = test.codex.next_event().await?;
-            if let EventMsg::TurnComplete(completed) = event.msg {
-                break completed.turn_id;
-            }
+        // Public TurnComplete delivery now waits for this exact finish owner.
+        // Capture its ID from normal admission; observe the matching public
+        // completion only after releasing the deliberately held idle gate.
+        let initial_turn_id = match &initial_submission {
+            TurnInputSubmission::Started { turn_id } => turn_id.clone(),
+            other => anyhow::bail!("initial user turn was not started: {other:?}"),
         };
-        assert_eq!(
-            initial_submission,
-            TurnInputSubmission::Started {
-                turn_id: initial_turn_id.clone(),
-            }
-        );
         let initial_finish = test
             .codex
             .pending_normal_turn_finish_completion(&initial_turn_id)
             .context("the held initial idle gate must retain its finish owner")?;
         release.notify_one();
         initial_finish.await;
+        let published_initial = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        assert_eq!(published_initial, initial_turn_id);
+        assert_eq!(
+            initial_submission,
+            TurnInputSubmission::Started {
+                turn_id: published_initial,
+            }
+        );
         let queued_turn_id = wait_for_event_match(test.codex.as_ref(), |event| match event {
             EventMsg::TurnComplete(completed) if completed.turn_id != initial_turn_id => {
                 Some(completed.turn_id.clone())
@@ -3090,21 +3200,13 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
             .await?;
         phase = "waiting for the initial idle contributor";
         entered.notified().await;
-        phase = "observing the initial completion while its idle gate is held";
-        // The shared event helper also waits for the finish owner. This raw
-        // observation must return while our idle gate still holds that owner.
-        let initial_turn_id = loop {
-            let event = test.codex.next_event().await?;
-            if let EventMsg::TurnComplete(completed) = event.msg {
-                break completed.turn_id;
-            }
+        phase = "capturing the admitted turn while its idle gate is held";
+        // Public terminal delivery observes this owner, so it cannot be used
+        // to release the fixture gate. Retain the real admitted turn ID.
+        let initial_turn_id = match &initial_submission {
+            TurnInputSubmission::Started { turn_id } => turn_id.clone(),
+            other => anyhow::bail!("initial user turn was not started: {other:?}"),
         };
-        assert_eq!(
-            initial_submission,
-            TurnInputSubmission::Started {
-                turn_id: initial_turn_id.clone(),
-            }
-        );
         let initial_finish = test
             .codex
             .pending_normal_turn_finish_completion(&initial_turn_id)
@@ -3135,6 +3237,19 @@ async fn queued_input_precedes_an_older_automatic_notification_at_the_same_fence
         release.notify_one();
         phase = "waiting for the initial finish owner after releasing its idle gate";
         initial_finish.await;
+        phase = "observing the initial public completion after its finish owner";
+        let published_initial = wait_for_event_match(test.codex.as_ref(), |event| match event {
+            EventMsg::TurnComplete(completed) => Some(completed.turn_id.clone()),
+            _ => None,
+        })
+        .await;
+        assert_eq!(published_initial, initial_turn_id);
+        assert_eq!(
+            initial_submission,
+            TurnInputSubmission::Started {
+                turn_id: published_initial,
+            }
+        );
         phase = "waiting for deferred automatic admission after queued input";
 
         assert_eq!(

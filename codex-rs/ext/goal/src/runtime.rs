@@ -3,6 +3,7 @@ use std::sync::Weak;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use codex_core::CodexThread;
 use codex_core::StartIfIdleSubmission;
 use codex_core::ThreadManager;
 use codex_core::TurnInput;
@@ -22,6 +23,10 @@ use crate::steering::objective_updated_steering_item;
 use crate::tool::protocol_goal_from_state;
 use tokio::sync::Semaphore;
 use tokio::sync::SemaphorePermit;
+
+mod idle_continuation;
+
+use idle_continuation::IdleContinuations;
 
 #[derive(Clone)]
 pub struct GoalRuntimeHandle {
@@ -50,6 +55,7 @@ struct GoalRuntimeInner {
     enabled: AtomicBool,
     tools_available_for_thread: bool,
     goal_state_lock: Semaphore,
+    idle_continuations: IdleContinuations,
 }
 
 pub(crate) struct AccountedGoalProgress {
@@ -102,6 +108,7 @@ impl GoalRuntimeHandle {
                 enabled: AtomicBool::new(config.enabled),
                 tools_available_for_thread: config.tools_available_for_thread,
                 goal_state_lock: Semaphore::new(/*permits*/ 1),
+                idle_continuations: IdleContinuations::default(),
             }),
         }
     }
@@ -359,7 +366,7 @@ impl GoalRuntimeHandle {
         Ok(())
     }
 
-    pub(crate) async fn continue_if_idle(&self) -> Result<(), String> {
+    async fn continue_on_thread(&self, thread: Arc<CodexThread>) -> Result<(), String> {
         if !self.tools_visible() {
             self.inner.accounting_state.clear_active_goal();
             return Ok(());
@@ -383,10 +390,13 @@ impl GoalRuntimeHandle {
             tracing::debug!("skipping goal continuation because thread manager is unavailable");
             return Ok(());
         };
-        let Ok(thread) = thread_manager.get_thread(self.inner.thread_id).await else {
+        let Ok(loaded_thread) = thread_manager.get_thread(self.inner.thread_id).await else {
             tracing::debug!("skipping goal continuation because live thread is unavailable");
             return Ok(());
         };
+        if !Arc::ptr_eq(&thread, &loaded_thread) {
+            return Ok(());
+        }
 
         let Some(goal) = self
             .inner
