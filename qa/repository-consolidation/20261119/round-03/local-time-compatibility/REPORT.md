@@ -77,11 +77,44 @@ The exact final hashes are:
 
 `source-manifest.json` records all 27 changed source/lock paths before and after
 formatting. `validation-summary.json` distinguishes each check's source scope.
-`evidence-index.json` hashes every member of `evidence.tar.gz`, which retains
-the complete logs, diagnostic sources, source snapshots, native receipts and
-independent review. Initial failures remain present, including the missing
+`evidence-index.json` hashes every member of the original `evidence.tar.gz`,
+which retains the complete logs, diagnostic sources, source snapshots, native
+receipts and independent review. The archive is stored as five exact ordered
+byte chunks of at most 400,000 bytes. Their concatenation has the original
+1,916,937-byte length and SHA-256
+`a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81`.
+The index also pins every chunk and the original commit/blob identity.
+`blob-size-before-chunking.log.gz` preserves the original 512,000-byte policy
+failure; the policy and its allowlist are unchanged. Initial validation
+failures remain present, including the missing
 offline cache, temporary compile error, missing Clang header, sparse-checkout
 Bazel error and the differential failures that motivated the final fixes.
+
+To reconstruct the archive, run from this evidence directory and choose an
+output path outside the repository:
+
+```sh
+python3 - /tmp/hepta-time-evidence.tar.gz <<'PY'
+import hashlib
+import json
+import pathlib
+import sys
+
+index = json.loads(pathlib.Path("evidence-index.json").read_text())
+parts = []
+offset = 0
+for chunk in index["chunks"]:
+    data = pathlib.Path(chunk["path"]).read_bytes()
+    assert chunk["offset"] == offset and len(data) == chunk["bytes"]
+    assert hashlib.sha256(data).hexdigest() == chunk["sha256"]
+    parts.append(data)
+    offset += len(data)
+archive = b"".join(parts)
+assert len(archive) == index["archive_bytes"]
+assert hashlib.sha256(archive).hexdigest() == index["archive_sha256"]
+pathlib.Path(sys.argv[1]).write_bytes(archive)
+PY
+```
 
 Native Windows execution of the OS comparison test and the complete final
 integration CI remain required before merging to main or deleting source
