@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.rust-consolidation-continuation.v3",
+  "date_utc": "2026-11-19",
+  "integration_parent": "f9796acc56cdbebba01564fa4eb55cf1d4217347",
+  "main_readback": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "previous_inventory": {
+    "branch_count": 7643,
+    "protected_named": 394,
+    "unique_shas": 7256,
+    "verified_pinned_names_unchanged_against_archived_snapshot": 394
+  },
+  "live_inventory_sample": {
+    "page_77": 45,
+    "page_78": 0,
+    "nominal_branch_count_from_paged_sample": 7645,
+    "non_atomic": true,
+    "full_graph_coverage": "NOT_VERIFIED"
+  },
+  "new_hia_protection": {
+    "name": "codex/hia-example-continuation-locked-native-20261119-a11",
+    "sha": "ffd678caa8d5fee7ba461557cf7a42bcbc7a5caa",
+    "root_ancestors": [
+      {
+        "sha": "ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+        "behind": 0
+      },
+      {
+        "sha": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+        "behind": 0
+      }
+    ],
+    "found_in_round_02_archive": false,
+    "manifest_protected_named_total_after": 395
+  },
+  "protected_hia_observed_concurrent_movement": [
+    {
+      "name": "research/e1e6-joint-20261118-2e9b",
+      "sha": "325218ec2e5f085637e78e192bf188842e51fad5",
+      "ancestor_root": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+    },
+    {
+      "name": "research/upstream-layout-learning-20261118-2e9b",
+      "sha": "077b552e6265be1c00cd045506f00e2aa3082c2f",
+      "ancestor_root": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb"
+    }
+  ],
+  "rustfmt_fix": {
+    "commit": "f9796acc56cdbebba01564fa4eb55cf1d4217347",
+    "tree": "29f20b3e408191469543cea777c26964863581cf",
+    "only_source_diff": "codex-rs/hepta-agentd/src/client_control.rs rustfmt two-line indentation",
+    "native_tests": "PENDING"
+  },
+  "merge_progress": {
+    "ordinary_heads_merged_in_this_round": 0,
+    "deleted_refs": 0,
+    "main_updated": false,
+    "exact_current_coverage": "NOT_VERIFIED",
+    "last_fully_classified": {
+      "branches": 7615,
+      "ordinary": 7225,
+      "covered": 2083,
+      "pending": 5142
+    }
+  },
+  "guards": [
+    "No HIA refs written",
+    "Protect all descendants and historical pins regardless of branch names",
+    "No old ordinary heads deleted",
+    "Do not merge to main without required CI and Architecture passing",
+    "GitHub ref-delete API unavailable"
+  ]
+}
