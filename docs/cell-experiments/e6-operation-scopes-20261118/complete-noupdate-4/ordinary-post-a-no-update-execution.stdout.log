@@ -1,0 +1,69 @@
+Root test uid=0
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+────────────
+ Nextest run ID 63a76b90-5212-472b-9475-1633088b9e29 with nextest profile: local
+    Starting 1 test across 2 binaries (1637 tests skipped)
+        SLOW [> 30.000s] (───) codex-hepta-agentd neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+        SLOW [> 60.000s] (───) codex-hepta-agentd neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+        FAIL [  68.140s] (1/1) codex-hepta-agentd neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+────────────
+     Summary [  68.149s] 1 test run: 0 passed, 1 failed, 1637 skipped
+        FAIL [  68.140s] (1/1) codex-hepta-agentd neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+  stdout ───
+
+    running 1 test
+    test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c has been running for over 60 seconds
+    test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c ... FAILED
+
+    failures:
+
+    failures:
+        neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 68.13s
+
+  stderr ───
+    ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-lptbJT
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-w1P27K
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-ZNVrMc
+    ORDINARY_Q24_SOURCE_INPUT_BYTES=73899 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+    ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-ab12-noupdate-4/bind/ordinary-q24-OpyqQn
+    ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-S7JRDu
+    ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-ab12-noupdate-4/witness-bind/ordinary-post-a-model-gjcyAe
+    ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1030287, start_ticks: 208036033, boot_id: "b1620269-aaef-43e7-bf47-bc6eb1c1a447" } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=AuthBus text relay unavailable: invalid agentd configuration: AuthBus text: Agent generation is not ready
+    daemon_stage=historical_client.read_limit request_id=65 maximum=64
+    daemon_stage=historical_client.observe_before_action
+    daemon_stage=historical.operation.result
+    daemon_stage=historical.operation.fence
+    daemon_stage=historical.dataset.operation
+    hepta-agentd module=circuit-task-owner: runtime owner failure retained during shutdown
+    Error: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable
+
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-SLCmyc
+    ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1030285, start_ticks: 208036032, boot_id: "b1620269-aaef-43e7-bf47-bc6eb1c1a447" } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_measure=historical.task_reply bytes=19113 bound=28933
+    root_stage=post_a.worker
+    root_stage=cli.serve
+    Error: Custom { kind: Other, error: "original post-A publication session ended" }
+
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-syxo1z
+    ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1030286, start_ticks: 208036033, boot_id: "b1620269-aaef-43e7-bf47-bc6eb1c1a447" } status=Ok(ExitStatus(unix_wait_status(25856))) stdout=
+    running 1 test
+    test neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child ... FAILED
+
+    failures:
+
+    failures:
+        neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 8.06s
+
+     stderr=Error: original B notification ended before its cut
+
+    ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-eQLoHa
+    ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-Qedjml
+    Error: original child lifetime is no longer live
+
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100
+{"after": {"commit": "ab12b8bc1e6761efc16ea8c64e839721739cef5f", "dirty": false, "parents": ["f883f77ff2c74e1b839c6eb915723a53271b4ac3"], "tree": "d0b851b201a8e1559e354b94a8909a146e340542"}, "base_sha": "", "before": {"commit": "ab12b8bc1e6761efc16ea8c64e839721739cef5f", "dirty": false, "parents": ["f883f77ff2c74e1b839c6eb915723a53271b4ac3"], "tree": "d0b851b201a8e1559e354b94a8909a146e340542"}, "command": ["just", "test", "--run-ignored", "only", "--test-threads", "1", "-E", "test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c)", "--cargo-metadata", "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-4/cargo-metadata.json", "--binaries-metadata", "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-4/native-binaries.json", "--retries", "0", "--success-output", "final", "--failure-output", "final", "--no-tests", "fail"], "command_exit_code": 100, "elapsed_seconds": 68.30263769789599, "error": "required tests were not observed passing", "exit_code": 100, "finished_at": "2026-11-19T02:16:46.794975+00:00", "job": null, "lane": "source-head", "log_bytes": 5239, "log_file": "ordinary-post-a-no-update.json.1b9d90927081436e97b81ca87a792f56.log", "log_sha256": "9e6dc29a7a7c10d1cd4e830e3cbdb51265837040bbaa72a83348366ebb78b953", "minimum_tests": 1, "observed_failed_tests": 1, "observed_passed_tests": 0, "output_limit_exceeded": false, "returncode": 100, "run_attempt": null, "run_id": null, "schema_version": 1, "source_sha": "ab12b8bc1e6761efc16ea8c64e839721739cef5f", "started_at": "2026-11-19T02:15:38.490783+00:00", "status": "failed", "tested_sha": "ab12b8bc1e6761efc16ea8c64e839721739cef5f", "timed_out": false, "working_directory": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source"}
