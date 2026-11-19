@@ -120,7 +120,9 @@ version = "149.2.0"
             self.run_git(root, "init", "--initial-branch=main")
             self.run_git(root, "config", "user.name", "Test User")
             self.run_git(root, "config", "user.email", "test@example.com")
-            self.write_and_commit(root, "rama-macros block not found", "codex-rs/Cargo.lock")
+            self.write_and_commit(
+                root, "rama-macros block not found", "codex-rs/Cargo.lock"
+            )
             base = self.run_git(root, "rev-parse", "HEAD")
             valid = """[[package]]
 name = "v8"

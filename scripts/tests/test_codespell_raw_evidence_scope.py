@@ -21,7 +21,13 @@ class CodespellRawEvidenceScopeTests(unittest.TestCase):
 
     def test_frozen_transcript_parts_are_excluded(self):
         self.assertIn(RAW_PATTERN, self.patterns)
-        for filename in ("part-03.txt", "part-09.txt", "part-10.txt", "part-13.txt", "part-14.txt"):
+        for filename in (
+            "part-03.txt",
+            "part-09.txt",
+            "part-10.txt",
+            "part-13.txt",
+            "part-14.txt",
+        ):
             relative = (
                 "docs/modules/runtime.agentd/evidence/2026-10-23-production-composition/"
                 f"owner-workspace-raw/{filename}"
