@@ -1,0 +1,19 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________________________ test_callable _________________________________
+tests/test_subscripts.py:171: in test_callable
+    assert not issubclass(Callable, subtype(Callable[[], int]))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+multimethod/__init__.py:109: in __subclasscheck__
+    and issubclass(args[-1], self.__args__[-1])  # covariant return
+                   ^^^^^^^^
+E   IndexError: tuple index out of range
+=============================== warnings summary ===============================
+tests/test_subscripts.py:188
+  /home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1/0-before/work/tests/test_subscripts.py:188: PytestUnknownMarkWarning: Unknown pytest.mark.benchmark - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.benchmark
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_subscripts.py::test_callable - IndexError: tuple index out ...
+1 failed, 11 deselected, 1 warning in 0.14s

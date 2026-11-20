@@ -1,0 +1,51 @@
+{
+  "full_system_cost_known": false,
+  "native_children": 4,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "original_four_children_retained": true,
+  "owner_wall_seconds": 2.4897998650558293,
+  "source_commit": "611a0dd96a648277912d2cd4c9b0a44adc57972b",
+  "stages": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-u",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay_sources.py",
+        "owner",
+        "--root",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051",
+        "--output",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1",
+        "--source-commit",
+        "611a0dd96a648277912d2cd4c9b0a44adc57972b"
+      ],
+      "exit_code": 2,
+      "stage": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "622d4b48b5368630b1b41399a8e448bfd1b4d8cc6be22354c63eafd313dd37c9",
+      "wall_seconds": 2.3975845561362803
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-u",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051/verify_replay_identity.py",
+        "--root",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051",
+        "--replay",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1",
+        "--output",
+        "/home/qian/work/hepta-e5-two-native-20261120-e9e051/identity-readback-1",
+        "--source-commit",
+        "611a0dd96a648277912d2cd4c9b0a44adc57972b"
+      ],
+      "exit_code": 0,
+      "stage": 1,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "05570fa005ebdb9ee60fe00ea7d847fb830ebf2aa374703b4c55e392e9304070",
+      "wall_seconds": 0.07100863987579942
+    }
+  ],
+  "status": "OWNER_COMPLETE"
+}

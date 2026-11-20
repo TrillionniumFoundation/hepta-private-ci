@@ -1,4 +1,8 @@
-# E5 six-candidate metadata and license freeze
+# E5 six-candidate intake and two native source admissions
+
+The metadata stage below remains frozen as originally recorded. Its later authorized native continuation has now completed from source commit `611a0dd96a648277912d2cd4c9b0a44adc57972b`: exactly four original children demonstrate two additional source materials, with the buggy revisions failing and fixed revisions passing. Read [the native readout](native/NATIVE_READOUT.md) and [machine-readable results](native/NATIVE_READOUT.json). The old collector's zero count, corrected exact identity readback, original first-parent inference and setup failure are all preserved. Model calls, training updates and authenticated users remain zero; source-growth qualification remains false.
+
+## Frozen metadata and license stage
 
 This stage records **zero new admitted sources, native test children, model calls or training updates**. It preserves the first eligible selection order and identifies what an authorized content review must resolve.
 
