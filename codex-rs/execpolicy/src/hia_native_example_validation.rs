@@ -68,6 +68,17 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
     };
     assert_eq!(status, 0, "HIA example-validation transition rejected a valid input");
     assert_eq!(source, original_source, "HIA wrote to the read-only example frame");
+    validate_response(mode, total, index, misses, hit, &output)
+}
+
+fn validate_response(
+    mode: u64,
+    total: usize,
+    index: usize,
+    misses: usize,
+    hit: bool,
+    output: &[u8; OUTPUT_BYTES],
+) -> Transition {
     let word = |offset: usize| {
         u64::from_le_bytes(
             output[offset..offset + 8]
@@ -245,3 +256,7 @@ pub(crate) fn validate_negative(
         }
     }
 }
+
+#[cfg(test)]
+#[path = "hia_native_example_validation_tests.rs"]
+mod tests;
