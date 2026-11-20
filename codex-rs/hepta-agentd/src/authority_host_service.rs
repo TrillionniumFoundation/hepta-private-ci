@@ -309,8 +309,45 @@ impl HostAuthorityService {
         {
             checkpoint.validate_peer(policy.peer).map_err(unavailable)?;
         }
-        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)?;
-        while channel.exchange(|bytes| self.handle(lane, bytes))? {}
+        let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
+            .inspect_err(|_| {
+                if matches!(lane, HostAuthorityLane::Observation) {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!(
+                            "root_stage=observation.construct thread={:?}\n",
+                            std::thread::current().id(),
+                        ),
+                    );
+                }
+            })?;
+        while {
+            let mut handler_failed = false;
+            // The handler records only a local diagnostic bit. Report it only
+            // after the original channel has closed the failed stream.
+            channel
+                .exchange(|bytes| {
+                    let handled = self.handle(lane, bytes);
+                    handler_failed = handled.is_err();
+                    handled
+                })
+                .inspect_err(|_| {
+                    if matches!(lane, HostAuthorityLane::Observation) {
+                        let stage = if handler_failed {
+                            "observation.handler"
+                        } else {
+                            "observation.exchange"
+                        };
+                        let _ = std::io::Write::write_fmt(
+                            &mut std::io::stderr(),
+                            format_args!(
+                                "root_stage={stage} thread={:?}\n",
+                                std::thread::current().id(),
+                            ),
+                        );
+                    }
+                })?
+        } {}
         Ok(())
     }
 
