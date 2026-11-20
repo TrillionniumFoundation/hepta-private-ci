@@ -744,6 +744,8 @@ fn live_image_loss_rejects_cached_reads_retries_and_new_writes() {
 #[cfg(unix)]
 #[test]
 fn missing_symlink_and_fifo_live_images_poison_without_blocking() {
+    use std::os::unix::fs::FileTypeExt;
+
     for damage in 0..3 {
         let root = must(TempRoot::new("live-image-kind"));
         let store = must(NduProjectionStoreV1::open(&root.0));
@@ -753,14 +755,26 @@ fn missing_symlink_and_fifo_live_images_poison_without_blocking() {
         match damage {
             0 => {}
             1 => symlink(root.0.join("missing-target"), &path).expect("symlink image"),
-            _ => rustix::fs::mknodat(
-                rustix::fs::CWD,
-                &path,
-                rustix::fs::FileType::Fifo,
-                rustix::fs::Mode::RUSR | rustix::fs::Mode::WUSR,
-                0,
-            )
-            .expect("fifo image"),
+            _ => {
+                let output = std::process::Command::new("mkfifo")
+                    .args(["-m", "600"])
+                    .arg(&path)
+                    .output()
+                    .expect("create fifo image");
+                assert!(
+                    output.status.success(),
+                    "mkfifo failed: stdout={} stderr={}",
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                assert!(
+                    fs::symlink_metadata(&path)
+                        .expect("stat fifo image")
+                        .file_type()
+                        .is_fifo(),
+                    "replacement must be a FIFO"
+                );
+            }
         }
         assert!(store.entries().is_err());
         assert!(store.is_indeterminate());
