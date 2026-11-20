@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.raw-function-resume-controller-events.v1",
+  "A": {
+    "idempotency_key": "e1e2-6737-original-A24-20261120-v1",
+    "session_id": "dpty-60a893a5e1f06ec1f60f4271cc5b1b9a10eede679ceb1c59f387c0f253f2880a",
+    "source_commit": "2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82",
+    "planned_calls": 24,
+    "new_training_updates": 0
+  },
+  "source_commit": "a76c0a4d07b3252f0cf5ea22de73fea532583b57",
+  "preflight": {
+    "session_id": "dpty-eb9e714d36a0ba6e9ffc8c36a648bdb3b57e0401ae11cdc7bbb9fdafd6c2f317",
+    "actual_exit_code": 0,
+    "new_model_calls": 0,
+    "new_training_updates": 0
+  },
+  "future_binding": {
+    "idempotency_key": "e1e2-6737-frozen-future-deployment-20261120-v1",
+    "session_id": "dpty-9ab8a983bb554c88fa387566d5abe9d1629f3722928a538fa8a8ef3dc15a466f",
+    "actual_exit_code": 0,
+    "deployment_sha256": "964e2a0c1f41d9b4d76d6e23dbbd092daa9bc58f9f94cbf53f087db54bcb34c0",
+    "new_model_calls": 0,
+    "new_training_updates": 0
+  },
+  "control_limitations": [
+    "Process start name 'python3' was definitively rejected before launch; corrected absolute /usr/bin/python3 completed with original read-only inventory key.",
+    "Native file batches that targeted missing files or exceeded per-file size were rejected without partial content; these are controller read errors, not model or native failures.",
+    "Full system cost including connector overhead and unrelated whole-host activity remains unknown."
+  ],
+  "no_source_or_gate_edit": true,
+  "no_panel_reselection": true,
+  "no_retraining": true,
+  "no_native_adoption": true
+}
