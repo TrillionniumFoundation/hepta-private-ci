@@ -13,7 +13,6 @@ use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 
 use super::*;
-use crate::LearningIterationEvidenceClientV1;
 use crate::OriginalCellEvaluationExecutionOwnerV1;
 use crate::OriginalCellEvaluationExecutionStoreV1;
 use crate::OriginalCellEvaluationPanelMemberOwnersV1;

@@ -56,7 +56,7 @@ async fn q24_readiness_waits_for_actual_c_without_consuming_observer_dispatch() 
 
 #[tokio::test]
 async fn q24_readiness_withdrawal_is_fatal_and_never_becomes_pending() -> anyhow::Result<()> {
-    let mut f = CompletionFixture::ready(None).await?;
+    let f = CompletionFixture::ready(None).await?;
     let context = next_use_context(&f.f.original.config);
     let published = original(&f.f.original, context.clone())?;
     let (wait, channel) = readiness::client(context)?;
