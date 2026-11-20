@@ -106,11 +106,35 @@ fn preserves_leap_second_and_pre_epoch_ordering() {
 #[test]
 fn preserves_signed_epoch_and_duration_refusals() {
     let epoch = std::time::SystemTime::UNIX_EPOCH;
-    let before = Timestamp::from_system_time(epoch - std::time::Duration::from_nanos(1))
+    let before = Timestamp::from_timestamp(/*seconds*/ -1, /*nanoseconds*/ 999_999_999)
         .expect("pre-epoch timestamp");
     assert_eq!(before.timestamp(), -1);
     assert_eq!(before.timestamp_millis(), -1);
     assert_eq!(before.timestamp_subsec_nanos(), 999_999_999);
+
+    // Windows SystemTime uses 100ns intervals. Check a negative fractional
+    // instant that its clock can represent, independently of Timestamp's 1ns range.
+    let clock_before = epoch - std::time::Duration::from_nanos(/*nanos*/ 100);
+    let clock_timestamp = Timestamp::from_system_time(clock_before).expect("pre-epoch clock");
+    assert_eq!(
+        clock_timestamp,
+        Timestamp::from_timestamp(/*seconds*/ -1, /*nanoseconds*/ 999_999_900)
+            .expect("pre-epoch clock timestamp")
+    );
+    assert_eq!(clock_timestamp.to_system_time(), Some(clock_before));
+
+    // Always exercise the 1ns SystemTime request too. Compare with the actual
+    // clock interval, retaining exact 1ns coverage on clocks that represent it.
+    let requested_before = epoch - std::time::Duration::from_nanos(/*nanos*/ 1);
+    let actual_before = Timestamp::from_system_time(requested_before).expect("actual clock");
+    let observed_elapsed = epoch
+        .duration_since(requested_before)
+        .expect("clock subtraction cannot advance the epoch");
+    assert_eq!(
+        Timestamp::UNIX_EPOCH - actual_before,
+        time::Duration::try_from(observed_elapsed).expect("signed clock interval")
+    );
+    assert_eq!(actual_before.to_system_time(), Some(requested_before));
     assert_eq!(
         Timestamp::from_timestamp_millis(/*milliseconds*/ -1)
             .expect("signed millisecond")
