@@ -22,8 +22,8 @@ use support::id;
 use support::outcome;
 use support::sign;
 
-// Only this integration target exercises recovery; keep its setup beside
-// the tests that use it instead of in the fixture shared with the subset target.
+// Keep this target's recovery setup beside its tests; the subset target
+// shares the base fixture but does not exercise recovery.
 impl Fixture {
     fn recover_writer(&self, limit: usize, frontier: LedgerWitnessFrontier) -> LedgerWriter {
         let ledger = DurableLedger::recover(

@@ -14,7 +14,11 @@ use codex_hepta_bellman_operator::TerminalCellProfileV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
+use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LedgerRecovery;
+use codex_hepta_learning_ledger::LedgerWitnessFrontier;
+use codex_hepta_learning_ledger::LedgerWitnessStore;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::dataset_freeze_signing_payload_v2;
 use codex_hepta_learning_ledger::decision_signing_payload_v2;
@@ -57,6 +61,29 @@ use ledger_support::digest;
 use ledger_support::id;
 use ledger_support::outcome;
 use ledger_support::sign;
+
+// This test module also reopens the real durable ledger after dropping its owner.
+impl Fixture {
+    fn recover_writer(&self, limit: usize, frontier: LedgerWitnessFrontier) -> LedgerWriter {
+        let ledger = DurableLedger::recover(
+            self.file("ledger"),
+            ledger_support::binding(),
+            limit,
+            LedgerRecovery::Acknowledged(frontier.anchor),
+        )
+        .unwrap();
+        let witness =
+            LedgerWitnessStore::recover(self.file("witness"), ledger_support::binding()).unwrap();
+        LedgerWriter::from_durable(
+            ledger,
+            witness,
+            ledger_support::activated_trust(),
+            &self.directory(),
+            &self.directory(),
+        )
+        .unwrap()
+    }
+}
 
 struct FixtureOwners {
     _memory_root: TempDir,

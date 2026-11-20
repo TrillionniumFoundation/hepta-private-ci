@@ -265,9 +265,9 @@ impl AgentdLearningCheckpointClientV1 {
             .try_lock()
             .map_err(|_| unavailable())?
             .take()
-            .ok_or_else(&unavailable)?;
+            .ok_or_else(unavailable)?;
         let request_id = channel.next_request_id;
-        channel.next_request_id = request_id.checked_add(1).ok_or_else(&unavailable)?;
+        channel.next_request_id = request_id.checked_add(1).ok_or_else(unavailable)?;
         let (schema, binding) = self.profile_identity();
         let operation = match self.frozen_scope_binding() {
             Some(_) => SCOPED_OPERATION,
