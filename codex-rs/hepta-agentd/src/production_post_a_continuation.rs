@@ -58,6 +58,31 @@ pub(crate) struct OriginalPostAContinuationV1 {
     original: OriginalContinuationInputs,
 }
 
+// This owner records only that startup finished before delivery could submit.
+// It retains the same concrete inputs, state and cancellation token. It carries
+// no Root observation or borrowed permission, and later effects keep their
+// original fresh current/source checks.
+pub(crate) struct OriginalPreparedPostAContinuationV1 {
+    source: Arc<RegisteredHistoricalLearningSourceV1>,
+    owners: Arc<OriginalCellQ24LearningStageOwnersV1>,
+    trust: Arc<OriginalHistoricalLearningTrustV1>,
+    receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+    successor: OriginalQ24SuccessorHandoffV1,
+    publication: OriginalPreparedPublicationRoute,
+    material: OriginalMaterialWriter,
+    artifacts: OriginalArtifactPlan,
+    task: OriginalCTaskPlan,
+    generation: OriginalGenerationFiles,
+    files: OriginalFiles,
+    baseline: Arc<LoadedCellQ24ModelV1>,
+    final_use: Arc<FinalUseAuthority>,
+    clock: Arc<dyn AuthorityClock>,
+    identity: AgentdIdentity,
+    end: Instant,
+    state: Arc<AgentdState>,
+    cancelled: CancellationToken,
+}
+
 enum PreparedCTask {
     New(OriginalNewCTask),
     Existing(OriginalExistingCTask),
@@ -118,12 +143,76 @@ impl OriginalPostAContinuationV1 {
         Ok(())
     }
 
-    pub(crate) async fn run(
+    pub(crate) async fn prepare_original_delivery(
         self,
         state: Arc<AgentdState>,
         cancelled: CancellationToken,
-    ) -> Result<(), AgentdError> {
+    ) -> Result<Option<OriginalPreparedPostAContinuationV1>, AgentdError> {
         let OriginalContinuationInputs {
+            source,
+            owners,
+            trust,
+            receipt,
+            successor,
+            publication,
+            material,
+            artifacts,
+            task,
+            generation,
+            files,
+            baseline,
+            final_use,
+            grants,
+            clock,
+            identity,
+            end,
+        } = self.original;
+        // C uses its actual prepared publication lane; this shared generic
+        // provider remains part of the original launcher input only.
+        drop(grants);
+        loop {
+            if cancelled.is_cancelled() {
+                return Ok(None);
+            }
+            post_a_remaining(end)?;
+            if require_successor_admission(&state, &identity).is_ok() {
+                break;
+            }
+            tokio::select! {
+                _ = cancelled.cancelled() => return Ok(None),
+                _ = tokio::time::sleep(post_a_remaining(end)?.min(Duration::from_millis(25))) => {}
+            }
+        }
+        RegisteredHistoricalLearningSourceV1::require_current_historical_source(
+            &source, &identity,
+        )?;
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
+        Ok(Some(OriginalPreparedPostAContinuationV1 {
+            source,
+            owners,
+            trust,
+            receipt,
+            successor,
+            publication,
+            material,
+            artifacts,
+            task,
+            generation,
+            files,
+            baseline,
+            final_use,
+            clock,
+            identity,
+            end,
+            state,
+            cancelled,
+        }))
+    }
+}
+
+impl OriginalPreparedPostAContinuationV1 {
+    pub(crate) async fn run_original_prepared_continuation(self) -> Result<(), AgentdError> {
+        let Self {
             source,
             owners,
             trust,
@@ -137,31 +226,12 @@ impl OriginalPostAContinuationV1 {
             mut files,
             baseline,
             final_use,
-            grants,
             clock,
             identity,
             end,
-        } = self.original;
-        // C uses its actual prepared publication lane; this shared generic
-        // provider remains part of the original launcher input only.
-        drop(grants);
-        loop {
-            if cancelled.is_cancelled() {
-                return Ok(());
-            }
-            post_a_remaining(end)?;
-            if require_successor_admission(&state, &identity).is_ok() {
-                break;
-            }
-            tokio::select! {
-                _ = cancelled.cancelled() => return Ok(()),
-                _ = tokio::time::sleep(post_a_remaining(end)?.min(Duration::from_millis(25))) => {}
-            }
-        }
-        RegisteredHistoricalLearningSourceV1::require_current_historical_source(
-            &source, &identity,
-        )?;
-        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
+            state,
+            cancelled,
+        } = self;
         let snapshot = tokio::select! {
             _ = cancelled.cancelled() => return Ok(()),
             result = tokio::time::timeout_at(end.into(), successor.decision_snapshot()) => {

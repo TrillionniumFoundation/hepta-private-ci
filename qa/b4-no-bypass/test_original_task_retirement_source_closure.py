@@ -55,7 +55,7 @@ fn unowned_retirement_probe(published: &PublishedCircuitFeatureTaskV1,
 
     def test_new_c_retirement_keeps_actual_owner_and_pre_post_custody(self):
         path = AGENT + "production_post_a_continuation.rs"
-        function = "fn run("
+        function = "fn run_original_prepared_continuation("
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
         start = code.index(function)

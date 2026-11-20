@@ -304,14 +304,34 @@ impl OriginalHistoricalLearningDeliveryV1 {
             return self.run_delivery(handle, state, cancellation).await;
         };
         let joined = cancellation.child_token();
+        // The continuation's original physical source preflight must finish
+        // before delivery can submit Restore to the same Historical client.
+        // This consumes the concrete continuation once; no Root read crosses
+        // the await, and no journal claim exists yet on this fresh path.
+        let continuation = match crate::production_launcher::OriginalPostAContinuationV1::prepare_original_delivery(
+            continuation,
+            Arc::clone(&state),
+            joined.clone(),
+        )
+        .await
+        {
+            Ok(Some(continuation)) => continuation,
+            Ok(None) => return Ok(()),
+            Err(error) => {
+                let _ = std::io::Write::write_fmt(
+                    &mut std::io::stderr(),
+                    format_args!(
+                        "daemon_stage=historical.continuation.original_result error={error:?}\n"
+                    ),
+                );
+                joined.cancel();
+                return Err(error);
+            }
+        };
         let delivery_cancelled = joined.clone();
         let continuation_cancelled = joined.clone();
         let delivery = self.run_delivery(handle, Arc::clone(&state), joined.clone());
-        let continuation = crate::production_launcher::OriginalPostAContinuationV1::run(
-            continuation,
-            state,
-            joined,
-        );
+        let continuation = continuation.run_original_prepared_continuation();
         // Both owned futures remain joined after an error or shutdown. An
         // original publisher or issuer already in progress is never detached.
         let first_failure = AtomicU8::new(0);

@@ -66,7 +66,7 @@ class PostACRecoverySourceTests(unittest.TestCase):
             self.check_markers(path, function, markers)
 
     def test_actual_root_intent_and_original_a_precede_completed_c_observation(self):
-        self.check_markers(CONT, 'fn run(', (
+        self.check_markers(CONT, 'fn run_original_prepared_continuation(', (
             'OriginalCellQ24RootPublicationDriverV1::read_original_recovery_intent(',
             '&driver, &receipt,', 'OriginalExistingCTask::into_original_recovery(',
             'Arc::clone(&receipt)', 'OriginalCellQ24RootPublicationDriverV1::recover_feature_from_historical_a(',
@@ -108,12 +108,15 @@ class PostACRecoverySourceTests(unittest.TestCase):
             'OriginalPostAContinuationV1::require_original_delivery(',
             'delivery.continuation = Some(continuation)'))
         self.check_markers(path, 'fn run(', (
-            'cancellation.child_token()', 'OriginalPostAContinuationV1::run(',
+            'cancellation.child_token()', 'OriginalPostAContinuationV1::prepare_original_delivery(',
+            '.await', 'Ok(Some(continuation)) => continuation,',
+            'Ok(None) => return Ok(()),', 'joined.cancel();', 'return Err(error);',
+            'continuation.run_original_prepared_continuation()',
             'tokio::join!(', 'let result = delivery.await', 'delivery_cancelled.cancel()',
             'let result = continuation.await', 'continuation_cancelled.cancel()', 'delivery?'))
 
     def test_new_c_keeps_real_grant_single_ingress_and_original_end(self):
-        self.check_markers(CONT, 'fn run(', (
+        self.check_markers(CONT, 'fn run_original_prepared_continuation(', (
             'original_end != end', 'OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(',
             'require_continuation(&state, &identity, &cancelled, end)?',
             'OriginalQ24PreparedSuccessorV1::publish_from_original_root(prepared)',
