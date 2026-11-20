@@ -2,7 +2,9 @@ use std::process::Command;
 
 #[test]
 fn native_worker_help_executes_the_real_binary_without_state() {
-    let output = Command::new(env!("CARGO_BIN_EXE_hepta-infer-worker"))
+    let worker = codex_utils_cargo_bin::cargo_bin("hepta-infer-worker")
+        .expect("resolve native worker binary");
+    let output = Command::new(worker)
         .arg("--help")
         .output()
         .expect("execute native worker help");
@@ -15,7 +17,9 @@ fn native_worker_help_executes_the_real_binary_without_state() {
 
 #[test]
 fn native_worker_fails_closed_without_an_explicit_profile() {
-    let output = Command::new(env!("CARGO_BIN_EXE_hepta-infer-worker"))
+    let worker = codex_utils_cargo_bin::cargo_bin("hepta-infer-worker")
+        .expect("resolve native worker binary");
+    let output = Command::new(worker)
         .output()
         .expect("execute native worker without profile");
     assert!(
