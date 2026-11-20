@@ -1,0 +1,88 @@
+{
+  "administrative_integrity_checks_only": true,
+  "complete_input_members_read_back": 1645,
+  "complete_input_root_sha256": "5f9fb9747b20b4f2645a1eff0add7d30108df02d4b5cba5510594cd24c25374b",
+  "freeze_sha256": "347ba2e41a8bbe18dc76699ecdcc71fe23d78a58e32cc117520b0af186981072",
+  "full_physical_monetary_cost_known": false,
+  "material_index_sha256": "6f7ae3e77cbd23a488622a982fc4718f8cbd4bd7049c5d1a9642ee76ea578767",
+  "model_calls": 0,
+  "new_native_children": 0,
+  "owner_id": "e5-sixteen-lossless-admission-20261120-e9e051-1",
+  "schema": "hepta.e5.material-check-owner-result.v1",
+  "source_before_after_unchanged": true,
+  "source_prefix_sha256": "1319a7884200321c108f08bae4c48e9a0e6417b9eb00b34cb1b9d12c0bf38a69",
+  "stages": [
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/unpack_materials.py",
+        "--manifest",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/PAYLOAD_MANIFEST.json",
+        "--output",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1"
+      ],
+      "child_cpu_seconds": 0.526004,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e1551d81833a7d267c5c2937d372d882cd3abe196ff70593ad38ce75eb207916",
+      "wall_seconds": 0.5320953109985567
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/lossless_admission.py",
+        "--root",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1",
+        "--prefix",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/SOURCE_PREFIX_FREEZE.json",
+        "--output",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/execution/ADMISSION_READOUT.json"
+      ],
+      "child_cpu_seconds": 0.965929,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "11656601408ba38da59b6039fae4079515f990f7deebdf41f4f38b86c1712c2f",
+      "wall_seconds": 0.9687722769995162
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/test_lossless_admission.py",
+        "--root",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1",
+        "--prefix",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/SOURCE_PREFIX_FREEZE.json",
+        "--output",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/execution/ADMISSION_CONTROLS.json"
+      ],
+      "child_cpu_seconds": 1.0205140000000001,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "88957ceea113579c2f35db05a687915c863e6eb40ef3675b8f632eafd814bfd9",
+      "wall_seconds": 1.0223947929989663
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/check_existing_codec.py",
+        "--root",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/readback-final-1",
+        "--provenance",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/provenance",
+        "--output",
+        "/workspace/scratch/e9e051ab0825/e5_material_adapter/publication/execution/CODEC_REFERENCE_READOUT.json"
+      ],
+      "child_cpu_seconds": 0.11679000000000006,
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "ce356edebd8b1a29cc8de116c73eab03a958152c56f4fcf843cf12f5564241d9",
+      "wall_seconds": 0.11791935499786632
+    }
+  ],
+  "training_updates": 0,
+  "wall_seconds": 2.7711062009984744
+}

@@ -1,0 +1,616 @@
+{
+  "actual_compute_match_established": false,
+  "material_count": 16,
+  "materials": [
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 701324,
+        "all_retained_before_snapshot": 925241,
+        "changed_runtime_after": 22368,
+        "changed_runtime_before": 21974,
+        "complete_native_test_files": 10703,
+        "review_unified_patch": 1653,
+        "runtime_before": 228166
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 18,
+      "original_after_passed": 17,
+      "original_after_skipped": 1,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "ExceptionFormatter"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "Delgan/loguru",
+      "runtime_patch_files": 1,
+      "source_id": "github:Delgan/loguru:pull:1541"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 88950,
+        "all_retained_before_snapshot": 197798,
+        "changed_runtime_after": 4882,
+        "changed_runtime_before": 4881,
+        "complete_native_test_files": 1285,
+        "review_unified_patch": 468,
+        "runtime_before": 110133
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 1,
+      "original_after_passed": 1,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "Try",
+              "name": null
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "SethMMorton/natsort",
+      "runtime_patch_files": 1,
+      "source_id": "github:SethMMorton/natsort:pull:196"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 10637,
+        "all_retained_before_snapshot": 306419,
+        "changed_runtime_after": 12335,
+        "changed_runtime_before": 10850,
+        "complete_native_test_files": 7760,
+        "review_unified_patch": 3937,
+        "runtime_before": 296907
+      },
+      "existing_codec": {
+        "catalog_already_bound": true,
+        "new_project_interface_required": false,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 24,
+      "original_after_passed": 24,
+      "original_after_skipped": 0,
+      "original_before_failures": 10,
+      "patch_shapes": [
+        {
+          "after_function_bytes": 3395,
+          "before_function_bytes": 1910,
+          "closed_payload_bytes": 3409,
+          "function": "split_graphemes",
+          "kind": "one_top_level_function"
+        }
+      ],
+      "project_id": "Textualize/rich",
+      "runtime_patch_files": 1,
+      "source_id": "github:Textualize/rich:pull:4006"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 20076,
+        "all_retained_before_snapshot": 37370,
+        "changed_runtime_after": 17387,
+        "changed_runtime_before": 17358,
+        "complete_native_test_files": 5835,
+        "review_unified_patch": 372,
+        "runtime_before": 17358
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 1,
+      "original_after_passed": 1,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "subtype"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "coady/multimethod",
+      "runtime_patch_files": 1,
+      "source_id": "github:coady/multimethod:pull:157"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 49079,
+        "all_retained_before_snapshot": 78978,
+        "changed_runtime_after": 30205,
+        "changed_runtime_before": 30107,
+        "complete_native_test_files": 35321,
+        "review_unified_patch": 866,
+        "runtime_before": 30107
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 1,
+      "original_after_passed": 1,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "Job"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "dbader/schedule",
+      "runtime_patch_files": 1,
+      "source_id": "github:dbader/schedule:pull:569"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 80152,
+        "all_retained_before_snapshot": 135621,
+        "changed_runtime_after": 20586,
+        "changed_runtime_before": 20342,
+        "complete_native_test_files": 26917,
+        "review_unified_patch": 1745,
+        "runtime_before": 56478
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 1,
+      "original_after_passed": 1,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "BootstrappingGrammar"
+            },
+            {
+              "kind": "Assign",
+              "name": null
+            },
+            {
+              "kind": "ClassDef",
+              "name": "RuleVisitor"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "erikrose/parsimonious",
+      "runtime_patch_files": 1,
+      "source_id": "github:erikrose/parsimonious:pull:250"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 73924,
+        "all_retained_before_snapshot": 144434,
+        "changed_runtime_after": 63477,
+        "changed_runtime_before": 63460,
+        "complete_native_test_files": 45458,
+        "review_unified_patch": 302,
+        "runtime_before": 71288
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 3,
+      "original_after_passed": 3,
+      "original_after_skipped": 0,
+      "original_before_failures": 3,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "TempDir"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "jaraco/path",
+      "runtime_patch_files": 1,
+      "source_id": "github:jaraco/path:pull:237"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 236931,
+        "all_retained_before_snapshot": 499877,
+        "changed_runtime_after": 48060,
+        "changed_runtime_before": 48489,
+        "complete_native_test_files": 4099,
+        "review_unified_patch": 1624,
+        "runtime_before": 264127
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 10,
+      "original_after_passed": 10,
+      "original_after_skipped": 0,
+      "original_before_failures": 4,
+      "patch_shapes": [
+        {
+          "after_function_bytes": 658,
+          "before_function_bytes": 856,
+          "closed_payload_bytes": 672,
+          "function": "filter_alt_coherence_matches",
+          "kind": "one_top_level_function"
+        },
+        {
+          "kind": "non_python"
+        }
+      ],
+      "project_id": "jawah/charset_normalizer",
+      "runtime_patch_files": 2,
+      "source_id": "github:jawah/charset_normalizer:pull:823"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 69386,
+        "all_retained_before_snapshot": 97694,
+        "changed_runtime_after": 4038,
+        "changed_runtime_before": 4170,
+        "complete_native_test_files": 44347,
+        "review_unified_patch": 1996,
+        "runtime_before": 29428
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 2,
+      "original_after_passed": 2,
+      "original_after_skipped": 0,
+      "original_before_failures": 2,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "FunctionDef",
+              "name": "retry_predicate"
+            },
+            {
+              "kind": "FunctionDef",
+              "name": "retry_exception"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "litl/backoff",
+      "runtime_patch_files": 1,
+      "source_id": "github:litl/backoff:pull:161"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 747928,
+        "all_retained_before_snapshot": 928671,
+        "changed_runtime_after": 75524,
+        "changed_runtime_before": 75463,
+        "complete_native_test_files": 28477,
+        "review_unified_patch": 498,
+        "runtime_before": 181338
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 2,
+      "original_after_passed": 2,
+      "original_after_skipped": 0,
+      "original_before_failures": 2,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "Pluck"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "marshmallow-code/marshmallow",
+      "runtime_patch_files": 1,
+      "source_id": "github:marshmallow-code/marshmallow:pull:3082"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 819788,
+        "all_retained_before_snapshot": 1276179,
+        "changed_runtime_after": 43014,
+        "changed_runtime_before": 41798,
+        "complete_native_test_files": 434904,
+        "review_unified_patch": 2538,
+        "runtime_before": 459498
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 12,
+      "original_after_passed": 12,
+      "original_after_skipped": 0,
+      "original_before_failures": 2,
+      "patch_shapes": [
+        {
+          "after_function_bytes": 2517,
+          "before_function_bytes": 1301,
+          "closed_payload_bytes": 2531,
+          "function": "match_previous_expr",
+          "kind": "one_top_level_function"
+        }
+      ],
+      "project_id": "pyparsing/pyparsing",
+      "runtime_patch_files": 1,
+      "source_id": "github:pyparsing/pyparsing:pull:653"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 29031,
+        "all_retained_before_snapshot": 222844,
+        "changed_runtime_after": 107212,
+        "changed_runtime_before": 107159,
+        "complete_native_test_files": 18752,
+        "review_unified_patch": 309,
+        "runtime_before": 194359
+      },
+      "existing_codec": {
+        "catalog_already_bound": true,
+        "new_project_interface_required": false,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 5,
+      "original_after_passed": 5,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "after_function_bytes": 532,
+          "before_function_bytes": 479,
+          "closed_payload_bytes": 546,
+          "function": "_is_class_var",
+          "kind": "one_top_level_function"
+        }
+      ],
+      "project_id": "python-attrs/attrs",
+      "runtime_patch_files": 1,
+      "source_id": "github:python-attrs/attrs:pull:1593"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 40786,
+        "all_retained_before_snapshot": 89980,
+        "changed_runtime_after": 21684,
+        "changed_runtime_before": 21758,
+        "complete_native_test_files": 35743,
+        "review_unified_patch": 294,
+        "runtime_before": 49452
+      },
+      "existing_codec": {
+        "catalog_already_bound": true,
+        "new_project_interface_required": false,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 56,
+      "original_after_passed": 56,
+      "original_after_skipped": 0,
+      "original_before_failures": 3,
+      "patch_shapes": [
+        {
+          "after_function_bytes": 301,
+          "before_function_bytes": 375,
+          "closed_payload_bytes": 315,
+          "function": "_abs_timedelta",
+          "kind": "one_top_level_function"
+        }
+      ],
+      "project_id": "python-humanize/humanize",
+      "runtime_patch_files": 1,
+      "source_id": "github:python-humanize/humanize:pull:479"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 2761386,
+        "all_retained_before_snapshot": 2992560,
+        "changed_runtime_after": 10659,
+        "changed_runtime_before": 10642,
+        "complete_native_test_files": 8461,
+        "review_unified_patch": 2178,
+        "runtime_before": 271487
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 124,
+      "original_after_passed": 124,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "FunctionDef",
+              "name": "find_evaluated_property_keys_by_schema"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "python-jsonschema/jsonschema",
+      "runtime_patch_files": 1,
+      "source_id": "github:python-jsonschema/jsonschema:pull:1351"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 138882,
+        "all_retained_before_snapshot": 200213,
+        "changed_runtime_after": 23821,
+        "changed_runtime_before": 23791,
+        "complete_native_test_files": 7885,
+        "review_unified_patch": 638,
+        "runtime_before": 61844
+      },
+      "existing_codec": {
+        "catalog_already_bound": false,
+        "new_project_interface_required": true,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 1,
+      "original_after_passed": 1,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "ClassDef",
+              "name": "TTLCache"
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "tkem/cachetools",
+      "runtime_patch_files": 1,
+      "source_id": "github:tkem/cachetools:pull:441"
+    },
+    {
+      "context_bytes": {
+        "all_retained_after_fixtures": 105746,
+        "all_retained_before_snapshot": 272162,
+        "changed_runtime_after": 20658,
+        "changed_runtime_before": 20486,
+        "complete_native_test_files": 95850,
+        "review_unified_patch": 986,
+        "runtime_before": 166416
+      },
+      "existing_codec": {
+        "catalog_already_bound": true,
+        "new_project_interface_required": false,
+        "output_raw_bytes_limit": 32768,
+        "pinned_codec_sha256": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+        "shape_scope": "Byte transport analysis only; no native evaluation or model call"
+      },
+      "lossless_material_admitted": true,
+      "native_cases_per_variant": 29,
+      "original_after_passed": 29,
+      "original_after_skipped": 0,
+      "original_before_failures": 1,
+      "patch_shapes": [
+        {
+          "changed_top_level_nodes": [
+            {
+              "kind": "FunctionDef",
+              "name": "_get_user_dirs_folder"
+            },
+            {
+              "kind": "AnnAssign",
+              "name": null
+            }
+          ],
+          "kind": "requires_broader_transport"
+        }
+      ],
+      "project_id": "tox-dev/platformdirs",
+      "runtime_patch_files": 1,
+      "source_id": "github:tox-dev/platformdirs:pull:721"
+    }
+  ],
+  "model_calls": 0,
+  "new_native_children": 0,
+  "schema": "hepta.e5.lossless-admission-readout.v1",
+  "source_growth_qualified": false,
+  "source_prefix_sha256": "1319a7884200321c108f08bae4c48e9a0e6417b9eb00b34cb1b9d12c0bf38a69",
+  "token_counts_measured": false,
+  "training_execution_admitted": false,
+  "training_updates": 0,
+  "unexposed_B_C_admitted": false
+}

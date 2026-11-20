@@ -1,0 +1,121 @@
+{
+  "control_scope": "In-memory copies; original bytes never modified",
+  "model_calls": 0,
+  "negative_controls": [
+    {
+      "name": "revision substitution",
+      "reason": "frozen material identity changed",
+      "rejected": true
+    },
+    {
+      "name": "invented agent trajectory",
+      "reason": "fabricated model interface or execution admission",
+      "rejected": true
+    },
+    {
+      "name": "invented numeric features",
+      "reason": "fabricated model interface or execution admission",
+      "rejected": true
+    },
+    {
+      "name": "incorrect training admission",
+      "reason": "fabricated model interface or execution admission",
+      "rejected": true
+    },
+    {
+      "name": "runtime preimage changed",
+      "reason": "bound bytes changed",
+      "rejected": true
+    },
+    {
+      "name": "patch replacement missing",
+      "reason": "missing bound bytes",
+      "rejected": true
+    },
+    {
+      "name": "patch span shifted",
+      "reason": "patch preimage differs",
+      "rejected": true
+    },
+    {
+      "name": "full runtime file omitted",
+      "reason": "retained source inventory changed",
+      "rejected": true
+    },
+    {
+      "name": "Cython counterpart omitted",
+      "reason": "incomplete or extra runtime repair",
+      "rejected": true
+    },
+    {
+      "name": "native original missing",
+      "reason": "incomplete native originals",
+      "rejected": true
+    },
+    {
+      "name": "native after output changed",
+      "reason": "bound bytes changed",
+      "rejected": true
+    },
+    {
+      "name": "coherent JUnit and EXIT parameter rename",
+      "reason": "native exit differs from retained original replay",
+      "rejected": true
+    },
+    {
+      "name": "selected full test missing",
+      "reason": "original selected test files changed",
+      "rejected": true
+    },
+    {
+      "name": "complete test function omitted",
+      "reason": "original function/decorator inventory changed",
+      "rejected": true
+    },
+    {
+      "name": "license notices missing",
+      "reason": "incomplete or extra license notice set",
+      "rejected": true
+    },
+    {
+      "name": "one of two license notices omitted",
+      "reason": "incomplete or extra license notice set",
+      "rejected": true
+    },
+    {
+      "name": "runtime roots weakened",
+      "reason": "original runtime scope or selector changed",
+      "rejected": true
+    },
+    {
+      "name": "native test selector weakened",
+      "reason": "original runtime scope or selector changed",
+      "rejected": true
+    },
+    {
+      "name": "parameter class normalization changed",
+      "reason": "case normalization scope changed",
+      "rejected": true
+    },
+    {
+      "name": "unbound separate license revision",
+      "reason": "unbound external original license",
+      "rejected": true
+    },
+    {
+      "name": "context size understated",
+      "reason": "context size report changed",
+      "rejected": true
+    },
+    {
+      "name": "source selection audit omitted",
+      "reason": "original selection audit absent",
+      "rejected": true
+    }
+  ],
+  "negative_controls_rejected": 22,
+  "new_native_children": 0,
+  "positive_materials": 16,
+  "schema": "hepta.e5.lossless-admission-controls.v1",
+  "training_updates": 0
+}
