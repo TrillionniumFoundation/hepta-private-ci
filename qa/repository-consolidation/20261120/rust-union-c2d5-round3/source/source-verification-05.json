@@ -1,0 +1,218 @@
+{
+  "schema": "hepta.round3.source-verification.v1",
+  "created_at": "2026-11-20T05:12:21.916536+00:00",
+  "plan": {
+    "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/publication-round3-plan-05.json",
+    "sha256": "ed0218c80087a3463e828c7c43f91892b929dea45731831f59fb0f6abcdb377d",
+    "bytes": 34847
+  },
+  "base_server": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "base_local": "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+  "base_tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "head": "82574295993f14689045d7f5ddfe83f1b33144fd",
+  "tree": "50600ef174c114ef8b77683d43b6085ad669c76d",
+  "step_count": 5,
+  "unchanged_prefix_steps": [
+    {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/steps/01.json",
+      "sha256": "821144d0de35fbfd505967cdc434c646abc0400fb9561de3519ec7633b9405fe",
+      "bytes": 4478
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/steps/02.json",
+      "sha256": "2e857e73fc8b5d7006411fc0f16732f6f44178380615c1c96bfc088418bdc2c6",
+      "bytes": 5894
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/steps/03.json",
+      "sha256": "919aa8a806544aba2f8a1c25f69f893653c40b1ea0c219e3af0ac125b120455e",
+      "bytes": 4605
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/steps/04.json",
+      "sha256": "8e621657eb9878e697e3f32bde291e6c57b89559936109bd74def5a9a7e8422d",
+      "bytes": 4545
+    }
+  ],
+  "appended_step": {
+    "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/steps/05.json",
+    "sha256": "0435ce2122b3e5c377bac47e209caf43819860859ef2332235a5abfe57ef963f",
+    "bytes": 3507
+  },
+  "raw_commit": {
+    "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/raw-commits/82574295993f14689045d7f5ddfe83f1b33144fd.commit",
+    "sha256": "6b806cde3c2bf559b3fb364908d92b07693dcdbf540a093166d5fc6e8a9ce16d",
+    "bytes": 988
+  },
+  "ordered_parents": [
+    "a42c6d7e2f854576f3881ea826f5078731faf24a"
+  ],
+  "changed_path_count": 20,
+  "upload_blob_count": 21,
+  "complete_leaf_maps_equal_after_only_declared_deltas": true,
+  "final_source_entries": [
+    {
+      "path": ".github/workflows/hepta-group-reasoning-research.yml",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "3cf5faeb281103edbd9a6f65b4379c99b9e33f62"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/rollout.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "05fdbcc137f1b5eff43c0ca4b2457ba8f42df09e"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "77d3eba9824b5b7b138294ac33bf8815200bbb4c"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "024c0692a009eec5feaaa5da5653de35be1747a0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "089bd0bfa2947c039556c7c6c34fae3f70ad772c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "3376659e2d972bfe4659a0c5be1b928289f2b45b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "0c643d58ab7e883618a49f0df19c4ab5045ec8e1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "8fb356816f87daf11d7b9e0fb4feea3590f6360d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "24f32c65455e8c67abd3968410c17d88fe9d67c8"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "350b70dc132e12592f395228b3b22d18edb76067"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_compaction_v3_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "813e9b5dc05222e12cb231243893d5eb6460d886"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "bf3b575c76d1eb5a066dc179d0f217801c7c9608"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "cdff27a7328a36881bef3a0e0e093f76a1658937"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "b872fa11846809f280b850e86d5e945c1fd37a30"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "5174aebf72b7b7bdc75757908460cec0fc2713e1"
+    },
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "5006a79180c806942c9447dc67ad9480f8bdfaab"
+    },
+    {
+      "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "55163bc757331623d31962ae7ebd8d1ebae72800"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "df74f9f9dec5909410ca52a564a632f225bc4c13"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+      "mode": "100644",
+      "type": "blob",
+      "git_blob": "6e0991ceda6b98950140d4dca209d25c17c79cd7"
+    }
+  ],
+  "git_diff_check": {
+    "command": [
+      "git",
+      "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/objects.git",
+      "diff",
+      "--check",
+      "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+      "50600ef174c114ef8b77683d43b6085ad669c76d"
+    ],
+    "exit_code": 0,
+    "scope": "Complete exact2b to this source candidate declared-path delta; not whole0cee qualification.",
+    "stdout": {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/source05-diff-check.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/source05-diff-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "tree_assembly": "write-tree --missing-ok retains known unchanged historical blob references; all changed bytes are materialized. No history-merge or ancestry override.",
+  "appended_group_source_validation": {
+    "original_tests_preserved": 11,
+    "assertions_preserved": 45,
+    "verbatim_assertions": 34,
+    "fixture_error_propagation_only_assertions": 11,
+    "input_calls": 21,
+    "prepared_request_calls": 13,
+    "strict_patch_apply_reverse": "PASS",
+    "original_child_and_compaction_helper_preserved": true,
+    "native": "NOT_RUN",
+    "Rustfmt_Clippy": "NOT_RUN"
+  },
+  "three_history_candidates_included": false,
+  "worker_binary_dependency_candidate_included": false,
+  "native_rust": "NOT_RUN",
+  "windows_runtime": "NOT_RUN",
+  "just_fmt": "NOT_RUN",
+  "required_ci": "PENDING_NEW_HEAD",
+  "remote_writes": 0,
+  "local_ref_writes": 0
+}

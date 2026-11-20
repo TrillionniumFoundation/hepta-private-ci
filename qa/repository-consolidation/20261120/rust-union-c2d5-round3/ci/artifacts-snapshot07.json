@@ -1,0 +1,517 @@
+{
+  "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "artifact_capture_after_snapshot07": true,
+  "verified_zip_and_member_index": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-verified-artifacts.json",
+    "bytes": 5086,
+    "sha256": "f3766e40313d2f3016a4869eb9e893ae8276279669361b6338f6dd302020b40c"
+  },
+  "archives": [
+    {
+      "name": "windows-learn-2b538380",
+      "zip_bytes": 20455,
+      "zip_sha256": "b1e4d8c02eaeaedcc76814639b51463ec79824df874def4e32633f450c572ab8",
+      "extracted": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-windows-learn"
+    },
+    {
+      "name": "learning-artifacts-source-2b538380",
+      "zip_bytes": 87030,
+      "zip_sha256": "51084d664612dd077cb1e99254703031b9e683beb2e7dd828d6d6ce658994d92",
+      "extracted": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source"
+    },
+    {
+      "name": "learning-artifacts-merge-2b538380",
+      "zip_bytes": 87004,
+      "zip_sha256": "eaac9d39f0377540cdef8209e63ed301c9135594356c435cd5f57fd7c5b5c615",
+      "extracted": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge"
+    }
+  ],
+  "learning_artifacts": [
+    {
+      "lane": "source",
+      "qualification": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/qualification.json",
+        "bytes": 48395,
+        "sha256": "caced000aea4d392a52d5f4405488b1ad28301b87d300d93edb458dad27e61cf"
+      },
+      "identity": {
+        "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+        "candidate": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "candidateTree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+        "lane": "source",
+        "parents": [
+          "bdbdb9e555191353528d0a67946ee5f7c726de34"
+        ],
+        "source": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "sourceTree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8"
+      },
+      "qualified": true,
+      "tracked_source_unchanged": true,
+      "release": false,
+      "activation": false,
+      "independent_acceptance": false,
+      "steps": [
+        {
+          "name": "build",
+          "argv": [
+            "cargo",
+            "check",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/build.log",
+            "bytes": 2717,
+            "sha256": "94d32abae0e18d0c0571f828d6851fa5b888a7f53e43bf992063a75b007b5b9d"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "strict-clippy",
+          "argv": [
+            "cargo",
+            "clippy",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/strict-clippy.log",
+            "bytes": 324,
+            "sha256": "08f1c657b75835b608a359cd94f9aef290e76a8c0ef1c4b802c4658b34db755e"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "owner-regression",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "fail"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 160,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/owner-regression.log",
+            "bytes": 24427,
+            "sha256": "7eff3ed28e010a57a4c307095461e2df0143580ccdd1af15cbc6be2650c497a4"
+          },
+          "summary_lines": [
+            "     Summary [   1.148s] 160 tests run: 160 passed, 1 skipped"
+          ]
+        },
+        {
+          "name": "cross-crate",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 1,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/cross-crate.log",
+            "bytes": 33232,
+            "sha256": "b41c0f1cd07d837455b5efd2fae411ee00af74ded5e5452b2a3d0244a92805ec"
+          },
+          "summary_lines": [
+            "     Summary [   0.032s] 1 test run: 1 passed, 38 skipped"
+          ]
+        },
+        {
+          "name": "selected-reload",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 1,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/selected-reload.log",
+            "bytes": 20843,
+            "sha256": "497653f4f4b62a4ec3657e247b1c606461b341db2409606282cdb2d9e982bada"
+          },
+          "summary_lines": [
+            "     Summary [   0.027s] 1 test run: 1 passed, 38 skipped"
+          ]
+        },
+        {
+          "name": "cognitive-read",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "cognitive_ranker",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 5,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/cognitive-read.log",
+            "bytes": 411095,
+            "sha256": "caf05ddde7a9fd0daaf801aa2e1a566684621ce08c9530947da49fea09374f31"
+          },
+          "summary_lines": [
+            "     Summary [   0.250s] 5 tests run: 5 passed, 1781 skipped"
+          ]
+        },
+        {
+          "name": "format",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--package",
+            "codex-hepta-learning-artifacts",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/format.log",
+            "bytes": 106,
+            "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "lane-e-self-test",
+          "argv": [
+            "python3",
+            "../scripts/hepta-lane-e-closure.py",
+            "self-test"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/lane-e-self-test.log",
+            "bytes": 134,
+            "sha256": "e96adfe3e20ce2c8474c19d5dfd7cf10cd5413e084e7e809fa769158fa18e3b5"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "lane-e-preflight",
+          "argv": [
+            "python3",
+            "../scripts/hepta-lane-e-closure.py",
+            "verify"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-source/lane-e-preflight.log",
+            "bytes": 131,
+            "sha256": "ba5e5b0c5d7352215144aa04580a0c12b676e7279f7a408912f9ac84e32ea0f2"
+          },
+          "summary_lines": []
+        }
+      ],
+      "warning": "Native scoped qualification only; old73 cognitive compile blockers are not present in this exact2b artifact. No full-workspace claim."
+    },
+    {
+      "lane": "merge",
+      "qualification": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/qualification.json",
+        "bytes": 48442,
+        "sha256": "e543d54a9fa5cbadf55a5341e3ae6250164507044b3e10ee895d2768e1903167"
+      },
+      "identity": {
+        "base": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+        "candidate": "2ac5c9e7bfb8d73330a5997eb7dd178e0af868f7",
+        "candidateTree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+        "lane": "merge",
+        "parents": [
+          "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+          "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+        ],
+        "source": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "sourceTree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8"
+      },
+      "qualified": true,
+      "tracked_source_unchanged": true,
+      "release": false,
+      "activation": false,
+      "independent_acceptance": false,
+      "steps": [
+        {
+          "name": "build",
+          "argv": [
+            "cargo",
+            "check",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--all-targets"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/build.log",
+            "bytes": 2717,
+            "sha256": "6257c540537cab9cf189987bcb08fec1fa25c5117a7c3b73597a0b04389034ea"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "strict-clippy",
+          "argv": [
+            "cargo",
+            "clippy",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/strict-clippy.log",
+            "bytes": 324,
+            "sha256": "12657f10bb562555ecff22f3d62c363ca3d886ef4642f887d82a21bfad73a39f"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "owner-regression",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-learning-artifacts",
+            "--status-level",
+            "all",
+            "--final-status-level",
+            "fail"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 160,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/owner-regression.log",
+            "bytes": 24427,
+            "sha256": "1448d5e605ea5dee55f25ac4a7c6746f27d1e43e6b06f2083e01ef4c09ac01b5"
+          },
+          "summary_lines": [
+            "     Summary [   0.616s] 160 tests run: 160 passed, 1 skipped"
+          ]
+        },
+        {
+          "name": "cross-crate",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 1,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/cross-crate.log",
+            "bytes": 33232,
+            "sha256": "a403f34d5ecdaac64750c4bbfbdd31731b65ad1b55975476e8375632b0347e5e"
+          },
+          "summary_lines": [
+            "     Summary [   0.027s] 1 test run: 1 passed, 38 skipped"
+          ]
+        },
+        {
+          "name": "selected-reload",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-shadow-qualification",
+            "existing_artifact_owner_new_process_predictions_and_revoked_rollback",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 1,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/selected-reload.log",
+            "bytes": 20843,
+            "sha256": "c4329a2e18cb7ea02589247e4b69defed94f59496ae15de607f0490243882f3c"
+          },
+          "summary_lines": [
+            "     Summary [   0.437s] 1 test run: 1 passed, 38 skipped"
+          ]
+        },
+        {
+          "name": "cognitive-read",
+          "argv": [
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "cognitive_ranker",
+            "--status-level",
+            "all"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 5,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/cognitive-read.log",
+            "bytes": 411095,
+            "sha256": "7ee6820637fa854fc48a616a5c2c75d395d69e1316dec22dfc87ea4940279f79"
+          },
+          "summary_lines": [
+            "     Summary [   0.189s] 5 tests run: 5 passed, 1781 skipped"
+          ]
+        },
+        {
+          "name": "format",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--package",
+            "codex-hepta-learning-artifacts",
+            "--",
+            "--check"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/format.log",
+            "bytes": 106,
+            "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "lane-e-self-test",
+          "argv": [
+            "python3",
+            "../scripts/hepta-lane-e-closure.py",
+            "self-test"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/lane-e-self-test.log",
+            "bytes": 134,
+            "sha256": "e96adfe3e20ce2c8474c19d5dfd7cf10cd5413e084e7e809fa769158fa18e3b5"
+          },
+          "summary_lines": []
+        },
+        {
+          "name": "lane-e-preflight",
+          "argv": [
+            "python3",
+            "../scripts/hepta-lane-e-closure.py",
+            "verify"
+          ],
+          "exit_code": 0,
+          "status": "passed",
+          "observed_pass_labels": 0,
+          "log": {
+            "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-learning-merge/lane-e-preflight.log",
+            "bytes": 131,
+            "sha256": "ba5e5b0c5d7352215144aa04580a0c12b676e7279f7a408912f9ac84e32ea0f2"
+          },
+          "summary_lines": []
+        }
+      ],
+      "warning": "Native scoped qualification only; old73 cognitive compile blockers are not present in this exact2b artifact. No full-workspace claim."
+    }
+  ],
+  "windows_learn": {
+    "job_id": 136084757682,
+    "run_id": 44675040583,
+    "receipt": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-windows-learn/receipt.json",
+      "bytes": 13114,
+      "sha256": "400be84857129dbb5f24c92781b83cec62fe9a1b3aade24062c13e938ba0a86b"
+    },
+    "junit": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-windows-learn/native-junit.xml",
+      "bytes": 9050,
+      "sha256": "fd5ecbdc308dd0f4f439488331c360e0f77d656300e0c4f9a180f93f581a0a66"
+    },
+    "execution": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-windows-learn/execution.json",
+      "bytes": 6157,
+      "sha256": "a82992f5f79981f2d28cead57f439dcee4df1a093d69206952b86d24d3fcefa4"
+    },
+    "native_log": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/artifact-windows-learn/native.log",
+      "bytes": 79665,
+      "sha256": "0404bf2e3da680e55a667267291f73d446c71c701fdc342c36ed5d4bfcba7f84"
+    },
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0,
+    "test_retries": 0,
+    "source_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "build_target": "x86_64-pc-windows-msvc",
+    "job_conclusion": "failure",
+    "job_failure": "Source-level Rust formatting: Q24 file in accepted formatter5 set.",
+    "skipped_steps": [
+      "Prove directory acquisition rejects both original native attacks",
+      "Exercise the original signed-credit case on the exact Windows source"
+    ],
+    "warning": "36 actual selected regressions passed; two separately named native gates skipped after format failure, so whole job is not qualified.",
+    "job_steps_receipt": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-acl-durability-jobs-receipt.json",
+      "bytes": 11351,
+      "sha256": "e45ef454ba4429b87a2fb01bc4d9e5f584a6426d69dec8099b15a032301e0e7d"
+    }
+  }
+}

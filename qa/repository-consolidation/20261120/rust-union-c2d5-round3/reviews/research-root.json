@@ -1,0 +1,522 @@
+{
+  "schema_version": 1,
+  "status": "PASS_FINAL_SOURCE_BINDING_AND_RECORDED_PYTHON_VALIDATION",
+  "reviewed_at": "2026-11-20T05:05:42.992086+00:00",
+  "base_remote_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "parent_source_tree": "31884ddd8455912d22bcdc98e65667fe601a7f8b",
+  "frozen_hashes": {
+    "FROZEN.json": "f302e955c0e04d0c7de5f0e93f68f5f5bc2e1928272bd549f98adcd7531172dc",
+    "manifest.json": "a9f24b1c776ed2751d25e2fa9f4b951503ac525a676fe5958d8a0a082a7bb227",
+    "PRESERVATION-PROOF.json": "935751796d231f6f482bed0d9cef7f2c4ec74179d4a92da58d079a4069d67115",
+    "ruff-format.json": "53b28bad1daeda07ef2ae0a2d4960b93a061076444e720441f1dd027748fb0e3"
+  },
+  "final_files": [
+    {
+      "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+      "blob": "df74f9f9dec5909410ca52a564a632f225bc4c13",
+      "sha256": "ed9ceb6bd34225e4688355e46b3d693354ab03ed76fd652c57083e9e8251010b"
+    },
+    {
+      "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+      "blob": "55163bc757331623d31962ae7ebd8d1ebae72800",
+      "sha256": "09962a3fb3536801f6e95e209e827cee2b3b8c7fa3e2f1e868aacf8371d82418"
+    },
+    {
+      "path": ".github/workflows/hepta-group-reasoning-research.yml",
+      "blob": "3cf5faeb281103edbd9a6f65b4379c99b9e33f62",
+      "sha256": "21682253cf9148bbcfebabbc4c8945b735a08d4128417ea6212a6f2c62ed3635"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+      "blob": "6e0991ceda6b98950140d4dca209d25c17c79cd7",
+      "sha256": "03ae422efbbb2b384330f9129eab1528ac6974189f62117f274d07eeaf44225e"
+    }
+  ],
+  "frozen_evidence_verified": [
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/manifest.json",
+      "sha256": "a9f24b1c776ed2751d25e2fa9f4b951503ac525a676fe5958d8a0a082a7bb227",
+      "git_blob": "8fd9b2455fd0a17da905cf53466909fb09d5857b",
+      "bytes": 10491
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/PRESERVATION-PROOF.json",
+      "sha256": "935751796d231f6f482bed0d9cef7f2c4ec74179d4a92da58d079a4069d67115",
+      "git_blob": "a0629b4136d6290304507a4e5df9f7678abbc4e7",
+      "bytes": 3947
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/input-manifest.json",
+      "sha256": "32efc9a7aedff2d4abbf2f77e703304e9eadc838b24d20595d88efb5c5351e00",
+      "git_blob": "9101940f475b98317894ce0570e7b3074d23478e",
+      "bytes": 13041
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/ruff-format.json",
+      "sha256": "53b28bad1daeda07ef2ae0a2d4960b93a061076444e720441f1dd027748fb0e3",
+      "git_blob": "5f93239ece77edf2622e934b2f89e91d7dcdc80b",
+      "bytes": 2562
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/proposal04-pre-ruff.patch",
+      "sha256": "094bf373a858115df79266e2def8ddd8a80fd137b961dcccca2a0027946e4180",
+      "git_blob": "4b63b84ce7127ac1eb51e2dfad93888a9e65d919",
+      "bytes": 5637
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/research-repair-final.patch",
+      "sha256": "daf6807729cf138b9198362561c82d5dd13b8fcaf9cd11de9381b3d0d077269f",
+      "git_blob": "6d761124d9721cfa31ef6ba5e59e51923ca2084a",
+      "bytes": 53318
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/environment.json",
+      "sha256": "d8a6b761ea403c21f1c26d87f22dabf33b84653949769b1c5f5da89135ea82b3",
+      "git_blob": "b147f5eb22ea11475ccf586059c8c2a02639c3a1",
+      "bytes": 439
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/official-pillow-search.json",
+      "sha256": "25a9a221c474dd8b27582fd418cbb823779661daf531d7cf2788ca49bd14cd3e",
+      "git_blob": "53a16614e48bc91faefc516b8cd198532c360877",
+      "bytes": 17122
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/official-pillow-pages.json",
+      "sha256": "5e2a7cec09725c17fedecf03509f75380c430f2f395c8383349e86d060f0e423",
+      "git_blob": "155505553037d59f8aeb3ac6a73d04b3e3fa8565",
+      "bytes": 22016
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/run_pure_tests.py",
+      "sha256": "310fbfcd284ffdf73e02b43c2c8b61bb1b6037bab00f5468834dbe4509507412",
+      "git_blob": "21cfadae3b41cc9b618226e22c71766ac270c9d7",
+      "bytes": 2518
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/run_proposal_tests.py",
+      "sha256": "f517ee9e84cca8a680a65260fe995cbc9540f9af2617c887ee4f6c22451818f9",
+      "git_blob": "62f6555ab473f48782e24e7a4fd999b09a611efc",
+      "bytes": 2501
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/freeze-check-diagnostic.json",
+      "sha256": "7af0df86ef550018767a728b6d44d94f1cc10e9bc4e6285566f4781d32f02ead",
+      "git_blob": "1422ebe55b8bed7ab840c6680f9806f4971be0f8",
+      "bytes": 1035
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/baseline/result.json",
+      "sha256": "5150f2e7dc54ccaa9635dec8942d19b7a12fd18a59cd285d02a31708a85cdd1f",
+      "git_blob": "ad36137ace83375a2346000f276a9b9447209ddb",
+      "bytes": 13323
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/baseline/stderr.log",
+      "sha256": "54663df5bcb2107c4c56b822e4b628a8146751ec582fa049e5b26854b0b4fd20",
+      "git_blob": "4df8fe882888d40e0926444efa0d49df740d60b1",
+      "bytes": 44589
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/candidate/result.json",
+      "sha256": "41c08355380828a61620c6f14da5fc4379efa38f7d7093508c3ada222fafef0c",
+      "git_blob": "16901abc679c0376aeca95c0930daf98fc067ac7",
+      "bytes": 13335
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/candidate/stderr.log",
+      "sha256": "9824ba82b0422f3d77d774829383351cdeda34166a89a3713ffff72af9499ad1",
+      "git_blob": "94a19cef41682a99dcea58592bffaba5ec0fc501",
+      "bytes": 8692
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/proposal04/result.json",
+      "sha256": "51475209678afb8626d35db2e3cd67ccb56d630cab268fae1a034553e9de107a",
+      "git_blob": "3d14bfa1a60ecd001e2eb5823c8bd161419f205c",
+      "bytes": 13310
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/proposal04/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0
+    },
+    {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/proposal04/stderr.log",
+      "sha256": "81dc5c1fce09e49133c94d064b63877d8070d968bdf2b7a165d3b3c850f4bc23",
+      "git_blob": "87fc4ae43e16837ffc8c7066608ce5aee2dfe172",
+      "bytes": 6670
+    }
+  ],
+  "input_bindings": [
+    {
+      "path": ".github/workflows/hepta-group-reasoning-research.yml",
+      "base_blob": "601c39c53051137879655ce1d067e9078ae57fa0",
+      "tested_sha256": "21682253cf9148bbcfebabbc4c8945b735a08d4128417ea6212a6f2c62ed3635",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/after/.github/workflows/hepta-group-reasoning-research.yml"
+    },
+    {
+      "path": "qualification/stem-cell-v1/aten_work.py",
+      "base_blob": "2ed0d80b6a0a3feef6b93e2cbe465ab5e818ac0c",
+      "tested_sha256": "a922af68e249e610f3350e2a2052ac9d31b5de57f5393124a4981a44a692387d",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/aten_work.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+      "base_blob": "9cd32188d8f441fe6437019bfb317171efbfbad8",
+      "tested_sha256": "bdd17b1471d1b3f55b724752071301ac8e2e026b5bcb16099f55e8f7e79ec497",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/tested-pre-ruff/qualification/stem-cell-v1/binding_v6_bridge.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/binding_v6_training.py",
+      "base_blob": "68bd7e0e7d1e502ae0968ca1c63549aced152d88",
+      "tested_sha256": "4431c68f2ca108b0e1d46ac1603c472a3dc0f3a64da98999e781c676311b96e9",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/binding_v6_training.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/execution_meter.py",
+      "base_blob": "2ab4c102f6f056ee1ad988d0e57e218bd39dcf6d",
+      "tested_sha256": "a0610030d3cb10cc9d264a20f900dd54c394f26cf3f2994303c932d096d0e069",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/execution_meter.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_abort_trace_audit.py",
+      "base_blob": "e7136105d58ce09fee97c4ea09c6855247b69ff5",
+      "tested_sha256": "b694e28261bd7d6107edf98fd48fd77486895c09d51ee349cb8b883f46bf49d8",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_abort_trace_audit.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_attention_campaign.py",
+      "base_blob": "6ce734c20041554e4b0509e1e5c4314bcae24444",
+      "tested_sha256": "fc9cd3250d6df70025a899f37270ed0afc370fc5049f998bb9814c77fe0656b4",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_attention_campaign.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_attention_campaign_review.py",
+      "base_blob": "157b00f69c63e0029d065c1c9766d1cba1076851",
+      "tested_sha256": "b05274fcd724e2d81e45029da189cc6d582ccf20157f117ac6b9cfc6f1058200",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_attention_campaign_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_attention_coverage.py",
+      "base_blob": "d766627505987107df28a82d7c29d3ab6fe3d91e",
+      "tested_sha256": "eccabfcb4cf80d4249cbd496cd9c1082bec1d7c24799f7a2a17cfa466d0fc215",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_attention_coverage.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_attention_curriculum.py",
+      "base_blob": "b42ea82f4264547d487e44108e36651319e23bdb",
+      "tested_sha256": "9ad34cebd08026b9f351f4c124a4bb8a54d7b36b5f0983ea1337c496df52e4b8",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_attention_curriculum.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_attention_slot_review.py",
+      "base_blob": "69f6e645df74325a0bd3592dcb2c73c9db9af0f3",
+      "tested_sha256": "f5b3e68eeb287f865b38b6aa06cd4f7fadbd99b05c11bdf6605ed2616572afbd",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_attention_slot_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_campaign.py",
+      "base_blob": "a7485a7cba729057cd8ced66dcb8c6c5b79dc4e0",
+      "tested_sha256": "ea25b4a0a69a348b1196777d85a416874190c0f438f9545099fa9e6d411788f1",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_campaign.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_campaign_review.py",
+      "base_blob": "a0e950e7c5282db5124c7fda6f9c2ba9ba3236a9",
+      "tested_sha256": "3dd1bb343cd475e4278fea41fbf1f056c31265c5666eb6f157711c96ea443423",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_campaign_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_checkpoint_audit.py",
+      "base_blob": "5153ea2720aedb8d553fec7ed05ecc9c06f0d57d",
+      "tested_sha256": "e49ad6c884cc5325b7c85a9d39293c06ba610349c36e9aa55195f160f7efcdcb",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_checkpoint_audit.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_core.py",
+      "base_blob": "d4dc76471e7abda87a68fdeadce38f01f2cf542d",
+      "tested_sha256": "06ca65ec3411055f1c3ccd07534c04031d5ed3e08d42e4227b6043327c983202",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_core.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_critic.py",
+      "base_blob": "ca184bbdad8ce3f0d7d46df4a96d9c254708c4c6",
+      "tested_sha256": "a3c889188402d5a0c8ece4b32a659c38f8eeed876c04ebd86ffd0556d6d4fcfd",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_critic.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_encoder.py",
+      "base_blob": "4e8e348b67eff12e504bc7d55cebaf6cfd25bafc",
+      "tested_sha256": "5135cefc437885cf5eb475ea033fbfacf4655e4678dd7b21ddd1c51c18470cac",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_encoder.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_features.py",
+      "base_blob": "c6e9f6f4d338297dd41fa05dbd16a79ab14f5a9e",
+      "tested_sha256": "98a8618e690da66df78b595205daa447836173845e8eb31121ba9527fd39f119",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_features.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_feedback_factorial_campaign.py",
+      "base_blob": "5c0d9005649c8bc820b2f5875627f95330388764",
+      "tested_sha256": "e094f1ced1193730a91b51f7564b9f1f4081aa6f71158ba681d85907c7f0e976",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_feedback_factorial_campaign.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_feedback_factorial_review.py",
+      "base_blob": "00ec63fb21ba250c14fb23f5e14495f529d2b2b4",
+      "tested_sha256": "02ab0ffbf1845d079430d474eb8bc8c2ae125d824787e6f65489c99124925b62",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_feedback_factorial_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_loop.py",
+      "base_blob": "e232d13dc05e640b9f6ed66b5707b5c4dd62c10a",
+      "tested_sha256": "80b2bb0d44c3e1cd743615b2d6999db0310fb344d6dca606eabb99b794d689d9",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_loop.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_optimizer_paired_review.py",
+      "base_blob": "154fe95895655f64135e98f0ab24051dabaf9144",
+      "tested_sha256": "47c31f8c2268e05ac277224f920c4628c42b8b0d1b3d3fd9d6a8ea2bf76971d2",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_optimizer_paired_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_step_supervision.py",
+      "base_blob": "2a72552186c9aa446dedb3087d7faf82b72c3f66",
+      "tested_sha256": "eadfd5b53f5fd80c1b8b6c47eed64eb909bb2a29ae59bbde68f4d74a4a877796",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_step_supervision.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_tasks.py",
+      "base_blob": "84bb06a7bc8dd8bf327703103b6a2dba3a5ddc6e",
+      "tested_sha256": "fd6570807cd1dff047ffdd30d54adfddaf97484a5dbaeb3a6848d9d10a9ccdd0",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_tasks.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_terminal_evidence.py",
+      "base_blob": "70ef77e9dfa166f50c81d16c63abe5c8e50dc9d2",
+      "tested_sha256": "6eab5b777d7868b831823176c99fc9ec7d4331731a6f8110161b9bd6e6f336b3",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_terminal_evidence.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_terminal_receipt_review.py",
+      "base_blob": "37aac6fcc438233559445c9bfa0ccfb635ed147f",
+      "tested_sha256": "d3415fd25724071fa3f37af44a2cf0a6c259dca80a068192352140b65018e580",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_terminal_receipt_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_token_id_binding.py",
+      "base_blob": "10dce12a34262ebb06d529963ef7c1a0bf0ba7f6",
+      "tested_sha256": "418aad7a3795073fac3c2ebd5a8281cfc0808b4c87548fd88283552f903f5ba9",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_token_id_binding.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_trace_semantic_audit.py",
+      "base_blob": "17e7d69c94ff7ad96d326203480140c27691699b",
+      "tested_sha256": "938773605e9c849d168b05e53343a472995c019997298fe45991c6f333b23c8a",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_trace_semantic_audit.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/group_training.py",
+      "base_blob": "e5a6261716c4d22f6fbd516db0ac4273a3acf940",
+      "tested_sha256": "d51c1d92574a7f41e070d9420b1a57d55dce3b57b020a77d309f0bd9024e446f",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/group_training.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/hf_encoder_kernel.py",
+      "base_blob": "172c60cc99d5c8ea66747cce4bc2a724e2208c29",
+      "tested_sha256": "44ed40c1fd2ea6fc6745e4d9a73247c754a5bf0eea608863ee8a231a50b6b88f",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/hf_encoder_kernel.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/ndu_continuation.py",
+      "base_blob": "a54585f84513310779041c4f50a8e2f111a372ff",
+      "tested_sha256": "89d1ea1e69aef7b9e558dec2ef42d928735a73216e9573ac84165017940886a0",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/ndu_continuation.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/next_round_matrix.py",
+      "base_blob": "a5aa11e0afd0c5ef494fb029146d42cb06f9cfeb",
+      "tested_sha256": "fb75d80a96764dd9e967d6a94845258cdda7dfd14c46f2da32bb1dda4d771d8f",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/next_round_matrix.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/paired_execution.py",
+      "base_blob": "83959a23bc9e1ac849ffc0b8f6735b54cfe05cca",
+      "tested_sha256": "97d0126feb9a19984def009d9feaa8fd5b0506087c7641fbb14c192ec9162a7b",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/paired_execution.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/scienceqa_image_sensitivity_v5.py",
+      "base_blob": "f9f6935feeee489ab1320a7cb588acbbea1ec424",
+      "tested_sha256": "55ae926e551fc733012497fccb2966044c40b27c3568e907b5d97d44ca3262ff",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/scienceqa_image_sensitivity_v5.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/scienceqa_independent_rejudge_v5.py",
+      "base_blob": "f04985968d5f761b583e005a2ef2814380fb9a21",
+      "tested_sha256": "310d1a1aa620551cac15fd9bec648d426f22214a81182a24a362217d1af8a18c",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/scienceqa_independent_rejudge_v5.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/system2_execution.py",
+      "base_blob": "874aa677837bd0ccac438896af9a4c0c24a09abf",
+      "tested_sha256": "65b6670a626ffbdde4e0a4af8622240256ff4e90f3bc912903dc609c62a707a8",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/system2_execution.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_binding_v6_bridge.py",
+      "base_blob": "21e4bb02b6ec9d6fc960a0cc1387f22a4b0f5c71",
+      "tested_sha256": "d9ceefdadbaa79e5ea87ed537120b4c6b9f8acb856d7f14960674af5a16e60db",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/test_binding_v6_bridge.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+      "base_blob": "dbd92471d7c1dd78086a33e7814741ce3081b626",
+      "tested_sha256": "1711f81f7aedc889b18a79ae3dd064364626b6431974222ca7c7169dbb875ce5",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/tested-pre-ruff/qualification/stem-cell-v1/test_group_attention_campaign_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_attention_slot_review.py",
+      "base_blob": "b532a0eb6487b1e029c51b065df560444cb3d541",
+      "tested_sha256": "e7447d5e5dcb062a04c5525d9f5a57708aa90cd9d267aea56306f8d1b997fc45",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/test_group_attention_slot_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_feedback_policy_review.py",
+      "base_blob": "ab59fb4779827c2e4d34694d656ca90edcab4f98",
+      "tested_sha256": "1281df66ccba6baae99829357d073d862cb922f1c735825ee671d67cad35fe1c",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/test_group_feedback_policy_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+      "base_blob": "aa6ea04a1f512ba26f070be1df018fff305061a4",
+      "tested_sha256": "2b2cfd13cfbb60fa34bcd539146f98e76836f75db7d5108176ae3cf968bc8de4",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/tested-pre-ruff/qualification/stem-cell-v1/test_group_optimizer_paired_review.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_scienceqa_image_sensitivity_v5.py",
+      "base_blob": "4d7b41ee8d9ed215b9c9767468a205eed576f69e",
+      "tested_sha256": "343d1f7a806a6763103203d727ebe1aef0de343da218848645392c6868a9b05f",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/test_scienceqa_image_sensitivity_v5.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_scienceqa_independent_rejudge_v5.py",
+      "base_blob": "1dd2a0b5d9635c1b4adb728e4d83eb6731583bb9",
+      "tested_sha256": "56e8caa2f4c1aeb9761324ad3fdd42476a65ae955322ab32aa6dd012e7ad7c9c",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/test_scienceqa_independent_rejudge_v5.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/token_protocol.py",
+      "base_blob": "9d9f80b80477e0cfa38e78d10bf99bcd275b2a27",
+      "tested_sha256": "58fc5cf2e8052e41c10d240965fa8bf171ec0479379495deaf3af87a52e5b6fe",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/token_protocol.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/token_reader.py",
+      "base_blob": "ca814a855c35e3d6fcf50883dba6d66b325d5c54",
+      "tested_sha256": "e2aff67ace65554b90a45c3680f886f8cd7292067de0ea7c2d0cba986dd9612f",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/token_reader.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/token_reader_training.py",
+      "base_blob": "f20588d9f05d6d280bae3d2fea643fceb399072c",
+      "tested_sha256": "cb5038fef134a2e7ba27c297d30c9e9ebe052c6c065a86d9b46e37b17d7b6ac7",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/token_reader_training.py"
+    },
+    {
+      "path": "qualification/stem-cell-v1/transformer_work.py",
+      "base_blob": "f8a5178a772cde72692ca09958858adbc24044ba",
+      "tested_sha256": "f7ab1cf4f7fd796aaaf33899b37e6a59b28b4a636cc0bbec0af1e4eb3429aa7e",
+      "tested_path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline/qualification/stem-cell-v1/transformer_work.py"
+    }
+  ],
+  "whole_module_ast_proof": [
+    {
+      "path": "qualification/stem-cell-v1/test_group_attention_campaign_review.py",
+      "tested_sha256": "1711f81f7aedc889b18a79ae3dd064364626b6431974222ca7c7169dbb875ce5",
+      "final_sha256": "ed9ceb6bd34225e4688355e46b3d693354ab03ed76fd652c57083e9e8251010b",
+      "whole_module_ast_equal": true
+    },
+    {
+      "path": "qualification/stem-cell-v1/binding_v6_bridge.py",
+      "tested_sha256": "bdd17b1471d1b3f55b724752071301ac8e2e026b5bcb16099f55e8f7e79ec497",
+      "final_sha256": "09962a3fb3536801f6e95e209e827cee2b3b8c7fa3e2f1e868aacf8371d82418",
+      "whole_module_ast_equal": true
+    },
+    {
+      "path": "qualification/stem-cell-v1/test_group_optimizer_paired_review.py",
+      "tested_sha256": "2b2cfd13cfbb60fa34bcd539146f98e76836f75db7d5108176ae3cf968bc8de4",
+      "final_sha256": "03ae422efbbb2b384330f9129eab1528ac6974189f62117f274d07eeaf44225e",
+      "whole_module_ast_equal": true
+    }
+  ],
+  "raw_test_log": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/proposal04/stderr.log",
+    "sha256": "81dc5c1fce09e49133c94d064b63877d8070d968bdf2b7a165d3b3c850f4bc23",
+    "git_blob": "87fc4ae43e16837ffc8c7066608ce5aee2dfe172",
+    "bytes": 6670
+  },
+  "actual_selected_python_result": "39 tests PASS, 0 skips; six original modules, pre-Ruff bytes verified; full-module AST unchanged by actual Ruff 0.15.13",
+  "prior_failures_retained": {
+    "baseline": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/baseline/result.json",
+      "git_blob": "ad36137ace83375a2346000f276a9b9447209ddb",
+      "sha256": "5150f2e7dc54ccaa9635dec8942d19b7a12fd18a59cd285d02a31708a85cdd1f",
+      "bytes": 13323
+    },
+    "candidate": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/candidate/result.json",
+      "git_blob": "16901abc679c0376aeca95c0930daf98fc067ac7",
+      "sha256": "41c08355380828a61620c6f14da5fc4379efa38f7d7093508c3ada222fafef0c",
+      "bytes": 13335
+    },
+    "proposal04": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/validation/proposal04/result.json",
+      "git_blob": "3d14bfa1a60ecd001e2eb5823c8bd161419f205c",
+      "sha256": "51475209678afb8626d35db2e3cd67ccb56d630cab268fae1a034553e9de107a",
+      "bytes": 13310
+    }
+  },
+  "semantics_review": [
+    "Fixture max_depth=4 matches existing real protocol; production validators unchanged.",
+    "Missing-checkpoint test expects the exact existing non-symlink regular-file guard; physical checkpoint tamper branch preserved.",
+    "Forged slot digest control retained separately, and original paired teacher geometry rejection reached after both unmodified single reviewers pass.",
+    "Exact TokenReader parameter expression moved inside original CPU fork_rng after arm initialization; same budget checks and arm order.",
+    "Workflow has exactly one Pillow dependency addition and preserves all original pins and complete test discovery."
+  ],
+  "limitations": [
+    "Torch/RNG mechanism NOT_RUN locally: Torch and safetensors unavailable.",
+    "Full 1105-test research suite, Rust, Bazel, Windows and just fmt NOT_RUN for this source.",
+    "Selected local tests used NumPy 2.3.5; CI pin remains 2.5.4.",
+    "Original whole CI had 1 skip; selected 39-test result does not assert whole CI zero skips."
+  ],
+  "review_harness_diagnostics": [
+    {
+      "attempt": 1,
+      "error": "git ls-tree source2 tree in round2/objects.git returned128; source2 belongs to round3 object store",
+      "corrected_git_dir": "/workspace/scratch/c2d514464ab5/merge-recovery/round3-fix/objects.git"
+    },
+    {
+      "attempt": 2,
+      "error": "The inputs/ directory holds only 33 supplemental files, so original workflow lookup raised FileNotFoundError",
+      "corrected_source_directory": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/baseline",
+      "verified_files": 47
+    }
+  ],
+  "source_mutations": 0,
+  "remote_mutations": 0
+}

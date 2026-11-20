@@ -1,0 +1,322 @@
+{
+  "schema": "hepta.later-and-held-evidence-index.v1",
+  "purpose": "Separate path index for root packaging; none of these files is a member of the reviewed snapshot07 archive.",
+  "later_snapshot08": {
+    "source_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "files": [
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-architecture-jobs.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-architecture-jobs.json",
+        "size": 32006,
+        "sha256": "cf437440c34d068d4488affed6b2f868a08624611d05afd86468d662939fc2bd",
+        "git_blob": "3f0b373134d788ead0556f0c9ec2ec11534822b4",
+        "pages": 1,
+        "row_count": 2,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:32.207Z"
+        ],
+        "states": {
+          "success": 1,
+          "in_progress": 1
+        }
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-blocking-jobs.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-blocking-jobs.json",
+        "size": 278496,
+        "sha256": "99054673288ae681fed9c082430eab62c4b317fa38bcc1f236dab7f1c8b3d97b",
+        "git_blob": "f9a200c540ff61e02a53c32d90fae76745526de1",
+        "pages": 1,
+        "row_count": 45,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:32.924Z"
+        ],
+        "states": {
+          "success": 19,
+          "skipped": 6,
+          "in_progress": 5,
+          "failure": 15
+        }
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-checks.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-checks.json",
+        "size": 931899,
+        "sha256": "3e5b75cf88a33ef4dd6baee5fd6e74ddbadb0e0094e709f82ebc3bffee26c9c5",
+        "git_blob": "443f52f95832d31ae7fb18d03ea4386b9782e1e0",
+        "pages": 2,
+        "row_count": 112,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:32.722Z",
+          "2026-11-20T05:09:35.878Z"
+        ],
+        "states": {
+          "failure": 27,
+          "success": 61,
+          "skipped": 14,
+          "in_progress": 9,
+          "cancelled": 1
+        }
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-learning-artifacts-jobs.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-learning-artifacts-jobs.json",
+        "size": 20516,
+        "sha256": "66c11963a39541047a212e10931abe00679b865197018e776be10638634b6df0",
+        "git_blob": "7ca1e32296628c4ec81ab76ddfd0b1f7a7134f47",
+        "pages": 1,
+        "row_count": 4,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:32.219Z"
+        ],
+        "states": {
+          "success": 4
+        }
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-runs.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-runs.json",
+        "size": 1225491,
+        "sha256": "48a949e2904f9fb4d61e7a8db3bc71684d8fc6c458029c72d3f094d64c4b1784",
+        "git_blob": "6cdb1a6a36e25f91f2b30b6e5eabf2227653c4f0",
+        "pages": 1,
+        "row_count": 37,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:33.780Z"
+        ],
+        "states": {
+          "pending": 1,
+          "skipped": 4,
+          "in_progress": 4,
+          "success": 19,
+          "failure": 8,
+          "cancelled": 1
+        }
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot08-windows-jobs.json",
+        "workspace_relative": "ci-repair/ci-monitor/new2b538380/snapshot08-windows-jobs.json",
+        "size": 12574,
+        "sha256": "b303c09ef3ab24b961c23b88f0a561a97ca60633787194af69a857f520298ce3",
+        "git_blob": "2be3521d5b9f7b9a83a3cd9378130f56fb117810",
+        "pages": 1,
+        "row_count": 2,
+        "complete": true,
+        "capture_times": [
+          "2026-11-20T05:09:32.079Z"
+        ],
+        "states": {
+          "in_progress": 2
+        }
+      }
+    ],
+    "new_failed_or_cancelled_checks": [
+      {
+        "id": 136097600578,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136097600578",
+        "completed_at": "2026-11-20T05:08:27Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136095049659,
+        "name": "learning.operator qualification / learning.operator qualification required",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136095049659",
+        "completed_at": "2026-11-20T05:01:23Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136090776830,
+        "name": "native-owner",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040432/job/136090776830",
+        "completed_at": "2026-11-20T05:02:45Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136085684949,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136085684949",
+        "completed_at": "2026-11-20T05:06:28Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136085684880,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136085684880",
+        "completed_at": "2026-11-20T05:08:20Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136085684678,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136085684678",
+        "completed_at": "2026-11-20T05:04:29Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136085684670,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "conclusion": "failure",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040532/job/136085684670",
+        "completed_at": "2026-11-20T05:04:29Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      },
+      {
+        "id": 136084757371,
+        "name": "startup-and-owner-regressions",
+        "conclusion": "cancelled",
+        "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44675040493/job/136084757371",
+        "completed_at": "2026-11-20T05:02:21Z",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      }
+    ],
+    "status": "RAW_API_ONLY_NEW_FAILURES_NOT_INDIVIDUALLY_DIAGNOSED",
+    "new_failed_job_logs_collected": 0,
+    "reason": "Parent froze07 evidence boundary and requested no continuing08 log collection.",
+    "cancelled_check_note": "GitHub reports cancelled. No agent cancel/rerun/dispatch action was issued; cancellation cause not diagnosed.",
+    "review_boundary_note": "Snapshot07 is this batch reviewed evidence, not newest API status. Later API success does not enlarge the earlier scoped qualification statements."
+  },
+  "held_bellman_example": {
+    "directory": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b",
+    "design": {
+      "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/READ_ONLY_DESIGN.json",
+      "workspace_relative": "ci-repair/learning-example-readonly-2b/READ_ONLY_DESIGN.json",
+      "size": 15532,
+      "sha256": "f15dd9ffb23556ae534fba4418a3836dcdb3d909c37494bb728f0868851da675",
+      "git_blob": "d903bdf506086cd0bdd7221066641622c72d71ac"
+    },
+    "files": [
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/READ_ONLY_DESIGN.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/READ_ONLY_DESIGN.json",
+        "size": 15532,
+        "sha256": "f15dd9ffb23556ae534fba4418a3836dcdb3d909c37494bb728f0868851da675",
+        "git_blob": "d903bdf506086cd0bdd7221066641622c72d71ac"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/automation-owner-overlap.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/automation-owner-overlap.json",
+        "size": 100239,
+        "sha256": "7862199282a6fa798489a6ec15da819f68fb7b8a885879c755b079f6ff9ca376",
+        "git_blob": "5b0a77d0eb47b43fbff8063f94d003ff49af34b4"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/identity-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/identity-receipt.json",
+        "size": 18827,
+        "sha256": "e7cb7c06e3eda2ec9be451c47f733e437885bff205d9a893a2956f1c711dc64e",
+        "git_blob": "e9dbdb402355f5c632f80f9f4bdfa9a085cd2fd1"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/learned-strict-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/learned-strict-receipt.json",
+        "size": 9686,
+        "sha256": "fd7da80f78fb63ea8d60b94573fff90c9c1dc5a2440a34ed1d4cbfaf62ffadc9",
+        "git_blob": "af0f00dc14fd30277f82850790d983ba23eb07f8"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/operator-lib-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/operator-lib-receipt.json",
+        "size": 20296,
+        "sha256": "c24633ecebcac49f629d1357e4c6fde56051e8e8a8a6a702541bf8dff6d1919f",
+        "git_blob": "83edd1ec274f53cde75cf4e3e58eda8c00a5a294"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/qualification_performance.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/qualification_performance.rs",
+        "size": 9054,
+        "sha256": "b73b6f39a7736868cd11cee9ab0f2a78239b12a0b26eee34cf7da22a710bea8f",
+        "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+        "size": 6693,
+        "sha256": "c29b4dea553c2b8001cb00ee4f1fec136e3f77f15b749d8f0aa22da9c221fb54",
+        "git_blob": "2418059ce3b842a89716004c63123bb4d5cf8d4c"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/lib.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/lib.rs",
+        "size": 14408,
+        "sha256": "71db4a3832cfe79d57370c84ca36e96d1db7e148e4b8e0b46529ff093d98e459",
+        "git_blob": "ce6a9d5156da7846197ffd233e117d1ebe254922"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/sensor_core_controlled.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/sensor_core_controlled.rs",
+        "size": 13193,
+        "sha256": "f4eccfbecdaf10d247dfafb3105deaeb1ab06335b6e0ce2c238afe3eb0d2fbde",
+        "git_blob": "419f0cc04e6bf58cb77b6609f6dcdac6d3950a70"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/work_control.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-bellman-operator/src/work_control.rs",
+        "size": 3472,
+        "sha256": "d938c2796e21ec0e08718fdac97189cd2b97db255ab345b0689bf5748317288d",
+        "git_blob": "e5d070ea8162e98353961aa133636c5d965bbfdc"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/identity.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/identity.rs",
+        "size": 13344,
+        "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+        "git_blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/lib.rs",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/reference/codex-rs/hepta-types/src/lib.rs",
+        "size": 5562,
+        "sha256": "9965c2a5483ff98904e26335115b48b7a4d140e9c5f1b8853410491a1b68d942",
+        "git_blob": "b8cf542ec4c5528450bc6b7df97866f9f6b6d51d"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/sensor-control-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/sensor-control-receipt.json",
+        "size": 18660,
+        "sha256": "1bd929e91821d101e24fbba1005af88b10e97867e2dd3ccfbba6ecde1deb7597",
+        "git_blob": "ccb1145582a105e110014997f309652e99e35456"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/source-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/source-receipt.json",
+        "size": 12967,
+        "sha256": "930b49891799bfec97c9cb50b5fc010d3c0549b298b984b6ee9485fb9ff2d24a",
+        "git_blob": "1ddc2bac93a350310010495a504fac8ea7245b06"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/types-lib-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/types-lib-receipt.json",
+        "size": 8095,
+        "sha256": "81b9e78cf83b96101f1b1f15a2aa3d65e21e43dc037d344a62d3558b6b1a750a",
+        "git_blob": "cc20256d9dcb6fdd05a783be1219c00b5a70be4d"
+      },
+      {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/learning-example-readonly-2b/work-control-receipt.json",
+        "workspace_relative": "ci-repair/learning-example-readonly-2b/work-control-receipt.json",
+        "size": 5248,
+        "sha256": "70404eeca001590c370017913cc548916951b628f670ed5adcc9a35eae21ff1f",
+        "git_blob": "430d06131e8e83befb31580c5cbaa4ea21c5ecff"
+      }
+    ],
+    "file_count": 16,
+    "raw_bytes": 275276,
+    "status": "READ_ONLY_DESIGN_NO_IMPLEMENTATION",
+    "original_owner_coordination_required": true,
+    "not_in_current_round3_source": true,
+    "native_tests": "NOT_RUN",
+    "before_source": "b456c2364345a07f7367bc7e7b688a99ba3c04e5",
+    "external_original_owner_manifests": "Design lists exact hashes/entries for original-ownerv7/materialization01/02. Those full external files are not copied in this held directory; source bytes are independently fetched from exact2b and bound to its tree."
+  }
+}

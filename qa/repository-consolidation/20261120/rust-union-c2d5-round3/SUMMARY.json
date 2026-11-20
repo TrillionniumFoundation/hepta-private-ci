@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.rust-consolidation-round3.v1",
+  "source_head": "7f616cb22d3b2b567e0fc25d5799ef4b3f0cc2d7",
+  "source_tree": "50600ef174c114ef8b77683d43b6085ad669c76d",
+  "repository_goal_completed": false,
+  "remote_ref_at_snapshot": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "source_steps": 5,
+  "source_paths": 20,
+  "new_historical_merges": 0,
+  "cumulative_prior_true_history_merges": 13,
+  "live_refs_at": "2026-11-20T05:13:12.122Z",
+  "heads": 7662,
+  "protected_names": 490,
+  "protected_pins": 515,
+  "protected_names_without_hia": 395,
+  "ordinary_names": 7171,
+  "ordinary_covered_by_candidate": 2842,
+  "ordinary_pending": 4329,
+  "main_retirement_eligible": 0,
+  "selected_python_tests": {
+    "tests": 39,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "scope": "Six selected research modules; pre-Ruff tested source and identical full-module AST after Ruff0.15.13."
+  },
+  "windows_test_preservation": {
+    "original_entries": 41,
+    "added_regression": 1,
+    "follow_on_tests": 11,
+    "follow_on_overlaps_original_prepared_entries": 8
+  },
+  "helper_clippy_preservation": {
+    "observed_prior_violations": 29,
+    "original_tests": 28,
+    "original_assertions": 144
+  },
+  "new_head_native_rust_windows_clippy_rustfmt_just_fmt": "NOT_RUN; original required gates must qualify the published head.",
+  "full_research_suite_and_torch_rng_mechanism": "NOT_RUN locally; local NumPy2.3.5 is not CI NumPy2.5.4.",
+  "ci_reviewed_snapshot07": {
+    "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "success": 59,
+    "failure": 20,
+    "skipped": 14,
+    "running": 17
+  },
+  "ci_later_snapshot08_raw_only": {
+    "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "success": 61,
+    "failure": 27,
+    "skipped": 14,
+    "running": 9,
+    "cancelled": 1
+  },
+  "required_gates_passed": false,
+  "publication_credential_sanitization": {
+    "ci_members": 199,
+    "unchanged_original_members": 188,
+    "download_receipts_with_sig_values_redacted": 11,
+    "sig_values_replaced": 33,
+    "all_original_zip_and_failure_log_bytes_preserved": true,
+    "original_credential_bearing_archive_published": false
+  },
+  "protected_branch_writes": 0,
+  "main_integration_writes": 0,
+  "branch_deletions": 0,
+  "held": [
+    "Three history proposals require real default ancestor discovery; override-based content merges do not establish completed historical merges.",
+    "Worker source candidates require original-owner canonical Cargo/Bazel lock generation; manual expected lock remains unaccepted.",
+    "Bellman example18 diagnostics have a read-only design only.",
+    "Windows ACL/AppContainer failures are retained without weakening production admission.",
+    "C2D production repair was rejected by automatic approval review and remains STOP.",
+    "Unknown source-copy native job is not retried, replayed or replaced."
+  ]
+}

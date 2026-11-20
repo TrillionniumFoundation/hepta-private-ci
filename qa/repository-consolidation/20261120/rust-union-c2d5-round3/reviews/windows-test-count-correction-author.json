@@ -1,0 +1,318 @@
+{
+  "schema": "hepta.frozen-candidate-test-count-correction.v1",
+  "status": "DOCUMENTATION_COUNT_CORRECTED_WITHOUT_SOURCE_OR_FROZEN_MUTATION",
+  "correct_original_test_declarations": 41,
+  "correct_after_test_declarations": 42,
+  "new_test_declarations": 1,
+  "previous_reported_original_count": 40,
+  "cause": "The first lexical inventory required fn immediately after #[test] and missed writer_process_child with intervening #[ignore]. All original source bytes were nevertheless retained by the complete inverse-transformation proof.",
+  "missed_original_test": {
+    "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+    "name": "writer_process_child",
+    "attributes": [
+      "#[test]",
+      "#[ignore]"
+    ],
+    "source_changed": false,
+    "existing_ignored_child_invocation_retained": true
+  },
+  "unchanged": {
+    "original_assertion_macros": 177,
+    "verbatim_original_assertions": 167,
+    "observation_expression_only_assertions": 10,
+    "held_reads": 21,
+    "source_files": 6,
+    "patch_sha256": "467f3621fc257c814d828c5f512d6e36666a00de51d3d356459440a38289c65f",
+    "frozen_sha256": "6f377fbf547578f69220323d1412f4c4f5eb49befaf8c5cbe3e2c84cbbf20ac5",
+    "source_afterimages": [
+      {
+        "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+        "git_blob": "d3d4f37ea3e04a8de0f1aec8bcfa72d435ced848",
+        "sha256": "01c04b1fd96215f41515064a311f02a87f466b5f4a83d97b19f2329c2d665744",
+        "bytes": 21384
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+        "git_blob": "350b70dc132e12592f395228b3b22d18edb76067",
+        "sha256": "f5094f8262cf36cd8fece886d747381687c00e8decdd8b962bf2529100aea9ab",
+        "bytes": 2931
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+        "git_blob": "bf3b575c76d1eb5a066dc179d0f217801c7c9608",
+        "sha256": "7126fdf09c83702f8e21bcb8f0f91d6b37991fcf1d61e7b4900d9ed36a701f3e",
+        "bytes": 7091
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+        "git_blob": "cdff27a7328a36881bef3a0e0e093f76a1658937",
+        "sha256": "acb6cfcd37ea51d45acd452c3f9d15df0d451f87a9ad0c544386ddccce4f52be",
+        "bytes": 11072
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+        "git_blob": "5174aebf72b7b7bdc75757908460cec0fc2713e1",
+        "sha256": "19a34877b80b75d885a32c9ad914d250a3304557b1e01fbed042b52d5519fd52",
+        "bytes": 7486
+      },
+      {
+        "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+        "git_blob": "f3709ec60401cb7937b58114eb19ea4134120ff5",
+        "sha256": "174227f79a359acd082f96bfa8d0d3a1ee3897b5550b767bbe0597862ec11d45",
+        "bytes": 11736
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "reopens_exact_committed_state",
+          "intervening_attributes": "",
+          "line": 43
+        },
+        {
+          "name": "cancellation_after_assignment_waits_for_observation_and_accounts_usage",
+          "intervening_attributes": "",
+          "line": 71
+        },
+        {
+          "name": "missing_terminal_observation_becomes_indeterminate",
+          "intervening_attributes": "",
+          "line": 109
+        },
+        {
+          "name": "one_writer_is_held_until_owner_drop",
+          "intervening_attributes": "",
+          "line": 141
+        },
+        {
+          "name": "invalid_event_is_rejected_before_append",
+          "intervening_attributes": "",
+          "line": 155
+        },
+        {
+          "name": "owner_drop_releases_lock_with_duplicate_descriptor",
+          "intervening_attributes": "",
+          "line": 174
+        },
+        {
+          "name": "qualification_observes_physical_same_length_changes_and_retains_the_lock_and_cursor",
+          "intervening_attributes": "",
+          "line": 205
+        },
+        {
+          "name": "qualification_bound_failure_preserves_the_cursor_and_fences_further_writes",
+          "intervening_attributes": "",
+          "line": 262
+        },
+        {
+          "name": "native_and_legacy_wal_fsync_emit_non_authorizing_phase_metrics",
+          "intervening_attributes": "",
+          "line": 316
+        },
+        {
+          "name": "evidence_outage_is_not_an_authorization_failure_or_wal_retry",
+          "intervening_attributes": "",
+          "line": 375
+        },
+        {
+          "name": "production_control_refuses_unsupported_platform",
+          "intervening_attributes": "",
+          "line": 404
+        },
+        {
+          "name": "checkpoint_roundtrips_every_reachable_legacy_state_shape",
+          "intervening_attributes": "",
+          "line": 413
+        }
+      ],
+      "after_test_count": 13,
+      "new_names": [
+        "held_journal_observation_preserves_physical_bytes_cursor_and_lock"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "one_record_commit_retains_unrelated_allocations_and_rejects_before_append",
+          "intervening_attributes": "",
+          "line": 3
+        },
+        {
+          "name": "replay_rejects_cross_namespace_collision_in_both_orders",
+          "intervening_attributes": "",
+          "line": 51
+        }
+      ],
+      "after_test_count": 2,
+      "new_names": []
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "unrelated_updates_do_not_copy_historical_output_or_lose_other_reservations",
+          "intervening_attributes": "",
+          "line": 17
+        },
+        {
+          "name": "rejected_transition_and_failed_append_preserve_records_and_slot_count",
+          "intervening_attributes": "",
+          "line": 97
+        },
+        {
+          "name": "active_count_survives_unknown_outcome_reopen_and_terminal_refinement",
+          "intervening_attributes": "",
+          "line": 138
+        },
+        {
+          "name": "owner_drop_releases_locks_held_by_duplicate_descriptors",
+          "intervening_attributes": "",
+          "line": 172
+        }
+      ],
+      "after_test_count": 4,
+      "new_names": []
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "old_overcommitted_journal_can_release_without_admitting_new_work",
+          "intervening_attributes": "",
+          "line": 5
+        },
+        {
+          "name": "compaction_failure_retains_old_bytes_and_all_responsibilities",
+          "intervening_attributes": "",
+          "line": 52
+        },
+        {
+          "name": "checkpoint_revision_does_not_expand_into_historical_observation_copies",
+          "intervening_attributes": "",
+          "line": 79
+        },
+        {
+          "name": "oversized_total_journal_is_rejected_without_rewriting_source",
+          "intervening_attributes": "",
+          "line": 97
+        },
+        {
+          "name": "writer_process_child",
+          "intervening_attributes": "#[ignore = \"subprocess entry; executed by writer_exclusion_survives_compaction_and_process_handoff\"]",
+          "line": 118
+        },
+        {
+          "name": "writer_exclusion_survives_compaction_and_process_handoff",
+          "intervening_attributes": "",
+          "line": 132
+        },
+        {
+          "name": "reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom",
+          "intervening_attributes": "",
+          "line": 160
+        },
+        {
+          "name": "checkpoint_truncation_at_a_complete_record_never_publishes_a_prefix",
+          "intervening_attributes": "",
+          "line": 183
+        },
+        {
+          "name": "checkpoint_state_mutation_is_rejected_without_repairing_the_source",
+          "intervening_attributes": "",
+          "line": 217
+        }
+      ],
+      "after_test_count": 9,
+      "new_names": []
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "terminal_without_usage_retains_settlement_liability_across_reopen",
+          "intervening_attributes": "",
+          "line": 4
+        },
+        {
+          "name": "full_journal_accepts_small_usage_delta_without_rewriting_terminal_body",
+          "intervening_attributes": "",
+          "line": 27
+        },
+        {
+          "name": "usage_delta_rejects_stale_predecessor_and_nonmonotonic_usage_before_append",
+          "intervening_attributes": "",
+          "line": 62
+        },
+        {
+          "name": "usage_optimization_does_not_hide_terminal_identity_or_body_mutation",
+          "intervening_attributes": "",
+          "line": 99
+        },
+        {
+          "name": "failed_usage_append_preserves_missing_usage_and_poisoned_owner_cannot_retry",
+          "intervening_attributes": "",
+          "line": 124
+        },
+        {
+          "name": "legacy_full_observation_usage_refinement_replays_and_compacts",
+          "intervening_attributes": "",
+          "line": 157
+        }
+      ],
+      "after_test_count": 6,
+      "new_names": []
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+      "original_test_declarations": [
+        {
+          "name": "v2_input_survives_reopen_exact_retry_and_all_later_events",
+          "intervening_attributes": "",
+          "line": 36
+        },
+        {
+          "name": "v2_payload_mutations_fail_before_reservation_or_io",
+          "intervening_attributes": "",
+          "line": 77
+        },
+        {
+          "name": "v2_malformed_input_and_missing_snapshot_fields_are_rejected",
+          "intervening_attributes": "",
+          "line": 146
+        },
+        {
+          "name": "v2_replay_rejects_replaced_input_without_repairing_bytes",
+          "intervening_attributes": "",
+          "line": 218
+        },
+        {
+          "name": "v2_never_upgrades_digest_only_history_from_ambient_input",
+          "intervening_attributes": "",
+          "line": 235
+        },
+        {
+          "name": "v1_run_id_only_input_cannot_be_reinterpreted_as_v3",
+          "intervening_attributes": "",
+          "line": 270
+        },
+        {
+          "name": "v2_prepared_input_crash_child",
+          "intervening_attributes": "",
+          "line": 282
+        },
+        {
+          "name": "v2_process_loss_retains_original_input_and_uncertain_slot",
+          "intervening_attributes": "",
+          "line": 295
+        }
+      ],
+      "after_test_count": 8,
+      "new_names": []
+    }
+  ],
+  "qualification": "Static declaration accounting correction only. No tests, formatter, native jobs or remote operations were run. Keep the original frozen artifacts unchanged and include this supplement beside them."
+}
