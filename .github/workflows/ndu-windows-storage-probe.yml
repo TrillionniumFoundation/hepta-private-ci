@@ -141,10 +141,10 @@ jobs:
                   "sha256": "72a4a810750bafa704541b9814a22a080774ab5efd7c135bb197f421ba217860"
               },
               "codex-rs/Cargo.toml": {
-                  "bytes": 27073,
+                  "bytes": 27016,
                   "mode": "100644",
-                  "oid": "520b0ba00e7e1e11f24773e42c21b5324578895b",
-                  "sha256": "033474d5d437dcaab5f771aa3bf1a90a10f768fb3465925a1f3ad2a3137c9f81"
+                  "oid": "a8a239fd98a0732e4baefe6b5008ea3314c54ace",
+                  "sha256": "8f77841d503f07726bec3a679e13ee8cb1d185f98c37897bb5cf75b71bb0e48e"
               },
               "codex-rs/rust-toolchain.toml": {
                   "bytes": 78,
@@ -805,7 +805,7 @@ jobs:
           HEAD = os.environ["EXPECTED_HEAD"]
           PINS = {
               ".github/scripts/windows-appcontainer-probe/probe.py": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
-              ".github/scripts/windows-appcontainer-probe/win32_api.py": "79e3019cccdf7e0ea2faf55dbfa418f3609798049df3c3597023521607b00bc5",
+              ".github/scripts/windows-appcontainer-probe/win32_api.py": "74da42fd9a09ff09e9b5e16f15a5d8176582fc7cc85da383dbcfce11b3bc6208",
           }
 
           def require(condition, message):
@@ -884,8 +884,8 @@ jobs:
           New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
           $pins = [ordered]@{
             '.github/scripts/windows-appcontainer-probe/probe.py' = 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192'
-            '.github/scripts/windows-appcontainer-probe/win32_api.py' = '79e3019cccdf7e0ea2faf55dbfa418f3609798049df3c3597023521607b00bc5'
-            '.github/scripts/windows-appcontainer-probe/cmd_entry_probe.py' = '6d36caa27910ac4c18de64257c1220491778beddf4b2ade2821dae3db05c26bb'
+            '.github/scripts/windows-appcontainer-probe/win32_api.py' = '74da42fd9a09ff09e9b5e16f15a5d8176582fc7cc85da383dbcfce11b3bc6208'
+            '.github/scripts/windows-appcontainer-probe/cmd_entry_probe.py' = 'c3b5d892a4305d2d8709ab6b42350f0d5bf6346f12220366de057670a6ff5fe5'
           }
           $actual = (& git -C $env:GITHUB_WORKSPACE rev-parse HEAD).Trim()
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -962,7 +962,7 @@ jobs:
               raise RuntimeError('diagnostic checkout differs from original PR head')
           pins = {
               '.github/scripts/windows-appcontainer-probe/probe.py': 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192',
-              '.github/scripts/windows-appcontainer-probe/win32_api.py': '79e3019cccdf7e0ea2faf55dbfa418f3609798049df3c3597023521607b00bc5',
+              '.github/scripts/windows-appcontainer-probe/win32_api.py': '74da42fd9a09ff09e9b5e16f15a5d8176582fc7cc85da383dbcfce11b3bc6208',
               '.github/scripts/windows-appcontainer-probe/child_trace.c': 'c59a908daa1df6c827d5d3245de563c3952f9e28fb044555ea3417581e07d697',
               '.github/scripts/windows-appcontainer-probe/child_trace.py': 'f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8',
           }
