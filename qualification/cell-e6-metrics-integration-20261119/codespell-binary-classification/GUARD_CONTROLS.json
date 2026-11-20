@@ -1,0 +1,59 @@
+{
+  "controls": [
+    {
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "name": "absent",
+      "passed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "29eed86c3cd26a83a680473e8b48672eb4866b1f339669ae9a6074df6853185c"
+    },
+    {
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "name": "published_exact",
+      "passed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "7e8bfe0f90e9ce33e8dcf7facfe503be3319ae6c8f5b73dd16ccd530ba932766"
+    },
+    {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "name": "same_length_mutation",
+      "passed": true,
+      "stderr_sha256": "c5353b9d54b7673115a5462da2cd9af48fa660366dc670334354bebce3a428bd",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "name": "truncated",
+      "passed": true,
+      "stderr_sha256": "8a716c04f50714061fd5782df030ad35c42b7bc0f94844a0d12145bf2714b57d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "name": "symlink",
+      "passed": true,
+      "stderr_sha256": "8a716c04f50714061fd5782df030ad35c42b7bc0f94844a0d12145bf2714b57d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "name": "directory",
+      "passed": true,
+      "stderr_sha256": "8a716c04f50714061fd5782df030ad35c42b7bc0f94844a0d12145bf2714b57d",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "failed": 0,
+  "full_codespell_rerun": false,
+  "guard_sha256": "7d5c4d2306d414222a362a9cc1e67c3133646099e9a22aad8663d736a2bc9d58",
+  "model_native_training": 0,
+  "passed": 6,
+  "schema": "hepta.codespell-exact-shard-proposed-guard-controls.v1",
+  "workflow_executed": false
+}

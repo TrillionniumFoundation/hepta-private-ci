@@ -1,0 +1,365 @@
+{
+  "schema": "hepta-ci-source-only-diagnosis-v1",
+  "recorded_at_utc": "2026-11-20T09:48:21.834257+00:00",
+  "mode": "read-only source/log review; no native rerun and no source, lease duration, assertion, workflow or ref change",
+  "head_sha": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+  "actual_test_checkout": "41efe113b0becba5234af5c0de197c31bb5a4581",
+  "workflow_run": {
+    "id": 44710897181,
+    "head_sha": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_attempt": 1,
+    "updated_at": "2026-11-20T09:45:22Z"
+  },
+  "reviewed_jobs": [
+    {
+      "id": 136202214966,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202214979,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:28:45Z",
+      "runner_id": 1000214214,
+      "runner_name": "GitHub Actions 1000214214"
+    },
+    {
+      "id": 136202215292,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:34:06Z",
+      "runner_id": 1000214224,
+      "runner_name": "GitHub Actions 1000214224"
+    },
+    {
+      "id": 136202215359,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:37:36Z",
+      "runner_id": 1000214217,
+      "runner_name": "GitHub Actions 1000214217"
+    },
+    {
+      "id": 136202215425,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202215426,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202215448,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:35:03Z",
+      "runner_id": 1000214225,
+      "runner_name": "GitHub Actions 1000214225"
+    },
+    {
+      "id": 136202215451,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:39:41Z",
+      "runner_id": 1000214234,
+      "runner_name": "GitHub Actions 1000214234"
+    },
+    {
+      "id": 136202215471,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:34:51Z",
+      "runner_id": 1000214226,
+      "runner_name": "GitHub Actions 1000214226"
+    },
+    {
+      "id": 136202215513,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    }
+  ],
+  "mac_intel": {
+    "job_id": 136202215451,
+    "overall_conclusion": "failure",
+    "unit_target": {
+      "name": "hepta-agentd-unit-tests",
+      "result": "PASSED",
+      "cached": false,
+      "bazel_seconds": 115.6
+    },
+    "cognitive_target": {
+      "name": "hepta-agentd-cognitive-write-qualification-test",
+      "result": "FAILED",
+      "cached": false,
+      "bazel_seconds": 2.7,
+      "tests_passed": 2,
+      "tests_failed": 1,
+      "tests_filtered_out": 392,
+      "rust_harness_seconds": 2.42
+    },
+    "failed_test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+    "panic_source_line": "codex-rs/hepta-agentd/src/runtime_tests.rs:703:33",
+    "exact_diagnostic": "expired-registry fixture stage=open compact executor, minted_at_unix_ms=1795167281948, expires_at_unix_seconds=1795167282, remaining_ms_at_mint=52, elapsed_ms=263, observed_at_unix_ms=Ok(1795167282212): Lease(StaleFence(\"local lease has expired\"))",
+    "full_log": {
+      "path": "ci/JOB_136202215451.log",
+      "bytes": 1122604,
+      "sha256": "5747d920b4f3f693f531321491673178e649fd496dc7102aaca88a23ec4757db"
+    }
+  },
+  "source_identity": [
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "all_four_refs_exact_bytes_equal": true,
+      "entries": [
+        {
+          "ref_label": "HEAD238",
+          "ref": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+          "git_blob_sha1": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+          "bytes": 38454,
+          "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3",
+          "original_tool": "HEAD238_RUNTIME_TESTS.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD_D1D",
+          "ref": "d1d3896e2a2628977bc466cee1e00aea93971949",
+          "git_blob_sha1": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+          "bytes": 38454,
+          "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3",
+          "original_tool": "HEAD_D1D_RUNTIME_TESTS.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD824",
+          "ref": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+          "git_blob_sha1": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+          "bytes": 38454,
+          "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3",
+          "original_tool": "HEAD824_RUNTIME_TESTS.original-tool.json"
+        },
+        {
+          "ref_label": "MERGE41",
+          "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+          "git_blob_sha1": "fb2459cbdb6f9d774858cc795cc2d9de406d76f4",
+          "bytes": 38454,
+          "sha256": "098d5535c136f987c6ee3f27cb1ea2ab65e4c172e908d1c725dbbe4a1bcaceb3",
+          "original_tool": "MERGE41_RUNTIME_TESTS.original-tool.json"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "all_four_refs_exact_bytes_equal": true,
+      "entries": [
+        {
+          "ref_label": "HEAD238",
+          "ref": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+          "git_blob_sha1": "5818de2c1c9ead0fa5dbf85a1c152702ef7768ca",
+          "bytes": 221108,
+          "sha256": "8a7e9be81a333c690abcba2c2f6000eae7dab92982e668d2c176d5fa66264723",
+          "original_tool": "HEAD238_LOCAL_LEASE_OUTBOX.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD_D1D",
+          "ref": "d1d3896e2a2628977bc466cee1e00aea93971949",
+          "git_blob_sha1": "5818de2c1c9ead0fa5dbf85a1c152702ef7768ca",
+          "bytes": 221108,
+          "sha256": "8a7e9be81a333c690abcba2c2f6000eae7dab92982e668d2c176d5fa66264723",
+          "original_tool": "HEAD_D1D_LOCAL_LEASE_OUTBOX.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD824",
+          "ref": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+          "git_blob_sha1": "5818de2c1c9ead0fa5dbf85a1c152702ef7768ca",
+          "bytes": 221108,
+          "sha256": "8a7e9be81a333c690abcba2c2f6000eae7dab92982e668d2c176d5fa66264723",
+          "original_tool": "HEAD824_LOCAL_LEASE_OUTBOX.original-tool.json"
+        },
+        {
+          "ref_label": "MERGE41",
+          "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+          "git_blob_sha1": "5818de2c1c9ead0fa5dbf85a1c152702ef7768ca",
+          "bytes": 221108,
+          "sha256": "8a7e9be81a333c690abcba2c2f6000eae7dab92982e668d2c176d5fa66264723",
+          "original_tool": "LOCAL_LEASE_OUTBOX.original-tool.json"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+      "all_four_refs_exact_bytes_equal": true,
+      "entries": [
+        {
+          "ref_label": "HEAD238",
+          "ref": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+          "git_blob_sha1": "822a80b58a0b537b4e02daf41721b167c33db5b0",
+          "bytes": 47549,
+          "sha256": "11974ace98de68e444d1b6ca2019604c6f8c3fde4e5478aa0c5ffd16a03a73f4",
+          "original_tool": "HEAD238_LOCAL_COMPACT_EXECUTOR.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD_D1D",
+          "ref": "d1d3896e2a2628977bc466cee1e00aea93971949",
+          "git_blob_sha1": "822a80b58a0b537b4e02daf41721b167c33db5b0",
+          "bytes": 47549,
+          "sha256": "11974ace98de68e444d1b6ca2019604c6f8c3fde4e5478aa0c5ffd16a03a73f4",
+          "original_tool": "HEAD_D1D_LOCAL_COMPACT_EXECUTOR.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD824",
+          "ref": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+          "git_blob_sha1": "822a80b58a0b537b4e02daf41721b167c33db5b0",
+          "bytes": 47549,
+          "sha256": "11974ace98de68e444d1b6ca2019604c6f8c3fde4e5478aa0c5ffd16a03a73f4",
+          "original_tool": "HEAD824_LOCAL_COMPACT_EXECUTOR.original-tool.json"
+        },
+        {
+          "ref_label": "MERGE41",
+          "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+          "git_blob_sha1": "822a80b58a0b537b4e02daf41721b167c33db5b0",
+          "bytes": 47549,
+          "sha256": "11974ace98de68e444d1b6ca2019604c6f8c3fde4e5478aa0c5ffd16a03a73f4",
+          "original_tool": "LOCAL_COMPACT_EXECUTOR.original-tool.json"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/logical_turn_registry.rs",
+      "all_four_refs_exact_bytes_equal": true,
+      "entries": [
+        {
+          "ref_label": "HEAD238",
+          "ref": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+          "git_blob_sha1": "ef7a143951442496b67724ed837348a44e1d06fd",
+          "bytes": 74636,
+          "sha256": "9a3fc6fd20452e08cfb11af8d7c616f9c9b3d7523ea01222c945934b5c2db887",
+          "original_tool": "HEAD238_LOGICAL_TURN_REGISTRY.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD_D1D",
+          "ref": "d1d3896e2a2628977bc466cee1e00aea93971949",
+          "git_blob_sha1": "ef7a143951442496b67724ed837348a44e1d06fd",
+          "bytes": 74636,
+          "sha256": "9a3fc6fd20452e08cfb11af8d7c616f9c9b3d7523ea01222c945934b5c2db887",
+          "original_tool": "HEAD_D1D_LOGICAL_TURN_REGISTRY.original-tool.json"
+        },
+        {
+          "ref_label": "HEAD824",
+          "ref": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+          "git_blob_sha1": "ef7a143951442496b67724ed837348a44e1d06fd",
+          "bytes": 74636,
+          "sha256": "9a3fc6fd20452e08cfb11af8d7c616f9c9b3d7523ea01222c945934b5c2db887",
+          "original_tool": "HEAD824_LOGICAL_TURN_REGISTRY.original-tool.json"
+        },
+        {
+          "ref_label": "MERGE41",
+          "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+          "git_blob_sha1": "ef7a143951442496b67724ed837348a44e1d06fd",
+          "bytes": 74636,
+          "sha256": "9a3fc6fd20452e08cfb11af8d7c616f9c9b3d7523ea01222c945934b5c2db887",
+          "original_tool": "LOGICAL_TURN_REGISTRY.original-tool.json"
+        }
+      ]
+    }
+  ],
+  "other_pinned_sources": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+      "bytes": 6911,
+      "git_blob_sha1": "d43a1b637f7779f06985c9a61b308cf5f71bba1e",
+      "sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs",
+      "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+      "bytes": 56223,
+      "git_blob_sha1": "0446b58dc3a5e9cf8e07aa0810a873f0ad4d1053",
+      "sha256": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "ref": "41efe113b0becba5234af5c0de197c31bb5a4581",
+      "bytes": 7929,
+      "git_blob_sha1": "679f0f86e3c01a1ca3638199ff2e8286519823f9",
+      "sha256": "cc16bb498028a806f49be839060fb6f092ab0997aec5c0e634b47cb8f4d00f67"
+    }
+  ],
+  "causal_observation": {
+    "fixture_deadline_expression": "minted_at.as_secs() + 1",
+    "deadline_semantics": "next integer Unix second; residual lifetime may be arbitrarily close to zero and is at most one second",
+    "recorded_remaining_ms_at_mint": 52,
+    "recorded_monotonic_elapsed_ms_at_failure": 263,
+    "recorded_wall_clock_elapsed_ms": 264,
+    "recorded_wall_clock_after_deadline_ms": 212,
+    "call_path": [
+      "runtime fixture reserve_or_replay_logical_turn",
+      "inspect_local_lease_head",
+      "reopen_host_bound_lease",
+      "open_local_compact_executor_bound",
+      "LocalCompactExecutor::open_bound",
+      "LocalLeaseOutbox::verify_current_in_transaction",
+      "ensure_current_active"
+    ],
+    "product_guard": "now_unix_seconds() >= persisted expires_at returns StaleFence(local lease has expired)",
+    "h7_start_and_terminal_and_intended_sleep_and_final_assertions": "not reached by this failing test control flow; no claim of independent database readback",
+    "intended_post_setup_wait": "tokio::time::sleep(Duration::from_secs(2)) after bound H7 start and terminal records",
+    "lease_scope": "local host-bound cognitive qualification lease; this is not an E6 Root mechanism or model/training result"
+  },
+  "helper_relationship": {
+    "new_helper_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+    "material_tempdir_visibility": "private function in material test module, called by six material tests",
+    "runtime_fixture_creation": "separate tempfile::tempdir followed by canonicalize; does not invoke material_tempdir",
+    "cognitive_bazel_filter": "runtime::tests::qualification_",
+    "material_tests_selected_by_cognitive_filter": false,
+    "observed_direct_call_path_to_new_helper": false
+  },
+  "conclusion": "The completed Mac Intel cognitive failure exposes a pre-existing residual-second fixture window. The relevant fixture and three product lease/registry/executor files are byte-identical across 238, d1d, 824 and actual merge41. The observed expiry rejection follows the unchanged product guard. This failed execution does not validate the intended later H7 quarantine assertion and does not establish a product regression caused by the new helper.",
+  "limitations": [
+    "Read-only review, not a native reproduction or a fix validation",
+    "No claim that every cause of scheduler or storage latency was identified",
+    "Mac ARM jobs were cancelled with runner_id=0; cancellation cause was not established and no ARM execution/pass is claimed",
+    "Linux GNU and musl target logs may describe the same remote execution, so do not sum them as independent physical runs"
+  ],
+  "new_cost": {
+    "model_calls": 0,
+    "training_updates": 0,
+    "upstream_native_replays": 0,
+    "cargo_invocations": 0,
+    "host_jobs": 0
+  }
+}

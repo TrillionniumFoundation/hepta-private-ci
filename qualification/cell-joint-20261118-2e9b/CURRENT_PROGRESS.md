@@ -1,61 +1,48 @@
-# E1–E6 continuation: helper correction and exact evidence
+# E1–E6 continuation: exact evidence and one binary classification
 
-Observed: 2026-11-20T04:21:57.156673-05:00 (America/New_York).
+Observed: 2026-11-20T04:56:21.009142-05:00 (America/New_York).
 
-All ten joint qualification flags remain **false**. The original E1–E6 experiment identities, source order, budgets, acceptance rules and negative history are retained. This checkpoint follows d1d3896e2a2628977bc466cee1e00aea93971949; its exact previous CURRENT JSON is preserved in checkpoint-d1d-successor. Independent E5/E6 source results are evidence, not a new integrated joint execution.
+**All ten joint qualification flags remain false.** Original experiment identities, budgets, source order, acceptance rules and negative history are unchanged. The exact prior 824 JSON is preserved in checkpoint-824-successor. Independent E5/E6 branch evidence does not constitute a new joint runtime execution.
 
-## Concrete source correction
+## Source change
 
-The prior checkpoint introduced two unwrap calls in the Mac fixture helper, and actual Mac/Linux CI denied them. The helper now returns io::Result, propagates canonicalize with ?, and returns tempdir_in directly. Six original test functions unwrap the result. No lint waiver, product guard, test assertion or second fixture is changed. The actual source SHA is e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca.
+The only new non-evidence source file is `.github/workflows/codespell.yml`. Codespell 2.4.3 examined the first 1024 bytes of an immutable compressed archive shard, whose first NUL is at byte1165, then decoded random bytes as text. The workflow now verifies that one exact path is a regular file of150516 bytes with SHA256 `6ad85c1eb8adbe0f061f65b097df84b078851a90c495da5163596c540ae8b61c`, before excluding that single binary path from spelling. The six guard controls cover exact/absent/tampered/truncated/symlink/directory cases. No artifact bytes, wordlist, broad glob, runtime source or experiment gate changed. Integrated CI for this new workflow has not run at this snapshot.
 
-The independent Mac checkout (238fc484 plus two fixture patches) performed the exact source CAS and original just fmt / --check, both exit 0 with unchanged validation inventory. Original just fix then failed in 1.062970125 seconds because offline Cargo lacked the locked Inflector archive; explicit lint and native tests were not reached. Five exact Git dependency caches are verified. Unpacked registry directories alone do not make offline Cargo material complete. This is not a new-source lint pass.
+## Actual terminal824 CI
 
-The older d1d actual merge f8aba45bc00865f522cc4e0a78c80078cd8ec062 independently passed noncached Mac hepta-agentd unit tests (92.1 s) and cognitive-write tests (3.3 s). Its overall Bazel job still failed in core/app-server. The two observations are kept distinct.
+Run44710897181, actual selected-job checkout41efe113b0becba5234af5c0de197c31bb5a4581, completed with failure:37 jobs,19 success,10 failure,4 cancelled,4 skipped. The helper Result-propagation correction has actual Linux and Windows Clippy PASS. Rust format and Linux/Windows native paths pass. Linux GNU and musl report successful targets; their remote execution is not counted twice or summed as independent physical work.
 
-## Current experiment evidence
+Mac Intel hepta-agentd unit tests pass without cache in115.6s. The cognitive target fails in2.7s: its existing fixture minted a lease with only52ms until the next integer second, then opening the executor took263ms. The unchanged product correctly rejected the expired lease before H7 setup, intended sleep and final quarantine assertions. The fixture and three relevant product files are byte-identical across238/d1d/824/actual merge41, and the new material helper has no direct call path to this fixture. This is not an overall Mac PASS. All four Mac ARM jobs were cancelled with runner_id0; the cancellation cause is unknown and no ARM execution is claimed. Cargo-deny remains failed with its cause unknown because the log response closed. Historical failures are retained.
 
-| Experiment | Actual result retained | Still required |
+## Experiment results
+
+| Experiment | Actual latest result | Qualification still missing |
 | --- | --- | --- |
-| E1 | Both real 32-update students remain 1/4 on A; future panel 0/4. Original 56 evaluation calls spent. | Same-information retrieval comparison and positive unseen/future native gain. |
-| E2 | Actual student action/recovery evaluation remains 0/4 recovery; no demonstrated retained new future capability. | Verified correction benefit and old-capability retention; no extra exhausted calls. |
-| E3 | New SmolLM2 weight recovery is terminal incomplete; no new teacher calls. Original T2 history remains intact. | Authorized complete new material and matched-budget complementarity. |
-| E4 | PP/CC/PC/CP remain 5/6 and do not beat the strong single-model baseline; original controls retained. | New-task communication benefit and edge/message/Cell controls under original budget. |
-| E5 | Original 16 public projects, zero authenticated users and zero growth training. V1 remains failed. Separate v2 has 15 exact full-template inputs within 3200 tokens; jsonschema is refused in place. | Immutable-view target coverage, full output/EOS token bounds, original optimizer/compute mappings and independent future evaluation. Input fit alone is insufficient. |
-| E6 | d035 original source gates and 34 native components pass; Root mechanism parent fails log framing before ordinary NoUpdate begins. Earlier NoUpdate6 Invalid(Unavailable) remains. | Marker-only same-source validation, complete ordinary NoUpdate, genuine Adopt authority, new C/cold recovery/new D/FinalUse/settlement. |
+| E1 | Real students remain1/4 on A and0/4 on future tasks; the original56-call collection is spent. | Matched same-information controls and executable unseen/future gain. |
+| E2 | Real student recovery remains0/4. | Verified correction benefit with retained old capability. |
+| E3 | New SmolLM2 material recovery is incomplete; original T2 observations are retained. | Ready authorized teacher material and matched-budget complementarity. |
+| E4 | Original PP/CC/PC/CP remain5/6 and do not beat the strong single-model repair baseline. | New-task message benefit and original edge/message/Cell controls. |
+| E5 | Five independent Drafts6793–6797 publish exact v2 input/target evidence. Seven complete encodings satisfy length limits, zero pass the original static gate, zero train. | Genuine context closure, original budget mappings and independent future verification;48 materials still missing for64. |
+| E6 | Exact8996 reruns34 components successfully and passes the real Root mechanism parent; complete NoUpdate8 fails at attempted request65/max64. | Complete ordinary NoUpdate, authorized Adopt, new C/cold recovery/new D/FinalUse/settlement. |
 
-## E6 exact scope
+## E5 complete target evidence
 
-Source d0353abfbf9ac783f0fe842fe313977e9d49bff9 retains all original authorization checks after durable Source completion. Missing/Pending observations no longer contend with the unique execution's CURRENT lane. This does not establish arbitrary same-run replay serialization. Original source checks passed 433 tests across 49 modules, 907 protected rows, 398 affected boundaries and the full 1159-boundary CLI. Original project lint, blob tests and 512000 gate passed.
+The original16 public projects and290 native cases remain in their frozen order, with zero authenticated users. One before-only retrieval creates15 bounded inputs; jsonschema remains refused in place. All15 full-template prefixes fit3200 tokens. Eight complete compact action sets reconstruct all original after bytes; seven target-scope refusals remain and rich exceeds the384-token target cap. Seven complete encodings satisfy all length limits. The original counter still rejects every static prefix because `v1_static_context_closed` is false for these partial views. Optimizer/compute/verifier/future mappings remain separate incomplete gates. No null or false field was converted into admission. The original v1 negative result and earlier imprecise derived terminology remain preserved with an explicit correction.
 
-The exact four original native families (11, 16, 5, 2) passed, with all case identities and zero failures/errors/skips verified. The subsequent Root mechanism parent failed because libtest placed the first success marker on its progress line. StalePrepare child assertions completed; Revoked and the ordinary NoUpdate parent did not run. The next change adds only an explicit newline and preserves exact-line assertions, the 64-read limit, every deadline and the requirement that all 34 prerequisites match the new source. New full CLI validation is in progress at this snapshot. No completed C/D, FinalUse or settlement is claimed.
+The final independent head is faeed277149701a316085a0453b05480df528655. Its original512000-byte gate passes26 paths. The complete274-member archive was independently reopened by root; no model, native replay or training was added by this readback.
 
-The Adopt addendum keeps the eight original design files and default-disabled primitive intact. It separates the artifact-use grant, selector, Root intent and original controller authorization, and records missing live revocation/ordering semantics. Twelve further controls are planned; none ran. It is not production authority.
+## E6 complete actual failure
 
-## E5 exact scope
+Runtime source8996e4c5b6a8662c51f47d9e164b8c839635c796 changes only two marker-framing bytes from d035. Fresh full1159 source validation, all34 original native components and the real Root parent pass. The Root parent preserves StalePrepare/Revoked and both SourceFirst/CurrentFirst orders. Earlier433/907/398 source results remain attributed to d035; they are not relabelled as fresh8996 executions.
 
-The v2 policy and code were frozen before the one-pass retrieval. All 16 original rows remain. Fifteen byte views were produced; jsonschema ordinal 13 was rejected when the top complete runtime group could not fit. Nothing was truncated or replaced. Full original verifier cases remain outside the partial prompt; semantic closure is not claimed.
+The ordinary parent actually ran and failed in90.9185s. C receipt returns at5.419372s, Source publication at5.424108s and RunStart at5.424725s. These are local progress, not whole-C or learning acceptance. The historical client rejects attempted ID65 before socket encoding/exchange. NextUse stage, delivery completion and independent Accept do not run. Cold D and Adopt remain paused and all whole-parent/FinalUse/settlement flags are false.
 
-The pinned tokenizer measured complete native-chat prefixes for all fifteen views: loguru 2851 tokens and maximum attrs 2986. Input-only prefixes 1 and 4 fit; prefix 16 does not. Target coverage, complete output/EOS limits, full SFT positions, optimizer units, budgets and B/C are still absent. Every complete-representation and training flag remains false. No model forward, generation, native replay or training update ran. Subsequent after-target analysis must use a separate frozen owner and cannot feed back into these inputs.
+Independent exact-source tail review gives installation56–57, Selection post-admission58–59, Selection stage60–61, NextUse pre62–63, NextUse post64–65, then unexecuted NextUse66–67, delivery completion68–69 and Accept70. The old63 estimate is refuted. A new design may remove six redundant exchanges by placing logical admission checks inside each actual synchronous stage operation. This is only a projection. Selection retains its pre-await admission; actual registered Weak/Arc slot identity, fresh readiness, installed owner, decision prefix, expiry, source/factory/cancellation pre/postchecks, error fencing, recovery and independent Accept remain required. A ready hint never grants permission.
 
-## CI and publication boundaries
+The full612-original archive,200235726 original bytes compressed into eight bounded parts, was independently reopened and verified. Publication PR6776 is Draft at7bb71087b21b0c98998acfaf4d499b6395d929a5; it retains runtime8996 and the failure. Original2s/500ms deadlines and64-entry limit are unchanged. Nested compile, component, Root, ordinary-parent and enclosing-owner intervals are not summed as independent costs.
 
-The d1d blocking workflow completed all 37 jobs: 20 successes, 12 failures, one cancellation and four skips. Engineering integrity, v8 and Windows private-state security succeeded; these do not qualify E6 business outcomes. Original own-Clippy failures and full logs are retained. The contract gate still interprets foreign Chain workflow references from historical base evidence as local paths; the verifier and historical bytes were not weakened or rewritten. Cargo-deny log retrieval failed, so its cause remains unknown.
+## Existing integration and system boundary
 
-The same base branch metadata was refreshed to actual 061334747ce9d87690c40df48eeedf239156b57d. No code or branch name changed. Old architecture-event failures remain. The new helper must receive fresh-source CI. The exact d1d 97-path original blob gate passed; this successor requires a separate exact-tree gate before nonforce CAS publication.
+The #6709 metrics correction remains in the joint lineage with114 original tests across18 modules, zero failure/error/skip and the expected old-code negative control. Completed-use counts still require actual use and cold-process evidence; status labels alone do not establish completion.
 
-## Evidence map
-
-All paths below are under qualification/cell-e6-metrics-integration-20261119. Archive manifests verify complete member names, bytes and SHA256 after reopening; parts stay below the original 512000-byte threshold.
-
-| Directory | Scope |
-| --- | --- |
-| checkpoint-d1d-readback | Original d1d preparation failure, passing exact-object gate and publication receipts. |
-| ci-d1d-complete | Full retrieved d1d CI logs, all-job observation, exact base/merge and metadata refresh. |
-| mac-helper-clippy-fix | Minimal source diff, actual native6 fmt/source receipts and locked-material failure. |
-| mac-native5-complete | Full earlier seed/native5 originals; no new test result. |
-| e6-d035-readback | Selected exact source/native results, original Root failure and marker-only proposed correction. |
-| e5-v2-input-readback | Full 161-file frozen review set, one-pass inputs and exact tokenizer originals. |
-| e5-representation-review | V1 lower bound and independent v2 contract review. |
-| adopt-authority-addendum | Separate authority/revocation design; planned controls only. |
-
-Original #6709 source-metrics accounting is unchanged: terminal status alone does not count a completed adoption/use cycle. Historical E1/E2 future failures, E3 incomplete material, E4 negative controls, E5 v1 refusals, E6 parent failures and Chain F0/cost negatives remain in CURRENT JSON and their original commits. Unknown whole-system resource and monetary cost stays unknown. No automatic merge or reward expansion occurred.
+Chain W1 mechanism results, original F0 failures, inherited contract gaps, unknown full physical cost and unchanged reward scope remain. No production activation, merge, public-reward expansion or new exhausted model-call budget is represented by this checkpoint.

@@ -1,0 +1,598 @@
+{
+  "schema": "hepta.post824-final-ci-retention.v1",
+  "frozen_at_utc": "2026-11-20T09:53:48.161866+00:00",
+  "run_id": 44710897181,
+  "run_attempt": 1,
+  "head_sha": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+  "actual_selected_job_checkout": "41efe113b0becba5234af5c0de197c31bb5a4581",
+  "run_status": "completed",
+  "run_conclusion": "failure",
+  "run_updated_at": "2026-11-20T09:45:22Z",
+  "total_jobs": 37,
+  "job_counts": {
+    "success": 19,
+    "failure": 10,
+    "cancelled": 4,
+    "skipped": 4
+  },
+  "final_jobs_api_sha256": "4fea2dc2dc2a9771a6e150293eda44b118d8a65d15be24dc6c7351ad7cc4f892",
+  "final_run_api_sha256": "f4a32ebc68b80cc05dfde0cbf94d3f44f8541c4fa9b4c8ec097748cb8ccaad80",
+  "all_jobs": [
+    {
+      "id": 136202001260,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:27:39Z",
+      "completed_at": "2026-11-20T09:28:03Z",
+      "runner_id": 1000214207,
+      "runner_name": "GitHub Actions 1000214207"
+    },
+    {
+      "id": 136202001708,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:27:40Z",
+      "completed_at": "2026-11-20T09:28:21Z",
+      "runner_id": 1000214209,
+      "runner_name": "GitHub Actions 1000214209"
+    },
+    {
+      "id": 136202001979,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:27:40Z",
+      "completed_at": "2026-11-20T09:31:10Z",
+      "runner_id": 1000214205,
+      "runner_name": "GitHub Actions 1000214205"
+    },
+    {
+      "id": 136202214690,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:06Z",
+      "completed_at": "2026-11-20T09:28:25Z",
+      "runner_id": 1000214215,
+      "runner_name": "GitHub Actions 1000214215"
+    },
+    {
+      "id": 136202214744,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:35:19Z",
+      "runner_id": 1000214229,
+      "runner_name": "GitHub Actions 1000214229"
+    },
+    {
+      "id": 136202214782,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:06Z",
+      "completed_at": "2026-11-20T09:29:34Z",
+      "runner_id": 1000214212,
+      "runner_name": "GitHub Actions 1000214212"
+    },
+    {
+      "id": 136202214827,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:29:20Z",
+      "runner_id": 1000214228,
+      "runner_name": "GitHub Actions 1000214228"
+    },
+    {
+      "id": 136202214863,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:05Z",
+      "completed_at": "2026-11-20T09:37:06Z",
+      "runner_id": 1000214213,
+      "runner_name": "GitHub Actions 1000214213"
+    },
+    {
+      "id": 136202214948,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:06Z",
+      "completed_at": "2026-11-20T09:30:11Z",
+      "runner_id": 1000214223,
+      "runner_name": "GitHub Actions 1000214223"
+    },
+    {
+      "id": 136202214961,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:06Z",
+      "completed_at": "2026-11-20T09:30:19Z",
+      "runner_id": 1000214216,
+      "runner_name": "GitHub Actions 1000214216"
+    },
+    {
+      "id": 136202214966,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202214979,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:28:45Z",
+      "runner_id": 1000214214,
+      "runner_name": "GitHub Actions 1000214214"
+    },
+    {
+      "id": 136202215292,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:34:06Z",
+      "runner_id": 1000214224,
+      "runner_name": "GitHub Actions 1000214224"
+    },
+    {
+      "id": 136202215359,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:37:36Z",
+      "runner_id": 1000214217,
+      "runner_name": "GitHub Actions 1000214217"
+    },
+    {
+      "id": 136202215361,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:34:55Z",
+      "runner_id": 1000214227,
+      "runner_name": "GitHub Actions 1000214227"
+    },
+    {
+      "id": 136202215415,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:08Z",
+      "completed_at": "2026-11-20T09:36:44Z",
+      "runner_id": 1000214218,
+      "runner_name": "GitHub Actions 1000214218"
+    },
+    {
+      "id": 136202215425,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202215426,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202215440,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:08Z",
+      "completed_at": "2026-11-20T09:42:33Z",
+      "runner_id": 1000214219,
+      "runner_name": "GitHub Actions 1000214219"
+    },
+    {
+      "id": 136202215442,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:44:19Z",
+      "runner_id": 1000214222,
+      "runner_name": "GitHub Actions 1000214222"
+    },
+    {
+      "id": 136202215448,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:35:03Z",
+      "runner_id": 1000214225,
+      "runner_name": "GitHub Actions 1000214225"
+    },
+    {
+      "id": 136202215451,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:39:41Z",
+      "runner_id": 1000214234,
+      "runner_name": "GitHub Actions 1000214234"
+    },
+    {
+      "id": 136202215459,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:44:57Z",
+      "runner_id": 1000214220,
+      "runner_name": "GitHub Actions 1000214220"
+    },
+    {
+      "id": 136202215471,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:07Z",
+      "completed_at": "2026-11-20T09:34:51Z",
+      "runner_id": 1000214226,
+      "runner_name": "GitHub Actions 1000214226"
+    },
+    {
+      "id": 136202215497,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:28:09Z",
+      "completed_at": "2026-11-20T09:40:36Z",
+      "runner_id": 1000214221,
+      "runner_name": "GitHub Actions 1000214221"
+    },
+    {
+      "id": 136202215513,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:43:06Z",
+      "runner_id": 0,
+      "runner_name": ""
+    },
+    {
+      "id": 136202216638,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:28:03Z",
+      "runner_id": null,
+      "runner_name": null
+    },
+    {
+      "id": 136202217175,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-20T09:28:03Z",
+      "completed_at": "2026-11-20T09:28:03Z",
+      "runner_id": null,
+      "runner_name": null
+    },
+    {
+      "id": 136202217895,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-20T09:28:04Z",
+      "completed_at": "2026-11-20T09:28:03Z",
+      "runner_id": null,
+      "runner_name": null
+    },
+    {
+      "id": 136202392517,
+      "name": "rust-ci / Cargo manifest preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:29Z",
+      "completed_at": "2026-11-20T09:28:50Z",
+      "runner_id": 1000214235,
+      "runner_name": "GitHub Actions 1000214235"
+    },
+    {
+      "id": 136202392522,
+      "name": "rust-ci / Rust format",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:28Z",
+      "completed_at": "2026-11-20T09:29:11Z",
+      "runner_id": 1000214236,
+      "runner_name": "GitHub Actions 1000214236"
+    },
+    {
+      "id": 136202392561,
+      "name": "rust-ci / cargo shear",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:29Z",
+      "completed_at": "2026-11-20T09:29:18Z",
+      "runner_id": 1000214237,
+      "runner_name": "GitHub Actions 1000214237"
+    },
+    {
+      "id": 136202394608,
+      "name": "rust-ci / Argument comment lint package",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-20T09:28:26Z",
+      "completed_at": "2026-11-20T09:28:26Z",
+      "runner_id": null,
+      "runner_name": null
+    },
+    {
+      "id": 136202585210,
+      "name": "rust-ci / Rust benchmark smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:28:52Z",
+      "completed_at": "2026-11-20T09:30:17Z",
+      "runner_id": 1000214247,
+      "runner_name": "GitHub Actions 1000214247"
+    },
+    {
+      "id": 136203273827,
+      "name": "rust-ci / CI results (required)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-20T09:30:20Z",
+      "completed_at": "2026-11-20T09:30:22Z",
+      "runner_id": 1000214251,
+      "runner_name": "GitHub Actions 1000214251"
+    },
+    {
+      "id": 136210310131,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:45:01Z",
+      "completed_at": "2026-11-20T09:45:04Z",
+      "runner_id": 1000214435,
+      "runner_name": "GitHub Actions 1000214435"
+    },
+    {
+      "id": 136210368869,
+      "name": "CI required",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-11-20T09:45:07Z",
+      "completed_at": "2026-11-20T09:45:21Z",
+      "runner_id": 1000214436,
+      "runner_name": "GitHub Actions 1000214436"
+    }
+  ],
+  "selected_full_log_count": 8,
+  "selected_full_logs": [
+    {
+      "job_id": 136202001708,
+      "label": "Codespell",
+      "conclusion": "failure",
+      "path": "ci/JOB_136202001708.log",
+      "bytes": 31385,
+      "sha256": "c880fac41e93050bbae68c2c2930aced391b3cb66ea0d2dff99a1bbe789e73d8",
+      "git_blob_sha1": "0598846e137f0e7696ad92f337536ef9c8487390",
+      "original_tool": "ci/EARLY_JOB_LOG_136202001708.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202214948,
+      "label": "Windows native Hepta paths",
+      "conclusion": "success",
+      "path": "ci/JOB_136202214948.log",
+      "bytes": 97367,
+      "sha256": "ce45c379a811c152b95139d39b56cd299199097ca43840ab030f60a45fada177",
+      "git_blob_sha1": "9038ffe05245f13bf241d3471a65b88c835f1458",
+      "original_tool": "ci/JOB_136202214948.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202214979,
+      "label": "Linux native Hepta paths",
+      "conclusion": "success",
+      "path": "ci/JOB_136202214979.log",
+      "bytes": 95660,
+      "sha256": "1bf1ee77294d3735afbf8ea68d1b85f3248c51a1103926bc198a632983bd0814",
+      "git_blob_sha1": "696955472166dbd42ca03a12e97d2668fd4eee89",
+      "original_tool": "ci/EARLY_JOB_LOG_136202214979.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202215292,
+      "label": "Linux Clippy",
+      "conclusion": "success",
+      "path": "ci/JOB_136202215292.log",
+      "bytes": 774741,
+      "sha256": "31160ff1d8dc494b355055560447b270406f0237e9f085bd46c0fd8f392fde30",
+      "git_blob_sha1": "cb78ef0448be3780b0d253e239724e863534fa73",
+      "original_tool": "ci/JOB_136202215292.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202215359,
+      "label": "Windows Clippy",
+      "conclusion": "success",
+      "path": "ci/JOB_136202215359.log",
+      "bytes": 436178,
+      "sha256": "c9d1c895e538b2c216c4937be13589447767d7bcf49a58289e71e31e2cb83358",
+      "git_blob_sha1": "4caf795b6dbe48421e40101a772da70ad6db4d70",
+      "original_tool": "ci/JOB_136202215359.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202215448,
+      "label": "Linux musl Bazel test",
+      "conclusion": "success",
+      "path": "ci/JOB_136202215448.log",
+      "bytes": 945298,
+      "sha256": "e7153fc48c9ae71f0ae5b8985fdcb8b8ca6ec88c255cfe3b20afd039ea42489e",
+      "git_blob_sha1": "423f707ce745f8687eb833381a46eddf76ab164d",
+      "original_tool": "ci/JOB_136202215448.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202215451,
+      "label": "Mac Intel Bazel test",
+      "conclusion": "failure",
+      "path": "ci/JOB_136202215451.log",
+      "bytes": 1122604,
+      "sha256": "5747d920b4f3f693f531321491673178e649fd496dc7102aaca88a23ec4757db",
+      "git_blob_sha1": "b36c67b124c7783d67339814eda75e97ef98fe51",
+      "original_tool": "ci/JOB_136202215451.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    },
+    {
+      "job_id": 136202215471,
+      "label": "Linux GNU Bazel test",
+      "conclusion": "success",
+      "path": "ci/JOB_136202215471.log",
+      "bytes": 952648,
+      "sha256": "c5f514b2996bebd17b1e909408ead25d112208e7130e967b3f8aad9b18b6e7ce",
+      "git_blob_sha1": "7c9b0625402f367f8ff844c79b2d0dce5a3f4ae7",
+      "original_tool": "ci/JOB_136202215471.original-tool.json",
+      "decoded_full_response_bytes_equal_log": true,
+      "head_and_actual_merge_present": true
+    }
+  ],
+  "mac_arm": {
+    "jobs": [
+      {
+        "id": 136202214966,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-20T09:28:03Z",
+        "completed_at": "2026-11-20T09:43:06Z",
+        "runner_id": 0,
+        "runner_name": ""
+      },
+      {
+        "id": 136202215425,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-20T09:28:03Z",
+        "completed_at": "2026-11-20T09:43:06Z",
+        "runner_id": 0,
+        "runner_name": ""
+      },
+      {
+        "id": 136202215426,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-20T09:28:03Z",
+        "completed_at": "2026-11-20T09:43:06Z",
+        "runner_id": 0,
+        "runner_name": ""
+      },
+      {
+        "id": 136202215513,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "conclusion": "cancelled",
+        "started_at": "2026-11-20T09:28:03Z",
+        "completed_at": "2026-11-20T09:43:06Z",
+        "runner_id": 0,
+        "runner_name": ""
+      }
+    ],
+    "actual_execution_evidence": false,
+    "pass_claimed": false,
+    "cancellation_cause": "not established",
+    "reviewer_cancel_or_rerun_requests": 0
+  },
+  "mac_intel": {
+    "unit_target": {
+      "name": "hepta-agentd-unit-tests",
+      "result": "PASSED",
+      "cached": false,
+      "bazel_seconds": 115.6
+    },
+    "cognitive_target": {
+      "name": "hepta-agentd-cognitive-write-qualification-test",
+      "result": "FAILED",
+      "cached": false,
+      "bazel_seconds": 2.7,
+      "tests_passed": 2,
+      "tests_failed": 1,
+      "tests_filtered_out": 392,
+      "rust_harness_seconds": 2.42
+    },
+    "existing_fixture_diagnosis": "Expiry minted at next integer second left52ms; open compact executor occurred after263ms; unchanged product guard rejected expired local lease before H7 creation, intended sleep and quarantine assertions",
+    "source_identity": "runtime fixture and all three relevant lease/registry/executor files have exact identical bytes across238/d1d/824/merge41",
+    "overall_mac_pass_claimed": false,
+    "diagnosis_readout_sha256": "7bf9bff2f30d9583006e61de39eb79ad349c519828ca2711b557bd653c0a288a"
+  },
+  "cargo_deny": {
+    "job_id": 136202214782,
+    "conclusion": "failure",
+    "cause": "unknown",
+    "full_log_available": false,
+    "prior_fetch_failure": "Transport closed",
+    "prior_fetch_failure_sha256": "d712fe24686aa91bb4590adb77d38d1f4ad09fb7a6f96074e36f01d1d619c63c",
+    "additional_diagnosis_or_retry_performed": false
+  },
+  "codespell": {
+    "job_id": 136202001708,
+    "conclusion": "failure",
+    "retained_diagnosis": "Exact native5 archive part002 lacks a NUL in its first1024 bytes, causing the actual codespell2.4.3 heuristic to scan it as text",
+    "accepted_minimal_classification_candidate": "existing skip mechanism for exactly one published binary path, with regular-file/type/length/SHA preflight; no raw artifact/dictionary/glob change",
+    "candidate_workflow_sha256": "d19ff4e23b7ed3b413be94626f52e3ead5ec1318b058d0040266c5bb12e4f366",
+    "source_diagnosis_readout_sha256": "ceae0400e4cd3b418b5a8a92cb5926996d1cc4519e91ace6be5be1e1f69ee5bc",
+    "workflow_changed_by_this_retention": false
+  },
+  "linux_target_observations": {
+    "gnu_and_musl_logs": "Both show noncached hepta unit PASS89.4s and cognitive PASS2.3s",
+    "independent_physical_execution_count": null,
+    "reason": "Identical timings and finish second; no remote-execution IDs establishing independence; do not sum CPU or count separate physical runs"
+  },
+  "scope_limits": [
+    "Final status of all37 jobs retained; full logs are retained for the eight selected relevant jobs, not all37",
+    "Historical intermediate API responses and failed read attempts remain unmodified and do not override the final run/job records",
+    "Other failed jobs remain failed with no expanded causal diagnosis in this work",
+    "Engineering CI and fixture checks are not E1-E6 model, training, useful-work, or adoption qualification"
+  ],
+  "new_operations": {
+    "native_runs": 0,
+    "cargo_runs": 0,
+    "model_calls": 0,
+    "training_updates": 0,
+    "dependency_downloads": 0,
+    "remote_host_jobs": 0,
+    "workflow_reruns": 0,
+    "workflow_cancellations": 0,
+    "ref_updates": 0,
+    "new_read_only_github_requests": 4
+  }
+}

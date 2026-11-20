@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.post824-independent-peer-review.v1",
+  "status": "PASS",
+  "scope": "exact controller source and current existing input inventory; not a new-head gate result",
+  "reviewed_controller_sha256": "d46ea0a8266efafd0ac7cbf8301527b5eaaa62f9a1ea1fdcf0e0073dcf5e11f9",
+  "extra_manifest_sha256": "48e0d8ff9725b6ef9fcc043974c3fd75839646643efcf3f86affbaa2deac5c08",
+  "prior_verified_unique_objects": 240,
+  "extra_verified_objects": 2,
+  "workflow_tree_api_reconstruction_exact": true,
+  "repository_identity_unchanged": true,
+  "original_gate_byte_limit": 512000,
+  "original_gate_timeout_seconds": 120,
+  "material_findings": [],
+  "verification_file": "READONLY_INPUT_VERIFICATION.json",
+  "verification_sha256": "5a8a95899eeb91b544ad26916835268be4b0070ff07288d0a4e9512eef0253d9",
+  "review_md_sha256": "f504887341effbdd13ee46e7d90e3e42cbe11cab7b23bd028f970af730166535",
+  "execution_counts": {
+    "blob_gate_runs": 0,
+    "native_runs": 0,
+    "cargo_runs": 0,
+    "model_calls": 0,
+    "training_updates": 0,
+    "remote_host_jobs": 0,
+    "ref_updates": 0
+  },
+  "limitations": [
+    "PASS means this exact controller and current frozen input inventory passed independent review, not that an uncreated future head has passed the gate",
+    "Prior EXACT_OBJECTS JSON is recorded by the controller rather than pinned as a constant; this peer review pins its actual SHA and verified all240 unique raw objects. Git object identity and base-tree bindings remain mandatory in the controller",
+    "Normal assertion-enabled Python and the observed clean Git override environment are part of this review scope; this is not a general hermetic execution sandbox"
+  ]
+}

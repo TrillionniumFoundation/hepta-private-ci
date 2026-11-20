@@ -1,0 +1,28 @@
+{
+  "alternative_assessment": "Renaming to.bin or adding.gitattributes would not change this classifier. Changing global encoding/chardet would change unrelated text handling and does not provide a precise binary declaration. Do not prepend NUL or alter archive bytes.",
+  "artifacts_modified": 0,
+  "broad_globs_added": 0,
+  "diff_sha256": "42f0d8851f98812be6b7d3691ce97b4566248c0a39114f9dbf6cf0d107fdbbaf",
+  "exact_additional_skip": "./qualification/cell-e6-metrics-integration-20261119/mac-native5-complete/native5-and-cache-originals.tar.xz.part-002",
+  "guarded_part_bytes": 150516,
+  "guarded_part_sha256": "6ad85c1eb8adbe0f061f65b097df84b078851a90c495da5163596c540ae8b61c",
+  "joint_or_workflow_ref_updates": 0,
+  "mechanism": "First NUL at byte1165 lies outside original1024-byte classifier; original is_text_file returns true even with.bin suffix. Encoding fallback then reads the compressed shard as Latin1. There is no extension, MIME or Git-attributes declaration path in that classifier.",
+  "minimal_patch": "One bounded pre-Codespell identity guard followed by one exact existing-style skip entry. Missing original shard is not applicable; nonregular, wrong length or different SHA is failure. Existing skip patterns, dictionaries, action pin, other files and all experiment gates stay unchanged.",
+  "new_controls": 6,
+  "official_sources": {
+    "action_requirements": "https://github.com/codespell-project/actions-codespell/blob/8f01853be192eb0f849a5c7d721450e7a467c579/requirements.txt",
+    "actual_codespell_source": "https://github.com/codespell-project/codespell/blob/57b21406f092110c18776e39b0bda50d37c945c8/codespell_lib/_codespell.py",
+    "actual_workflow": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8240292307116aa4063f7c63d8cdf48a0e8ef773/.github/workflows/codespell.yml"
+  },
+  "qualification_effect": "None: binary spell-check classification only; no experiment/native/source/lint pass or authority is granted.",
+  "random_dictionary_words_added": 0,
+  "schema": "hepta.codespell-one-binary-shard-classification-proposal.v1",
+  "source_head": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+  "status": "REVIEW_ONLY_NOT_APPLIED",
+  "version_scope": "Action pin is fixed, but requirements allow codespell>=2.2.4; actual failing job installed2.4.3. This review analyzes that observed version, not every possible future version.",
+  "workflow_original_git_blob": "ed434625e55ada0bc8678b554153daa4a8d3dbc5",
+  "workflow_original_sha256": "8bad5e22d59a4c0ef4caad7e277b92440e3b8fe22de6ce016da63fca470039d4",
+  "workflow_path": ".github/workflows/codespell.yml",
+  "workflow_proposed_sha256": "d19ff4e23b7ed3b413be94626f52e3ead5ec1318b058d0040266c5bb12e4f366"
+}

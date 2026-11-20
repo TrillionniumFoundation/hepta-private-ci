@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-20T09:21:57.156673+00:00",
+  "observed_at_utc": "2026-11-20T09:56:21.009142+00:00",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-20T04:21:57.156673-05:00",
+  "observed_at_user_timezone": "2026-11-20T04:56:21.009142-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -4399,6 +4399,117 @@
       "partial_view_semantic_closure_proved": false,
       "next_target_measurement": "Separate frozen owner, algorithm and budgets; no input or ranking feedback from after targets. Not yet a result at this snapshot.",
       "evidence_directory": "../cell-e6-metrics-integration-20261119/e5-v2-input-readback"
+    },
+    "latest_v2_complete_targets_and_original_gate": {
+      "source_prs": [
+        6793,
+        6794,
+        6795,
+        6796,
+        6797
+      ],
+      "final_head": "faeed277149701a316085a0453b05480df528655",
+      "final_tree": "7a24f4e0323411e6d8dbe9cf65d1e4786385bea9",
+      "all_draft_open_unmerged": true,
+      "original_v1_head_unchanged": "148e37c26586677e83f0e57e100def8805c1a020",
+      "original_identities_budgets_order_and_negative_results_preserved": true,
+      "independent_branch_evidence_not_joint_runtime": true,
+      "complete_binding": {
+        "base_source": "148e37c26586677e83f0e57e100def8805c1a020",
+        "complete_counter_result_sha256": "416215a419902e075e828e77534163274de6b1397736e0b532db95d771b1bc5f",
+        "complete_token_owner_sha256": "23fe594ed7649d5055c0f0124ab3ed0980c8fc1783dccd6194907377eaf78350",
+        "fixed_source_prefix": "9dade6e90f6227dded45afa1c8462758a511a699",
+        "full_counter_protocol_sha256": "79a9c54b26912cff83459431529be30d5ca10d3d68d0eaa2cc29bc1946b5209a",
+        "full_measurement_original_sha256": "0108d4b9023626bc123c18527ea5a48c94788048220e1d622a0cca7e897e2aab",
+        "future_reads": 0,
+        "independent_B_C": null,
+        "input_freeze_sha256": "9410edd900e216e1f92e4a20b66ed2648ac7b1cfcbcdeaf4769b4c7be21e3efc",
+        "input_source_freeze_sha256": "d4fe4fb301b3ac68f9ca5bf88ca58d6e378636ec20957d684082007680c56d44",
+        "inputs_and_input_code_rechecked_unchanged": true,
+        "interpretation": "Seven complete compact targets fit the original byte/token bounds, but zero sources satisfy the original static representation gate because v1_static_context_closed remains false. All original static and training prefixes remain false. Complete action encoding and length fit are a separate observation, not acceptance or learned utility.",
+        "new_native_model_forward_generation_training": 0,
+        "optimizer_unit_mapping": null,
+        "original_32_fixed_total_and_per_source_unchanged": true,
+        "original_counter_gate": {
+          "actual_v2_context_gate": false,
+          "all_expression_lines": [
+            102,
+            113
+          ],
+          "budget_B_C_fields_remain_null_lines": [
+            137,
+            139
+          ],
+          "budget_B_C_part_of_static_all_expression": false,
+          "original_counter_result_unmodified": true,
+          "reason": "Frozen v2 inputs are partial retrieved views; no original v1 semantic context closure qualification was obtained. The target request explicitly preserves false.",
+          "required": [
+            "record.v1_static_context_closed",
+            "record.structural_roundtrip",
+            "record.visible_action_roundtrip",
+            "fits_original_native_message_bytes_65536",
+            "fits_original_input_4096",
+            "fits_original_sft_3584",
+            "fits_original_generation_384",
+            "fits_original_answer_bytes_32768"
+          ],
+          "source_path": "scripts/cell_experiments/e5_source_codec_v1/count_tokens.py",
+          "source_sha256": "bbfbe6cc9d433755ad22440cd23c0621d0ddf26f414531a3f44e2e0debed3092",
+          "target_request_producer": "target-coverage-1/source/run_targets.py:188",
+          "training_admission_initialized_false_line": 76
+        },
+        "original_material_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+        "prefix_counter_result_sha256": "37425d89ec98acd24b85b7c4ffcf928bb43605e0fe061c651fb899af2fda1ef5",
+        "previous_derived_readout_sha256": "162b3106aa805f702ecc06ff4e4f11d6ae40d6d59b10e16176647d96a16551d7",
+        "schema": "hepta.e5.v2.complete-encoding-bounds-not-static-admission.v1",
+        "source_64": "48 materials remain absent",
+        "source_selection_after_target_exposure": false,
+        "summary": {
+          "byte_views": 15,
+          "complete_encoding_and_token_bounds_fit_count": 7,
+          "complete_encoding_and_token_bounds_prefix_1_4_16_fit": {
+            "1": true,
+            "16": false,
+            "4": false
+          },
+          "complete_target_token_refusals": 1,
+          "complete_visible_target_roundtrips": 8,
+          "original_native_cases_retained": 290,
+          "original_static_prefix_1_4_16_admitted": {
+            "1": false,
+            "16": false,
+            "4": false
+          },
+          "original_static_representation_admitted_count": 0,
+          "prefixes_fit_3200": 15,
+          "source_refusals": 1,
+          "sources": 16,
+          "target_scope_refusals": 7,
+          "training_prefix_1_4_16": {
+            "1": false,
+            "16": false,
+            "4": false
+          }
+        },
+        "target_policy_sha256": "8eb0b8d54e7ee2eed0b632c8f5a31794347a5b014ce69b561ab4db18a4c38196",
+        "target_result_sha256": "96f880d6bd37ffb90619e997b806e6b2b55e0faa351bb002d45ffdfe2d4b401d",
+        "target_source_freeze_sha256": "3def3a59fb5087f7f90562ec4cb96e71655fd7617bf4b1dae594a1ea6780ae3e",
+        "tokenizer_freeze_sha256": "ee0b5f244964e7aaa69280310085d46a4a8d971075f3e655c86c6f6d61fe7aca",
+        "training_compute_or_verifier_budget": null
+      },
+      "real_users": 0,
+      "new_training_updates": 0,
+      "new_model_calls": 0,
+      "new_native_replays": 0,
+      "original_final_blob_gate": {
+        "status": "PASS",
+        "changed_paths": 26,
+        "maximum_bytes": 512000,
+        "result_sha256": "39a2b1dc7c588ce60066a904866493c9c4f81439ff7505baa7ad7348f3493bd8"
+      },
+      "full_274_member_archive_root_verified": true,
+      "archive_sha256": "c29e3372f6765f3c671019150f347eae3a511933ced1a68b161386ab96ff6923",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/e5-v2-complete-readback"
     }
   },
   "E6": {
@@ -6183,6 +6294,95 @@
       "additional_controls_planned": 12,
       "additional_controls_executed": 0,
       "evidence_directory": "../cell-e6-metrics-integration-20261119/adopt-authority-addendum"
+    },
+    "latest_8996_complete_ordinary_attempt": {
+      "source": "8996e4c5b6a8662c51f47d9e164b8c839635c796",
+      "tree": "73ad85ec4ac58f2c8901b0e85375e21e27641041",
+      "public_pr": 6776,
+      "public_head": "7bb71087b21b0c98998acfaf4d499b6395d929a5",
+      "public_tree": "10e4ae616971337d67381bac76f75ece10f1f1f1",
+      "publication_adds_evidence_without_product_byte_changes": true,
+      "draft_open_unmerged": true,
+      "full1159_source_CLI_passed_on_8996": true,
+      "full1159_result_sha256": "1241dd778f529ffdebf4239dd31c45e30d7d4b8e775567a6192ee572c7e1b3cf",
+      "old433_907_398_gate_evidence_remains_bound_to_d035": true,
+      "exact_marker_framing_change_bytes": 2,
+      "strict_Root_parent_and_same_source_prior34_assertions_retained": true,
+      "components": [
+        {
+          "path": "native-validation-8/RESULT.json",
+          "sha256": "a54165197543e87d757fec0a01baf98ea6505c00005ed4b3b1821747d947f2cb",
+          "cases": 11,
+          "command_seconds": 94.99995548697188,
+          "owner_seconds": 96.88585461629555
+        },
+        {
+          "path": "retirement-native-validation-6/RESULT.json",
+          "sha256": "ff26de45f1146c66118af530f022c96763fc59c166b497760f12a84efa487e31",
+          "cases": 16,
+          "command_seconds": 10.981752763036638,
+          "owner_seconds": 11.750122318044305
+        },
+        {
+          "path": "historical-delivery-native-validation-4/RESULT.json",
+          "sha256": "a512c72cbaa953ceda55927a712050d1967a138e82d878c9fbf543c57d196c4e",
+          "cases": 5,
+          "command_seconds": 0.7151118121109903,
+          "owner_seconds": 1.4849699470214546
+        },
+        {
+          "path": "feature-ack-native-validation-2/RESULT.json",
+          "sha256": "e113e909050a2476ebdecd543a24055634c896f67ce296a8e862f98b35d49ef2",
+          "cases": 2,
+          "command_seconds": 5.756104204338044,
+          "owner_seconds": 6.536222384311259
+        }
+      ],
+      "actual_new_component_cases": 34,
+      "actual_new_component_failure_error_skip": 0,
+      "actual_Root_mechanism_parent_passed": true,
+      "actual_Root_parent_terminal_branches": [
+        "StalePrepare",
+        "Revoked"
+      ],
+      "actual_Root_parent_orders_each": [
+        "SourceFirst",
+        "CurrentFirst"
+      ],
+      "ordinary_parent_executed": true,
+      "ordinary_parent_passed": false,
+      "ordinary_parent_result_sha256": "7b1d06160571f5d59d14ebd9f4aa6e9f454f1ae2afde84ffb6bc6e48c7b37177",
+      "ordinary_parent_JUnit_sha256": "83f6c67ebd9ca1924b8e98dba3d160de10020a21bc53c0fe208675490f347509",
+      "ordinary_parent_command_seconds": 90.91851284820586,
+      "enclosing_pipeline_owner_seconds": 264.0621305783279,
+      "nested_owner_costs_must_not_be_summed": true,
+      "local_C_receipt_elapsed_micros": 5419372,
+      "local_C_publish_elapsed_micros": 5424108,
+      "local_C_RunStart_elapsed_micros": 5424725,
+      "request65_is_attempted_ID_refused_before_socket_exchange": true,
+      "original_client_limit": 64,
+      "NextUse_executed": false,
+      "terminal_Accept_executed": false,
+      "complete_C_and_learning_qualification": false,
+      "cold_D_executed": false,
+      "Adopt_executed": false,
+      "FinalUse_and_settlement_qualified": false,
+      "old_static63_projection_refuted": true,
+      "independent_source_projection_only": {
+        "unmodified_full_path": 70,
+        "actual_observed_through_attempt": 65,
+        "66_through70_not_executed": true,
+        "proposed_same_operation_savings": 6,
+        "proposed_full_path": 64,
+        "candidate_implemented_or_executed_at_snapshot": false
+      },
+      "source_review_constraints": "Preserve Selection pre-await admission, actual registered Weak/Arc slot identity, fresh Ready/installed/generation/prefix/expiry checks inside real operation, source/factory/cancellation pre/postchecks, error fencing, recovery paths and independent Accept. A ready hint cannot grant authority.",
+      "original_deadlines_limits_acceptance_unchanged": true,
+      "full612_originals_root_verified": true,
+      "archive_sha256": "b86604090557849cadea5992cc2f58a3fd3c7d5320e27cd79bbf31387c3d01f3",
+      "summary_sha256": "a316f970778a5257a17b93f7365ffa0b4c7e2c4e5088900db7fc2ad3aa4f8e3c",
+      "publication_gate_sha256": "53c15e44c109890d61058f0a52fc1bb1ea8bcce5dd3bf675c3bdb52ba77f94b0",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/e6-8996-noupdate8-readback"
     }
   },
   "Chain": {
@@ -9119,6 +9319,262 @@
       "owner_wall_seconds": 2.169731805999618,
       "initial_preparation_keyerror_tree_retained": true,
       "evidence_directory": "../cell-e6-metrics-integration-20261119/checkpoint-d1d-readback"
+    },
+    "latest_824_terminal_workflow_observation": {
+      "source_head": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+      "source_tree": "2ec6ba4ee575eba4daee656ccf3d218074efd65c",
+      "actual_selected_job_checkout": "41efe113b0becba5234af5c0de197c31bb5a4581",
+      "run_id": 44710897181,
+      "run_status": "completed",
+      "run_conclusion": "failure",
+      "run_updated_at": "2026-11-20T09:45:22Z",
+      "all_37_jobs_terminal": true,
+      "job_counts": {
+        "success": 19,
+        "failure": 10,
+        "cancelled": 4,
+        "skipped": 4
+      },
+      "selected_jobs": [
+        {
+          "id": 136202001708,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-20T09:27:40Z",
+          "completed_at": "2026-11-20T09:28:21Z",
+          "runner_id": 1000214209,
+          "runner_name": "GitHub Actions 1000214209"
+        },
+        {
+          "id": 136202214782,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-20T09:28:06Z",
+          "completed_at": "2026-11-20T09:29:34Z",
+          "runner_id": 1000214212,
+          "runner_name": "GitHub Actions 1000214212"
+        },
+        {
+          "id": 136202214948,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:06Z",
+          "completed_at": "2026-11-20T09:30:11Z",
+          "runner_id": 1000214223,
+          "runner_name": "GitHub Actions 1000214223"
+        },
+        {
+          "id": 136202214966,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-20T09:28:03Z",
+          "completed_at": "2026-11-20T09:43:06Z",
+          "runner_id": 0,
+          "runner_name": ""
+        },
+        {
+          "id": 136202214979,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:28:45Z",
+          "runner_id": 1000214214,
+          "runner_name": "GitHub Actions 1000214214"
+        },
+        {
+          "id": 136202215292,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:34:06Z",
+          "runner_id": 1000214224,
+          "runner_name": "GitHub Actions 1000214224"
+        },
+        {
+          "id": 136202215359,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:37:36Z",
+          "runner_id": 1000214217,
+          "runner_name": "GitHub Actions 1000214217"
+        },
+        {
+          "id": 136202215425,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-20T09:28:03Z",
+          "completed_at": "2026-11-20T09:43:06Z",
+          "runner_id": 0,
+          "runner_name": ""
+        },
+        {
+          "id": 136202215426,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-20T09:28:03Z",
+          "completed_at": "2026-11-20T09:43:06Z",
+          "runner_id": 0,
+          "runner_name": ""
+        },
+        {
+          "id": 136202215448,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:35:03Z",
+          "runner_id": 1000214225,
+          "runner_name": "GitHub Actions 1000214225"
+        },
+        {
+          "id": 136202215451,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:39:41Z",
+          "runner_id": 1000214234,
+          "runner_name": "GitHub Actions 1000214234"
+        },
+        {
+          "id": 136202215471,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:07Z",
+          "completed_at": "2026-11-20T09:34:51Z",
+          "runner_id": 1000214226,
+          "runner_name": "GitHub Actions 1000214226"
+        },
+        {
+          "id": 136202215513,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "started_at": "2026-11-20T09:28:03Z",
+          "completed_at": "2026-11-20T09:43:06Z",
+          "runner_id": 0,
+          "runner_name": ""
+        },
+        {
+          "id": 136202392522,
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-20T09:28:28Z",
+          "completed_at": "2026-11-20T09:29:11Z",
+          "runner_id": 1000214236,
+          "runner_name": "GitHub Actions 1000214236"
+        }
+      ],
+      "new_helper_linux_and_windows_clippy_passed": true,
+      "new_helper_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+      "mac_intel": {
+        "job_id": 136202215451,
+        "overall_conclusion": "failure",
+        "unit_target": {
+          "name": "hepta-agentd-unit-tests",
+          "result": "PASSED",
+          "cached": false,
+          "bazel_seconds": 115.6
+        },
+        "cognitive_target": {
+          "name": "hepta-agentd-cognitive-write-qualification-test",
+          "result": "FAILED",
+          "cached": false,
+          "bazel_seconds": 2.7,
+          "tests_passed": 2,
+          "tests_failed": 1,
+          "tests_filtered_out": 392,
+          "rust_harness_seconds": 2.42
+        },
+        "failed_test": "runtime::tests::qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence",
+        "panic_source_line": "codex-rs/hepta-agentd/src/runtime_tests.rs:703:33",
+        "exact_diagnostic": "expired-registry fixture stage=open compact executor, minted_at_unix_ms=1795167281948, expires_at_unix_seconds=1795167282, remaining_ms_at_mint=52, elapsed_ms=263, observed_at_unix_ms=Ok(1795167282212): Lease(StaleFence(\"local lease has expired\"))",
+        "full_log": {
+          "path": "ci/JOB_136202215451.log",
+          "bytes": 1122604,
+          "sha256": "5747d920b4f3f693f531321491673178e649fd496dc7102aaca88a23ec4757db"
+        }
+      },
+      "mac_intel_causal_observation": {
+        "fixture_deadline_expression": "minted_at.as_secs() + 1",
+        "deadline_semantics": "next integer Unix second; residual lifetime may be arbitrarily close to zero and is at most one second",
+        "recorded_remaining_ms_at_mint": 52,
+        "recorded_monotonic_elapsed_ms_at_failure": 263,
+        "recorded_wall_clock_elapsed_ms": 264,
+        "recorded_wall_clock_after_deadline_ms": 212,
+        "call_path": [
+          "runtime fixture reserve_or_replay_logical_turn",
+          "inspect_local_lease_head",
+          "reopen_host_bound_lease",
+          "open_local_compact_executor_bound",
+          "LocalCompactExecutor::open_bound",
+          "LocalLeaseOutbox::verify_current_in_transaction",
+          "ensure_current_active"
+        ],
+        "product_guard": "now_unix_seconds() >= persisted expires_at returns StaleFence(local lease has expired)",
+        "h7_start_and_terminal_and_intended_sleep_and_final_assertions": "not reached by this failing test control flow; no claim of independent database readback",
+        "intended_post_setup_wait": "tokio::time::sleep(Duration::from_secs(2)) after bound H7 start and terminal records",
+        "lease_scope": "local host-bound cognitive qualification lease; this is not an E6 Root mechanism or model/training result"
+      },
+      "mac_intel_fixture_and_three_product_files_exact_across_four_refs": true,
+      "mac_intel_direct_call_path_to_new_helper_observed": false,
+      "mac_arm_executed": false,
+      "mac_arm_cancellation_cause": null,
+      "cargo_deny_cause": null,
+      "cargo_deny_retrieval_error_retained": "Transport closed",
+      "gnu_musl_independent_physical_execution_or_summed_cost_claimed": false,
+      "whole_mac_or_joint_CI_passed": false,
+      "readout_sha256": "6afac2aa16b096f527e65ff1b1ce1a4aa94c048100375757b23c8ca05c96a8bd",
+      "archive_sha256": "f3abb9657fb4bdd6bc0082c2ae5b313025fa31e05c4673f5a9fbdc7fb0af7e84",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/ci-824-complete"
+    },
+    "latest_exact_binary_classification_correction": {
+      "workflow": ".github/workflows/codespell.yml",
+      "workflow_sha256": "d19ff4e23b7ed3b413be94626f52e3ead5ec1318b058d0040266c5bb12e4f366",
+      "exact_path": "qualification/cell-e6-metrics-integration-20261119/mac-native5-complete/native5-and-cache-originals.tar.xz.part-002",
+      "exact_binary_bytes": 150516,
+      "exact_binary_sha256": "6ad85c1eb8adbe0f061f65b097df84b078851a90c495da5163596c540ae8b61c",
+      "codespell_version": "2.4.3",
+      "first_NUL_byte_offset": 1165,
+      "binary_detection_prefix_bytes": 1024,
+      "guard_controls_passed": [
+        "absent",
+        "exact",
+        "same_length_tamper",
+        "truncated",
+        "symlink",
+        "directory"
+      ],
+      "skip_is_one_exact_path": true,
+      "original_binary_bytes_unchanged": true,
+      "broad_glob_or_wordlist_added": false,
+      "integrated_workflow_executed_at_snapshot": false,
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/codespell-binary-classification"
+    },
+    "checkpoint_824_original_blob_validation": {
+      "base": "d1d3896e2a2628977bc466cee1e00aea93971949",
+      "head": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+      "tree": "2ec6ba4ee575eba4daee656ccf3d218074efd65c",
+      "changed_paths": 70,
+      "exact_objects": 240,
+      "status": "PASS",
+      "original_maximum_bytes": 512000,
+      "gate_wall_seconds": 0.6086402000000817,
+      "owner_wall_seconds": 3.5639370499993674,
+      "result_sha256": "17275ff00a228e38b789d0267e54f68bbd994c8eb2999b1e78ec8e080afb0e01",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/checkpoint-824-readback"
     }
   },
   "environment": {
@@ -9153,7 +9609,7 @@
     "production_eligible": false,
     "full_system_cost_complete": false
   },
-  "interpretation": "The original #6709 metrics integration and its controls remain unchanged. Original E1/E2 real student results remain ResearchNoUpdate; E3 bounded teacher material remains incomplete; E4 has not beaten strong single-model repair. E5 v1 remains inadmissible at every original prefix. Separate frozen before-only v2 retrieval has 15/16 byte views and exact measured full-template prefixes at most 3200 tokens; jsonschema ordinal13 is refused, target/output coverage remains unmeasured, and every training flag remains false. Independent E6 source d035 passes the original source gates and 34 native components but its Root mechanism parent fails strict log framing before ordinary NoUpdate starts; a marker-only repair is being validated with the original same-source component guard. Previous NoUpdate6 Unavailable, all prior failures, cold-D and Adopt authority gaps remain. The d1d actual Mac merge passed hepta-agentd unit and cognitive-write targets; the complete blocking workflow failed, including this checkpoint's own two helper unwrap regressions. The new Result-propagation correction has actual fmt/check pass; local lint stopped on absent locked registry material, and fresh-source lint/native is not claimed. Chain liveness, original F0 failures and unknown full-system cost remain. All ten joint qualification flags remain false, and independent branch evidence is not a joint execution.",
+  "interpretation": "The original #6709 correction and its114 original tests remain unchanged. E1/E2 real student results remain ResearchNoUpdate; all56 evaluation calls are spent. The new E3 SmolLM2 recovery remains incomplete while original T2 history remains intact. E4 still has no proven advantage over strong single-model repair. E5 v2 now has published complete target evidence:7 complete encodings satisfy length bounds, but zero sources pass the original static context gate and every training prefix remains false. E6 exact8996 passes fresh34 native components and the actual Root mechanism parent; its complete ordinary NoUpdate8 attempt fails at attempted historical request65 before socket exchange. C local receipt/publication/RunStart return, but NextUse, delivery completion, Accept, cold D, Adopt, FinalUse and settlement are unqualified. Exact tail source analysis projects70 entries, with a proposed six-entry reduction only through fully checked real same-operation admission; no new implementation or native result is claimed in this snapshot. Actual824 CI has Linux/Windows Clippy pass, Mac Intel unit pass and cognitive fixture-expiry failure, and four Mac ARM jobs cancelled without a runner. The entire workflow fails. This checkpoint only adds one hash-guarded binary Codespell classification plus immutable evidence; runtime code, original limits and all ten joint qualification flags remain unchanged. Chain original liveness/F0 and full-cost gaps remain. Independent branches are not a new joint execution.",
   "original_native_files": [
     {
       "path": "native-v8/RESULT.json",
@@ -9246,7 +9702,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "d1d3896e2a2628977bc466cee1e00aea93971949",
+  "previous_evidence_commit": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
   "next_actual_student_collection": {
     "status": "ORIGINAL_56_CALL_COLLECTION_COMPLETE_NO_UPDATE",
     "evidence_pr": 6778,
@@ -9681,8 +10137,8 @@
   "checkpoint_scope": {
     "historical_joint_execution_source_unchanged": true,
     "independent_branch_passes_are_not_a_joint_execution": true,
-    "previous_current_sha256": "172a7975075ff94523c56ee7ed814c9ee81221080250f73867664b777d685d23",
-    "previous_current_exact_bytes": "checkpoint-d1d-successor/previous-current-d1d.json.xz",
+    "previous_current_sha256": "3cc021446a076f04c3654a5416964d29071ac1decf413cd3107abdd0f062e238",
+    "previous_current_exact_bytes": "checkpoint-824-successor/previous-current-824.json.xz",
     "latest_continuation_fields_take_precedence_over_historical_running_snapshots": true,
     "original_experiment_identities_budgets_and_negative_results_preserved": true,
     "latest_checkpoint_readbacks": {
@@ -9694,7 +10150,7 @@
       "next_checkpoint_original_blob_gate_preparation": "../cell-e6-metrics-integration-20261119/checkpoint-next-gate-preparation"
     },
     "current_execution_is_not_a_new_joint_run": true,
-    "new_source_change": "Only the fixture helper Result propagation correction; E5/E6 independent source is archived as evidence, not merged into joint runtime."
+    "new_source_change": "Only the Codespell workflow classifies one exact immutable binary shard after checking its regular-file type, length and SHA256. Runtime source and experiment gates are unchanged."
   },
   "metrics_integration_6709": {
     "pr": 6703,

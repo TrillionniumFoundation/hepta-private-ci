@@ -1,0 +1,37 @@
+--- a/.github/workflows/codespell.yml
++++ b/.github/workflows/codespell.yml
+@@ -21,12 +21,33 @@
+           persist-credentials: false
+       - name: Annotate locations with typos
+         uses: codespell-project/codespell-problem-matcher@b80729f885d32f78a716c2f107b4db1025001c42 # v1.1.0
++      - name: Verify retained binary archive shard
++        run: |
++          python3 - <<'PY'
++          import hashlib
++          from pathlib import Path
++          import stat
++
++          path = Path('qualification/cell-e6-metrics-integration-20261119/mac-native5-complete/native5-and-cache-originals.tar.xz.part-002')
++          try:
++              info = path.lstat()
++          except FileNotFoundError:
++              print("Retained binary archive shard absent; check not applicable")
++          else:
++              if not stat.S_ISREG(info.st_mode) or info.st_size != 150516:
++                  raise SystemExit("Retained binary archive shard type or length changed")
++              with path.open("rb") as handle:
++                  raw = handle.read(150517)
++              if len(raw) != 150516 or hashlib.sha256(raw).hexdigest() != '6ad85c1eb8adbe0f061f65b097df84b078851a90c495da5163596c540ae8b61c':
++                  raise SystemExit("Retained binary archive shard digest changed")
++              print("Verified retained binary archive shard identity")
++          PY
+       - name: Codespell
+         uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2.2
+         with:
+           ignore_words_file: .codespellignore
+           # Preserve immutable CI/evaluation artifacts; do not spell-check binary archive shards.
+-          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-*.bin
++          skip: ./.git,./qualification/hcsn_differentiable/ci_baseline.json,./qualification/hcsn_regenerative/studies/s81-20261107/artifacts/suite-artifacts.zip.part-006,./qualification/cell-common-20261109-e1c98/actual-model-no-update/full/raw-all-model.tar.gz.part*,./qualification/cell-experiments-v3-20261116/operations/research-run02-final/export/archive-part-*.bin,./qualification/cell-e6-metrics-integration-20261119/mac-native5-complete/native5-and-cache-originals.tar.xz.part-002
+ 
+       - name: Check for a clean worktree
+         if: always() && !cancelled()
