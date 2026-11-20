@@ -1,0 +1,145 @@
+{
+  "all_payload_roundtrips_passed": true,
+  "base_audit_result_sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca",
+  "base_export_manifest_sha256": "35408e04e4516d5e976632d3a6f4da15efd3f442389604f7af7cdfbf02e1cfd2",
+  "captured_ref_count": 7654,
+  "captured_refs_reconstructed_byte_exactly": true,
+  "complete_graph_delta_verified": true,
+  "compressed_artifacts": [
+    {
+      "bytes": 456,
+      "git_blob_sha1": "a4e7fac81fff564d45b4384842a8caaa25abc78b",
+      "independently_decompressible": true,
+      "path": "refs-delta.json.gz",
+      "raw_bytes": 778,
+      "raw_end_offset": 778,
+      "raw_git_blob_sha1": "7b09149227d434fe31f42d325413ae0bb8c944d0",
+      "raw_sha256": "9df40027908e0f26ac737fd5d2bb44b3a09dd883f90d86b9998100462f68c29b",
+      "raw_start_offset": 0,
+      "role": "exact lossless ref delta against original captured refs",
+      "roundtrip_bytes_equal_original": true,
+      "sha256": "693d6154fe7bbeda18f7f479da056543965a13a97ea253c8c2f6ae0617da9977"
+    },
+    {
+      "bytes": 594,
+      "git_blob_sha1": "aa1875b165824ed767809fc278427c13d68261cd",
+      "independently_decompressible": true,
+      "path": "graph-delta.json.gz",
+      "raw_bytes": 1181,
+      "raw_end_offset": 1181,
+      "raw_git_blob_sha1": "f40bcaab5d0ab162278bcdaa058cf41616e401c7",
+      "raw_sha256": "9729cd7eeeff6622e71a0148c5b2f22a6f3eeca14b5999c7ca8a86d9dfe0bf13",
+      "raw_start_offset": 0,
+      "role": "complete actual Git graph delta and appended canonical parent row",
+      "roundtrip_bytes_equal_original": true,
+      "sha256": "01e78dd5323aa087862e1400121d190555c4449dcb56768ac1c5989e9bdedbac"
+    },
+    {
+      "bytes": 224,
+      "git_blob_sha1": "59436c2069735bdc7ea58aa0ae7616c889b12d75",
+      "independently_decompressible": true,
+      "path": "new-commit.raw.gz",
+      "raw_bytes": 323,
+      "raw_end_offset": 323,
+      "raw_git_blob_sha1": "ab525c48167b3bcdc8e7b24ddee16a05f7e17703",
+      "raw_sha256": "d7f34cc7aab3cf1615858727f1826c6d39f8b0991a2c16162fc5a529d42f851e",
+      "raw_start_offset": 0,
+      "role": "exact newly fetched commit object bytes",
+      "roundtrip_bytes_equal_original": true,
+      "sha256": "dd5f124d65d759420f6ff19db4eafdb642bdf864360a61c0ba8fbb1d1b0e75c5"
+    },
+    {
+      "bytes": 25817,
+      "git_blob_sha1": "670acf159961b6e9d58e6e23338a5eedcce63c83",
+      "independently_decompressible": true,
+      "path": "observed-protection-505.json.gz",
+      "raw_bytes": 71346,
+      "raw_end_offset": 71346,
+      "raw_git_blob_sha1": "3d36a693b75d665f65cdb2292f8ebb7832824867",
+      "raw_sha256": "a1abd37137e98fbd7636d281cbbb31e9869d013330d8a1b1deed505416264076",
+      "raw_start_offset": 0,
+      "role": "monotone observed protection policy; production policy remains unchanged",
+      "roundtrip_bytes_equal_original": true,
+      "sha256": "11c3839cd1d20393745424620d01fc4d96e1c805f6ee6ae38c947c8a436040ce"
+    }
+  ],
+  "exported_files": [
+    {
+      "bytes": 456,
+      "git_blob_sha1": "a4e7fac81fff564d45b4384842a8caaa25abc78b",
+      "path": "refs-delta.json.gz",
+      "role": "exact lossless ref delta against original captured refs",
+      "sha256": "693d6154fe7bbeda18f7f479da056543965a13a97ea253c8c2f6ae0617da9977"
+    },
+    {
+      "bytes": 594,
+      "git_blob_sha1": "aa1875b165824ed767809fc278427c13d68261cd",
+      "path": "graph-delta.json.gz",
+      "role": "complete actual Git graph delta and appended canonical parent row",
+      "sha256": "01e78dd5323aa087862e1400121d190555c4449dcb56768ac1c5989e9bdedbac"
+    },
+    {
+      "bytes": 224,
+      "git_blob_sha1": "59436c2069735bdc7ea58aa0ae7616c889b12d75",
+      "path": "new-commit.raw.gz",
+      "role": "exact newly fetched commit object bytes",
+      "sha256": "dd5f124d65d759420f6ff19db4eafdb642bdf864360a61c0ba8fbb1d1b0e75c5"
+    },
+    {
+      "bytes": 25817,
+      "git_blob_sha1": "670acf159961b6e9d58e6e23338a5eedcce63c83",
+      "path": "observed-protection-505.json.gz",
+      "role": "monotone observed protection policy; production policy remains unchanged",
+      "sha256": "11c3839cd1d20393745424620d01fc4d96e1c805f6ee6ae38c947c8a436040ce"
+    },
+    {
+      "bytes": 5731,
+      "git_blob_sha1": "b0eb8a9c62f04cbdd8730447dd9f1dbc7d8ddb28",
+      "path": "refresh-result.json",
+      "role": "exact native refresh result",
+      "sha256": "af960bbfa2ce56ee0ee113a1a058f71e00ad7a21c3cc86d66aabe3f3285d8107"
+    },
+    {
+      "bytes": 23600,
+      "git_blob_sha1": "71f7541866e7000998822dc5135eb77cfe068e78",
+      "path": "refresh-audit.py",
+      "role": "exact native refresh source",
+      "sha256": "fa234c000606031b2013e5569fff41ad66a46ea92ae2544f67c704981f064661"
+    },
+    {
+      "bytes": 559,
+      "git_blob_sha1": "b9985a29d7dec8e11af41a03181a574aa416a0c8",
+      "path": "invocation.json",
+      "role": "runtime invocation identity",
+      "sha256": "48373a142d0d375869224025009543f3b70a6fe427ec9ae05a7cdf56fff3565d"
+    },
+    {
+      "bytes": 1976,
+      "git_blob_sha1": "05e233a5fe528938d4bba051bb419bec6f3be4b9",
+      "path": "README.md",
+      "role": "delta reconstruction and scope instructions",
+      "sha256": "30a675fcccf04d98b6872784ff20d45c6824aa0b5cda327902d771b70e8123c4"
+    }
+  ],
+  "exported_files_excluding_manifest_bytes": 58957,
+  "graph_nodes": 78731,
+  "gzip": {
+    "compression_level": 9,
+    "filename": "",
+    "maximum_compressed_bytes": 65536,
+    "mtime": 0
+  },
+  "native_process_key": "hepta-rust-protection-0cee-hia565-refresh-20261120-v1",
+  "observed_pins": 505,
+  "ordinary_coverage_hashes_unchanged": true,
+  "production_inputs_unchanged": true,
+  "production_pins": 504,
+  "protected_names": 483,
+  "result_sha256": "af960bbfa2ce56ee0ee113a1a058f71e00ad7a21c3cc86d66aabe3f3285d8107",
+  "schema": "hepta.single-protected-tip-refresh-export.v1",
+  "tip_change": {
+    "after": "5653790ac0f64783c28926dcfca2fa7a48a40e77",
+    "before": "c32019b1e1ef566419a7b6d28a34d24270cf3d27",
+    "name": "codex/hia-chrono-time-network-proxy-20261119-a11"
+  }
+}

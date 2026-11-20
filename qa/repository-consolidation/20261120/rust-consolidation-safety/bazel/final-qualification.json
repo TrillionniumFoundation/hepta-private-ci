@@ -1,0 +1,191 @@
+{
+  "schema": "hepta.library-root-final-qualification.v1",
+  "recorded_at": "2026-11-20T02:42:05.668275+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "published_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "ci_checkout_commit": "3ac734f11379d38ca497435d6c9f43ab4e225a1e",
+  "identical_source_tree": "f289a1e9c1112d6afae4d9423e7f18c0c7be128a",
+  "qualified_scope": "All three corrected library roots configured natively; three library unit-test targets and five extension-api integration targets compiled and passed in source-equivalent Linux CI.",
+  "native_queries": {
+    "baseline": "PASS",
+    "published_roots": "PASS",
+    "details": "root-query-and-census-proof.json",
+    "executed_compile_actions": 0
+  },
+  "ci_passed_targets": [
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-capabilities-test",
+      "seconds": 0.1,
+      "log_line": 10957,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-model_provider_input-test",
+      "seconds": 0.1,
+      "log_line": 10959,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-model_provider_policy-test",
+      "seconds": 0.1,
+      "log_line": 10961,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-registry-test",
+      "seconds": 0.1,
+      "log_line": 10963,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-state-test",
+      "seconds": 0.1,
+      "log_line": 10965,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/extension-api:extension-api-unit-tests",
+      "seconds": 0.2,
+      "log_line": 10967,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/ext/hepta-prompt:hepta-prompt-unit-tests",
+      "seconds": 0.2,
+      "log_line": 10981,
+      "result": "PASSED"
+    },
+    {
+      "label": "//codex-rs/hepta-context-compiler:hepta-context-compiler-unit-tests",
+      "seconds": 0.3,
+      "log_line": 11007,
+      "result": "PASSED"
+    }
+  ],
+  "ci_job_urls": [
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136026289154",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44656939483/job/136026288769"
+  ],
+  "ci_jobs_overall": "FAILURE",
+  "sdk_source_sha": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "sdk_progress": "Prompt and Core rlib compilation completed; app-server Rustc failed E0433 undeclared MultiAgentMode. No SDK dependency claim for context-compiler.",
+  "native_builds": {
+    "1a1f6b82b2f-ffbe-1539": "CANCELLED_INCOMPLETE_NOT_PASS",
+    "1a1f6bdfade-ffbe-153f": "CANCELLED_INCOMPLETE_NOT_PASS"
+  },
+  "native_terminal": {
+    "at_unix_ms": 1795142392981,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": true,
+    "exit_code": -15,
+    "job_id": "1a1f6bdfade-ffbe-153f",
+    "launch_nonce": "da91017e6e273ac1bdce1592a3b80f79",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 35513,
+        "stored": 35513
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "cancelled",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "all_four_source_hashes_unchanged": true,
+  "source_files": [
+    {
+      "path": "codex-rs/ext/extension-api/BUILD.bazel",
+      "size": 161,
+      "sha256": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+      "git_blob_sha1": "037f30c619a54b3bb46b5b080e1ffae5c23d0598"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/BUILD.bazel",
+      "size": 179,
+      "sha256": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+      "git_blob_sha1": "5693595a786d265f819cc15c98654e3e96f264f1"
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/BUILD.bazel",
+      "size": 169,
+      "sha256": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+      "git_blob_sha1": "75129eef54403c4632400dff382dc4d56a935e38"
+    },
+    {
+      "path": "defs.bzl",
+      "size": 37838,
+      "sha256": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+      "git_blob_sha1": "39a06f42c014f0b34f6e59ed3189b030aac4fd59"
+    }
+  ],
+  "log_publication_index": {
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/publication-logs/index.json",
+    "size": 11471,
+    "sha256": "8149e850b6a6da0260ab4efcd4b6601f124f5cc04503e68434eb4fefcf189b5d",
+    "git_blob_sha1": "da8e641ea1d38dc61f525a1751b34b382ac599ac"
+  },
+  "plaintext_evidence": [
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/ci-tree-objects.json",
+      "size": 5270,
+      "sha256": "c879450c7b9b206caed16c168e3bb4d32fc0fbf6c9df81e1230af649afc12cc8",
+      "git_blob_sha1": "4b8fef7513971366955f2292558c20823f274776"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/ci-source-bindings.json",
+      "size": 2105,
+      "sha256": "74f0e8124806a18d8fb270a1a51dd2cf8baa152107d9ec970dd5dc828ebffd01",
+      "git_blob_sha1": "b8eccd284b2f43b54f823960028e2e773156c0e0"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/native-build-v2-terminal.json",
+      "size": 3360,
+      "sha256": "7999bf5db09990b52c2b070a41c3755d982a9cbcdba9d1322515044a68082122",
+      "git_blob_sha1": "fb7f635f83827c2aaf822555837a039dc19c2bc6"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/four-file-source-record.json",
+      "size": 48302,
+      "sha256": "108184691e9e659c4eb0a985899864e99a72fd7891b96d9cab8749a2056105b6",
+      "git_blob_sha1": "329dc2ab7a306178f7aa2cbd08faa5efcf405001"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/root-query-and-census-proof.json",
+      "size": 11692,
+      "sha256": "184c95608f42bfd0979958aa9625aba84481574c61bf49fb3f8a392576d8c428",
+      "git_blob_sha1": "e00fb49441bc613a5108beee8835caf58e6a95df"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/ci-source-qualification.json",
+      "size": 5323,
+      "sha256": "331f484ad931e48851e5b28f7b246a54457e16068096c624dc9251149cf484b6",
+      "git_blob_sha1": "b56a6c10906dc263d04c724299fa62b1bf92c94f"
+    }
+  ],
+  "limitations": [
+    "This is scoped Bazel root repair qualification, not full main merge qualification.",
+    "Cross-platform skipped tests are not counted.",
+    "No further build, test or configured query was run after sufficient CI proof.",
+    "Raw decoded GitHub logs and exact native logs are preserved; gzip copies are byte-for-byte reversible."
+  ]
+}

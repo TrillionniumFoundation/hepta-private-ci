@@ -132,8 +132,6 @@ class PositiveCircuitNextUseSourceClosureTests(unittest.TestCase):
             if row["path"] in PROTECTED
         ]
         expected_counts = dict.fromkeys(PROTECTED, 1)
-        expected_counts[AGENT + "circuit_candidate_learning_read_service.rs"] = 2
-        expected_counts[AGENT + "circuit_candidate_learning_completion_readiness_service.rs"] = 2
         if Counter(row["path"] for row in cls.rows) != expected_counts:
             raise AssertionError("all complete positive protected records are present")
 

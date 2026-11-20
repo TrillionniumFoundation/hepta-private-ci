@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.commit-only-history-audit-preflight.v1",
+  "observed_at_utc": "2026-11-20T02:01:47.420450+00:00",
+  "root": "/home/qian-qi/hepta-rust-protection-20261120-0cee",
+  "new_bare_repository": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history.git",
+  "git_executable": "/usr/bin/git",
+  "git_version": "git version 2.53.0",
+  "git_fetch_help_exit": 129,
+  "git_fetch_filter_in_short_help": false,
+  "server_filter_capability_verified": false,
+  "predecessor_job": "1a1f6a7093b-ffbe-1523",
+  "predecessor_outcome": "FAILED1: short-help text did not prove filter support; no fetch attempted",
+  "disk_free_bytes": 26918322176,
+  "inputs": [
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/hepta_branch_consolidation.py",
+      "bytes": 19209,
+      "sha256": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/protected-branches.json",
+      "bytes": 71298,
+      "sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f"
+    }
+  ],
+  "remote_mutations_authorized": false,
+  "fetch_filter_required": "tree:0",
+  "classification_no_lazy_fetch_required": true,
+  "history_existed": false,
+  "classification_performed": false
+}

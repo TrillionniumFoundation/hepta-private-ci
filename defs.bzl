@@ -273,7 +273,8 @@ def codex_rust_crate(
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and harness.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
-        crate_root: Optional library entry point; defaults to rules_rust source inference.
+        crate_root: Optional library root matching Cargo's `[lib].path`.
+            None preserves rules_rust's default source-root inference.
         crate_edition: Rust edition override, if not default.
             You probably don't want this, it's only here for a single caller.
         proc_macro: Whether this crate builds a proc-macro library.
