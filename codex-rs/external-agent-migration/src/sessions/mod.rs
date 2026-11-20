@@ -198,10 +198,20 @@ fn truncate(text: &str, max_len: usize) -> String {
 }
 
 pub(crate) fn now_unix_seconds() -> i64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|duration| duration.as_secs() as i64)
-        .unwrap_or_default()
+    unix_seconds_from_system_time(std::time::SystemTime::now())
+}
+
+fn unix_seconds_from_system_time(now: std::time::SystemTime) -> i64 {
+    match now.duration_since(std::time::UNIX_EPOCH) {
+        Ok(duration) => i64::try_from(duration.as_secs()).unwrap_or(i64::MAX),
+        Err(error) => {
+            let duration = error.duration();
+            let seconds = duration
+                .as_secs()
+                .saturating_add(u64::from(duration.subsec_nanos() != 0));
+            i64::try_from(seconds).map_or(i64::MIN, |seconds| -seconds)
+        }
+    }
 }
 
 #[cfg(test)]
@@ -212,6 +222,26 @@ mod tests {
     use sha2::Digest;
     use sha2::Sha256;
     use tempfile::TempDir;
+
+    #[test]
+    fn unix_timestamp_floors_fractional_seconds_before_the_epoch() {
+        use std::time::Duration;
+        use std::time::UNIX_EPOCH;
+
+        assert_eq!(unix_seconds_from_system_time(UNIX_EPOCH), 0);
+        assert_eq!(
+            unix_seconds_from_system_time(UNIX_EPOCH + Duration::from_millis(999)),
+            0
+        );
+        assert_eq!(
+            unix_seconds_from_system_time(UNIX_EPOCH - Duration::from_millis(500)),
+            -1
+        );
+        assert_eq!(
+            unix_seconds_from_system_time(UNIX_EPOCH - Duration::from_secs(2)),
+            -2
+        );
+    }
 
     #[test]
     fn skips_session_that_was_already_imported() {
