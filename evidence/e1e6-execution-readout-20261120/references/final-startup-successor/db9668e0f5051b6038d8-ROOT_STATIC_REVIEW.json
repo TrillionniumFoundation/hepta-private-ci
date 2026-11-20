@@ -1,0 +1,72 @@
+{
+  "reviewed_at": "2026-11-20T20:23:31.446212+00:00",
+  "scope": "Root independent static source and policy review; source apply/format/compile/native not authorized by this receipt",
+  "candidate_manifest_sha256": "e3c86216d3bf55ebba3d20d1422a95286ee25b515d5269d59aa1775134849623",
+  "source_manifest_sha256": "5a76e4e83b7db25013248607398690e5cc784278752fde10e6bdb42d1cb3a229",
+  "source_files": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "before_sha256": "8dd73c4857177e13faa8070596b17aa7b06ef2ab5ddf508856d27742b3b1881c",
+      "after_sha256": "3ec7699ed62516136983172733dab1b4b3c6088f7b0319dabceb6bd720c4ec1e"
+    },
+    {
+      "path": "CALLERS.toml",
+      "before_sha256": "156692a1d5083087a1cb0d2db375e8006012c0f73b5757b05a4639b0d3651fae",
+      "after_sha256": "057bf6d1d261eae1233dd1f7ef088c19cab11c09f17dd7cefa98f10b1714c3f2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "before_sha256": "02e179a61e34a0a7224c131b59f47043aa81e687e554d1284817ccd4ff1f39d0",
+      "after_sha256": "6e49a89a57142b012497a1e7e25ff085a24ab54235c46827f22751f9b4c87eae"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "before_sha256": "bed6cb0a02a22993a638e2f8f9bb5d3daf201320bb5c460ffa283f89bae1c16d",
+      "after_sha256": "32dbcdd34230f4f5aefff13ae43a7ef56cf1dcc064bd7df91b368364aff70a61"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "before_sha256": "44c9b627395772f0d7095173768d1e20c11c38c09da98b14165e155774adcd5d",
+      "after_sha256": "8f1ba3dc30b62943fad87fbc863b32c72fd3ff87283d8f75da7289d8a7d04302"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "before_sha256": "9df4fd85b14c51d21035b1b7e82bfe7827a43a7b2ef559778ef73e83720410a7",
+      "after_sha256": "50162d4f448af6805f0dba5f5fd504190477d6dfd2b6052e74f1ac84edd7c5e4"
+    }
+  ],
+  "full_diff_sha256": "4e336ab8e3a306c1876d144cd7d5bb97681ebc1f6f95874e8e706d0ba6101a9a",
+  "protected_occurrences": 908,
+  "full_boundaries": 1165,
+  "changed_zero_based_occurrences": [
+    183,
+    554,
+    555,
+    630
+  ],
+  "unchanged_all_required_forbidden": true,
+  "unchanged_other_904_protected_occurrences": true,
+  "allowlist_only_exact_CALLERS_hash_rebind": true,
+  "manual_control_flow_findings": [
+    "Original owner/end checks, poll ordering, ERR/NVAL/HUP mapping, write0/Interrupted/WouldBlock mapping and full errors retained; helpers with None preserve old read/body callers.",
+    "Header diagnostic is new per-call data only, logged after original shutdown; no new retry, deadline, request, authority or successful result branch.",
+    "Client nested frame retains exclusive slot semantics and exact deadline/lifetime/read/decode/restore order; all normal returned errors become Failed, only interrupted execution/unwind remains Unfinished.",
+    "Inner stream drops before the borrowing diagnostic guard; success is marked only after restoration; cancellation is not asserted as a proven cause.",
+    "Session and worker diagnostics follow the original fence/abort/clear effects; requested is not joined. New output is nonpanic and does not replace original errors."
+  ],
+  "actual_remaining_requirements": [
+    "Exact project formatter readback and any required literal-only policy rebind.",
+    "Original locked/offline two-package compile and lint; fresh ELF/source identities.",
+    "Original54modules474cases, preserve453targets union affected and full1165 caller CLI,908protected.",
+    "Actual source freeze and original7/blob512000 gate before native.",
+    "Original65components + Root2 + mechanism + whole parent once with unchanged64/500ms/authority/end/originalbudgets and retries0."
+  ],
+  "limitations": [
+    "Diagnostic candidate is not a demonstrated transport repair.",
+    "NoUpdate14 remains FAIL; underlying socket/client cause is unknown.",
+    "Synchronous diagnostic output adds observation cost; original deadlines stay fixed.",
+    "A passing next run would not retroactively explain the previous failure."
+  ],
+  "static_review_passed": true,
+  "runtime_qualification": false
+}

@@ -1,0 +1,241 @@
+{
+  "recorded_at": "2026-11-20T20:02:53.921420+00:00",
+  "scope": "Root local immutable member SHA/full XML and exact source result verification, not a new execution or a claim to manually read all log lines",
+  "source": "41a0fd9bbbc30051f1e7492cd17eeeb5337aa7a0",
+  "inventory": "e5a6990d15845abcfc3934d0060cbca59b828f9037c33a017608f58679835991",
+  "manifests": [
+    {
+      "manifest": "e6_owner_work/historical_startup_native/rev4/actual-terminal-1/MANIFEST.json",
+      "sha256": "5d6c25fef9eb8002e9a7b4ed72623272937b629a5616d92c0d9bbdc1e8dae939",
+      "files": 14,
+      "bytes": 112004
+    },
+    {
+      "manifest": "e6_owner_work/historical_startup_native_resume/rev1/actual-components-1/MANIFEST.json",
+      "sha256": "7d1d50b4835ca4269cfee83855ae5de2adeafccad06bfb1bfc0692d814e28a8a",
+      "files": 11,
+      "bytes": 61110
+    },
+    {
+      "manifest": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/MANIFEST.json",
+      "sha256": "7378326c3f0764a1e37edfd055bd2299948dd21c37cdb3649273ad5e66b4b644",
+      "files": 16,
+      "bytes": 233248
+    },
+    {
+      "manifest": "e6_owner_work/historical_startup_native_resume/rev1/actual-terminal-1/MANIFEST.json",
+      "sha256": "30a6f1741e304b3feceedccabac151d47d87a3cc5c439d52afc23a496b0d6f70",
+      "files": 10,
+      "bytes": 206124
+    },
+    {
+      "manifest": "e6_owner_work/startup_noupdate14_failure/childlogs_capture1/actual/MANIFEST.json",
+      "sha256": "089c3345c451a2ea69b2846f79e6b733b1aed772ebbab2cabfe4bcfcb8d2591d",
+      "files": 8,
+      "bytes": 22365
+    },
+    {
+      "manifest": "e6_startup_initial_a_causal_boundary_review_1/MANIFEST.json",
+      "sha256": "2428b5e0d4723a3fd1c414c38ad3142ff9783ea10319cad725384564f6f0eb7e",
+      "files": 21,
+      "bytes": 267824
+    },
+    {
+      "manifest": "e6_noupdate14_header_write_review_1/FINAL_MANIFEST.json",
+      "sha256": "c685301660a4b3c54f3b662bf05da2042729eac07a4899c082427c2f13bcf002",
+      "files": 6,
+      "bytes": 34618
+    }
+  ],
+  "xmls": [
+    {
+      "path": "e6_owner_work/historical_startup_native/rev4/actual-terminal-1/native-validation-14/original-nextest-0.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+        "codex-hepta-agentd::production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native/rev4/actual-terminal-1/observation-framing-native-validation-3/original-nextest-0.xml",
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::deadline_tests::durable_handler_cannot_emit_success_after_the_shared_frame_deadline",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::deadline_tests::durable_handler_is_not_entered_for_an_invalid_original_frame",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::deadline_tests::durable_handler_receives_the_original_clamped_frame_deadline",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::handler_finishing_after_total_deadline_cannot_emit_success",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::ordinary_complete_denial_can_be_followed_by_a_bounded_response",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::original_absolute_end_can_only_shorten",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::original_absolute_end_crossed_by_handler_emits_no_reply",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::original_absolute_end_expiry_closes_before_any_frame",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::original_absolute_end_limits_the_idle_socket_wait",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::oversized_complete_response_emits_no_success_prefix",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::pinned_client_invalid_input_emits_nothing_and_closes",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::pinned_client_preserves_complete_request_response_boundaries",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::pinned_client_rejects_truncated_oversized_and_late_replies_without_retry",
+        "codex-hepta-contracts::authority_host_issuer_transport::peer::tests::purpose_bound_rejects_request_before_handler_and_is_permanently_closed",
+        "codex-hepta-contracts::authority_host_store::tests::issuer_tests::transport_tests::channel_tests::a_complete_exchange_does_not_reset_the_hard_lifetime",
+        "codex-hepta-contracts::authority_host_store::tests::issuer_tests::transport_tests::channel_tests::arbitrary_descriptor_is_not_an_owner_lifecycle_handle",
+        "codex-hepta-contracts::authority_host_store::tests::issuer_tests::transport_tests::channel_tests::idle_may_exceed_frame_timeout_but_partial_frame_cannot",
+        "codex-hepta-contracts::authority_host_store::tests::issuer_tests::transport_tests::channel_tests::owner_exit_ends_idle_session_even_while_descendant_keeps_the_stream_open"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-components-1/complete-noupdate-14__root-completed-refusal-original-bounds.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-components-1/complete-noupdate-14__root-completed-refusal-observer-namespace.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-components-1/complete-noupdate-14__root-ack-lane-mechanism.xml",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/retirement-native-validation-12-resume1__original-nextest-0.xml",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-neuron::cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+        "codex-hepta-neuron::cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+        "codex-hepta-neuron::cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+        "codex-hepta-neuron::cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/historical-delivery-native-validation-10-resume1__original-nextest-0.xml",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+        "codex-hepta-agentd::learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+        "codex-hepta-agentd::learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+        "codex-hepta-agentd::learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+        "codex-hepta-agentd::learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/feature-ack-native-validation-8-resume1__original-nextest-0.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+        "codex-hepta-agentd::runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/ready-slot-native-validation-6-resume1__original-nextest-0.xml",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::circuit_q24_successor::state::tests::ready_guard_rejects_expiry_and_poison_without_returning_an_owner",
+        "codex-hepta-agentd::circuit_q24_successor::state::tests::ready_guard_rejects_notification_without_an_installed_original_owner"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-component-logs-1/completed-data-native-validation-5-resume1__original-nextest-0.xml",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+        "codex-hepta-agentd::authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+        "codex-hepta-agentd::authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+        "codex-hepta-agentd::learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner"
+      ]
+    },
+    {
+      "path": "e6_owner_work/historical_startup_native_resume/rev1/actual-terminal-1/PARENT.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "identities": [
+        "codex-hepta-agentd::neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c"
+      ]
+    }
+  ],
+  "controls": {
+    "first_pipeline": 29,
+    "resume": 36,
+    "distinct_total": 65,
+    "root_original": 2,
+    "root_mechanism": 1
+  },
+  "whole_parent": {
+    "tests": 1,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "qualified": false,
+    "A_committed_and_observer_passed": true,
+    "B_C_entered": false,
+    "failed_stage": "A Root peer.response-header-write -> Unavailable",
+    "cause_known": false,
+    "new_post_A_prepare_reached": false
+  },
+  "mount_cleanup_successful": true,
+  "budgets_or_original_failures_modified": false
+}

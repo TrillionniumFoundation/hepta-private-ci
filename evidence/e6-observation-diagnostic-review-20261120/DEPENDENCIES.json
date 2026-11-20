@@ -1,0 +1,57 @@
+{
+  "compile_payload_not_duplicated": {
+    "metadata_sha256": "99eeebb674f740a56eb65236e122deaeca081740cbf5b3d0aae55b5e642e23b4",
+    "payload_sha256": "2619d1239c8c520412adbf88fcf479a2ec37f07d88af02f8b00691838f4489b9",
+    "reason": "The exact reviewed runner, launcher, four-file manifest and verified payload-byte peer are embedded. The large body containing duplicated CALLERS and the actual host invocation belongs to the separate execution archive."
+  },
+  "external_candidate_policy_members": [
+    {
+      "archive_member_not_embedded": "e6_initial_a_unavailable_diagnostic_candidate_2/source/CALLERS.toml",
+      "bytes": 1791454,
+      "git_blob": "2958b8e9b0d24655f2fc545bc383d86a63a45271",
+      "reason": "Large exact CALLERS policy is an explicit Git-blob dependency; no bare duplicate or allowlist enlargement.",
+      "sha256": "5533596462eed0fe608e7271b4aab8b76600909268d989dc1d6dc41d6aaf884a"
+    },
+    {
+      "archive_member_not_embedded": "e6_initial_a_unavailable_diagnostic_candidate_3/source/CALLERS.toml",
+      "bytes": 1791454,
+      "git_blob": "2958b8e9b0d24655f2fc545bc383d86a63a45271",
+      "reason": "Large exact CALLERS policy is an explicit Git-blob dependency; no bare duplicate or allowlist enlargement.",
+      "sha256": "5533596462eed0fe608e7271b4aab8b76600909268d989dc1d6dc41d6aaf884a"
+    }
+  ],
+  "extraction_is_not_execution": true,
+  "historical_absolute_paths": "Frozen originals keep original absolute workspace/host paths. Archive members preserve workspace-relative layout; MEMBERS maps each original local path. No frozen README/manifest is silently rewritten.",
+  "host_diagnostic_execution": {
+    "archive_owner": "hia_circuit; separate execution publication",
+    "known_actual_compile_result_reference": "b1d4e2126e75e62a20213a07a14e150f6fd83f4ffef98c19d8e288c4ab100649",
+    "note": "ROOT_SOURCE_GATE_REVIEW preserves its original compile reference and pre-execution sourcegate wording. This package does not turn those historical review fields into a current runtime result.",
+    "qualification_claim_by_this_package": false,
+    "raw_compile_gate_freeze_native_material_embedded": false
+  },
+  "original_execution_archive": {
+    "actual47_member_readback_embedded": "e6_initial_observation_runner_review_1/ORIGINAL47_RETRY_READBACK.json",
+    "archive_bytes": 4156344,
+    "archive_sha256": "9d6848aa4145952dbd7b889a76b1f41f67de659ab90c045006c8585c43670341",
+    "local_archive": "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/retained-host/original-evidence.tar.xz",
+    "ordinary_noupdate11_result_sha256": "69432bd4a092f2cf9b6060fef652fd615df8400f11fe952a98773c292975ef95",
+    "owner_result_sha256": "37905ee3e7bc42f8279cae789e89efb12de5d2f7df7c3f86c03e5817860e369e",
+    "raw_runtime_material_embedded_here": false,
+    "separate_repo_prefix": "evidence/e6-completion-namespace-20261120/"
+  },
+  "policy_git_object_endpoint": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/2958b8e9b0d24655f2fc545bc383d86a63a45271",
+  "policy_scope": "Candidate2 and candidate3 use the same exact full CALLERS object. Its local bytes were verified here, but remote existence/custody was not queried by this packaging operation. Root reports the existing Git blob is available. A final diagnostic source commit is not inferred.",
+  "prepared_git_shadow": {
+    "extra_four_objects_embedded": true,
+    "manifest_member": "e6_final_blob_gate_work/prepared-shadow/MANIFEST.json",
+    "manifest_sha256": "f455cd2fd4b120957fc496a76e5848eb079926412760a90ffd6f32c4caecd6ae",
+    "not_a_complete_repository_or_ready_to_execute_shadow": true,
+    "object_bytes": 17101246,
+    "original_objects": 263,
+    "original_policy_sources_embedded": true,
+    "raw_object_store_embedded": false
+  },
+  "schema": "hepta.e6.observation.static-review-dependencies.v1",
+  "source_anchor": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+  "source_anchor_tree": "d07a8a95a2f0921387446063a1a51661cbd62df7"
+}

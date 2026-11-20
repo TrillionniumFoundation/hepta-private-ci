@@ -1,0 +1,14 @@
+--- e6_final_blob_gate_work/final_pr_blob_gate.py
++++ e6_final_blob_gate_work/final_pr_blob_gate_v2.py
+@@ -212,6 +212,11 @@
+             else:
+                 raw_commit, reconstruction = exact.reconstruct_commit(api)
+             put("commit", raw_commit, stage["head"])
++            committed_header = git("cat-file", "commit", stage["head"]).split(b"\n\n", 1)[0].splitlines()
++            committed_trees = [line[5:].decode("ascii") for line in committed_header if line.startswith(b"tree ")]
++            committed_parents = [line[7:].decode("ascii") for line in committed_header if line.startswith(b"parent ")]
++            assert committed_trees == [tree], "actual commit tree must equal the reconstructed stage tree"
++            assert committed_parents == [previous_commit], "actual commit parents must equal the declared direct predecessor"
+             actual = git("diff", "--name-status", "--no-renames", previous_commit, stage["head"]).decode().splitlines()
+             assert all(line.startswith(("A\t", "M\t")) for line in actual)
+             assert sorted(line.split("\t", 1)[1] for line in actual) == sorted(files)

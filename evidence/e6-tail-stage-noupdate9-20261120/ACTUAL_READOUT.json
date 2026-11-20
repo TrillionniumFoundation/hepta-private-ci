@@ -1,0 +1,473 @@
+{
+  "schema": "hepta-e6-tail-stage-noupdate9-actual-results-v1",
+  "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+  "source_gates": {
+    "441_tests_50_modules": true,
+    "908_protected_rows": true,
+    "416_targeted_boundaries": true,
+    "1164_full_caller_cli": true,
+    "7_blob_policy_tests": true,
+    "blob_limit": 512000
+  },
+  "components": [
+    {
+      "path": "native-validation-9/RESULT.json",
+      "sha256": "fc285750b0268bfdd2b27016a98df70c7f7605d3f2231f25f97ee27f9b65f1a2",
+      "count": 11,
+      "test_cases": [
+        {
+          "name": "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+          "classname": "codex-hepta-agentd",
+          "time": "0.009",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+          "classname": "codex-hepta-agentd",
+          "time": "0.012",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+          "classname": "codex-hepta-agentd",
+          "time": "0.342",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+          "classname": "codex-hepta-agentd",
+          "time": "0.363",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+          "classname": "codex-hepta-agentd",
+          "time": "0.376",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+          "classname": "codex-hepta-agentd",
+          "time": "0.439",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+          "classname": "codex-hepta-agentd",
+          "time": "0.477",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+          "classname": "codex-hepta-agentd",
+          "time": "0.524",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+          "classname": "codex-hepta-agentd",
+          "time": "0.666",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+          "classname": "codex-hepta-agentd",
+          "time": "0.848",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+          "classname": "codex-hepta-agentd",
+          "time": "0.871",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "separate_new_cases": false
+    },
+    {
+      "path": "retirement-native-validation-7/RESULT.json",
+      "sha256": "b8f2150207ca73954a888f802753cf75be27d0407554f283257295888debcc9b",
+      "count": 16,
+      "test_cases": [
+        {
+          "name": "cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+          "classname": "codex-hepta-neuron",
+          "time": "0.017",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+          "classname": "codex-hepta-neuron",
+          "time": "0.021",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+          "classname": "codex-hepta-neuron",
+          "time": "0.024",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+          "classname": "codex-hepta-neuron",
+          "time": "0.025",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+          "classname": "codex-hepta-agentd",
+          "time": "0.440",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+          "classname": "codex-hepta-agentd",
+          "time": "0.458",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+          "classname": "codex-hepta-agentd",
+          "time": "0.596",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+          "classname": "codex-hepta-agentd",
+          "time": "0.612",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+          "classname": "codex-hepta-agentd",
+          "time": "0.626",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+          "classname": "codex-hepta-agentd",
+          "time": "0.900",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+          "classname": "codex-hepta-agentd",
+          "time": "0.997",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+          "classname": "codex-hepta-agentd",
+          "time": "1.070",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+          "classname": "codex-hepta-agentd",
+          "time": "1.453",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+          "classname": "codex-hepta-agentd",
+          "time": "4.578",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+          "classname": "codex-hepta-agentd",
+          "time": "9.554",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry",
+          "classname": "codex-hepta-agentd",
+          "time": "9.605",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "separate_new_cases": false
+    },
+    {
+      "path": "historical-delivery-native-validation-5/RESULT.json",
+      "sha256": "c371dc4211bf8b1c09da7ef3d1214e1deba0eaeec3eaf0b24cf10b9971d18524",
+      "count": 5,
+      "test_cases": [
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+          "classname": "codex-hepta-agentd",
+          "time": "0.008",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery",
+          "classname": "codex-hepta-agentd",
+          "time": "0.009",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "separate_new_cases": false
+    },
+    {
+      "path": "feature-ack-native-validation-3/RESULT.json",
+      "sha256": "4c6bbd27821dcd99d708558149869072ebaf0a2dbee965b20772daa619544daf",
+      "count": 2,
+      "test_cases": [
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+          "classname": "codex-hepta-agentd",
+          "time": "2.957",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch",
+          "classname": "codex-hepta-agentd",
+          "time": "5.031",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "separate_new_cases": false
+    },
+    {
+      "path": "ready-slot-native-validation-1/RESULT.json",
+      "sha256": "6e36645316d53d6b1485874c4beeebb7d65c1fba34510a6f51d04abeab3a1af3",
+      "count": 2,
+      "test_cases": [
+        {
+          "name": "circuit_q24_successor::state::tests::ready_guard_rejects_expiry_and_poison_without_returning_an_owner",
+          "classname": "codex-hepta-agentd",
+          "time": "0.014",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        {
+          "name": "circuit_q24_successor::state::tests::ready_guard_rejects_notification_without_an_installed_original_owner",
+          "classname": "codex-hepta-agentd",
+          "time": "0.016",
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      ],
+      "separate_new_cases": true
+    }
+  ],
+  "original_34_passed": true,
+  "new_ready_refusals_passed": 2,
+  "root_lane_mechanism_parent_passed": true,
+  "ordinary_parent_runs": 1,
+  "complete_NoUpdate": false,
+  "cold_D": 0,
+  "Adopt": 0,
+  "FinalUse_end_to_end": false,
+  "ordinary_failure": "Bare parent ENOENT after terminal checkpoint; obsolete test-observer refusal namespace independently confirmed from retained physical data. No syscall stack was captured.",
+  "request_trace_ids": {
+    "first": 1,
+    "last": 61,
+    "successful_reply_count_proven_by_trace_alone": false,
+    "delivery_62_63_and_accept_64_observed": false
+  },
+  "timing_seconds": {
+    "pipeline": 318.147278523,
+    "enclosing_parent_owner": 172.601863312,
+    "parent_command": 97.7792587187,
+    "rust_test": 96.669
+  },
+  "timings_are_nested_not_additive": true,
+  "physical_namespace_crosscheck": {
+    "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "initial": "deb14d53b909dba582deb90bb1bf8cec68d30dafd962215d05921a690a849786",
+    "scope_digest": "545f8a5ac1359a3ce6cca2128aa25656419b0983e9c6354a8c50163b6ecb633d",
+    "canonical_owner": "initial-data-refusal/completed-learning/493210e270f3a11e448b4e2c1216efa900be428ea9f9912f27375455149b194d",
+    "legacy_observer_owner": "initial-data-refusal/completed-learning/deb14d53b909dba582deb90bb1bf8cec68d30dafd962215d05921a690a849786/545f8a5ac1359a3ce6cca2128aa25656419b0983e9c6354a8c50163b6ecb633d",
+    "canonical_filename": "frontier-v1-de6c979fa4a455329efafc6951dae246aa18708611d57641c649744a2b553ab2.json",
+    "legacy_filename": "frontier-v1-a8e934e4b541f6f7e731a122668f199c67d99d2e61de4c2273d67e6e748d6339.json",
+    "canonical_path": "/run/hepta-daemon-learning-root-e6-tail-stage-bfea526e-noupdate-9/source/ordinary-q24-fLbWxM/authority/frontier-v1-de6c979fa4a455329efafc6951dae246aa18708611d57641c649744a2b553ab2.json",
+    "legacy_path": "/run/hepta-daemon-learning-root-e6-tail-stage-bfea526e-noupdate-9/source/ordinary-q24-fLbWxM/authority/frontier-v1-a8e934e4b541f6f7e731a122668f199c67d99d2e61de4c2273d67e6e748d6339.json",
+    "canonical_phase": "ready",
+    "canonical_attempt": 1,
+    "canonical_record_sha256": "57aed6a9ffe2b43d8362dae65853a58bd53e0e9520fb268efe0006bf28d90c6a",
+    "canonical_record_matches_actual_product_derivation": true,
+    "legacy_filename_absent_in_retained_frontier_inventory": true,
+    "native_or_model_or_host_execution_by_this_review": 0,
+    "computed_from_actual_retained_bytes_and_exact_source": true
+  },
+  "physical_inventory_limitations": "Initial recursive inventory hit its 4096-entry cap and failed; preserved. Later shallow known-path inventories are scoped, not a whole-host inventory. Backing authority selected depth had no omissions.",
+  "qualified_source_inventory_sha256": "c08eedaa7f475367cf44193413908e1536a7a8208d4468e3c1dbf843588b476f",
+  "qualification_scope": "Exact bfea compile/lint/source gates, original 34 plus separate 2 native and mechanism Root parent pass. The original complete NoUpdate9 failed. No cold-D/Adopt/FinalUse end-to-end qualification. Namespace fix and receipt-count static finding are not executed on this source.",
+  "key_bodies_copied": false,
+  "business_image_bodies_copied": false,
+  "archive_execution_contains_native_or_model_runs": false,
+  "prior_evidence": {
+    "source": "8996e4c5b6a8662c51f47d9e164b8c839635c796",
+    "commit": "7bb71087b21b0c98998acfaf4d499b6395d929a5",
+    "archive_sha256": "b86604090557849cadea5992cc2f58a3fd3c7d5320e27cd79bbf31387c3d01f3",
+    "path": "evidence/e6-ack-order-noupdate8-20261120/"
+  },
+  "first_archive_attempt": {
+    "successful": false,
+    "wall_seconds": 1.9466987191699445,
+    "reason": "Archive assumed a standalone freeze_tail_stage_source1.py on host; original was executed from literal python -c. Exact cloud payload supplied; original failed archive and 47 completed physical captures preserved.",
+    "physical_files_captured": 47,
+    "native_or_model_runs": 0
+  },
+  "archive": {
+    "successful": true,
+    "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+    "native_or_model_runs": 0,
+    "source_or_original_journal_mutated": false,
+    "original_keys_read": false,
+    "started_at_ns": "1795172390685905325",
+    "original_files": 400,
+    "original_bytes": 95978279,
+    "archive_bytes": 1631696,
+    "archive_sha256": "63ac249e451dc9f390933e1e0a5a05a31a59e504f1f9a982c7e640276a131a88",
+    "manifest_sha256": "1b532e43247829bf6ac473cbca3d1836a35671f48ffcf0ea540b7bbe7594e7fb",
+    "summary_sha256": "15b1abdebe2818b40d4c56fc8f3783df60868d534bcf38ec89c40559b1c3b3b9",
+    "physical_journal_count": 47,
+    "parts": [
+      {
+        "name": "original-evidence.tar.xz.part-00",
+        "bytes": 480000,
+        "sha256": "d369404b6a632424b11f0a694066823f439680019320b91370e3fb4a22a95a7e"
+      },
+      {
+        "name": "original-evidence.tar.xz.part-01",
+        "bytes": 480000,
+        "sha256": "6a50e536ff3549238fd3b1428ed346846a97692868f67e8cfb8bcbd495019cc9"
+      },
+      {
+        "name": "original-evidence.tar.xz.part-02",
+        "bytes": 480000,
+        "sha256": "2cb6d87f6975e29551dc4b80e3f64f8d81cc40ad1d197bc0bee14b1d34a40264"
+      },
+      {
+        "name": "original-evidence.tar.xz.part-03",
+        "bytes": 191696,
+        "sha256": "7821c35944c59db52b7018d42c100d916089cbbb295e65c6c2598582823f23b4"
+      }
+    ],
+    "original_files_unchanged": true,
+    "wall_seconds": 10.715278984047472,
+    "finished_at_ns": "1795172401401182349",
+    "owner_self_user_cpu_seconds": 10.427297000000001,
+    "owner_self_system_cpu_seconds": 0.113205,
+    "owner_child_user_cpu_seconds": 0.017039,
+    "owner_child_system_cpu_seconds": 0.072243
+  },
+  "independent_member_verification": {
+    "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "archive_sha256": "63ac249e451dc9f390933e1e0a5a05a31a59e504f1f9a982c7e640276a131a88",
+    "archive_bytes": 1631696,
+    "manifest_sha256": "1b532e43247829bf6ac473cbca3d1836a35671f48ffcf0ea540b7bbe7594e7fb",
+    "original_members": 400,
+    "original_bytes": 95978279,
+    "all_members_exact_sha256": true,
+    "original_cli_stdout_bytes": 558833,
+    "original_cli_stdout_sha256": "0fa3a58b4216389e16253c73f044ca2ad8629cee99c44fd4319181492df7b6b0",
+    "key_bodies_in_selected_physical_copies": false,
+    "new_native_or_model_runs": 0,
+    "archive_result_sha256": "79e48d709ec9ac96f4dbef81f841a2c96be56f5205e124bdd944a0d4146958a5",
+    "chunk_count": 25,
+    "version": "66306:57017422:1631696:1795172401330574767:1795172401330574767",
+    "complete_NoUpdate": false
+  },
+  "later_static_review": "Separately identified completed-checkpoint capacity and per-stage signature/journal shape incompatibilities; not executed through terminal Accept in NoUpdate9. No succeeding source is qualified by this evidence.",
+  "limitations": [
+    "No direct same historical client Root-after fault injection is claimed.",
+    "Source-first ACK order is not general same-request replay serialization.",
+    "Real installed Ready slot component is not a registered Root aggregate positive.",
+    "Root lane mechanism parent is not complete product Root Feature ACK.",
+    "C local receipt/publication/RunStart returns do not constitute original parent, cold D or FinalUse completion.",
+    "Trace requests 1..61 are not individually proven successful replies by the trace alone."
+  ]
+}

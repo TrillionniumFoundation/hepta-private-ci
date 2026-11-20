@@ -1,0 +1,71 @@
+{
+  "source": "41a0fd9bbbc30051f1e7492cd17eeeb5337aa7a0",
+  "tree": "ea62214ae90a4b1f5e47d9690694c234521746dd",
+  "source_inventory_sha256": "e5a6990d15845abcfc3934d0060cbca59b828f9037c33a017608f58679835991",
+  "source_files": 15813,
+  "owner_session": "dpty-0dc140beac2c37bffd2d3d3dc3c365f2c2ca733c3efcb1d2f36096a7cc4c2bc2",
+  "terminal_exit_code": 1,
+  "output_complete": true,
+  "capture_error": null,
+  "actual_component_results": {
+    "retained_previous_owner": {
+      "framing": 18,
+      "original_scope": 11,
+      "rerun": false
+    },
+    "this_owner": {
+      "retirement": 16,
+      "delivery": 5,
+      "feature_ack": 2,
+      "ready_refusal": 2,
+      "completed_data": 11
+    }
+  },
+  "root_components": 2,
+  "root_mechanism_parents": 1,
+  "whole_parent": {
+    "executed": 1,
+    "passed": false,
+    "failures": 1,
+    "errors": 0,
+    "skipped": 0,
+    "testcase_name": "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c",
+    "testcase_time_seconds": 9.016,
+    "command_exit_code": 100,
+    "command_wall_seconds": 9.828761463053524
+  },
+  "times": {
+    "resume_pipeline_owner_wall_seconds": 286.5237709810026,
+    "whole_wrapper_owner_wall_seconds": 242.77556541515514
+  },
+  "physical_guards": {
+    "source_unchanged": true,
+    "tracked_bytes_unchanged": true,
+    "compiler_inputs_unchanged": true,
+    "pinned_and_original_binary_bytes_unchanged": true,
+    "mount_cleanup_successful": true
+  },
+  "observed_first_failure": {
+    "child_pid": 486203,
+    "child_exit_code": 1,
+    "root_phase_chain": [
+      "peer.response-header-write ThreadId(14)",
+      "observation.exchange ThreadId(14)",
+      "lane.observation",
+      "cli.serve"
+    ],
+    "returned_error": "Custom { kind: Other, error: Unavailable }",
+    "additional_parent_line": "ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out",
+    "ready_exchange_elapsed_micros": 62705,
+    "ready_exchange_is_error_timestamp": false,
+    "os_error_cause": "not captured by current fixed labels; unknown",
+    "child_logs_not_yet_captured": true
+  },
+  "cold_or_adopt_runs": 0,
+  "automatic_retry": false,
+  "limitations": [
+    "Component and mechanism results do not establish whole parent, cold D, FinalUse or settlement completion.",
+    "No error timestamp or errno is inferred from the earlier successful ready-exchange line.",
+    "Wrapper source tracking SHA is its own schema; canonical full-inventory identity remains e5a6990d15845abcfc3934d0060cbca59b828f9037c33a017608f58679835991."
+  ]
+}

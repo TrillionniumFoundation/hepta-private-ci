@@ -1,0 +1,71 @@
+{
+  "status": "READ_ONLY_STATIC_REVIEW_COMPLETE_NO_EXECUTION",
+  "scanned_scope": {
+    "original_cold_files": 36,
+    "overlay_changed_paths": 32,
+    "unique_candidate_paths": 65,
+    "full_repository_claimed": false
+  },
+  "findings": [
+    {
+      "id": "cold-physical-seven",
+      "kind": "PRESERVE",
+      "finding": "RootFinalizedColdHistoryV1.cuts:[String;7] binds all seven physical journals, not signature cardinality; an empty LocalDecision journal still has a mandatory exact cut."
+    },
+    {
+      "id": "shared-observer-seven",
+      "kind": "OLD_BLOCK_COVERED_BY_UNEXECUTED_CANDIDATE",
+      "finding": "Original require_actual_acceptance required both journals and signatures to have length seven. Hia rev1 preserves journals7 and derives signature count from exact terminal non-Proposal receipts, constrained to 6 + LocalDecision presence. Both ordinary parent and cold observer consume this helper."
+    },
+    {
+      "id": "frozen-cold-policy",
+      "kind": "REQUIRED_FUTURE_COMPOSITION",
+      "finding": "Frozen cold CALLERS still requires len!=MAX and old per-journal/signature7 literals. These exact guards must be semantically migrated in a newly frozen combined candidate. Old manifests remain unchanged."
+    },
+    {
+      "id": "cold-d-route",
+      "kind": "NO_ADDITIONAL_COUNT_ASSUMPTION_FOUND_IN_SCOPE",
+      "finding": "Cold history retention, finalized-C reopening, new-D enrollment, FinalUse issue and physical D postchecks do not independently require eight receipts or seven receipt signatures. They reuse original accepted fact/current authority and exact physical cuts."
+    },
+    {
+      "id": "outer-peer",
+      "kind": "STATIC_CONSISTENT_NOT_EXECUTED",
+      "finding": "Outer two-product candidate retains seven physical inputs; local journal count0/1 follows replayed terminal; non-Proposal signatures6/7; training2 and B-plan exactness, unique payload/current signer, historical first time/first fresh verify, immutable first initialization and readback remain."
+    }
+  ],
+  "preserved_requirements": [
+    "immutable original first acceptance bytes/digest; no renewal by cold read",
+    "original 600/300/120/480 boundaries; no budget or profile edits",
+    "real old process retirement and fresh Root/daemon incarnation",
+    "new D task/run/input, same complete selected C model",
+    "single actual D ObjectiveStart and typed ACK; no lost-ACK retry",
+    "original final-use issuer, durable attempt, live authority and physical pre/postchecks",
+    "sealed Adopt primitive remains unconnected; no new ArtifactUse authority claim"
+  ],
+  "limitations": [
+    "No Rust parser/typecheck, formatting, source gate, project test, parent or model execution in this review.",
+    "The three outer DATA unit tests are source-only proposals and do not prove actual Root route authentication or local journal negative controls.",
+    "Absence of an additional count condition in the specified files is not a complete runtime qualification; shared ordinary repairs must be integrated and validated before any cold parent."
+  ],
+  "all_executions": {
+    "remote_reads": 0,
+    "host_processes": 0,
+    "source_mutations": 0,
+    "rust_compile": 0,
+    "rust_tests": 0,
+    "native_parents": 0,
+    "model_calls": 0
+  },
+  "input_pins": {
+    "path": "e6_cold_completed_shape_review_1/INPUT_PINS.json",
+    "bytes": 33424,
+    "sha256": "eace494baf267357c98ebd382b1dc68596383621ab7d7387d0310725d9587010",
+    "git_blob": "62b204f6f620428ea98ccc15b4ec6acecc663e6b"
+  },
+  "source_anchors": {
+    "path": "e6_cold_completed_shape_review_1/SOURCE_ANCHORS.json",
+    "bytes": 26084,
+    "sha256": "67d8d6748c412893bb0118dea5945834a9d06d9aed80460b968f88b5b7a6b3a3",
+    "git_blob": "df6bcae989eeb171f1879c1ad954ee9cdb610651"
+  }
+}

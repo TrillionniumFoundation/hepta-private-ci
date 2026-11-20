@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="3023cf0c-291f-42fb-928c-c29ddfad9d50" timestamp="2026-11-20T20:49:19.392+08:00" time="8.848">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c" classname="codex-hepta-agentd" timestamp="2026-11-20T20:49:19.399+08:00" time="8.834">
+            <failure message="Error: original child OriginalProcessLifetime { pid: 4163525, start_ticks: 220472109, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } did not complete successfully: exit status: 1; stdout= stderr=original Initial phase=worker.accept-before; elapsed_micros=1; remaining_micros=299999754" type="test failure with exit code 101">Error: original child OriginalProcessLifetime { pid: 4163525, start_ticks: 220472109, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } did not complete successfully: exit status: 1; stdout= stderr=original Initial phase=worker.accept-before; elapsed_micros=1; remaining_micros=299999754
+original Initial phase=worker.accept-returned; elapsed_micros=66037; remaining_micros=299933718
+original Initial phase=ready.channel-before; elapsed_micros=0; remaining_micros=299933704
+original Initial phase=ready.channel-returned; elapsed_micros=32; remaining_micros=299933672
+original Initial phase=ready.frame-received; elapsed_micros=47; remaining_micros=499992
+original Initial phase=ready.context-returned; elapsed_micros=2073; remaining_micros=497966
+original Initial phase=enrollment.context-before; elapsed_micros=0; remaining_micros=493697
+original Initial phase=enrollment.profile-before; elapsed_micros=974; remaining_micros=492722
+original Initial phase=enrollment.profile-returned; elapsed_micros=12352; remaining_micros=481345
+original Initial phase=enrollment.profile-context-returned; elapsed_micros=13233; remaining_micros=480464
+original Initial phase=enrollment.run-start-before; elapsed_micros=13237; remaining_micros=480460
+original Initial phase=enrollment.run-start-returned; elapsed_micros=23429; remaining_micros=470268
+original Initial phase=enrollment.cell-before; elapsed_micros=23431; remaining_micros=470266
+original Initial phase=enrollment.cell-returned; elapsed_micros=32034; remaining_micros=461663
+original Initial phase=enrollment.ledger-before; elapsed_micros=32036; remaining_micros=461661
+original Initial phase=enrollment.ledger-returned; elapsed_micros=46139; remaining_micros=447558
+original Initial phase=enrollment.profile-recheck-before; elapsed_micros=46141; remaining_micros=447556
+original Initial phase=enrollment.profile-recheck-returned; elapsed_micros=46529; remaining_micros=447168
+original Initial phase=enrollment.final-context-before; elapsed_micros=46532; remaining_micros=447165
+original Initial phase=enrollment.final-context-returned; elapsed_micros=47727; remaining_micros=445970
+original Initial phase=ready.enrollment-returned; elapsed_micros=54075; remaining_micros=445964
+original Initial phase=ready.registration-context-returned; elapsed_micros=55327; remaining_micros=444712
+original Initial phase=ready.response-encoded; elapsed_micros=55714; remaining_micros=444325
+original Initial phase=ready.exchange-returned; elapsed_micros=55728; remaining_micros=299877976
+root_stage=lane.observation
+root_stage=cli.serve
+Error: Custom { kind: Other, error: Unavailable }</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1367 filtered out; finished in 8.83s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-M1pzcK
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-G6bGkA
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-0TL5k6
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-root-e6-completed-acceptance-9dfded9c-noupdate-11/bind/ordinary-q24-OzjQSw
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-IOnKPi
+Error: original child OriginalProcessLifetime { pid: 4163525, start_ticks: 220472109, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } did not complete successfully: exit status: 1; stdout= stderr=original Initial phase=worker.accept-before; elapsed_micros=1; remaining_micros=299999754
+original Initial phase=worker.accept-returned; elapsed_micros=66037; remaining_micros=299933718
+original Initial phase=ready.channel-before; elapsed_micros=0; remaining_micros=299933704
+original Initial phase=ready.channel-returned; elapsed_micros=32; remaining_micros=299933672
+original Initial phase=ready.frame-received; elapsed_micros=47; remaining_micros=499992
+original Initial phase=ready.context-returned; elapsed_micros=2073; remaining_micros=497966
+original Initial phase=enrollment.context-before; elapsed_micros=0; remaining_micros=493697
+original Initial phase=enrollment.profile-before; elapsed_micros=974; remaining_micros=492722
+original Initial phase=enrollment.profile-returned; elapsed_micros=12352; remaining_micros=481345
+original Initial phase=enrollment.profile-context-returned; elapsed_micros=13233; remaining_micros=480464
+original Initial phase=enrollment.run-start-before; elapsed_micros=13237; remaining_micros=480460
+original Initial phase=enrollment.run-start-returned; elapsed_micros=23429; remaining_micros=470268
+original Initial phase=enrollment.cell-before; elapsed_micros=23431; remaining_micros=470266
+original Initial phase=enrollment.cell-returned; elapsed_micros=32034; remaining_micros=461663
+original Initial phase=enrollment.ledger-before; elapsed_micros=32036; remaining_micros=461661
+original Initial phase=enrollment.ledger-returned; elapsed_micros=46139; remaining_micros=447558
+original Initial phase=enrollment.profile-recheck-before; elapsed_micros=46141; remaining_micros=447556
+original Initial phase=enrollment.profile-recheck-returned; elapsed_micros=46529; remaining_micros=447168
+original Initial phase=enrollment.final-context-before; elapsed_micros=46532; remaining_micros=447165
+original Initial phase=enrollment.final-context-returned; elapsed_micros=47727; remaining_micros=445970
+original Initial phase=ready.enrollment-returned; elapsed_micros=54075; remaining_micros=445964
+original Initial phase=ready.registration-context-returned; elapsed_micros=55327; remaining_micros=444712
+original Initial phase=ready.response-encoded; elapsed_micros=55714; remaining_micros=444325
+original Initial phase=ready.exchange-returned; elapsed_micros=55728; remaining_micros=299877976
+root_stage=lane.observation
+root_stage=cli.serve
+Error: Custom { kind: Other, error: Unavailable }
+
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

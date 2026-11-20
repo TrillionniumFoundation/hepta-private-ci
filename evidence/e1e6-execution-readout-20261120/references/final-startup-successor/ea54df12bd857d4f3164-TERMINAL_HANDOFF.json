@@ -1,0 +1,210 @@
+{
+  "annex_manifests": [
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/actual-component-inputs-1/MANIFEST.json",
+      "scope": "Actual seven protocols/deployments/driver copies: 21 originals plus readback",
+      "sha256": "3e45b19d1220586dd2829d0c5b95d92261b8ce8b08a4bb13e88795bb132f1a4d"
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_noupdate15_failure/childlogs_capture1/actual/MANIFEST.json",
+      "scope": "Exact six XML child directories, twelve original stdout/stderr logs totaling 36545 bytes, complete capture controls/results/PTY; no new native execution",
+      "sha256": "937d05cf1854f0dbf8b72660e08dee0bb03e7b0d56924f61843b6bba798586bc"
+    }
+  ],
+  "cleanup": {
+    "compiler_inputs_unchanged": true,
+    "mount_cleanup_successful": true,
+    "native_build_mode_restored": true,
+    "pinned_and_original_binary_bytes_unchanged": true,
+    "source_unchanged": true,
+    "tracked_bytes_unchanged": true
+  },
+  "costs": {
+    "child_log_read_only_capture_seconds": 0.04051953088492155,
+    "native_pipeline_owner_seconds": 375.55694728996605,
+    "parent_command_seconds": 99.79600353678688,
+    "windows_overlap_and_are_not_additive": true,
+    "wrapper_owner_seconds": 234.2414841419086
+  },
+  "current_host_state": "All host reads and execution stopped; no active owner or in-flight RPC remains.",
+  "native_build_mode_receipt": {
+    "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/wrapper-full-originals-1/originals/native-build-mode-restoration.json",
+    "scope": "Original native 0555 sealing and cleanup retained, then one owned actual agentd ELF restored to historical build 0700",
+    "sha256": "c31636ac571e57b8b4ac95039c47ae249c229381fb1f0d0aba1ad2550dfc56c6"
+  },
+  "native_build_mode_restoration": {
+    "after": {
+      "bytes": 1207763128,
+      "ctime_ns": "1795211720417807148",
+      "device": 66306,
+      "gid": 1000,
+      "inode": 53384615,
+      "mode": "0o700",
+      "mtime_ns": "1795211458113097056",
+      "nlink": 1,
+      "uid": 1000
+    },
+    "elapsed_seconds": 1.1083744773641229,
+    "kernel_execution_write_protection_unchanged": true,
+    "native_sealed_mode": "0o555",
+    "original_native_receipt_preserved": true,
+    "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/startup-isolated-target-1/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "rename": 0,
+    "restored_build_mode": "0o700",
+    "sha256": "a4139b254c1822fcb126833d417dcdbdc6c895a522c19114477d8a9df74e011f",
+    "signals_sent": 0,
+    "single_owned_elf_only": true,
+    "source_changes": 0,
+    "unlink": 0
+  },
+  "native_owner": {
+    "capture_error": null,
+    "exit_code": 1,
+    "output_complete": true,
+    "pty_bytes": 16185,
+    "pty_paths": [
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0001.json",
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0002.json",
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0003.json",
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0004.json",
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0005.json",
+      "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/PTY_0006.json"
+    ],
+    "session_id": "dpty-01704e8c400fcdc7615198cb67774e2550415baa7ddd4458b34ab68850c7eada",
+    "start_path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/OWNER_START.json"
+  },
+  "new_pyc_original": {
+    "bytes": 55592,
+    "logical_path": "complete-noupdate-15/__pycache__/ORIGINAL_HARNESS.cpython-314.pyc",
+    "only_preserved_not_imported_or_executed": true,
+    "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/wrapper-full-originals-1/originals/__pycache__/ORIGINAL_HARNESS.cpython-314.pyc",
+    "readback_path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/wrapper-full-originals-1/PYC_READBACK.json",
+    "sha256": "2a4fa4e078e50d6a4c482f3dba9122eebf6be7de70be7164e149567290554c5c"
+  },
+  "next_action_owner": "Root final evidence cut, archive verification and Git publication; no further host action currently authorized or underway.",
+  "outcomes": {
+    "new_adopt_runs": 0,
+    "new_cold_runs": 0,
+    "original_components": {
+      "cases": 65,
+      "errors": 0,
+      "failures": 0,
+      "groups": 7,
+      "retries": 0,
+      "skips": 0,
+      "unique_case_names": 65
+    },
+    "original_root_mechanism": {
+      "cases": 1,
+      "passed": 1
+    },
+    "root_completion_components": {
+      "cases": 2,
+      "passed": 2
+    },
+    "settlement_qualification_granted": false,
+    "whole_ordinary_no_update": {
+      "case": "neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c",
+      "cases": 1,
+      "command_exit_code": 100,
+      "complete_native_NoUpdate": false,
+      "elapsed_seconds": 99.79600353678688,
+      "errors": 0,
+      "failures": 1,
+      "junit_case_time": "99.065",
+      "skips": 0,
+      "successful": false
+    }
+  },
+  "parent_failure": {
+    "C_objective_log_not_equated_to_final_C_or_first_ACK_acceptance": true,
+    "exact_failed_guard_unresolved": true,
+    "message": "Error: original complete historical task read unavailable",
+    "observed_root_stage_chain": [
+      "historical.route_accept_completed",
+      "historical.observe_complete_task",
+      "peer.handler",
+      "historical.worker",
+      "cli.serve"
+    ],
+    "prior_header_write_cause_resolved": false,
+    "purpose": "runtime.learning.completed-acceptance.v1",
+    "request_observed": 64
+  },
+  "raw_receipt_groups": {
+    "new_pyc": [
+      "WRAPPER_PYC_INFO_RPC.json",
+      "WRAPPER_PYC_BINARY_RPC.json"
+    ],
+    "preserved_cloud_summary_failure": "LOCAL_COMPONENT_READBACK_FAILURE_1.json",
+    "preserved_direct_read_failure": "ACTUAL_CHILD_LOG_DIRECT_RPC.json",
+    "seven_component_core": [
+      "COMPONENTS_RPC_0001.json",
+      "COMPONENTS_RPC_0002.json",
+      "COMPONENTS_RPC_0003.json",
+      "COMPONENTS_RPC_0004.json"
+    ],
+    "seven_component_inputs": [
+      "COMPONENT_INPUTS_RPC_0001.json",
+      "COMPONENT_INPUTS_RPC_0002.json",
+      "COMPONENT_INPUTS_RPC_0003.json",
+      "COMPONENT_INPUTS_RPC_0004.json"
+    ],
+    "terminal_core": [
+      "ACTUAL_TERMINAL_CORE_RPC.json",
+      "ACTUAL_PARENT_EVIDENCE_RPC.json",
+      "ACTUAL_PARENT_LOGS_RPC.json"
+    ],
+    "wrapper_originals": "wrapper-full-originals-1/raw-rpc: 5 complete small batches, 2 actual large file infos, 38 fixed-version binary chunks"
+  },
+  "remote_ref_actions_by_this_owner": 0,
+  "root_three_actual_xml_cases": [
+    {
+      "case": "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity",
+      "execution_sha256": "e915e17de315fe8e7a830141e30d2c255603e8f4d17d868f4f077f579264809f",
+      "explicit_retries": 0,
+      "junit_sha256": "ec7bbd54d8e58a6f8e7604deeb87f84baa1b0f749aa53a9d5fc3232e9695d64e",
+      "passed": true,
+      "stage": "root-completed-refusal-original-bounds"
+    },
+    {
+      "case": "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner",
+      "execution_sha256": "9fda2148db758e985152959ead841d92096326e3cf8dcf63c9f29838184cd956",
+      "explicit_retries": 0,
+      "junit_sha256": "48dd7b5470b0d1f8c84ddb5818721a2959a331736ad9833cd627ec29acdd15d7",
+      "passed": true,
+      "stage": "root-completed-refusal-observer-namespace"
+    },
+    {
+      "case": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+      "execution_sha256": "f5fc055683356b7c4311c64a8a9f5092bf70c62c2e5ecdc561466173d87f21ac",
+      "explicit_retries": 0,
+      "junit_sha256": "9eb416ae19a014a70fd4b967e2933c69a30ca252f2827b39a0c09ad9793192c0",
+      "passed": true,
+      "stage": "root-ack-lane-mechanism"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Existing actual NoUpdate15 terminal evidence handoff only; no new verification or execution in this assembly",
+  "source": "8ce582b0a8619ff9250bc3a0098456112110ef82",
+  "source_files": 15813,
+  "source_inventory_sha256": "019cee0f93b88145076b4a837c2bbdfdbd77181eeafa91dd35e622b1ace41d72",
+  "source_tree": "698ebaaf9cd8706a1850e2531aeb0bc2c37a1f25",
+  "three_primary_manifests": [
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/actual-terminal-1/MANIFEST.json",
+      "scope": "Native pipeline/wrapper/parent execution/JUnit/full stdout/native log/terminal PTY and mode receipts; 13 members",
+      "sha256": "032ff7b42044de912da22e6db117ceaee0b8a9b5861f21195f26682802288dda"
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/actual-components-1/MANIFEST.json",
+      "scope": "Seven original component groups: 28 complete RESULT/JUnit/stdout/stderr originals plus readback; 65 exact unique passing cases",
+      "sha256": "d7189405386449cbb27bb7b0a80049fc485755bf718e5bfb8177db5ca10c6b6f"
+    },
+    {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_native/rev2/wrapper-full-originals-1/MANIFEST.json",
+      "scope": "Every actual terminal wrapper log_inventory member: 89 files, 11648501 bytes, all complete bytes and SHA verified",
+      "sha256": "8d4f66d06283047cdba2a85c11fa3a97a694140d49a6f09b27e575be0369c9ca"
+    }
+  ]
+}

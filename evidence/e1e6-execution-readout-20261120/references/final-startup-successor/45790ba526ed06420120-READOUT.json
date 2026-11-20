@@ -1,0 +1,60 @@
+{
+  "actual_schema_outcomes_preserved": {
+    "1f_R2_compile": true,
+    "1f_source_gate": false,
+    "41a_NoUpdate14_resume_pipeline": false,
+    "41a_source_freeze": true
+  },
+  "all_four_source_relations": "historical_only",
+  "bounded_controls_per_version": 10,
+  "bytecode": {
+    "exact_original_identity_accepted": true,
+    "import_unmarshal_execute": 0,
+    "readers": [
+      "helper.read",
+      "successor.read"
+    ],
+    "wrong_expected_bytes_rejected": true
+  },
+  "final_assemble_freeze_pack_restore_render": 0,
+  "future_schemas_unproven": true,
+  "host_network_Git_model_native_actions": 0,
+  "new_gate_reported_commit_negative": {
+    "synthetic_copy_not_real_result": true,
+    "v2_rejected": false,
+    "v3_rejected": true
+  },
+  "old_tools_and_originals_unchanged": true,
+  "required_negative_controls": [
+    "intermediate_status",
+    "different_owner_terminal",
+    "borrowed_source_RESULT"
+  ],
+  "same_controller_and_actual_fixture_inputs": true,
+  "scope": "TOOLS_ONLY; archive-validator compatibility, no E1–E6 or Chain execution added.",
+  "source5_qualification_transferred": false,
+  "v2_actual": {
+    "bytes": 1605,
+    "git_blob": "b9ba7f023a87bf8706dd5c0cf7dfd7eb53f3b7ea",
+    "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-compatibility-controls-1/v2-run-1/RESULT.json",
+    "sha256": "7765b78ef02946d9188426804ed84ec769f35d44ad21f04d6d1308800cd9765c"
+  },
+  "v2_invocation": {
+    "bytes": 1014,
+    "git_blob": "da3450c8efe3e8ba7166d47fef5f9a41f7078146",
+    "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-compatibility-controls-1/V2_EXECUTION.json",
+    "sha256": "9092e2a5fa0fec69363e624280c469953ce447c294114713333177b41efd9a7d"
+  },
+  "v3_actual": {
+    "bytes": 1603,
+    "git_blob": "1a68e361d7f7c22f53598f323cdd63c6035a9127",
+    "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-compatibility-controls-1/v3-run-1/RESULT.json",
+    "sha256": "d80256881db992a3a03178bc9aad76cc149cabcde3a73996679bca702f4dfc54"
+  },
+  "v3_invocation": {
+    "bytes": 1013,
+    "git_blob": "2f75c668e45328b61eab0a005d264ee082528752",
+    "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-compatibility-controls-1/V3_EXECUTION.json",
+    "sha256": "f72f8db4276716b07e96cd09691563b3d87a3d1de079ce343a4ea464ca71af2f"
+  }
+}

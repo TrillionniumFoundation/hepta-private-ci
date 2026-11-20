@@ -1,0 +1,79 @@
+{
+  "scope": "Root exact formatted-file readback plus manual review of four displayed line-wrap diffs; not a general Rust semantic equivalence proof",
+  "manifest_sha256": "0e508df4ae86b185c68277c57cfd87e475ec3b03ee7667d774bdd9a1fbf0b40e",
+  "compile_justfix_result_sha256": "f93e3b2b82e4941c8db1e239fd83ac558a71c61823c57d896a5cc521e4a7de8c",
+  "source_inventory_sha256": "c08eedaa7f475367cf44193413908e1536a7a8208d4468e3c1dbf843588b476f",
+  "all_11_files_match_formatted_manifest": true,
+  "changed_files_count": 4,
+  "actual_displayed_changes_only_line_wrapping": true,
+  "other_7_files_exact_bytes_unchanged": true,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+      "bytes": 5879,
+      "sha256": "f1a18c04bef48e446455b095c25d4b5cdfee7bbf2bbff226a7012a236a7cd8e5",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_ready.rs",
+      "bytes": 1981,
+      "sha256": "83018d55dfa1cf15dee99be8512545425e61421b957e8549b09d6e924f4412e2",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state.rs",
+      "bytes": 10766,
+      "sha256": "b669be107c48dcd57ce9d11f0a72a18342ebcbe25b45fb9079ac05aaf6564bce",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs",
+      "bytes": 7656,
+      "sha256": "f85efb2493b4a413987feee235aa680730d73f2d6bf55d17649cc3d745fbac59",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs",
+      "bytes": 5198,
+      "sha256": "c1ac65e3204b094a35953877d8b804c41cfba08558637ce2ee11251da3b785fb",
+      "format_only_whitespace_difference": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_source_tests.rs",
+      "bytes": 849,
+      "sha256": "7a05cdd0c97b785ef94c84144e78668eb1fb216e2beac86f0e8892841e184152",
+      "format_only_whitespace_difference": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_successor_state_tests.rs",
+      "bytes": 9549,
+      "sha256": "c1ba490eaca65d3a67f1dcea86d264f8ac2266bfcf88c97037e78298fc45cbab",
+      "format_only_whitespace_difference": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_control_completion_tests.rs",
+      "bytes": 6101,
+      "sha256": "cbb96d37a6b2cd04d629885d6eb97bcbef311301b0a9a84a6b6a12bb016afdc0",
+      "format_only_whitespace_difference": true
+    },
+    {
+      "path": "CALLERS.toml",
+      "bytes": 1789199,
+      "sha256": "0477b3ffa6b030e60efe00fd1ccd7357682c56fa15ba120e00772949981aa8e9",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "bytes": 15170,
+      "sha256": "779af2fe5b9cdf3ece9f5911ee0c5c9950c2d54b3b9b629f406c0ad1a6d363c5",
+      "format_only_whitespace_difference": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_historical_successor_stage_source_closure.py",
+      "bytes": 9930,
+      "sha256": "1a5d6c09125379aee0ef080b6e3bc1885c256dc350a1120fe365d5379a2f143c",
+      "format_only_whitespace_difference": false
+    }
+  ],
+  "native_qualification_granted": false
+}

@@ -1,0 +1,156 @@
+{
+  "scope": "Actual diagnostic source gate failure, preserved before any repair; no native or freeze.",
+  "result_sha256": "3e1af2929b6ec08baf9ea328cc19c2eedb17bdcaa5535bfd5ebdc024328c3132",
+  "owner": "dpty-9e38ca45add55c31a842c1bc5619f30a0d9d592def0d31971560530afdadbd7c",
+  "owner_terminal": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 2216,
+    "bytes_stored": 2216,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1795208821373,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 526438,
+    "pid": 526439,
+    "state": "exited"
+  },
+  "source_inventory_sha256": "25d8b9ccb4fa3196152c630f3d603a7c8894c086af0c0d62570efdd6f43d66cc",
+  "source_unchanged": true,
+  "modules": 54,
+  "tests_run": 474,
+  "failures": 0,
+  "errors": 12,
+  "skipped": 0,
+  "protected_rows": 908,
+  "protected_failures": [
+    {
+      "index": 554,
+      "path": "codex-rs/hepta-contracts/src/authority_host_channel.rs",
+      "error": "codex-rs/hepta-contracts/src/authority_host_channel.rs:fn wait(: required_order must contain marker sequences"
+    },
+    {
+      "index": 630,
+      "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "error": "codex-rs/hepta-contracts/src/authority_host_peer.rs:fn exchange_with_original_deadline(: required code order missing: ['handle: impl FnOnce(&[u8], Instant)', 'self.stream.take().ok_or(HostIssuerTransportError::Closed)?', 'self.exchange_inner(\\n            &mut stream,\\n            handle,\\n            &mut failure_stage,\\n            &mut header_diagnostic,\\n        )', 'Ok(true)', 'self.stream = Some(stream)', 'Err(error)', 'stream.shutdown(Shutdown::Both)', 'root_stage={failure_stage} thread={:?}', 'if failure_stage == \"peer.response-header-write\"', 'root_stage=peer.response-header-detail', 'Err(error)']"
+    }
+  ],
+  "targeted_boundaries": 460,
+  "targeted_passed": true,
+  "retained_prior_targets": 453,
+  "new_targeted_ids": [
+    "final_use_revocation_update",
+    "original_pinned_stream_explicit_uid",
+    "root_completed_accept_capsule",
+    "root_independent_b_record_inspect",
+    "root_initial_data_refusal_inspect",
+    "root_observation_original_end",
+    "root_original_publication_stream_until"
+  ],
+  "full_cli_started": false,
+  "full_cli_placeholder_exit": 125,
+  "source_tests_seconds": 64.36074700113386,
+  "protected_sweep_seconds": 1.2351787621155381,
+  "targeted_seconds": 168.84637432685122,
+  "enclosing_owner_seconds": 235.6557655208744,
+  "cost_relationship": "Stage times are nested within owner; skipped full CLI has not consumed its 1800-second work budget.",
+  "full_fixed_version_readbacks": [
+    {
+      "remote_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-source-probe-1/source-qa.stdout",
+      "version": "66306:56378263:135920:1795208886551089400:1795208886551089400",
+      "bytes": 135920,
+      "sha256": "c27b9dcc26a5935f29c8a5687a50d689317ce19b09895b6a020ce9529fafefff",
+      "chunks": [
+        {
+          "rpc": "ACTUAL_SOURCE_QA_STDOUT_CHUNK_0001.json",
+          "offset": 0,
+          "next_offset": 65536,
+          "sha256": "18cb278c513699f1342d6a363fc1ebfa9b15c04526807ca6a0d3063799c34c32",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_SOURCE_QA_STDOUT_CHUNK_0002.json",
+          "offset": 65536,
+          "next_offset": 131072,
+          "sha256": "1666d41b24d0d2f8680301a78d0a2e5b898f7570ad6bc9733e6930b69dc74056",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_SOURCE_QA_STDOUT_CHUNK_0003.json",
+          "offset": 131072,
+          "next_offset": 135920,
+          "sha256": "82ede6964a2b942ab6131ac0777223054eb5b5510f40a404eb2b4833299c255b",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "remote_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-source-probe-1/TARGETED_CALLER_PROOF.json",
+      "version": "66306:56378266:180591:1795209056714591891:1795209056714591891",
+      "bytes": 180591,
+      "sha256": "10baa3abd8c4e7052418bb2b0331a09908022c900c50c65f47a889d4e5fd0bc3",
+      "chunks": [
+        {
+          "rpc": "ACTUAL_TARGETED_CALLER_PROOF_JSON_CHUNK_0001.json",
+          "offset": 0,
+          "next_offset": 65536,
+          "sha256": "9ea259e817b207c12da36649b987200e2790d3e0e501510ba733bd2889a7269f",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_TARGETED_CALLER_PROOF_JSON_CHUNK_0002.json",
+          "offset": 65536,
+          "next_offset": 131072,
+          "sha256": "8e9656a43e1de721488aa6f04ee7449e448a259ade43288398c9be1b89f56d43",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_TARGETED_CALLER_PROOF_JSON_CHUNK_0003.json",
+          "offset": 131072,
+          "next_offset": 180591,
+          "sha256": "8f55edc2b6b669ccf463026dfaeb36b935c17f342d0a3707fd68236e29de6a5b",
+          "eof": true
+        }
+      ]
+    },
+    {
+      "remote_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/observation-io-source-probe-1/SOURCE_CASE_IDENTITY.json",
+      "version": "66306:56378262:140755:1795208822190329999:1795208822190329999",
+      "bytes": 140755,
+      "sha256": "1f8efe276cd30aae86567cc8d9b22d072d6d28a163f08d98670b5537beff8565",
+      "chunks": [
+        {
+          "rpc": "ACTUAL_SOURCE_CASE_IDENTITY_JSON_CHUNK_0001.json",
+          "offset": 0,
+          "next_offset": 65536,
+          "sha256": "382c191ffa94ab723137a7006b2a2ec7bb69331dc7c47840282509742fa6ec40",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_SOURCE_CASE_IDENTITY_JSON_CHUNK_0002.json",
+          "offset": 65536,
+          "next_offset": 131072,
+          "sha256": "49077412ead3b81d198d2edbc717db5fb9d3f05bf66813b488d39faaea1d5a9f",
+          "eof": false
+        },
+        {
+          "rpc": "ACTUAL_SOURCE_CASE_IDENTITY_JSON_CHUNK_0003.json",
+          "offset": 131072,
+          "next_offset": 140755,
+          "sha256": "e9ddebaa69234cdb7cffb762346f32aa805ba8865b6779a9d93b9d7a7d05cdfd",
+          "eof": true
+        }
+      ]
+    }
+  ],
+  "inventory_reuse": {
+    "original_complete_local_path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_compile/rev2/actual/SOURCE_FILES_AFTER.json",
+    "actual_file_info": "ACTUAL_SOURCE_FILES_AFTER_JSON_INFO.json",
+    "bytes": 3642020,
+    "sha256": "75da4a34bac58df51b9ef61bc333497612c59b58d2b2962110cc087c0e2661ba",
+    "version": "66306:56378269:3642020:1795209057063814331:1795209057063814331",
+    "scope": "Full identical prior object reused after actual full SHA/size identity; not newly downloaded body."
+  },
+  "native_cases": 0,
+  "original_parent_runs": 0
+}

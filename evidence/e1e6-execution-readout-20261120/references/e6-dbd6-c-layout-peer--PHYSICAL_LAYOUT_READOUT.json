@@ -1,0 +1,123 @@
+{
+  "schema": "e6-retained-generation-layout-review-v1",
+  "source_commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "kind": "INDEPENDENT_STATIC_DECODE_OF_RETAINED_BYTES",
+  "decoder": {
+    "path": "/workspace/scratch/e9e051ab0825/e6_noupdate12_c_drain_review/decode_retained_generation.py",
+    "sha256": "058081a216c9946b1dbfc4a078d9162ba85503c95242557012ba0fa94fcdef5a"
+  },
+  "inputs": {
+    "post-a-data__c-generation.journal": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/c-physical/post-a-data__c-generation.journal",
+      "bytes": 40,
+      "sha256": "d055b22f70e1d6d144deb451768dd3b80d5f7a81e6ab8fa02540689390e0be7a"
+    },
+    "post-a-witnesses__c-generation.witness": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/c-physical/post-a-witnesses__c-generation.witness",
+      "bytes": 112,
+      "sha256": "b0a7d7ff7650bf0053f1792615f3bcf58572149be2f775741439a8e59818043f"
+    },
+    "post-a-data__c-target.json": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/c-physical/post-a-data__c-target.json",
+      "bytes": 3049,
+      "sha256": "51a105a7b0634d56d918ffd2ab8589c8136f5ba66ace49484cca47e0d3e559d9"
+    },
+    "post-a-data__c-source.json": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/c-physical/post-a-data__c-source.json",
+      "bytes": 7383,
+      "sha256": "01534894f7bbc4b4220879af0609ec23e7f3706aad84733cc59ff9a53f37dec5"
+    },
+    "post-a-data__original-publication-material.json": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/initial_observation_noupdate12_failure/c-physical/post-a-data__original-publication-material.json",
+      "bytes": 5059,
+      "sha256": "d7c67fe3c0898ee779745b91bdb5b2de16dd5c63a43a9864ab08fbc190fb5c33"
+    }
+  },
+  "target_equals_material_target": true,
+  "journal": {
+    "bytes": 40,
+    "magic": "HPTACG03",
+    "header_config_digest": "386d2b9a798e7f7f378dfa5592935e7c7d65e1557bab082598b7ba083fc43190",
+    "exact_target_header_match": true,
+    "frame_count": 0,
+    "drain_event_count": 0,
+    "head": null
+  },
+  "witness": {
+    "bytes": 112,
+    "magic": "HPTNWA01",
+    "header_context_and_checksum_match": true,
+    "record_count": 0,
+    "current_anchor": null,
+    "generation": 2
+  },
+  "digests": {
+    "manifest": "913d9641257bf3a4dc1b7730ed66a97cbe43238c83d8cc936b5398ac53737e6b",
+    "initial_snapshot": "39fb30ee876426d77c63bdf2692b79b7d9f8d6be6abe8333c562acc958f53793",
+    "owner_binding": "4f9b5b048d696fe31a326b5270b7fd2a840bcd18278fbb8305dfdfbaacb45bea"
+  },
+  "state": {
+    "revision": 0,
+    "prefix_bytes": 0,
+    "stopped": false,
+    "draining": false,
+    "pending_request": null,
+    "pending_output": null
+  },
+  "original_assertion_conditions": [
+    {
+      "ordinal": 1,
+      "expression": "generation.owner_binding() == &binding",
+      "value": true,
+      "basis": "The exact target reconstructs the actual guarded header; both original binding and observer binding are constructed from that same target."
+    },
+    {
+      "ordinal": 2,
+      "expression": "generation.is_drained()",
+      "value": false,
+      "basis": "Zero frames: initial reducer draining=false, pending=None, outbox=None. No Drain event is retained."
+    },
+    {
+      "ordinal": 3,
+      "expression": "observed.manifest_digest() == selected.manifest.digest()?",
+      "value": true,
+      "basis": "Exact target manifest digest equals initial and material selection compatibility digest. The original preceding native assertion also required target.generation.manifest == selected.manifest."
+    },
+    {
+      "ordinal": 4,
+      "expression": "observed.snapshot().revision == 0",
+      "value": true
+    },
+    {
+      "ordinal": 5,
+      "expression": "observed.snapshot().prefix.is_empty()",
+      "value": true
+    },
+    {
+      "ordinal": 6,
+      "expression": "!observed.snapshot().stopped",
+      "value": true
+    },
+    {
+      "ordinal": 7,
+      "expression": "observed.pending_request_digest().is_none()",
+      "value": true
+    },
+    {
+      "ordinal": 8,
+      "expression": "observed.pending_output().is_none()",
+      "value": true
+    }
+  ],
+  "false_condition_ordinals": [
+    2
+  ],
+  "all_eight": false,
+  "conclusion": "The retained C Generation is an exact genesis with no Drain. Under the pinned reducer, only is_drained is false among the original eight conditions.",
+  "limits": [
+    "No new Rust observer, current authorization, source/cell recovery, model, native test, host call or gate executed.",
+    "The original selected-manifest identity premise is from the original earlier native assertion plus captured material; this decoder does not authenticate its signature anew.",
+    "These after-exit bytes and original assertion locate the retained-state failure; they do not establish the exact time of a missing mutation.",
+    "This is not independent proof of Root64 acceptance, completed whole parent, cold D or FinalUse."
+  ]
+}

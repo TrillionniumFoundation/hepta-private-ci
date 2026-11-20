@@ -1,0 +1,96 @@
+{
+  "schema": "e6-checkpoint-terminal-data-reader-candidate-v2",
+  "source_commit": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "source_tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+  "changes": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "old": {
+        "bytes": 17117,
+        "sha256": "ea1819bd00aaadbad85d010cb3232c7809c2aa9f0e24ecef3e775dc9e61824c3",
+        "git_blob": "419984870420c0f79b842b62b411d4e110a779e9"
+      },
+      "new": {
+        "bytes": 17177,
+        "sha256": "79b0f9009200b67b60812ee4828c319ed7f3382e5c88af7146452ba337afe673",
+        "git_blob": "c00f35d92ac720b3504b04f7dc7736c1d9e11985"
+      },
+      "lines": 458
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs",
+      "old": null,
+      "new": {
+        "bytes": 14925,
+        "sha256": "7c97c0e7a80189ce73549757022800e8bc8102123139442ec59bf94bf0a7dc9e",
+        "git_blob": "ac372d82bce4c7dfadddaea31d291ba98065240f"
+      },
+      "lines": 414
+    }
+  ],
+  "tests": [
+    "completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+    "completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+    "completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+    "completed_reader_refuses_every_unfinished_prefix_and_vacant_owner",
+    "completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+    "completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+    "completed_reader_requires_the_selected_parent_and_real_next_task_use",
+    "completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads"
+  ],
+  "runtime_delta": "Remove only the capacity-equality condition from read_original_completed_scoped; register Linux-only dedicated DATA-reader component tests.",
+  "unchanged": [
+    "MAX_RECEIPTS=8",
+    "MAX_BYTES=8192",
+    "HEPLCP02/03/04 wire formats",
+    "scope and outer record binding",
+    "complete coordinator semantic replay",
+    "nonterminal rejection",
+    "TrainingNoUpdate exclusion for this Root history purpose",
+    "tail stage NextUse",
+    "checkpoint CAS and authenticated current owner",
+    "all Root signatures/authorization/physical journal acceptance",
+    "budgets and owner windows"
+  ],
+  "local_static_checks": {
+    "source_pin_files": 23,
+    "all_source_git_blobs_match_bfea": true,
+    "exact_product_edit_only": true,
+    "test_count": 8,
+    "changed_source_files": 2
+  },
+  "execution": {
+    "formatter_runs": 0,
+    "rust_compile_runs": 0,
+    "rust_test_runs": 0,
+    "native_parent_runs": 0,
+    "model_calls": 0,
+    "training_updates": 0,
+    "remote_host_calls": 0,
+    "policy_gate_runs": 0
+  },
+  "pending": [
+    "Hia owns exact CALLERS required-order removal/forbidden addition and allowlist SHA only.",
+    "Integrated just fmt, source gates, project lint/test execution remain unperformed.",
+    "Outer fixed physical-journal/signature shape remains an independent blocking contract; this candidate is necessary but not sufficient for actual Root acceptance."
+  ],
+  "historical_boundary": "NoUpdate9 failed earlier at the original observer namespace ENOENT. This DATA length guard was not reached and is not substituted as its original cause.",
+  "test_evidence_class": "Synthetic, authority-free direct DATA API component controls. No Root owner registration/signature/capability, physical acceptance, actual training or native success is claimed.",
+  "previous_candidate_manifest": {
+    "bytes": 3512,
+    "sha256": "c785aa6ce3d62c39cdb6336a8ebb9da7a7259bd7b904e53e2d60fe494df832d3",
+    "git_blob": "b720856c87c5b7fc6c331b2b17c78e796c587691"
+  },
+  "revision_reason": "Peer review found possible stale-head masking in generic error assertions. Require exact Snapshot(ContextMismatch) for four last-observation controls and WrongOwner/WrongOperation/EmptyEvidence/DeadlineExceeded for four receipt controls. Do not recompute heads or copy digest implementation; product unchanged.",
+  "source_pins": {
+    "path": "/workspace/scratch/e9e051ab0825/e6_checkpoint_terminal_contract_review/SOURCE_PINS.json",
+    "bytes": 8828,
+    "sha256": "359a48463751226c8b2dfec415eef475d4497a7aa1b2036c83038fceba42ea8d",
+    "git_blob": "5bbcdda2fdfc3987a88ed3a28cec8023edbfb802"
+  },
+  "source_anchors": {
+    "bytes": 52131,
+    "sha256": "93e49ad9605aa50949e787e9e573325b59af81d9feb89456beaa74b9e7446a1d",
+    "git_blob": "f76bad282c00d4228e1e269ce3c5fe4a4ca2d994"
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "status": "completed",
+  "started_at_ns": "1795171129812370222",
+  "native_adoption": false,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "original_executor_mutated": false,
+  "original_executor_target_reused": false,
+  "own_prior_target_reused": true,
+  "independently_copied_cache_used": true,
+  "cargo_target_dir": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+  "cost_scope": "The actual just test interval includes this source's compilation and all test descendants. Owner and command windows overlap and are not additive. Child max RSS is not simultaneous whole-system RSS.",
+  "unknown_costs": [
+    "whole-system concurrent CPU/RSS",
+    "physical energy",
+    "physical network bytes",
+    "physical storage byte-seconds",
+    "provider charges"
+  ],
+  "source_gate_reference_commit": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "current_source_full_caller_cli_executed": true,
+  "retained_failed_read65_source_probe_sha256": "320e4bdbbf41f16cd3740ba25efd139ac6391151b6f41f384608a7b42886e6e1",
+  "cache_restoration": {
+    "receipt_sha256": "618fa8460d025e479755f7743ba4b2dc8c3f1634556e806ecc52891f0d63efbd",
+    "file_index_sha256": "0ad70261088307ee69b3f38bb7fece1e08282a3e5053552f34da6f93deacfa2a",
+    "source_head": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+    "source_compiled_qualification_transferred": false
+  },
+  "prior_owned_immutable_elf_retained": {
+    "path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-validation-3/prior-owned-native-elf",
+    "sha256": "ed3aa79b8c3de934fb8952d86224c34eaae15e7fd92878ee1fdffc14a4df5c82",
+    "original_elf_untouched": true
+  },
+  "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+  "source_inventory_sha256": "c08eedaa7f475367cf44193413908e1536a7a8208d4468e3c1dbf843588b476f",
+  "source_files": 15809,
+  "frozen_at_ns": "1795171071723437660",
+  "protocol_sha256": "48d3175fe54f02c6a8c002c6126029b769d5731f76907d7999cf38ff3b259b3b",
+  "driver_sha256": "b92193489e264237d27f1380f614c8dd83e6639ab2d003f198e8240e762d4d4a",
+  "deployment": {
+    "schema": "hepta-e6-ack-source-frozen-deployment-v1",
+    "protocol_sha256": "48d3175fe54f02c6a8c002c6126029b769d5731f76907d7999cf38ff3b259b3b",
+    "driver_sha256": "b92193489e264237d27f1380f614c8dd83e6639ab2d003f198e8240e762d4d4a",
+    "source": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+    "automatic_retry": false
+  },
+  "cargo_build_jobs": 2,
+  "source_freeze_result_sha256": "508226bb607f9c96a6466aaecb9059c400c9129ebda6b61ba0d2a678ba7bf3d1",
+  "compiler_environment": {
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "prior_reports_excluded": [
+    {
+      "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "bytes": 21248,
+      "sha256": "83f6c67ebd9ca1924b8e98dba3d160de10020a21bc53c0fe208675490f347509",
+      "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-validation-9/excluded-prior-nextest-1.xml"
+    }
+  ],
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_preparation_) | test(source_operation_) | test(training_source_operation_) | test(post_a_owner_open_) | test(post_a_signing_files_)"
+  ],
+  "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs",
+  "disk_free_bytes_before": 639692566528,
+  "pid": 3939410,
+  "command_exit": 0,
+  "timed_out": false,
+  "command_wall_seconds": 115.48678021412343,
+  "command_child_user_cpu_seconds": 134.937454,
+  "command_child_system_cpu_seconds": 10.198546,
+  "command_child_input_blocks": 8692992,
+  "command_child_output_blocks": 4705928,
+  "owner_children_max_rss_kib": 5953268,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "2f5f5541b55375d91e0c26c58d689f11a9b531c2f72c9515b120ed3389c6366a",
+  "junit": [
+    {
+      "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-validation-9/original-nextest-0.xml",
+      "bytes": 3222,
+      "sha256": "5381d2be4bcd209244528aa555ad65fd08e046af683fdc3fbf1b240b7b8823c3"
+    }
+  ],
+  "test_cases": [
+    {
+      "name": "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+      "classname": "codex-hepta-agentd",
+      "time": "0.009",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+      "classname": "codex-hepta-agentd",
+      "time": "0.012",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+      "classname": "codex-hepta-agentd",
+      "time": "0.342",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+      "classname": "codex-hepta-agentd",
+      "time": "0.363",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+      "classname": "codex-hepta-agentd",
+      "time": "0.376",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+      "classname": "codex-hepta-agentd",
+      "time": "0.439",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+      "classname": "codex-hepta-agentd",
+      "time": "0.477",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+      "classname": "codex-hepta-agentd",
+      "time": "0.524",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+      "classname": "codex-hepta-agentd",
+      "time": "0.666",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+      "classname": "codex-hepta-agentd",
+      "time": "0.848",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+      "classname": "codex-hepta-agentd",
+      "time": "0.871",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "native_cases": 11,
+  "expected_native_cases": 11,
+  "missing_cases": [],
+  "unexpected_cases": [],
+  "all_native_passed": true,
+  "source_after_sha256": "c08eedaa7f475367cf44193413908e1536a7a8208d4468e3c1dbf843588b476f",
+  "source_unchanged": true,
+  "head_unchanged": true,
+  "tree_unchanged": true,
+  "source_clean": true,
+  "compiler_environment_unchanged": true,
+  "disk_free_bytes_after": 639647694848,
+  "finished_at_ns": "1795171253354029519",
+  "owner_wall_seconds": 123.54166517686099,
+  "owner_child_user_cpu_seconds": 134.955342,
+  "owner_child_system_cpu_seconds": 10.304628,
+  "owner_self_user_cpu_seconds": 1.607361,
+  "owner_self_system_cpu_seconds": 0.546773,
+  "successful": true
+}

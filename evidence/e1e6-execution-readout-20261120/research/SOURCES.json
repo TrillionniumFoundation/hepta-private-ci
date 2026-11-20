@@ -1,0 +1,303 @@
+{
+  "schema": "hepta.e1e6-research-appendix-sources.v1",
+  "created_utc": "2026-11-20T12:28:40.667743+00:00",
+  "status": "LOCAL_REPO_PUBLICATION_DRAFT_NOT_PUBLISHED",
+  "scope": "Five selected primary works and retained repository evidence; not a systematic security survey and not experimental execution.",
+  "primary_work_count": 5,
+  "primary_works": [
+    {
+      "id": "P1",
+      "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning",
+      "authors": [
+        "Stephane Ross",
+        "Geoffrey J. Gordon",
+        "J. Andrew Bagnell"
+      ],
+      "venue": "AISTATS 2011; PMLR 15:627-635",
+      "primary_url": "https://proceedings.mlr.press/v15/ross11a/ross11a.pdf",
+      "landing_url": "https://proceedings.mlr.press/v15/ross11a.html",
+      "refs": [
+        "turn756200069view0",
+        "turn912440492view0"
+      ],
+      "inspected_sections": [
+        "Abstract",
+        "Section 3: Dataset Aggregation",
+        "Algorithm 3.1"
+      ],
+      "direct_support": "DAgger collects states visited by the current mixed/student policy, obtains expert actions, aggregates data and retrains. Its analysis depends on the stated learning and expert assumptions.",
+      "boundary": "Not a general guarantee for modern agents or passive logs; expert correction availability is an assumption.",
+      "hepta_inference": "Use actual student rollouts and authorized corrections to test transfer beyond teacher-log fitting.",
+      "original_experiment_mapping": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+      "authors": [
+        "William Fedus",
+        "Barret Zoph",
+        "Noam Shazeer"
+      ],
+      "venue": "JMLR 23(120):1-39, 2022",
+      "primary_url": "https://jmlr.org/papers/volume23/21-0998/21-0998.pdf",
+      "landing_url": "https://jmlr.org/papers/v23/21-0998.html",
+      "refs": [
+        "turn912440492view2",
+        "turn454490010view1",
+        "turn454490010view2"
+      ],
+      "inspected_sections": [
+        "Section 2.1: Switch routing",
+        "Section 2.2: Efficient sparse routing and capacity",
+        "Load-balancing objective"
+      ],
+      "direct_support": "A jointly trained sparse model routes each token to one expert; capacity and load balancing affect compute and communication.",
+      "boundary": "The implementation concerns a model on an accelerator mesh, not heterogeneous Internet agent RPC; no throughput factor transfers to Hepta.",
+      "hepta_inference": "Investigate bounded task-level sparse routing and measure utility, retention, bytes, latency and verification together.",
+      "original_experiment_mapping": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "DiLoCo: Distributed Low-Communication Training of Language Models",
+      "authors": [
+        "Arthur Douillard",
+        "Qixuan Feng",
+        "Andrei A. Rusu",
+        "Rachita Chhaparia",
+        "Yani Donchev",
+        "Adhiguna Kuncoro",
+        "Marc’Aurelio Ranzato",
+        "Arthur Szlam",
+        "Jiajun Shen"
+      ],
+      "venue": "arXiv:2311.08105v3; version dated 2024-09-23; cited as preprint",
+      "primary_url": "https://arxiv.org/html/2311.08105v3",
+      "landing_url": "https://arxiv.org/abs/2311.08105v3",
+      "refs": [
+        "turn427762760view0",
+        "turn912440492view1",
+        "turn489115919view0"
+      ],
+      "inspected_sections": [
+        "Section 2 and Algorithm 1",
+        "Section 5: Limitations"
+      ],
+      "direct_support": "Workers train replicas in one parameter space for many local steps, then average outer updates. The paper states scale, worker and FLOP/data-efficiency limitations.",
+      "boundary": "Not arbitrary heterogeneous-base averaging, Byzantine-update security or a proof of private training; no communication multiplier transfers to Hepta.",
+      "hepta_inference": "Evaluate coarse-grained WAN exchange for compatible models; authentication and utility validation remain separate.",
+      "original_experiment_mapping": [
+        "E1",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Knowledge Fusion of Large Language Models",
+      "authors": [
+        "Fanqi Wan",
+        "Xinting Huang",
+        "Deng Cai",
+        "Xiaojun Quan",
+        "Wei Bi",
+        "Shuming Shi"
+      ],
+      "venue": "ICLR 2024 conference paper",
+      "primary_url": "https://proceedings.iclr.cc/paper_files/paper/2024/file/4fd5cfd2e31bebbccfa5ffa354c04bdc-Paper-Conference.pdf",
+      "landing_url": "https://proceedings.iclr.cc/paper_files/paper/2024/hash/4fd5cfd2e31bebbccfa5ffa354c04bdc-Abstract-Conference.html",
+      "refs": [
+        "turn427762760view1",
+        "turn489115919view2"
+      ],
+      "inspected_sections": [
+        "Abstract",
+        "Sections 3.2-3.3",
+        "Algorithm 1",
+        "Appendix A token alignment"
+      ],
+      "direct_support": "FuseLLM aligns heterogeneous teacher token distributions and fuses them for continued target-model training, combining language-model and fusion objectives.",
+      "boundary": "Distribution access and alignment matter. Text/action-only access is not identical. Evaluated model/task gains do not prove universal retention or fusion of every teacher strength.",
+      "hepta_inference": "Separate routable teacher complementarity from actual shared-student training and retention.",
+      "original_experiment_mapping": [
+        "E1",
+        "E2",
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "id": "P5",
+      "title": "Proof-of-Learning: Definitions and Practice",
+      "authors": [
+        "Hengrui Jia",
+        "Mohammad Yaghini",
+        "Christopher A. Choquette-Choo",
+        "Natalie Dullerud",
+        "Anvith Thudi",
+        "Varun Chandrasekaran",
+        "Nicolas Papernot"
+      ],
+      "venue": "IEEE Symposium on Security and Privacy 2021",
+      "primary_url": "https://arxiv.org/abs/2103.05633",
+      "official_same_work_implementation_url": "https://github.com/cleverhans-lab/Proof-of-Learning",
+      "refs": [
+        "turn454490010view0",
+        "turn912440492view3",
+        "turn454490010view3"
+      ],
+      "inspected_sections": [
+        "Paper abstract and bibliographic record",
+        "Official implementation README: Train, Verify, dataset scope"
+      ],
+      "direct_support": "The work studies evidence of a model optimization trajectory. Its implementation exposes checkpoint intervals and top-q verification and reports CIFAR-10/100 use.",
+      "boundary": "This appendix does not audit or adopt the security claim. Optimization evidence does not itself establish generalization improvement, independent contribution, authorization or settlement.",
+      "hepta_inference": "Keep compute evidence, causal utility evidence and authority/ledger acceptance separate.",
+      "original_experiment_mapping": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "Chain"
+      ]
+    }
+  ],
+  "local_exact_reference_copies": [
+    {
+      "id": "hia_contract",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/audit_sources/hia_bridge.md",
+      "appendix_relative_path": "references/hia_bridge.md",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/hia_bridge.md",
+      "bytes": 9827,
+      "sha256": "9c23605ed18b31dbd0b9fa35c0f82806d625b82d071c1c7eea8b476ef7d088f9",
+      "git_blob_oid": "61e8a9d21976ff1606dd8465cf8ffeaf34d8932b",
+      "byte_identical_copy": true,
+      "immutable_publication_url": null,
+      "inspected_anchors": "Runtime contract and actual effects; C ABI; component scope",
+      "scope_note": "Retained audit snapshot; no claim that these bytes represent every later branch."
+    },
+    {
+      "id": "circuit_source",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/audit_sources/cross_neural_circuit.rs",
+      "appendix_relative_path": "references/cross_neural_circuit.rs",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/cross_neural_circuit.rs",
+      "bytes": 20803,
+      "sha256": "3b42bcfdd20d0dfe5e6b20ccecea4a359cab5abfab0b9b6e69c91f4e3cc7d821",
+      "git_blob_oid": "299b12f0a8e0f4184ddef39318fc0965a4cb6047",
+      "byte_identical_copy": true,
+      "immutable_publication_url": null,
+      "inspected_anchors": "Module contract; CircuitCandidateV1; compile_taskflow; validate_shape; validate_successor",
+      "scope_note": "Retained audit snapshot; no claim that these bytes represent every later branch."
+    },
+    {
+      "id": "e1e2_evaluation",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/learning_work/publication/qualification/cell-upstream-raw-function-learning-20261119/evaluation-20261120/READOUT.json",
+      "appendix_relative_path": "references/e1e2_READOUT.json",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/e1e2_READOUT.json",
+      "bytes": 15556,
+      "sha256": "efef59d8d016beb5b7be333136e8077fac2dad8fc59caaff9037a4dff20e321e",
+      "git_blob_oid": "d257533f8bda6b61a4b27e85c169da2445f84b24",
+      "byte_identical_copy": true,
+      "immutable_publication_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ef096991a2632d04758d5a577ea9fbdf54209d31",
+      "inspected_anchors": "new_generations; new_training_updates; results; decision; cost_limitations",
+      "scope_note": "Retained result/readout; cited scope only, no new execution."
+    },
+    {
+      "id": "e3_readout",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/learning_work/e3_original_reference/READOUT.json",
+      "appendix_relative_path": "references/e3_READOUT.json",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/e3_READOUT.json",
+      "bytes": 11300,
+      "sha256": "c605f89bc897ebc4c5e9c2ea99b5f367e2675e751204c95539279edfa1e4082a",
+      "git_blob_oid": "5b801191a505b1bf8e684569328477453f033906",
+      "byte_identical_copy": true,
+      "immutable_publication_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/5e027a1d0c49a2b1408e90491b4cc0bc1660725f",
+      "inspected_anchors": "gain_over_best_teacher; union_selected; mutual_complementarity_observed; physical_compute_matched; student_trained_on_teacher_outputs",
+      "scope_note": "Retained result/readout; cited scope only, no new execution."
+    },
+    {
+      "id": "e5_v2_measurement",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/e5_bounded_retrieval_v2/MEASUREMENT_READOUT_3.json",
+      "appendix_relative_path": "references/e5_MEASUREMENT_READOUT_3.json",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/e5_MEASUREMENT_READOUT_3.json",
+      "bytes": 27005,
+      "sha256": "0108d4b9023626bc123c18527ea5a48c94788048220e1d622a0cca7e897e2aab",
+      "git_blob_oid": "6d6b4e10de838886dac5b10f0a02e64ace5947bc",
+      "byte_identical_copy": true,
+      "immutable_publication_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/faeed277149701a316085a0453b05480df528655",
+      "inspected_anchors": "summary; interpretation; original_32_fixed_total_and_per_source_unchanged; new_native_model_forward_generation_training",
+      "scope_note": "Retained result/readout; cited scope only, no new execution."
+    },
+    {
+      "id": "e6_authority_readout",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/e6_authority_entry_review/publication/READOUT.json",
+      "appendix_relative_path": "references/e6_authority_READOUT.json",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/e6_authority_READOUT.json",
+      "bytes": 3717,
+      "sha256": "faa2154e1c57978cddba6ff9fc0bd020ba1b91b5eb69a3ec9d3cc5ef4adf5d08",
+      "git_blob_oid": "a7558a792fdcd3caaa836b5d635ab09522ed22a0",
+      "byte_identical_copy": true,
+      "immutable_publication_url": null,
+      "inspected_anchors": "retirement; artifact; clock_inference; real_existing_typed_chain; new_Artifact_use; performed",
+      "scope_note": "Retained result/readout; cited scope only, no new execution."
+    },
+    {
+      "id": "chain_execution_readout",
+      "original_source_path": "/workspace/scratch/e9e051ab0825/chain_work/FINAL_READOUT.md",
+      "appendix_relative_path": "references/chain_FINAL_READOUT.md",
+      "repository_path": "evidence/e1e6-execution-readout-20261120/research/references/chain_FINAL_READOUT.md",
+      "bytes": 9993,
+      "sha256": "aa5ca77e94237184cf906df9ed18998cc222fbf73008df7c6313b5a177a11fef",
+      "git_blob_oid": "058b849e9d9c1e3a0a0e02e82fd6860fd4c233e9",
+      "byte_identical_copy": true,
+      "immutable_publication_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/de5f5766fe44fdc42507afe14b30873060c9e4d2/evidence/chain-w1-delay-controls-20261120-e9e051/README.md",
+      "inspected_anchors": "W1 controls and mixed workload; original F0; repository-truth; remaining whole-system cost gaps",
+      "scope_note": "Retained result/readout; cited scope only, no new execution."
+    }
+  ],
+  "immutable_joint_reference": {
+    "local_source_path": "/workspace/scratch/e9e051ab0825/metrics_integration/post824-publication/qualification/cell-joint-20261118-2e9b/CURRENT_PROGRESS.json",
+    "bytes": 469723,
+    "sha256": "2700792bc2519f7bceec1ebd7ec5b9acce640bcbd35feb00f2594977a624217a",
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a5366ae2e16f1ed77273bc610671b580ecc0eaf0/qualification/cell-joint-20261118-2e9b/CURRENT_PROGRESS.json",
+    "inspected_fields": [
+      "E4.followup.groups",
+      "E4.followup.actual_oracle_union_reached",
+      "E4.followup.same_budget_Circuit_gain_established",
+      "qualification"
+    ],
+    "qualification_observed": {
+      "whole_joint_native_or_numerical": false,
+      "independent_learning_gain": false,
+      "Circuit_necessity": false,
+      "native_original_owner_adoption": false,
+      "complete_native_NoUpdate": false,
+      "fresh_C_and_cold_fresh_D": false,
+      "FinalUse": false,
+      "settlement_eligible": false,
+      "production_eligible": false,
+      "full_system_cost_complete": false
+    },
+    "copied_into_this_package": false
+  },
+  "source_result_boundary": {
+    "paper_results_transfer_to_hepta": false,
+    "future_design_changes_original_experiment_protocol": false,
+    "new_model_calls": 0,
+    "new_training_updates": 0,
+    "new_native_executions": 0,
+    "host_access_or_owner": false,
+    "git_ref_mutation": false,
+    "canonical_execution_report_edited": false,
+    "e6_live_state_updated": false,
+    "external_full_papers_republished": false
+  },
+  "source_citation_note": "Refs identify actually retrieved web sources. Root should independently open primary URLs before citing them in its final response. Official implementation is the same P5 work, not a sixth paper."
+}

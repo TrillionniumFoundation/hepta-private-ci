@@ -1,0 +1,95 @@
+{
+  "recorded_at": "2026-11-20 10:58:44 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 6776,
+  "head": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "base": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+  "tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+  "expected_parent": "7bb71087b21b0c98998acfaf4d499b6395d929a5",
+  "cas": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "success": true
+    },
+    "isError": false
+  },
+  "fresh_pr": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6776",
+      "number": 6776,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "draft": true,
+      "body": "## Current exact candidate: native tail advances; original NoUpdate still fails\n\nExecutable source: [bfea526e1cb9a2da718d835cd617e87c67181fe9](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/bfea526e1cb9a2da718d835cd617e87c67181fe9)  \nTree: `e047b5fc72284e25a98c0ebb4f2e69a2f6338e56`  \nParent: `7bb71087b21b0c98998acfaf4d499b6395d929a5`  \nPR base: `d83f70f38137a99a86a3afd122199ba9cdae4f79`\n\n**Draft, unmerged. The original complete NoUpdate9 is FAIL.** Fresh original 34 component cases, two separately counted Ready refusal cases, and the real Root mechanism parent pass on this source. The complete parent reaches the Selection/NextUse tail and then reports `No such file or directory (os error 2)`. Cold D, Adopt, whole FinalUse and settlement remain unqualified.\n\n## Problem and change\n\nEarlier complete runs exposed a missing completed-generation drain, then identity/ACK-observation defects, then the 64-entry historical-read limit. Those failures and their exact sources remain in this branch.\n\nThis 11-path increment binds successor admission to the **actual historical stage operation**:\n\n- Selection retains authorization before its real wait.\n- The actual stage checks the same registered successor slot, actual installed owner, request and receipt prefix, Ready state, expiry, original Source/factory and cancellation before and after its action.\n- The NextUse Ready hint only chooses a scheduling path; it cannot grant authority. The actual stage revalidates the complete binding. Retained/recovery paths keep the original full wait.\n- Physical Root pre/post observations, fencing, recovery, delivery completion and independent terminal Accept remain required.\n- The same-C component fixture installs a real owner through the original path. It is not labeled a registered Root aggregate or a whole-parent success.\n- Original caller restrictions remain. Five boundaries and one protected record are added; the allowlist changes only its existing exact CALLERS digest.\n\nThe original 64-entry ceiling, 2-second and 500-ms constraints, authority lifetimes, original parent test body, acceptance predicates and experiment scoring are unchanged.\n\n## Exact validation\n\n| Scope | Actual result on bfea |\n| --- | --- |\n| Project formatting, test-binary compilation and original scoped `just fix --locked --offline` | PASS; lint changed no source bytes |\n| Source controls | 441 tests across 50 modules, zero failure/error/skip |\n| Protected/source boundaries | 908 protected records, 416 related boundaries and full 1,164-boundary CLI PASS |\n| Original blob policy | Original seven policy tests and exact d83-to-bfea diff at 512,000 bytes PASS |\n| Original native scope | 11 PASS |\n| Original retirement/fault controls | 16 PASS |\n| Original historical-delivery controls | 5 PASS |\n| Original Feature ACK controls, with same-C Ready assertions | 2 PASS |\n| Added Ready refusal controls | 2 PASS, reported separately from original 34 |\n| Actual Root mechanism parent | PASS: original StalePrepare/Revoked × SourceFirst/CurrentFirst assertions retained |\n| Original complete NoUpdate9 | **FAIL**, one original case, zero skipped/errors; command exit 100 |\n\nSource inventory: `c08eedaa7f475367cf44193413908e1536a7a8208d4468e3c1dbf843588b476f`, 15,809 tracked files.  \nCompile/lint RESULT: `f93e3b2b82e4941c8db1e239fd83ac558a71c61823c57d896a5cc521e4a7de8c`.  \nFull source gate RESULT: `85d84d242367318b8734388c4a7cee8faf635aacf96900c783407e9c902b1702`.  \nExact source freeze/blob gate RESULT: `508226bb607f9c96a6466aaecb9059c400c9129ebda6b61ba0d2a678ba7bf3d1`.\n\nOriginal 34 results: `fc285750…5f1a2` / `b8f21502…bcc9b` / `c371dc42…18524` / `4c6bbd27…44daf`. Added two: `6e366453…3a1af3`. Actual Root JUnit: `410bd17515102d70a1f9c949bb017a90b6660584bfb76565af1ae6ce02e630c3`.\n\n## Actual NoUpdate9 failure and diagnosed observer defect\n\nOriginal RESULT: `a59aefb992eaa7839849c9ace0e7cc66b4d8b4e9b57904c19cf04cbbd9877862`.  \nOriginal JUnit: `ec7175c761326aa40390ce439376b6baa6d8346431d91d373970274fe0d1d8e1`.  \nPipeline RESULT: `a6cffee50133daf1d2237365f212cbc69ac2aa50e9ab2c60282f1f63a00e8795`.\n\nC's local receipt, publication, observation and RunStart return at approximately 5.6604, 5.6653, 5.6657 and 5.6660 seconds. The complete retained log contains historical request IDs 1–61. It has no request-65 limit failure and no delivery-completion 62–63 or independent Accept64 trace. A request trace alone does not prove successful completion of that request; the remaining 64-entry full-tail estimate is still not a measured whole-parent pass.\n\nThe exact source review and retained backing-directory record identify a stale test-observer namespace:\n\n- Production `authority_host_data_refusal.rs` stores CompletedLearning refusal under `initial-data-refusal/completed-learning/{slot}`, with the original domain-separated hash of scope and initial digest. The fixed 128-byte owner bound remains.\n- Both observer locations in `ordinary_q24_cold_acceptance_data_tests.rs` still construct the old `{initial}/{scope}` owner.\n- Production registers the canonical refusal during PREPARED startup. The actual canonical file is present, 1,351 bytes, with `Ready / attempt=1`; the incorrectly derived old filename is absent from the retained complete frontier inventory.\n- The observer calls the strict record reader for that old refusal name before its later acceptance-presence check. That reader correctly propagates ENOENT.\n\nA following **test-observer identity correction is being prepared separately**. It must preserve strict missing-file refusal, the complete refusal binding/phase/attempt checks, actual Root acceptance, daemon ACK and all postchecks. This commit does not contain that following repair and does not claim it passed.\n\nNoUpdate9 command: **97.7793 s**; original testcase: **96.669 s**; enclosing owner: **172.6019 s**; whole component/parent pipeline: **318.1473 s**. These intervals overlap and must not be summed. Source, compiler inputs and pinned binaries remained unchanged; original mount cleanup passed. No automatic parent retry occurred.\n\n## Preserved negative history\n\n- The initial missing completed-generation journal/witness effect and the original first-error masking remain documented in [the first-cause checkpoint](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/784814179ea48359f7f98c91b4a305788af1ab34/evidence/e6-original-first-cause-20261120-2e9b).\n- e4ae/ab5 retain the actual drain improvement and request65/max64 failure in [the drain checkpoint](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/ab5e792d1bceb583c246f44d01ee8e433d5c60e8/evidence/e6-original-drain-read65-20261120-2e9b).\n- Subsequent C identity, historical-observation and Root marker failures remain in their original commits and records.\n- Parent7bb retains the complete 612-original NoUpdate8 archive, bound to runtime8996. Its RESULT `7b1d06160571f5d59d14ebd9f4aa6e9f454f1ae2afde84ffb6bc6e48c7b37177` remains a failure at attempted request65, before NextUse/completion/Accept.\n- Original 63/67 full-tail estimates remain explicitly refuted. Source projection is not native evidence.\n- New NoUpdate9 originals and physical readbacks remain retained in the isolated owner workspace; this source publication is not a claim that their complete follow-up archive has already been committed.\n\n## Remaining qualification\n\nThe cold integration is a separately reviewed overlay, with its original 600/300/120/480 contracts and 36 original files retained. It has no new combined-source or whole-cold qualification. The Adopt head-use route still lacks the required original Artifact purpose authority and integration; a new Root FinalUse grant does not renew an expired Artifact head. Actual clock origins must be compared instead of inferring universal impossibility from 300 versus 240 alone.\n\nThe joint research candidate remains separate. Its older source lineage does not inherit this branch's native results. No production activation, public-reward expansion, merge, new exhausted teacher-call budget or claim of learning improvement is made by this checkpoint.\n",
+      "title": "agentd: retire original completed generation and preserve E6 first failures",
+      "base": "research/e6-operation-scopes-20261118-2e9b",
+      "base_sha": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+      "head": "research/e6-original-error-20261120-2e9b",
+      "head_sha": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+      "head_repo_id": 1320694176,
+      "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+      "merge_commit_sha": "077add3ef433e6f95d075e81bd82d41d0ad07455",
+      "user": {
+        "login": "ProfHepta",
+        "name": "ProfHepta",
+        "email": null,
+        "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+        "id": 102159240
+      },
+      "requested_reviewers": null,
+      "requested_team_reviewers": null,
+      "diff": null,
+      "comments": null,
+      "created_at": "2026-11-20T04:36:51Z",
+      "updated_at": "2026-11-20T10:56:49Z",
+      "closed_at": null,
+      "merged_at": null,
+      "commits": 14,
+      "changed_files": 144,
+      "additions": 19079,
+      "deletions": 276,
+      "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6776",
+      "display_title": "agentd: retire original completed generation and preserve E6 first failures"
+    },
+    "isError": false
+  },
+  "fresh_ref": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"ref\":\"refs/heads/research/e6-original-error-20261120-2e9b\",\"node_id\":\"REF_kwDOTrgxoNoAM3JlZnMvaGVhZHMvcmVzZWFyY2gvZTYtb3JpZ2luYWwtZXJyb3ItMjAyNjExMjAtMmU5Yg\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/e6-original-error-20261120-2e9b\",\"object\":{\"sha\":\"bfea526e1cb9a2da718d835cd617e87c67181fe9\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/bfea526e1cb9a2da718d835cd617e87c67181fe9\"}}",
+      "title": "e6-original-error-20261120-2e9b",
+      "modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/e6-original-error-20261120-2e9b",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/e6-original-error-20261120-2e9b",
+      "display_title": "e6-original-error-20261120-2e9b",
+      "structuredContent": {
+        "title": "e6-original-error-20261120-2e9b",
+        "content": "{\"ref\":\"refs/heads/research/e6-original-error-20261120-2e9b\",\"node_id\":\"REF_kwDOTrgxoNoAM3JlZnMvaGVhZHMvcmVzZWFyY2gvZTYtb3JpZ2luYWwtZXJyb3ItMjAyNjExMjAtMmU5Yg\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/research/e6-original-error-20261120-2e9b\",\"object\":{\"sha\":\"bfea526e1cb9a2da718d835cd617e87c67181fe9\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/bfea526e1cb9a2da718d835cd617e87c67181fe9\"}}",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/ref/heads/research/e6-original-error-20261120-2e9b"
+      }
+    },
+    "isError": false
+  },
+  "body_exact": true,
+  "source_gate": true,
+  "complete_noupdate": false,
+  "evidence_archive_committed_by_this_action": false,
+  "prior_body_snapshot": "## Problem and current result\n\nThe original NoUpdate owner first masked its original failure with delivery cancellation. Preserving the first error exposed that completed A never retired its generation journal/witness, so C could not authenticate the predecessor. This PR fixes that missing product effect.\n\n**Current end-to-end status: not passed.** On executable source [e4aeaa2c](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e4aeaa2cdd1a4aa884d09cafaeef96968feb7a90), the original 11 native cases and 16 retirement/fault controls pass. The actual original NoUpdate parent now records the A drain, proceeds past the earlier predecessor-witness failure, and fails at **historical request 65 with maximum 64**. C, Adopt, cold D, FinalUse and settlement have no new successful qualification.\n\n## Changes\n\n- Preserve original transport/binding/evaluation errors. Record the first error from the original delivery/continuation futures and return it after both owned futures join; cancellation and CommitUncertain fences remain.\n- After the trusted original outcome is Complete, the shared submit/resume effect helper requires Active custody and calls the actual completed-generation drain. It checks source-publication identity and unchanged task status afterward. Retained/status paths remain read-only.\n- Add native controls for repeat/resume, readonly witness failure after the journal append, exact reopen/recovery, unchanged readback, and retained-source restrictions.\n- Register the one real drain boundary, ordered effect protection, and privileged inventory ID. All prior 1,137 boundary and 892 protected rows remain; only the already-allowed CALLERS digest is updated. The verifier, allowed paths and 512,000-byte limit are unchanged.\n- Preserve source/native/parent failures and successful controls in immutable bounded evidence archives.\n\nThe C predecessor gate, owner/signature predicates, 64-read ceiling, 500 ms frame, original 240/300/600-second constraints, original parent test body, acceptance scoring and source-metrics files remain unchanged.\n\n## Exact validation\n\n| Executable source / scope | Observed result |\n| --- | --- |\n| Initial diagnostic source candidate | Preserved failure: 244 source tests / 60 errors; original protected guard restored, verifier unchanged |\n| 27d90883 | 244 source tests, 892 protected rows, targeted proof and original 1,137-boundary CLI passed |\n| 715a7a37 and 27d90883 native rounds | 11 actual cases passed in each round; original NoUpdate failed in each round |\n| 27d90883 original first cause | C predecessor or new witness history differs; preserved original RESULT and raw logs |\n| b5da8e70 drain source | 275 source tests, 893 protected rows, 282 targeted checks and original 1,138-boundary CLI passed |\n| b5da8e70 first native attempt | Compile exit 101 from new test assert_eq imports; zero cases; no parent started |\n| e4aeaa2c compile/list | Actual two-library compile exit 0; recorder failed a name/id spelling assumption, retained unchanged and independently reconciled |\n| e4aeaa2c source delta | Exactly two explicit test imports; all other 15,734 tracked files identical to b5da. Current protected sweep passed; full caller CLI was not rerun on e4ae |\n| e4aeaa2c original native | 11 passed, zero failed/errors/skipped |\n| e4aeaa2c retirement/fault controls | 16 passed, zero failed/errors/skipped |\n| e4aeaa2c original NoUpdate | Failed at request 65 / max 64. Original RESULT SHA-256: 0f35886d2338dcb8264c7a77c341db4f10ddfa9ffaa24b7e69e7ee0073253e69 |\n\nThe current A generation journal/witness are 93/224 bytes, versus the prior 40/112-byte headers. C remains zero-byte journal / 112-byte initial witness. This is evidence of the actual A drain, not C completion.\n\n## Immutable evidence and policy\n\nThe latest [evidence directory](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/ab5e792d1bceb583c246f44d01ee8e433d5c60e8/evidence/e6-original-drain-read65-20261120-2e9b) preserves 201 originals / 55,918,596 bytes, including actual source failures/passes, compile failure and recorder correction, native and parent XML/logs, protocols/runners, physical journal/witness originals, inventories and terminal archives. All original sizes and SHA-256 values were verified after transfer.\n\nThe 2,176,776-byte archive is split 480,000 / 480,000 / 480,000 / 480,000 / 256,776 bytes, with manifest and checked reassembler. Its SHA-256 is 84f474d4f9699d3e9bc538dab820beb5e21d61d9da700007fa5b59465665cabc. Only five selected non-key physical files are copied. Broader physical data, including unconfirmed key/authority paths, is metadata-only; excluded key bodies remain on the original host.\n\nAt exact evidence head ab5e792d1bceb583c246f44d01ee8e433d5c60e8, the original seven blob-policy tests, original 512,000-byte diff policy, and published archive reassembly all passed. Policy owner RESULT SHA-256: a82ba3d62189eb3ff9ffe9135fa5858a0e8cc1342bc90daab7630ee548e37437.\n\nThe previous [177-original first-cause evidence](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/784814179ea48359f7f98c91b4a305788af1ab34/evidence/e6-original-first-cause-20261120-2e9b), its oversized-blob negative control, and historical failed NoUpdate7 RESULT c8bf40870e694e68e864e90a6856d3ba882272d2882300497cb3f724e9f82e25 remain in history.\n\n## Costs and limits\n\nThe current original NoUpdate command took 70.808666 s and enclosing owner 121.382146 s. Compile/list, failed compilation, source gates, helpers and native cases are separately retained. Nested durations overlap; complete whole-system energy, network, memory and provider-charge totals are not claimed. Small read-only RPCs occurred during the parent; zero cohost activity is not claimed.\n\nThe Adopt CURRENT 240-second versus old writer 300-second authority mismatch remains unresolved. This Draft PR is not merged or activated. No budget increase, scoring change or known-failure parent replay is performed. The next repair is to authenticate each actual successor operation within one synchronous original-owner lane while preserving every before/after check and the existing read cap.\n"
+}

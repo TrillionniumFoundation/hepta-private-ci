@@ -1,0 +1,191 @@
+{
+  "signed_envelope": {
+    "evidence_id": "original-evaluation:238f52867e1ddf710f210eb0a1c3472ba9ead0bc199131f47c92e83fd7afc03e",
+    "principal_id": "ordinary-independent-b-evaluator",
+    "trust_digest": "1a99045280ece9e1bbe534055365c1bd12ab01f7e621975c8fd3227942c1a1d2",
+    "scope_digest": "4b1cd2a513804a5ccb044d77cb65d408e5f979c3283ddd4204e36bcc39361393",
+    "objective_digest": "e0a61935b8eb93d2e24e777503c349cf8f4aadcfd372b3ab14be4518dbca7fa0",
+    "payload_digest": "76814b44d6cd7e6fcb5c22c04a1de8fd0d16a02b1b0e392e40afd0e16fb694e9",
+    "authority_epoch": 1,
+    "issued_at": 1795183200,
+    "expires_at": 1795183440,
+    "signature_hex": "07e0ac52f94c184f215f13d9dfff023d1eef1f31d3106c30f9e7953032df3b34785eb0869239ab455c6de8c1f3ba7afdfffd856f586e9e89bf308e8afc1a0301"
+  },
+  "body_sha256": "2424a1f22560b47985200bae4627d1172750a8d67f21c711b416e469a6344504",
+  "body_bytes": 1243,
+  "execution": {
+    "product_plan_receipt_seal": "5e7559ac93698780b59a93b4fef6e2a0c95e482aedbe22aabd9e6c93ea3cd40a",
+    "holdout_sequence": 1,
+    "holdout_record_digest": "9d0048d108642ad4a2dba3b50ccbed30c333fd7bb4322f2d7c2eddcf80ff1230",
+    "holdout_head_digest": "9d0048d108642ad4a2dba3b50ccbed30c333fd7bb4322f2d7c2eddcf80ff1230",
+    "holdout_use_digest": "6efdb1cfccc9b743ef457e4ae97befdc4a1ceef49c240254a5ae8980998ae3e1",
+    "candidate": {
+      "evaluation_id": "ordinary-b-original-temporal-comparison",
+      "plan_digest": "202020c795738f23ba47eebc1faf3f61a851f483b578b21f89ce9587cb600318",
+      "model_digest": "fae44332a03cb149e0fc17fcc647322046138e6af6623ee7c681560a9f08ea1a",
+      "predictions_digest": "55c9ab67c9415f4bd7f668572052c9c8f0de741719aacec8c55c9a63e350059d",
+      "evidence_digest": "4c4b55211e6c23f1c8984e1837b5de94817e35ba7c951464db0508b23606c6d2",
+      "receipt_seal": "5e06153ff4331f853a04fb1d14c13d59fa25b1c25e618497a3c97561ac347786",
+      "point": {
+        "rows": 256,
+        "ips": {
+          "raw_q32": 0,
+          "value": 0.0
+        },
+        "snips": {
+          "raw_q32": 0,
+          "value": 0.0
+        },
+        "doubly_robust": {
+          "raw_q32": 0,
+          "value": 0.0
+        },
+        "effective_sample_size": {
+          "raw_q32": 523986010112,
+          "value": 122.0
+        },
+        "maximum_observed_weight": {
+          "raw_q32": 8589934592,
+          "value": 2.0
+        },
+        "evidence_digest": "34e8277e552720fc3d0fa9f19f6e3d4450dcf7b621f1f0edc12f229abd6ddc44"
+      },
+      "cluster_count": 256,
+      "largest_cluster_rows": 1,
+      "intervals": {
+        "ips": {
+          "lower": {
+            "raw_q32": -1004393515,
+            "value": -0.23385358857922256
+          },
+          "upper": {
+            "raw_q32": 1004393515,
+            "value": 0.23385358857922256
+          }
+        },
+        "snips": {
+          "lower": {
+            "raw_q32": 0,
+            "value": 0.0
+          },
+          "upper": {
+            "raw_q32": 1396404055,
+            "value": 0.32512565492652357
+          }
+        },
+        "doubly_robust": {
+          "lower": {
+            "raw_q32": -2510983776,
+            "value": -0.584633968770504
+          },
+          "upper": {
+            "raw_q32": 2510983776,
+            "value": 0.584633968770504
+          }
+        },
+        "weight_mean": {
+          "lower": {
+            "raw_q32": 3089247189,
+            "value": 0.7192714114207774
+          },
+          "upper": {
+            "raw_q32": 5098034219,
+            "value": 1.1869785885792226
+          }
+        }
+      },
+      "estimate_evidence_digest": "6d8f9417b6816f40e86026155b279648dd136b4dc8a91c8cf90939e468623481",
+      "estimate_receipt_seal": "b1cc11c381acaf3fd64ed93af23e5ab2fe2088dd4346f9033220cb073b93d340"
+    },
+    "baseline": {
+      "evaluation_id": "ordinary-b-original-temporal-comparison",
+      "plan_digest": "202020c795738f23ba47eebc1faf3f61a851f483b578b21f89ce9587cb600318",
+      "model_digest": "fae44332a03cb149e0fc17fcc647322046138e6af6623ee7c681560a9f08ea1a",
+      "predictions_digest": "55c9ab67c9415f4bd7f668572052c9c8f0de741719aacec8c55c9a63e350059d",
+      "evidence_digest": "7aea3a411910a630e69b6c5605de65840f5dd35fb6fb84ce96575cf519ea0e3c",
+      "receipt_seal": "6e700b905fab066d9f441c4482c99bb533c3cce6c9eba14e272042a9061d419e",
+      "point": {
+        "rows": 256,
+        "ips": {
+          "raw_q32": 4496293888,
+          "value": 1.046875
+        },
+        "snips": {
+          "raw_q32": 4294967296,
+          "value": 1.0
+        },
+        "doubly_robust": {
+          "raw_q32": 4294967296,
+          "value": 1.0
+        },
+        "effective_sample_size": {
+          "raw_q32": 575525617664,
+          "value": 134.0
+        },
+        "maximum_observed_weight": {
+          "raw_q32": 8589934592,
+          "value": 2.0
+        },
+        "evidence_digest": "aa1123db427ea7a5148e6205a3d9fe57ff39d558afafa11951bd4d48c9cd8daf"
+      },
+      "cluster_count": 256,
+      "largest_cluster_rows": 1,
+      "intervals": {
+        "ips": {
+          "lower": {
+            "raw_q32": 3491900373,
+            "value": 0.8130214114207774
+          },
+          "upper": {
+            "raw_q32": 5500687403,
+            "value": 1.2807285885792226
+          }
+        },
+        "snips": {
+          "lower": {
+            "raw_q32": 2726495218,
+            "value": 0.6348116365261376
+          },
+          "upper": {
+            "raw_q32": 4294967296,
+            "value": 1.0
+          }
+        },
+        "doubly_robust": {
+          "lower": {
+            "raw_q32": 1783983520,
+            "value": 0.415366031229496
+          },
+          "upper": {
+            "raw_q32": 6805951072,
+            "value": 1.584633968770504
+          }
+        },
+        "weight_mean": {
+          "lower": {
+            "raw_q32": 3491900373,
+            "value": 0.8130214114207774
+          },
+          "upper": {
+            "raw_q32": 5500687403,
+            "value": 1.2807285885792226
+          }
+        }
+      },
+      "estimate_evidence_digest": "9adf4efe40619be47303f2cddc697eaea20ae508e28b5c5f300ac6ebe0fc4e00",
+      "estimate_receipt_seal": "e478f3c949c3b666477d82e4d71da921a2975e50ef22ffe60cf4159419da44e2"
+    },
+    "snapshot_ids": [
+      "ordinary-independent-b-original-observations"
+    ],
+    "future_window_ids": [
+      "ordinary-b-original-future-window"
+    ],
+    "estimate_receipt_digest": "5d0a475aa832200c8dd861c3ac5aacd96231496a28272e1f612e364922798df0",
+    "support_audit_digest": "406966cbd916bb22edae3de77d9fb44b8ba4108f7efd9a719ee48991069dcfe5",
+    "confidence_receipt_digest": "92a85b497a23a273e293e24f591ae1b6c30825ef645849eb350d80dc7fa603d3",
+    "execution_digest": "e18f61e7a67fe36084510c049ff7bd58f0e71acc7412492ffa6f8eda0528f138",
+    "receipt_seal": "7789e5e465996eb6da73a8adbd88a81736b0cecfe3a3539391a81433ec0deddb"
+  },
+  "limits": "Stored fields only. Does not run confidence estimation, derive gates, validate receipt seals, or verify signatures."
+}

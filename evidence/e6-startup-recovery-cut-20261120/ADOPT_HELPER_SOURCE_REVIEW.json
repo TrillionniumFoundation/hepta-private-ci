@@ -1,0 +1,137 @@
+{
+  "status": "DIRECT_TWO_HELPER_SOURCE_SCOPE_CONFIRMED_NO_NEW_EXECUTION",
+  "source_commit": "1a9799686243c2be0ee393ba364e091029cfb944",
+  "source_pins": {
+    "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/SOURCE_PINS.json",
+    "bytes": 6758,
+    "sha256": "c5bfa0299016940980c24546597b37f154a0c8ff00708d355a35572b6b3372c2",
+    "git_blob": "f6bdc2eea4b120c4790940584c673f84e8f1fe07",
+    "local_stat": {
+      "device": 27,
+      "inode": 3316479,
+      "bytes": 6758,
+      "mtime_ns": 1795193935182430043,
+      "ctime_ns": 1795193935182430043
+    }
+  },
+  "actual_inventory": {
+    "workspace_path": "e6_c_generation_full_original_readback_1/originals/SOURCE_FILES_AFTER.json",
+    "bytes": 3641800,
+    "sha256": "bcd27467e7f8d01fe36298e96761c417f8205fa4c5d44f356dc4625d99032f1c",
+    "git_blob": "08ae4fb1550587fcb9c85498d37d3525269a3f1a",
+    "local_stat": {
+      "device": 27,
+      "inode": 3306199,
+      "bytes": 3641800,
+      "mtime_ns": 1795190500589632468,
+      "ctime_ns": 1795190500589632468
+    }
+  },
+  "source_checks": [
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "actual": {
+        "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/source/codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+        "bytes": 13510,
+        "sha256": "2795e8f816f01a54732c87dcd44e54f2f755ae3d98b74e2cb807e5c1e5d4f3b7",
+        "git_blob": "ec8a5a68d025a5e23c7f5d448bb5ff3c0fa30f59",
+        "local_stat": {
+          "device": 27,
+          "inode": 3316376,
+          "bytes": 13510,
+          "mtime_ns": 1795193656020496137,
+          "ctime_ns": 1795193656020496137
+        }
+      },
+      "matches_actual_1a_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+      "actual": {
+        "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/source/codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs",
+        "bytes": 15891,
+        "sha256": "baafa3bf95a53bd6082eea2e2d6eacb0830b0d11f7f887a8ef9ef01df5105b95",
+        "git_blob": "8537fa1efbb59cd76754a14c77cf5b440b4d2c96",
+        "local_stat": {
+          "device": 27,
+          "inode": 3316378,
+          "bytes": 15891,
+          "mtime_ns": 1795193656256493528,
+          "ctime_ns": 1795193656256493528
+        }
+      },
+      "matches_actual_1a_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "actual": {
+        "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/source/codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+        "bytes": 20668,
+        "sha256": "5c4201e1401f4fe151599e5855cdb8805559bb8d22f8323e41aa08f93a912bbf",
+        "git_blob": "e72c72a54aa6feb0b7d50b4435a57a64139541d4",
+        "local_stat": {
+          "device": 27,
+          "inode": 3316476,
+          "bytes": 20668,
+          "mtime_ns": 1795193935150065099,
+          "ctime_ns": 1795193935150065099
+        }
+      },
+      "matches_actual_1a_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "actual": {
+        "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/source/codex-rs/hepta-agentd/src/authority_host_session.rs",
+        "bytes": 24241,
+        "sha256": "7469c2d686d27062c450888729e62dc4188fc424c4648ffc1147e13f67514798",
+        "git_blob": "96655d075d169322cd568fb4ce506ff04a45bed3",
+        "local_stat": {
+          "device": 27,
+          "inode": 3316477,
+          "bytes": 24241,
+          "mtime_ns": 1795193935151184703,
+          "ctime_ns": 1795193935151184703
+        }
+      },
+      "matches_actual_1a_inventory": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "actual": {
+        "workspace_path": "e6_ordinary_adopt_equivalence_helper_addendum_1/source/codex-rs/hepta-agentd/src/lib.rs",
+        "bytes": 69252,
+        "sha256": "a5b651b377e194512e0fe8c740b1af1e7c5ca2a491640c3e0592064dbe3fbaa0",
+        "git_blob": "6a4aa09d459a3c19e797dbb400870e68177b712a",
+        "local_stat": {
+          "device": 27,
+          "inode": 3316478,
+          "bytes": 69252,
+          "mtime_ns": 1795193935151960998,
+          "ctime_ns": 1795193935151960998
+        }
+      },
+      "matches_actual_1a_inventory": true
+    }
+  ],
+  "full_source_bodies_read": [
+    "authority_host_learning_registration.rs::with_learning_profile:200-296",
+    "authority_host_q24_evaluation_operation.rs::with_original_completed_evaluation and with_operation:48-360"
+  ],
+  "confirmed": [
+    "with_learning_profile checks real recipient/pidfd/logind, original writer proof, live leases and issuer revocations around a successful callback.",
+    "Its action(initial, proof)? propagates callback errors before the subsequent successful-path checks.",
+    "Completed B uses Readback, actual B owner/record/cell locks, restored learning checkpoint and Training cut, native receipt/attestation/output readback, current signatures and preserved owner/end.",
+    "B captures the callback result, performs native Readback and checkpoint equality before propagating value?; later success checks are not claimed on every error path."
+  ],
+  "narrow_remaining_proof_obligation": "Whether retained B/helper checks equivalently dominate a fresh rejection specific to original A Source/Cell/RunStart/terminal-ledger/persistent-refusal before each next effect is unproved.",
+  "must_not_claim": [
+    "shared revocations/writer lease/pidfd are necessarily omitted",
+    "all uninspected lower helpers omit A",
+    "M1 equivalence or any historical request budget reduction has been established"
+  ],
+  "conditional_existing_operation_total": 74,
+  "original_limit_unchanged": 64,
+  "actual_adopt_runs": 0,
+  "additional_fetch_or_host_or_tests": 0
+}

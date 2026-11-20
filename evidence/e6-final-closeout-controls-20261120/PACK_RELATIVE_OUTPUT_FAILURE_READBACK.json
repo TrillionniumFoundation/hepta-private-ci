@@ -1,0 +1,11 @@
+{
+  "actual_failed_output_argument": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-execution-1/package",
+  "bytecode_whitelist_and_checks_unchanged": true,
+  "cause": "The restore reader requires an explicit absolute bytecode evidence path. Root passed a relative output argument; the original check refused it.",
+  "failure_file": "/workspace/scratch/e9e051ab0825/metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-execution-1/package/FAILURE.json",
+  "failure_sha256": "0e68dc798be5e85798f1a32d317090d1c4ac870d34610a9e7a6b72433b3faf26",
+  "host_native_model_git_actions": 0,
+  "observed_at_utc": "2026-11-20T22:15:11.594374+00:00",
+  "remedy": "Re-run exact pinned pack controller with absolute frozen path and a fresh absolute package-2 output. Preserve failed package and its original FAILURE.json.",
+  "scope": "Root local invocation path correction; no controller or frozen input modification"
+}

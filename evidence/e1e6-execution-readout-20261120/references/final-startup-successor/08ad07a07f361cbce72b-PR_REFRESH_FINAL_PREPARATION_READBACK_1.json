@@ -1,0 +1,105 @@
+{
+  "state": "ACTUAL_PREPUBLICATION_PR_METADATA_READBACK",
+  "read_intervals_utc": [
+    [
+      "2026-11-20 21:53:02 UTC",
+      "2026-11-20 21:53:33 UTC"
+    ],
+    [
+      "2026-11-20 21:53:48 UTC",
+      "2026-11-20 21:53:49 UTC"
+    ]
+  ],
+  "raw_files": [
+    "metrics_integration/PR_REFRESH_FINAL_PREPARATION_1.json",
+    "metrics_integration/PR_REFRESH_FINAL_CHAIN_METADATA_1.json"
+  ],
+  "pull_requests": [
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6703,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "a5366ae2e16f1ed77273bc610671b580ecc0eaf0",
+      "base": "061334747ce9d87690c40df48eeedf239156b57d",
+      "branch": "research/e1e6-joint-20261118-2e9b"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6776,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+      "base": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+      "branch": "research/e6-original-error-20261120-2e9b"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6778,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "ef096991a2632d04758d5a577ea9fbdf54209d31",
+      "base": "a76c0a4d07b3252f0cf5ea22de73fea532583b57",
+      "branch": "research/raw-function-evaluation-20261120-e9e051"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6780,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "75cae37a07b18acf342b901296f3f124c61d8c76",
+      "base": "ef096991a2632d04758d5a577ea9fbdf54209d31",
+      "branch": "research/raw-function-weight-path-20261120-e9e051"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6781,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "6cce823fcef62f3e65856d3a4ff2b428d3bd8c38",
+      "base": "a76c0a4d07b3252f0cf5ea22de73fea532583b57",
+      "branch": "research/e3-smollm2-materials-20261120-e9e051"
+    },
+    {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "pr_number": 6797,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "faeed277149701a316085a0453b05480df528655",
+      "base": "b78c319a3f6956d95331c8d89924a1d3782f6894",
+      "branch": "research/e5-v2-evidence-20261120-e9e051"
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "pr_number": 970,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "de5f5766fe44fdc42507afe14b30873060c9e4d2",
+      "base": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+      "branch": "fix/chain-native-owned-append-20261119-2e9b"
+    },
+    {
+      "repository": "TrillionniumFoundation/Trillionnium-Chain",
+      "pr_number": 971,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "head": "ea356c57bc8ae8e69bc48fe6d7e1496afca3e3da",
+      "base": "59bd6ae4223caff6695dc9cf2ee2cdcdc6df5e88",
+      "branch": "docs/chain-native-owned-append-f0-20261119-2e9b"
+    }
+  ],
+  "mutations": 0,
+  "limitations": [
+    "First fetch_pr batch returned six actual Hepta results and two Chain Transport closed errors; both errors retained. Smaller pull metadata GET then returned two complete Chain records.",
+    "One local result-unwrapping TypeError after raw save performed no further remote action; subsequent bounded decode succeeded.",
+    "This snapshot is not a future ref CAS proof or all-CI success."
+  ]
+}

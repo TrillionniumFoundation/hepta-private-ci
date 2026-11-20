@@ -1,0 +1,22 @@
+{
+  "schema": "hepta.cold-completion-draft.archive.v1",
+  "format": "tar/ustar compressed with XZ CRC64; deterministic uid/gid/mtime metadata",
+  "compressed_bytes": 381636,
+  "compressed_sha256": "3d03bca924b353b82316d97b54d590d448c612468afaf073a60762e81ac08b38",
+  "uncompressed_tar_bytes": 5836800,
+  "uncompressed_tar_sha256": "733c06e294800d18f16ef97f3efadf8acfcb5ba92b8d846fb46789d15aa4892c",
+  "part_limit_bytes": 480000,
+  "parts": [
+    {
+      "path": "complete-originals.tar.xz",
+      "index": 1,
+      "offset": 0,
+      "bytes": 381636,
+      "sha256": "3d03bca924b353b82316d97b54d590d448c612468afaf073a60762e81ac08b38",
+      "nul_in_first_1024_bytes": true,
+      "first_nul_offset": 5
+    }
+  ],
+  "members_manifest_sha256": "5a7591046761ff18bec8022184bb66fdc1cbf7aef8b17784c61bd83fc0bc359e",
+  "reconstruction": "Concatenate parts by ascending index, require the complete compressed SHA256, then decompress/read the tar and verify every member against MEMBERS.json."
+}

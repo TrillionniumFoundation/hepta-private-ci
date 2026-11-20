@@ -1,0 +1,1336 @@
+{
+  "status": "completed",
+  "started": "2026-11-20T13:56:43.975961+00:00",
+  "source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+  "protocol_sha256": "b8b8a10fda69d78a0c350c7fed6c1a26e418778c74cea7d335510ebe32a5b43c",
+  "driver_sha256": "7ebe8b4987a26824abc5d2eff5be222a4ecd30651213cba39dd40817d65f53f9",
+  "deployment": {
+    "schema": "hepta-e6-ack-source-frozen-deployment-v1",
+    "protocol_sha256": "b8b8a10fda69d78a0c350c7fed6c1a26e418778c74cea7d335510ebe32a5b43c",
+    "driver_sha256": "7ebe8b4987a26824abc5d2eff5be222a4ecd30651213cba39dd40817d65f53f9",
+    "source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "automatic_retry": false
+  },
+  "source_gate_reference_commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "current_source_full_caller_cli_executed": true,
+  "original_harness_sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1",
+  "original_executor_mutated": false,
+  "target": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+  "public": "/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12",
+  "root": "/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12",
+  "stages": [
+    {
+      "name": "helper-build",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:56:44.637758+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 49800,
+      "process_group": 49800,
+      "finished": "2026-11-20T13:58:23.767997+00:00",
+      "elapsed_seconds": 99.13016473781317,
+      "timed_out": false,
+      "child_user_cpu_seconds": 158.886337,
+      "child_system_cpu_seconds": 11.207168,
+      "owner_children_max_rss_kib": 3770280,
+      "input_blocks": 596320,
+      "output_blocks": 5006736,
+      "exit_code": 0
+    },
+    {
+      "name": "helper-verify",
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers",
+        "--verify-only"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:23.775523+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 52918,
+      "process_group": 52918,
+      "finished": "2026-11-20T13:58:23.889611+00:00",
+      "elapsed_seconds": 0.11399850714951754,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.04775399999999763,
+      "child_system_cpu_seconds": 0.06730699999999956,
+      "owner_children_max_rss_kib": 3770280,
+      "input_blocks": 2192,
+      "output_blocks": 8,
+      "exit_code": 0
+    },
+    {
+      "name": "product-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--bin",
+        "codex-hepta-agentd",
+        "--bin",
+        "hepta-authority-host",
+        "--message-format=json-render-diagnostics"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs",
+      "started": "2026-11-20T13:58:24.205875+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 52995,
+      "process_group": 52995,
+      "finished": "2026-11-20T13:58:30.930386+00:00",
+      "elapsed_seconds": 6.724474052898586,
+      "timed_out": false,
+      "child_user_cpu_seconds": 11.704496000000006,
+      "child_system_cpu_seconds": 4.797529999999998,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 2504512,
+      "output_blocks": 4591784,
+      "exit_code": 0
+    },
+    {
+      "name": "library-binaries-build-uid1000",
+      "command": [
+        "cargo",
+        "nextest",
+        "list",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-agent-protocol",
+        "-p",
+        "codex-hepta-learning-ledger",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-intelligence-eval",
+        "-p",
+        "codex-hepta-learning-artifacts",
+        "--lib",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs",
+      "started": "2026-11-20T13:58:36.038131+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53220,
+      "process_group": 53220,
+      "finished": "2026-11-20T13:58:42.313482+00:00",
+      "elapsed_seconds": 6.275195968803018,
+      "timed_out": false,
+      "child_user_cpu_seconds": 4.688154999999995,
+      "child_system_cpu_seconds": 1.2317110000000007,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 1829400,
+      "output_blocks": 562168,
+      "exit_code": 0
+    },
+    {
+      "name": "dedicated-source-descriptor-list",
+      "command": [
+        "sudo",
+        "-n",
+        "/usr/bin/python3",
+        "-c",
+        "import os,json,sys,ctypes,errno\nassert os.geteuid()==0\ndata=json.loads(sys.argv[1]);fd=os.open(data['path'],os.O_RDONLY|os.O_NOFOLLOW);os.set_inheritable(fd,True)\nclass Header(ctypes.Structure):_fields_=[('version',ctypes.c_uint32),('pid',ctypes.c_int32)]\nclass Data(ctypes.Structure):_fields_=[('effective',ctypes.c_uint32),('permitted',ctypes.c_uint32),('inheritable',ctypes.c_uint32)]\npid=os.fork()\nif pid==0:\n c=ctypes.CDLL(None,use_errno=True)\n assert c.prctl(38,1,0,0,0)==0 and c.prctl(47,4,0,0,0)==0\n for cap in range(64):\n  present=c.prctl(23,cap,0,0,0)\n  if present<0:\n   assert cap>0 and ctypes.get_errno()==errno.EINVAL;break\n  if present:assert c.prctl(24,cap,0,0,0)==0\n os.setgroups([]);os.setresgid(60001,60001,60001);os.setresuid(60002,60002,60002)\n header=Header(0x20080522,0);caps=(Data*2)()\n assert c.capset(ctypes.byref(header),ctypes.byref(caps))==0\n private_refused=False\n try:os.close(os.open(data['path'],os.O_RDONLY|os.O_NOFOLLOW))\n except OSError as e:private_refused=e.errno==errno.EACCES\n assert private_refused,'private ancestor unexpectedly traversable'\n q='/proc/self/fd/'+str(fd)\n assert os.access(q,os.X_OK,effective_ids=True) and os.access(q,os.R_OK,effective_ids=True)\n print(json.dumps({'uid':os.geteuid(),'gid':os.getegid(),'groups':os.getgroups(),'private_path_EACCES':private_refused,'fd_execute_access':True,'command':[q,'--list','--exact',data['child']]}),flush=True)\n os.chdir('/run');os.execve(q,[q,'--list','--exact',data['child']],{'PATH':'/usr/bin:/bin'})\n_,status=os.waitpid(pid,0);os.close(fd);code=os.waitstatus_to_exitcode(status)\nprint(json.dumps({'actual_wait_exit':code}),flush=True)\nassert code==0\n",
+        "{\"path\": \"/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017\", \"child\": \"neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child\"}"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:44.346348+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53417,
+      "process_group": 53417,
+      "finished": "2026-11-20T13:58:44.422770+00:00",
+      "elapsed_seconds": 0.07633290300145745,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.01680200000001264,
+      "child_system_cpu_seconds": 0.008767999999999887,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 5296,
+      "output_blocks": 8,
+      "exit_code": 0
+    },
+    {
+      "name": "dedicated-uid-helper-access",
+      "command": [
+        "sudo",
+        "-n",
+        "/usr/bin/python3",
+        "-c",
+        "import os,json,sys,ctypes,errno\nassert os.geteuid()==0\npaths=json.loads(sys.argv[1]);codes=[]\nclass Header(ctypes.Structure):_fields_=[('version',ctypes.c_uint32),('pid',ctypes.c_int32)]\nclass Data(ctypes.Structure):_fields_=[('effective',ctypes.c_uint32),('permitted',ctypes.c_uint32),('inheritable',ctypes.c_uint32)]\nfor uid in [60001,60002]:\n pid=os.fork()\n if pid==0:\n  c=ctypes.CDLL(None,use_errno=True)\n  assert c.prctl(38,1,0,0,0)==0 and c.prctl(47,4,0,0,0)==0\n  for cap in range(64):\n   present=c.prctl(23,cap,0,0,0)\n   if present<0:\n    assert cap>0 and ctypes.get_errno()==errno.EINVAL;break\n   if present:assert c.prctl(24,cap,0,0,0)==0\n  os.setgroups([]);os.setresgid(60001,60001,60001);os.setresuid(uid,uid,uid)\n  header=Header(0x20080522,0);caps=(Data*2)()\n  assert c.capset(ctypes.byref(header),ctypes.byref(caps))==0\n  for path in paths:\n   row={'uid':uid,'path':path,'read':os.access(path,os.R_OK,effective_ids=True),'execute':os.access(path,os.X_OK,effective_ids=True)}\n   print(json.dumps(row),flush=True);assert row['read'] and row['execute']\n  os._exit(0)\n _,status=os.waitpid(pid,0);codes.append(os.waitstatus_to_exitcode(status))\nassert codes==[0,0],codes\n",
+        "[\"/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd\", \"/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host\", \"/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose\"]"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:44.732339+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53445,
+      "process_group": 53445,
+      "finished": "2026-11-20T13:58:44.764160+00:00",
+      "elapsed_seconds": 0.031721520237624645,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.011519999999990205,
+      "child_system_cpu_seconds": 0.010334000000000287,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 0,
+      "output_blocks": 8,
+      "exit_code": 0
+    },
+    {
+      "name": "root-mount-setup",
+      "command": [
+        "sudo",
+        "-n",
+        "python3",
+        "-c",
+        "import os,pathlib,subprocess,json\nassert os.geteuid()==0\nroot=pathlib.Path('/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12');root.mkdir(mode=0o700)\nfor name in ['source','bind','witness-source','witness-bind','checkpoints']:(root/name).mkdir(mode=0o700)\nfor source,target in [('source','bind'),('witness-source','witness-bind')]:\n subprocess.run(['mount','--bind',str(root/source),str(root/target)],check=True)\n assert (root/source).stat().st_dev==(root/target).stat().st_dev\n assert (root/source).stat().st_ino==(root/target).stat().st_ino\nrows=[line for line in pathlib.Path('/proc/self/mountinfo').read_text().splitlines() if str(root) in line]\nassert len(rows)==2\nprint(json.dumps({'uid':os.geteuid(),'root':str(root),'actual_mountinfo':rows}))\n"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:45.074923+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53474,
+      "process_group": 53474,
+      "finished": "2026-11-20T13:58:45.107116+00:00",
+      "elapsed_seconds": 0.03193392604589462,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.013727999999986196,
+      "child_system_cpu_seconds": 0.008699000000000012,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 1072,
+      "output_blocks": 8,
+      "exit_code": 0
+    },
+    {
+      "name": "root-completed-refusal-original-bounds-execution",
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "-i",
+        "BINDGEN_EXTRA_CLANG_ARGS=-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "CARGO_BIN_EXE_codex-hepta-agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_codex_hepta_agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_hepta-authority-host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta-joint-propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BIN_EXE_hepta_authority_host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta_joint_propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BUILD_JOBS=2",
+        "CARGO_HOME=/home/qq/.cargo",
+        "CARGO_INCREMENTAL=0",
+        "CARGO_NET_OFFLINE=true",
+        "CARGO_TARGET_DIR=/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+        "GIT_CONFIG_COUNT=1",
+        "GIT_CONFIG_KEY_0=safe.directory",
+        "GIT_CONFIG_VALUE_0=/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/checkpoints",
+        "HEPTA_CI_LANE=source-head",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/bind",
+        "HEPTA_ORDINARY_SOURCE_COMMIT=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "HEPTA_ORDINARY_SOURCE_TREE=fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+        "HEPTA_Q24_FACTORY_WITNESS_BIND=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-bind",
+        "HEPTA_Q24_FACTORY_WITNESS_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-source",
+        "LIBCLANG_PATH=/home/qq/hepta-learn-ff41-tools/lib",
+        "PATH=/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/tooling/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "RUSTUP_HOME=/home/qq/.rustup",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "SOURCE_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "TESTED_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "python3",
+        "-c",
+        "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-12/root-completed-refusal-original-bounds.json",
+        "--",
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:46.330815+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53522,
+      "process_group": 53522,
+      "finished": "2026-11-20T13:58:47.146407+00:00",
+      "elapsed_seconds": 0.8153820051811635,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.5793679999999881,
+      "child_system_cpu_seconds": 0.30393899999999974,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 12640,
+      "output_blocks": 200,
+      "exit_code": 0
+    },
+    {
+      "name": "root-completed-refusal-observer-namespace-execution",
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "-i",
+        "BINDGEN_EXTRA_CLANG_ARGS=-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "CARGO_BIN_EXE_codex-hepta-agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_codex_hepta_agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_hepta-authority-host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta-joint-propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BIN_EXE_hepta_authority_host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta_joint_propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BUILD_JOBS=2",
+        "CARGO_HOME=/home/qq/.cargo",
+        "CARGO_INCREMENTAL=0",
+        "CARGO_NET_OFFLINE=true",
+        "CARGO_TARGET_DIR=/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+        "GIT_CONFIG_COUNT=1",
+        "GIT_CONFIG_KEY_0=safe.directory",
+        "GIT_CONFIG_VALUE_0=/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/checkpoints",
+        "HEPTA_CI_LANE=source-head",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/bind",
+        "HEPTA_ORDINARY_SOURCE_COMMIT=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "HEPTA_ORDINARY_SOURCE_TREE=fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+        "HEPTA_Q24_FACTORY_WITNESS_BIND=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-bind",
+        "HEPTA_Q24_FACTORY_WITNESS_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-source",
+        "LIBCLANG_PATH=/home/qq/hepta-learn-ff41-tools/lib",
+        "PATH=/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/tooling/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "RUSTUP_HOME=/home/qq/.rustup",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "SOURCE_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "TESTED_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "python3",
+        "-c",
+        "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-12/root-completed-refusal-observer-namespace.json",
+        "--",
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:48.102972+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 53762,
+      "process_group": 53762,
+      "finished": "2026-11-20T13:58:48.918915+00:00",
+      "elapsed_seconds": 0.8156377905979753,
+      "timed_out": false,
+      "child_user_cpu_seconds": 0.5841489999999965,
+      "child_system_cpu_seconds": 0.29533599999999893,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 0,
+      "output_blocks": 200,
+      "exit_code": 0
+    },
+    {
+      "name": "root-ack-lane-mechanism-execution",
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "-i",
+        "BINDGEN_EXTRA_CLANG_ARGS=-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "CARGO_BIN_EXE_codex-hepta-agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_codex_hepta_agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_hepta-authority-host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta-joint-propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BIN_EXE_hepta_authority_host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta_joint_propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BUILD_JOBS=2",
+        "CARGO_HOME=/home/qq/.cargo",
+        "CARGO_INCREMENTAL=0",
+        "CARGO_NET_OFFLINE=true",
+        "CARGO_TARGET_DIR=/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+        "GIT_CONFIG_COUNT=1",
+        "GIT_CONFIG_KEY_0=safe.directory",
+        "GIT_CONFIG_VALUE_0=/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/checkpoints",
+        "HEPTA_CI_LANE=source-head",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/bind",
+        "HEPTA_ORDINARY_SOURCE_COMMIT=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "HEPTA_ORDINARY_SOURCE_TREE=fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+        "HEPTA_Q24_FACTORY_WITNESS_BIND=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-bind",
+        "HEPTA_Q24_FACTORY_WITNESS_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-source",
+        "LIBCLANG_PATH=/home/qq/hepta-learn-ff41-tools/lib",
+        "PATH=/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/tooling/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "RUSTUP_HOME=/home/qq/.rustup",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "SOURCE_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "TESTED_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "python3",
+        "-c",
+        "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-12/root-ack-lane-mechanism.json",
+        "--",
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:49.883852+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 54053,
+      "process_group": 54053,
+      "finished": "2026-11-20T13:58:53.813100+00:00",
+      "elapsed_seconds": 3.928996343165636,
+      "timed_out": false,
+      "child_user_cpu_seconds": 2.2598119999999824,
+      "child_system_cpu_seconds": 0.5036670000000001,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 96,
+      "output_blocks": 216,
+      "exit_code": 0
+    },
+    {
+      "name": "ordinary-post-a-no-update-execution",
+      "command": [
+        "sudo",
+        "-n",
+        "env",
+        "-i",
+        "BINDGEN_EXTRA_CLANG_ARGS=-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+        "CARGO_BIN_EXE_codex-hepta-agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_codex_hepta_agentd=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/codex-hepta-agentd",
+        "CARGO_BIN_EXE_hepta-authority-host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta-joint-propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BIN_EXE_hepta_authority_host=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/bin/hepta-authority-host",
+        "CARGO_BIN_EXE_hepta_joint_propose=/var/tmp/hepta-native-root-e6-completed-acceptance-dbd6a009-noupdate-12/helpers/bin/hepta-joint-propose",
+        "CARGO_BUILD_JOBS=2",
+        "CARGO_HOME=/home/qq/.cargo",
+        "CARGO_INCREMENTAL=0",
+        "CARGO_NET_OFFLINE=true",
+        "CARGO_TARGET_DIR=/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+        "GIT_CONFIG_COUNT=1",
+        "GIT_CONFIG_KEY_0=safe.directory",
+        "GIT_CONFIG_VALUE_0=/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+        "HEPTA_CHECKPOINT_TEST_ROOT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/checkpoints",
+        "HEPTA_CI_LANE=source-head",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/bind",
+        "HEPTA_ORDINARY_SOURCE_COMMIT=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "HEPTA_ORDINARY_SOURCE_TREE=fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+        "HEPTA_Q24_FACTORY_WITNESS_BIND=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-bind",
+        "HEPTA_Q24_FACTORY_WITNESS_SOURCE=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-source",
+        "LIBCLANG_PATH=/home/qq/hepta-learn-ff41-tools/lib",
+        "PATH=/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/tooling/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "RUSTUP_HOME=/home/qq/.rustup",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "SOURCE_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "TESTED_SHA=dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+        "python3",
+        "-c",
+        "import os,runpy,sys; assert os.geteuid()==0; print('Root test uid=0',flush=True); runpy.run_path(sys.argv.pop(1),run_name='__main__')",
+        "scripts/hepta_ci_exec.py",
+        "--timeout-seconds",
+        "7200",
+        "--minimum-tests",
+        "1",
+        "--output",
+        "/home/qq/work/hepta-e6-first-error-20261120-2e9b/complete-noupdate-12/ordinary-post-a-no-update.json",
+        "--",
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "cwd": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source",
+      "started": "2026-11-20T13:58:54.789289+00:00",
+      "status": "completed",
+      "launcher_uid": 1000,
+      "pid": 54539,
+      "process_group": 54539,
+      "finished": "2026-11-20T14:00:33.186245+00:00",
+      "elapsed_seconds": 98.39668090827763,
+      "timed_out": false,
+      "child_user_cpu_seconds": 47.87983800000001,
+      "child_system_cpu_seconds": 4.589987000000001,
+      "owner_children_max_rss_kib": 5934252,
+      "input_blocks": 801752,
+      "output_blocks": 368,
+      "exit_code": 100
+    }
+  ],
+  "checks": {
+    "actual-helper-build": {
+      "started": "2026-11-20T13:56:44.637641+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:23.768888+00:00",
+      "elapsed_seconds": 99.13114202301949
+    },
+    "actual-helper-permissions-and-original-verify": {
+      "started": "2026-11-20T13:58:23.768978+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:24.205278+00:00",
+      "elapsed_seconds": 0.43625844502821565
+    },
+    "actual-product-build-and-original-pin": {
+      "started": "2026-11-20T13:58:24.205566+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:36.025302+00:00",
+      "elapsed_seconds": 11.819463055115193
+    },
+    "actual-library-binaries-build": {
+      "started": "2026-11-20T13:58:36.026534+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:42.625051+00:00",
+      "elapsed_seconds": 6.586965351831168
+    },
+    "actual-test-executable-mode": {
+      "started": "2026-11-20T13:58:42.625462+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:44.345697+00:00",
+      "elapsed_seconds": 1.7198809320107102
+    },
+    "actual-capless-uid60002-source-descriptor-list": {
+      "started": "2026-11-20T13:58:44.346010+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:44.731547+00:00",
+      "elapsed_seconds": 0.3852704241871834
+    },
+    "actual-capless-helper-access": {
+      "started": "2026-11-20T13:58:44.731913+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:45.074179+00:00",
+      "elapsed_seconds": 0.3419384700246155
+    },
+    "root-mount-setup": {
+      "started": "2026-11-20T13:58:45.074529+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:45.107515+00:00",
+      "elapsed_seconds": 0.03260448528453708
+    },
+    "root-completed-refusal-original-bounds": {
+      "started": "2026-11-20T13:58:45.107768+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:47.632362+00:00",
+      "elapsed_seconds": 2.5245034070685506
+    },
+    "root-completed-refusal-observer-namespace": {
+      "started": "2026-11-20T13:58:47.632772+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:49.396046+00:00",
+      "elapsed_seconds": 1.7631774279288948
+    },
+    "root-ack-lane-mechanism": {
+      "started": "2026-11-20T13:58:49.403250+00:00",
+      "status": "passed",
+      "passed": true,
+      "finished": "2026-11-20T13:58:54.304866+00:00",
+      "elapsed_seconds": 4.901518343016505
+    },
+    "ordinary-post-a-no-update": {
+      "started": "2026-11-20T13:58:54.305569+00:00",
+      "status": "failed",
+      "passed": false,
+      "finished": "2026-11-20T14:00:37.914590+00:00",
+      "elapsed_seconds": 103.6089017377235
+    }
+  },
+  "automatic_retry": false,
+  "scope": "Two separately recorded actual Root refusal namespace/bounded-identity components, one original real Root lane mechanism parent (two terminal scenarios), then only on success one unchanged ordinary complete NoUpdate parent. Component fixtures are not ordinary C or a complete Root Feature ACK proof. No Adopt/cold parent runs.",
+  "root_completion_components_passed": true,
+  "root_lane_mechanism_passed": true,
+  "root_mechanism_is_full_product_ack": false,
+  "mechanism_parent": "neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current",
+  "qualification_limits": {
+    "human_independent_source_authentication": false,
+    "adoption": false,
+    "fresh_D_after_cold_recovery": false,
+    "FinalUse": false,
+    "settlement_eligibility": false,
+    "full_system_cost_complete": false
+  },
+  "complete_native_NoUpdate": false,
+  "native_owner_adoption": false,
+  "fresh_C_and_cold_fresh_D": false,
+  "cost_scope": "Fresh exact-source helper/product/library preparation and the unchanged original just test command are executed in the private restored target. Prior cache acquisition, failed owners, and exact-source native11 costs remain linked and are not relabeled free or new model work. Per-command and whole-owner intervals overlap. RUSAGE_CHILDREN measures reaped descendants; max RSS is not simultaneous system RSS. Physical energy, network, storage byte-seconds and charges remain unknown.",
+  "before": {
+    "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+    "status": "",
+    "tracked_files": 15812,
+    "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+  },
+  "environment": {
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target",
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "PATH": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/tooling/bin:/home/qq/.cargo/bin:/home/qq/hepta-learn-ff41-tools/bin:/home/qq/hepta-learn-ff41-tools/python/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "environment_file_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "cargo_profile_overrides": {},
+  "root-completed-refusal-original-bounds": {
+    "command_exit_code": 0,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "root-completed-refusal-original-bounds.json",
+      "execution_sha256": "0fb26f5faf49ada12f5f3dd44387e7eb3b0f6bbc15c2bcde3c4d5fe5bf457767",
+      "failures": 0,
+      "job": null,
+      "junit_bytes": 581,
+      "junit_mtime_ns": 1795183127102845022,
+      "junit_sha256": "6c213821d672f6f1af6808804423cc432793d1c3e70846064ef73e9b29e7f851",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "source_tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "passed",
+      "total_testcases": 1,
+      "collector_exit_code": 0,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "",
+      "tracked_files": 15812,
+      "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+    },
+    "source_unchanged": true
+  },
+  "root_completion_components": [
+    {
+      "name": "root-completed-refusal-original-bounds",
+      "case": "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity",
+      "passed": true,
+      "requires_actual_uid0": true,
+      "full_learning_acceptance": false
+    },
+    {
+      "name": "root-completed-refusal-observer-namespace",
+      "case": "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner",
+      "passed": true,
+      "requires_actual_uid0": true,
+      "full_learning_acceptance": false
+    }
+  ],
+  "root-completed-refusal-observer-namespace": {
+    "command_exit_code": 0,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "root-completed-refusal-observer-namespace.json",
+      "execution_sha256": "98e215dda25213f10c6661ea13fd33d02b4c1fd010539da30aae0a7f3d9db33d",
+      "failures": 0,
+      "job": null,
+      "junit_bytes": 601,
+      "junit_mtime_ns": 1795183128838814612,
+      "junit_sha256": "8b3a1f29794ac10b06fb85c46796e98b7072857853f26a84eea48763b043fbdd",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "source_tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "passed",
+      "total_testcases": 1,
+      "collector_exit_code": 0,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "",
+      "tracked_files": 15812,
+      "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+    },
+    "source_unchanged": true
+  },
+  "root-ack-lane-mechanism": {
+    "command_exit_code": 0,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::publication_root_tests::root_broker_late_enrolls_publishes_and_recovers_original_current)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "root-ack-lane-mechanism.json",
+      "execution_sha256": "accd3f4967fbd5e892c5fc30c79a5f3ed6f8896c8df6e210f465175b4f6a305b",
+      "failures": 0,
+      "job": null,
+      "junit_bytes": 564,
+      "junit_mtime_ns": 1795183133721919814,
+      "junit_sha256": "a7192ac80a395a65646f5072b8f2d80cfb012493a4c44a65a38bbc38b9986f73",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "source_tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "passed",
+      "total_testcases": 1,
+      "collector_exit_code": 0,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "",
+      "tracked_files": 15812,
+      "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+    },
+    "source_unchanged": true
+  },
+  "root_mechanism_evidence_scope": {
+    "native_parent_cases": 1,
+    "original_terminal_branches": [
+      "StalePrepare",
+      "Revoked"
+    ],
+    "required_orders_per_terminal": [
+      "SourceFirst",
+      "CurrentFirst"
+    ],
+    "real_root_client_and_socket": true,
+    "real_missing_and_pending_source_files": true,
+    "completed_root_feature_ack": false,
+    "ordinary_C": false,
+    "same_run_concurrent_replay_serialization": false,
+    "failure_only_child_stderr_retained_on_success": false,
+    "success_output_asserted_by_parent": true
+  },
+  "ordinary-post-a-no-update": {
+    "command_exit_code": 100,
+    "collection": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-contracts",
+        "--lib",
+        "--run-ignored",
+        "only",
+        "--test-threads",
+        "1",
+        "-E",
+        "test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c)",
+        "--retries",
+        "0",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final",
+        "--no-tests",
+        "fail"
+      ],
+      "errors": 0,
+      "execution_file": "ordinary-post-a-no-update.json",
+      "execution_sha256": "3dd803ee6f6e832b553ad5e5271566db4b96ce87fc10daa5f1f41e8a9e0009c1",
+      "failures": 1,
+      "job": null,
+      "junit_bytes": 2908,
+      "junit_mtime_ns": 1795183232799731337,
+      "junit_sha256": "65318b60bb71cacfe5961445de2d5092bd8be20a5ecb9f982c5f460df79226bc",
+      "kind": "native-junit-collection",
+      "native_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "run_attempt": null,
+      "run_id": null,
+      "schema_version": 1,
+      "skipped_in_xml": 0,
+      "source_sha": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "source_tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "retained-failed",
+      "total_testcases": 1,
+      "collector_exit_code": 1,
+      "exact_parent_coverage": true
+    },
+    "source_after": {
+      "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+      "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+      "status": "",
+      "tracked_files": 15812,
+      "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+    },
+    "source_unchanged": true
+  },
+  "pinned_and_original_binary_bytes_unchanged": true,
+  "mount_cleanup_successful": true,
+  "after": {
+    "head": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+    "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+    "status": "",
+    "tracked_files": 15812,
+    "tracked_sha256": "a6137f46278ffe086e93d98f3daaa76c8f81df40acdf9b5a6b34be85f425fce7"
+  },
+  "source_unchanged": true,
+  "tracked_bytes_unchanged": true,
+  "compiler_inputs_unchanged": true,
+  "owner_self_user_cpu_seconds": 9.407561,
+  "owner_self_system_cpu_seconds": 3.580537,
+  "finished": "2026-11-20T14:00:45.489078+00:00",
+  "owner_wall_seconds": 241.51293221209198,
+  "owner_child_user_cpu_seconds": 226.882024,
+  "owner_child_system_cpu_seconds": 23.740768,
+  "owner_children_max_rss_kib": 5934252,
+  "successful": false,
+  "log_inventory": {
+    "DEPLOYMENT.json": {
+      "bytes": 319,
+      "sha256": "8926bad6ed4afe2a31f015a812f0dabf63d53344350f69b60463503fa5b7aba2"
+    },
+    "ORIGINAL_HARNESS.py": {
+      "bytes": 33247,
+      "sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1"
+    },
+    "PROTOCOL.json": {
+      "bytes": 24261,
+      "sha256": "b8b8a10fda69d78a0c350c7fed6c1a26e418778c74cea7d335510ebe32a5b43c"
+    },
+    "TRACKED_FILES_AFTER.json": {
+      "bytes": 3641800,
+      "sha256": "de258a2cf89cdb629d02c1e50d955b6fd01160f36c815d042b975d2dbd087e36"
+    },
+    "TRACKED_FILES_BEFORE.json": {
+      "bytes": 3641800,
+      "sha256": "de258a2cf89cdb629d02c1e50d955b6fd01160f36c815d042b975d2dbd087e36"
+    },
+    "__pycache__/ORIGINAL_HARNESS.cpython-314.pyc": {
+      "bytes": 55592,
+      "sha256": "6f6e7ab5a08d1719826f829b1bade9a8953f1fceb09a1da05a65efed15480fba"
+    },
+    "actual-native-executable.json": {
+      "bytes": 975,
+      "sha256": "35c19f09c754c0350053ca78e19d7cba192242d2e9fd19e61f555d02327c1f80"
+    },
+    "dedicated-source-descriptor-list.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dedicated-source-descriptor-list.stdout.log": {
+      "bytes": 423,
+      "sha256": "0ba6396ba6ec6117778c12d9c097c054e1a3be6d0a669f6aea9462b28210a236"
+    },
+    "dedicated-uid-helper-access.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "dedicated-uid-helper-access.stdout.log": {
+      "bytes": 934,
+      "sha256": "0a17d8ce99bee533648606e753dec5b1622d0ad130de9412b6830e4e873aec0c"
+    },
+    "helper-build-preparation-records/codex-hepta-infer-worker-host.jsonl": {
+      "bytes": 1065709,
+      "sha256": "8e73a035aeb3396f4b9c7c234462dc1ed28c01e6fc2327519403857ffab91c12"
+    },
+    "helper-build-preparation-records/codex-hepta-infer-worker-host.stderr.log": {
+      "bytes": 28766,
+      "sha256": "fa1c6f1d2a9306f67de349fbe11eec0735eae1b04f0604cc180ec4275551a51d"
+    },
+    "helper-build-preparation-records/env.json": {
+      "bytes": 295,
+      "sha256": "1cf156d0ee7879127965a24a60a4af3ecc333c99e9180b3cfbc1921bc0bd3947"
+    },
+    "helper-build-preparation-records/manifest.json": {
+      "bytes": 1913,
+      "sha256": "c34023046728358a34ec626ad56ff0d11c5c1df9f778c3d98d12aaf5f6d04c69"
+    },
+    "helper-build.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "helper-build.stdout.log": {
+      "bytes": 197,
+      "sha256": "60236c6603568a6be76c6ab7f149c4567bff5e6eb56b71492ca0bad640662bf7"
+    },
+    "helper-env.json": {
+      "bytes": 295,
+      "sha256": "1cf156d0ee7879127965a24a60a4af3ecc333c99e9180b3cfbc1921bc0bd3947"
+    },
+    "helper-manifest.json": {
+      "bytes": 1913,
+      "sha256": "c34023046728358a34ec626ad56ff0d11c5c1df9f778c3d98d12aaf5f6d04c69"
+    },
+    "helper-verify-preparation-records/codex-hepta-infer-worker-host.jsonl": {
+      "bytes": 1065709,
+      "sha256": "8e73a035aeb3396f4b9c7c234462dc1ed28c01e6fc2327519403857ffab91c12"
+    },
+    "helper-verify-preparation-records/codex-hepta-infer-worker-host.stderr.log": {
+      "bytes": 28766,
+      "sha256": "fa1c6f1d2a9306f67de349fbe11eec0735eae1b04f0604cc180ec4275551a51d"
+    },
+    "helper-verify-preparation-records/env.json": {
+      "bytes": 295,
+      "sha256": "1cf156d0ee7879127965a24a60a4af3ecc333c99e9180b3cfbc1921bc0bd3947"
+    },
+    "helper-verify-preparation-records/manifest.json": {
+      "bytes": 1913,
+      "sha256": "c34023046728358a34ec626ad56ff0d11c5c1df9f778c3d98d12aaf5f6d04c69"
+    },
+    "helper-verify.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "helper-verify.stdout.log": {
+      "bytes": 1159,
+      "sha256": "4fa4b53ecd3a4f34a8c6782c08cd015f637c5991575385b146cf83df4bfdc654"
+    },
+    "library-binaries-build-uid1000.stderr.log": {
+      "bytes": 27167,
+      "sha256": "e476003ee8a5be0b40edfdb3f38dc282661a2daf003ea673112b2d183d972046"
+    },
+    "library-binaries-build-uid1000.stdout.log": {
+      "bytes": 4092,
+      "sha256": "2931a19fa177233e337c17123efa03b9b679c54c14db21b4a272335954f454eb"
+    },
+    "mount-cleanup.json": {
+      "bytes": 333,
+      "sha256": "5b2c2815c160a52acd9b55ca0fafbb54ffcf14672a70e88a84e4ef313bc3e996"
+    },
+    "ordinary-parent-roster.json": {
+      "bytes": 759,
+      "sha256": "fe07adf80a788195990aae3f9c06ce807866ab4142c72189b63e30b86684a72b"
+    },
+    "ordinary-post-a-no-update-collection.json": {
+      "bytes": 1352,
+      "sha256": "59ce9b42114b3b8a613aa8b15a7243b451ef5402fdbc0c1da9447823e12ec795"
+    },
+    "ordinary-post-a-no-update-execution.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ordinary-post-a-no-update-execution.stdout.log": {
+      "bytes": 46616,
+      "sha256": "b49fcc75d989c0d8d9ba9e4b6e0c84fc23ddea91bed1ef1680223e838048c95b"
+    },
+    "ordinary-post-a-no-update-fresh-native-observed-0.xml": {
+      "bytes": 2908,
+      "sha256": "65318b60bb71cacfe5961445de2d5092bd8be20a5ecb9f982c5f460df79226bc"
+    },
+    "ordinary-post-a-no-update-launch.json": {
+      "bytes": 3609,
+      "sha256": "bc70aa11194a727530fd26350a20ee4066ea29808a66a94ffa98210c2493510b"
+    },
+    "ordinary-post-a-no-update-parent-coverage.json": {
+      "bytes": 388,
+      "sha256": "49c8e45989e9f3bdf87d48d22d00c72e467e954b9df30cff83293cef67d15507"
+    },
+    "ordinary-post-a-no-update-prior-junit-1-excluded.xml": {
+      "bytes": 564,
+      "sha256": "a7192ac80a395a65646f5072b8f2d80cfb012493a4c44a65a38bbc38b9986f73"
+    },
+    "ordinary-post-a-no-update-source-before.json": {
+      "bytes": 241,
+      "sha256": "0db0e2afdc1d7deda2e693459d0b9d4d401052bf300cd45a371b7f0e6a2325e0"
+    },
+    "ordinary-post-a-no-update.json": {
+      "bytes": 1927,
+      "sha256": "3dd803ee6f6e832b553ad5e5271566db4b96ce87fc10daa5f1f41e8a9e0009c1"
+    },
+    "ordinary-post-a-no-update.json.a609cad1844f48d192b6b92c89cb93fa.log": {
+      "bytes": 44891,
+      "sha256": "8e586d8e58a937b92cc70cd84d560fcfbd210dbc0e91d407ff043e9f6b7d1ef5"
+    },
+    "ordinary-post-a-no-update.summary.json": {
+      "bytes": 1291,
+      "sha256": "60878427f7a3ca12b33d3b46d32f84a4659e4e135a7b5fa0864e993016dac24b"
+    },
+    "ordinary-post-a-no-update.xml": {
+      "bytes": 2908,
+      "sha256": "65318b60bb71cacfe5961445de2d5092bd8be20a5ecb9f982c5f460df79226bc"
+    },
+    "original-nextest-budgets.json": {
+      "bytes": 6004,
+      "sha256": "b0f3f6afbae5df72041cd7d0d11b9b94ba9de51f1a5b65d09910dd75a68e1ae9"
+    },
+    "product-build.stderr.log": {
+      "bytes": 23634,
+      "sha256": "93fc1dd6243e2f4db3d934f4f0a8f7e0e1fe5f93bf47e2d8d07f1228051ab71c"
+    },
+    "product-build.stdout.log": {
+      "bytes": 1065564,
+      "sha256": "6bad14c0103bcb96fe655ba630c7c8b5b5f15e3e143d03a3a1abb02178783e9e"
+    },
+    "product-env.json": {
+      "bytes": 555,
+      "sha256": "fcfcca02060b713d633f9d3ad7c2cf0ff3cdff26106e6ff393cb94fb54192ed8"
+    },
+    "product-manifest.json": {
+      "bytes": 1505,
+      "sha256": "64bdfe7b9fe8694beb0f26400bc0a09612f7bfc74a781b9669c5ad2780660d86"
+    },
+    "public-helper-executable-installation.json": {
+      "bytes": 358,
+      "sha256": "127edc2a49fd9f6470072bf99d169c2ec1c39d0e67e19afe03508888d72b52f7"
+    },
+    "root-ack-lane-mechanism-collection.json": {
+      "bytes": 1307,
+      "sha256": "cedacf66ab71af46a6fdc00e18ff90a0958155ef16af1dec3df5870dce1259e6"
+    },
+    "root-ack-lane-mechanism-execution.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-ack-lane-mechanism-execution.stdout.log": {
+      "bytes": 47348,
+      "sha256": "ab87626e43a711d055f6d756def49b3ed3c28439cced3b0cd95bb23cfcbc6103"
+    },
+    "root-ack-lane-mechanism-fresh-native-observed-0.xml": {
+      "bytes": 564,
+      "sha256": "a7192ac80a395a65646f5072b8f2d80cfb012493a4c44a65a38bbc38b9986f73"
+    },
+    "root-ack-lane-mechanism-launch.json": {
+      "bytes": 3574,
+      "sha256": "8c369ea606a620432672b61f611f0672568a84b9148c71fe41b863f88e6c21c1"
+    },
+    "root-ack-lane-mechanism-parent-coverage.json": {
+      "bytes": 322,
+      "sha256": "550649f86e4409bfe0dc9ff9d8bcd04aa1e3ef472cc2c998c4c9350bb15826bc"
+    },
+    "root-ack-lane-mechanism-prior-junit-1-excluded.xml": {
+      "bytes": 601,
+      "sha256": "8b3a1f29794ac10b06fb85c46796e98b7072857853f26a84eea48763b043fbdd"
+    },
+    "root-ack-lane-mechanism-source-before.json": {
+      "bytes": 241,
+      "sha256": "0db0e2afdc1d7deda2e693459d0b9d4d401052bf300cd45a371b7f0e6a2325e0"
+    },
+    "root-ack-lane-mechanism.json": {
+      "bytes": 1832,
+      "sha256": "accd3f4967fbd5e892c5fc30c79a5f3ed6f8896c8df6e210f465175b4f6a305b"
+    },
+    "root-ack-lane-mechanism.json.2f74716dc8d54a6ba1c273f4d9ffb0e1.log": {
+      "bytes": 45716,
+      "sha256": "c50d7f6f122223eacf84d4bf124bb8c45b9225ad4be54e0c2bd02b6657f5f864"
+    },
+    "root-ack-lane-mechanism.summary.json": {
+      "bytes": 1246,
+      "sha256": "a46f2a2480aec63386f3768fc8d5fe41c9fff4c95480330114202c91873bf355"
+    },
+    "root-ack-lane-mechanism.xml": {
+      "bytes": 564,
+      "sha256": "a7192ac80a395a65646f5072b8f2d80cfb012493a4c44a65a38bbc38b9986f73"
+    },
+    "root-completed-refusal-observer-namespace-collection.json": {
+      "bytes": 1362,
+      "sha256": "2ae050e021784c5471c41bc03b1bc953682cb6cc6a1bb372c86ff963ebc9d5b4"
+    },
+    "root-completed-refusal-observer-namespace-execution.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-completed-refusal-observer-namespace-execution.stdout.log": {
+      "bytes": 44113,
+      "sha256": "38dd33bfbf77453d3dc69ddef44f2539adb996226b0b10875f74817e2fb6c70f"
+    },
+    "root-completed-refusal-observer-namespace-fresh-native-observed-0.xml": {
+      "bytes": 601,
+      "sha256": "8b3a1f29794ac10b06fb85c46796e98b7072857853f26a84eea48763b043fbdd"
+    },
+    "root-completed-refusal-observer-namespace-launch.json": {
+      "bytes": 3629,
+      "sha256": "befa922227afaf6863e6b15a5f8fa45d3be4bb7dc441e6df209ca2e823b8d980"
+    },
+    "root-completed-refusal-observer-namespace-parent-coverage.json": {
+      "bytes": 396,
+      "sha256": "e5575b765a55ad977b8d79fd812c7e09bf6e6ec4a36a81d0451f3989b0554fc4"
+    },
+    "root-completed-refusal-observer-namespace-prior-junit-1-excluded.xml": {
+      "bytes": 581,
+      "sha256": "6c213821d672f6f1af6808804423cc432793d1c3e70846064ef73e9b29e7f851"
+    },
+    "root-completed-refusal-observer-namespace-source-before.json": {
+      "bytes": 241,
+      "sha256": "0db0e2afdc1d7deda2e693459d0b9d4d401052bf300cd45a371b7f0e6a2325e0"
+    },
+    "root-completed-refusal-observer-namespace.json": {
+      "bytes": 1887,
+      "sha256": "98e215dda25213f10c6661ea13fd33d02b4c1fd010539da30aae0a7f3d9db33d"
+    },
+    "root-completed-refusal-observer-namespace.json.56ee4c26f70e4cfdb1b2ff4ff266dc5c.log": {
+      "bytes": 42426,
+      "sha256": "c4f29c5ad0308ba9537a4eae512c507006972add435061c8d30e53ac78653600"
+    },
+    "root-completed-refusal-observer-namespace.summary.json": {
+      "bytes": 1301,
+      "sha256": "a7130ea25d0a2e46cb69e43459968c7c37e3ba8457b77b88095ae28ac3724fa8"
+    },
+    "root-completed-refusal-observer-namespace.xml": {
+      "bytes": 601,
+      "sha256": "8b3a1f29794ac10b06fb85c46796e98b7072857853f26a84eea48763b043fbdd"
+    },
+    "root-completed-refusal-original-bounds-collection.json": {
+      "bytes": 1339,
+      "sha256": "907ce20c8c0290907da013d465bf94cf22539f35310f9f32e248afe44e5526c2"
+    },
+    "root-completed-refusal-original-bounds-execution.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-completed-refusal-original-bounds-execution.stdout.log": {
+      "bytes": 44030,
+      "sha256": "1a5c54d7face10ac85d3ab2ada5b2f433e93c6454e91dfb720c2dfae0c28c79b"
+    },
+    "root-completed-refusal-original-bounds-fresh-native-observed-0.xml": {
+      "bytes": 581,
+      "sha256": "6c213821d672f6f1af6808804423cc432793d1c3e70846064ef73e9b29e7f851"
+    },
+    "root-completed-refusal-original-bounds-launch.json": {
+      "bytes": 3606,
+      "sha256": "c897573b9ffd05164e5680e48f0e66878082b90d48f8f2e7e3f4825f3624362e"
+    },
+    "root-completed-refusal-original-bounds-parent-coverage.json": {
+      "bytes": 356,
+      "sha256": "841896d2ab94d0c750882890fcb63b448bab488793df82ea30a528daceec4b8b"
+    },
+    "root-completed-refusal-original-bounds-prior-junit-1-excluded.xml": {
+      "bytes": 2965,
+      "sha256": "af306fbc1c16578911eec3501628a4ffe0b9a99513b6b4eecc5a2a7ddf53852d"
+    },
+    "root-completed-refusal-original-bounds-source-before.json": {
+      "bytes": 241,
+      "sha256": "0db0e2afdc1d7deda2e693459d0b9d4d401052bf300cd45a371b7f0e6a2325e0"
+    },
+    "root-completed-refusal-original-bounds.json": {
+      "bytes": 1864,
+      "sha256": "0fb26f5faf49ada12f5f3dd44387e7eb3b0f6bbc15c2bcde3c4d5fe5bf457767"
+    },
+    "root-completed-refusal-original-bounds.json.7b43eb53d4ec429c96db959297311cea.log": {
+      "bytes": 42366,
+      "sha256": "70343ccf5529258a8803994cbaa6629ecc5955a3cde94ee0322c8c126a2658f5"
+    },
+    "root-completed-refusal-original-bounds.summary.json": {
+      "bytes": 1278,
+      "sha256": "93aeb04409ab0413380baaf2c0150a27d2dc522eb9b5edb02a0c28434d6f0ad3"
+    },
+    "root-completed-refusal-original-bounds.xml": {
+      "bytes": 581,
+      "sha256": "6c213821d672f6f1af6808804423cc432793d1c3e70846064ef73e9b29e7f851"
+    },
+    "root-mount-setup.stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "root-mount-setup.stdout.log": {
+      "bytes": 673,
+      "sha256": "daa2bd453105ff785226e6384195503f570cf6014d62ead9f3050c44537a3063"
+    },
+    "root48-parent-roster.json": {
+      "bytes": 6633,
+      "sha256": "236ad5a519e8e8ff51e17bcf5a2c4b232e6d8b1a04764fdedc70db7790e77e85"
+    }
+  }
+}

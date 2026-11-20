@@ -1,0 +1,123 @@
+{
+  "status": "completed",
+  "successful": true,
+  "source_parent": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "started_at_ns": "1795174612040037020",
+  "native_cases": 0,
+  "model_calls": 0,
+  "original_parent_runs": 0,
+  "automatic_retry": false,
+  "original_deadlines_changed": false,
+  "root_read_budget": 64,
+  "original_failed_parent_retained": true,
+  "scope": "Only exact post-format source-policy tokens change; actual compile-list and original project justfix rebind the complete inventory without carrying validation across source identities.",
+  "retained_prior_native_elf": {
+    "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-target/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "retained_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/completion-acceptance-compile-project-fix-1/retained-bfea-agentd-test-binary",
+    "sha256": "855c122c7fc0d6125519bd4b4dcec2142abd62efac0b01c9b602c9c6fee2a1ed",
+    "bytes": 1206035048,
+    "device": 66306,
+    "inode": 53511655,
+    "mode": "0555",
+    "original_bytes_and_mode_unchanged": true
+  },
+  "source_before_sha256": "7b81718fc52322b3257874bd979c04256158f337be3dd07d33367ca25496151c",
+  "prior_compile_result_sha256": "5b651e9e1d7b4b079b6f1f5a53566400018724063cff2e9fb9366a93577dc6a4",
+  "retained_component_result_sha256": "a59aefb992eaa7839849c9ace0e7cc66b4d8b4e9b57904c19cf04cbbd9877862",
+  "runner_sha256": "31cd6fe10a942ecfe05e0ff756edfbbf93a52c35b4d10d0a9541aadffc911880",
+  "original_environment_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "changed_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "codex-rs/hepta-agentd/src/authority_host_completed_record.rs",
+    "codex-rs/hepta-agentd/src/authority_host_completed_record_tests.rs",
+    "codex-rs/hepta-agentd/src/authority_host_completed_signatures.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs",
+    "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_data_tests.rs",
+    "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs",
+    "qa/b4-no-bypass/test_completed_learning_acceptance_source_closure.py",
+    "qa/b4-no-bypass/test_root_learning_scope_source_closure.py"
+  ],
+  "new_paths": [
+    "codex-rs/hepta-agentd/src/authority_host_completed_record_tests.rs",
+    "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs",
+    "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs"
+  ],
+  "policy_only_changes": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_completed_learning_acceptance_source_closure.py"
+  ],
+  "all_rust_and_build_inputs_byte_identical_to_prior_compile": true,
+  "cargo_build_jobs": 2,
+  "format": {
+    "argv": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.4153322894126177,
+    "child_user_cpu_seconds": 0.10071499999999999,
+    "child_system_cpu_seconds": 0.106768,
+    "child_max_rss_kib": 61564,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_before_compile_sha256": "cef7b4abff2e0140f7a0d58da117f75a4454b282a797c4853738935ed1d1f89a",
+  "only_refinement_paths": [
+    ".github/blob-size-allowlist.txt",
+    "CALLERS.toml",
+    "qa/b4-no-bypass/test_completed_learning_acceptance_source_closure.py"
+  ],
+  "source_files": 15812,
+  "compile": {
+    "argv": [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "--list-type",
+      "binaries-only",
+      "--message-format",
+      "json"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 107.59875567816198,
+    "child_user_cpu_seconds": 123.28707899999999,
+    "child_system_cpu_seconds": 8.183901,
+    "child_max_rss_kib": 6006660,
+    "stdout_sha256": "fce07df62376a39a707054dfdc3b51135ac294c9ebe7a60626c3b4dc63207032",
+    "stderr_sha256": "bd18b42f0318e4ba9b0c1094643bda0365c7e95bc4903879a2e9cf8bafc7e5c4"
+  },
+  "source_unchanged_during_compile": true,
+  "source_after_compile_sha256": "cef7b4abff2e0140f7a0d58da117f75a4454b282a797c4853738935ed1d1f89a",
+  "justfix": {
+    "argv": [
+      "just",
+      "fix",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 104.08083071606234,
+    "child_user_cpu_seconds": 96.417329,
+    "child_system_cpu_seconds": 4.742115,
+    "child_max_rss_kib": 6006660,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "996ffd185e384531b0007903771fc20473b037558b6c50582a2a6567d89cf87b"
+  },
+  "lint_changed_paths": [],
+  "source_unchanged_during_lint": true,
+  "compiled_bytes_remain_current": true,
+  "source_after_lint_sha256": "cef7b4abff2e0140f7a0d58da117f75a4454b282a797c4853738935ed1d1f89a",
+  "source_after_sha256": "cef7b4abff2e0140f7a0d58da117f75a4454b282a797c4853738935ed1d1f89a",
+  "finished_at_ns": "1795174831368462741",
+  "owner_wall_seconds": 219.32843100093305
+}

@@ -1,0 +1,11 @@
+{
+  "status": "LOCAL_FINALIZATION_FAILED_BEFORE_PUBLICATION",
+  "error": "ValueError: absolute local_path was passed to Path.relative_to with a relative publication root",
+  "actual_exit_code": 1,
+  "scope": "Local publication manifest readback; no archive verification or source/native experiment",
+  "retained_state": "PUBLICATION_FILES.initial63.json contains the unchanged initial 63-file manifest; PUBLICATION_FILES.json was not changed by the failed step",
+  "recovery": "Resolve the publication root once and retain the original failed readback record; repeat only the local publication finalization",
+  "original_archives_changed": false,
+  "host_calls": 0,
+  "remote_git_mutations": 0
+}

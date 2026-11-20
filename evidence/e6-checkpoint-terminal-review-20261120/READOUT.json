@@ -1,0 +1,67 @@
+{
+  "status": "UNEXECUTED_LOCAL_CANDIDATE",
+  "source_commit": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "source_tree": "e047b5fc72284e25a98c0ebb4f2e69a2f6338e56",
+  "finding": "Eight is capacity, not a universal completion count.",
+  "route_counts": {
+    "TrainingNoUpdate_core_valid_this_purpose_excluded": 5,
+    "EvaluationNoUpdate": 6,
+    "ProposalNoAdmissibleUpdate": 7,
+    "HistoricalUpdateWithoutLocalDecision": 7,
+    "LocalAdopt": 8,
+    "LocalDefer": 8,
+    "LocalRetain": 8
+  },
+  "minimum_product_change": "Remove only the len != MAX_RECEIPTS condition.",
+  "root_acceptance_claimed": false,
+  "outer_fixed_signature_shape_independent_blocker": true,
+  "noupdate9_first_cause_replaced": false,
+  "unchanged": [
+    "MAX_RECEIPTS=8",
+    "MAX_BYTES=8192",
+    "HEPLCP02/03/04 wire formats",
+    "scope and outer record binding",
+    "complete coordinator semantic replay",
+    "nonterminal rejection",
+    "TrainingNoUpdate exclusion for this Root history purpose",
+    "tail stage NextUse",
+    "checkpoint CAS and authenticated current owner",
+    "all Root signatures/authorization/physical journal acceptance",
+    "budgets and owner windows"
+  ],
+  "execution": {
+    "formatter_runs": 0,
+    "rust_compile_runs": 0,
+    "rust_test_runs": 0,
+    "native_parent_runs": 0,
+    "model_calls": 0,
+    "training_updates": 0,
+    "remote_host_calls": 0,
+    "policy_gate_runs": 0
+  },
+  "test_functions_authored": 8,
+  "test_functions_executed": 0,
+  "source_identity_checks_only": {
+    "source_pin_files": 23,
+    "all_source_git_blobs_match_bfea": true,
+    "exact_product_edit_only": true,
+    "test_count": 8,
+    "changed_source_files": 2
+  },
+  "manifest": {
+    "bytes": 4522,
+    "sha256": "44af789a8cea9ff976e51e14224345ee086904067aaebd8c808f8e6e30764dce",
+    "git_blob": "a315890b4f39c595bdac285d62edae5f935319f1"
+  },
+  "product_diff": {
+    "bytes": 16252,
+    "sha256": "cc4e597c24c6a7495592b6892b46f82e29bd511c05337c0edae326938c4717ef",
+    "git_blob": "1d6ab25b4e2e696399f7d0c1c8dcb9cb8a8fbad9"
+  },
+  "revision_2_diff": {
+    "bytes": 1728,
+    "sha256": "28948963a8a5cb30c60c4e2e494c0f7f6dc1d7b38ee2d82a2f3c3234cdbda211",
+    "git_blob": "443dcf7d7338812bd9e24fee4617ae459a4570db"
+  },
+  "peer_note": "Peer review found possible stale-head masking in generic error assertions. Require exact Snapshot(ContextMismatch) for four last-observation controls and WrongOwner/WrongOperation/EmptyEvidence/DeadlineExceeded for four receipt controls. Do not recompute heads or copy digest implementation; product unchanged."
+}

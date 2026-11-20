@@ -1,0 +1,76 @@
+{
+  "status": "SOURCE_ONLY_COMMIT_CREATED_REF_UNCHANGED",
+  "commit": {
+    "sha": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+    "node_id": "C_kwDOTrgxoNoAKDlkZmRlZDljZWNjNzRlMzlhMTliY2NkMTRiOWRlOWRjNDZjMDJjNjM",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T12:41:00Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T12:41:00Z"
+    },
+    "tree": {
+      "sha": "d07a8a95a2f0921387446063a1a51661cbd62df7",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/d07a8a95a2f0921387446063a1a51661cbd62df7"
+    },
+    "message": "test(hepta): align refusal namespace fixture with Cell scope\n\nThe stable scope digest excludes run_id, so changing only the run must keep the canonical refusal slot. Check that the complete target binding still rejects a different run, and change cell_id for the genuine missing-namespace control.\n\nRetain the physical missing-file, original-byte restoration, writer epoch and real Armed/Ready controls. Add caller location to the missing-file assertion for precise failure diagnosis. Production code and policy are unchanged.",
+    "parents": [
+      {
+        "sha": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/527e62b68bdf704efdd8a521c5a95c664bf69172",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/527e62b68bdf704efdd8a521c5a95c664bf69172"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "source_paths": 1,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs",
+      "bytes": 7905,
+      "sha256": "d9f12dab23ce5fe24182b13472e5ada4c7824e9df7061aadfcdc91618fe1fd11",
+      "git_blob": "f1adb0b1f0e9f4cece6d79150235f4970f7d5b26",
+      "mode": "100644"
+    }
+  ],
+  "compile_result_sha256": "2678e22936e5ec1c7f397473b483a18a77fe23dad2b231d75c9cfa6d90edd043",
+  "source_gate_result_sha256": "24d8cc10bd47f06f5441bb967bb3ebba39e30b3ea958ef234f18594c817e9e5c",
+  "source_inventory_sha256": "e3eb350ec62306da04dfa8e6aec5592a48d8962912204b15d17047f48920405e",
+  "github_ref_updated": false,
+  "blob_receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "f1adb0b1f0e9f4cece6d79150235f4970f7d5b26"
+    },
+    "isError": false
+  },
+  "tree_receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "d07a8a95a2f0921387446063a1a51661cbd62df7"
+    },
+    "isError": false
+  }
+}

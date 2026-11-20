@@ -1,0 +1,111 @@
+--- a/codex-rs/hepta-agentd/src/production_post_a_continuation.rs
++++ b/codex-rs/hepta-agentd/src/production_post_a_continuation.rs
+@@ -290,6 +290,27 @@
+                 task_custody.require_original()?;
+                 artifact_custody.require_original()?;
+                 material.require_unchanged()?;
++                // Retire only this actual completed C through its still-held
++                // publication owner. Keep the mutation synchronous in this
++                // joined continuation: cancelling its future cannot leave a
++                // separate blocking worker writing after owner teardown.
++                if installed.identity != identity {
++                    return Err(refused("original installed C retirement identity differs"));
++                }
++                let retirement_task = installed.published_task();
++                let retirement_cell = installed.cell();
++                let retirement_source = installed.source();
++                require_continuation(&state, &identity, &cancelled, end)?;
++                crate::PublishedCircuitFeatureTaskV1::drain_completed_task(
++                    &retirement_task,
++                    &retirement_cell,
++                    retirement_source.as_ref(),
++                    &installed.identity,
++                )?;
++                require_continuation(&state, &identity, &cancelled, end)?;
++                task_custody.require_original()?;
++                artifact_custody.require_original()?;
++                material.require_unchanged()?;
+                 let original =
+                     OriginalGenerationFiles::into_original_handoff(generation, completed)?;
+                 OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
+--- a/CALLERS.toml
++++ b/CALLERS.toml
+@@ -12550,7 +12550,7 @@
+ path = "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+ required = ["pub(crate) struct OriginalPostAContinuationV1", "original: OriginalContinuationInputs,"]
+ forbidden = ["AllowVerifier", "permit_all", "AuthorityPosture::ALLOW_ALL", "unwrap_or_default", "unwrap_or_else", "tokio::spawn(", "tokio::try_join!", "abort(", "detach", "Instant::now() +", "SigningKey", "Serialize", "Deserialize", "set_len(", "truncate(", "grants.request_grant", "issue_registered_final_use"]
+-required_function_order = [{ function = "fn from_original_inputs(", sequence = ["post_a_remaining(original.end)?", "OriginalHistoricalLearningTrustV1::require_original_receipt(", "&original.trust,", "&original.receipt,", "OriginalPreparedPublicationRoute::require_current(&original.publication)?", "OriginalCTaskPlan::require_original_mode(", "OriginalGenerationFiles::require_original_lifecycle(&original.generation, recovering)?", "Ok(Self { original })"] }, { function = "fn require_original_delivery(", sequence = ["!Arc::ptr_eq(source, &self.original.source)", "!Arc::ptr_eq(owners, &self.original.owners)", "identity != &self.original.identity", "OriginalHistoricalLearningTrustV1::require_original_receipt(", "OriginalPreparedPublicationRoute::require_current(&self.original.publication)?", "post_a_remaining(self.original.end)?"] }, { function = "fn run(", sequence = ["if cancelled.is_cancelled()", "post_a_remaining(end)?", "require_successor_admission(&state, &identity)", "RegisteredHistoricalLearningSourceV1::require_current_historical_source(", "OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?", "tokio::time::timeout_at(end.into(), successor.decision_snapshot())", "require_continuation(&state, &identity, &cancelled, end)?", "Decision::new(snapshot.clone())", "OriginalArtifactPlan::publish_and_select_original(", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalCTaskPlan::require_original_mode(&task, &publication)?", "OriginalGenerationFiles::require_original_lifecycle(&generation, recovering)?", "if recovering", "OriginalCTaskPlan::open_original_existing_task(", "else", "OriginalCTaskPlan::open_original_new_task(", "artifact_custody.require_original()?", "original.require_original_custody()?", "OriginalPreparedPublicationRoute::require_current(&publication)?", "OriginalMaterialWriter::commit_original_material(", "OriginalPreparedPublicationRoute::into_original_connection(publication)?", "original_end != end", "OriginalCellQ24SelectedArtifactForRootV1::connect_current_until(", "post_a_remaining(end)?.min(Duration::from_millis(500))", "material.require_unchanged()?", "require_continuation(&state, &identity, &cancelled, end)?", "match original", "PreparedCTask::New(original)", "OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalQ24PreparedSuccessorV1::publish_from_original_root(prepared)", "OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(", "OriginalCircuitFeatureIngressV1::submit_until(", "require_continuation(&state, &identity, &cancelled, end)?", "task_custody.require_original()?", "artifact_custody.require_original()?", "material.require_unchanged()?", "OriginalGenerationFiles::into_original_handoff(", "OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(", "require_continuation(&state, &identity, &cancelled, end)?", "PreparedCTask::Existing(original)", "OriginalCellQ24RootPublicationDriverV1::read_original_recovery_intent(", "&driver, &receipt,", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalExistingCTask::into_original_recovery(", "Arc::clone(&receipt)", "OriginalCellQ24RootPublicationDriverV1::recover_feature_from_historical_a(", "tokio::task::spawn_blocking(move ||", "post_a_remaining(end)?", "PublishedCircuitFeatureTaskV1::recover_original_completed_successor(", "&recovered, original_a, mode,", "post_a_remaining(end)?", "require_continuation(&state, &identity, &cancelled, end)?", "custody.require_original()?", "artifact_custody.require_original()?", "material.require_unchanged()?", "OriginalGenerationFiles::into_original_historical_handoff(", "OriginalCellQ24LearningStageOwnersV1::install_historical_circuit_feature_generation(", "require_continuation(&state, &identity, &cancelled, end)?", "cancelled.cancelled().await", "drop(("] }, { function = "fn require_continuation(", sequence = ["post_a_remaining(end)?", "cancelled.is_cancelled()", "require_successor_admission(state, identity)", "post_a_remaining(end)?"] }]
++required_function_order = [{ function = "fn from_original_inputs(", sequence = ["post_a_remaining(original.end)?", "OriginalHistoricalLearningTrustV1::require_original_receipt(", "&original.trust,", "&original.receipt,", "OriginalPreparedPublicationRoute::require_current(&original.publication)?", "OriginalCTaskPlan::require_original_mode(", "OriginalGenerationFiles::require_original_lifecycle(&original.generation, recovering)?", "Ok(Self { original })"] }, { function = "fn require_original_delivery(", sequence = ["!Arc::ptr_eq(source, &self.original.source)", "!Arc::ptr_eq(owners, &self.original.owners)", "identity != &self.original.identity", "OriginalHistoricalLearningTrustV1::require_original_receipt(", "OriginalPreparedPublicationRoute::require_current(&self.original.publication)?", "post_a_remaining(self.original.end)?"] }, { function = "fn run(", sequence = ["if cancelled.is_cancelled()", "post_a_remaining(end)?", "require_successor_admission(&state, &identity)", "RegisteredHistoricalLearningSourceV1::require_current_historical_source(", "OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?", "tokio::time::timeout_at(end.into(), successor.decision_snapshot())", "require_continuation(&state, &identity, &cancelled, end)?", "Decision::new(snapshot.clone())", "OriginalArtifactPlan::publish_and_select_original(", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalCTaskPlan::require_original_mode(&task, &publication)?", "OriginalGenerationFiles::require_original_lifecycle(&generation, recovering)?", "if recovering", "OriginalCTaskPlan::open_original_existing_task(", "else", "OriginalCTaskPlan::open_original_new_task(", "artifact_custody.require_original()?", "original.require_original_custody()?", "OriginalPreparedPublicationRoute::require_current(&publication)?", "OriginalMaterialWriter::commit_original_material(", "OriginalPreparedPublicationRoute::into_original_connection(publication)?", "original_end != end", "OriginalCellQ24SelectedArtifactForRootV1::connect_current_until(", "post_a_remaining(end)?.min(Duration::from_millis(500))", "material.require_unchanged()?", "require_continuation(&state, &identity, &cancelled, end)?", "match original", "PreparedCTask::New(original)", "OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalQ24PreparedSuccessorV1::publish_from_original_root(prepared)", "OriginalQ24InstalledSuccessorV1::original_installed_successor_ingress(", "OriginalCircuitFeatureIngressV1::submit_until(", "require_continuation(&state, &identity, &cancelled, end)?", "task_custody.require_original()?", "artifact_custody.require_original()?", "material.require_unchanged()?", "if installed.identity != identity", "return Err(refused(", "let retirement_task = installed.published_task();", "let retirement_cell = installed.cell();", "let retirement_source = installed.source();", "require_continuation(&state, &identity, &cancelled, end)?", "PublishedCircuitFeatureTaskV1::drain_completed_task(", "&retirement_task,", "&retirement_cell,", "retirement_source.as_ref(),", "&installed.identity,", "require_continuation(&state, &identity, &cancelled, end)?", "task_custody.require_original()?", "artifact_custody.require_original()?", "material.require_unchanged()?", "OriginalGenerationFiles::into_original_handoff(", "OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(", "require_continuation(&state, &identity, &cancelled, end)?", "PreparedCTask::Existing(original)", "OriginalCellQ24RootPublicationDriverV1::read_original_recovery_intent(", "&driver, &receipt,", "require_continuation(&state, &identity, &cancelled, end)?", "OriginalExistingCTask::into_original_recovery(", "Arc::clone(&receipt)", "OriginalCellQ24RootPublicationDriverV1::recover_feature_from_historical_a(", "tokio::task::spawn_blocking(move ||", "post_a_remaining(end)?", "PublishedCircuitFeatureTaskV1::recover_original_completed_successor(", "&recovered, original_a, mode,", "post_a_remaining(end)?", "require_continuation(&state, &identity, &cancelled, end)?", "custody.require_original()?", "artifact_custody.require_original()?", "material.require_unchanged()?", "OriginalGenerationFiles::into_original_historical_handoff(", "OriginalCellQ24LearningStageOwnersV1::install_historical_circuit_feature_generation(", "require_continuation(&state, &identity, &cancelled, end)?", "cancelled.cancelled().await", "drop(("] }, { function = "fn require_continuation(", sequence = ["post_a_remaining(end)?", "cancelled.is_cancelled()", "require_successor_admission(state, identity)", "post_a_remaining(end)?"] }]
+ 
+ [[protected_file]]
+ path = "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+@@ -16768,7 +16768,7 @@
+ receiver_type = "PublishedCircuitFeatureTaskV1"
+ definition_path = "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs"
+ definition_markers = ["fn drain_completed_task<"]
+-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs"]
++product_callers = ["codex-rs/hepta-agentd/src/cell_q24_task_ledger_outcome.rs", "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"]
+ caller_markers = []
+ 
+ [[protected_file]]
+--- a/.github/blob-size-allowlist.txt
++++ b/.github/blob-size-allowlist.txt
+@@ -88,7 +88,7 @@
+ sha256:bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233 qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz
+ sha256:938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618 qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz
+ # Exact privileged caller inventory after reviewed ab12b8bc operation scopes; future edits require a new digest.
+-sha256:5533596462eed0fe608e7271b4aab8b76600909268d989dc1d6dc41d6aaf884a CALLERS.toml
++sha256:ebca7632dcb414917ccdaf6238a558461d74bed82239be8c4459d8cba48ea2a3 CALLERS.toml
+ sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz
+ sha256:aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a qualification/ordinary-owner-assembly-20261111/native-evidence/v6/original-records.tar.xz
+ 
+--- a/qa/b4-no-bypass/test_original_task_retirement_source_closure.py
++++ b/qa/b4-no-bypass/test_original_task_retirement_source_closure.py
+@@ -53,6 +53,47 @@
+             PROOF._verify_boundary(ROOT, boundary, index, ignored, fields_by_receiver_type={})
+         self.assertIn(path, str(raised.exception))
+ 
++    def test_new_c_retirement_keeps_actual_owner_and_pre_post_custody(self):
++        path = AGENT + "production_post_a_continuation.rs"
++        function = "fn run("
++        source = (ROOT / path).read_text()
++        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
++        start = code.index(function)
++        end = PROOF._rust_item_end(code, start)
++        self.assertIsNotNone(end)
++        new = code.index("PreparedCTask::New(original) => {", start, end)
++        existing = code.index("PreparedCTask::Existing(original) => {", new, end)
++        offset = new
++        markers = (
++            "OriginalCircuitFeatureIngressV1::submit_until(",
++            "require_continuation(&state, &identity, &cancelled, end)?",
++            "task_custody.require_original()?",
++            "artifact_custody.require_original()?",
++            "material.require_unchanged()?",
++            "if installed.identity != identity",
++            "return Err(refused(",
++            "let retirement_task = installed.published_task();",
++            "let retirement_cell = installed.cell();",
++            "let retirement_source = installed.source();",
++            "require_continuation(&state, &identity, &cancelled, end)?",
++            "PublishedCircuitFeatureTaskV1::drain_completed_task(",
++            "&retirement_task,",
++            "&retirement_cell,",
++            "retirement_source.as_ref(),",
++            "&installed.identity,",
++            "require_continuation(&state, &identity, &cancelled, end)?",
++            "task_custody.require_original()?",
++            "artifact_custody.require_original()?",
++            "material.require_unchanged()?",
++            "OriginalGenerationFiles::into_original_handoff(",
++        )
++        for marker in markers:
++            position = source.index(marker, offset, existing)
++            occurrence = source.count(marker, start, position)
++            with self.subTest(marker=marker, occurrence=occurrence):
++                self.reject_removal(path, function, marker, occurrence)
++            offset = position + len(marker)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

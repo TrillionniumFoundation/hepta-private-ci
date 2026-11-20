@@ -1,0 +1,50 @@
+{
+  "actual_inputs": {
+    "report_spec": {
+      "bytes": 71275,
+      "git_blob": "c0f7937ab7289937f38d45ca7e83643a76fed9e6",
+      "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-execution-1/report-binding/REPORT_SPEC.json",
+      "sha256": "fcde453eab037db12d52085b4ceebc1b4fb2f797eaf55bd6d611a2865a5ebfd8"
+    },
+    "template": {
+      "bytes": 41959,
+      "git_blob": "143a83fb9a913a87c77f515cef15ff2737dfd728",
+      "path": "metrics_integration/execution-readout-intake-diagnostic-6/final-closeout-execution-1/prepared/FINAL_REPORT_TEMPLATE.md",
+      "sha256": "7e4c7e4bfb7480ee4da5521662f30e66d4860acfff2a5fba9127b1c283c25ce6"
+    }
+  },
+  "bytecode_import_or_execution": 0,
+  "controls": [
+    {
+      "identity_renamed": false,
+      "name": "historical_native_Root2_identity",
+      "new_pattern_match": [
+        "native_Root2"
+      ],
+      "passed": true
+    },
+    {
+      "matched": 105,
+      "name": "actual_frozen_105_binding_set",
+      "passed": true,
+      "same_original_equality_guard_executed": true
+    },
+    {
+      "actual_refusal": "missing or unused RESULT field binding",
+      "name": "unbound_identifier_still_rejected",
+      "original_template_unchanged": true,
+      "passed": true,
+      "synthetic_added_marker": "{{fact:unbound_Root_control}}"
+    }
+  ],
+  "host_Git_model_native_actions": 0,
+  "old_missing_identities_preserved": [
+    "native_Root2"
+  ],
+  "original_binding_count": 105,
+  "original_old_pattern_match_count": 104,
+  "pack_restore_or_cut_actions": 0,
+  "render_build_calls": 0,
+  "scope": "TOOLS_ONLY_FACT_PATTERN_AND_UNCHANGED_EQUALITY_GUARD_COMPATIBILITY",
+  "successful": true
+}

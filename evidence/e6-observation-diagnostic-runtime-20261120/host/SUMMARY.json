@@ -1,0 +1,65 @@
+{
+  "schema": "hepta-e6-observation-diagnostic-runtime-actual-v1",
+  "source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+  "qualification_scope": "Exact dbd6 compile/lint/source/blob preparation passed; 18 separate framing controls, original47 components, two separate Root components, and the original Root mechanism parent passed. The original whole NoUpdate12 parent failed. No Adopt, fresh cold D, or complete FinalUse qualification is granted.",
+  "actual": {
+    "framing_controls_passed": 18,
+    "ordinary_components_passed": 47,
+    "root_components_passed": 2,
+    "root_lane_mechanism_passed": 1,
+    "ordinary_noupdate_parent_runs": 1,
+    "ordinary_noupdate_parent_passed": 0,
+    "pipeline_result_sha256": "68ab50844539231700fee1c6ff700cce7ec904dd4bbb1dc64a941cc642e0e3a6",
+    "wrapper_result_sha256": "98aff6cb4739c04a2e6b4bfb4fdc60d72003f1d6df78ac43df91ec4286255ef0",
+    "parent_junit_sha256": "65318b60bb71cacfe5961445de2d5092bd8be20a5ecb9f982c5f460df79226bc",
+    "pipeline_wall_seconds": 405.122892070096,
+    "wrapper_wall_seconds": 241.51293221209198,
+    "parent_command_seconds": 98.31973223993555,
+    "parent_case_junit_seconds": 97.26,
+    "parent_suite_junit_seconds": 97.283,
+    "first_failure": "Feature C must drain its original Generation owner without Generation inference",
+    "c_generation_layout": {
+      "journal_bytes": 40,
+      "journal_event_frames": 0,
+      "witness_bytes": 112,
+      "witness_anchor_records": 0,
+      "guard_values_by_original_order": [
+        true,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "interpretation": "The original Rust conjunction short-circuited at drained=false. Later field values are independently decoded from retained layout, not a new Rust observer, trust, or signature validation."
+    }
+  },
+  "classification": {
+    "ordinary_components": "Original34 plus separately counted Ready2 and completed DATA11. DATA API/codec cases do not establish the entire authenticated completion workflow.",
+    "root_lane_mechanism": "Actual Root socket mechanism controls; not the complete Feature ACK or original parent.",
+    "phase_logging": "The earlier Root observation Unavailable was not reproduced here. This is not proof that diagnostic logging fixed its historical cause.",
+    "historical_trace": "Requests1..64 were traced. Request64 alone does not establish its acknowledgement. Exact parent control flow reached the C Generation assertion after the original typed terminal-acceptance wait.",
+    "physical": "652 exact named non-key copies; 12 known key paths stat metadata only. Four exact software/temporary subtrees remain unexpanded and two socket endpoints are metadata only. This is not a complete host snapshot or an atomic multi-file snapshot.",
+    "ephemeral_source_report": "The source keeper report was an anonymous tempfile retained by the parent file descriptor. No named recoverable report is asserted after parent termination. Sealed producer memfd contents contain private key material and are not captured."
+  },
+  "source_preparation": {
+    "qa_tests": 467,
+    "qa_modules": 53,
+    "protected_rows": 908,
+    "targeted_boundaries": 438,
+    "full_caller_boundaries": 1164,
+    "original_blob_tests": 7,
+    "changed_blob_limit": 512000,
+    "changed_paths": 155
+  },
+  "source_or_original_journal_mutated": false,
+  "archive_native_or_model_runs": 0,
+  "automatic_retry": false,
+  "cold_or_adopt_runs": 0,
+  "original_historical_limit": 64,
+  "original_budget_or_assertions_changed": false,
+  "times_are_nested_not_additive": true
+}

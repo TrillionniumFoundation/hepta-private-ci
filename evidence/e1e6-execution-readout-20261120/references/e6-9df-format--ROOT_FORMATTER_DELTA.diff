@@ -1,0 +1,14 @@
+--- raw29e6
++++ actuald9f12
+@@ -103,7 +103,10 @@
+     let mut other_run = serde_json::to_value(&target)?;
+     other_run["scope"]["run_id"] = serde_json::json!("other-refusal-run");
+     let other_run = serde_json::from_value(other_run)?;
+-    assert_eq!(completed_learning_refusal_owner(initial, &other_run)?, owner);
++    assert_eq!(
++        completed_learning_refusal_owner(initial, &other_run)?,
++        owner
++    );
+     let mut wrong_run_binding = expected.clone();
+     wrong_run_binding.target = other_run;
+     assert!(read_expected(directory.path(), &owner, &wrong_run_binding).is_err());

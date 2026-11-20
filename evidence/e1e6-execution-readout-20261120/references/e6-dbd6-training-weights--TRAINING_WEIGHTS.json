@@ -1,0 +1,160 @@
+{
+  "baseline": {
+    "base": {
+      "rows": 2,
+      "cols": 2,
+      "values_q24": [
+        16777216,
+        0,
+        0,
+        16777216
+      ],
+      "bytes": 44,
+      "sha256": "edbb9ed7527ef4969edbe928f73ce0ce675b25eb74969572461a02a3277350cb"
+    },
+    "encoder": {
+      "rows": 2,
+      "cols": 2,
+      "values_q24": [
+        16777216,
+        0,
+        0,
+        16777216
+      ],
+      "bytes": 44,
+      "sha256": "edbb9ed7527ef4969edbe928f73ce0ce675b25eb74969572461a02a3277350cb"
+    },
+    "heads": {
+      "rows": 10,
+      "cols": 2,
+      "values_q24": [
+        16777216,
+        0,
+        0,
+        16777216,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        16777216,
+        0,
+        0,
+        16777216,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "bytes": 172,
+      "sha256": "77d98407da42e3a9ac90ec6c441843f9d9a74b188b3130c658df7fa9f1383763"
+    }
+  },
+  "retained_candidate_heads": {
+    "rows": 10,
+    "cols": 2,
+    "values_q24": [
+      29097984,
+      3080192,
+      0,
+      16777216,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      16777216,
+      0,
+      0,
+      16777216,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "bytes": 172,
+    "sha256": "db9b556b8f46d8f69667016ae9131afef5cba2a980038cb07b651f0c07116c90"
+  },
+  "training": {
+    "binding": "86a7066ffaffd9bbe20970985516572c8d75b735dde9d7761de18e4616c7f451",
+    "tag": 1,
+    "bundle_digest": "6b6eb4249a9bbaf4063ae9be8b61f22979efd98ce4d20c0d14a013304a1cb40e",
+    "batch_digest": "bac79e0267adcb5d3654a03bc74603343b10207e9d743d4b2fee46dada7184a2",
+    "optimizer_rule": "31d42ab20899f0784d9931648af3c843bf37826c9296abf7abac44e5853621d4",
+    "update_rule": "5a743239d366afbd889883b12d95729f44991c667f206ddc30ae1dd5b62cbd29",
+    "optimizer_steps": 2,
+    "squared_error_before_q48": 281474976710656,
+    "squared_error_after_q48": 13589544960000,
+    "elapsed_microseconds": 2010,
+    "heads_bytes": 172,
+    "heads_sha256": "db9b556b8f46d8f69667016ae9131afef5cba2a980038cb07b651f0c07116c90",
+    "payload_bytes": 393,
+    "payload_sha256": "aca01f133bc4ac4c308ad846fcd4783b9937372fc75680366d27d4c76722d442",
+    "heads": {
+      "rows": 10,
+      "cols": 2,
+      "values_q24": [
+        29097984,
+        3080192,
+        0,
+        16777216,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        16777216,
+        0,
+        0,
+        16777216,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "bytes": 172,
+      "sha256": "db9b556b8f46d8f69667016ae9131afef5cba2a980038cb07b651f0c07116c90"
+    },
+    "evidence_digest_v2": "198249a3c9ed3156414e91ce91670585e94aff93b5bf1ca1718654c2ec2dcca8"
+  },
+  "plan_id": "ordinary-original-post-a-learning",
+  "changed_coordinates": [
+    {
+      "row": 0,
+      "column": 0,
+      "before_q24": 16777216,
+      "after_q24": 29097984,
+      "before": 1.0,
+      "after": 1.734375,
+      "delta_q24": 12320768
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "before_q24": 0,
+      "after_q24": 3080192,
+      "before": 0.0,
+      "after": 0.18359375,
+      "delta_q24": 3080192
+    }
+  ],
+  "total_matrix_parameters": 28,
+  "candidate_head_parameters": 20,
+  "training_record_heads_equal_root_retained_candidate_file": true,
+  "training_witness_matches_journal_anchor": true,
+  "meanings": {
+    "losses": "Stored squared-error Q48 totals; divided by 2^48 below, not newly executed loss evaluation.",
+    "optimizer": "Original stored metrics; no optimizer or model forward executed by this reader."
+  },
+  "squared_error_before": 1.0,
+  "squared_error_after": 0.048279762268066406
+}

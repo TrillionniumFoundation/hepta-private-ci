@@ -1,0 +1,38 @@
+{
+  "max_part_bytes": 480000,
+  "original": {
+    "bytes": 547652,
+    "git_blob": "99fb600ab0aa4bacfba54a66c2553a94fd4e3448",
+    "mode": "100644",
+    "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/MANIFEST.json",
+    "sha256": "ae7f11b3b434bc304e0a5b9284e272ec007014f58a5008802aec2f447763ff16"
+  },
+  "parts": [
+    {
+      "file": {
+        "bytes": 480000,
+        "git_blob": "ae2ff9cf3ef493c8af3fa50510e31af173daf003",
+        "local_path": "/workspace/scratch/e9e051ab0825/e6_diagnostic_host_archive_readback_1/publication-1/metadata-parts/a591674977731df60055176e07a76ca4ba94644e10744a77e0273f3a3600b0e9-ae7f11b3b434bc304e0a5b9284e272ec007014f58a5008802aec2f447763ff16/part-00000",
+        "mode": "100644",
+        "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/metadata-parts/a591674977731df60055176e07a76ca4ba94644e10744a77e0273f3a3600b0e9-ae7f11b3b434bc304e0a5b9284e272ec007014f58a5008802aec2f447763ff16/part-00000",
+        "sha256": "ee3236eb74399b86b969ed6addea7e94a9cb010c05345517ad66a4bbc12451cd"
+      },
+      "offset": 0,
+      "ordinal": 0
+    },
+    {
+      "file": {
+        "bytes": 67652,
+        "git_blob": "dac49cbae7ac380b88693f50eff506b302b65908",
+        "local_path": "/workspace/scratch/e9e051ab0825/e6_diagnostic_host_archive_readback_1/publication-1/metadata-parts/a591674977731df60055176e07a76ca4ba94644e10744a77e0273f3a3600b0e9-ae7f11b3b434bc304e0a5b9284e272ec007014f58a5008802aec2f447763ff16/part-00001",
+        "mode": "100644",
+        "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/metadata-parts/a591674977731df60055176e07a76ca4ba94644e10744a77e0273f3a3600b0e9-ae7f11b3b434bc304e0a5b9284e272ec007014f58a5008802aec2f447763ff16/part-00001",
+        "sha256": "708448b9966110605c8f982bbf420eb682a35215feaebe98eba2fa589769c874"
+      },
+      "offset": 480000,
+      "ordinal": 1
+    }
+  ],
+  "schema": "hepta.exact-byte-parts.v2",
+  "transformation": "ordered original byte slices; no decoding or field removal"
+}

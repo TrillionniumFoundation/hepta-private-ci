@@ -1,0 +1,22 @@
+{
+  "archive_bytes": 321068,
+  "archive_sha256": "2997c6315c55909c8dad3e9a883410b27a0fcbc4e0fcf1bacc3e5cd3b770e294",
+  "format": "tar.xz; regular files only; normalized archive metadata; original content bytes unchanged",
+  "member_bytes": 3338787,
+  "member_count": 249,
+  "members_manifest_sha256": "0a1ac5af1f01eeff801cf225e9343d9c027e477bc41b01d4788fa5ae2a77c6fa",
+  "parts": [
+    {
+      "bytes": 321068,
+      "first_nul_offset": 5,
+      "git_blob": "da25e7d3a4b995000a2ef1e3a3a9c0a6b4a1a118",
+      "offset": 0,
+      "path": "static-review.tar.xz",
+      "sha256": "2997c6315c55909c8dad3e9a883410b27a0fcbc4e0fcf1bacc3e5cd3b770e294"
+    }
+  ],
+  "reassemble": "Concatenate parts in the listed order (or use the single xz directly), verify archive SHA256, then inspect/extract the regular safe relative members. Do not execute retained scripts.",
+  "schema": "hepta.e6.observation.static-review-archive.v1",
+  "tar_bytes": 3604480,
+  "tar_sha256": "231fa237f717e207252923b2604328feb4dde27c9e3fc409faf5a2d4f72ff2ce"
+}

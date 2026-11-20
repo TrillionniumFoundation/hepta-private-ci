@@ -1,0 +1,51 @@
+{
+  "status": "CLOUD_ONLY_STATIC_DRAFT_NOT_EXECUTED",
+  "base_source": "1a9799686243c2be0ee393ba364e091029cfb944",
+  "base_tree": "931a344b1ea3e2ddf45e917ea4b3ae37c504ed05",
+  "base_inventory_sha256": "1c7782e85a9b79fad6e82c0c5022964299451629d2cb96e55b442f96f0059a7a",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+      "before_sha256": "d97753ce03a7c4a32a4805db75c72710fa76d764c0426ca25cec09434053123d",
+      "before_git_blob": "9fdd90d153316290a0b47d31ac83e62bb9475e23",
+      "before_bytes": 15806,
+      "sha256": "56a5b6edd3cac3ac530bf10eb8cfb2d9a00a6ae78a21b82b33c40b157ce23593",
+      "git_blob": "679fc0fe494c0f7eea70997be407975a9580160b",
+      "bytes": 17927
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+      "before_sha256": "18ee449e057942c8b3728dbb3664140d9302e8d946fd29dc1d372e615416d68c",
+      "before_git_blob": "9c054f9e2d55f5ea1e9f7981c182dd53aadd5ca6",
+      "before_bytes": 22451,
+      "sha256": "adb3f433fefe5f12d4143412d0eaa0e6185414ceccf29a7f4d2f36a9a77a46ad",
+      "git_blob": "301975ab59836f6c38000f857759d3bae15acf60",
+      "bytes": 23388
+    }
+  ],
+  "product_diff_sha256": "90d09593ed9b2aaf61337d368b8012d28fdec04ff37dc20f799ca978b7ec72e0",
+  "invariants": {
+    "original_effect_body_byte_identical": true,
+    "original_join_and_delivery_byte_identical": true,
+    "original_grants_drop_before_ready_loop": true,
+    "original_physical_preflight_once": true,
+    "deadline_or_read_budget_changed": false,
+    "root_read_retained_across_await": false,
+    "prepared_fields_private": true,
+    "prepared_consumes_exact_inputs_state_and_token": true
+  },
+  "validation": {
+    "format": 0,
+    "compile": 0,
+    "native": 0,
+    "model": 0,
+    "source_gates": 0,
+    "host_actions": 0
+  },
+  "pending": [
+    "Independent product review",
+    "Exact caller/protected inventory and original-plus-necessary source controls",
+    "Controlled real startup scheduling validation",
+    "Original compile/lint/source/blob/native gates"
+  ]
+}

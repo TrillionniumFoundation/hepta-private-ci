@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.completion-compile2-independent-peer.v1",
+  "reviewer": "/root/research",
+  "reviewed_at_utc": "2026-11-20T11:36:50.293789+00:00",
+  "scope": "Read-only local static recipe and exact-byte audit; no candidate execution, host access, source edits, compiler, native test, model, or training.",
+  "result": "PASS_STATIC_REBIND_RECIPE_WITH_EXPLICIT_RUNTIME_PENDING",
+  "source_parent": "bfea526e1cb9a2da718d835cd617e87c67181fe9",
+  "candidate_manifest_sha256": "de63e007ca2803a286f22694364348f14a77728af752e627ffe48d04ec6c5ea3",
+  "runner_sha256": "31cd6fe10a942ecfe05e0ff756edfbbf93a52c35b4d10d0a9541aadffc911880",
+  "exact_byte_checks": {
+    "manifest_blobs_sha256_and_git_oid": 11,
+    "rust_files_equal_actual_compile1_formatted_bytes": 7,
+    "other_unchanged_QA_files": 1,
+    "changed_policy_paths": [
+      "CALLERS.toml",
+      "qa/b4-no-bypass/test_completed_learning_acceptance_source_closure.py",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "CALLERS_change": "One exact protected-function string changes only whitespace to match the real formatted Rust guard. All other bytes are equal.",
+    "QA_change": "Same one exact guard-string whitespace change; all other bytes equal.",
+    "allowlist_change": "Only exact CALLERS digest replacement; no path or wildcard expansion.",
+    "compressed_payload": "Decoded metadata equals saved metadata; runner equals exact script; candidate manifest and three before-SHA CAS inputs match frozen source and actual formatted prior source."
+  },
+  "recipe_checks": {
+    "precondition": "Exact bfea HEAD, no staged diff, exact prior compile RESULT and NoUpdate9 RESULT SHA, prior successful compile/fmt/lint with full unchanged-source flags, original retained ELF inode/mode/size/digest.",
+    "locks": [
+      "actual-drain-complete-pipeline.lock",
+      "native-component-owner.lock",
+      "native-target/.hepta-root-native-owner.lock"
+    ],
+    "cargo_lock": "Nonblocking probe before mutation; Cargo owns its normal lock during commands.",
+    "inventory": "All git-tracked and nonignored untracked paths, path/type/mode/bytes/SHA; exact previous full digest and 15812 rows, no new/deleted paths, exactly three policy changes; exact full inventories compared after formatter and compile and recorded after lint.",
+    "environment": "Exact original env.json, original justfile/AGENTS/verifier hashes; Rust 1.96.0, CARGO_BUILD_JOBS=2, CARGO_INCREMENTAL=0, original target, CARGO_NET_OFFLINE=true, --locked --offline for both compile-list and justfix.",
+    "commands": [
+      "just fmt",
+      "cargo nextest list --locked --offline -p codex-hepta-agentd --lib --list-type binaries-only --message-format json",
+      "just fix --locked --offline -p codex-hepta-agentd"
+    ],
+    "timeouts_seconds": {
+      "fmt": 300,
+      "compile": 1800,
+      "justfix": 1800
+    },
+    "timeout_boundary": "These are unchanged per-command limits, independently confirmed in compile1 script. They are not a claimed total-owner 1800-second deadline. Hia confirmed original authorization has this same interpretation.",
+    "source_identity": "Prior pass only gates preflight. The recipe executes new compile-list and original project justfix against the current policy-rebound full inventory; no old runtime pass is promoted.",
+    "successful_field_boundary": "successful alone means justfix returned zero. Consumers must also require source_unchanged_during_compile, source_unchanged_during_lint, compiled_bytes_remain_current and exact source_after digest. Actual source gate recipe lines70-77 independently read and pinned below enforces these; lint mutation cannot be promoted through that gate."
+  },
+  "existing_evidence_read": {
+    "compile1_format_exit": 0,
+    "compile1_compile_exit": 0,
+    "compile1_justfix_exit": 0,
+    "compile1_lint_delta_count": 0,
+    "rev2_affected_source_tests": 4,
+    "rev2_mutation_controls": 45,
+    "rev2_reported_failures": 0,
+    "full_source_gate_executed_by_this_review": false
+  },
+  "pending": [
+    "compile2 actual execution and retained terminal result",
+    "complete source-gate execution against exact new inventory",
+    "Rust direct DATA tests and real Root namespace/native parent; prior compilation is not their execution"
+  ],
+  "review_operations": {
+    "candidate_script_executions": 0,
+    "host_operations": 0,
+    "source_or_policy_edits": 0,
+    "native_cases": 0,
+    "model_calls": 0,
+    "training_updates": 0
+  },
+  "read_failure_retained": {
+    "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/freeze_completion_acceptance_source1.py",
+    "observed": "Separate follow-up sed read returned FileNotFoundError after an earlier path listing/excerpt; likely concurrent runner staging. Not used as a fixed pin or prerequisite for this review. Hia informed.",
+    "scope_effect": "None on the requested manifest/policy diff/source controls/compile2 script and payload."
+  }
+}

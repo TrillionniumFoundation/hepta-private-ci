@@ -1,0 +1,171 @@
+{
+  "scope": "Retained finite DATA attribution, not live FinalUse qualification",
+  "actual_source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "mapping_sha256": "0f657a2c990364cc151c11e044c36d1e2ae32d67d3b016d01594d74279f9b98d",
+  "device_claims_bytes": 80,
+  "notes_claims_bytes": 0,
+  "claim_frames": [
+    {
+      "offset": 0,
+      "authority_epoch": 1,
+      "nonce": "c40fc13a246653135f1ca2b252049bce437e3be42438aa45a8cae603b31b5ab1",
+      "attribution": "A initialization",
+      "grant_id": "ordinary-original-root:1:2",
+      "signer_id": "ordinary-original-root",
+      "destination_id": "agentd.cell-generation.initialize",
+      "operation_id": "ordinary-original-a-initial",
+      "previous_run_id": null,
+      "target_run_id": "ordinary-original-a",
+      "subject_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+      "request_sha256": "18f6f0a0af88335dde38b7a8cae7e93cfe1bd65660f51aeb9150c925c1de6dc4",
+      "scope_sha256": "545f8a5ac1359a3ce6cca2128aa25656419b0983e9c6354a8c50163b6ecb633d",
+      "payload_sha256": "00ab57ebcfaf92316c7213fd2203aa9cfc17d3146cea914b99c581cc658d28ce",
+      "signed_grant_digest_retained": "967f467fc7f58187ee9a6b2b763229cb49be59f3e8ed0cb4c1f1de802caa7015",
+      "witness_binding_sha256_retained": "85295fa7217ddc41f63177e2521f443ab771edc8290000ea111dae39feca6af7",
+      "not_before_unix_ms": 1795183136138,
+      "expires_at_unix_ms": 1795183436138,
+      "witness_verified_at_unix_ms": 1795183136172,
+      "witness_boundary": "dispatch_entry"
+    },
+    {
+      "offset": 40,
+      "authority_epoch": 1,
+      "nonce": "c2a82d055b9f477a212907ccd61a13bb23b876a10bb49cb9b16a43e2a1150053",
+      "attribution": "A to C retained-model publication",
+      "grant_id": "ordinary-original-root:1:4",
+      "signer_id": "ordinary-original-root",
+      "destination_id": "agentd.cell-generation.next-task-same-model",
+      "operation_id": "learning-retained-task:2cb939d5f2b9ea9e432433e4314d5b831b22bbc38936c7e651d6ae443b331dd6",
+      "previous_run_id": "ordinary-original-a",
+      "target_run_id": "ordinary-original-c",
+      "subject_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+      "request_sha256": "a61a5b46e2e78cd1f165dae62f4e8cdc0bd61556ed6fdb83f60ac93c1da7e560",
+      "scope_sha256": "545f8a5ac1359a3ce6cca2128aa25656419b0983e9c6354a8c50163b6ecb633d",
+      "payload_sha256": "4f9b5b048d696fe31a326b5270b7fd2a840bcd18278fbb8305dfdfbaacb45bea",
+      "signed_grant_digest_retained": "712dc20c00d45d131a1fc109142cc4435f0214bbaf7d5636778e626865478208",
+      "witness_binding_sha256_retained": "c86a61a529e6eb67e57f77945d806354fd9d36317b1712525b3ce1fe934d8a2e",
+      "not_before_unix_ms": 1795183203163,
+      "expires_at_unix_ms": 1795183435000,
+      "witness_verified_at_unix_ms": 1795183203884,
+      "witness_boundary": "dispatch_entry"
+    }
+  ],
+  "equality_checks": {
+    "claim_epoch_nonce_matches_full_retained_grant": true,
+    "A_initial_intent_target_matches_original_and_observed_current": true,
+    "C_intent_previous_equals_A_target": true,
+    "C_intent_target_equals_retained_current": true,
+    "C_prepared_signed_grant_equals_published_signed_grant": true,
+    "C_issued_prepared_intent_equals_published_intent": true,
+    "C_accepted_publication_current_equals_owner_current": true,
+    "grant_ids_signer_epoch_match_witness_and_device_head": true
+  },
+  "C_publication_evidence": {
+    "grant_phase": "issued",
+    "refusal_phase": "ready",
+    "refusal_attempt": 1869,
+    "publication_verified_at_unix_ms": 1795183203949,
+    "completion_label": "owner_drained_same_model",
+    "completion_label_applies_to_previous_A_owner": true,
+    "is_not_C_drain_completion": true
+  },
+  "limits": [
+    "Epoch/nonce claim frames contain no task identity; attribution requires the separately retained signed-grant/intents and frontiers.",
+    "Claims are durable nonce burns, not by themselves proof that a downstream effect completed.",
+    "No fresh signature, live trust/revocation/currentness, grant verification or Rust observer was executed.",
+    "Retained digest fields are cross-compared, not independently recalculated from signing/domain algorithms by this reader.",
+    "No database, WAL or SHM was opened; the captured originals remain unchanged.",
+    "No D/cold/Adopt/final-post-retirement acceptance or complete FinalUse qualification follows.",
+    "Original NoUpdate12 remains FAIL at C Generation is_drained=false."
+  ],
+  "consumed_inputs": [
+    {
+      "bytes": 6754,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0013__frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "original_path": "/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source/ordinary-q24-bIcMJQ/authority/frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0013__frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "sha256": "6edb1bdb1d5858a21242ea5336333ebe6f1b56b719a0a1493cb44870a23e6e6b",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0013__frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "copy": "primary/0013__frontier-v1-0c65b63160e9e170f019c5408390d14a135edcb311c5fda0429484a7793f66c6.json",
+      "git_blob": "c9361da6230e6f8702704ae7d93adaa487d04bb1"
+    },
+    {
+      "bytes": 12412,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0023__frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "original_path": "/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source/ordinary-q24-bIcMJQ/authority/frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0023__frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "sha256": "a6a20a91f5c6e89fbf904f3f8ca6f06cd970157aafdab110b41718f29f414fae",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0023__frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "copy": "primary/0023__frontier-v1-7cd1fffbd7092c2f4cd52c8e418a49275a9840cad53172f858e64c9643f6e1bd.json",
+      "git_blob": "3330ff40eb3f62f070a237bfe6f3868e20d9fb08"
+    },
+    {
+      "bytes": 5485,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0041__frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "original_path": "/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source/ordinary-q24-bIcMJQ/authority/frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0041__frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "sha256": "028fbde1452562fcb03ce5dedaba5507996a491a6a867cc74ec0127724c40b9e",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0041__frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "copy": "primary/0041__frontier-v1-ddef6ff81d081320feb423a68e48f5465c29b336c205a3fc71bc5312dde16075.json",
+      "git_blob": "84dc9044a593cdf12dfa3249b8a3e4157e28f6b2"
+    },
+    {
+      "bytes": 5400,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0043__frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "original_path": "/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/source/ordinary-q24-bIcMJQ/authority/frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0043__frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "sha256": "fb016e5f5fd6fcb13e45243fd9c95904e2e3c642ce1855b815dd86d78fa92acc",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0043__frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "copy": "primary/0043__frontier-v1-e44ed9a89da52dddab39f7ece2106db8a2851717c37ca6dfd2f113a6539467be.json",
+      "git_blob": "c6ddd7ef259e5c5401d41cf472132fc81b0524c2"
+    },
+    {
+      "bytes": 80,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0159__authority.claims",
+      "original_path": "/run/oq-jpxVvG/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/device/authority.claims",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0159__authority.claims",
+      "sha256": "492bdf3dee1c8defbfa5b77046dbcce1bef0b7359fc7f686a76cd270c5c3fa6a",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0159__authority.claims",
+      "copy": "primary/0159__authority.claims",
+      "git_blob": "cd3f949abf76259a490ef6b6da6751e62fb8db1d"
+    },
+    {
+      "bytes": 254,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0160__authority.json",
+      "original_path": "/run/oq-jpxVvG/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/device/authority.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0160__authority.json",
+      "sha256": "37bffb7e3dbb91f87489a4469bfaf0a1b3a68e1c19535513fd5342ce768e2678",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0160__authority.json",
+      "copy": "primary/0160__authority.json",
+      "git_blob": "791e99218947ac9922b7d234cbc7c3ecc236850d"
+    },
+    {
+      "bytes": 0,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0162__authority.claims",
+      "original_path": "/run/oq-jpxVvG/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/notes/authority.claims",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0162__authority.claims",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0162__authority.claims",
+      "copy": "primary/0162__authority.claims",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "bytes": 254,
+      "capture_directory": "diagnostic-noupdate12-business-capture-2",
+      "member": "raw/diagnostic-noupdate12-business-capture-2/0163__authority.json",
+      "original_path": "/run/oq-jpxVvG/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/final-use/notes/authority.json",
+      "remote_captured_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/diagnostic-noupdate12-business-capture-2/0163__authority.json",
+      "sha256": "37bffb7e3dbb91f87489a4469bfaf0a1b3a68e1c19535513fd5342ce768e2678",
+      "workspace_relative_path": "e6_diagnostic_host_archive_readback_1/restored/raw/diagnostic-noupdate12-business-capture-2/0163__authority.json",
+      "copy": "primary/0163__authority.json",
+      "git_blob": "791e99218947ac9922b7d234cbc7c3ecc236850d"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "status": "STATIC_FIXTURE_REPAIR_REVIEW_NO_NEW_BLOCKER; NOT EXECUTED",
+  "failed_source": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "failed_component": {
+    "path": "e6_owner_work/completion_namespace_failure_1/root-completed-refusal-observer-namespace.xml",
+    "bytes": 4689,
+    "sha256": "dd588de6932eb4dc41ba6a84c09afb06a9beb2f4eb8dfd585891e73bf98a6e6e",
+    "git_blob": "b8101f37ad16f692163203aad342730ab8f6f699"
+  },
+  "candidate_manifest": {
+    "path": "e6_owner_work/completion_namespace_fixture_candidate/rev1/MANIFEST.json",
+    "bytes": 1115,
+    "sha256": "e99fa53a6df53b71c23c9d3f500c79d5744b27ae85fed18e7d7c1efa97de719d",
+    "git_blob": "3c41f9383b8a0c1000503898003e2929e948b6c6"
+  },
+  "before_fixture": {
+    "path": "e6_owner_work/completion_acceptance_candidate/rev2/source/codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs",
+    "bytes": 7097,
+    "sha256": "93ef3c64bde0da9a55489f03a0713bfe89a19a51330ccc5c8820c5f344b20286",
+    "git_blob": "6dd21ada28fc408b2b5696ee22b61e8b8cb049b7"
+  },
+  "after_fixture": {
+    "path": "e6_owner_work/completion_namespace_fixture_candidate/rev1/source/codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_namespace_tests.rs",
+    "bytes": 7883,
+    "sha256": "29e6ede0a3b43270f1287cd20270852e4d70958db73e6b7fab3b0f19831eb778",
+    "git_blob": "8e7eeb30a5a76ca25b1a1e784a66f721c3f44fd6"
+  },
+  "diff": {
+    "path": "e6_owner_work/completion_namespace_fixture_candidate/rev1/FIXTURE_SCOPE.diff",
+    "bytes": 2298,
+    "sha256": "28b182eddf5ae15ceed5acf3ecb82dbacb7bd06cc753ea631c9a6d1e67c00fc3",
+    "git_blob": "191aa6217b6923d68dd53ad3dd2afcedd265786b"
+  },
+  "exact_unchanged_source_context": [
+    {
+      "path": "e6_noupdate9_parent_read_review/support-source/codex-rs/hepta-agentd/src/neuron_generation_current_types.rs",
+      "bytes": 7559,
+      "sha256": "6651e3fb0bbfeb4a73e49eb3e98e2fe54fde86f209d1c2e674b8a9f7dc646fbc",
+      "git_blob": "092877e50d1422b73409d8b19d3cddd7e00f78c3"
+    },
+    {
+      "path": "e6_noupdate9_parent_read_review/source/ordinary_q24_cold_record_tests.rs",
+      "bytes": 4929,
+      "sha256": "5aa190da1350da5518a012d7bcca87c27ed3952e1b931ac0d1f22674e8fc871b",
+      "git_blob": "df8e1a8aa28e8c865407619180b56045252a2606"
+    },
+    {
+      "path": "e6_noupdate9_product_review/source/authority_host_data_refusal.rs",
+      "bytes": 12415,
+      "sha256": "93a87091dcf8cc1c81928023a415026f141aa79ef58daef45fec2ab3e1dbe7a4",
+      "git_blob": "d2a29e2cedb73163c432dffd24ef17267222b931"
+    },
+    {
+      "path": "e6_owner_work/completion_acceptance_candidate/rev2/source/codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_data_tests.rs",
+      "bytes": 20002,
+      "sha256": "9a22df392ac184a9e965084187babd45c8633676fbe7a193d81b524f3bf79596",
+      "git_blob": "848423b9d7ecf5d93cfbfb8e2ace8920f3f7d592"
+    }
+  ],
+  "confirmed_root_cause": "The previous test incorrectly treated a run_id-only mutation as a different Cell scope slot. scope_digest intentionally contains only agent_id, cell_id and principal_digest, so that input maps to the exact original canonical owner. Returning Some(original Ready/attempt1) from the unvalidated DATA reader is correct, and is not an authority bypass.",
+  "repair": [
+    "Preserve changed-run input as same-slot equality plus full Refusal/target mismatch refusal.",
+    "Use changed cell_id for a genuinely different namespace slot, explicitly require different owner, then retain strict io::ErrorKind::NotFound expectation.",
+    "Import pretty_assertions::assert_ne explicitly and add track_caller only for accurate failure attribution."
+  ],
+  "full_source_reverse_comparison": {
+    "only_three_declared_edits": true,
+    "old_7097_bytes_recovered_exactly": true,
+    "all_other_existing_assertions_and_product_calls_unchanged": true
+  },
+  "preserved_controls": [
+    "old two-digest key strict missing",
+    "other initial strict missing",
+    "writer_epoch same-slot full-target refusal",
+    "canonical physical record rename produces strict missing",
+    "rename restoration and JSON/lock bytes and directory-entry count unchanged",
+    "actual product retain_fresh Ready1",
+    "real accept_registered Armed2 then Ready2",
+    "failed product accept stays Armed3",
+    "read_original refuses unfinished state"
+  ],
+  "physical_missing_contract": "Image::read opens the exact canonical JSON path with O_NOFOLLOW|O_CLOEXEC and propagates open errors; there is no witness/lock-file fallback. observe_original_record returns None only after fully validated atomic replacement, not for missing files.",
+  "wait_phase_hypothesis": "No defect found: validate_refusal permits Armed and excludes only Refused; typed ACK is considered only after equal before/after Ready with attempt>=2. No wait-phase change is needed.",
+  "case_count_changed": false,
+  "product_or_policy_mutations": 0,
+  "test_source_mutations_by_reviewer": 0,
+  "native_model_compile_or_host_runs_by_reviewer": 0,
+  "execution_scope": "Existing47 ordinary components and oldRoot bounded1 passed in the reported actual pipeline; the newnamespace1 failed. The stop happened before Rootmechanism and actual NoUpdate10 parent, so this record must not be counted as a newly executed NoUpdate parent.",
+  "needs_future_execution": "The corrected test has not been executed by this review. Its exact formatted source, real UID0 result and the subsequent original gates/parent remain owner-managed prerequisites."
+}

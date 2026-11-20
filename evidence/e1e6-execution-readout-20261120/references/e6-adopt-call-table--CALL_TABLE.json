@@ -1,0 +1,702 @@
+{
+  "schema": "e6-ordinary-adopt-historical-static-budget-v1",
+  "source_commit": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "source_tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+  "inventory": {
+    "path": "e6_owner_work/initial_observation_diagnostic_candidate/rev1/EXPECTED_SOURCE_INVENTORY_RECONSTRUCTED.json",
+    "bytes": 3641800,
+    "sha256": "de258a2cf89cdb629d02c1e50d955b6fd01160f36c815d042b975d2dbd087e36",
+    "git_blob": "bc5b5560134ed9a097272380b95bef692124a165"
+  },
+  "actual_noupdate12_trace": {
+    "path": "e6_owner_work/initial_observation_noupdate12_failure/childlogs/ordinary-q24-original-process-kJQZLM__stderr.log",
+    "bytes": 16551,
+    "sha256": "f8f28e6ba08c6780bf60ad7488a0c999b4a7dff3fb75a2b578348104d91bed28",
+    "git_blob": "778c6105c0bf2a4fc29966810388ec514f93e7e9"
+  },
+  "observed_noupdate12_requests": 64,
+  "static_fresh_adopt_new_c_demand": 74,
+  "static_additional_operations": 5,
+  "hard_maximum_unchanged": 64,
+  "actual_adopt_runs": 0,
+  "actual_adopt_request_count": null,
+  "extra_host_calls": 0,
+  "extra_model_calls": 0,
+  "statement": "74 is conditional complete-path demand. The existing client refuses request 65 before sending; no actual Adopt trace of 74 exists. Pair ordering across independently scheduled owners is not asserted by this table.",
+  "groups": [
+    {
+      "id": 1,
+      "label": "Capture A's actual historical receipt",
+      "noupdate12_observed_request_ids": [
+        1
+      ],
+      "noupdate12_count": 1,
+      "adopt_fresh_new_c_static_count": 1,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+        "needle": "observe_original_task(",
+        "lines": [
+          92
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 2,
+      "label": "Read Root-selected historical learning trust",
+      "noupdate12_observed_request_ids": [
+        2
+      ],
+      "noupdate12_count": 1,
+      "adopt_fresh_new_c_static_count": 1,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+        "needle": "activate_current_learning_trust(",
+        "lines": [
+          35
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 3,
+      "label": "Activate that trust against the exact current A receipt",
+      "noupdate12_observed_request_ids": [
+        3,
+        4
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+        "needle": "with_current_read",
+        "lines": [
+          58
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 4,
+      "label": "Capture the original historical task and Dataset preparation",
+      "noupdate12_observed_request_ids": [
+        5,
+        6
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+        "needle": "capture_original_historical_task(",
+        "lines": [
+          28
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 5,
+      "label": "Authenticate original freeze configuration and signer",
+      "noupdate12_observed_request_ids": [
+        7,
+        8
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+        "needle": "with_historical_cut<T>",
+        "lines": [
+          87
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 6,
+      "label": "Materialize the original frozen Dataset owner",
+      "noupdate12_observed_request_ids": [
+        9,
+        10
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs",
+        "needle": "with_historical_cut",
+        "lines": [
+          75,
+          89
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 7,
+      "label": "Install frozen learning: Task / Frozen / Task",
+      "noupdate12_observed_request_ids": [
+        11,
+        12,
+        13
+      ],
+      "noupdate12_count": 3,
+      "adopt_fresh_new_c_static_count": 3,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+        "needle": "install_original_post_a_learning(",
+        "lines": [
+          124
+        ]
+      },
+      "note": "Three distinct exchanges; the middle purpose is runtime.learning.post-a-frozen-learning.v1."
+    },
+    {
+      "id": 8,
+      "label": "Validate the prepared cut for original deferred handoffs",
+      "noupdate12_observed_request_ids": [
+        14,
+        15
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_q24_handoff.rs",
+        "needle": "receive_original_after_ack(",
+        "lines": [
+          61
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 9,
+      "label": "Admit original roles, keys and descriptors",
+      "noupdate12_observed_request_ids": [
+        16,
+        17
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+        "needle": "with_original_prepared_operation",
+        "lines": [
+          144,
+          193
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 10,
+      "label": "Initialize exact original Q24 owners and bind the runtime",
+      "noupdate12_observed_request_ids": [
+        18,
+        19
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+        "needle": "with_original_historical_q24_learning_owners(",
+        "lines": [
+          17
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 11,
+      "label": "Capture source and create the exact delivery journal",
+      "noupdate12_observed_request_ids": [
+        20,
+        21
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_q24.rs",
+        "needle": "capture_original_historical_source_in_operation(",
+        "lines": [
+          194
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 12,
+      "label": "Register the real historical successor slot",
+      "noupdate12_observed_request_ids": [
+        22,
+        23
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_successor.rs",
+        "needle": "register_original_historical_successor(",
+        "lines": [
+          39
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 13,
+      "label": "Install the independent B Root reader",
+      "noupdate12_observed_request_ids": [
+        24,
+        25
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+        "needle": "install_root_independent_evaluation(",
+        "lines": [
+          21
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 14,
+      "label": "Runtime validates the actual proposal owner",
+      "noupdate12_observed_request_ids": [
+        26,
+        27
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "needle": "require_proposal_owner(",
+        "lines": [
+          365
+        ]
+      },
+      "note": "runtime::run_with_shutdown calls this before state creation; original.require_current enters the existing Prepared lane."
+    },
+    {
+      "id": 15,
+      "label": "Attach the actual historical delivery source to runtime",
+      "noupdate12_observed_request_ids": [
+        28,
+        29
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+        "needle": "attach_sources(",
+        "lines": [
+          113
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 16,
+      "label": "Continuation checks its source before waiting for Decision",
+      "noupdate12_observed_request_ids": [
+        30,
+        31
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+        "needle": "RegisteredHistoricalLearningSourceV1::require_current_historical_source(",
+        "lines": [
+          161
+        ]
+      },
+      "note": "This pair's order relative to the delivery claim is the observed NoUpdate12 order, not a universal scheduling guarantee."
+    },
+    {
+      "id": 17,
+      "label": "Claim the original delivery in its synchronous source operation",
+      "noupdate12_observed_request_ids": [
+        32,
+        33
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "needle": "let (reservation, existing, claim)",
+        "lines": [
+          387
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 18,
+      "label": "Restore; authenticate Experience and Dataset and commit each checkpoint",
+      "noupdate12_observed_request_ids": [
+        34,
+        35
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "OriginalHistoricalWorkV1::Restore(mode)",
+        "lines": [
+          152
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 19,
+      "label": "Execute actual Training in its original bounded stage",
+      "noupdate12_observed_request_ids": [
+        36,
+        37
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "LearningIterationStageV1::Training",
+        "lines": [
+          303
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 20,
+      "label": "Execute original independent B Evaluation",
+      "noupdate12_observed_request_ids": [
+        38,
+        39
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "LearningIterationStageV1::Evaluation",
+        "lines": [
+          312
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 21,
+      "label": "Qualified path executes Proposal",
+      "noupdate12_observed_request_ids": [],
+      "noupdate12_count": 0,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "LearningIterationStageV1::Proposal",
+        "lines": [
+          330,
+          335
+        ]
+      },
+      "note": "Actual stage owner work, not an added model invocation inferred from receipt count."
+    },
+    {
+      "id": 22,
+      "label": "Selection dispatch after Proposal executes CommitDecision / LocalDecisionV2",
+      "noupdate12_observed_request_ids": [],
+      "noupdate12_count": 0,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "model::Action::CommitDecision",
+        "lines": [
+          339
+        ]
+      },
+      "note": "LocalDecision is a receipt observation, not a separate LearningIterationStage enum variant. After this dispatch, next_stage remains Selection for the real C selection."
+    },
+    {
+      "id": 23,
+      "label": "Original admission before waiting for actual successor Selection",
+      "noupdate12_observed_request_ids": [
+        40,
+        41
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs",
+        "needle": "self.require_stage_admission(state)?",
+        "lines": [
+          32
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 24,
+      "label": "Adopt constructs a qualified Artifact phase from actual B material",
+      "noupdate12_observed_request_ids": [],
+      "noupdate12_count": 0,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "needle": "for_qualified_adoption(",
+        "lines": [
+          50
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 25,
+      "label": "Adopt publishes the actual new Artifact",
+      "noupdate12_observed_request_ids": [],
+      "noupdate12_count": 0,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "needle": "pub async fn publish_candidate(",
+        "lines": [
+          87
+        ]
+      },
+      "note": "Fresh Reserve branch only. Recover is an alternative readback, never an additional publish or retry."
+    },
+    {
+      "id": 26,
+      "label": "Accept independently signed Artifact Selection",
+      "noupdate12_observed_request_ids": [
+        42,
+        43
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+        "needle": "let selected = match (published, retained)",
+        "lines": [
+          233
+        ]
+      },
+      "note": "NoUpdate combines retained phase construction with selection. Adopt's accept_selection still costs this same pair; it does not cancel either additional adopt pair."
+    },
+    {
+      "id": 27,
+      "label": "Read the actual adopted Training model for new C",
+      "noupdate12_observed_request_ids": [],
+      "noupdate12_count": 0,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+        "needle": "async fn actual_model(",
+        "lines": [
+          238
+        ]
+      },
+      "note": "NoUpdate only compares retained baseline components. Adopt reads the real Training completion twice under one source operation; no new fit or signing occurs here."
+    },
+    {
+      "id": 28,
+      "label": "Read A's actual historical Feature completion",
+      "noupdate12_observed_request_ids": [
+        44,
+        45
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+        "needle": "read_original_historical_completion(",
+        "lines": [
+          207
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 29,
+      "label": "Connect the exact Root CURRENT route",
+      "noupdate12_observed_request_ids": [
+        46,
+        47
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
+        "needle": "pub async fn connect_current_until(",
+        "lines": [
+          225
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 30,
+      "label": "Prepare CURRENT in the real successor worker",
+      "noupdate12_observed_request_ids": [
+        48,
+        49
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+        "needle": "prepare_successor_current(",
+        "lines": [
+          24
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 31,
+      "label": "Issue the original Root successor FinalUse grant",
+      "noupdate12_observed_request_ids": [
+        50,
+        51
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
+        "needle": "issue_original_successor_final_use(",
+        "lines": [
+          7
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 32,
+      "label": "Publish CURRENT and construct the actual Feature task",
+      "noupdate12_observed_request_ids": [
+        52,
+        53
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
+        "needle": "publish_successor_current(",
+        "lines": [
+          76
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 33,
+      "label": "Open original Source and Cell owners in the required worker",
+      "noupdate12_observed_request_ids": [
+        54,
+        55
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/circuit_q24_successor_worker.rs",
+        "needle": "with_current_successor_publication(move ||",
+        "lines": [
+          235
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 34,
+      "label": "Install actual C Generation receipt owners",
+      "noupdate12_observed_request_ids": [
+        56,
+        57
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/production_post_a_continuation.rs",
+        "needle": "install_circuit_feature_generation(",
+        "lines": [
+          295
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 35,
+      "label": "Commit the real Selection receipt stage",
+      "noupdate12_observed_request_ids": [
+        58,
+        59
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "LearningIterationStageV1::Selection",
+        "lines": [
+          333,
+          342,
+          350,
+          366
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 36,
+      "label": "Commit real NextUse with the same registered Ready slot",
+      "noupdate12_observed_request_ids": [
+        60,
+        61
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "needle": "LearningIterationStageV1::NextUse",
+        "lines": [
+          342,
+          365
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 37,
+      "label": "Complete the same claimed delivery journal after Submit returns",
+      "noupdate12_observed_request_ids": [
+        62,
+        63
+      ],
+      "noupdate12_count": 2,
+      "adopt_fresh_new_c_static_count": 2,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "needle": "complete_original_historical_delivery(",
+        "lines": [
+          464
+        ]
+      },
+      "note": ""
+    },
+    {
+      "id": 38,
+      "label": "Independent Root completed acceptance",
+      "noupdate12_observed_request_ids": [
+        64
+      ],
+      "noupdate12_count": 1,
+      "adopt_fresh_new_c_static_count": 1,
+      "source": {
+        "file": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "needle": ".accept_original_terminal(",
+        "lines": [
+          482
+        ]
+      },
+      "note": "One completed-acceptance exchange. This boundary remains independent of source-operation merging."
+    }
+  ]
+}

@@ -1,0 +1,221 @@
+{
+  "scope": "Independent static runner review; no candidate execution, source gates, native, or host operations",
+  "runner_manifest": {
+    "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/MANIFEST.json",
+    "bytes": 2918,
+    "sha256": "99d735d234bd05b389fc87e23a8792b5bb4c37024435a5818aad473b7d74f1aa"
+  },
+  "ordinary_candidate_manifest": {
+    "path": "e6_owner_work/completion_acceptance_candidate/rev2/MANIFEST.json",
+    "bytes": 4381,
+    "sha256": "de63e007ca2803a286f22694364348f14a77728af752e627ffe48d04ec6c5ea3"
+  },
+  "status": "NO_NEW_STATIC_BLOCKER_FOUND",
+  "runners": [
+    {
+      "original": {
+        "path": "e6_owner_work/freeze_tail_stage_source1.py",
+        "bytes": 7446,
+        "sha256": "ba94827a5b40bcee0464db7fe8aa37560024bb17e674170bc66e712f8d1238f3"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/freeze_completion_acceptance_source1.py",
+        "bytes": 7511,
+        "sha256": "8a5d8e79f60df99a1408a62dac618d9d854c4544768ff69c2a21a101281f383c"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/freeze_completion_acceptance_source1.py.diff",
+        "bytes": 3092,
+        "sha256": "a7b883b42ae6c4a8fc32192e5fbb96e2979c66909d8b7262bc60b5fbbbc0e512"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_native9.py",
+        "bytes": 15893,
+        "sha256": "b92193489e264237d27f1380f614c8dd83e6639ab2d003f198e8240e762d4d4a"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_native10.py",
+        "bytes": 15896,
+        "sha256": "ecc2184a283cfefcd3de0eb96e175f3ca7ade011ca70f880452f5db662cac229"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_native10.py.diff",
+        "bytes": 1354,
+        "sha256": "37d2579330bedaaf44f303da816cef4ba9e33db358afb2aa2eddc86b1ca4b444"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_retirement_native7.py",
+        "bytes": 15629,
+        "sha256": "c694b29ba36d0094f03120fb0ad21a945f3c70634dce19090aafbf2ebb74f90b"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_retirement_native8.py",
+        "bytes": 15629,
+        "sha256": "82d1c2222b2151d2031d9384c3c5cf6de1b9b28a95262444f290cc5f5cd68861"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_retirement_native8.py.diff",
+        "bytes": 1438,
+        "sha256": "378c9d5a5e65ee083cc872909cf339f5fca7a094797dad3eaeb9ffcbd2ba9b3b"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_delivery_native5.py",
+        "bytes": 15664,
+        "sha256": "72d6220d866f3292a7f04bbd86715db658b82ad60471e4f5fb65767481496489"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_delivery_native6.py",
+        "bytes": 15664,
+        "sha256": "3036781e090157559611020f330f6728cc23c8f623cb6b5fb3977aa23b900d2c"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_delivery_native6.py.diff",
+        "bytes": 1444,
+        "sha256": "d0f21237721a87c66021bbbfa5be6eaf0e890107a2b224944986cd1d08aae387"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_feature_ack_native3.py",
+        "bytes": 15699,
+        "sha256": "988d2b7c41f82aef66e0757989f5d01ecc3c8063b462e88d641191cfb615ab5b"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_feature_ack_native4.py",
+        "bytes": 15699,
+        "sha256": "13566324b6070c2816a3343655cf08aa3fd41a2147167b16d8b5d3583898aa22"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_feature_ack_native4.py.diff",
+        "bytes": 1446,
+        "sha256": "3f502236216c3bf6bc2e5efb26029f00ca1a8b6110f53d1b4e44121298960f6c"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_ready_slot_native1.py",
+        "bytes": 15664,
+        "sha256": "0dbb86e6030fa1450f78e1a9916ba3ba39f4b3e24d6f1c18363e5d624c33a90e"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_ready_slot_native2.py",
+        "bytes": 15664,
+        "sha256": "db4577b30265bacb8e3b2ad78137be16ac985c65395640cca996aa1023c78303"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_ready_slot_native2.py.diff",
+        "bytes": 1438,
+        "sha256": "4205bf2f41a2da36a8e637e65a8998b3540dacb06ad463469bf161bdb37ce01a"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_native9.py",
+        "bytes": 15893,
+        "sha256": "b92193489e264237d27f1380f614c8dd83e6639ab2d003f198e8240e762d4d4a"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_completed_data_native1.py",
+        "bytes": 15938,
+        "sha256": "d56ee586f063a49efc9191b957fff64b3d50eb548d3d3b14e516ae887f7807cd"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_completed_data_native1.py.diff",
+        "bytes": 1410,
+        "sha256": "ada2501e7507b6695a93d39b693fa2217bb42edc6243b74c2f6b400e2c615661"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/run_noupdate9.py",
+        "bytes": 27341,
+        "sha256": "37b1ea17a48e1e2d4059385505ef29cec127ebe95694e8866a16360f22d568d8"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_noupdate10.py",
+        "bytes": 29322,
+        "sha256": "cba1f25b5177889295bc804bfc3aab2516e657cc502dd6e0d4278b960da73155"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/run_noupdate10.py.diff",
+        "bytes": 8544,
+        "sha256": "f87bd00c74f884efd1bff589a4a8f0c1e5bda3a5f71bd81e4e2cb47429ff5ed6"
+      }
+    },
+    {
+      "original": {
+        "path": "e6_owner_work/deploy_tail_stage_pipeline1.py",
+        "bytes": 23133,
+        "sha256": "4b4ecfe051221c39221fa629736b935d97c0263ca848fe57ae0ce19252aa2dfe"
+      },
+      "candidate": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/deploy_completion_acceptance_pipeline1.py",
+        "bytes": 26548,
+        "sha256": "9f1369b7ffd686281254ab43592dc49cdbd702323c2c41da468a3a098164aa56"
+      },
+      "diff": {
+        "path": "e6_owner_work/completion_acceptance_candidate/rev2/runners/deploy_completion_acceptance_pipeline1.py.diff",
+        "bytes": 25074,
+        "sha256": "b3383566102fbeaf6599734cefbbf7d7fd04098f631ed40eae3e4d2d97cb64b3"
+      }
+    }
+  ],
+  "original_root_harness": {
+    "path": "e6_owner_work/root_5eeb5d33_completed_chain_v1.py",
+    "bytes": 33247,
+    "sha256": "ee20bff704f8495fabb6133bbb478d82dd14466303e82c4a93ff2ea276c2b3d1"
+  },
+  "exact_cases": {
+    "ordinary_data_cases": [
+      "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_evaluated_and_proposed_terminal_histories",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_accepts_all_local_decisions_after_selection_and_actual_use",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_excludes_valid_trainer_no_update_for_this_history_purpose",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_refuses_every_unfinished_prefix_and_vacant_owner",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_keeps_original_scope_request_owner_and_outer_record_binding",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_replays_missing_duplicate_reordered_and_tampered_receipts",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_requires_the_selected_parent_and_real_next_task_use",
+      "learning_iteration_checkpoint::completed_tests::completed_reader_rejects_truncated_trailing_and_noncanonical_encoded_payloads",
+      "authority_host_runtime::session::historical_read::completed_record::tests::original_seven_signature_record_has_identical_wire_bytes_and_digest",
+      "authority_host_runtime::session::historical_read::completed_record::tests::six_signature_record_is_distinct_and_roundtrips_without_padding",
+      "authority_host_runtime::session::historical_read::completed_record::tests::signature_digest_data_rejects_other_lengths_or_element_types"
+    ],
+    "root_component_cases": [
+      "authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity",
+      "neuron_generation_current::initial_root_tests::ordinary::cold_acceptance_data::namespace_tests::root_completed_refusal_observer_matches_registered_owner"
+    ],
+    "root_component_record_names": [
+      "root-completed-refusal-original-bounds",
+      "root-completed-refusal-observer-namespace"
+    ],
+    "executed": false
+  },
+  "findings": [
+    "All nine candidate and original runner byte pins match. Python source was parsed without importing or executing any runner.",
+    "Original native11 and retirement16 are loaded from their original SHA-bound protocols; delivery5, Feature ACK2 and Ready2 case arrays are unchanged.",
+    "New completed DATA group uses eleven unique full module names with exact test(=...) selectors. Definitions are present in the fixed source. It retains full JUnit names and requires one fresh report, exact case-set equality, no skips/errors/failures, exit zero and before/after source-tree inventory equality.",
+    "Two independently named Root components use the original m.test and ignored-only exact full-name filters. The actual original harness forces sudo env UID0, requires at least one case and no-test failure, zero retries, exact coverage and fresh JUnit. Each failure aborts before subsequent mechanism/whole parent.",
+    "Ordering is original34, original Ready2, new DATA11, separately recorded Root namespace/bounded2, original Root lane parent1, then one unchanged original NoUpdate parent. These are separately scoped; DATA or Root components do not count as whole-parent acceptance.",
+    "Freeze/source gates require current parent bfea, three new paths, eleven total changed paths, exact compiler/lint inventory, 467 tests/53 modules/908 protected rows/current full1164, original blob tests and original512000 policy. Prior source qualification is not substituted.",
+    "The new native controls retain original1800-second timeout and two build jobs. New Root components retain the original harness budgets; mechanism10s/500ms/60s and whole parent64 historical frames/2s ACK/500ms frame/original expiry deadlines are unchanged.",
+    "Unique output names and nonblocking owner locks remain. Every stage exit/result/source/count check must pass before the next stage. Old failed NoUpdate9 result is SHA-bound and explicitly retained.",
+    "Real source freeze, compile2/list, source gates and subsequent native results are pending operational prerequisites; static review grants none of those results."
+  ],
+  "nonblocking_wording_note": "run_completed_data_native1.py retains the old template module docstring saying original eleven native scope regressions; its deployed protocol.scope, stage name and expected full cases correctly distinguish DATA11. No executable semantic issue inferred.",
+  "exact_new_namespace_path_caveat": "The lib/current hooks and old bounded chain were checked against exact bfea blobs. Two intermediate ordinary module hook captures are from the cold branch and have different whole-file blobs; their hook names agree. The actual compile/list and exact fresh JUnit must independently confirm the new fully-qualified namespace case; no execution is claimed here.",
+  "executed_counts": {
+    "python_runner_import_or_execution": 0,
+    "source_gate": 0,
+    "formatter_or_compile": 0,
+    "native": 0,
+    "remote_reads": 0,
+    "host_owner": 0,
+    "model_or_training": 0
+  },
+  "candidate_or_original_source_mutations": 0
+}

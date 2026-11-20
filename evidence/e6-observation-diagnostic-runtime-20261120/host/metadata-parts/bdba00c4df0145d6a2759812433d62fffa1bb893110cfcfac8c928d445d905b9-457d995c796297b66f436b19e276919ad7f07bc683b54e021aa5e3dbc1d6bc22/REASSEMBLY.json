@@ -1,0 +1,50 @@
+{
+  "max_part_bytes": 480000,
+  "original": {
+    "bytes": 998122,
+    "git_blob": "15b8df42354c5ecbf966513bdb0388721742e3d9",
+    "mode": "100644",
+    "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/INPUT.json",
+    "sha256": "457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22"
+  },
+  "parts": [
+    {
+      "file": {
+        "bytes": 480000,
+        "git_blob": "5889f8b5aa31b2c2fde845ce8d2ef57d3c9552c6",
+        "local_path": "/workspace/scratch/e9e051ab0825/e6_diagnostic_host_archive_readback_1/publication-1/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00000",
+        "mode": "100644",
+        "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00000",
+        "sha256": "9b21bdcfa1bc37771c715cf8b5c16436e70bdd41d884fd82688f99da0c713f9b"
+      },
+      "offset": 0,
+      "ordinal": 0
+    },
+    {
+      "file": {
+        "bytes": 480000,
+        "git_blob": "8dc5f8c465d070fa46ab6ca4ff9cc6d4435fcefa",
+        "local_path": "/workspace/scratch/e9e051ab0825/e6_diagnostic_host_archive_readback_1/publication-1/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00001",
+        "mode": "100644",
+        "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00001",
+        "sha256": "38a115456c776afd703378543238b155edbf3258886af0036dab748125f918a7"
+      },
+      "offset": 480000,
+      "ordinal": 1
+    },
+    {
+      "file": {
+        "bytes": 38122,
+        "git_blob": "810acb58c0295f92f0cf893d9cd5856e6eadfdc0",
+        "local_path": "/workspace/scratch/e9e051ab0825/e6_diagnostic_host_archive_readback_1/publication-1/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00002",
+        "mode": "100644",
+        "path": "evidence/e6-observation-diagnostic-runtime-20261120/host/metadata-parts/bdba00c4df0145d6a2759812433d62fffa1bb893110cfcfac8c928d445d905b9-457d995c796297b66f436b19e276919ad7f07bc683b54e021aa5e3dbc1d6bc22/part-00002",
+        "sha256": "2a63a07b3b84e32e5a44ec7a6a4b7d482e7c72e825756a038e71508f95841c6f"
+      },
+      "offset": 960000,
+      "ordinal": 2
+    }
+  ],
+  "schema": "hepta.exact-byte-parts.v2",
+  "transformation": "ordered original byte slices; no decoding or field removal"
+}

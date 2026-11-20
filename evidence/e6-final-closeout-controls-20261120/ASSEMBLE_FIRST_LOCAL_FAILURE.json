@@ -1,0 +1,13 @@
+{
+  "actual_input_validation_reached_output_creation": true,
+  "controller_sha256": "100e602cbd4dc92e8b0bf67aa13541965a113a4596915eeed70b999122ca2db7",
+  "cut_sha256": "3f7d2ffcd767ee88e92db59425225918e8b8f41e5fcd48bc45bcc6d06fd961fe",
+  "error": "FileNotFoundError at prepare_final_cut.py:285 output.mkdir(exist_ok=False): parent final-closeout-execution-1 did not exist",
+  "exit_code": 1,
+  "host_native_model_git_actions": 0,
+  "observed_at_utc": "2026-11-20T22:13:22.096690+00:00",
+  "prepared_directory_created": false,
+  "remedy": "Create only the missing intended local output parent and rerun the same pinned controller and approved cut; no source/fact/reference change",
+  "scope": "Actual first local assemble invocation failure before output creation",
+  "tools_session_id": 5914
+}

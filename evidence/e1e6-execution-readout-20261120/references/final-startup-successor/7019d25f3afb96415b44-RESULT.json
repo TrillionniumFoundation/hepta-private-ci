@@ -1,0 +1,30 @@
+{
+  "scope": "Cloud-only unchanged original installation mutation module, with the one reviewed function-locator migration; not full 474/source CLI/native qualification.",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_post_a_installation_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/e9e051ab0825/e6_noupdate14_io_diagnostic_candidate_3_focused_controls_1/source",
+  "source_manifest_sha256": "0ae7946386f872ee0408c1fb27512fcc0f9abbff86dcf7be6075fda63b5342ca",
+  "exit_code": 0,
+  "wall_seconds": 6.328664746004506,
+  "successful": true,
+  "expected_original_tests": 13,
+  "reported_original_tests": 13,
+  "source_unchanged": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "6fbeb1efef870ffd44aab68811516e15d576c0e50b380665d96c5618949db6be",
+  "input_files": 28,
+  "host_rpcs": 0,
+  "native_cases": 0,
+  "full_54_module_source_gate": 0,
+  "full_1165_cli": 0
+}

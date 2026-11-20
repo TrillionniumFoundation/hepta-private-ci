@@ -1,0 +1,65 @@
+{
+  "status": "AUTHORIZED_ONCE_NOT_OBSERVED_EXECUTED",
+  "time_utc": "2026-11-20T13:53:38.009129+00:00",
+  "source": "dbd6a00992b60f4b33e8f10c2defda031d123bcb",
+  "tree": "fe037f5b6617fb647d416e0523685fa4ce08ef2f",
+  "payload_sha256": "a95df2bb88d53379f8d4748b6bc099a9cea795dc917ec78312897be2a0622bbd",
+  "lzma_payload_metadata_semantically_equal": true,
+  "runner_and_eight_drivers_exact_template_bytes": true,
+  "template_sha256": "c4ae7089db71a09bbe1d9fd6c2b48c1aa536c6606366473a644b38a0095c0c63",
+  "actual_freeze_sha256": "af4665cd2704b8c25a9ab44d963d79f11b83bfc307e69bb49be5741e7094dfca",
+  "actual_source_gate_sha256": "fc850c12616f1a1a51f35675457c80c63aff191eb8b86bdc4d5d6da0ca362050",
+  "actual_compile_result_sha256": "b1d4e2126e75e62a20213a07a14e150f6fd83f4ffef98c19d8e288c4ab100649",
+  "matched": [
+    {
+      "name": "run_observation_framing_native1.py",
+      "sha256": "19945957b756026362925ef9f071a6614a4db4c44368cc57a76dbab36241a8b9",
+      "bytes": 18330
+    },
+    {
+      "name": "run_native12.py",
+      "sha256": "c1d6841bb84ff587c79907a2b53b0420fbc9c035a32a39cb45be745b4fa0eb28",
+      "bytes": 16133
+    },
+    {
+      "name": "run_retirement_native10.py",
+      "sha256": "f677dbae4d929bfaf062b351666acd5ecfce64d0fc730913af61e04aa481e48c",
+      "bytes": 15869
+    },
+    {
+      "name": "run_delivery_native8.py",
+      "sha256": "fc59386ccddf7c1ae0709b7ae0f416cf37ef7962f9d91de82070096365438ab4",
+      "bytes": 15901
+    },
+    {
+      "name": "run_feature_ack_native6.py",
+      "sha256": "41cb9d5e6a9e95277d8d2847b97d708eb846d6f7fda1b40e2886a64e62979805",
+      "bytes": 15936
+    },
+    {
+      "name": "run_ready_slot_native4.py",
+      "sha256": "668f155da2b17c283aafd89beb779e20d78133b314dcff684d1c5d9ebae7c11b",
+      "bytes": 15901
+    },
+    {
+      "name": "run_completed_data_native3.py",
+      "sha256": "7bd1906cc6adcdb195e6bd4101ebf24f39256210fce6f6a541f6e62089b9a916",
+      "bytes": 16191
+    },
+    {
+      "name": "run_noupdate12.py",
+      "sha256": "7ebe8b4987a26824abc5d2eff5be222a4ecd30651213cba39dd40817d65f53f9",
+      "bytes": 29803
+    },
+    {
+      "name": "deploy_initial_observation_diagnostic_pipeline1.py",
+      "sha256": "5833554b3cd9fdcf842c4c56da3f529a2d8d87d23dbed506f11c22cd2492b6c9",
+      "bytes": 32781
+    }
+  ],
+  "no_budget_or_original_case_change": true,
+  "all_test_entrypoint_retries_zero": true,
+  "stage_failure_blocks_later_stages": true,
+  "cold_or_adopt_authorized": false,
+  "earlier_local_decode_error": "A local zlib decoding probe failed; actual bootstrap uses lzma, independently decoded and compared successfully. No host action from that local probe."
+}

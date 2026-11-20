@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/e9e051ab0825/e6_archive_readback_1/verify_archives.py", line 208, in verify
+    assert indexed[name]["sha256"] == row["sha256"] and indexed[name]["bytes"] == row["bytes"]
+           ~~~~~~~^^^^^^
+KeyError: 'drivers/freeze_completion_acceptance_source1.py'

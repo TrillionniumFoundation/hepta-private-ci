@@ -1,0 +1,39 @@
+{
+  "status": "Native pipeline stopped at retirement preflight; no whole NoUpdate14 execution",
+  "source": "41a0fd9bbbc30051f1e7492cd17eeeb5337aa7a0",
+  "source_inventory": "e5a6990d15845abcfc3934d0060cbca59b828f9037c33a017608f58679835991",
+  "actual_passed_groups": [
+    {
+      "directory": "observation-framing-native-validation-3",
+      "actual_cases": 18,
+      "success": true,
+      "command_seconds": 19.207935178186744,
+      "owner_seconds": 21.249929772224277,
+      "all_qualified_names_unique": true,
+      "xml_failed_error_skipped": 0,
+      "command_logs_and_xml_exact_RESULT_SHA": true
+    },
+    {
+      "directory": "native-validation-14",
+      "actual_cases": 11,
+      "success": true,
+      "command_seconds": 104.5927586951293,
+      "owner_seconds": 106.98358478024602,
+      "all_qualified_names_unique": true,
+      "xml_failed_error_skipped": 0,
+      "command_logs_and_xml_exact_RESULT_SHA": true
+    }
+  ],
+  "retirement_test_commands_started": 0,
+  "subsequent_stages_started": 0,
+  "whole_NoUpdate14_parent_runs": 0,
+  "new_cold_runs": 0,
+  "first_failure": "retirement fresh_build_inputs exact compile receipt device/inode/size/mode tuple; agentd inode differs while all binary bytes SHA/size/mode and owner/link count match",
+  "retirement_source_unchanged_false_note": "Original before_files remains None because preflight stopped before inventory; actual after e5 and HEAD/tree/sourceclean match, not evidence of source mutation",
+  "pipeline_result_sha256": "f82706bc1d98fce557057eed88d577fa09550dafb60bbcb7e67fe21a46c0c321",
+  "retirement_error_sha256": "f124500f94a108013e1162c68c59bb2f5372265be9b1194c3604895b736f4f82",
+  "pipeline_owner_seconds": 129.69412315823138,
+  "exit_code": 1,
+  "output_complete": true,
+  "capture_error": null
+}

@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "status": "FOUR_FILE_DIAGNOSTIC_DRAFT_WITH_THREAD_CORRELATION_NOT_EXECUTED",
+  "base_commit": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+  "base_tree": "d07a8a95a2f0921387446063a1a51661cbd62df7",
+  "candidate2_manifest_sha256": "7a8cb5c2fe9cb2990dabf0ed00e045967380f1bc4fc14a02a1d8849bbea31a4f",
+  "changed_source_paths": 4,
+  "policy_and_allowlist_same_as_candidate2": true,
+  "boundary_count": 1164,
+  "protected_count": 908,
+  "compile_lint_gate_native_parent_cold_model_executions": 0,
+  "host_calls": 0,
+  "git_mutations": 0,
+  "files": [
+    {
+      "path": "POLICY_MIGRATION_FROM_CANDIDATE2.json",
+      "bytes": 4521,
+      "sha256": "061e28fd13c47dfdf8912b4344ba93d3834a54d133abcd48a801db675a93b112",
+      "gitBlob": "34ca36751ef43dd3ce661534c20caed2822da15f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3648,
+      "sha256": "735dbd6eb973d00f99a66a7bf21317278f86279e2c9ba596a750904862863af4",
+      "gitBlob": "02cc0a36495ccd7343a78381b2b9b8175e43aebe"
+    },
+    {
+      "path": "SOURCE.diff",
+      "bytes": 8757,
+      "sha256": "6692ab4c10dab04f79e9c69b02173f75316200b186e50295835708fdc6ea2fab",
+      "gitBlob": "3657e8a8d36e7cbe97531945e9467120dc787219"
+    },
+    {
+      "path": "SOURCE_BINDINGS.json",
+      "bytes": 4917,
+      "sha256": "2ff6455282d116156186af3577c1f21f04faff49cd54b85cff3d6287d337d19b",
+      "gitBlob": "4c538db5edcc42c0839b8593f284f4b856dc228f"
+    },
+    {
+      "path": "THREAD_CORRELATION_DELTA.diff",
+      "bytes": 6026,
+      "sha256": "806965355d2452106e8764c4b397b612fc05cbd0926096da8f9d6af4ae706858",
+      "gitBlob": "5cbb5e0a41bb55902d1675d7b990702b83614019"
+    },
+    {
+      "path": "source/.github/blob-size-allowlist.txt",
+      "bytes": 15170,
+      "sha256": "c895e00c7ab95a0fef897364f32fe827fcb7ac7605c007556409395d69eedcfb",
+      "gitBlob": "fa7fa6b4bd2dbbc72995725cef40855d1f6f8d31"
+    },
+    {
+      "path": "source/CALLERS.toml",
+      "bytes": 1791454,
+      "sha256": "5533596462eed0fe608e7271b4aab8b76600909268d989dc1d6dc41d6aaf884a",
+      "gitBlob": "2958b8e9b0d24655f2fc545bc383d86a63a45271"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "bytes": 25164,
+      "sha256": "8720f165df1488f2fe4cf0d810a56ef3d0fb28da0c48ab43bcba8eaf3d3d4d0a",
+      "gitBlob": "aab7fa5b228eb8646ba398abc58b901424db5c04"
+    },
+    {
+      "path": "source/codex-rs/hepta-contracts/src/authority_host_peer.rs",
+      "bytes": 9147,
+      "sha256": "9df4fd85b14c51d21035b1b7e82bfe7827a43a7b2ef559778ef73e83720410a7",
+      "gitBlob": "22cd8a0d7cca4f4bf4c533981542ca347a4bbd0c"
+    }
+  ]
+}

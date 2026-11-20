@@ -1,0 +1,20 @@
+--- verify_archives.py
++++ verify_archives_v2.py
+@@ -60,7 +60,7 @@
+ 
+ 
+ def verify(kind):
+-    output = HERE / ("verification-" + kind + "-1")
++    output = HERE / ("verification-" + kind + "-2")
+     output.mkdir(exist_ok=False)
+     started = time.monotonic()
+     result = {"schema": "hepta.e6.independent-archive-readback.v1", "kind": kind, "source": SOURCE, "archive_members_extracted_to_filesystem": 0, "native_experiments": 0, "model_calls": 0, "host_processes_started": 0, "remote_git_writes": 0, "qualification_granted": False, "status": "VERIFYING"}
+@@ -205,7 +205,7 @@
+             for name, row in meta["supplied_cloud_files"].items():
+                 raw = base64.b64decode(row["base64"], validate=True)
+                 assert len(raw) == row["bytes"] and sha(raw) == row["sha256"]
+-                assert indexed[name]["sha256"] == row["sha256"] and indexed[name]["bytes"] == row["bytes"]
++                assert indexed["original-cloud-inputs/" + name]["sha256"] == row["sha256"] and indexed["original-cloud-inputs/" + name]["bytes"] == row["bytes"]
+             for session, terminal in meta["terminals"].items():
+                 assert terminal["status"]["state"] == "exited" and terminal["output_complete"] is True
+                 assert terminal["status"].get("capture_error") is None

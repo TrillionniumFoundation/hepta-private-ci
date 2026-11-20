@@ -1,0 +1,47 @@
+{
+  "archive_render_or_host_actions": 0,
+  "controls": [
+    {
+      "actual": {
+        "bytes": 55592,
+        "git_blob": "027a11d133e97255b137d5083fab2498d82fb87e",
+        "sha256": "2a4fa4e078e50d6a4c482f3dba9122eebf6be7de70be7164e149567290554c5c"
+      },
+      "control": "new15_exact_inert_bytes",
+      "passed": true,
+      "reader": "helper.read"
+    },
+    {
+      "control": "new15_wrong_expected_length",
+      "original_body_unchanged": true,
+      "passed": true,
+      "reader": "helper.read",
+      "refusal": "bytecode expected identity is incomplete or differs",
+      "synthetic_expected_bytes": 55593
+    },
+    {
+      "actual": {
+        "bytes": 55592,
+        "git_blob": "027a11d133e97255b137d5083fab2498d82fb87e",
+        "sha256": "2a4fa4e078e50d6a4c482f3dba9122eebf6be7de70be7164e149567290554c5c"
+      },
+      "control": "new15_exact_inert_bytes",
+      "passed": true,
+      "reader": "successor.read"
+    },
+    {
+      "control": "new15_wrong_expected_length",
+      "original_body_unchanged": true,
+      "passed": true,
+      "reader": "successor.read",
+      "refusal": "bytecode expected identity is incomplete or differs",
+      "synthetic_expected_bytes": 55593
+    }
+  ],
+  "old_v3_compatibility_controls_unchanged": true,
+  "original_experiments_run": 0,
+  "original_result_sha256": "98111312189af8eee4ce1e2eb5ffd6ed07c926b84f81944fc70287b28a03557f",
+  "retained_originals_unchanged": true,
+  "scope": "Four necessary new15 reader controls only: exact inert body accepted and wrong expected length refused by each of two reviewed readers",
+  "successful": true
+}

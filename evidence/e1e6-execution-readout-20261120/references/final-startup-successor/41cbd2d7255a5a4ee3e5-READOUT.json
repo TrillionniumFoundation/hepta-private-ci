@@ -1,0 +1,39 @@
+{
+  "candidate_manifest_sha256": "7b226f0ec11dd95d92b491b254a39a9d57f457f49474b8784dc257efd2ac77f2",
+  "closed_finding": "N14-HELPER-LINK-1",
+  "execution": {
+    "candidate_edits": 0,
+    "cargo": 0,
+    "driver_import_or_execution": 0,
+    "git_write": 0,
+    "host": 0,
+    "model": 0,
+    "native": 0,
+    "network": 0,
+    "tests": 0
+  },
+  "other_eight_drivers_byte_identical": [
+    "run_native14.py",
+    "run_retirement_native12.py",
+    "run_delivery_native10.py",
+    "run_feature_ack_native8.py",
+    "run_ready_slot_native6.py",
+    "run_completed_data_native5.py",
+    "run_observation_framing_native3.py",
+    "deploy_startup_native_pipeline1.py"
+  ],
+  "preserved": [
+    "new private target containment",
+    "absolute non-symlink regular compiler file uid1000",
+    "actual compiler SHA/size",
+    "independent runtime pin nlink1",
+    "pin0555",
+    "original verify-only stability/env/build checks",
+    "post-verify CargoHOME/target/offline",
+    "NoUpdate14 run identity",
+    "original cases, seven libraries, product/helper chain, budgets and authorization"
+  ],
+  "runtime_delta": "Only compiler source nlink1 removed; no other byte differs in that driver.",
+  "scope": "This closes a static compatibility issue only. OUT2 material failure remains history; future success/source/compile/gate/freeze/payload pins are still absent.",
+  "state": "STATIC_SINGLE_DELTA_PASS_COMPILER_LINK_BLOCKER_CLOSED"
+}

@@ -1,0 +1,13 @@
+{
+  "status": "ROOT_RAW_COMMIT_RECONSTRUCTED_EXACT",
+  "commit": {
+    "sha": "9dfded9cecc74e39a19bccd14b9de9dc46c02c63",
+    "timezone": "-0500",
+    "message_suffix": "''",
+    "raw_commit": "tree d07a8a95a2f0921387446063a1a51661cbd62df7\nparent 527e62b68bdf704efdd8a521c5a95c664bf69172\nauthor Qian QI <102159240+ProfHepta@users.noreply.github.com> 1795178460 -0500\ncommitter Qian QI <102159240+ProfHepta@users.noreply.github.com> 1795178460 -0500\n\ntest(hepta): align refusal namespace fixture with Cell scope\n\nThe stable scope digest excludes run_id, so changing only the run must keep the canonical refusal slot. Check that the complete target binding still rejects a different run, and change cell_id for the genuine missing-namespace control.\n\nRetain the physical missing-file, original-byte restoration, writer epoch and real Armed/Ready controls. Add caller location to the missing-file assertion for precise failure diagnosis. Production code and policy are unchanged.",
+    "raw_commit_bytes": 782
+  },
+  "tree": "d07a8a95a2f0921387446063a1a51661cbd62df7",
+  "parent": "527e62b68bdf704efdd8a521c5a95c664bf69172",
+  "ref_changed": false
+}

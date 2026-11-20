@@ -1,0 +1,14 @@
+{
+  "scope": "Cloud DATA parser correction, no host/native/model retry",
+  "original_failure": "phase2/FAILURE.json",
+  "original_reader_sha256": "d89bd2d53f2c1792eb7d1748783586fb00b1f8831b55c9081266bbdcdfc3a8f2",
+  "original_decoder_sha256": "87eaed99e53e633afafc9b4d1c5ba7d3faf64f76eb3e4851522e85f175fba6c3",
+  "new_reader_sha256": "300d9803560bed2e56d3f3273f3007b065facfeeae88b97f4262aaaa23e1d78c",
+  "new_decoder_sha256": "fb3d71fdc78cef7a3f2aad55ce6a968dec7d03b22660724e48319e99c7f44e51",
+  "source": {
+    "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+    "bytes": 13379,
+    "sha256": "b08ae74c9da62d474f5669020000f15f538f10433f2eeda3da6b0a7218f50e11"
+  },
+  "reason": "Execution signature payload is domain + 4-byte BE plan-id length + id + original operation binding + SHA256(body), not bare body. The rejected exploratory assertion was a reader error; original product inputs unchanged. No signature verified."
+}

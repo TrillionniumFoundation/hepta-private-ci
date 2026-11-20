@@ -1,0 +1,93 @@
+{
+  "schema": "hepta-e6-observation-diagnostic-source-gate-failure-readout-v1",
+  "scope": "Independent local read of existing actual failed gate and exact source/QA/verifier; no test or controller executed.",
+  "actual": {
+    "result": {
+      "path": "/workspace/scratch/e9e051ab0825/e6_owner_work/observation_io_diagnostic_gate/rev2/actual-failure-1/RESULT.json",
+      "bytes": 37445,
+      "sha256": "3e1af2929b6ec08baf9ea328cc19c2eedb17bdcaa5535bfd5ebdc024328c3132"
+    },
+    "successful": false,
+    "source_inventory": "25d8b9ccb4fa3196152c630f3d603a7c8894c086af0c0d62570efdd6f43d66cc",
+    "modules": 54,
+    "tests_run": 474,
+    "failure_records": 0,
+    "error_records": 12,
+    "skips": 0,
+    "protected_rows": 908,
+    "failed_protected_occurrences": [
+      554,
+      630
+    ],
+    "targeted_boundaries": 460,
+    "targeted_passed": true,
+    "full_cli_started": false,
+    "full_cli_exit_sentinel": 125,
+    "source_unchanged": true,
+    "owner_wall_seconds": 235.6557655208744
+  },
+  "findings": [
+    {
+      "id": "POLICY_554_SEQUENCE_MINIMUM",
+      "classification": "actual cause",
+      "occurrence": 554,
+      "detail": "The new fn wait and fn write_until forwarding sequences each contain ONE marker, not an empty list. The unchanged verifier rejects every sequence with len < 2 before order matching. The first wait failure masks the same error in write_until.",
+      "source": "verify_hepta_callers.py::_verify_required_order",
+      "minimum_fix": "Each actual forwarding function sequence needs a real signature/body code marker before its complete original None forwarding call. Keep every existing end/pidfd/poll guard in wait_with_diagnostic, required/forbidden unchanged."
+    },
+    {
+      "id": "POLICY_630_MASKED_LITERALS",
+      "classification": "actual cause",
+      "occurrence": 630,
+      "detail": "Three newly added sequence markers contain ordinary Rust string literal text. _verify_protected_files first strips comments/literals; function order matches only the remaining code. The first new root_stage text after shutdown cannot match. The full if marker includes a stripped string and the detail log string is also stripped.",
+      "not_the_cause": "The three fmt-adjusted multiline call markers contain real newlines, no literal backslash-n, and occur exactly in the raw current Rust.",
+      "literal_calls_limit": "The existing exception admits only exact ordinary function/method(\"literal\") calls. It does not admit if expressions or format_args! macros.",
+      "minimum_fix": "Use the actual surviving code order for the diagnostic operations, preserving original shutdown before diagnostics and final Err(error). Do not change the verifier, Rust, required or forbidden fields."
+    },
+    {
+      "id": "QA_WAIT_LOCATOR",
+      "classification": "additional static obstruction hidden by baseline failure; not a newly executed result",
+      "detail": "The original test_channel_end_only_shrinks_and_checks_the_actual_pidfd still calls self.check(OWNER,\"wait\",three markers). wait now only forwards stream/event/deadline/None; those same three actual checks live in wait_with_diagnostic.",
+      "minimum_fix": "One locator string wait -> wait_with_diagnostic; retain exact case identity, all three markers, three deletion mutations, helper functions, thresholds and assertions. Declare the QA file as a seventh existing changed path.",
+      "same_mechanism": "The exact public wait forwards the same stream/event/deadline with None. The private helper still clamps the original deadline to self.end, polls the original owner pidfd and rejects owner events before socket readiness. Diagnostic writes also forward the same deadline to that helper."
+    }
+  ],
+  "error_interpretation": {
+    "row554_error_records": 5,
+    "row630_error_records": 7,
+    "all_stack_traces_fail_at_verify_source_before_change": true,
+    "meaning": "Twelve reported errors are repeated baseline-validation failures within the original mutation tests; they are not twelve independently established product defects. The gate is genuinely failed and cannot be relabelled passed."
+  },
+  "qa_control_preservation": {
+    "check": "Runs each marker in a subTest and calls reject.",
+    "reject": "Finds the exact named real function, requires the requested marker occurrence, comments out only that actual span, then delegates to mutate.",
+    "mutate": "First verifies unmodified source, demands the mutation changes bytes, then requires the changed source to raise the original VerificationFailure.",
+    "full_original_case_names": [
+      "test_exact_callers_cannot_omit_or_add_a_new_custody_path",
+      "test_channel_end_only_shrinks_and_checks_the_actual_pidfd",
+      "test_failed_clamp_permanently_shuts_down_the_real_stream",
+      "test_absolute_end_controls_idle_read_and_precedes_every_reply",
+      "test_every_transport_clamps_before_its_existing_exchange",
+      "test_listener_until_keeps_original_end_and_both_owner_checks",
+      "test_nested_model_publication_and_ack_keep_the_same_end",
+      "test_worker_keeps_original_root_incarnation_and_one_fixed_end",
+      "test_submit_consumes_one_attempt_and_cannot_renew_the_request",
+      "test_bind_and_both_real_handoffs_precede_the_only_ack",
+      "test_worker_operations_cannot_be_hidden_in_unreachable_blocks",
+      "test_outer_termination_closes_and_joins_the_owned_worker",
+      "test_installation_fields_cannot_become_a_cloneable_or_raw_wire_api"
+    ],
+    "original_file_sha256": "3e2e7118b4cebea2b10a9c30910401a6f363f80775f57667cca0f8d6bec6d8e3",
+    "original_verifier_matches_actual_inventory": true,
+    "original_qa_matches_actual_inventory": true
+  },
+  "limits": {
+    "host_calls": 0,
+    "tests_executed": 0,
+    "native_or_model_runs": 0,
+    "author_files_modified": 0,
+    "candidate3_reviewed": false,
+    "frozen_candidate2_and_prior_peer_unchanged": true,
+    "new_source_and_gate_rebinding_required": true
+  }
+}

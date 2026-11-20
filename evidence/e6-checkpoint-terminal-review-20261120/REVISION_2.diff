@@ -1,0 +1,45 @@
+--- candidate_1/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs
++++ candidate_2/codex-rs/hepta-agentd/src/learning_iteration_checkpoint_completed_tests.rs
+@@ -315,15 +315,22 @@
+         reordered,
+         wrong_chain,
+         wrong_head,
+-        wrong_actor,
+-        wrong_operation,
+-        empty_evidence,
+-        expired,
+     ] {
+         assert!(
+             record(&scope, &changed)?
+                 .read_original_completed_scoped(initial, &scope)
+                 .is_err()
++        );
++    }
++    for (changed, expected) in [
++        (wrong_actor, LearningIterationError::WrongOwner),
++        (wrong_operation, LearningIterationError::WrongOperation),
++        (empty_evidence, LearningIterationError::EmptyEvidence),
++        (expired, LearningIterationError::DeadlineExceeded),
++    ] {
++        assert_eq!(
++            record(&scope, &changed)?.read_original_completed_scoped(initial, &scope),
++            Err(Error::Snapshot(expected))
+         );
+     }
+     Ok(())
+@@ -370,11 +377,10 @@
+             Mutation::MissingStep => *committed_step_receipt = Digest32::ZERO,
+             Mutation::MissingPublication => *task_owner_publication = Digest32::ZERO,
+         }
+-        assert!(
+-            record(&scope, &changed)?
+-                .read_original_completed_scoped(initial, &scope)
+-                .is_err(),
+-            "accepted mutated actual-use evidence: {mutation:?}"
++        assert_eq!(
++            record(&scope, &changed)?.read_original_completed_scoped(initial, &scope),
++            Err(Error::Snapshot(LearningIterationError::ContextMismatch)),
++            "wrong semantic refusal for actual-use mutation: {mutation:?}"
+         );
+     }
+     Ok(())

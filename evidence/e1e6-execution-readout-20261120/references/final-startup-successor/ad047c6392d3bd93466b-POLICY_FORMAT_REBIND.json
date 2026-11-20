@@ -1,0 +1,197 @@
+{
+  "candidate1_callers_sha256": "057bf6d1d261eae1233dd1f7ef088c19cab11c09f17dd7cefa98f10b1714c3f2",
+  "formatted_callers_sha256": "057bf6d1d261eae1233dd1f7ef088c19cab11c09f17dd7cefa98f10b1714c3f2",
+  "rebound_callers_sha256": "f594a380996ef7c3f2256b7a3a2837e3266885b736f5882e91ae6b7a5eb24c06",
+  "changed_occurrence_indices": [
+    555,
+    630
+  ],
+  "all_other_906_raw_occurrences_unchanged": true,
+  "all_required_and_forbidden_unchanged": true,
+  "all_other_root_tables_unchanged": true,
+  "replacements": [
+    {
+      "old": "write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic))?",
+      "new": "write_until_with_diagnostic(\n            stream,\n            &(response.len() as u32).to_be_bytes(),\n            deadline,\n            Some(header_diagnostic),\n        )?",
+      "exact_occurrences": 2
+    },
+    {
+      "old": "self.exchange_inner(&mut stream, handle, &mut failure_stage, &mut header_diagnostic)",
+      "new": "self.exchange_inner(\n            &mut stream,\n            handle,\n            &mut failure_stage,\n            &mut header_diagnostic,\n        )",
+      "exact_occurrences": 1
+    }
+  ],
+  "occurrence_bodies": [
+    {
+      "occurrence_index": 555,
+      "old_exact": "[[protected_file]]\npath = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\nrequired = [\"pub fn limit_original_end(\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn limit_original_end(\", sequence = [\"if self.stream.is_none()\", \"HostIssuerTransportError::Closed\", \"OwnerChannel::limit_original_end(&mut self.owner, end)\", \"if result.is_err()\", \"let Some(stream) = self.stream.take()\", \"stream.shutdown(Shutdown::Both)\", \"result\"] }, { function = \"fn exchange_inner(\", sequence = [\"self.owner.end()\", \"let deadline = self.owner.deadline(self.policy.timeout)\", \"self.owner.check(deadline)?\", \"let response = handle(&bytes, deadline)?\", \"self.owner.check(deadline)?\", \"write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic))?\", \"self.owner.write_until(stream, &response, deadline)?\", \"self.owner.check(deadline)?\"] }]\n\n",
+      "new_exact": "[[protected_file]]\npath = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\nrequired = [\"pub fn limit_original_end(\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn limit_original_end(\", sequence = [\"if self.stream.is_none()\", \"HostIssuerTransportError::Closed\", \"OwnerChannel::limit_original_end(&mut self.owner, end)\", \"if result.is_err()\", \"let Some(stream) = self.stream.take()\", \"stream.shutdown(Shutdown::Both)\", \"result\"] }, { function = \"fn exchange_inner(\", sequence = [\"self.owner.end()\", \"let deadline = self.owner.deadline(self.policy.timeout)\", \"self.owner.check(deadline)?\", \"let response = handle(&bytes, deadline)?\", \"self.owner.check(deadline)?\", \"write_until_with_diagnostic(\\n            stream,\\n            &(response.len() as u32).to_be_bytes(),\\n            deadline,\\n            Some(header_diagnostic),\\n        )?\", \"self.owner.write_until(stream, &response, deadline)?\", \"self.owner.check(deadline)?\"] }]\n\n",
+      "old_parsed": {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "required": [
+          "pub fn limit_original_end("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn limit_original_end(",
+            "sequence": [
+              "if self.stream.is_none()",
+              "HostIssuerTransportError::Closed",
+              "OwnerChannel::limit_original_end(&mut self.owner, end)",
+              "if result.is_err()",
+              "let Some(stream) = self.stream.take()",
+              "stream.shutdown(Shutdown::Both)",
+              "result"
+            ]
+          },
+          {
+            "function": "fn exchange_inner(",
+            "sequence": [
+              "self.owner.end()",
+              "let deadline = self.owner.deadline(self.policy.timeout)",
+              "self.owner.check(deadline)?",
+              "let response = handle(&bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic))?",
+              "self.owner.write_until(stream, &response, deadline)?",
+              "self.owner.check(deadline)?"
+            ]
+          }
+        ]
+      },
+      "new_parsed": {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "required": [
+          "pub fn limit_original_end("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn limit_original_end(",
+            "sequence": [
+              "if self.stream.is_none()",
+              "HostIssuerTransportError::Closed",
+              "OwnerChannel::limit_original_end(&mut self.owner, end)",
+              "if result.is_err()",
+              "let Some(stream) = self.stream.take()",
+              "stream.shutdown(Shutdown::Both)",
+              "result"
+            ]
+          },
+          {
+            "function": "fn exchange_inner(",
+            "sequence": [
+              "self.owner.end()",
+              "let deadline = self.owner.deadline(self.policy.timeout)",
+              "self.owner.check(deadline)?",
+              "let response = handle(&bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "write_until_with_diagnostic(\n            stream,\n            &(response.len() as u32).to_be_bytes(),\n            deadline,\n            Some(header_diagnostic),\n        )?",
+              "self.owner.write_until(stream, &response, deadline)?",
+              "self.owner.check(deadline)?"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "occurrence_index": 630,
+      "old_exact": "[[protected_file]]\npath = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\nrequired = [\"pub fn exchange_with_original_deadline(\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn exchange(\", sequence = [\"handle: impl FnOnce(&[u8])\", \"self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))\"] }, { function = \"fn exchange_with_original_deadline(\", sequence = [\"handle: impl FnOnce(&[u8], Instant)\", \"self.stream.take().ok_or(HostIssuerTransportError::Closed)?\", \"self.exchange_inner(&mut stream, handle, &mut failure_stage, &mut header_diagnostic)\", \"Ok(true)\", \"self.stream = Some(stream)\", \"Err(error)\", \"stream.shutdown(Shutdown::Both)\", \"root_stage={failure_stage} thread={:?}\", \"if failure_stage == \\\"peer.response-header-write\\\"\", \"root_stage=peer.response-header-detail\", \"Err(error)\"] }, { function = \"fn exchange_inner(\", sequence = [\"let deadline = self.owner.deadline(self.policy.timeout)\", \"self.owner.read_until(stream, &mut length[1..], deadline)?\", \"self.owner.read_until(stream, &mut bytes, deadline)?\", \"self.owner.check(deadline)?\", \"let response = handle(&bytes, deadline)?\", \"self.owner.check(deadline)?\", \"write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic))?\", \"self.owner.write_until(stream, &response, deadline)?\", \"self.owner.check(deadline)?\"] }]\n\n",
+      "new_exact": "[[protected_file]]\npath = \"codex-rs/hepta-contracts/src/authority_host_peer.rs\"\nrequired = [\"pub fn exchange_with_original_deadline(\"]\nforbidden = []\nrequired_function_order = [{ function = \"fn exchange(\", sequence = [\"handle: impl FnOnce(&[u8])\", \"self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))\"] }, { function = \"fn exchange_with_original_deadline(\", sequence = [\"handle: impl FnOnce(&[u8], Instant)\", \"self.stream.take().ok_or(HostIssuerTransportError::Closed)?\", \"self.exchange_inner(\\n            &mut stream,\\n            handle,\\n            &mut failure_stage,\\n            &mut header_diagnostic,\\n        )\", \"Ok(true)\", \"self.stream = Some(stream)\", \"Err(error)\", \"stream.shutdown(Shutdown::Both)\", \"root_stage={failure_stage} thread={:?}\", \"if failure_stage == \\\"peer.response-header-write\\\"\", \"root_stage=peer.response-header-detail\", \"Err(error)\"] }, { function = \"fn exchange_inner(\", sequence = [\"let deadline = self.owner.deadline(self.policy.timeout)\", \"self.owner.read_until(stream, &mut length[1..], deadline)?\", \"self.owner.read_until(stream, &mut bytes, deadline)?\", \"self.owner.check(deadline)?\", \"let response = handle(&bytes, deadline)?\", \"self.owner.check(deadline)?\", \"write_until_with_diagnostic(\\n            stream,\\n            &(response.len() as u32).to_be_bytes(),\\n            deadline,\\n            Some(header_diagnostic),\\n        )?\", \"self.owner.write_until(stream, &response, deadline)?\", \"self.owner.check(deadline)?\"] }]\n\n",
+      "old_parsed": {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "required": [
+          "pub fn exchange_with_original_deadline("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "handle: impl FnOnce(&[u8])",
+              "self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))"
+            ]
+          },
+          {
+            "function": "fn exchange_with_original_deadline(",
+            "sequence": [
+              "handle: impl FnOnce(&[u8], Instant)",
+              "self.stream.take().ok_or(HostIssuerTransportError::Closed)?",
+              "self.exchange_inner(&mut stream, handle, &mut failure_stage, &mut header_diagnostic)",
+              "Ok(true)",
+              "self.stream = Some(stream)",
+              "Err(error)",
+              "stream.shutdown(Shutdown::Both)",
+              "root_stage={failure_stage} thread={:?}",
+              "if failure_stage == \"peer.response-header-write\"",
+              "root_stage=peer.response-header-detail",
+              "Err(error)"
+            ]
+          },
+          {
+            "function": "fn exchange_inner(",
+            "sequence": [
+              "let deadline = self.owner.deadline(self.policy.timeout)",
+              "self.owner.read_until(stream, &mut length[1..], deadline)?",
+              "self.owner.read_until(stream, &mut bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "let response = handle(&bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "write_until_with_diagnostic(stream, &(response.len() as u32).to_be_bytes(), deadline, Some(header_diagnostic))?",
+              "self.owner.write_until(stream, &response, deadline)?",
+              "self.owner.check(deadline)?"
+            ]
+          }
+        ]
+      },
+      "new_parsed": {
+        "path": "codex-rs/hepta-contracts/src/authority_host_peer.rs",
+        "required": [
+          "pub fn exchange_with_original_deadline("
+        ],
+        "forbidden": [],
+        "required_function_order": [
+          {
+            "function": "fn exchange(",
+            "sequence": [
+              "handle: impl FnOnce(&[u8])",
+              "self.exchange_with_original_deadline(|bytes, _deadline| handle(bytes))"
+            ]
+          },
+          {
+            "function": "fn exchange_with_original_deadline(",
+            "sequence": [
+              "handle: impl FnOnce(&[u8], Instant)",
+              "self.stream.take().ok_or(HostIssuerTransportError::Closed)?",
+              "self.exchange_inner(\n            &mut stream,\n            handle,\n            &mut failure_stage,\n            &mut header_diagnostic,\n        )",
+              "Ok(true)",
+              "self.stream = Some(stream)",
+              "Err(error)",
+              "stream.shutdown(Shutdown::Both)",
+              "root_stage={failure_stage} thread={:?}",
+              "if failure_stage == \"peer.response-header-write\"",
+              "root_stage=peer.response-header-detail",
+              "Err(error)"
+            ]
+          },
+          {
+            "function": "fn exchange_inner(",
+            "sequence": [
+              "let deadline = self.owner.deadline(self.policy.timeout)",
+              "self.owner.read_until(stream, &mut length[1..], deadline)?",
+              "self.owner.read_until(stream, &mut bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "let response = handle(&bytes, deadline)?",
+              "self.owner.check(deadline)?",
+              "write_until_with_diagnostic(\n            stream,\n            &(response.len() as u32).to_be_bytes(),\n            deadline,\n            Some(header_diagnostic),\n        )?",
+              "self.owner.write_until(stream, &response, deadline)?",
+              "self.owner.check(deadline)?"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "allowlist_only_exact_digest_replacement": true
+}

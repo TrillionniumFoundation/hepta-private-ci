@@ -1,0 +1,28 @@
+{
+  "scope": "independent root read-only revision2 source review; no native execution",
+  "candidate_manifest_sha256": "d31ce5e2d36059ed2411b4dfccd0ad4abea04db1ae158ceb256c300189bfc29b",
+  "old_callers_sha256": "272e7130450edf8d2a012e5e6df52b3db9078bf7a84dedc938019dacbce4b6b8",
+  "new_callers_sha256": "0477b3ffa6b030e60efe00fd1ccd7357682c56fa15ba120e00772949981aa8e9",
+  "exact_rows": {
+    "boundary": {
+      "old_rows": 1159,
+      "new_rows": 1164,
+      "old_unique_path_or_id": 1159,
+      "all_exact_duplicates_and_unchanged_rows_preserved": true
+    },
+    "protected_file": {
+      "old_rows": 907,
+      "new_rows": 908,
+      "old_unique_path_or_id": 570,
+      "all_exact_duplicates_and_unchanged_rows_preserved": true
+    }
+  },
+  "original_forbidden_rules_ignored_authority_preserved": true,
+  "allowlist_only_preexisting_CALLERS_digest_updated": true,
+  "new_product_methods_reviewed": 5,
+  "new_source_mutation_tests_are_not_native_authority_proof": true,
+  "slot_component_helpers_do_not_prove_registered_Root_aggregate": true,
+  "original_deadlines_budget_and_Accept_unchanged": true,
+  "static_projection_only": 64,
+  "status": "PASS for bounded compile/source-gate continuation, not native qualification"
+}

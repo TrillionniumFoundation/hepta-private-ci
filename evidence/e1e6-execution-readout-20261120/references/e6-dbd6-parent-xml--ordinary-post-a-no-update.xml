@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="31df3994-6d9d-47da-a944-6155f0a35d72" timestamp="2026-11-20T21:58:55.513+08:00" time="97.283">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c" classname="codex-hepta-agentd" timestamp="2026-11-20T21:58:55.520+08:00" time="97.260">
+            <failure message="Error: Feature C must drain its original Generation owner without Generation inference" type="test failure with exit code 101">Error: Feature C must drain its original Generation owner without Generation inference</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1367 filtered out; finished in 97.25s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-3jFN5A
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-vO1IMn
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-zi919c
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73893 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-1j4Rpq
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-kJQZLM
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-aTIwl5
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/bind/ordinary-q24-bIcMJQ
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-jpxVvG
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-root-e6-completed-acceptance-dbd6a009-noupdate-12/witness-bind/ordinary-post-a-model-R8Cptx
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-ZToF8w
+Error: Feature C must drain its original Generation owner without Generation inference
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>
