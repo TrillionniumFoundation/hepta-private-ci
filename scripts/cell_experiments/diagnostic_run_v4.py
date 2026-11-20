@@ -166,7 +166,16 @@ def main():
     parser.add_argument(
         "--study", choices=("fixed_graphs", "repair_retrieval"), default="fixed_graphs"
     )
+    parser.add_argument(
+        "--panel", choices=("diagnostic", "upstream", "blind_b2"), default="diagnostic"
+    )
+    parser.add_argument("--matched-training-source", type=Path)
+    parser.add_argument("--current-credit-source", type=Path)
     args = parser.parse_args()
+    if (args.panel == "blind_b2") != (args.current_credit_source is not None):
+        raise ValueError("B2 follow-up requires the explicit current-credit source")
+    if args.panel == "blind_b2" and args.matched_training_source is None:
+        raise ValueError("original matched training source required")
     root = Path(__file__).resolve().parents[2]
     directory = args.output.resolve()
     directory.mkdir(parents=True, exist_ok=False)
@@ -182,24 +191,63 @@ def main():
         "--run-dir",
         str(directory),
     ]
+    if args.matched_training_source is not None:
+        if args.panel not in ("upstream", "blind_b2"):
+            raise ValueError("matched adapters require the explicit upstream study")
+        command.extend(
+            [
+                "--matched-training-source",
+                str(args.matched_training_source.resolve(strict=True)),
+            ]
+        )
+    if args.current_credit_source is not None:
+        command.extend(
+            [
+                "--current-credit-source",
+                str(args.current_credit_source.resolve(strict=True)),
+            ]
+        )
     source = lambda: {
         str(p.relative_to(root)): file_hash(p)
         for p in sorted((root / "scripts/cell_experiments").rglob("*.py"))
     }
     inventory = source()
-    catalog = repo_execution.load_catalog("diagnostic")
-    materials = root / "qualification/cell-diagnostic-panel-20261118"
-    panels = {
-        name: data.load_records(materials / name / "prepared-records.jsonl")
-        for name in ("c", "d")
-    }
+    if args.panel == "blind_b2":
+        if args.study != "repair_retrieval":
+            raise ValueError("B2 requires all nine preregistered interaction arms")
+        from cell_experiments.blind_panel_v4 import load_panel
+
+        materials = root / "qualification/cell-blind-panel-b2-20261118"
+        panels = {"B2_exposed_followup": load_panel(materials)}
+        catalog = data._parse((materials / "CATALOG.json").read_bytes())
+    elif args.panel == "upstream":
+        if args.study != "repair_retrieval":
+            raise ValueError(
+                "upstream requires the preregistered repair/retrieval study"
+            )
+        from cell_experiments.upstream_panel_v4 import load_panel
+
+        materials = root / "qualification/cell-upstream-panel-20261118"
+        panels = {"upstream": load_panel(materials)}
+        catalog = data._parse((materials / "CATALOG.json").read_bytes())
+    else:
+        catalog = repo_execution.load_catalog("diagnostic")
+        materials = root / "qualification/cell-diagnostic-panel-20261118"
+        panels = {
+            name: data.load_records(materials / name / "prepared-records.jsonl")
+            for name in ("c", "d")
+        }
     records = [(panel, record) for panel, rows in panels.items() for record in rows]
     if (
-        any(len(rows) != 2 for rows in panels.values())
-        or len({row["task_id"] for _, row in records}) != 4
+        len({row["task_id"] for _, row in records})
+        != (4 if args.panel == "diagnostic" else 6)
+        or (
+            args.panel == "diagnostic"
+            and any(len(rows) != 2 for rows in panels.values())
+        )
         or any(row["authorization"]["training_allowed"] for _, row in records)
     ):
-        raise ValueError("exactly four evaluation-only diagnostics required")
+        raise ValueError("complete frozen evaluation-only panel required")
     arms = [
         ("FF", Graph("FF", ("F", "F")), {}),
         ("TT", Graph("TT", ("T", "T")), {}),
@@ -219,6 +267,58 @@ def main():
         from cell_experiments.circuit_repair_study_v4 import prepare
 
         arms, augmented, study = prepare(records, root)
+        if args.panel == "upstream":
+            arms = [arm for arm in arms if arm[0].startswith("native_")]
+            for cell, removed in (("F", "T"), ("T", "F")):
+                name = "native_" + cell + "_one_call"
+                arms.append(
+                    (
+                        name,
+                        Graph(name, (cell, removed)),
+                        {"message_style": "native_turn_v1", "drop_cell": removed},
+                    )
+                )
+            study["evaluation_scope"] = (
+                "Six fixed public-source tasks already accessed by E1. "
+                "Development transfer and interaction diagnostics, not a new confirmation."
+            )
+            study["single_call_control"] = (
+                "F or T in slot zero; the other Cell removed before any dispatch"
+            )
+        if args.panel == "blind_b2":
+            specifications = [
+                ("PP", ("P", "P"), {}),
+                ("CC", ("C", "C"), {}),
+                ("PC", ("P", "C"), {}),
+                ("CP", ("C", "P"), {}),
+                ("PC_no_answer", ("P", "C"), {"drop_edge": "answer"}),
+                ("PC_no_feedback", ("P", "C"), {"drop_edge": "feedback"}),
+                ("PP_retrieval", ("P", "P"), {}),
+                ("CC_retrieval", ("C", "C"), {}),
+                ("PC_retrieval", ("P", "C"), {}),
+            ]
+            arms = [
+                (name, Graph(name, path), {"message_style": "native_turn_v1", **change})
+                for name, path, change in specifications
+            ]
+            study["evaluation_scope"] = (
+                "B2 was evaluated in the prior E2 study. This fixed follow-up tests "
+                "a post-exposure complementarity hypothesis, not new confirmation."
+            )
+            study["hypothesis"] = (
+                "Parent and verified-credit adapters each selected 5/6 with different "
+                "failures; test whether fixed-order communication realizes the "
+                "observed oracle union at the same two-call and verifier budget."
+            )
+            study["prior_independent_audit_sha256"] = (
+                "afdf9eb3bd3816a815b6f63d732ce8fbc6578565f5340019b0a70a981cb9521e"
+            )
+            study["fixed_arm_order"] = [name for name, _, _ in arms]
+            study["task_specific_routing"] = False
+            study["reuse_prior_outputs_as_messages"] = False
+            study["planned_primary_model_calls"] = 108
+            study["planned_calibration_model_calls"] = 4
+            study["planned_total_verifier_calls_including_A_references"] = 118
         write_new(directory / "RETRIEVAL.json", study)
     budget = Budget(max_output_tokens_per_call=384, max_relay_bytes=2048)
     launch = {
@@ -253,8 +353,9 @@ def main():
         ):
             raise ValueError("provider executable or admission differs")
         cells = {cell: CellSpec(**value) for cell, value in ready["cells"].items()}
-        if set(cells) != {"F", "T", "C"}:
-            raise ValueError("exactly the original three adapters required")
+        expected_cells = {"P", "C"} if args.panel == "blind_b2" else {"F", "T", "C"}
+        if set(cells) != expected_cells:
+            raise ValueError("provider Cells differ from the declared study")
         freeze = {
             "schema": "hepta.fixed-diagnostic-freeze.v1",
             "launch": launch,
@@ -269,10 +370,21 @@ def main():
                 {"name": name, "graph": asdict(graph), "intervention": intervention}
                 for name, graph, intervention in arms
             ],
-            "order": "c then d; declared task order then declared arm order",
+            "order": (
+                "upstream records in frozen order, then declared arm order"
+                if args.panel != "diagnostic"
+                else "c then d; declared task order then declared arm order"
+            ),
             "learned_routing_tested": False,
-            "single_call_definition": "F in slot 0; slot 1 T removed before dispatch",
-            "posthoc_selection": False,
+            "single_call_definition": (
+                "No removal arms; all nine arms use two calls"
+                if args.panel == "blind_b2"
+                else "F or T in slot 0; other Cell in slot 1 removed before dispatch"
+                if args.panel == "upstream"
+                else "F in slot 0; slot 1 T removed before dispatch"
+            ),
+            "posthoc_selection": args.panel == "blind_b2",
+            "within_run_posthoc_arm_selection": False,
             "scientific_confirmation_qualified": False,
             "native_owner_adoption": False,
         }
