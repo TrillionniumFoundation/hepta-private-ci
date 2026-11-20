@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::RootAuthorityDirectory;
 use pretty_assertions::assert_eq;
+use pretty_assertions::assert_ne;
 
 use super::Kind;
 use super::Phase;
@@ -30,6 +31,7 @@ fn read_expected(
     .ok_or_else(|| anyhow::anyhow!("quiescent original refusal was replaced"))
 }
 
+#[track_caller]
 fn require_missing_error(directory: &std::path::Path, owner: &str) -> anyhow::Result<()> {
     let error = observe_original_record::<Refusal>(directory, owner, |_| Ok(()))
         .expect_err("missing original refusal must fail, never become a retryable None");
@@ -96,13 +98,26 @@ fn root_completed_refusal_observer_matches_registered_owner() -> anyhow::Result<
         directory.path(),
         &completed_learning_refusal_owner(other_initial, &target)?,
     )?;
+    // Run identity is part of the complete binding, not the stable Cell scope
+    // slot. The same pathname still must reject another run's full binding.
+    let mut other_run = serde_json::to_value(&target)?;
+    other_run["scope"]["run_id"] = serde_json::json!("other-refusal-run");
+    let other_run = serde_json::from_value(other_run)?;
+    assert_eq!(
+        completed_learning_refusal_owner(initial, &other_run)?,
+        owner
+    );
+    let mut wrong_run_binding = expected.clone();
+    wrong_run_binding.target = other_run;
+    assert!(read_expected(directory.path(), &owner, &wrong_run_binding).is_err());
+
+    // A different Cell identity actually selects another scope slot.
     let mut other_scope = serde_json::to_value(&target)?;
-    other_scope["scope"]["run_id"] = serde_json::json!("other-refusal-run");
+    other_scope["scope"]["cell_id"] = serde_json::json!("other-refusal-cell");
     let other_scope = serde_json::from_value(other_scope)?;
-    require_missing_error(
-        directory.path(),
-        &completed_learning_refusal_owner(initial, &other_scope)?,
-    )?;
+    let other_scope_owner = completed_learning_refusal_owner(initial, &other_scope)?;
+    assert_ne!(other_scope_owner, owner);
+    require_missing_error(directory.path(), &other_scope_owner)?;
 
     // Full target changes stay in the same scope slot and must not be accepted
     // merely because the physical record was found at the canonical pathname.
