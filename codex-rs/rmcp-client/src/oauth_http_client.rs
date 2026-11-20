@@ -1,9 +1,13 @@
+use std::collections::HashMap;
 use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
+use anyhow::Context;
+use anyhow::bail;
 use codex_exec_server::HttpClient;
 use codex_exec_server::HttpHeader;
 use codex_exec_server::HttpRedirectPolicy;
@@ -21,16 +25,28 @@ use http::header::TRANSFER_ENCODING;
 use http::header::USER_AGENT;
 use oauth2::HttpRequest;
 use oauth2::HttpResponse;
+use rmcp::model::ClientCapabilities;
+use rmcp::model::ClientJsonRpcMessage;
+use rmcp::model::ClientRequest;
+use rmcp::model::Implementation;
+use rmcp::model::InitializeRequest;
+use rmcp::model::InitializeRequestParams;
+use rmcp::model::ProtocolVersion;
+use rmcp::model::RequestId;
+use rmcp::transport::AuthorizationManager;
 use rmcp::transport::auth::AuthorizationMetadata;
 use rmcp::transport::auth::OAuthHttpClient;
 use rmcp::transport::auth::OAuthHttpClientError;
 use rmcp::transport::auth::OAuthHttpClientFuture;
 use rmcp::transport::auth::OAuthHttpRedirectPolicy;
 use rmcp::transport::auth::OAuthHttpRequest;
+use rmcp::transport::streamable_http_client::StreamableHttpClient;
+use rmcp::transport::streamable_http_client::StreamableHttpPostResponse;
 use url::Origin;
 use url::Url;
 
 use crate::auth_status::OAuthDiscoveryTimeout;
+use crate::http_client_adapter::StreamableHttpClientAdapter;
 use crate::http_client_adapter::StreamableHttpRedirectMode;
 use crate::utils::MCP_USER_AGENT;
 
@@ -118,6 +134,91 @@ impl OAuthHttpClientAdapter {
             has_configured_headers,
             redirect_mode,
         })
+    }
+
+    /// Resolve advertised OAuth metadata, using an unauthenticated MCP
+    /// initialization only when GET/well-known discovery found no metadata.
+    /// The ordinary transport owns challenge parsing and redirect boundaries.
+    pub(crate) async fn resolve_authorization_metadata(
+        &self,
+        manager: &AuthorizationManager,
+        server_url: &str,
+    ) -> anyhow::Result<AuthorizationMetadata> {
+        let resolution = manager.resolve_metadata().await?;
+        if resolution.source.is_discovered() {
+            return Ok(resolution.metadata);
+        }
+
+        let mut headers = self.default_headers.clone();
+        headers.remove(AUTHORIZATION);
+        let maximum = match self.timeout {
+            OAuthDiscoveryTimeout::Requested => Duration::from_secs(30),
+            OAuthDiscoveryTimeout::Capped(timeout) => timeout.min(Duration::from_secs(30)),
+        };
+        let mut transport = StreamableHttpClientAdapter::new(
+            Arc::clone(&self.http_client),
+            headers,
+            /*auth_provider*/ None,
+            self.has_configured_headers,
+            self.redirect_mode,
+            Arc::new(Mutex::new(Some(Instant::now() + maximum))),
+        );
+        transport.maximum_response_bytes = Some(MAX_OAUTH_HTTP_RESPONSE_BODY_BYTES);
+        let params = InitializeRequestParams::new(
+            ClientCapabilities::default(),
+            Implementation::new("Codex OAuth discovery", env!("CARGO_PKG_VERSION")),
+        )
+        .with_protocol_version(ProtocolVersion::V_2025_06_18);
+        let message = ClientJsonRpcMessage::request(
+            ClientRequest::InitializeRequest(InitializeRequest::new(params)),
+            RequestId::Number(0),
+        );
+        let response = transport
+            .post_message(
+                Arc::from(server_url),
+                message,
+                /*session_id*/ None,
+                /*auth_token*/ None,
+                HashMap::new(),
+            )
+            .await;
+        match response {
+            Err(error) => {
+                let challenge = error.auth_challenge().with_context(|| {
+                    format!(
+                        "MCP initialization did not provide an OAuth discovery challenge: {error}"
+                    )
+                })?;
+                let resolved = manager
+                    .resolve_metadata_from_challenge(Some(challenge))
+                    .await?;
+                if !resolved.source.is_discovered() {
+                    bail!("MCP OAuth challenge did not resolve authorization server metadata");
+                }
+                Ok(resolved.metadata)
+            }
+            Ok(response) => {
+                // An unauthenticated initialization can create an owned HTTP
+                // session. End that session before returning to the login flow.
+                let session = match response {
+                    StreamableHttpPostResponse::Json(_, session)
+                    | StreamableHttpPostResponse::Sse(_, session) => session,
+                    StreamableHttpPostResponse::Accepted => None,
+                    _ => None,
+                };
+                if let Some(session) = session {
+                    transport
+                        .delete_session(
+                            Arc::from(server_url),
+                            Arc::from(session),
+                            /*auth_token*/ None,
+                            HashMap::new(),
+                        )
+                        .await?;
+                }
+                Ok(resolution.metadata)
+            }
+        }
     }
 
     async fn execute_request(

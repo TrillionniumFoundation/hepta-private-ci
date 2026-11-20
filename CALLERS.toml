@@ -12,6 +12,7 @@ required_boundary_ids = [
   "cognitive_store_recovery_open",
   "cognitive_production_mutation_capability",
   "agentd_production_writer_host",
+  "agentd_protected_writer_host",
   "agentd_production_operation_runtime",
   "learning_artifact_owner_bootstrap",
   "learning_artifact_owner_restart",
@@ -75,7 +76,7 @@ id = "cognitive_store_recovery_open"
 symbol = "CognitiveStore::open_with_recovery"
 definition_path = "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
 definition_markers = ["pub async fn open_with_recovery", "ProductionAuthorityVerifier", "CognitiveStoreOpenGuard::acquire_exclusive"]
-product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs", "codex-rs/hepta-agentd/src/production_protected_host.rs"]
 caller_markers = ["CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier"]
 
 [[boundary]]
@@ -100,9 +101,17 @@ id = "agentd_production_operation_runtime"
 symbol = "AgentdProductionOperationRuntimeConfig::attach"
 call_pattern = '\boperations\s*\.\s*attach\s*\('
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "recovered_host.writer.verify_current_authority"]
+definition_markers = ["pub struct AgentdProductionOperationRuntimeConfig", "pub(crate) async fn attach", "self.validate_recovered_host(&recovered_host).await?", "pub(crate) async fn validate_recovered_host", ".verify_current_authority()", "writer_recovered_host_final"]
 product_callers = ["codex-rs/hepta-agentd/src/runtime.rs"]
 caller_markers = ["operations.attach", "attach_production_operations", "run_production_operation_reconciler"]
+
+[[boundary]]
+id = "agentd_protected_writer_host"
+symbol = "AgentdProductionWriterHost::open_with_protected_recovery"
+definition_path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+definition_markers = ["pub async fn open_with_protected_recovery", "CognitiveRecoveryRequirement::ExactCurrentCut", "bind_protected_checkpoint", "Self::from_recovered_store"]
+product_callers = ["codex-rs/hepta-agentd/src/production_root_composition.rs"]
+caller_markers = ["AgentdProductionWriterHost::open_with_protected_recovery", "AgentdProtectedCheckpointInputs", "bootstrap_proof"]
 
 [[boundary]]
 id = "learning_artifact_owner_bootstrap"
@@ -148,10 +157,11 @@ caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractA
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
+call_pattern = 'FinalUseAuthority\s*::\s*open_state_dir(?:_with_clock|_with_trust|_with_recovered_trust|_with_issuer_keys)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
-caller_markers = ["FinalUseAuthority", "verifying_key"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-agentd/src/production_authority.rs", "codex-rs/hepta-agentd/src/production_root_composition.rs"]
+caller_markers = ["FinalUseAuthority"]
 
 [[boundary]]
 id = "final_use_claim"
@@ -224,10 +234,10 @@ caller_markers = []
 [[boundary]]
 id = "final_use_revocation_update"
 symbol = "FinalUseAuthority::update_revocations"
-call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
+call_pattern = '(?:authority|owner)\s*\.\s*update_revocations\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-agentd/src/root_authority_session.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]
@@ -327,18 +337,20 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_open_state"
 symbol = "AuthorityLeaseRegistry::open_state_dir"
+call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_state_dir(?:_with_frontier_store|_with_clock|_with_trust)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs"]
+caller_markers = ["AuthorityLeaseRegistry", "open_state_dir_with_trust", "HostAuthorityClock", "HostAuthorityFrontierStore"]
 
 [[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '(?:\b(?:leases|registry)\s*\.\s*put_lease|\bAuthorityLeaseRegistry\s*::\s*put_lease)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/authority_host_runtime.rs"]
+caller_markers = ["AuthorityLeaseRegistry", ".put_lease(", "production_ready: false"]
 
 [[boundary]]
 id = "authority_lease_revoke"
@@ -367,11 +379,11 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_verify_use"
 symbol = "AuthorityLeaseVerifier::verify_use"
-call_pattern = '\bverifier\s*\.\s*verify_use\s*\('
+call_pattern = '(?:\b(?:verifier|leases)\s*\.\s*verify_use|\bAuthorityLeaseVerifier\s*::\s*verify_use)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["AuthorityLeaseVerifier", ".verify_use(", "FleetAuthorityPort"]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".verify_use("]
 
 [[boundary]]
 id = "authority_lease_delivery"
@@ -392,18 +404,76 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_dispatch_raw"
 symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
+call_pattern = '(?:\b(?:verifier|leases)\s*\.\s*with_dispatch_boundary|\bAuthorityLeaseVerifier\s*::\s*with_dispatch_boundary)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn with_dispatch_boundary", "with_dispatch_boundary_witness", "dispatch_boundary"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs"]
+caller_markers = ["AuthorityLeaseVerifier", ".with_dispatch_boundary(", ".verify_use("]
 
 [[boundary]]
 id = "authority_lease_dispatch_witness"
 symbol = "dispatch_authority_lease_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
-caller_markers = ["dispatch_authority_lease_with_witness", "issue_with_witness", "FleetAuthorityPort"]
+product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs"]
+caller_markers = ["dispatch_authority_lease_with_witness", "AuthorityLeaseVerifier"]
+
+# Per-owner invariants supplement the common markers shared by the closed sets.
+# Fixtures remain excluded only by the original test cfg/path rules above.
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
+required = ["FinalUseAuthority", "verifying_key"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_authority.rs"
+required = ["AgentdFinalUseHostInputs", "issuer_keys: Vec<FinalUseIssuerTrustKey>", "clock: Arc<dyn AuthorityClock>", "frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>", "FinalUseAuthority::open_state_dir_with_issuer_keys"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_root_composition.rs"
+required = ["VerifiedRootWriterProof", "FinalUseIssuerTrustKey::from(bundle.issuer_key.clone())", "frontier.load(&slot.owner_id).map_err(protocol)? != slot.frontier", "owner.frontier().map_err(protocol)? != slot.frontier", "AgentdProductionWriterHost::open_with_protected_recovery"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-contracts/src/authority_host_issuer.rs"
+required = ["lease.revision != lease_revision", ".verify_use(lease_id, lease_revision, &expected)", ".with_dispatch_boundary(token, &expected", ".min(lease.expires_at_unix_ms)"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/authority_host_runtime.rs"
+required = ["RootAuthorityDirectory::open", "HostAuthorityClock::initialize", "HostAuthorityFrontierStore::initialize", "AuthorityLeaseRegistry::open_state_dir_with_trust", "production_ready: false", "issuer.register_writer_authorization(writer, &leases.verifier())"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-fleet/src/authority_port.rs"
+required = ["FleetAuthorityPort", "issue_with_witness", "AuthorityLeaseVerifier", "dispatch_authority_lease_with_witness"]
+forbidden = []
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/production_protected_host.rs"
+required = ["receipt.head.writer_binding != binding", "receipt.head.phase != CognitiveCheckpointPhase::Current", "CognitiveRecoveryRequirement::ExactCurrentCut(&receipt.head.last_current)", "bind_protected_checkpoint", "Self::from_recovered_store"]
+forbidden = ["CognitiveStore::open(", "AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_issuer_root.rs"
+required = ["lease.revision != self.revision", "lease.revision != pinned.revision", ".verify_use(&self.id, self.revision, &expected)", ".with_dispatch_boundary(token, &expected", ".verify_use(&pinned.id, pinned.revision, &lease.binding)", ".with_dispatch_boundary(token, &lease.binding"]
+forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-agentd/src/deployment_writer.rs"
+required = ["lease != self.authority_lease", ".verify_use(&lease.lease_id, lease.revision, &lease.binding)", "dispatch_authority_lease_with_witness(verifier, token, &lease.binding", "VerifiedUseAuthorityRefV1::AuthorityLease(reference)", "registration.with_live(verifier"]
+forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"

@@ -7,14 +7,13 @@ use std::time::Instant;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::HistoryPosition;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 use uuid::Uuid;
 
 use super::RolloutReferenceIndex;
 
 #[tokio::test]
 async fn scans_active_archived_and_compressed_history_bases() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let source_id = thread_id(Uuid::from_u128(1))?;
     let active_base = history_position(source_id);
     let archived_base = history_position(source_id);
@@ -55,7 +54,7 @@ async fn scans_active_archived_and_compressed_history_bases() -> anyhow::Result<
 
 #[tokio::test]
 async fn active_duplicate_wins_without_double_counting() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let active_source_id = thread_id(Uuid::from_u128(8))?;
     let archived_source_id = thread_id(Uuid::from_u128(9))?;
     let child_uuid = Uuid::from_u128(10);
@@ -82,7 +81,7 @@ async fn active_duplicate_wins_without_double_counting() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn indexes_multiple_rollouts_for_the_same_thread() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let source_rollout_id = thread_id(Uuid::from_u128(21))?;
     let replacement_rollout_id = thread_id(Uuid::from_u128(22))?;
     let thread_id = thread_id(Uuid::from_u128(20))?;
@@ -110,7 +109,7 @@ async fn indexes_multiple_rollouts_for_the_same_thread() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn self_history_base_does_not_count_as_reference() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
     let thread_id = thread_id(Uuid::from_u128(11))?;
     let history_base = history_position(thread_id);
     write_rollout(
@@ -128,7 +127,7 @@ async fn self_history_base_does_not_count_as_reference() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn expired_deadline_returns_none() -> anyhow::Result<()> {
-    let home = TempDir::new()?;
+    let home = crate::test_support::private_temp_dir()?;
 
     let index =
         RolloutReferenceIndex::scan_until(home.path(), Instant::now(), Duration::ZERO).await?;

@@ -1,0 +1,19 @@
+{
+  "schema_version": 2,
+  "provenance": "Fixed private inherited descriptor bootstrap fixture; no authority or runtime execution.",
+  "offer_utf8": "{\"schema_version\":2,\"action\":\"offer_notes_target\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\"}",
+  "attached_ack_utf8": "{\"schema_version\":2,\"action\":\"notes_target_registration\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"status\":\"attached\"}",
+  "rejected_ack_utf8": "{\"schema_version\":2,\"action\":\"notes_target_registration\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"task_id\":1,\"incarnation\":\"22222222222222222222222222222222\"},\"destination_id\":\"trill.notes:11111111111111111111111111111111:1:22222222222222222222222222222222\",\"status\":\"rejected\"}",
+  "descriptor_roles": [
+    "effect",
+    "recovery"
+  ],
+  "descriptor_transfer": "SCM_RIGHTS",
+  "descriptor_socket_types": [
+    "SOCK_STREAM",
+    "SOCK_DGRAM"
+  ],
+  "offer_descriptor_count": 2,
+  "ack_descriptor_count": 0,
+  "bootstrap_socket_type": "SOCK_DGRAM"
+}

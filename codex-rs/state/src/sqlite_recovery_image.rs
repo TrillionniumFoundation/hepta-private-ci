@@ -35,6 +35,17 @@ impl SqliteConfig {
         guard: &ExistingSqliteRecoveryGuard,
         target: &std::path::Path,
     ) -> Result<(), SqliteRecoveryError> {
+        guard.revalidate_for(self)?;
+        self.materialize_retained_bundle(guard, target)
+    }
+
+    // Only the original same-home recovery or the internally owned observer
+    // directory may choose a destination. No public arbitrary-copy API.
+    pub(super) fn materialize_retained_bundle(
+        &self,
+        guard: &ExistingSqliteRecoveryGuard,
+        target: &std::path::Path,
+    ) -> Result<(), SqliteRecoveryError> {
         #[cfg(unix)]
         {
             use super::RetainedOptionalObject;
@@ -53,7 +64,7 @@ impl SqliteConfig {
             {
                 return Err(SqliteRecoveryError::Indeterminate);
             }
-            guard.revalidate_for(self)?;
+            guard.verify_inspection_unchanged()?;
 
             fn retained_bytes(
                 object: &super::RetainedObject,
@@ -115,7 +126,7 @@ impl SqliteConfig {
             if total > MAX_BUNDLE_BYTES {
                 return Err(SqliteRecoveryError::Unavailable);
             }
-            guard.revalidate_for(self)?;
+            guard.verify_inspection_unchanged()?;
 
             let target_wal = super::sqlite_sidecar_path(target, "-wal");
             let target_journal = super::sqlite_sidecar_path(target, "-journal");

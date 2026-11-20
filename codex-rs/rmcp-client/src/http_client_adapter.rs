@@ -85,6 +85,7 @@ pub(crate) struct StreamableHttpClientAdapter {
     has_configured_headers: bool,
     redirect_mode: StreamableHttpRedirectMode,
     initialize_deadline: Arc<Mutex<Option<Instant>>>,
+    pub(crate) maximum_response_bytes: Option<usize>,
 }
 
 struct EventStreamCancellation {
@@ -130,6 +131,7 @@ impl StreamableHttpClientAdapter {
             has_configured_headers,
             redirect_mode,
             initialize_deadline,
+            maximum_response_bytes: None,
         }
     }
 
@@ -189,11 +191,13 @@ impl StreamableHttpClient for StreamableHttpClientAdapter {
             .get(HEADER_MCP_PROTOCOL_VERSION)
             .and_then(|value| value.to_str().ok())
             == Some(ProtocolVersion::V_2026_07_28.as_str());
-        let maximum_response_bytes = if is_event_stream_request {
-            Some(MAX_EVENT_NOTIFICATION_BYTES)
-        } else {
-            (is_discovery_request || uses_modern_protocol).then_some(MAX_MCP_STDIO_LINE_BYTES)
-        };
+        let maximum_response_bytes = self.maximum_response_bytes.or_else(|| {
+            if is_event_stream_request {
+                Some(MAX_EVENT_NOTIFICATION_BYTES)
+            } else {
+                (is_discovery_request || uses_modern_protocol).then_some(MAX_MCP_STDIO_LINE_BYTES)
+            }
+        });
         let redirect_policy = if is_discovery_request {
             HttpRedirectPolicy::Stop
         } else {

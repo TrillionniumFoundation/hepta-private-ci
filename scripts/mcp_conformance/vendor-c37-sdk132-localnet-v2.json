@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "profile": "vendor-c37-sdk132-localnet-v2",
+  "repository": "modelcontextprotocol/conformance",
+  "gitRef": "c37eec888e1c6ff140af79987a40008548b7cc5f",
+  "tree": "22eb98b99b522401dd1911dc2c2a55bee3547b50",
+  "sourcePins": {
+    "package.json": "94413176fd205eaf3b714813338bd23fa23497d0bbefe5db48a276b9febb4d9a",
+    "pnpm-lock.yaml": "a6d7783e5c3e1f4f87f08e674170f6f12157d11c6946af669ac3b8d92c33eba8",
+    ".npmrc": "13059b0ced8d64cf848c9b1419b17de40fb8e30a5b6d67929b0b8814f229c41b",
+    "scripts/verify-mcp-conformance-vendor.mjs": "31ce7c7772ea704de4f496a3a37f434f109bf0865f0fddee26e6f9f6abe028c6",
+    "third_party/mcp-conformance-upstream.json": "12f2449790c63fb674c27c2fd58cbbfc87dea10be963aa8908aa9f351e7e49e4",
+    "third_party/mcp-conformance/package-lock.json": "0bcde31f680dacec39d1f1105712ce7d252bde888da58b8db85dc48b116c2ffe",
+    "third_party/mcp-conformance-patches/sdk-1.32-reference-clients.patch": "da28bd53e955eb7a5efb3826a8395c12603bc41e04e773176f3e3ac7ff30ebc3",
+    "scripts/mcp_conformance/sdk132_negative_oauth_reuse.ts": "af46e13d70e2dd3eb0008df1d8e343925ee7438860b34489728fc2cbab162ad3",
+    "third_party/mcp-conformance-patches/local-network-boundary.patch": "6a00eb547b040b8737482eb41007777c08a854a6c02f0fc356f734d3bace4a3d",
+    "third_party/mcp-conformance/src/fixture-network.ts": "3a3ca2fd1ac10a0da57afb153ca02c2a4773ddbdd240676f03a6482baf6a1d38",
+    "third_party/mcp-conformance/src/fixture-network.test.ts": "25dc708ba11e4473592f933538e12c63de6e1203ccb9b81e70546462bc28262c"
+  },
+  "packageManager": "pnpm@10.34.5+sha512.a4ee05f2f73658255bd6a89859c065a45c28a57daefae2c893a168ee2b73168c37b91e83e57ea67654ad03f03031746430e8bce38e362e042605fb8abc80192e",
+  "nodeMajor": 22,
+  "buildScript": "tsdown src/index.ts --minify --clean --target node20 --no-fixed-extension",
+  "dist": {
+    "index.js": "ff7ea0d4b8e3aba32684d7fb61a0f7d209a1d8d732aec997fc4efc763662492d"
+  },
+  "peerGraph": [
+    {
+      "scope": "third_party/mcp-conformance",
+      "sdkVersion": "1.32.0",
+      "sdkPackage": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/package.json",
+      "sdkEntry": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@4.4.3/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js",
+      "zodVersion": "4.4.3",
+      "zodPackage": "node_modules/.pnpm/zod@4.4.3/node_modules/zod/package.json"
+    },
+    {
+      "scope": "sdk/typescript",
+      "sdkVersion": "1.32.0",
+      "sdkPackage": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@3.25.76/node_modules/@modelcontextprotocol/sdk/package.json",
+      "sdkEntry": "node_modules/.pnpm/@modelcontextprotocol+sdk@1.32.0_zod@3.25.76/node_modules/@modelcontextprotocol/sdk/dist/cjs/client/index.js",
+      "zodVersion": "3.25.76",
+      "zodPackage": "node_modules/.pnpm/zod@3.25.76/node_modules/zod/package.json"
+    }
+  ],
+  "localNetworkPatch": {
+    "path": "third_party/mcp-conformance-patches/local-network-boundary.patch",
+    "sha256": "6a00eb547b040b8737482eb41007777c08a854a6c02f0fc356f734d3bace4a3d",
+    "upstreamFiles": 291,
+    "addedFiles": [
+      "src/fixture-network.ts",
+      "src/fixture-network.test.ts"
+    ],
+    "semantics": "loopback and bounded local request admission; original protocol cases unchanged"
+  }
+}

@@ -79,6 +79,11 @@ jobs:
         with:
           target: x86_64-unknown-linux-gnu
 
+      - name: Verify the original MCP conformance source and lock patch
+        run: |
+          node scripts/verify-mcp-conformance-vendor.mjs
+          node --test scripts/tests/verify-mcp-conformance-vendor.test.mjs
+
       - name: Build codex and code-mode host with Bazel
         env:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
@@ -170,7 +175,17 @@ jobs:
           "${CODEX_EXEC_PATH%/*}/codex-code-mode-host" --help >/dev/null
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Initialize the exact packageManager integrity pin for the offline
+        # canonical conformance rebuild, as well as the frozen dependency graph.
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Verify explicit localnet-v2 conformance execution source identity
+        env:
+          CI: "true"
+          COREPACK_ENABLE_NETWORK: "0"
+        run: |
+          node scripts/verify-mcp-conformance-local-network-profile.mjs
+          node --test scripts/tests/verify-mcp-conformance-profile.test.mjs
 
       - name: Build SDK packages
         run: pnpm -r --filter ./sdk/typescript run build

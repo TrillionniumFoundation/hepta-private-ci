@@ -8,7 +8,6 @@ use codex_protocol::protocol::TurnCompleteEvent;
 use codex_protocol::protocol::TurnStartedEvent;
 use codex_rollout::RolloutItem;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::super::LocalThreadStore;
 use super::super::test_support::test_config;
@@ -25,7 +24,7 @@ use crate::ThreadStore;
 
 #[tokio::test]
 async fn revert_keeps_thread_id_and_hides_suffix_across_repeated_reverts() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let state_db = codex_state::StateRuntime::init(
         config.sqlite.clone(),

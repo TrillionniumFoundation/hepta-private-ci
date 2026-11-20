@@ -1237,6 +1237,8 @@ def test_regression_cli_extracts_compact_baseline_without_starting_conformance(
         main(
             [
                 str(codex),
+                "--conformance-profile",
+                "legacy491",
                 "--baseline-report",
                 str(source),
                 "--extract-baseline",
@@ -1258,7 +1260,18 @@ def test_regression_cli_rejects_extraction_without_a_source_report(
     codex.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     codex.chmod(0o755)
 
-    assert main([str(codex), "--extract-baseline", str(tmp_path / "compact.json")]) == 2
+    assert (
+        main(
+            [
+                str(codex),
+                "--conformance-profile",
+                "legacy491",
+                "--extract-baseline",
+                str(tmp_path / "compact.json"),
+            ]
+        )
+        == 2
+    )
     assert "requires --baseline-report" in capsys.readouterr().err
 
 
@@ -1274,7 +1287,18 @@ def test_regression_cli_rejects_malformed_baselines(
     baseline = tmp_path / "baseline.json"
     baseline.write_text(payload, encoding="utf-8")
 
-    assert main([str(codex), "--baseline-report", str(baseline)]) == 2
+    assert (
+        main(
+            [
+                str(codex),
+                "--conformance-profile",
+                "legacy491",
+                "--baseline-report",
+                str(baseline),
+            ]
+        )
+        == 2
+    )
     assert "baseline report" in capsys.readouterr().err
 
 
@@ -1286,5 +1310,16 @@ def test_regression_cli_rejects_missing_baseline_before_starting_conformance(
     codex.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     codex.chmod(0o755)
 
-    assert main([str(codex), "--baseline-report", str(tmp_path / "missing.json")]) == 2
+    assert (
+        main(
+            [
+                str(codex),
+                "--conformance-profile",
+                "legacy491",
+                "--baseline-report",
+                str(tmp_path / "missing.json"),
+            ]
+        )
+        == 2
+    )
     assert "cannot read baseline report" in capsys.readouterr().err

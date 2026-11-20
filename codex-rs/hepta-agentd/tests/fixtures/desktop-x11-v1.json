@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "topic": "trill.desktop.input.v1",
+  "descriptor_order": [
+    "effect:AF_UNIX/SOCK_STREAM/unnamed",
+    "observe:AF_UNIX/SOCK_STREAM/unnamed"
+  ],
+  "scope_sha256": "fbe3ac191449ad57aa049b64adc5b5747cf30072907ae415276b0fdf66f79b40",
+  "predecessor_sha256": "14eedb2f65651a059efbcebd3ded1cdbca8b4bac74768397823d00a9076e02e8",
+  "offer_raw": "{\"schema_version\":1,\"profile\":\"trill.desktop.x11.v1\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"destination_id\":\"trill.desktop:11111111111111111111111111111111:22222222222222222222222222222222:33333333333333333333333333333333\",\"scope_sha256\":\"fbe3ac191449ad57aa049b64adc5b5747cf30072907ae415276b0fdf66f79b40\",\"expected_window\":2097153,\"screen_width\":800,\"screen_height\":600}",
+  "ack_raw": "{\"schema_version\":1,\"profile\":\"trill.desktop.x11.v1\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"status\":\"attached\"}",
+  "input_raw": "{\"schema_version\":1,\"action\":\"input\",\"operation_id\":\"desktop-input-1\",\"destination_id\":\"trill.desktop:11111111111111111111111111111111:22222222222222222222222222222222:33333333333333333333333333333333\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"expected_sequence\":0,\"expected_window\":2097153,\"events\":[{\"kind\":\"key\",\"keycode\":38,\"pressed\":true},{\"kind\":\"key\",\"keycode\":38,\"pressed\":false}]}",
+  "receipt_raw": "{\"schema_version\":1,\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"operation_id\":\"desktop-input-1\",\"payload_sha256\":\"3b1148386abea2df3c4dc0a6df0c96852b4721e901d56b201d3fc1e65c77cfab\",\"result\":{\"status\":\"injected\",\"effect_semantics\":\"x11_server_injected\",\"previous_sequence\":0,\"sequence\":1}}",
+  "receipt_sha256": "c215a158c8aaa27afe62ed65b39d094ef1ba959357f85837f7030819537b4eec",
+  "observe_raw": "{\"schema_version\":1,\"action\":\"observe\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"operation_id\":\"desktop-input-1\",\"payload_sha256\":\"3b1148386abea2df3c4dc0a6df0c96852b4721e901d56b201d3fc1e65c77cfab\"}",
+  "capture_request_raw": "{\"schema_version\":1,\"action\":\"capture\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"request_id\":\"44444444444444444444444444444444\"}",
+  "capture_raw": "{\"schema_version\":1,\"action\":\"capture\",\"target\":{\"session_instance\":\"11111111111111111111111111111111\",\"incarnation\":\"22222222222222222222222222222222\",\"display_epoch\":\"33333333333333333333333333333333\"},\"request_id\":\"44444444444444444444444444444444\",\"input_sequence\":1,\"window_id\":2097153,\"width\":1,\"height\":1,\"pixel_format\":\"rgb8\",\"pixels_hex\":\"ff0000\",\"sha256\":\"7fa54a42524916a1648ec76ce75d295024840b7a3a4f4bbaf3e43155d0014767\"}"
+}

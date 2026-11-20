@@ -18,6 +18,9 @@ use std::sync::Arc;
 #[path = "sqlite_recovery_image.rs"]
 mod image;
 
+#[path = "sqlite_recovery_observer.rs"]
+mod observer;
+
 #[cfg(unix)]
 use std::ffi::CString;
 #[cfg(unix)]

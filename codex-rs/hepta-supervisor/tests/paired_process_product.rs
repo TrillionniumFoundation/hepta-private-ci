@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -47,11 +49,10 @@ const IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
 
-// Both product tests spawn real agentd+matrixd pairs. Running them in parallel
-// can make one test's bounded shutdown compete with the other's ten-child
-// adoption workload, which turns a lifecycle assertion into host-load timing.
-// Keep the product scenarios isolated while leaving their child processes and
-// all supervisor behavior unchanged.
+// Both product tests spawn real agentd+matrixd pairs. Serialize them when the
+// libtest harness runs both inside one process. Nextest instead runs a separate
+// process per case, so this lock does not provide cross-process isolation.
+// Qualification records must retain the actual profile and child ELF size.
 static PAIR_PRODUCT_TEST_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -205,6 +206,7 @@ struct PairFleet {
 
 impl PairFleet {
     fn new(count: usize) -> Result<Self> {
+        let started = Instant::now();
         // The child fixtures bind the same compact control sockets as the
         // product.  Keep the synthetic fleet under a short root so Darwin's
         // SUN_LEN limit is exercised against production geometry, not the
@@ -228,6 +230,11 @@ impl PairFleet {
         }
         let release_id = ReleaseId::parse("paired-process-fixture-v1")?;
         let fixture_binary = std::env::current_exe()?;
+        eprintln!(
+            "paired-stage fixture_registered count={count} binary_bytes={} elapsed={:?}",
+            fixture_binary.metadata()?.len(),
+            started.elapsed()
+        );
         let child_args = vec![
             "--exact".to_string(),
             "paired_child_process".to_string(),
@@ -241,10 +248,18 @@ impl PairFleet {
             Some(&fixture_binary),
             child_args,
         )?;
+        eprintln!(
+            "paired-stage release_installed elapsed={:?}",
+            started.elapsed()
+        );
         for agent_id in &agents {
             registry.allow_release(agent_id, &release_id)?;
             write_binding(&registry, agent_id)?;
         }
+        eprintln!(
+            "paired-stage release_allowed elapsed={:?}",
+            started.elapsed()
+        );
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
             UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -252,6 +267,10 @@ impl PairFleet {
             Instant::now(),
         )?;
         assert!(report.faults.is_empty());
+        eprintln!(
+            "paired-stage supervisor_recovered elapsed={:?}",
+            started.elapsed()
+        );
         Ok(Self {
             _temp: temp,
             registry,
@@ -545,13 +564,8 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
-        let response = AgentdResponse {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id: request.request_id,
-            agent_id: agent_id.clone(),
-            spawn_generation,
-            current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
+        let payload = match request.method {
+            AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: true,
                 ready: running,
                 fenced: false,
@@ -561,6 +575,31 @@ fn run_agent_child() -> Result<()> {
                 home_root,
                 run_root,
             }),
+            AgentdMethod::Drain => {
+                anyhow::ensure!(
+                    lifecycle.lifecycle == AgentLifecycle::Draining,
+                    "fixture drain must follow the real lifecycle transition"
+                );
+                // This controlled child runs no turns. It acknowledges only
+                // the actual draining generation; the driver still validates
+                // identity, generation and the typed closed-admission reply.
+                AgentdPayload::Drain(DrainSnapshot {
+                    admission_closed: true,
+                    running_turns: 0,
+                    drained: true,
+                    lifecycle: lifecycle.lifecycle,
+                    fenced: false,
+                })
+            }
+            method => anyhow::bail!("unsupported paired fixture request: {method:?}"),
+        };
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: agent_id.clone(),
+            spawn_generation,
+            current_generation: lifecycle.generation,
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;

@@ -10,6 +10,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
@@ -143,7 +144,9 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
-    drop(store);
+    // Wait for SQLite WAL/SHM cleanup before releasing the shared store fence
+    // and binding the complete immutable identity for recovered writer admission.
+    store.close().await;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -173,6 +176,24 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let mut wrong_cut = expected.clone();
+    wrong_cut.state_digest = Sha256Digest::for_bytes(b"not-the-current-cognitive-cut");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&wrong_cut),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await
+    .expect_err("writer admission must reject a cut that differs from retained state");
+    assert!(matches!(
+        rejected,
+        AgentdError::Protocol(reason)
+            if reason.contains("recovery candidate differs from independently retained current cut")
+    ));
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -182,8 +203,27 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         1,
     )
     .await?;
-    let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    let writer_anchor = host.writer().recovery_anchor().await?;
+    assert_eq!(
+        (
+            &writer_anchor.profile,
+            &writer_anchor.owner_agent_id,
+            &writer_anchor.schema_digest,
+            host.writer().lease_id(),
+            host.writer().generation(),
+        ),
+        (
+            &expected.profile,
+            &expected.owner_agent_id,
+            &expected.schema_digest,
+            "agentd-product-recovery-test",
+            1,
+        )
+    );
+    assert_ne!(
+        writer_anchor.state_digest, expected.state_digest,
+        "opening the recovered writer appends its host-bound lease to the authenticated cut"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
@@ -421,7 +461,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     );
     authority_live.store(true, Ordering::SeqCst);
     host.writer().release().await?;
-    drop(host);
+    host.close().await?;
 
     let reopened = DurableCognitiveStore::open(&config.identity().layout).await?;
     let post_recovery_anchor = reopened.recovery_anchor().await?;

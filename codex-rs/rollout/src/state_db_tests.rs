@@ -15,7 +15,6 @@ use codex_protocol::protocol::UserMessageEvent;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
 use std::path::Path;
-use tempfile::TempDir;
 
 #[test]
 fn cursor_to_anchor_normalizes_timestamp_format() {
@@ -52,7 +51,7 @@ fn cursor_to_anchor_preserves_recency_tie_breaker() {
 /// a caller supplies a mismatched configuration.
 #[tokio::test]
 async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> anyhow::Result<()> {
-    let root = TempDir::new().expect("temp dir");
+    let root = crate::test_support::private_temp_dir().expect("temp dir");
     let runtime_sqlite = codex_state::SqliteConfig::new_for_testing(
         root.path().join("runtime-sqlite").as_path().abs(),
     );
@@ -96,7 +95,7 @@ async fn list_threads_db_rejects_mismatched_sqlite_config_without_cleanup() -> a
 
 #[tokio::test]
 async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -130,7 +129,7 @@ async fn try_init_waits_for_concurrent_startup_backfill() -> anyhow::Result<()> 
 
 #[tokio::test]
 async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let runtime = codex_state::StateRuntime::init(
         codex_state::SqliteConfig::new_for_testing(home.path().abs()),
         "test-provider".to_string(),
@@ -161,7 +160,7 @@ async fn try_init_times_out_waiting_for_stuck_startup_backfill() -> anyhow::Resu
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path =
         write_rollout_with_user_message(home.path(), thread_id, "Hey", ThreadHistoryMode::Legacy)?;
@@ -202,7 +201,7 @@ async fn reconcile_rollout_preserves_existing_explicit_title() -> anyhow::Result
 
 #[tokio::test]
 async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let thread_id = ThreadId::new();
     let initial_rollout_path = write_rollout_with_user_message(
         home.path(),
@@ -262,7 +261,7 @@ async fn filesystem_repair_preserves_existing_rollout_path() -> anyhow::Result<(
 
 #[tokio::test]
 async fn reconcile_rollout_preserves_existing_paginated_memory_mode() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let thread_id = ThreadId::new();
     let rollout_path = write_rollout_with_user_message(
         home.path(),

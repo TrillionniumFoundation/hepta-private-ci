@@ -713,7 +713,7 @@ def run_adapter(server_url: str) -> dict[str, object]:
     )
     context = _conformance_context()
 
-    codex_home.mkdir(parents=True, exist_ok=True)
+    codex_home.mkdir(mode=0o700, parents=True, exist_ok=True)
     workspace = codex_home / "workspace"
     workspace.mkdir()
     env = _isolated_environment(codex_home)

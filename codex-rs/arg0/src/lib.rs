@@ -57,7 +57,13 @@ impl Arg0PathEntryGuard {
     }
 }
 
-pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+/// Execute the original hidden helper mode, if one was requested.
+///
+/// This dispatcher returns for an ordinary invocation without loading `.env`,
+/// creating aliases or changing the process environment. Native sealed entry
+/// points call it before their bootstrap checks, so genuine helper re-execs do
+/// not enter the daemon or manufacture a second authority-bearing role.
+pub fn dispatch_hidden_helper_if_requested() {
     // Determine if we were invoked via the special alias.
     let mut args = std::env::args_os();
     let argv0 = args.next().unwrap_or_default();
@@ -153,6 +159,10 @@ pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
         };
         std::process::exit(exit_code);
     }
+}
+
+pub fn arg0_dispatch() -> Option<Arg0PathEntryGuard> {
+    dispatch_hidden_helper_if_requested();
 
     // This modifies the environment, which is not thread-safe, so do this
     // before creating any threads/the Tokio runtime.

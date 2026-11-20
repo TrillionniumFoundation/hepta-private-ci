@@ -537,6 +537,8 @@ def test_official_cli_rejects_an_empty_versioned_scenario_run(
     exit_code = run_codex_compliance.main(
         [
             sys.executable,
+            "--conformance-profile",
+            "legacy491",
             "--mode",
             SHIPPING_LEGACY_VERSION,
             "--transport",

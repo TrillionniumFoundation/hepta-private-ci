@@ -5,11 +5,11 @@ use anyhow::bail;
 use rmcp::transport::AuthorizationManager;
 use rmcp::transport::AuthorizationRequest;
 use rmcp::transport::AuthorizationSession;
-use rmcp::transport::auth::OAuthHttpClient;
 use rmcp::transport::auth::OAuthState;
 use url::Url;
 
 use crate::oauth::validate_authorization_server_endpoints;
+use crate::oauth_http_client::OAuthHttpClientAdapter;
 
 /// OAuth client-registration strategy for one interactive HTTP MCP login.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -31,16 +31,18 @@ pub(crate) struct PreparedOAuthLogin {
 
 pub(crate) async fn start_authorization(
     server_url: &str,
-    http_client: Arc<dyn OAuthHttpClient>,
+    http_client: Arc<OAuthHttpClientAdapter>,
     scopes: &[&str],
     redirect_uri: &str,
     callback_id: &str,
     client_registration: McpOAuthClientRegistration,
 ) -> Result<PreparedOAuthLogin> {
     let mut auth_manager =
-        AuthorizationManager::new_with_oauth_http_client(server_url, http_client).await?;
+        AuthorizationManager::new_with_oauth_http_client(server_url, http_client.clone()).await?;
     auth_manager.set_allow_missing_issuer(true);
-    let metadata = auth_manager.resolve_metadata().await?.metadata;
+    let metadata = http_client
+        .resolve_authorization_metadata(&auth_manager, server_url)
+        .await?;
     validate_authorization_server_endpoints(&metadata)?;
     let authorization_server_issuer = metadata.issuer.clone();
 

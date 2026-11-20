@@ -2,6 +2,7 @@ packages:
   - codex-cli
   - codex-rs/responses-api-proxy/npm
   - sdk/typescript
+  - third_party/mcp-conformance
 
 ignoredBuiltDependencies:
   - esbuild
@@ -14,6 +15,9 @@ strictDepBuilds: true
 trustPolicy: no-downgrade
 trustPolicyIgnoreAfter: 10080
 trustPolicyExclude: []
+# Workspace preparation is trusted repository code, checked before installation
+# by .pnpmfile.cjs. No third-party dependency receives build permission here.
 allowBuilds:
-  # Build only the official MCP conformance CLI pinned by the TypeScript SDK.
-  "@modelcontextprotocol/conformance@https://codeload.github.com/modelcontextprotocol/conformance/tar.gz/49103de6ed70804e940637bf3e9e29e4a3f54e64": true
+  # This reviewed version installs shared Git hooks outside CI.
+  # The conformance CLI's own prepare/build/test scripts still run normally.
+  "lefthook@2.2.2": false

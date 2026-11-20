@@ -10,6 +10,17 @@ use uuid::Uuid;
 
 use super::LocalThreadStoreConfig;
 
+/// Create a fixture home independently of the caller's umask.
+pub(in crate::local) fn private_temp_dir() -> std::io::Result<tempfile::TempDir> {
+    let mut builder = tempfile::Builder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        builder.permissions(fs::Permissions::from_mode(0o700));
+    }
+    builder.tempdir()
+}
+
 pub(super) fn test_config(codex_home: &Path) -> LocalThreadStoreConfig {
     LocalThreadStoreConfig {
         codex_home: codex_home.to_path_buf(),

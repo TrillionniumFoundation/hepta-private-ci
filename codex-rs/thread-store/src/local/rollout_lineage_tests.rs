@@ -9,7 +9,6 @@ use codex_protocol::protocol::ThreadHistoryMode;
 use codex_rollout::RolloutItem;
 use codex_rollout::RolloutLine;
 use pretty_assertions::assert_eq;
-use tempfile::TempDir;
 
 use super::super::LocalThreadStore;
 use super::super::test_support::test_config;
@@ -17,7 +16,7 @@ use super::RolloutLineageSegment;
 
 #[tokio::test]
 async fn resolves_nested_lineage_with_empty_intermediate_segments() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
     let root = ThreadId::default();
     let middle = ThreadId::default();
@@ -74,7 +73,7 @@ async fn resolves_nested_lineage_with_empty_intermediate_segments() {
 
 #[tokio::test]
 async fn resolves_archived_ancestors() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
     let root = ThreadId::default();
     let child = ThreadId::default();
@@ -105,7 +104,7 @@ async fn resolves_archived_ancestors() {
 
 #[tokio::test]
 async fn resolves_lineage_at_explicit_history_position() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
     let root = ThreadId::default();
     let child = ThreadId::default();
@@ -152,7 +151,7 @@ async fn resolves_lineage_at_explicit_history_position() {
 
 #[tokio::test]
 async fn rejects_missing_cycles_and_out_of_bounds_offsets() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
     let missing_parent = ThreadId::default();
     let missing_child = ThreadId::default();

@@ -1,0 +1,151 @@
+{
+  "source_commit": "f02d0a259a96fde8bb2fa989f41b1f36ef802ef2",
+  "source_is_local_candidate": true,
+  "files": [
+    {
+      "path": "hepta-contracts/src/authority_consumer_wire.rs",
+      "lines": 45,
+      "new": true,
+      "sha256": "6120d50b0d74ffb4781f6084a3f66a7e0103e3ea86783b6f49956e56395e2531"
+    },
+    {
+      "path": "hepta-contracts/src/authority_consumer_wire_tests.rs",
+      "lines": 38,
+      "new": true,
+      "sha256": "320eab9065c2170a94bbe335271598421e44d0cb2ee828cac87d9c47b7e86aec"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_channel.rs",
+      "lines": 182,
+      "new": true,
+      "sha256": "434199685c0daeb2168df34eebc38b8bd1aea42222bfe500806a3ec628929cf3"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_channel_tests.rs",
+      "lines": 192,
+      "new": true,
+      "sha256": "a5351a9bbc447d8e8d656c35fe47e2a7abe8ff53bca9076b51bf41c731b19a2c"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_clock.rs",
+      "lines": 520,
+      "new": true,
+      "sha256": "fc6317d8402ab533df5ddbcd4e19235f1845a7403e6f252daedf8ec43c68fc75"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_clock_slow_tests.rs",
+      "lines": 299,
+      "new": true,
+      "sha256": "450eba87c24ad36362360feb4a585d00ac50176188c9f24ee39c75f5539f3648"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_issuer.rs",
+      "lines": 245,
+      "new": true,
+      "sha256": "1e60093e11bd52b9b0d40624b2638a8e82f8c06c201480ac8a69b456274d9ae9"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_issuer_race_tests.rs",
+      "lines": 135,
+      "new": true,
+      "sha256": "11f01d96c9b8fc8e42cd9e8533baf93ee39a64ba6a010f45566bb2eb62962cbf"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_issuer_tests.rs",
+      "lines": 283,
+      "new": true,
+      "sha256": "36cd1fc85eba564840914de19cec7abaf86616cfd722bbd3b7c4964b990ff3f7"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_issuer_transport.rs",
+      "lines": 236,
+      "new": true,
+      "sha256": "20b0121aa8d1d4d0a7fa3d2d0f459000459d01b8db268820b0d9c74fd42138b4"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_peer.rs",
+      "lines": 128,
+      "new": true,
+      "sha256": "4ba2e91e3cc30780dbde287e955a4e71beac65e25647c067a3beff4595eb6e43"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_peer_tests.rs",
+      "lines": 101,
+      "new": true,
+      "sha256": "a7592f01d968c65735835a9f9663fb7a64063acfb474dd467c4523000a9bcfa5"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_store.rs",
+      "lines": 420,
+      "new": true,
+      "sha256": "a8dba1e4a168bac6b4b4d4cd09b5ab353a63b5493ca9918ef37db7960f0eae25"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_store_cache_tests.rs",
+      "lines": 99,
+      "new": true,
+      "sha256": "129dd47455cd270dcee8fbd45c29a3e29667b4c4edd6c8ecd4ee7980faa2bc59"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_store_durable_tests.rs",
+      "lines": 72,
+      "new": true,
+      "sha256": "8af1d6540e636b811473f32b91f686dbf90e88f6ecfe6bc3ac7eabc315ce5c76"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_store_tests.rs",
+      "lines": 408,
+      "new": true,
+      "sha256": "857b102c9702dcce327c166cd34beba89f5adf2b731c481bd6dea460b7f28ef5"
+    },
+    {
+      "path": "hepta-contracts/src/authority_host_transport_tests.rs",
+      "lines": 305,
+      "new": true,
+      "sha256": "f7c0523c9e542cbed68a70b3d65117f53952fa520bf4e394590d6ad3bcf874ad"
+    },
+    {
+      "path": "hepta-contracts/src/authority_lease.rs",
+      "lines": 1748,
+      "new": false,
+      "sha256": "217af384ee1cd83d19706d201b7961e0cc9474c48700390e128936965e7c226c"
+    },
+    {
+      "path": "hepta-contracts/src/authority_lease_entry_clock_tests.rs",
+      "lines": 105,
+      "new": true,
+      "sha256": "4956677f0a24ee0860ea15f6d9f045242f245455b516aef78452f70eea26c330"
+    },
+    {
+      "path": "hepta-contracts/src/authority_lease_pair_boundary.rs",
+      "lines": 148,
+      "new": true,
+      "sha256": "1d9144ae3138a5f3a02e04023f1a3795796596c667db35e14def2bb14dbe51fc"
+    },
+    {
+      "path": "hepta-contracts/src/authority_lease_pair_boundary_tests.rs",
+      "lines": 327,
+      "new": true,
+      "sha256": "d3fca817265323aee3b5f0e07d00ce5e3fbc390195ef3d99a54ac0ccc72a72e1"
+    },
+    {
+      "path": "hepta-contracts/src/authority_root_frontier.rs",
+      "lines": 220,
+      "new": true,
+      "sha256": "cd0b581fc4b3421d2184b7f6d4999c1f6cfdf32c144a7358537f2c0b6ca12ead"
+    },
+    {
+      "path": "hepta-contracts/src/authority_root_frontier_tests.rs",
+      "lines": 308,
+      "new": true,
+      "sha256": "2cf676132e6900b70aaff63a9578df5f6b9c9e55feb7539bc02a977eb7e4442c"
+    },
+    {
+      "path": "hepta-contracts/src/lib.rs",
+      "lines": 357,
+      "new": false,
+      "sha256": "0b64184e1cbacc90e04c23ac99bc545d8e9f008b74c0e302cb795c9fbb544a76"
+    }
+  ],
+  "production_authority_created": false
+}

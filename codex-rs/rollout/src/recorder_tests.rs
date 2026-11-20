@@ -30,7 +30,6 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
-use tempfile::TempDir;
 use uuid::Uuid;
 
 fn test_config(codex_home: &Path) -> RolloutConfig {
@@ -140,7 +139,7 @@ fn write_session_file(root: &Path, ts: &str, uuid: Uuid) -> std::io::Result<Path
 
 #[test]
 fn append_repair_terminates_nonempty_rollout_tail() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     fs::write(&rollout_path, b"{\"type\":\"event_msg\"}")?;
     drop(open_log_file(&rollout_path)?);
@@ -152,7 +151,7 @@ fn append_repair_terminates_nonempty_rollout_tail() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn opening_existing_rollout_preserves_modified_time() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     write_paginated_rollout(&rollout_path, ThreadId::default(), &[])?;
     let modified = std::time::SystemTime::UNIX_EPOCH + Duration::from_secs(1_700_000_000);
@@ -171,7 +170,7 @@ async fn opening_existing_rollout_preserves_modified_time() -> std::io::Result<(
 
 #[tokio::test]
 async fn state_db_init_backfills_before_returning() -> anyhow::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::new_v4();
     let thread_id = ThreadId::from_string(&uuid.to_string())?;
     let rollout_path = home.path().join(format!(
@@ -255,7 +254,7 @@ async fn state_db_init_backfills_before_returning() -> anyhow::Result<()> {
 
 #[tokio::test]
 async fn load_rollout_items_defaults_legacy_session_id() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     let mut file = File::create(&rollout_path)?;
     let thread_id = ThreadId::new();
@@ -336,7 +335,7 @@ async fn load_rollout_items_defaults_legacy_session_id() -> std::io::Result<()> 
 
 #[tokio::test]
 async fn load_rollout_items_ignores_unknown_fork_source_history_mode() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let uuid = Uuid::new_v4();
     let thread_id = ThreadId::from_string(&uuid.to_string()).expect("thread id");
     let rollout_path = write_session_file(home.path(), "2025-01-03T12-00-00", uuid)?;
@@ -373,7 +372,7 @@ async fn load_rollout_items_ignores_unknown_fork_source_history_mode() -> std::i
 
 #[tokio::test]
 async fn load_rollout_items_preserves_legacy_guardian_assessment_lines() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     let mut file = File::create(&rollout_path)?;
     let thread_id = ThreadId::new();
@@ -436,7 +435,7 @@ async fn load_rollout_items_preserves_legacy_guardian_assessment_lines() -> std:
 
 #[tokio::test]
 async fn load_rollout_items_preserves_security_risk_scores() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     let thread_id = ThreadId::new();
     let security_risk = SecurityRiskScore {
@@ -491,7 +490,7 @@ async fn load_rollout_items_preserves_security_risk_scores() -> std::io::Result<
 #[tokio::test]
 async fn load_rollout_items_filters_legacy_ghost_snapshots_from_compaction_history()
 -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     let mut file = File::create(&rollout_path)?;
     let thread_id = ThreadId::new();
@@ -610,7 +609,7 @@ fn strip_legacy_ghost_snapshot_keeps_checkpoint_metadata_aligned() {
 
 #[tokio::test]
 async fn recorder_materializes_on_flush_with_pending_items() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let session_id = SessionId::default();
     let thread_id = ThreadId::new();
@@ -714,7 +713,7 @@ async fn recorder_materializes_on_flush_with_pending_items() -> std::io::Result<
 #[tokio::test]
 async fn referenced_paginated_rollout_starts_at_history_cutoff_and_resumes() -> std::io::Result<()>
 {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let history_base = HistoryPosition {
         thread_id: ThreadId::new(),
@@ -767,7 +766,7 @@ async fn referenced_paginated_rollout_starts_at_history_cutoff_and_resumes() -> 
 
 #[tokio::test]
 async fn rollout_id_preserves_session_meta_thread_id() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let thread_id = ThreadId::new();
     let rollout_id = ThreadId::new();
@@ -811,7 +810,7 @@ async fn rollout_id_preserves_session_meta_thread_id() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn recorder_omits_ordinals_from_legacy_rollouts() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let recorder = RolloutRecorder::new(
         &config,
@@ -844,7 +843,7 @@ async fn recorder_omits_ordinals_from_legacy_rollouts() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn resumed_empty_rollout_omits_ordinals() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let rollout_path = home.path().join("rollout.jsonl");
     File::create(&rollout_path)?;
@@ -868,7 +867,7 @@ async fn resumed_empty_rollout_omits_ordinals() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn persist_reports_filesystem_error_and_retries_buffered_items() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let thread_id = ThreadId::new();
     let recorder = RolloutRecorder::new(
@@ -924,7 +923,7 @@ async fn persist_reports_filesystem_error_and_retries_buffered_items() -> std::i
 
 #[tokio::test]
 async fn writer_state_retries_write_error_before_reporting_flush_success() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     File::create(&rollout_path)?;
     let read_only_file = std::fs::OpenOptions::new().read(true).open(&rollout_path)?;
@@ -960,7 +959,7 @@ async fn writer_state_retries_write_error_before_reporting_flush_success() -> st
 
 #[tokio::test]
 async fn resumed_paginated_rollout_continues_after_ordinal_gap() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let rollout_path = home.path().join("rollout.jsonl");
     write_paginated_rollout(&rollout_path, ThreadId::new(), &[4])?;
@@ -999,7 +998,7 @@ async fn resumed_paginated_rollout_repairs_unsafe_tail() -> std::io::Result<()> 
             vec![Some(0), Some(4), Some(5)],
         ),
     ] {
-        let home = TempDir::new().expect("temp dir");
+        let home = crate::test_support::private_temp_dir().expect("temp dir");
         let config = test_config(home.path());
         let rollout_path = home.path().join("rollout.jsonl");
         write_paginated_rollout(&rollout_path, ThreadId::new(), &[4])?;
@@ -1033,7 +1032,7 @@ async fn resumed_paginated_rollout_repairs_unsafe_tail() -> std::io::Result<()> 
 
 #[tokio::test]
 async fn paginated_ordinal_overflow_fails_without_appending() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let rollout_path = home.path().join("rollout.jsonl");
     write_paginated_rollout(&rollout_path, ThreadId::new(), &[u64::MAX])?;
@@ -1055,7 +1054,7 @@ async fn paginated_ordinal_overflow_fails_without_appending() -> std::io::Result
 
 #[tokio::test]
 async fn resumed_paginated_subagent_rollout_rejects_incomplete_prefix() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let rollout_path = home.path().join("rollout.jsonl");
     let thread_id = ThreadId::new();
@@ -1095,7 +1094,7 @@ async fn resumed_paginated_subagent_rollout_rejects_incomplete_prefix() -> std::
 
 #[tokio::test]
 async fn append_rollout_item_to_path_assigns_next_paginated_ordinal() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let rollout_path = home.path().join("rollout.jsonl");
     write_paginated_rollout(&rollout_path, ThreadId::new(), &[4])?;
 
@@ -1108,7 +1107,7 @@ async fn append_rollout_item_to_path_assigns_next_paginated_ordinal() -> std::io
 
 #[tokio::test]
 async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let newest = write_session_file(home.path(), "2025-01-03T12-00-00", Uuid::from_u128(9001))?;
@@ -1156,7 +1155,7 @@ async fn list_threads_db_disabled_does_not_skip_paginated_items() -> std::io::Re
 #[tokio::test]
 async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9010);
@@ -1250,7 +1249,7 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
 
 #[tokio::test]
 async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let runtime = codex_state::StateRuntime::init(
@@ -1349,7 +1348,7 @@ async fn list_threads_state_db_only_skips_jsonl_repair_scan() -> std::io::Result
 
 #[tokio::test]
 async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9013);
@@ -1440,7 +1439,7 @@ async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::i
 
 #[tokio::test]
 async fn list_threads_metadata_filter_overlays_state_db_list_metadata() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9015);
@@ -1596,7 +1595,7 @@ fn fill_missing_thread_item_metadata_preserves_identity_and_prefers_state_git_fi
 
 #[tokio::test]
 async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
 
     let uuid = Uuid::from_u128(9014);
@@ -1686,7 +1685,7 @@ async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> s
 
 #[tokio::test]
 async fn resume_candidate_matches_cwd_reads_latest_turn_context() -> std::io::Result<()> {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::test_support::private_temp_dir().expect("temp dir");
     let stale_cwd = home.path().join("stale");
     let latest_cwd = home.path().join("latest");
     fs::create_dir_all(&stale_cwd)?;

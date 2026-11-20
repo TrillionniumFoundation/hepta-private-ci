@@ -897,7 +897,7 @@ async fn lineage_reads_nested_forks() {
 }
 
 async fn store_with_mode(history_mode: ThreadHistoryMode) -> (TempDir, LocalThreadStore, ThreadId) {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let thread_id = ThreadId::default();
     let rollout_path = rollout_path(home.path(), thread_id);

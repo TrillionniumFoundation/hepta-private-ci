@@ -3,10 +3,8 @@ use std::path::PathBuf;
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::bail;
-use codex_hepta_supervisor::SignedIntentRecoveryDirective;
 use codex_hepta_supervisor::SignedIntentStatus;
 use codex_hepta_supervisor::read_signed_intent;
-use codex_hepta_supervisor::write_signed_intent_recovery_directive;
 
 fn main() -> Result<()> {
     let mut args = std::env::args_os().skip(1);
@@ -53,9 +51,9 @@ fn main() -> Result<()> {
             if intent.intent_sha256.as_str() != expected_digest {
                 bail!("intent digest changed; inspect again before issuing an abort directive");
             }
-            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)?;
-            write_signed_intent_recovery_directive(&run_root, &directive)?;
-            println!("{}", serde_json::to_string_pretty(&directive)?);
+            bail!(
+                "legacy unsigned abort cannot resolve an ambiguous production intent; use the independently signed ResolveProductionRecovery ceremony"
+            );
         }
         _ => bail!("unknown command {command:?}; expected inspect or abort"),
     }

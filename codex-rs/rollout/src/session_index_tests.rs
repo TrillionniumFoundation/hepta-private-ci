@@ -9,7 +9,6 @@ use codex_protocol::protocol::SessionSource;
 use pretty_assertions::assert_eq;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use tempfile::TempDir;
 fn write_index(path: &Path, lines: &[SessionIndexEntry]) -> std::io::Result<()> {
     let mut out = String::new();
     for entry in lines {
@@ -68,7 +67,7 @@ fn write_rollout_with_source_and_provider(
 
 #[test]
 fn find_thread_id_by_name_prefers_latest_entry() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let id1 = ThreadId::new();
     let id2 = ThreadId::new();
@@ -94,7 +93,7 @@ fn find_thread_id_by_name_prefers_latest_entry() -> std::io::Result<()> {
 #[tokio::test]
 async fn find_thread_meta_by_name_str_skips_newest_entry_without_rollout() -> std::io::Result<()> {
     // A newer unsaved name entry should not shadow an older persisted rollout with the same name.
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let saved_id = ThreadId::new();
     let unsaved_id = ThreadId::new();
@@ -129,7 +128,7 @@ async fn find_thread_meta_by_name_str_skips_newest_entry_without_rollout() -> st
 
 #[tokio::test]
 async fn find_thread_meta_by_name_str_skips_partial_rollout() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let saved_id = ThreadId::new();
     let partial_id = ThreadId::new();
@@ -164,7 +163,7 @@ async fn find_thread_meta_by_name_str_skips_partial_rollout() -> std::io::Result
 #[tokio::test]
 async fn find_thread_meta_by_name_str_ignores_historical_name_after_rename() -> std::io::Result<()>
 {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let renamed_id = ThreadId::new();
     let current_id = ThreadId::new();
@@ -201,7 +200,7 @@ async fn find_thread_meta_by_name_str_ignores_historical_name_after_rename() -> 
 
 #[tokio::test]
 async fn find_thread_meta_candidates_filter_metadata_before_ranking() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let index_path = session_index_path(temp.path());
     let allowed_id = ThreadId::new();
     let other_id = ThreadId::new();
@@ -273,7 +272,7 @@ async fn find_thread_meta_candidates_filter_metadata_before_ranking() -> std::io
 
 #[test]
 fn find_thread_name_by_id_prefers_latest_entry() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let id = ThreadId::new();
     let lines = vec![
@@ -300,7 +299,7 @@ fn find_thread_name_by_id_prefers_latest_entry() -> std::io::Result<()> {
 
 #[test]
 fn scan_index_returns_none_when_entry_missing() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let id = ThreadId::new();
     let lines = vec![SessionIndexEntry {
@@ -320,7 +319,7 @@ fn scan_index_returns_none_when_entry_missing() -> std::io::Result<()> {
 
 #[tokio::test]
 async fn reverse_lookup_accepts_valid_eof_json_and_skips_invalid() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let expected = SessionIndexEntry {
         id: ThreadId::new(),
@@ -354,7 +353,7 @@ async fn reverse_lookup_accepts_valid_eof_json_and_skips_invalid() -> std::io::R
 
 #[tokio::test]
 async fn find_thread_names_by_ids_prefers_latest_entry() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let id1 = ThreadId::new();
     let id2 = ThreadId::new();
@@ -392,7 +391,7 @@ async fn find_thread_names_by_ids_prefers_latest_entry() -> std::io::Result<()> 
 
 #[test]
 fn scan_index_finds_latest_match_among_mixed_entries() -> std::io::Result<()> {
-    let temp = TempDir::new()?;
+    let temp = crate::test_support::private_temp_dir()?;
     let path = session_index_path(temp.path());
     let id_target = ThreadId::new();
     let id_other = ThreadId::new();

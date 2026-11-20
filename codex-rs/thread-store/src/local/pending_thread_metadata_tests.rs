@@ -189,7 +189,7 @@ async fn discarding_live_thread_clears_pending_metadata() {
 
 #[tokio::test]
 async fn pending_thread_metadata_requires_state_db() {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let store = LocalThreadStore::new(test_config(home.path()), /*state_db*/ None);
 
     let err = store
@@ -229,7 +229,7 @@ async fn store_with_runtime() -> (
     Arc<LocalThreadStore>,
     Arc<codex_state::StateRuntime>,
 ) {
-    let home = TempDir::new().expect("temp dir");
+    let home = crate::local::test_support::private_temp_dir().expect("temp dir");
     let config = test_config(home.path());
     let runtime = codex_state::StateRuntime::init(
         config.sqlite.clone(),

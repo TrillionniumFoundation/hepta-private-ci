@@ -93,3 +93,47 @@ async fn cold_image_rejects_wrong_guard_replacement_sidecars_and_size() -> anyho
     std::fs::remove_dir_all(home)?;
     Ok(())
 }
+
+#[tokio::test]
+async fn wal_copy_returns_immutable_memory_without_touching_source() -> anyhow::Result<()> {
+    let home = unique_temp_dir();
+    std::fs::create_dir(&home)?;
+    std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))?;
+    let config = SqliteConfig::new_for_testing(home.as_path().abs());
+    let path = home.join("retained.sqlite3");
+    let source = config.open_durable_evidence_pool(&path).await?;
+    sqlx::query("CREATE TABLE fact(value TEXT); INSERT INTO fact VALUES ('original WAL')")
+        .execute(&source)
+        .await?;
+    for suffix in ["", "-wal", "-shm"] {
+        std::fs::set_permissions(
+            format!("{}{suffix}", path.display()),
+            std::fs::Permissions::from_mode(0o600),
+        )?;
+    }
+    let guard = config.bind_existing_recovery_database(&path)?;
+    let pool = config.open_wal_image_read_only_pool(&guard).await?;
+    guard.verify_inspection_unchanged()?;
+    assert!(matches!(
+        config.open_cold_image_read_only_pool(&guard).await,
+        Err(SqliteRecoveryError::Indeterminate)
+    ));
+    sqlx::query("PRAGMA query_only = OFF")
+        .execute(&pool)
+        .await?;
+    assert!(
+        sqlx::query("UPDATE fact SET value = 'changed'")
+            .execute(&pool)
+            .await
+            .is_err()
+    );
+    source.close().await;
+    std::fs::remove_dir_all(home)?;
+    pool.acquire().await?.close().await?;
+    let value: String = sqlx::query_scalar("SELECT value FROM fact")
+        .fetch_one(&pool)
+        .await?;
+    assert_eq!(value, "original WAL");
+    pool.close().await;
+    Ok(())
+}

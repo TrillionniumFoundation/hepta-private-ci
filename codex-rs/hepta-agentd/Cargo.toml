@@ -20,6 +20,14 @@ production-cognitive-write = []
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
+# Explicit sealed-guest entry; default Agentd gains no bootstrap path.
+qualification-native-owner = []
+
+[[bin]]
+name = "hepta-native-owner-qualification"
+path = "src/bin/hepta-native-owner-qualification.rs"
+required-features = ["qualification-native-owner"]
+test = false
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -68,6 +76,7 @@ codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-objective = { path = "../hepta-objective" }
+codex-hepta-operations = { workspace = true }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
@@ -82,6 +91,7 @@ codex-utils-cli = { workspace = true }
 codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
+getrandom = { version = "0.3", features = ["std"] }
 http = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -98,9 +108,11 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+libc = { workspace = true }
+
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
-codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
@@ -109,6 +121,12 @@ codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
 codex-hepta-supervisor = { workspace = true }
 codex-utils-cargo-bin = { workspace = true }
 core_test_support = { workspace = true }
+pretty_assertions = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[[bin]]
+name = "hepta-authority-host"
+path = "src/bin/hepta-authority-host.rs"
+test = false

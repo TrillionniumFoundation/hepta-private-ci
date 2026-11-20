@@ -533,3 +533,306 @@ async fn invalid_cimd_metadata_and_redirects_fail_without_dynamic_registration()
         .expect("explicit DCR should require an advertised registration endpoint");
     assert!(error.to_string().contains("registration not supported"));
 }
+
+#[tokio::test]
+async fn post_only_challenge_resolves_custom_prm_and_path_appended_oidc() -> Result<()> {
+    for tenant in ["/tenant1", "/tenant%2Fone/subtenant", "/tenant1/"] {
+        let resource = MockServer::start().await;
+        let authorization = MockServer::start().await;
+        let resource_url = format!("{}/mcp", resource.uri());
+        let issuer = format!("{}{tenant}", authorization.uri());
+        let endpoint_prefix = format!("{}{}", authorization.uri(), tenant.trim_end_matches('/'));
+        let metadata_path = format!(
+            "{}/.well-known/openid-configuration",
+            tenant.trim_end_matches('/')
+        );
+        let redirect = format!("http://127.0.0.1:43123/callback/{CALLBACK_ID}");
+        Mock::given(method("POST"))
+            .and(path("/mcp"))
+            .respond_with(ResponseTemplate::new(401).insert_header(
+                "www-authenticate",
+                format!(
+                    "Bearer resource_metadata=\"{}/custom/metadata.json\", scope=\"read\"",
+                    resource.uri()
+                ),
+            ))
+            .expect(1)
+            .mount(&resource)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/custom/metadata.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "resource": resource_url,
+                "authorization_servers": [issuer],
+            })))
+            .mount(&resource)
+            .await;
+        Mock::given(method("GET"))
+            .and(path(metadata_path))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "issuer": issuer,
+                "authorization_endpoint": format!("{endpoint_prefix}/authorize"),
+                "token_endpoint": format!("{endpoint_prefix}/token"),
+                "registration_endpoint": format!("{endpoint_prefix}/register"),
+                "token_endpoint_auth_methods_supported": ["none"],
+                "code_challenge_methods_supported": ["S256"],
+                "authorization_response_iss_parameter_supported": true,
+            })))
+            .mount(&authorization)
+            .await;
+        Mock::given(method("POST"))
+            .and(path(format!("{}/register", tenant.trim_end_matches('/'))))
+            .respond_with(ResponseTemplate::new(201).set_body_json(json!({
+                "client_id": "path-client",
+                "redirect_uris": [redirect],
+            })))
+            .expect(1)
+            .mount(&authorization)
+            .await;
+        Mock::given(method("POST"))
+            .and(path(format!("{}/token", tenant.trim_end_matches('/'))))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "access_token": "fixture-path-token",
+                "token_type": "Bearer",
+            })))
+            .expect(1)
+            .mount(&authorization)
+            .await;
+        let prepared = start_authorization(
+            &resource_url,
+            Arc::new(OAuthHttpClientAdapter::new(
+                Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+                    OutboundProxyPolicy::ReqwestDefault,
+                ))),
+                HeaderMap::new(),
+                &resource_url,
+            )),
+            &[],
+            &redirect,
+            CALLBACK_ID,
+            McpOAuthClientRegistration::Dcr,
+        )
+        .await?;
+        assert_eq!(
+            prepared.authorization_server_issuer.as_deref(),
+            Some(issuer.as_str())
+        );
+        let mut state = prepared.oauth_state;
+        let auth_url = Url::parse(&state.get_authorization_url().await?)?;
+        assert_eq!(
+            auth_url.path(),
+            format!("{}/authorize", tenant.trim_end_matches('/'))
+        );
+        let query: HashMap<String, String> = auth_url.query_pairs().into_owned().collect();
+        assert_eq!(query["resource"], resource_url);
+        assert_eq!(query["redirect_uri"], redirect);
+        assert_eq!(query["code_challenge_method"], "S256");
+        assert!(
+            state
+                .handle_callback_with_issuer("fixture-code", "wrong-state", Some(&issuer))
+                .await
+                .is_err()
+        );
+        assert_eq!(
+            requests_to(
+                &authorization,
+                &format!("{}/token", tenant.trim_end_matches('/'))
+            )
+            .await
+            .len(),
+            0
+        );
+        state
+            .handle_callback_with_issuer("fixture-code", &query["state"], Some(&issuer))
+            .await?;
+        let token = requests_to(
+            &authorization,
+            &format!("{}/token", tenant.trim_end_matches('/')),
+        )
+        .await;
+        let body: HashMap<String, String> = url::form_urlencoded::parse(&token[0].body)
+            .into_owned()
+            .collect();
+        assert_eq!(body["resource"], resource_url);
+        assert_eq!(body["redirect_uri"], redirect);
+        assert!(body.contains_key("code_verifier"));
+        let initialize = requests_to(&resource, "/mcp").await;
+        let posts: Vec<_> = initialize
+            .iter()
+            .filter(|request| request.method == "POST")
+            .collect();
+        assert_eq!(posts.len(), 1);
+        let initialize: Value = serde_json::from_slice(&posts[0].body)?;
+        assert_eq!(initialize["method"], "initialize");
+        assert_eq!(initialize["params"]["protocolVersion"], "2025-06-18");
+        assert!(!posts[0].headers.contains_key("authorization"));
+        assert_eq!(requests_to(&resource, "/register").await.len(), 0);
+        assert_eq!(requests_to(&authorization, "/register").await.len(), 0);
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn invalid_post_challenge_metadata_never_registers_at_guessed_root() -> Result<()> {
+    for invalid in [
+        "no-challenge",
+        "wrong-resource",
+        "wrong-issuer",
+        "malformed-metadata",
+    ] {
+        let resource = MockServer::start().await;
+        let authorization = MockServer::start().await;
+        let resource_url = format!("{}/mcp", resource.uri());
+        let mut challenge = ResponseTemplate::new(401);
+        if invalid != "no-challenge" {
+            challenge = challenge.insert_header(
+                "www-authenticate",
+                format!(
+                    "Bearer resource_metadata=\"{}/custom.json\"",
+                    resource.uri()
+                ),
+            );
+        }
+        Mock::given(method("POST"))
+            .and(path("/mcp"))
+            .respond_with(challenge)
+            .mount(&resource)
+            .await;
+        Mock::given(method("GET")).and(path("/custom.json")).respond_with(
+            if invalid == "malformed-metadata" { ResponseTemplate::new(200).set_body_string("not-json") }
+            else { ResponseTemplate::new(200).set_body_json(json!({
+                "resource": if invalid == "wrong-resource" { format!("{}/different", resource.uri()) } else { resource_url.clone() },
+                "authorization_servers": [format!("{}/tenant1", authorization.uri())],
+            })) }
+        ).mount(&resource).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/oauth-authorization-server/tenant1"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "issuer": format!("{}/other-tenant", authorization.uri()),
+                "authorization_endpoint": format!("{}/tenant1/authorize", authorization.uri()),
+                "token_endpoint": format!("{}/tenant1/token", authorization.uri()),
+                "registration_endpoint": format!("{}/tenant1/register", authorization.uri()),
+            })))
+            .mount(&authorization)
+            .await;
+        let result = start_authorization(
+            &resource_url,
+            Arc::new(OAuthHttpClientAdapter::new(
+                Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+                    OutboundProxyPolicy::ReqwestDefault,
+                ))),
+                HeaderMap::new(),
+                &resource_url,
+            )),
+            &[],
+            &format!("http://127.0.0.1:43123/callback/{CALLBACK_ID}"),
+            CALLBACK_ID,
+            McpOAuthClientRegistration::Dcr,
+        )
+        .await;
+        assert!(result.is_err(), "{invalid} must fail before registration");
+        assert_eq!(requests_to(&resource, "/register").await.len(), 0);
+        assert_eq!(requests_to(&authorization, "/register").await.len(), 0);
+        assert_eq!(
+            requests_to(&authorization, "/tenant1/register").await.len(),
+            0
+        );
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn oauth_initialization_response_is_bounded_before_registration() -> Result<()> {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/mcp"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .set_body_raw(vec![b'x'; 1024 * 1024 + 1], "application/json"),
+        )
+        .mount(&server)
+        .await;
+    let result = start_authorization(
+        &format!("{}/mcp", server.uri()),
+        Arc::new(OAuthHttpClientAdapter::new(
+            Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+                OutboundProxyPolicy::ReqwestDefault,
+            ))),
+            HeaderMap::new(),
+            &format!("{}/mcp", server.uri()),
+        )),
+        &[],
+        &format!("http://127.0.0.1:43123/callback/{CALLBACK_ID}"),
+        CALLBACK_ID,
+        McpOAuthClientRegistration::Dcr,
+    )
+    .await;
+    let error = match result {
+        Ok(_) => panic!("oversize initialization must fail"),
+        Err(error) => error,
+    };
+    assert!(format!("{error:#}").contains("response body exceeds 1048576 bytes"));
+    assert_eq!(requests_to(&server, "/register").await.len(), 0);
+    Ok(())
+}
+
+#[tokio::test]
+async fn successful_unauthenticated_initialization_closes_only_its_session() -> Result<()> {
+    let server = MockServer::start().await;
+    Mock::given(method("POST"))
+        .and(path("/mcp"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .insert_header("mcp-session-id", "owned-oauth-session")
+                .set_body_json(json!({
+                    "jsonrpc": "2.0", "id": 0, "result": {
+                        "protocolVersion": "2025-06-18", "capabilities": {},
+                        "serverInfo": { "name": "fixture", "version": "1" }
+                    }
+                })),
+        )
+        .expect(1)
+        .mount(&server)
+        .await;
+    Mock::given(method("DELETE"))
+        .and(path("/mcp"))
+        .and(header("mcp-session-id", "owned-oauth-session"))
+        .respond_with(ResponseTemplate::new(204))
+        .expect(1)
+        .mount(&server)
+        .await;
+    Mock::given(method("POST")).and(path("/register"))
+        .respond_with(ResponseTemplate::new(201).set_body_json(json!({
+            "client_id": "legacy-client", "redirect_uris": [format!("http://127.0.0.1:43123/callback/{CALLBACK_ID}")]
+        }))).expect(1).mount(&server).await;
+    let _prepared = start_authorization(
+        &format!("{}/mcp", server.uri()),
+        Arc::new(OAuthHttpClientAdapter::new(
+            Arc::new(RouteAwareHttpClient::new(HttpClientFactory::new(
+                OutboundProxyPolicy::ReqwestDefault,
+            ))),
+            HeaderMap::new(),
+            &format!("{}/mcp", server.uri()),
+        )),
+        &[],
+        &format!("http://127.0.0.1:43123/callback/{CALLBACK_ID}"),
+        CALLBACK_ID,
+        McpOAuthClientRegistration::Dcr,
+    )
+    .await?;
+    let requests = server
+        .received_requests()
+        .await
+        .expect("requests should be recorded");
+    let deleted = requests
+        .iter()
+        .position(|request| request.method == "DELETE")
+        .expect("owned session deletion");
+    let registered = requests
+        .iter()
+        .position(|request| request.url.path() == "/register")
+        .expect("legacy registration");
+    assert!(deleted < registered);
+    assert!(!requests[deleted].headers.contains_key("authorization"));
+    Ok(())
+}
