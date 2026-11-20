@@ -294,7 +294,8 @@ def codex_rust_crate(
         integration_compile_data_extra: Extra compile_data for integration tests.
         integration_test_dependency_replacements: Test-only workspace dependency
             replacements keyed by generated integration test target name. Retains
-            the complete unit-test dependency mapping when that graph is selected;
+            the complete unit-test dependency mapping when that graph is selected.
+            The local library can also be replaced using its normal absolute label;
             production libraries and binaries are unchanged.
         integration_test_dependency_replacements_by_test: Equivalent test-only
             replacements keyed by the integration test filename stem. Named target
@@ -652,8 +653,13 @@ def codex_rust_crate(
             if integration_test_use_unit_test_dependencies:
                 test_replacements = unit_test_dependency_replacements | test_replacements
             test_deps = rust_test_dependencies(test_replacements, normal_dev = True)
+            test_replacement_labels = {Label(original): replacement for original, replacement in test_replacements.items()}
+            test_local_library = test_replacement_labels.get(
+                Label("//%s:%s" % (native.package_name(), name)),
+                unit_test_library if integration_test_use_unit_test_dependencies else name,
+            )
             test_deps += [
-                unit_test_library if integration_test_use_unit_test_dependencies and dependency == name else dependency
+                test_local_library if dependency == name else dependency
                 for dependency in maybe_deps
             ] + deps_extra
             test_aliases = cargo_crate_aliases(
