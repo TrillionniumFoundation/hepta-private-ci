@@ -1,0 +1,246 @@
+{
+  "schema": "hepta.e5-isolated-original-object-closure.v1",
+  "expected_head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+  "records": [
+    {
+      "name": "head",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.0025301080313511193,
+      "diagnostic_no_lazy_fetch": true,
+      "stdout_sha256": "ff532f1d2b4f89cb3ef2ee3a2db3856fa7dcdc5362d5d22126323f7542d298f4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "refs-before",
+      "argv": [
+        "git",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.0025460670003667474,
+      "diagnostic_no_lazy_fetch": true,
+      "stdout_sha256": "a6e0984f60571e897b796c896717f81725836f9aec1ad81b78c0f7bcf90ab8b4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-0",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.004104187013581395,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "26f4be9adfc1586ef54f6345c8849ad29ded5b814544218aef6bf2e0486a9052",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-1",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.002692895010113716,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "9ca990ad213db6735ea35d90b25433efd2e35300a1a42469eeed91c2d62ae235",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-2",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.002896560006774962,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "5a994a8a263ab3b46bcfc7eafd16ec99f6c776a411e729074d99a86cebf00513",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-3",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.00423758098622784,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "03382f2c33762ac9cb8135a99eedd37fe38f90f210dd63c1ce9169bd90910c11",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-4",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.003024395031388849,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "923e2f4ad2f971b12ced9570080813d40e86e57741b1719d22410ce64c333830",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-5",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.002624475979246199,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "139e9deb143dbbc222404b109147b13958919f992c3a74ff34cbffdc87d50938",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-6",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.003972953010816127,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "973bcc428645de168bb10de70d4909b76ef273a5e2e0827c9fa2b8682bdd7e36",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hash-7",
+      "argv": [
+        "git",
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.0035221950383856893,
+      "diagnostic_no_lazy_fetch": false,
+      "stdout_sha256": "ee170166de684eccfcbf5fd67696c732eb60c01d4a43ccd9b80f77a03c8b302d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "all-original-objects",
+      "argv": [
+        "git",
+        "cat-file",
+        "--batch-check=%(objectname) %(objecttype) %(objectsize)"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.004241797956638038,
+      "diagnostic_no_lazy_fetch": true,
+      "stdout_sha256": "a55f7fe9aa91155579b8852d1190d443bd91bf8b32df3f375cec64298098997e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "refs-after",
+      "argv": [
+        "git",
+        "for-each-ref",
+        "--format=%(refname) %(objectname)"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 0.002161022974178195,
+      "diagnostic_no_lazy_fetch": true,
+      "stdout_sha256": "a6e0984f60571e897b796c896717f81725836f9aec1ad81b78c0f7bcf90ab8b4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "restored": [
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/fixture-recovery/DEPLOYMENT_MANIFEST.json",
+      "bytes": 606,
+      "git_sha": "186a9a9b2111635870c36857d05804aad689055a",
+      "sha256": "df5624d7b9f258339633b56967cbb775a624d495eb2ac806025339132d73fd7a",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/fixture-recovery/extra/8/examples/__init__.py",
+      "bytes": 0,
+      "git_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/fixture-recovery/extra/8/examples/jsonParser.py",
+      "bytes": 4828,
+      "git_sha": "066d66116f2f04d57e9968c209c7293ad49d4ab8",
+      "sha256": "1d64fcf4845c766a4ec66c7badcc87a3a7bb12a2922107e54006241bb9aeba25",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/fixture-recovery/prepare_fixture_recovery.py",
+      "bytes": 6491,
+      "git_sha": "8b9403def28cfd7375f9a236fe094549f8469dc9",
+      "sha256": "0fc3622b0401e209e6ad998cc43ee68aab5aa38002dc965714e3f24f2e3c519e",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/replay_sources.py",
+      "bytes": 12597,
+      "git_sha": "2465ced0b143de23cab69acfeeba20b1212551e5",
+      "sha256": "41af79c1756623d71c38737f5b7bd9d91e4b341079f5f9258e09be6921077ad0",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/resume_setup.py",
+      "bytes": 2787,
+      "git_sha": "2a4f64f602cd7f463f434b27e3070571cde0bba9",
+      "sha256": "65de17c143c7f060675694001d46ca74892ab0cd62a2df93515564526b4db7a8",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/verify_replay_identity.py",
+      "bytes": 6213,
+      "git_sha": "9d164f81238eefa2352495967ae492528279f824",
+      "sha256": "5b4744a623b4431c8ac2c8564d4e099bc3e3ed23e04fc1d355fab7ee03ac44ef",
+      "worktree_file_preexisted": false
+    },
+    {
+      "path": "qualification/cell-e5-additional-sources-20261119/recovery-overlay.tar.gz",
+      "bytes": 9433,
+      "git_sha": "4e24d38e1da7d0f9c53010d4edd91669fd8ed82a",
+      "sha256": "eddbc5a05585e995f00f2dec9259ae6467ff51fb98e231f9de8658108254c7d7",
+      "worktree_file_preexisted": false
+    }
+  ],
+  "config_changed": false,
+  "ref_changed": false,
+  "gate_not_yet_run": true,
+  "all_original_41_objects_present": true,
+  "refs_unchanged": true,
+  "status": "ORIGINAL_EXACT_OBJECT_CLOSURE_COMPLETE"
+}

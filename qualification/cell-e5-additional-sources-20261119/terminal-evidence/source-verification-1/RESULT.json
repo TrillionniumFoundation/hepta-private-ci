@@ -1,0 +1,108 @@
+{
+  "all_commands_passed": false,
+  "base_commit": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "diff_bytes": 0,
+  "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "no_new_model_calls": true,
+  "no_new_native_tests": true,
+  "no_new_training": true,
+  "owner_wall_seconds": 126.00651860097423,
+  "qualification_python_files_outside_original_scoped_formatter_roots": true,
+  "records": [
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "/home/qian-qi/work/hepta-e5-final-verification-20261120-e9e051/source",
+        "1818fde55d964a87cfc8aed49f26a6a866a0e0a5"
+      ],
+      "exit_code": 0,
+      "stage": "worktree",
+      "stderr_bytes": 1628,
+      "stderr_sha256": "a4bcd08ab8219a03788c87dec40edc73f26be987e7c56853df83bec1247c9bcb",
+      "stdout_bytes": 106,
+      "stdout_sha256": "7684dd3cce5cbce2b6f659c64c96c310edf107f57b9b0e01519660469f5ff686",
+      "timed_out": false,
+      "wall_seconds": 2.8717254200018942
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3"
+      ],
+      "exit_code": 0,
+      "stage": "fmt",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 73,
+      "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "timed_out": false,
+      "wall_seconds": 0.5301242080167867
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stage": "fmt-check",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 73,
+      "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "timed_out": false,
+      "wall_seconds": 0.46562515798723325
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_blob_size_policy.py"
+      ],
+      "exit_code": 0,
+      "stage": "blob-tests",
+      "stderr_bytes": 105,
+      "stderr_sha256": "04012c0b25cf5739febbc33cf12d06ed92b8024a53426739363d7edf3a4416c2",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false,
+      "wall_seconds": 1.8691931680077687
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+        "--head",
+        "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit_code": null,
+      "stage": "blob-gate",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": true,
+      "wall_seconds": 120.00446316500893
+    }
+  ],
+  "source_commit": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5"
+}

@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.e5-exact-candidate-full-pr-original-blob-gate.v1",
+  "tested_head": "b6822f9afe283e1e1b4493173ee98cc2f740ef0a",
+  "tested_tree": "ace010f9ff23207de53c5941db73c11079fc8034",
+  "checkout_head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+  "base": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "original_gate_and_allowlist_sha256": {
+    "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "timeout_seconds": 120,
+  "model_calls": 0,
+  "training_updates": 0,
+  "native_task_children": 0,
+  "refs_changed": false,
+  "full_pr_base_to_candidate": true,
+  "argv": [
+    "/usr/bin/python3",
+    "scripts/check_blob_size.py",
+    "--base",
+    "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+    "--head",
+    "b6822f9afe283e1e1b4493173ee98cc2f740ef0a",
+    "--max-bytes",
+    "512000",
+    "--allowlist",
+    ".github/blob-size-allowlist.txt"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "wall_seconds": 0.9883465460152365,
+  "owner_self_cpu_seconds": 0.0009773209999999963,
+  "stdout_bytes": 14306,
+  "stdout_sha256": "ceb5def3eac3af7d1fa1a871ce293f81d819358214b827b3ece64c8e88729128",
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_first_line": [
+    "Checked 104 changed file(s) against the 512000-byte limit."
+  ],
+  "gate_and_allowlist_unchanged": true,
+  "head_unchanged": true,
+  "refs_unchanged": true
+}
