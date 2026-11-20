@@ -105,7 +105,7 @@ impl RootGenerationCurrentClient {
         missing.require_unchanged()?;
         pending.require_unchanged()?;
         println!(
-            "ROOT_ACK_LANE_MECHANISM order={order:?} actual_root_stream=true actual_source_files=true whole_product_ack=0 ordinary_c=0"
+            "\nROOT_ACK_LANE_MECHANISM order={order:?} actual_root_stream=true actual_source_files=true whole_product_ack=0 ordinary_c=0"
         );
         Ok(())
     }
