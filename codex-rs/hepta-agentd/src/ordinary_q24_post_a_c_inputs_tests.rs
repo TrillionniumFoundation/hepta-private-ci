@@ -214,13 +214,16 @@ impl OriginalCInputFiles {
         source["fence"]["owner_id"] = json!("ordinary-original-c-circuit-owner");
         source["fence"]["fencing_token"] = json!("ordinary-original-c-circuit-fence");
         let source_bytes = serde_json::to_vec(&source)?;
-        crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
-            &source_bytes,
-            &successor.identity,
-        )?;
+        let configuration =
+            crate::OriginalSingleQ24SourceConfigurationV1::from_original_deployment_bytes(
+                &source_bytes,
+                &successor.identity,
+            )?;
         let mut request = self.objective.request.clone();
-        request.body.model_tuple_digest = bundle.digest()?.to_string();
-        request.body.artifact_set_digest = request.body.model_tuple_digest.clone();
+        request.body.runtime_body_digest =
+            configuration.definition.runtime.runtime_digest.to_string();
+        request.body.model_tuple_digest = configuration.definition.semantic_digest()?.to_string();
+        request.body.artifact_set_digest = bundle.digest()?.to_string();
         request.signature_hex = super::inputs::hex(
             &SigningKey::from_bytes(&[91; 32])
                 .sign(
