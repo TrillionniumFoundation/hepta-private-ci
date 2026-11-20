@@ -190,7 +190,7 @@ class PostAInstallationSourceTests(unittest.TestCase):
         for occurrence in (0, 1):
             self.reject(OWNER, "check", "remaining(deadline.min(self.end))?", occurrence)
         self.check(OWNER, "check", ("PollFd::new(&self.owner, PollFlags::IN)", "HostIssuerTransportError::PeerDenied"))
-        self.check(OWNER, "wait", ("remaining(deadline.min(self.end))?", "PollFd::new(&self.owner, PollFlags::IN)",
+        self.check(OWNER, "wait_with_diagnostic", ("remaining(deadline.min(self.end))?", "PollFd::new(&self.owner, PollFlags::IN)",
                                   "!descriptors[1].revents().is_empty()"))
 
     def test_failed_clamp_permanently_shuts_down_the_real_stream(self):
