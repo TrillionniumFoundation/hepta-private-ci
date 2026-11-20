@@ -4,6 +4,7 @@ on:
     paths:
       - apps/hepta-control-ui/**
       # Conservative gateway Cargo closure; drift-checked against the shared graph.
+      - codex-rs/execution-core/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-infer-core/**
@@ -17,6 +18,7 @@ on:
       - codex-rs/hepta-wire/**
       - codex-rs/utils/absolute-path/**
       - codex-rs/utils/path-utils/**
+      - codex-rs/utils/windows-private-state/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
