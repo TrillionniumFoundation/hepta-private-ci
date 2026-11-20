@@ -209,7 +209,11 @@ fn system_time_conversion_preserves_signed_fractional_instants() {
     ] {
         let timestamp = Timestamp::parse_from_rfc3339(input).expect(input);
         assert_eq!(timestamp.to_system_time(), Some(expected), "{input}");
-        assert_eq!(Timestamp::from_system_time(expected), Some(timestamp), "{input}");
+        assert_eq!(
+            Timestamp::from_system_time(expected),
+            Some(timestamp),
+            "{input}"
+        );
     }
 }
 
@@ -225,13 +229,18 @@ fn system_time_conversion_normalizes_explicit_leap_seconds() {
         (
             "2016-12-31T23:59:60.123456700Z",
             "2017-01-01T00:00:00.123456700Z",
-            epoch + std::time::Duration::new(/*secs*/ 1_483_228_800, /*nanos*/ 123_456_700),
+            epoch
+                + std::time::Duration::new(/*secs*/ 1_483_228_800, /*nanos*/ 123_456_700),
         ),
     ] {
         let timestamp = Timestamp::parse_from_rfc3339(input).expect(input);
         let normalized = Timestamp::parse_from_rfc3339(normalized).expect(normalized);
         assert_eq!(timestamp.to_system_time(), Some(expected), "{input}");
-        assert_eq!(Timestamp::from_system_time(expected), Some(normalized), "{input}");
+        assert_eq!(
+            Timestamp::from_system_time(expected),
+            Some(normalized),
+            "{input}"
+        );
     }
 }
 
@@ -280,7 +289,8 @@ fn system_time_conversion_preserves_signed_fraction_and_normalizes_leap_seconds(
         ),
         (
             "2016-12-31T23:59:60.250Z",
-            epoch + std::time::Duration::new(/*secs*/ 1_483_228_800, /*nanos*/ 250_000_000),
+            epoch
+                + std::time::Duration::new(/*secs*/ 1_483_228_800, /*nanos*/ 250_000_000),
         ),
     ] {
         let timestamp = Timestamp::parse_from_rfc3339(input).expect(input);
