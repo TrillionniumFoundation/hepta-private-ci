@@ -250,7 +250,8 @@ def codex_rust_crate(
         extra_binaries_non_windows = [],
         run_tests_with_wine_exec = False,
         crate_root = None,
-        integration_test_dependency_replacements = {}):
+        integration_test_dependency_replacements = {},
+        integration_test_dependency_replacements_by_test = {}):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -295,6 +296,9 @@ def codex_rust_crate(
             replacements keyed by generated integration test target name. Retains
             the complete unit-test dependency mapping when that graph is selected;
             production libraries and binaries are unchanged.
+        integration_test_dependency_replacements_by_test: Equivalent test-only
+            replacements keyed by the integration test filename stem. Named target
+            replacements take precedence when both mappings specify the same edge.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -643,7 +647,7 @@ def codex_rust_crate(
 
         test_deps = integration_test_deps
         test_aliases = integration_test_aliases
-        test_replacements = integration_test_dependency_replacements.get(test_name, {})
+        test_replacements = integration_test_dependency_replacements_by_test.get(test_file_stem, {}) | integration_test_dependency_replacements.get(test_name, {})
         if test_replacements:
             if integration_test_use_unit_test_dependencies:
                 test_replacements = unit_test_dependency_replacements | test_replacements
