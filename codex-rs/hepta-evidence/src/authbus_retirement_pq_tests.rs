@@ -1,3 +1,6 @@
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
+
 use codex_hepta_authbus::AuthBusAlgorithm;
 use codex_hepta_authbus::AuthBusAuthorityOwner;
 use codex_hepta_authbus::AuthBusVerifyingKey;
@@ -50,8 +53,11 @@ async fn pq_retirement_requires_the_exact_pinned_revoked_key_and_profile() {
     ];
     for (index, verifying_key) in keys.into_iter().enumerate() {
         // Each real owner retains its own independent private checkpoint.
-        let authority_database = tempfile::tempdir_in(temp.path()).unwrap();
-        let authority_checkpoint = tempfile::tempdir_in(temp.path()).unwrap();
+        let authority_directories = &mut tempfile::Builder::new();
+        #[cfg(unix)]
+        authority_directories.permissions(std::fs::Permissions::from_mode(0o700));
+        let authority_database = authority_directories.tempdir_in(temp.path()).unwrap();
+        let authority_checkpoint = authority_directories.tempdir_in(temp.path()).unwrap();
         let database_path = authority_database
             .path()
             .canonicalize()

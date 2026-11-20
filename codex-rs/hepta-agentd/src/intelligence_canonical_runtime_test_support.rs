@@ -132,7 +132,10 @@ fn fresh_inputs(
 }
 
 pub(super) async fn runtime_fixture(body_generation: u64, drain_on_build: bool) -> RuntimeFixture {
-    let directory = tempfile::tempdir().expect("directory");
+    let directory = tempfile::Builder::new()
+        .permissions(std::fs::Permissions::from_mode(0o700))
+        .tempdir()
+        .expect("directory");
     let root = directory.path().canonicalize().expect("root");
     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
     let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");

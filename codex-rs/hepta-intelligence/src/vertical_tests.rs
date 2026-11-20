@@ -477,7 +477,9 @@ fn expected_scalarization_digest(weights: &[(&str, i64)]) -> Digest32 {
 
 #[test]
 fn vertical_normalizes_half_weight_without_rewriting_the_admitted_objective() {
-    let request = vertical_request();
+    let mut profile = objective_profile();
+    profile.soft_dimensions[0].baseline_weight = FixedQ32::from_raw(1_i64 << 31);
+    let request = vertical_request_with_profile(profile);
     let expected = must(admit_and_compile_objective_v1(
         &request.objective_envelope,
         &request.objective_profile,
@@ -734,7 +736,7 @@ fn omitted_cognitive_read_evidence_fails_closed() {
 }
 
 #[test]
-fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations() {
+fn objective_weights_normalize_or_reject_for_unique_and_abstain_only_recommendations() {
     for weight in [FixedQ32::ZERO, FixedQ32::from_raw(1_i64 << 31)] {
         let mut profile = objective_profile();
         profile.soft_dimensions[0].baseline_weight = weight;
@@ -746,12 +748,40 @@ fn incomplete_objective_weights_reject_unique_and_abstain_only_recommendations()
                     .retain(|contribution| contribution.candidate_id == id("abstain"));
             }
 
-            let error =
-                run_read_only_vertical(request).expect_err("incomplete weights must reject");
-            assert!(matches!(
-                error,
-                ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
+            let expected = must(admit_and_compile_objective_v1(
+                &request.objective_envelope,
+                &request.objective_profile,
+                &request.objective_context,
             ));
+            let result = run_read_only_vertical(request);
+            if weight == FixedQ32::ZERO {
+                let error = result.expect_err("zero total weight must reject");
+                assert!(matches!(
+                    error,
+                    ReadOnlyVerticalError::Ndu(codex_hepta_ndu::NduError::IncompleteScalarization)
+                ));
+                continue;
+            }
+
+            let receipt = must(result);
+            assert_eq!(receipt.objective, must(expected.compile_result));
+            assert_eq!(receipt.objective_admission, expected.receipt);
+            assert_eq!(
+                receipt.ndu.base.scalarization_profile_digest,
+                Some(expected_scalarization_digest(&[(
+                    "quality.ratio",
+                    FixedQ32::ONE.raw(),
+                )]))
+            );
+            let expected_decision = if abstain_only {
+                PlanDecision::Abstained(crate::AbstentionReason::NoEligibleCandidate)
+            } else {
+                PlanDecision::Selected(id("action.read"))
+            };
+            assert_eq!(receipt.plan.decision, expected_decision);
+            assert!(!receipt.authority.grants_any());
+            assert!(!receipt.plan.authority.grants_any());
+            assert!(!receipt.plan.effect_authority);
         }
     }
 }
