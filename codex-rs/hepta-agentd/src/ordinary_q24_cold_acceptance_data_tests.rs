@@ -6,6 +6,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
+use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
@@ -101,11 +102,7 @@ impl OriginalColdAcceptanceData {
         service_pin.require_unchanged(&[service.clone()])?;
         let accepted = result?;
         let target = &original.plan.resources.original.plan.deployment.target;
-        let refusal_owner = format!(
-            "initial-data-refusal/completed-learning/{}/{}",
-            initial.head_digest,
-            crate::neuron_generation_current::types::scope_digest(target.scope())?
-        );
+        let refusal_owner = completed_learning_refusal_owner(initial.head_digest, target)?;
         let refusal =
             observe_original_record::<Refusal>(&config.state_dir, &refusal_owner, |data| {
                 anyhow::ensure!(
@@ -234,13 +231,22 @@ fn require_actual_acceptance(
     ] {
         require_digest(&data[field])?;
     }
-    for field in ["journals", "signatures"] {
+    let expected_signatures = terminal
+        .receipts
+        .iter()
+        .filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)
+        .count();
+    anyhow::ensure!(
+        expected_signatures == 6 + usize::from(terminal.local_decision_v2().is_some()),
+        "actual terminal signature stages differ"
+    );
+    for (field, expected) in [("journals", 7), ("signatures", expected_signatures)] {
         let values = data[field]
             .as_array()
             .ok_or_else(|| anyhow::anyhow!("actual accepted {field} absent"))?;
         anyhow::ensure!(
-            values.len() == 7,
-            "all seven original completion inputs required"
+            values.len() == expected,
+            "all original {field} inputs for the actual terminal stages required"
         );
         for value in values {
             require_digest(value)?;
@@ -259,6 +265,22 @@ fn require_digest(value: &serde_json::Value) -> anyhow::Result<()> {
         "accepted digest is not canonical"
     );
     Ok(())
+}
+
+/// Locate the existing Root refusal record using its bounded original namespace.
+/// This data-only helper does not create a record or grant a historical capability.
+fn completed_learning_refusal_owner(
+    initial: Digest32,
+    target: &CellGenerationOwnerBindingV1,
+) -> anyhow::Result<String> {
+    let scope = crate::neuron_generation_current::types::scope_digest(target.scope())?;
+    anyhow::ensure!(!initial.is_zero(), "original initial digest is absent");
+    let slot = Digest32::of_parts(&[
+        b"hepta.root.initial-data-refusal.completed-learning.v1\0",
+        scope.as_array(),
+        initial.as_array(),
+    ]);
+    Ok(format!("initial-data-refusal/completed-learning/{slot}"))
 }
 
 fn record_paths(directory: &Path, owner: &str) -> Vec<PathBuf> {
@@ -283,11 +305,7 @@ pub(super) async fn wait_for_original_terminal_acceptance(
     let owner = completed_learning_acceptance_owner(&initial);
     let path = record_paths(directory, &owner).remove(0);
     let target = &plan.resources.original.plan.deployment.target;
-    let refusal_owner = format!(
-        "initial-data-refusal/completed-learning/{}/{}",
-        initial.head_digest,
-        crate::neuron_generation_current::types::scope_digest(target.scope())?
-    );
+    let refusal_owner = completed_learning_refusal_owner(initial.head_digest, target)?;
     let checkpoint_directory = directory.join("learning-checkpoint");
     let validate_refusal = |data: &Refusal| -> anyhow::Result<()> {
         anyhow::ensure!(
@@ -424,3 +442,7 @@ pub(super) async fn wait_for_original_terminal_acceptance(
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
 }
+
+#[cfg(test)]
+#[path = "ordinary_q24_cold_acceptance_namespace_tests.rs"]
+mod namespace_tests;

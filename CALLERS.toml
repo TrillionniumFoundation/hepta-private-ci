@@ -14718,8 +14718,8 @@ caller_markers = []
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs"
 required = ["pub(crate) fn read_original_completed_scoped("]
-forbidden = []
-required_function_order = [{function="fn read_original_completed_scoped(",sequence=["scope.validate_snapshot(initial)", "self\n            .decode_original_snapshot(initial, Some(scope))?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())", "coordinator.next_stage().is_some()", "snapshot.receipts.len() != codec::MAX_RECEIPTS", "snapshot.training_no_update_v2().is_some()", "snapshot.receipts.last().is_none_or", "LearningIterationStageV1::NextUse", "return Err(Error::InvalidRecord)", "Ok(snapshot)"]}]
+forbidden = ["snapshot.receipts.len() != codec::MAX_RECEIPTS"]
+required_function_order = [{function="fn read_original_completed_scoped(",sequence=["scope.validate_snapshot(initial)", "self\n            .decode_original_snapshot(initial, Some(scope))?", "LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())", "coordinator.next_stage().is_some()", "snapshot.training_no_update_v2().is_some()", "snapshot.receipts.last().is_none_or", "LearningIterationStageV1::NextUse", "return Err(Error::InvalidRecord)", "Ok(snapshot)"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
@@ -15660,6 +15660,7 @@ sequence = ["RootDataRefusalV1::open_existing(", "RootDataKind::CompletedLearnin
 path = "codex-rs/hepta-agentd/src/authority_host_completed_record.rs"
 required = ["bytes.len() > 12 * 1024", "hepta.root.completed-learning.acceptance.v1", "hepta.root.completed-learning.owner.v1\\0", "\"completed-learning/{}\""]
 forbidden = ["SigningKey", "unwrap_or_default", "Instant::now() +"]
+required_order = [["#[serde(untagged)]", "pub(super) enum CompletedSignatureDigests {\n    Six([String; 6]),\n    Seven([String; 7]),\n}", "pub(crate) struct RootCompletedLearningAcceptanceDataV1", "pub(super) journals: [String; 7]", "pub(super) signatures: CompletedSignatureDigests"]]
 [[protected_file.required_function_order]]
 function = "fn accept<T>("
 sequence = ["require_end(end)?", "RootCompletedLearningRefusalV1::accept_registered(original, ||", "let (accepted, value) = action()?", "accepted.require_original(initial, target)?", "require_end(end)?", "HostAuthorityFrontierStore::initialize(root, owner.clone(), accepted.clone())", "store.load(&owner).map_err(io::Error::other)? != accepted", "require_end(end)?", "accepted.data_digest()?"]
@@ -15668,10 +15669,13 @@ function = "fn read<T>("
 sequence = ["require_end(end)?", "RootCompletedLearningRefusalV1::read_original(", "OriginalControlRecord::open(root_path, &owner)?", "HostAuthorityFrontierStore::open(root, owner.clone())", "store.load(&owner)", "pin.require_unchanged()?", "accepted.require_original(initial, target)?", "let value = action(&accepted);", "store.load(&owner).map_err(io::Error::other)? != accepted", "pin.require_unchanged()?", "require_end(end)?", "value?"]
 [[protected_file.required_function_order]]
 function = "fn require_original("
-sequence = ["self.schema != 1", "self.purpose != PURPOSE", "self.root_verified_at_seconds == 0", "self.initial != initial.head_digest.to_string()", "target.digest()", "digest.is_zero() || digest.to_string() != *field", "serde_json::from_str(&self.original_profile)", "profile.original_initial_data()? != *initial", "profile.require_cell_scope(initial)?.binding().to_string() != self.frozen_scope", "self.data_digest()?"]
+sequence = ["self.schema != 1", "self.purpose != PURPOSE", "self.root_verified_at_seconds == 0", "self.initial != initial.head_digest.to_string()", "target.digest()", ".chain(self.journals.iter())", ".chain(self.signatures.as_slice().iter())", "digest.is_zero() || digest.to_string() != *field", "serde_json::from_str(&self.original_profile)", "profile.original_initial_data()? != *initial", "profile.require_cell_scope(initial)?.binding().to_string() != self.frozen_scope", "self.data_digest()?"]
 [[protected_file.required_function_order]]
 function = "fn completed_learning_acceptance_owner("
 sequence = ["format!(", "Digest32::of_parts(&[", "initial.request.operation_id.as_str().as_bytes()"]
+[[protected_file.required_function_order]]
+function = "fn as_slice("
+sequence = ["match self", "Self::Six(digests) => digests", "Self::Seven(digests) => digests"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_completed_files.rs"
@@ -15713,7 +15717,7 @@ required = []
 forbidden = ["SigningKey", "issued_at", "expires_at =", "LearningOwnerJournalV1", "unwrap_or_default"]
 [[protected_file.required_function_order]]
 function = "fn verify_original_completions("
-sequence = ["fixed: [&CompletedJournalObservation; 7]", "journal.records.len() != if index == 3 { 2 } else { 1 }", "!matches!(state, ProductEvaluationExecutionStateV1::Completed(_))", "journal.cut.data_digest()", "fact.journals != cuts || fact.independent_b != independent_b.acceptance.to_string()", "context.require_current_freeze_signer(&freeze)?", "for receipt in &context.terminal().receipts", "LearningIterationStageV1::Proposal", "learning_iteration_receipt_signing_bytes_v1(receipt)", "independent_b.evaluation_attestation.clone()", "saved == payload", "let [(digest, signed)] = matches.as_slice()", "context.require_current_signer(&signed)?", "signatures.len() != 7 || context.terminal().training_no_update_v2().is_some()", "vec![independent_b.plan_attestation]", "fact.signatures != hashes", "let verify_at = |at|", "LearningEvidenceVerifierV1::verify(", "LearningEvidenceRoleV1::Evaluator", "OriginalReceiptVerificationV1::new(", "OriginalReceiptVerificationV1::verify(&request, signed, at)", "independent_receipt_stages(context.terminal(), receipt)", "verify_signed_actor_separation(prior, &current, at)", "Some(fact) => fact.root_verified_at_seconds", "None => context.current_unix_seconds()?", "verify_at(at)?", "if accepted.is_none()", "let now = context.current_unix_seconds()?", "verify_at(now)?", "Ok(CompletedSignatures"]
+sequence = ["fixed: [&CompletedJournalObservation; 7]", "let local_decision_records = usize::from(context.terminal().local_decision_v2().is_some())", "let expected_signatures = 6 + local_decision_records", "let expected_records = match index", "3 => 2", "4 => local_decision_records", "_ => 1", "journal.records.len() != expected_records", "!matches!(state, ProductEvaluationExecutionStateV1::Completed(_))", "journal.cut.data_digest()", "fact.journals != cuts || fact.independent_b != independent_b.acceptance.to_string()", "context.require_current_freeze_signer(&freeze)?", "for receipt in &context.terminal().receipts", "LearningIterationStageV1::Proposal", "learning_iteration_receipt_signing_bytes_v1(receipt)", "independent_b.evaluation_attestation.clone()", "saved == payload", "let [(digest, signed)] = matches.as_slice()", "context.require_current_signer(&signed)?", "signatures.len() != expected_signatures\n        || context.terminal().training_no_update_v2().is_some()", "vec![independent_b.plan_attestation]", "let hashes = match context.terminal().local_decision_v2()", "Some(_) => CompletedSignatureDigests::Seven(", ".try_into()", "None => CompletedSignatureDigests::Six(", ".try_into()", "fact.signatures != hashes", "let verify_at = |at|", "LearningEvidenceVerifierV1::verify(", "LearningEvidenceRoleV1::Evaluator", "OriginalReceiptVerificationV1::new(", "OriginalReceiptVerificationV1::verify(&request, signed, at)", "independent_receipt_stages(context.terminal(), receipt)", "verify_signed_actor_separation(prior, &current, at)", "Some(fact) => fact.root_verified_at_seconds", "None => context.current_unix_seconds()?", "verify_at(at)?", "if accepted.is_none()", "let now = context.current_unix_seconds()?", "verify_at(now)?", "Ok(CompletedSignatures"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_completed_learning.rs"
@@ -16266,12 +16270,21 @@ forbidden = []
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/ordinary_q24_cold_acceptance_data_tests.rs"
-required = ["fn wait_for_original_terminal_acceptance("]
+required = ["fn wait_for_original_terminal_acceptance(", "b\"hepta.root.initial-data-refusal.completed-learning.v1\\0\"", "format!(\"initial-data-refusal/completed-learning/{slot}\")", "for (field, expected) in [(\"journals\", 7), (\"signatures\", expected_signatures)]"]
 forbidden = ["HostAuthorityFrontierStore::initialize", "FileAnchorWitnessStore::open"]
 [[protected_file.required_function_order]]
 function = "fn wait_for_original_terminal_acceptance("
-sequence = ["let client = running.client()?;", "observe_original_record::<Refusal>", "before.attempt >= previous_attempt", "require_actual_acceptance(&accepted, &checkpoint, plan, terminal)?", "let digest = accepted.data_digest()?;", "before == after && after.phase == Phase::Ready && after.attempt >= 2", "if let Some(acknowledged)", "client.original_q24_terminal_acceptance().await?", "acknowledged.validate_data()", "crate::neuron_generation_process_identity_digest_v1(", "acknowledged.initial == initial.head_digest.to_string()", "acknowledged.frozen_scope.as_str()", "acknowledged.terminal_head", "acknowledged.acceptance == digest.to_string()", "acknowledged.data_cut.as_str()", "let actual = observe_original_record::<", "let final_attempt = observe_original_record::<Refusal>(", "actual == accepted && final_attempt == after", "super::root::write_json(", "&acknowledged,", "running.require_live()?;", "return Ok(digest);"]
+sequence = ["let client = running.client()?;", "completed_learning_refusal_owner(initial.head_digest, target)?", "observe_original_record::<Refusal>", "before.attempt >= previous_attempt", "require_actual_acceptance(&accepted, &checkpoint, plan, terminal)?", "let digest = accepted.data_digest()?;", "before == after && after.phase == Phase::Ready && after.attempt >= 2", "if let Some(acknowledged)", "client.original_q24_terminal_acceptance().await?", "acknowledged.validate_data()", "crate::neuron_generation_process_identity_digest_v1(", "acknowledged.initial == initial.head_digest.to_string()", "acknowledged.frozen_scope.as_str()", "acknowledged.terminal_head", "acknowledged.acceptance == digest.to_string()", "acknowledged.data_cut.as_str()", "let actual = observe_original_record::<", "let final_attempt = observe_original_record::<Refusal>(", "actual == accepted && final_attempt == after", "super::root::write_json(", "&acknowledged,", "running.require_live()?;", "return Ok(digest);"]
 top_level = ["let client = running.client()?;"]
+[[protected_file.required_function_order]]
+function = "fn completed_learning_refusal_owner("
+sequence = ["scope_digest(target.scope())?", "!initial.is_zero()", "Digest32::of_parts(&[", "scope.as_array()", "initial.as_array()", "Ok(format!("]
+[[protected_file.required_function_order]]
+function = "fn observe("
+sequence = ["completed_learning_refusal_owner(initial.head_digest, target)?", "observe_original_record::<Refusal>", "data.attempt >= 2", "data.phase == Phase::Ready", "immutable.require_unchanged(&paths)?"]
+[[protected_file.required_function_order]]
+function = "fn require_actual_acceptance("
+sequence = ["let terminal = terminal_data", "let expected_signatures = terminal", ".filter(|receipt| receipt.observation.stage() != LearningIterationStageV1::Proposal)", ".count()", "expected_signatures == 6 + usize::from(terminal.local_decision_v2().is_some())", "for (field, expected) in [", "7), (", "expected_signatures)]", "values.len() == expected", "require_digest(value)?", "Ok(())"]
 
 [[boundary]]
 id = "root_original_cell_files"

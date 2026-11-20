@@ -14,6 +14,7 @@ use codex_hepta_types::Digest32;
 use super::super::q24_evaluation::OriginalCompletedBDataV1;
 use super::completed_journal::CompletedJournalObservation;
 use super::completed_learning::OriginalCompletedLearningContextV1;
+use super::completed_record::CompletedSignatureDigests;
 use super::completed_record::RootCompletedLearningAcceptanceDataV1;
 use crate::learning_iteration_auth::OriginalReceiptVerificationV1;
 use crate::learning_iteration_auth::independent_receipt_stages;
@@ -22,7 +23,7 @@ use crate::learning_owner_evidence;
 pub(super) struct CompletedSignatures {
     pub(super) verified_at: u64,
     pub(super) journals: [String; 7],
-    pub(super) signatures: [String; 7],
+    pub(super) signatures: CompletedSignatureDigests,
 }
 
 pub(super) fn verify_original_completions(
@@ -37,8 +38,18 @@ pub(super) fn verify_original_completions(
             .collect::<Vec<_>>()
             .try_into()
             .map_err(|_| io::Error::other("all seven original completion journals required"))?;
+    // The private Root context already replayed the complete terminal under
+    // its original scope. All seven physical pairs remain mandatory; only an
+    // unused LocalDecision journal must contain exactly zero records.
+    let local_decision_records = usize::from(context.terminal().local_decision_v2().is_some());
+    let expected_signatures = 6 + local_decision_records;
     for (index, journal) in fixed.iter().enumerate() {
-        if journal.records.len() != if index == 3 { 2 } else { 1 }
+        let expected_records = match index {
+            3 => 2,
+            4 => local_decision_records,
+            _ => 1,
+        };
+        if journal.records.len() != expected_records
             || journal
                 .records
                 .iter()
@@ -107,9 +118,11 @@ pub(super) fn verify_original_completions(
         context.require_current_signer(&signed)?;
         signatures.push((receipt, signed));
     }
-    if signatures.len() != 7 || context.terminal().training_no_update_v2().is_some() {
+    if signatures.len() != expected_signatures
+        || context.terminal().training_no_update_v2().is_some()
+    {
         return Err(io::Error::other(
-            "seven actual evaluated terminal signatures required",
+            "exact actual evaluated terminal signatures required",
         ));
     }
     let actual_plan = fixed[3]
@@ -128,7 +141,7 @@ pub(super) fn verify_original_completions(
             "original Training journal and B plan signature differ",
         ));
     }
-    let hashes: [String; 7] = signatures
+    let hashes = signatures
         .iter()
         .map(|(receipt, signed)| {
             let payload =
@@ -137,9 +150,19 @@ pub(super) fn verify_original_completions(
                 learning_owner_evidence::encode(&payload, signed).map_err(io::Error::other)?;
             Ok(Digest32::of_bytes(&bytes).to_string())
         })
-        .collect::<io::Result<Vec<_>>>()?
-        .try_into()
-        .map_err(|_| io::Error::other("original signature count"))?;
+        .collect::<io::Result<Vec<_>>>()?;
+    let hashes = match context.terminal().local_decision_v2() {
+        Some(_) => CompletedSignatureDigests::Seven(
+            hashes
+                .try_into()
+                .map_err(|_| io::Error::other("original local-decision signature count"))?,
+        ),
+        None => CompletedSignatureDigests::Six(
+            hashes
+                .try_into()
+                .map_err(|_| io::Error::other("original evaluated signature count"))?,
+        ),
+    };
     if accepted.is_some_and(|fact| fact.signatures != hashes) {
         return Err(io::Error::other("retained original signatures changed"));
     }

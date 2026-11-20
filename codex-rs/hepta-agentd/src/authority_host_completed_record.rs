@@ -23,6 +23,26 @@ use crate::authority_host_service::generation_initial::RootCompletedLearningRefu
 
 const PURPOSE: &str = "runtime.learning.completed-acceptance.v1";
 
+/// Bounded DATA encoding for actual non-Proposal receipt signature digests.
+/// Array length does not authenticate a terminal route. The original Root
+/// verifier selects Six or Seven from its fully validated terminal snapshot.
+/// Untagged arrays preserve every existing seven-signature JSON byte.
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[serde(untagged)]
+pub(super) enum CompletedSignatureDigests {
+    Six([String; 6]),
+    Seven([String; 7]),
+}
+
+impl CompletedSignatureDigests {
+    pub(super) fn as_slice(&self) -> &[String] {
+        match self {
+            Self::Six(digests) => digests,
+            Self::Seven(digests) => digests,
+        }
+    }
+}
+
 /// DATA only. Constructing or deserializing this record grants no historical
 /// receipt, new execution, checkpoint owner or current model authority.
 #[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -40,7 +60,7 @@ pub(crate) struct RootCompletedLearningAcceptanceDataV1 {
     pub(super) root_verified_at_seconds: u64,
     pub(super) original_task: String,
     pub(super) journals: [String; 7],
-    pub(super) signatures: [String; 7],
+    pub(super) signatures: CompletedSignatureDigests,
     pub(super) independent_b: String,
     pub(super) publication: String,
 }
@@ -88,7 +108,7 @@ impl RootCompletedLearningAcceptanceDataV1 {
         ]
         .into_iter()
         .chain(self.journals.iter())
-        .chain(self.signatures.iter())
+        .chain(self.signatures.as_slice().iter())
         {
             let digest: Digest32 = field.parse().map_err(io::Error::other)?;
             if digest.is_zero() || digest.to_string() != *field {
@@ -189,3 +209,7 @@ pub(crate) fn completed_learning_acceptance_owner(initial: &LearningIterationSna
         ])
     )
 }
+
+#[cfg(test)]
+#[path = "authority_host_completed_record_tests.rs"]
+mod tests;

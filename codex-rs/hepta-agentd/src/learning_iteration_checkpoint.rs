@@ -363,7 +363,6 @@ impl LearningIterationCheckpointRecordV1 {
         let coordinator = LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())
             .map_err(Error::Snapshot)?;
         if coordinator.next_stage().is_some()
-            || snapshot.receipts.len() != codec::MAX_RECEIPTS
             || snapshot.training_no_update_v2().is_some()
             || snapshot.receipts.last().is_none_or(|receipt| {
                 receipt.observation.stage()
@@ -453,3 +452,7 @@ mod ports_tests;
 #[cfg(test)]
 #[path = "learning_iteration_checkpoint_profile_tests.rs"]
 mod profile_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "learning_iteration_checkpoint_completed_tests.rs"]
+mod completed_tests;
