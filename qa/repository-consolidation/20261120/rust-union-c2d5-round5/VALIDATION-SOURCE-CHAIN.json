@@ -1,0 +1,56 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "publication-round5/audit-source/verify_source_chain.py"
+  ],
+  "exit_code": 0,
+  "actual_stdout": {
+    "status": "PASS_COMPLETE_SOURCE_TREE_CHAIN",
+    "base_commit": "d0b48bd33cfe920ba944eb321e4767c8e64d83dc",
+    "base_tree": "f40de2219149ca0c306eea6ba5c575099be0da0f",
+    "source_leaf_count": 59290,
+    "final_head": "9eb0137a2b79b80d3c644530757746cc615d00bd",
+    "final_tree": "a6b76427e8e9e470527c102d0a5110dc8df31214",
+    "source_steps": [
+      {
+        "commit": "1eb796f6f04058e82ec7449a42dd63d7dbb12fe5",
+        "tree": "33117c45c7ee191946b142a6b7a02da779a38679",
+        "changed_paths": [
+          "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs"
+        ]
+      },
+      {
+        "commit": "9eb0137a2b79b80d3c644530757746cc615d00bd",
+        "tree": "a6b76427e8e9e470527c102d0a5110dc8df31214",
+        "changed_paths": [
+          "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs"
+        ]
+      }
+    ],
+    "archive_members_verified": 238,
+    "qualification": "Exact bytes and source tree identity only; no Rust or native execution.",
+    "archive_members_extracted_or_executed": false
+  },
+  "wall_time_seconds": 2.200884808,
+  "chunk_id": "007f43",
+  "qualification": "Evidence and source identity only. No Rust/native/formatter/Clippy/test/CI execution.",
+  "executed_checker": {
+    "path": "verify_source_chain.py",
+    "bytes": 6707,
+    "sha256": "1c941b5142491df6ec293546df1db7f9d59049a831864a59cc55f6116b0dcca9",
+    "git_blob": "dc3e3567e76eaf54d5882320decbc807e3c180fe"
+  },
+  "imported_archive_checker": {
+    "path": "verify_evidence.py",
+    "bytes": 6150,
+    "sha256": "652ae835c93a6e501d528f358d695a4bac27c66068f8fc3dfdb18626f95423b6",
+    "git_blob": "e2824d09ffb9341427a9f1249d2787495cd29266"
+  },
+  "index": {
+    "path": "evidence-index.json",
+    "bytes": 22211,
+    "sha256": "ee34bfb8a102ea0da03ae12980f9a6f5c7fb5fa00d89cdf4fdb71661c74d8584",
+    "git_blob": "a05fd129e57582ace6db7504c18332763151bf00"
+  }
+}
