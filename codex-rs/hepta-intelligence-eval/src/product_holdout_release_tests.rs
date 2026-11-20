@@ -251,10 +251,10 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Poisoned
+            FencedHoldoutError::Store(crate::FinalHoldoutCasStoreError::Indeterminate)
         ))
     );
-    // The borrowed postcheck poisons the owner; the runner observes it again.
+    // The borrowed postcheck latches the original store error before restoration.
     assert!(case.runner.holdout.is_poisoned());
     assert_eq!((provider.calls, provider.callbacks), (1, 1));
     assert!(
@@ -262,6 +262,13 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
         "the successful original physical read preceded corruption"
     );
     provider.restore();
+    assert_eq!(
+        case.run(&mut provider).err(),
+        Some(ProductEvaluationError::Holdout(
+            FencedHoldoutError::Indeterminate
+        ))
+    );
+    assert_eq!((provider.calls, provider.callbacks), (1, 1));
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
@@ -278,13 +285,20 @@ fn original_holdout_release_postcheck_survives_provider_ignoring_borrow() {
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Indeterminate
+            FencedHoldoutError::Store(crate::FinalHoldoutCasStoreError::Indeterminate)
         ))
     );
-    // This first physical uncertainty poisons the owner before bytes are restored.
+    // Physical uncertainty closes reads; execution then reports it before poisoning.
     assert!(case.runner.holdout.is_poisoned());
     assert_eq!((provider.calls, provider.callbacks), (1, 0));
     provider.restore();
+    assert_eq!(
+        case.run(&mut provider).err(),
+        Some(ProductEvaluationError::Holdout(
+            FencedHoldoutError::Indeterminate
+        ))
+    );
+    assert_eq!((provider.calls, provider.callbacks), (1, 0));
     assert_eq!(
         case.run(&mut provider).err(),
         Some(ProductEvaluationError::Holdout(
