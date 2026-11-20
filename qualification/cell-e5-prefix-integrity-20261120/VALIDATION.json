@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.e5.prefix-integrity.offline-readback.v1",
+  "base_commit": "faeed277149701a316085a0453b05480df528655",
+  "scope": "Offline readback of actual historical results; no tokenizer or experiment rerun.",
+  "source_manifest": {
+    "commit": "faeed277149701a316085a0453b05480df528655",
+    "path": "qualification/cell-e5-bounded-retrieval-v2-20261120/EVIDENCE_MANIFEST.json",
+    "git_blob_sha1": "32f5595c75279d1ae19b8b358daf033419743a10",
+    "sha256": "f22cf7b9ee60106476ee75c91c0d25be817b01494e2248651a53c3414bab2ccb",
+    "archive_sha256": "c29e3372f6765f3c671019150f347eae3a511933ced1a68b161386ab96ff6923"
+  },
+  "original_inputs": [
+    {
+      "bytes": 130973,
+      "path": "target-coverage-1/tokenizer-1/TOKENIZER_REQUEST.json",
+      "sha256": "e701e2645f60355fe99daee64ad900ccff593324b85e93fe28a5cf0f8a401732"
+    },
+    {
+      "bytes": 11489,
+      "path": "target-coverage-1/tokenizer-1/remote/counter/RESULT.json",
+      "sha256": "416215a419902e075e828e77534163274de6b1397736e0b532db95d771b1bc5f"
+    }
+  ],
+  "original_inputs_unchanged_after_readback": true,
+  "original_request_and_counter_copied_byte_exactly": true,
+  "original_measured_rows_equal": true,
+  "source_counter_preformat_sha256": "8f4b7d49f2cbe63348947005136320e8e5ae36f87fe6695844dbdd0b47cc45e8",
+  "readback_result_sha256": "ee208bbff30ef38db919d2fba0fc76231d88695d426532393dd15e47394bb099",
+  "original_measured_rows": 15,
+  "original_refusals": 1,
+  "refusal_ordinal": 13,
+  "corrected_complete_rows": 16,
+  "prefixes": {
+    "1": false,
+    "4": false,
+    "16": false,
+    "64": false
+  },
+  "missing_sources_for_64": 48,
+  "original_counter_cost_retained": {
+    "wall_seconds": 6.434541146969423,
+    "self_cpu_seconds": 5.593275237,
+    "peak_rss_kib": 707268
+  },
+  "actual_new_readback_cost": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e107850a89cc/e5-prefix-integrity/scripts/cell_experiments/e5_bounded_target_v2/count_tokens.py",
+      "--request",
+      "/workspace/scratch/e9e051ab0825/e5_bounded_retrieval_v2/target-coverage-1/tokenizer-1/TOKENIZER_REQUEST.json",
+      "--counter-result",
+      "/workspace/scratch/e9e051ab0825/e5_bounded_retrieval_v2/target-coverage-1/tokenizer-1/remote/counter/RESULT.json",
+      "--material-index",
+      "/workspace/scratch/e107850a89cc/e5-prefix-integrity/qualification/cell-e5-material-adapter-20261120/MATERIAL_INDEX.json",
+      "--source-prefix",
+      "/workspace/scratch/e107850a89cc/e5-prefix-integrity/qualification/cell-e5-material-adapter-20261120/SOURCE_PREFIX_FREEZE.json",
+      "--output",
+      "/workspace/scratch/e107850a89cc/e5-prefix-integrity-base/historical-readback-1/result"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.06202354300330626,
+    "child_user_cpu_seconds": 0.037228,
+    "child_system_cpu_seconds": 0.02454
+  },
+  "new_tokenizer_loads": 0,
+  "new_model_loads": 0,
+  "new_forward_calls": 0,
+  "new_generation_calls": 0,
+  "new_training_updates": 0,
+  "new_upstream_native_replays": 0,
+  "historical_successes_added": 0,
+  "tests_before_format": {
+    "count": 14,
+    "result": "PASS",
+    "unittest_seconds": 0.151,
+    "tool_chunk_id": "9b9310"
+  },
+  "independent_review_before_format": "counter_integration PASS"
+}
