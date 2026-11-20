@@ -1,0 +1,83 @@
+{
+  "base_source": "148e37c26586677e83f0e57e100def8805c1a020",
+  "complete_counter_result_sha256": "416215a419902e075e828e77534163274de6b1397736e0b532db95d771b1bc5f",
+  "complete_token_owner_sha256": "23fe594ed7649d5055c0f0124ab3ed0980c8fc1783dccd6194907377eaf78350",
+  "fixed_source_prefix": "9dade6e90f6227dded45afa1c8462758a511a699",
+  "full_counter_protocol_sha256": "79a9c54b26912cff83459431529be30d5ca10d3d68d0eaa2cc29bc1946b5209a",
+  "full_measurement_original_sha256": "0108d4b9023626bc123c18527ea5a48c94788048220e1d622a0cca7e897e2aab",
+  "future_reads": 0,
+  "independent_B_C": null,
+  "input_freeze_sha256": "9410edd900e216e1f92e4a20b66ed2648ac7b1cfcbcdeaf4769b4c7be21e3efc",
+  "input_source_freeze_sha256": "d4fe4fb301b3ac68f9ca5bf88ca58d6e378636ec20957d684082007680c56d44",
+  "inputs_and_input_code_rechecked_unchanged": true,
+  "interpretation": "Seven complete compact targets fit the original byte/token bounds, but zero sources satisfy the original static representation gate because v1_static_context_closed remains false. All original static and training prefixes remain false. Complete action encoding and length fit are a separate observation, not acceptance or learned utility.",
+  "new_native_model_forward_generation_training": 0,
+  "optimizer_unit_mapping": null,
+  "original_32_fixed_total_and_per_source_unchanged": true,
+  "original_counter_gate": {
+    "actual_v2_context_gate": false,
+    "all_expression_lines": [
+      102,
+      113
+    ],
+    "budget_B_C_fields_remain_null_lines": [
+      137,
+      139
+    ],
+    "budget_B_C_part_of_static_all_expression": false,
+    "original_counter_result_unmodified": true,
+    "reason": "Frozen v2 inputs are partial retrieved views; no original v1 semantic context closure qualification was obtained. The target request explicitly preserves false.",
+    "required": [
+      "record.v1_static_context_closed",
+      "record.structural_roundtrip",
+      "record.visible_action_roundtrip",
+      "fits_original_native_message_bytes_65536",
+      "fits_original_input_4096",
+      "fits_original_sft_3584",
+      "fits_original_generation_384",
+      "fits_original_answer_bytes_32768"
+    ],
+    "source_path": "scripts/cell_experiments/e5_source_codec_v1/count_tokens.py",
+    "source_sha256": "bbfbe6cc9d433755ad22440cd23c0621d0ddf26f414531a3f44e2e0debed3092",
+    "target_request_producer": "target-coverage-1/source/run_targets.py:188",
+    "training_admission_initialized_false_line": 76
+  },
+  "original_material_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+  "prefix_counter_result_sha256": "37425d89ec98acd24b85b7c4ffcf928bb43605e0fe061c651fb899af2fda1ef5",
+  "previous_derived_readout_sha256": "162b3106aa805f702ecc06ff4e4f11d6ae40d6d59b10e16176647d96a16551d7",
+  "schema": "hepta.e5.v2.complete-encoding-bounds-not-static-admission.v1",
+  "source_64": "48 materials remain absent",
+  "source_selection_after_target_exposure": false,
+  "summary": {
+    "byte_views": 15,
+    "complete_encoding_and_token_bounds_fit_count": 7,
+    "complete_encoding_and_token_bounds_prefix_1_4_16_fit": {
+      "1": true,
+      "16": false,
+      "4": false
+    },
+    "complete_target_token_refusals": 1,
+    "complete_visible_target_roundtrips": 8,
+    "original_native_cases_retained": 290,
+    "original_static_prefix_1_4_16_admitted": {
+      "1": false,
+      "16": false,
+      "4": false
+    },
+    "original_static_representation_admitted_count": 0,
+    "prefixes_fit_3200": 15,
+    "source_refusals": 1,
+    "sources": 16,
+    "target_scope_refusals": 7,
+    "training_prefix_1_4_16": {
+      "1": false,
+      "16": false,
+      "4": false
+    }
+  },
+  "target_policy_sha256": "8eb0b8d54e7ee2eed0b632c8f5a31794347a5b014ce69b561ab4db18a4c38196",
+  "target_result_sha256": "96f880d6bd37ffb90619e997b806e6b2b55e0faa351bb002d45ffdfe2d4b401d",
+  "target_source_freeze_sha256": "3def3a59fb5087f7f90562ec4cb96e71655fd7617bf4b1dae594a1ea6780ae3e",
+  "tokenizer_freeze_sha256": "ee0b5f244964e7aaa69280310085d46a4a8d971075f3e655c86c6f6d61fe7aca",
+  "training_compute_or_verifier_budget": null
+}
