@@ -53,6 +53,47 @@ fn unowned_retirement_probe(published: &PublishedCircuitFeatureTaskV1,
             PROOF._verify_boundary(ROOT, boundary, index, ignored, fields_by_receiver_type={})
         self.assertIn(path, str(raised.exception))
 
+    def test_new_c_retirement_keeps_actual_owner_and_pre_post_custody(self):
+        path = AGENT + "production_post_a_continuation.rs"
+        function = "fn run("
+        source = (ROOT / path).read_text()
+        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+        start = code.index(function)
+        end = PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        new = code.index("PreparedCTask::New(original) => {", start, end)
+        existing = code.index("PreparedCTask::Existing(original) => {", new, end)
+        offset = new
+        markers = (
+            "OriginalCircuitFeatureIngressV1::submit_until(",
+            "require_continuation(&state, &identity, &cancelled, end)?",
+            "task_custody.require_original()?",
+            "artifact_custody.require_original()?",
+            "material.require_unchanged()?",
+            "if installed.identity != identity",
+            "return Err(refused(",
+            "let retirement_task = installed.published_task();",
+            "let retirement_cell = installed.cell();",
+            "let retirement_source = installed.source();",
+            "require_continuation(&state, &identity, &cancelled, end)?",
+            "PublishedCircuitFeatureTaskV1::drain_completed_task(",
+            "&retirement_task,",
+            "&retirement_cell,",
+            "retirement_source.as_ref(),",
+            "&installed.identity,",
+            "require_continuation(&state, &identity, &cancelled, end)?",
+            "task_custody.require_original()?",
+            "artifact_custody.require_original()?",
+            "material.require_unchanged()?",
+            "OriginalGenerationFiles::into_original_handoff(",
+        )
+        for marker in markers:
+            position = source.index(marker, offset, existing)
+            occurrence = source.count(marker, start, position)
+            with self.subTest(marker=marker, occurrence=occurrence):
+                self.reject_removal(path, function, marker, occurrence)
+            offset = position + len(marker)
+
 
 if __name__ == "__main__":
     unittest.main()

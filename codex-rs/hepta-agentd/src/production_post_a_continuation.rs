@@ -290,6 +290,27 @@ impl OriginalPostAContinuationV1 {
                 task_custody.require_original()?;
                 artifact_custody.require_original()?;
                 material.require_unchanged()?;
+                // Retire only this actual completed C through its still-held
+                // publication owner. Keep the mutation synchronous in this
+                // joined continuation: cancelling its future cannot leave a
+                // separate blocking worker writing after owner teardown.
+                if installed.identity != identity {
+                    return Err(refused("original installed C retirement identity differs"));
+                }
+                let retirement_task = installed.published_task();
+                let retirement_cell = installed.cell();
+                let retirement_source = installed.source();
+                require_continuation(&state, &identity, &cancelled, end)?;
+                crate::PublishedCircuitFeatureTaskV1::drain_completed_task(
+                    &retirement_task,
+                    &retirement_cell,
+                    retirement_source.as_ref(),
+                    &installed.identity,
+                )?;
+                require_continuation(&state, &identity, &cancelled, end)?;
+                task_custody.require_original()?;
+                artifact_custody.require_original()?;
+                material.require_unchanged()?;
                 let original =
                     OriginalGenerationFiles::into_original_handoff(generation, completed)?;
                 OriginalCellQ24LearningStageOwnersV1::install_circuit_feature_generation(
