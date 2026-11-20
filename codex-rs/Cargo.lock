@@ -3358,7 +3358,6 @@ name = "codex-git-utils"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-file-system",
  "codex-protocol",
  "codex-utils-absolute-path",
@@ -3374,6 +3373,7 @@ dependencies = [
  "similar",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "ts-rs",
  "walkdir",
