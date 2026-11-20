@@ -41,13 +41,23 @@ struct Transition {
 }
 
 fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Transition {
-    let total_word = u64::try_from(total).unwrap_or_else(|_| panic!("example-validation count exceeds u64"));
-    let index_word = u64::try_from(index).unwrap_or_else(|_| panic!("example-validation index exceeds u64"));
-    let misses_word = u64::try_from(misses).unwrap_or_else(|_| panic!("example-validation misses exceed u64"));
+    let total_word =
+        u64::try_from(total).unwrap_or_else(|_| panic!("example-validation count exceeds u64"));
+    let index_word =
+        u64::try_from(index).unwrap_or_else(|_| panic!("example-validation index exceeds u64"));
+    let misses_word =
+        u64::try_from(misses).unwrap_or_else(|_| panic!("example-validation misses exceed u64"));
     let mut source = [0u8; INPUT_BYTES];
-    for (i, word) in [1u64, mode, total_word, index_word, misses_word, if hit { 1 } else { 0 }]
-        .into_iter()
-        .enumerate()
+    for (i, word) in [
+        1u64,
+        mode,
+        total_word,
+        index_word,
+        misses_word,
+        if hit { 1 } else { 0 },
+    ]
+    .into_iter()
+    .enumerate()
     {
         source[i * 8..(i + 1) * 8].copy_from_slice(&word.to_le_bytes());
     }
@@ -66,8 +76,14 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
             0,
         )
     };
-    assert_eq!(status, 0, "HIA example-validation transition rejected a valid input");
-    assert_eq!(source, original_source, "HIA wrote to the read-only example frame");
+    assert_eq!(
+        status, 0,
+        "HIA example-validation transition rejected a valid input"
+    );
+    assert_eq!(
+        source, original_source,
+        "HIA wrote to the read-only example frame"
+    );
     validate_response(mode, total, index, misses, hit, &output)
 }
 
@@ -87,10 +103,19 @@ fn validate_response(
         )
     };
     let event = word(0);
-    let next = usize::try_from(word(8)).unwrap_or_else(|_| panic!("example-validation next index overflow"));
-    let new_misses = usize::try_from(word(16)).unwrap_or_else(|_| panic!("example-validation misses overflow"));
-    assert_eq!(word(24), 0, "HIA example-validation reserved response is nonzero");
-    assert!(new_misses <= total && next <= total, "HIA response exceeded example bounds");
+    let next = usize::try_from(word(8))
+        .unwrap_or_else(|_| panic!("example-validation next index overflow"));
+    let new_misses =
+        usize::try_from(word(16)).unwrap_or_else(|_| panic!("example-validation misses overflow"));
+    assert_eq!(
+        word(24),
+        0,
+        "HIA example-validation reserved response is nonzero"
+    );
+    assert!(
+        new_misses <= total && next <= total,
+        "HIA response exceeded example bounds"
+    );
     if total == 0 {
         assert!(
             event == DONE && next == 0 && new_misses == 0,
@@ -102,10 +127,18 @@ fn validate_response(
             "HIA negative-match response violates the stop contract"
         );
     } else {
-        let successor = index.checked_add(1).unwrap_or_else(|| panic!("example-validation index overflow"));
-        assert_eq!(next, successor, "HIA continuation did not advance one example");
+        let successor = index
+            .checked_add(1)
+            .unwrap_or_else(|| panic!("example-validation index overflow"));
+        assert_eq!(
+            next, successor,
+            "HIA continuation did not advance one example"
+        );
         assert!(
-            matches!(event, DONE | NEXT | MISSING | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES),
+            matches!(
+                event,
+                DONE | NEXT | MISSING | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES
+            ),
             "HIA returned an unknown continuation event"
         );
         assert!(
@@ -113,7 +146,11 @@ fn validate_response(
             "HIA next event violated the terminal boundary"
         );
         assert!(
-            mode == POSITIVE || !matches!(event, MISSING | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES),
+            mode == POSITIVE
+                || !matches!(
+                    event,
+                    MISSING | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES
+                ),
             "HIA emitted a positive-only event for negative examples"
         );
         assert!(
@@ -121,8 +158,7 @@ fn validate_response(
             "HIA returned a nonterminal miss at the last example"
         );
         assert!(
-            !matches!(event, DONE | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES)
-                || next == total,
+            !matches!(event, DONE | LAST_MISSING | POSITIVE_FINISHED_WITH_MISSES) || next == total,
             "HIA returned a terminal event before the final example"
         );
     }
@@ -217,10 +253,7 @@ pub(crate) fn validate_positive(
     }
 }
 
-pub(crate) fn validate_negative(
-    policy: &Policy,
-    not_matches: &[Vec<String>],
-) -> Result<()> {
+pub(crate) fn validate_negative(policy: &Policy, not_matches: &[Vec<String>]) -> Result<()> {
     let total = not_matches.len();
     if total == 0 {
         let result = step(NEGATIVE, 0, 0, 0, false);
@@ -233,11 +266,8 @@ pub(crate) fn validate_negative(
     let mut index = 0;
     loop {
         let example = &not_matches[index];
-        let matches = policy.matches_for_command_with_options(
-            example,
-            /*heuristics_fallback*/ None,
-            &options,
-        );
+        let matches = policy
+            .matches_for_command_with_options(example, /*heuristics_fallback*/ None, &options);
         let transition = step(NEGATIVE, total, index, 0, !matches.is_empty());
         match transition.event {
             NEXT => index = transition.next,
