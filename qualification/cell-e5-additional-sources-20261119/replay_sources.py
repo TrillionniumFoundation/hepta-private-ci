@@ -112,6 +112,24 @@ def parse_junit(path):
     return {"tests": len(cases), "failures": failed, "errors": errors, "skipped": skipped, "passed": len(cases) - failed - errors - skipped, "cases": [{"name": case.get("name"), "class": case.get("classname"), "failure": None if case.find("failure") is None else case.find("failure").get("message"), "error": None if case.find("error") is None else case.find("error").get("message"), "skipped": case.find("skipped") is not None} for case in cases], "junit_sha256": sha(path)}
 
 
+def original_case_ids(entry, row, root, output):
+    if row.get("errors", 1) or not row.get("cases"):
+        return None
+    assert row["project_id"] == entry["project_id"]
+    assert row["variant"] in ("before", "after")
+    work = output / f"{entry['index']}-{row['variant']}" / "work"
+    prefix = ".".join(work.relative_to(root).parts) + "."
+    modules = [".".join(Path(path).with_suffix("").parts) for path in entry["test_files"]]
+    identities = []
+    for case in row["cases"]:
+        assert case["class"].startswith(prefix), (case["class"], prefix)
+        relative = case["class"][len(prefix):]
+        assert any(relative == module or relative.startswith(module + ".") for module in modules), relative
+        identities.append((relative, case["name"]))
+    assert len(identities) == row["tests"]
+    return identities
+
+
 def owner(root, output, source_commit):
     output.mkdir(exist_ok=False)
     plan = json.loads((root / "ACQUISITION_PLAN.json").read_bytes())
@@ -123,7 +141,7 @@ def owner(root, output, source_commit):
     stages, sources = [], []
     for entry in plan["projects"]:
         if entry.get("python_requires") and sys.version_info >= (3, 11):
-            sources.append({"project_id": entry["project_id"], "source_id": entry["source_id"], "original_regression_demonstrated": False, "status": "MISSING_COMPATIBLE_INTERPRETER", "reason": entry["python_requires"], "native_children": 0})
+            sources.append({"project_id": entry["project_id"], "source_id": entry["source_id"], "original_regression_demonstrated": False, "status": "CURRENT_INTERPRETER_INCOMPATIBLE", "reason": entry["python_requires"], "native_children": 0})
             continue
         pair = []
         for variant in ("before", "after"):
@@ -155,9 +173,11 @@ def owner(root, output, source_commit):
             print(json.dumps({key: row.get(key) for key in ("project_id", "variant", "wait_returncode", "tests", "passed", "failures", "errors", "skipped", "timed_out")}), flush=True)
             checked_snapshot(root, entry["index"], variant)
         prior, fixed = pair
-        cases = lambda row: [(case["class"], case["name"]) for case in row.get("cases", [])]
-        admitted = prior["wait_returncode"] == 1 and prior.get("failures", 0) > 0 and prior.get("errors", 1) == 0 and fixed["wait_returncode"] == 0 and fixed.get("passed", 0) > 0 and fixed.get("errors", 1) == 0 and prior.get("tests") == fixed.get("tests") and cases(prior) == cases(fixed) and not prior["timed_out"] and not fixed["timed_out"]
-        sources.append({"project_id": entry["project_id"], "source_id": entry["source_id"], "original_regression_demonstrated": admitted, "before_failed": prior.get("failures"), "after_passed": fixed.get("passed"), "case_identity_equal": cases(prior) == cases(fixed), "native_children": 2, "authenticated_user_count": 0})
+        prior_cases = original_case_ids(entry, prior, root, output)
+        fixed_cases = original_case_ids(entry, fixed, root, output)
+        case_identity_equal = bool(prior_cases) and prior_cases == fixed_cases
+        admitted = prior["wait_returncode"] == 1 and prior.get("failures", 0) > 0 and prior.get("errors", 1) == 0 and fixed["wait_returncode"] == 0 and fixed.get("passed", 0) > 0 and fixed.get("errors", 1) == 0 and prior.get("tests") == fixed.get("tests") and case_identity_equal and not prior["timed_out"] and not fixed["timed_out"]
+        sources.append({"project_id": entry["project_id"], "source_id": entry["source_id"], "original_regression_demonstrated": admitted, "before_failed": prior.get("failures"), "after_passed": fixed.get("passed"), "case_identity_equal": case_identity_equal, "native_children": 2, "authenticated_user_count": 0})
     final_cpu = resource.getrusage(resource.RUSAGE_CHILDREN)
     result = {"schema": "hepta.upstream-native-regression-replay.v1", "status": "REPLAY_COMPLETE", "source_commit": source_commit, "by_source": sources, "stages": stages, "actual_owned_children": len(stages), "new_admitted_sources": sum(row["original_regression_demonstrated"] for row in sources), "new_model_calls": 0, "new_training_updates": 0, "authenticated_user_count": 0, "source_growth_qualified": False, "owner_wall_seconds": time.perf_counter() - started, "completed_child_cpu_seconds": final_cpu.ru_utime + final_cpu.ru_stime - usage.ru_utime - usage.ru_stime, "full_system_cost_known": False, "pretraining_overlap_known": False, "native_adoption": False}
     write(output / "RESULT.json", result)
