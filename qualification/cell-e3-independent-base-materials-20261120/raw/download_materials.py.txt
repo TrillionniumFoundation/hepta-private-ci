@@ -1,0 +1,138 @@
+from pathlib import Path
+import hashlib
+import json
+import os
+import shutil
+import signal
+import sys
+import time
+import urllib.request
+
+ROOT = Path("/home/qian-qi/work/hepta-e3-smollm2-materials-20261120-e9e051")
+start = time.monotonic()
+cpu = time.process_time()
+def alarm(signum, frame):
+    raise TimeoutError("single download owner deadline reached")
+signal.signal(signal.SIGALRM, alarm)
+signal.setitimer(signal.ITIMER_REAL, 895)
+def sha(path):
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+def write(name, value):
+    p = ROOT / name
+    with p.open("x") as f:
+        f.write(json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n")
+    return {"path": str(p), "bytes": p.stat().st_size, "sha256": sha(p)}
+
+manifest_path = ROOT / "FROZEN_MANIFEST.json"
+if len(sys.argv) != 3 or sys.argv[1] != "--manifest-sha":
+    raise ValueError("exact frozen manifest SHA argument required")
+if sha(manifest_path) != sys.argv[2]:
+    raise ValueError("frozen manifest changed")
+plan = json.loads(manifest_path.read_bytes())
+if sha(Path(__file__)) != plan["download_source_sha256"]:
+    raise ValueError("download source changed")
+if plan["status"] != "FROZEN_BEFORE_WEIGHT_DOWNLOAD" or plan["download_wall_cap_seconds"] != 900 or plan["byte_cap"] != 4 * 1024**3:
+    raise ValueError("frozen material limits differ")
+if plan["selected_total_bytes"] + plan["prior_public_metadata_body_bytes"] > plan["byte_cap"]:
+    raise ValueError("four GiB total HTTP body cap admission failed")
+if shutil.disk_usage(ROOT).free < plan["selected_total_bytes"] + plan["minimum_reserve_bytes"]:
+    raise ValueError("insufficient free disk")
+materials = ROOT / "materials"
+materials.mkdir(exist_ok=False)
+intent = {"schema": "hepta.e3-single-material-download-intent.v1", "manifest_sha256": sys.argv[2], "download_source_sha256": plan["download_source_sha256"], "started_at_ns": str(time.time_ns()), "single_attempt_no_retry_or_resume": True, "material_destination": str(materials), "byte_cap": plan["byte_cap"], "planned_material_bytes": plan["selected_total_bytes"], "prior_public_metadata_body_bytes": plan["prior_public_metadata_body_bytes"], "wall_cap_seconds": 900, "alarm_seconds": 895, "no_authorization_header": True, "no_credentials_read": True, "no_paid_API": True, "new_model_loads": 0, "new_model_forward_calls": 0, "new_model_generation_calls": 0, "new_training_updates": 0, "new_native_children": 0}
+write("DOWNLOAD_INTENT.json", intent)
+opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+network_bytes = 0
+completed = []
+active = None
+try:
+    for entry in plan["files"]:
+        name = entry["filename"]
+        if Path(name).name != name or "/" in name or "\\" in name:
+            raise ValueError("invalid frozen material filename")
+        target = materials / name
+        temporary = materials / (name + ".partial")
+        if target.exists() or temporary.exists():
+            raise ValueError("material output already exists")
+        active = name
+        size = 0
+        h = hashlib.sha256()
+        git = hashlib.sha1(b"blob " + str(entry["bytes"]).encode() + b"\0")
+        local_source = entry.get("retained_source")
+        began = time.monotonic()
+        if local_source:
+            src = Path(local_source)
+            if src.stat().st_size != entry["bytes"] or sha(src) != entry["expected_sha256"]:
+                raise ValueError("prefetched public metadata changed")
+            with src.open("rb") as response, temporary.open("xb") as output:
+                for chunk in iter(lambda: response.read(1024 * 1024), b""):
+                    output.write(chunk)
+                    h.update(chunk)
+                    git.update(chunk)
+                    size += len(chunk)
+                output.flush()
+                os.fsync(output.fileno())
+        else:
+            request = urllib.request.Request(entry["resolve_url"], headers={"User-Agent": "Hepta-E3-Public-Material-Audit/1.0", "Accept-Encoding": "identity"})
+            print(json.dumps({"event": "FILE_STARTED", "filename": name, "expected_bytes": entry["bytes"], "elapsed_seconds": time.monotonic() - start}), flush=True)
+            last_progress = 0
+            with opener.open(request, timeout=30) as response, temporary.open("xb") as output:
+                if response.status != 200:
+                    raise ValueError("unexpected HTTP status")
+                declared = response.headers.get("Content-Length")
+                if declared is not None and int(declared) != entry["bytes"]:
+                    raise ValueError("HTTP Content-Length differs from frozen source")
+                while True:
+                    allowed = min(1024 * 1024, entry["bytes"] - size + 1, plan["byte_cap"] - plan["prior_public_metadata_body_bytes"] - network_bytes)
+                    if allowed <= 0:
+                        raise ValueError("total public HTTP body cap reached")
+                    chunk = response.read(allowed)
+                    if not chunk:
+                        break
+                    network_bytes += len(chunk)
+                    size += len(chunk)
+                    if size > entry["bytes"]:
+                        raise ValueError("body exceeds frozen file size")
+                    output.write(chunk)
+                    h.update(chunk)
+                    git.update(chunk)
+                    if size - last_progress >= 128 * 1024**2:
+                        print(json.dumps({"event": "FILE_PROGRESS", "filename": name, "file_bytes": size, "new_HTTP_body_bytes": network_bytes, "elapsed_seconds": time.monotonic() - start}), flush=True)
+                        last_progress = size
+                output.flush()
+                os.fsync(output.fileno())
+        if size != entry["bytes"]:
+            raise ValueError("file size differs from frozen source: " + name)
+        if entry.get("lfs_sha256"):
+            if h.hexdigest() != entry["lfs_sha256"]:
+                raise ValueError("LFS SHA256 mismatch: " + name)
+        elif entry.get("git_blob_sha1") and git.hexdigest() != entry["git_blob_sha1"]:
+            raise ValueError("Git blob SHA1 mismatch: " + name)
+        if entry.get("expected_sha256") and h.hexdigest() != entry["expected_sha256"]:
+            raise ValueError("public metadata SHA256 mismatch: " + name)
+        if sha(temporary) != h.hexdigest():
+            raise ValueError("independent disk SHA256 readback mismatch: " + name)
+        if target.exists():
+            raise ValueError("target unexpectedly appeared")
+        temporary.rename(target)
+        row = {"filename": name, "path": str(target), "bytes": size, "sha256": h.hexdigest(), "git_blob_sha1": None if entry.get("lfs_sha256") else git.hexdigest(), "expected_lfs_sha256": entry.get("lfs_sha256"), "copied_prefetched_public_metadata": bool(local_source), "independent_disk_sha256_verified": True, "wall_seconds": time.monotonic() - began}
+        completed.append(row)
+        print(json.dumps({"event": "FILE_VERIFIED", **row}), flush=True)
+        active = None
+    assert sum(e["bytes"] for e in completed) == plan["selected_total_bytes"]
+    assert sha(manifest_path) == sys.argv[2]
+    signal.setitimer(signal.ITIMER_REAL, 0)
+    result = {"schema": "hepta.e3-single-material-download-result.v1", "status": "COMPLETE_FILES_VERIFIED_NO_MODEL_EXECUTION", "manifest_sha256": sys.argv[2], "model_id": plan["model_id"], "revision": plan["revision"], "completed_files": completed, "material_bytes": sum(e["bytes"] for e in completed), "new_HTTP_body_bytes": network_bytes, "prior_public_metadata_body_bytes": plan["prior_public_metadata_body_bytes"], "total_retained_public_HTTP_body_bytes": network_bytes + plan["prior_public_metadata_body_bytes"], "HTTP_body_byte_cap": plan["byte_cap"], "wire_TLS_header_bytes_not_measured": True, "single_attempt": True, "self_cpu_seconds": time.process_time() - cpu, "wall_seconds": time.monotonic() - start, "free_disk_bytes_after": shutil.disk_usage(ROOT).free, "no_credentials_read": True, "no_paid_API": True, "no_remote_code": True, "new_model_loads": 0, "new_model_forward_calls": 0, "new_model_generation_calls": 0, "new_training_updates": 0, "new_native_children": 0, "different_base_identity_only_not_complementarity": True, "training_and_generation_protocol_not_selected": True, "full_system_cost_known": False}
+    receipt = write("DOWNLOAD_RESULT.json", result)
+    print(json.dumps({"event": "COMPLETE", "result": receipt, "status": result["status"], "material_bytes": result["material_bytes"], "new_HTTP_body_bytes": network_bytes, "wall_seconds": result["wall_seconds"], "self_cpu_seconds": result["self_cpu_seconds"], "new_model_calls": 0, "new_training_updates": 0}), flush=True)
+except BaseException as exc:
+    signal.setitimer(signal.ITIMER_REAL, 0)
+    partial = materials / ((active or "no-active-file") + ".partial")
+    result = {"schema": "hepta.e3-single-material-download-result.v1", "status": "FAILED_MATERIAL_PREPARATION_NO_MODEL_EXECUTION", "manifest_sha256": sys.argv[2], "model_id": plan["model_id"], "revision": plan["revision"], "error_type": type(exc).__name__, "reason": str(exc).split("?")[0][:500], "completed_files": completed, "active_filename": active, "partial_bytes_retained": partial.stat().st_size if partial.exists() else 0, "new_HTTP_body_bytes": network_bytes, "prior_public_metadata_body_bytes": plan["prior_public_metadata_body_bytes"], "single_attempt_no_automatic_retry": True, "self_cpu_seconds": time.process_time() - cpu, "wall_seconds": time.monotonic() - start, "new_model_loads": 0, "new_model_forward_calls": 0, "new_model_generation_calls": 0, "new_training_updates": 0, "new_native_children": 0, "full_system_cost_known": False}
+    receipt = write("DOWNLOAD_RESULT.json", result)
+    print(json.dumps({"event": "FAILED", "result": receipt, "status": result["status"], "reason": result["reason"], "partial_bytes_retained": result["partial_bytes_retained"], "wall_seconds": result["wall_seconds"]}), flush=True)
+    raise
