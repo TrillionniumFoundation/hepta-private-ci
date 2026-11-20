@@ -42,8 +42,8 @@ EXPECTED = {
     "learning_original_evaluation_cohort_readback_after_release": (),
     "learning_original_evaluation_cohort_readback_cold": (),
     "learning_original_evaluation_cohort_readback_current": (
-        CUSTODY,
         CORE,
+        CUSTODY,
     ),
     "learning_original_evaluation_cohort_member_binding": (CUSTODY,),
     "learning_original_evaluation_cohort_final_authentication": (CUSTODY,),

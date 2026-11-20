@@ -23,6 +23,7 @@ CALLERS = {
         "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
         AGENT + "neuron_generation_update_selection_root.rs",
         AGENT + "cell_split_owner.rs",
+        "codex-rs/hepta-learning-artifacts/src/selected.rs",
     ),
     "root_learning_live_profile_action": (
         "codex-rs/hepta-agentd/src/authority_host_completed_deployment.rs",
@@ -108,17 +109,18 @@ class RootPublicationExistingOwnerSourceClosureTests(unittest.TestCase):
 
     def test_same_original_typed_call_cannot_move_to_an_unregistered_file(self):
         for identifier, expected in CALLERS.items():
-            with self.subTest(boundary=identifier):
-                row = self.boundaries[identifier]
-                # Preserve the real receiver declarations and imports. This
-                # mutant changes only the source path's custody registration.
-                sources = dict(self.sources)
-                sources[AGENT + "unregistered_publication_owner.rs"] = (
-                    self.sources[expected[-1]] if expected else
-                    f"fn bypass(owner: &{row.receiver_type}) {{ {row.symbol}(owner); }}"
-                )
-                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
-                    PROOF._verify_boundary(ROOT, row, sources, ())
+            for caller in expected or (None,):
+                with self.subTest(boundary=identifier, caller=caller):
+                    row = self.boundaries[identifier]
+                    # Preserve the real receiver declarations and imports. This
+                    # mutant changes only the source path's custody registration.
+                    sources = dict(self.sources)
+                    sources[AGENT + "unregistered_publication_owner.rs"] = (
+                        self.sources[caller] if caller is not None else
+                        f"fn bypass(owner: &{row.receiver_type}) {{ {row.symbol}(owner); }}"
+                    )
+                    with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                        PROOF._verify_boundary(ROOT, row, sources, ())
 
 
 if __name__ == "__main__":

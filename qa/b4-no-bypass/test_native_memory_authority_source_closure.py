@@ -38,12 +38,18 @@ BAO_CLOCK = (
     "            .map_err(BaoFinalUseHostError::Trust)?;"
 )
 BAO_APPLY = (
-    "let receipt = self\n"
-    "            .revocation_verifier\n"
-    "            .apply(&self.authority, update, now_unix_ms)\n"
-    "            .map_err(BaoFinalUseHostError::Control)?;"
+    "let receipt = match self.authority.authentication_profile() {\n"
+    "            FinalUseAuthenticationProfile::ClassicalV1 => {\n"
+    "                self.revocation_verifier\n"
+    "                    .apply(&self.authority, update, now_unix_ms)\n"
+    "            }\n"
+    "            FinalUseAuthenticationProfile::MlDsa65V2 => self\n"
+    "                .revocation_verifier\n"
+    "                .apply_or_confirm_current(&self.authority, update, now_unix_ms),\n"
+    "        }\n"
+    "        .map_err(BaoFinalUseHostError::Control)?;"
 )
-BAO_RECEIPT = "*fresh_until = receipt.valid_until_unix_ms();"
+BAO_RECEIPT = "*lease = Some(receipt.clone());"
 BOOTSTRAP_VERIFY = (
     "feed_key\n"
     "        .verify_strict(\n"
@@ -156,6 +162,15 @@ class NativeMemoryAuthoritySourceClosureTests(unittest.TestCase):
             ):
                 with self.subTest(path=relative, replacement=changed):
                     self.rejects(relative, call, changed)
+        for method in ("apply", "apply_or_confirm_current"):
+            call = f".{method}(&self.authority, update, now_unix_ms)"
+            for argument, replacement in (
+                ("&self.authority", "&other_authority"),
+                ("update", "other_update"),
+                ("now_unix_ms", "supplied_time"),
+            ):
+                with self.subTest(method=method, argument=argument):
+                    self.rejects(BAO, call, call.replace(argument, replacement))
 
     def test_feed_time_cannot_come_from_untrusted_input_or_ignore_clock_failure(self):
         for relative, clock, occurrences, occurrence in (
@@ -206,7 +221,22 @@ class NativeMemoryAuthoritySourceClosureTests(unittest.TestCase):
             (
                 BAO,
                 BAO_RECEIPT,
-                "*fresh_until = u64::MAX;",
+                "*lease = Some(other_receipt.clone());",
+            ),
+            (
+                BAO,
+                "current.authority_epoch() == receipt.authority_epoch()",
+                "true",
+            ),
+            (
+                BAO,
+                "current.revision() == receipt.revision()",
+                "true",
+            ),
+            (
+                BAO,
+                "current.valid_until_unix_ms() > receipt.valid_until_unix_ms()",
+                "true",
             ),
         ):
             with self.subTest(path=relative, replacement=changed):

@@ -96,13 +96,26 @@ class LintPreservedOwnerGuardsSourceClosureTests(unittest.TestCase):
         indirect = (
             ".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)"
         )
-        self.assertEqual(sources[LANE].count(explicit), 1)
-        changed = dict(sources)
-        changed[LANE] = changed[LANE].replace(explicit, indirect, 1)
-        with self.assertRaisesRegex(
-            PROOF.VerificationFailure, "caller set mismatch; missing="
-        ):
-            PROOF._verify_boundary(ROOT, boundary, changed, ())
+        self.assertEqual(sources[LANE].count(indirect), 1)
+        for call in (explicit, indirect):
+            with self.subTest(call=call):
+                # The current scanner follows both qualified call expressions
+                # and qualified function items; neither can hide an owner edge.
+                changed = dict(sources)
+                changed[LANE] = changed[LANE].replace(indirect, call, 1)
+                PROOF._verify_boundary(ROOT, boundary, changed, ())
+                removed = dict(changed)
+                removed[LANE] = removed[LANE].replace(call, ".map(|_| None)", 1)
+                with self.assertRaisesRegex(
+                    PROOF.VerificationFailure, "caller set mismatch; missing="
+                ):
+                    PROOF._verify_boundary(ROOT, boundary, removed, ())
+                unregistered = dict(changed)
+                unregistered[PREFIX + "unregistered_training_source_operation.rs"] = (
+                    changed[LANE]
+                )
+                with self.assertRaisesRegex(PROOF.VerificationFailure, "unexpected"):
+                    PROOF._verify_boundary(ROOT, boundary, unregistered, ())
 
     def test_after_native_check_keeps_same_source_operation_and_fail_closed_body(self):
         for changed in (

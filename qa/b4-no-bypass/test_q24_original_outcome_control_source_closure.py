@@ -175,7 +175,7 @@ class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
         ))
 
     def test_runtime_moves_original_custody_after_real_circuit_attachment(self):
-        self.rejects_removal(RUNTIME, "run_with_shutdown", (
+        self.rejects_removal(RUNTIME, "run_composed_with_shutdown", (
             "config.take_original_q24_outcome_control()",
             ".circuit_task\n            .set(bootstrap.handle())",
             ".circuit_task_invocation\n            .set(invocation)",
