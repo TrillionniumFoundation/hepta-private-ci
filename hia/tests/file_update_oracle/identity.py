@@ -243,14 +243,40 @@ def _exec_server_test_projection(relative, expected, actual, listing):
 
 
 
-# The complete original lock stays pinned. A single reviewed transitive-graph
-# change is admitted solely by reproducing the exact approved byte deletion.
-# Subsequent dependency migrations require a new explicit projection.
-_LOCK_PREFIX = (b'[[package]]\nname = "codex-network-proxy"\nversion = "0.0.0"\n'
-                b'dependencies = [\n "anyhow",\n "base64 0.22.1",\n')
-_LOCK_BEFORE = _LOCK_PREFIX + b' "chrono",\n'
+# The original a201 Cargo.lock remains pinned byte for byte. Admit only the
+# four reviewed first-party Chrono dependency-list changes, and reconstruct
+# the complete original lock through their exact inverse. Any unrelated
+# dependency, feature, package or ordering change fails closed.
 _LOCK_ORIGINAL_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
-_LOCK_REVIEWED_BLOB = "0300a2a9ff4eafb582f90e27161eec4faa50c196"
+_LOCK_REVIEWED_BLOB = "cf9beec5b550556b9a33114c244f94d8ee40f137"
+_LOCK_CHANGES = (
+    ("codex-network-proxy", (
+        (b' "chrono",\n', b''),
+    )),
+    ("codex-cloud-tasks-mock-client", (
+        (b' "chrono",\n', b''),
+    )),
+    ("codex-git-utils", (
+        (b' "chrono",\n', b''),
+        (b' "thiserror 2.0.21",\n', b' "thiserror 2.0.21",\n "time",\n'),
+    )),
+    ("codex-agent-identity", (
+        (b' "chrono",\n', b''),
+        (b' "sha2 0.10.9",\n', b' "sha2 0.10.9",\n "time",\n'),
+    )),
+)
+
+
+def _lock_package_span(data, package):
+    prefix = (b'[[package]]\nname = "' + package.encode("ascii")
+              + b'"\nversion = "0.0.0"\ndependencies = [\n')
+    if data.count(prefix) != 1:
+        raise RuntimeError(f"missing or duplicated reviewed Cargo.lock package: {package}")
+    start = data.index(prefix)
+    end = data.find(b"\n[[package]]", start + len(prefix))
+    if end < 0:
+        raise RuntimeError(f"unterminated reviewed Cargo.lock package: {package}")
+    return start, end
 
 
 def reviewed_lock_projection(current, original):
@@ -259,19 +285,44 @@ def reviewed_lock_projection(current, original):
 
     original_blob = blob(original)
     current_blob = blob(current)
+    if original_blob != _LOCK_ORIGINAL_BLOB:
+        raise RuntimeError("the complete pinned original Cargo.lock changed")
     if current == original:
         return {"scope": "unchanged original Cargo.lock",
                 "original_blob": original_blob, "current_blob": current_blob,
                 "byte_exact": True}
-    if (original_blob != _LOCK_ORIGINAL_BLOB
-            or original.count(_LOCK_BEFORE) != 1
-            or current != original.replace(_LOCK_BEFORE, _LOCK_PREFIX, 1)
-            or current_blob != _LOCK_REVIEWED_BLOB):
+    if current_blob != _LOCK_REVIEWED_BLOB:
         raise RuntimeError("unreviewed Cargo.lock dependency change")
-    return {"scope": "codex-network-proxy only: remove direct chrono",
+
+    projected = original
+    inverses = []
+    for package, changes in _LOCK_CHANGES:
+        start, end = _lock_package_span(projected, package)
+        before = projected[start:end]
+        after = before
+        for old, new in changes:
+            if after.count(old) != 1:
+                raise RuntimeError(f"unreviewed Cargo.lock dependency layout: {package}")
+            after = after.replace(old, new, 1)
+        projected = projected[:start] + after + projected[end:]
+        inverses.append((package, before, after))
+
+    if projected != current:
+        raise RuntimeError("unreviewed Cargo.lock dependency change")
+
+    restored = current
+    for package, before, after in reversed(inverses):
+        start, end = _lock_package_span(restored, package)
+        if restored[start:end] != after:
+            raise RuntimeError(f"reviewed Cargo.lock inverse changed: {package}")
+        restored = restored[:start] + before + restored[end:]
+    if restored != original:
+        raise RuntimeError("reviewed Cargo.lock inverse did not recover original")
+
+    return {"scope": "four exact first-party Chrono dependency-list changes",
+            "reviewed_packages": [package for package, _ in _LOCK_CHANGES],
             "original_blob": original_blob, "current_blob": current_blob,
-            "inverse_original_blob": blob(current.replace(_LOCK_PREFIX, _LOCK_BEFORE, 1)),
-            "byte_exact": True}
+            "inverse_original_blob": blob(restored), "byte_exact": True}
 
 
 def producer_inputs(producer, original_root, original_manifest):
