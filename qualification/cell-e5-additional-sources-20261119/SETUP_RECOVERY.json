@@ -1,0 +1,15 @@
+{
+  "cause": "Dependency metadata was read with a silent 4 MiB truncation; JSON decoding failed before any environment or native test child.",
+  "change": "Read complete dependency metadata with an explicit 32 MiB + 1 overflow check. Reuse all verified original Git blobs and before/after snapshots; new isolated environment and owner.",
+  "exact_snapshots": 22,
+  "exact_unique_git_blobs": 1111,
+  "failed_acquisition_sha256": "474a917e839fa95b30c211d4246e38417bdd888244a201800447aa0937a6b163",
+  "failed_owner_result_sha256": "755c0e9701b30083222b096ef4c915a42674d498f0484af7e2b5fee57503ed5d",
+  "failed_source_commit": "aa3d49e94b14dfe410d296771ae09d27d7142b56",
+  "new_generation_budget": 0,
+  "new_training_budget": 0,
+  "original_selection_and_native_protocol_unchanged": true,
+  "plan_sha256": "8132c4f2ce9efa28c239dfd8e3fa96a57166dab5c557a6abc8415cd0e99afc84",
+  "previous_failure_retained": true,
+  "schema": "hepta.e5.setup-recovery.v1"
+}

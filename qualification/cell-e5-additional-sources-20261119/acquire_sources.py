@@ -78,8 +78,9 @@ def setup(root):
     requirements = []
     for name in names:
         with urllib.request.urlopen(f"https://pypi.org/pypi/{name}/json", timeout=30) as response:
-            raw = response.read(4 * 1024 * 1024)
+            raw = response.read(32 * 1024 * 1024 + 1)
         (environment / f"{name}.pypi.json").write_bytes(raw)
+        assert len(raw) <= 32 * 1024 * 1024, "dependency metadata exceeds acquisition limit"
         requirements.append(name + "==" + json.loads(raw)["info"]["version"])
     write(environment / "DIRECT_REQUIREMENTS.json", requirements)
     python = str(root / "venv/bin/python")
