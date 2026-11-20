@@ -64,7 +64,10 @@ fn coordinate(index: usize, count: usize) -> QualificationResult<FixedQ32> {
     let numerator = qualify(i128::try_from(index + 1), "index")?;
     let denominator = qualify(i128::try_from(count + 1), "count")?;
     let raw = numerator * i128::from(FixedQ32::ONE.raw()) / denominator;
-    Ok(FixedQ32::from_raw(qualify(i64::try_from(raw), "coordinate")?))
+    Ok(FixedQ32::from_raw(qualify(
+        i64::try_from(raw),
+        "coordinate",
+    )?))
 }
 
 fn sensor_design(
@@ -161,7 +164,10 @@ fn run_tabular(sample_count: usize, iteration: usize) -> QualificationResult<Dur
     )?;
     assert_eq!(artifact.cells.len(), 1);
     assert_eq!(
-        qualify(usize::try_from(artifact.cells[0].sample_count), "cell count")?,
+        qualify(
+            usize::try_from(artifact.cells[0].sample_count),
+            "cell count"
+        )?,
         sample_count
     );
     Ok(started.elapsed())
