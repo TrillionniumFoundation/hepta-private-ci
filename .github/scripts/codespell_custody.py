@@ -91,13 +91,13 @@ QUALIFICATION_SOURCE_SHA256 = {
         'remote-five-commit-deltas.json'
     ): 'b791017524abeace5ed6c5151398dde77a7c454376ad0a81a90152fc4535c6a6',
     (
-        'qualification/continuation-20261021/inventory/OWNER_CANDIDATES.json'
+        'qualification/main-consolidation/historical-continuations/continuation-20261021/inventory/OWNER_CANDIDATES.json'
     ): '58d6c1173770ed5934eb3eb42d507fdc3302bb565b7657854fd0588a5bf3d1cf',
     (
-        'qualification/continuation-20261021/inventory/pull_requests/part-012.json'
+        'qualification/main-consolidation/historical-continuations/continuation-20261021/inventory/pull_requests/part-012.json'
     ): '34f1ed0bfb0db415aa512446d24f7c1c055c9ec542824ad1541540105b650795',
     (
-        'qualification/continuation-20261021/os/pull_requests.json'
+        'qualification/main-consolidation/historical-continuations/continuation-20261021/os/pull_requests.json'
     ): '7e4900244f8e2538f4da3a52791dc17f433f3feac7c7adeefeaede2d60c6fe34',
     (
         'qualification/ctrl-metacontrol-20261109/DEPENDENCY_SYN_REPAIR.md'
@@ -334,6 +334,14 @@ QUALIFICATION_SOURCE_SHA256 = {
         "qa/repository-consolidation/20261119/round-03/local-time-compatibility/evid"
         "ence.tar.gz.part-002"
     ): "44c491b8c00e1230bd372bde1192202f00511eaebf6717846cb15d6198a6b118",
+    (
+        'qa/repository-consolidation/20261119/windows-c52-cmd-entry-7246/'
+        'codespell-baseline-comparison.json'
+    ): '3aa784685450876595489e7cbd80a6a1427c097b4e09d97a7d73bccf1b44d7b5',
+    (
+        'qa/repository-consolidation/20261119/windows-c52-cmd-entry-7246/'
+        'root-source-review.json'
+    ): '5cf0439b71255c31fc5dd9dda9e36e56dcd2211f73e26a7fd8824bba0f1d12e8',
 }
 
 

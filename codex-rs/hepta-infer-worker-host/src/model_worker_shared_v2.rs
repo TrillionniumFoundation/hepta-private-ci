@@ -5,30 +5,44 @@
 //! on their borrowed Q24 slices. Only owner-verified, source-approved data may
 //! enter this seam; this API does not verify grants/signatures or issue authority.
 
+#[cfg(test)]
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
 use codex_hepta_infer_core::shared_feature_v2::ImmutableFeatureSnapshotV2;
+#[cfg(test)]
 use codex_hepta_infer_core::shared_feature_v2::feature_content_digest_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NonAuthorizingPosture;
 use codex_hepta_types::StableId;
 
+#[cfg(test)]
 use super::DriverModelHandle;
+#[cfg(test)]
 use super::DriverNeuronFeatureObservation;
 use super::Error;
 use super::ExecutionStatus;
+#[cfg(test)]
 use super::InferenceWorker;
+#[cfg(test)]
 use super::MAX_ACTIVE_REQUESTS;
+#[cfg(test)]
 use super::MAX_NEURON_FEATURES;
+#[cfg(test)]
 use super::ModelDriver;
+#[cfg(test)]
 use super::NeuronFeatureBatchItemObservationV2;
 use super::WorkerRequest;
+#[cfg(test)]
 use super::validate_digest;
+#[cfg(test)]
 use super::validate_identity;
+#[cfg(test)]
 use super::validate_request;
 
+#[cfg(test)]
 const MAX_BATCH_ITEMS_V2: usize = 32;
+#[cfg(test)]
 const MAX_FEATURE_ABS_Q24: i64 = 8 * (1_i64 << 24);
 
 /// One admitted Cell use of an already frozen semantic/numeric feature.
@@ -83,6 +97,7 @@ pub type SharedNeuronFeatureResultV2 = SharedNeuronFeatureResultV3;
 
 /// A real backend has to implement this separately from the V1 Vec API.
 /// CPU GatedHead reference implements it with scalar kernels, not a GPU GEMM.
+#[cfg(test)]
 pub(crate) trait NeuronSharedFeatureBatchDriverV2: ModelDriver {
     fn run_shared_neuron_features_batch_v2(
         &mut self,
@@ -174,6 +189,7 @@ fn validate_item(
     Ok(())
 }
 
+#[cfg(test)]
 fn validate_item_without_content_hash(
     req: &SharedNeuronFeatureRequestV2,
     now_ms: u64,
@@ -257,6 +273,7 @@ fn validate_item_without_content_hash(
 /// within one already isolated batch. Distinct Arc allocations always get
 /// their own hash, even if their lengths, payload digests or values match.
 /// This is only a computation cache, never a source-admission shortcut.
+#[cfg(test)]
 fn validate_batch_feature_content_v2(
     requests: &[SharedNeuronFeatureRequestV2],
 ) -> Result<usize, Error> {
@@ -281,6 +298,7 @@ fn validate_batch_feature_content_v2(
     Ok(checked.len())
 }
 
+#[cfg(test)]
 fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
     let mut cells = BTreeSet::new();
@@ -299,6 +317,7 @@ fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Res
 /// The minimum memory needed for independent Q24 output buffers across the
 /// entire batch. Immutable input features are not re-materialized per Cell.
 /// This is a conservative admission floor, NOT measured backend RSS/scratch.
+#[cfg(test)]
 fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
     requests.iter().try_fold(0_u64, |total, item| {
         let width =
@@ -314,6 +333,7 @@ fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> R
 /// Physical bytes retained by distinct immutable Arc input allocations in
 /// this cohort. Pointer-identical clones are counted once. Two allocations
 /// with identical content still occupy different memory.
+#[cfg(test)]
 fn minimum_batch_input_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
     let mut seen: Vec<&Arc<[i64]>> = Vec::new();
     let mut bytes = 0_u64;
@@ -334,7 +354,8 @@ fn minimum_batch_input_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Re
     Ok(bytes)
 }
 
-impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
+#[cfg(test)]
+impl<D: ModelDriver> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
     ///
@@ -345,7 +366,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
         requests: Vec<SharedNeuronFeatureRequestV2>,
-    ) -> Result<Vec<SharedNeuronFeatureResultV3>, Error> {
+    ) -> Result<Vec<SharedNeuronFeatureResultV3>, Error>
+    where
+        D: NeuronSharedFeatureBatchDriverV2,
+    {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS_V2 {
@@ -530,6 +554,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     }
 }
 
+#[cfg(test)]
 fn observation_digest_v3(
     request: &SharedNeuronFeatureRequestV2,
     observation: &DriverNeuronFeatureObservation,

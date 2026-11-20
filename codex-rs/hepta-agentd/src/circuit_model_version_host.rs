@@ -84,6 +84,11 @@ struct OriginalModelVersionState {
     installed: Option<ModelVersionInstalledTaskV1>,
     config: Option<AgentdConfig>,
 }
+struct ModelVersionInitialState {
+    origin: Origin,
+    state: OriginalModelVersionState,
+}
+
 pub struct OriginalCircuitModelVersionHostV1 {
     predecessors: Predecessors,
     initial_binding: Digest32,
@@ -134,17 +139,19 @@ impl OriginalCircuitModelVersionHostV1 {
             model,
             control,
             artifacts,
-            Origin::Fresh,
-            OriginalModelVersionState {
-                awaiting: Some(Awaiting {
-                    inputs: Box::new(inputs),
-                    task,
-                    issuer,
-                }),
-                context: None,
-                intent: None,
-                installed: None,
-                config: None,
+            ModelVersionInitialState {
+                origin: Origin::Fresh,
+                state: OriginalModelVersionState {
+                    awaiting: Some(Awaiting {
+                        inputs: Box::new(inputs),
+                        task,
+                        issuer,
+                    }),
+                    context: None,
+                    intent: None,
+                    installed: None,
+                    config: None,
+                },
             },
             lifetime,
         )
@@ -184,13 +191,15 @@ impl OriginalCircuitModelVersionHostV1 {
             model,
             original.current,
             artifacts,
-            Origin::Recovered,
-            OriginalModelVersionState {
-                awaiting: None,
-                context: Some(Arc::new(original.context)),
-                intent: Some(original.intent_digest),
-                installed: Some(installed),
-                config: None,
+            ModelVersionInitialState {
+                origin: Origin::Recovered,
+                state: OriginalModelVersionState {
+                    awaiting: None,
+                    context: Some(Arc::new(original.context)),
+                    intent: Some(original.intent_digest),
+                    installed: Some(installed),
+                    config: None,
+                },
             },
             lifetime,
         )
@@ -202,10 +211,10 @@ impl OriginalCircuitModelVersionHostV1 {
         model: OriginalCellQ24ModelCommandClientV1,
         control: Arc<NeuronGenerationCurrentOwnerV1>,
         artifacts: ModelVersionArtifactOwner,
-        origin: Origin,
-        state: OriginalModelVersionState,
+        initial: ModelVersionInitialState,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        let ModelVersionInitialState { origin, state } = initial;
         if lifetime.is_zero() || lifetime > Duration::from_secs(300) {
             return Err(Error::Binding("original positive Version lifetime"));
         }

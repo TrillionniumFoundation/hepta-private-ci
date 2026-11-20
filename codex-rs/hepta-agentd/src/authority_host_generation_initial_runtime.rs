@@ -190,11 +190,13 @@ pub(in super::super) fn serve_optional(
                     let policy = context.peer_policy()?;
                     let result = service.serve_generation_initial(
                         &slot,
-                        config,
-                        registration,
-                        stream,
-                        policy,
-                        owner.try_clone()?,
+                        crate::authority_host_service::generation_initial::GenerationInitialTransport {
+                            config,
+                            registration,
+                            stream,
+                            policy,
+                            owner: owner.try_clone()?,
+                        },
                         Some(&initial.runtime.peer_source_capture),
                         end,
                         run_start.as_ref(),

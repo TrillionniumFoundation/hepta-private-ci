@@ -57,6 +57,12 @@ type RetainedVersionPreparedV1 =
 type RetainedVersionInputsV1 =
     OriginalCircuitRetainedPublicationInputsV1<FileAnchorWitnessStore, FileAnchorWitnessStore>;
 
+/// Supplied publication inputs and task; the host checks both on admission.
+pub struct OriginalCircuitRetainedPublicationTaskV1 {
+    pub inputs: RetainedVersionInputsV1,
+    pub task: OriginalCircuitRetainedTaskInputsV1,
+}
+
 /// Expected identity of an already started original artifact transaction.
 /// This metadata can only narrow actual owner readback; it grants nothing.
 pub struct OriginalCircuitRetainedArtifactCheckpointV1 {
@@ -158,12 +164,12 @@ impl OriginalCircuitRetainedVersionHostV1 {
         material: OriginalCellQ24MaterialReceiptConfigV1,
         dataset: OriginalCellQ24DatasetCommandReadbackV1,
         trainer: OriginalCellQ24TrainingCommandConnectionV1,
-        inputs: RetainedVersionInputsV1,
-        task: OriginalCircuitRetainedTaskInputsV1,
+        publication_task: OriginalCircuitRetainedPublicationTaskV1,
         artifact_checkpoint: OriginalCircuitRetainedArtifactCheckpointV1,
         final_use_issuer: AgentdUnixFinalUseGrantProvider,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        let OriginalCircuitRetainedPublicationTaskV1 { inputs, task } = publication_task;
         let started = super::now()?;
         let (initial_binding, at) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;

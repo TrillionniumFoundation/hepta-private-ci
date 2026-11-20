@@ -122,7 +122,9 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
                 }) {
                     return Err(Error::Binding("unowned original Outcome"));
                 }
-                OriginalCellQ24TaskLedgerStatusV1::AwaitingOutcome { decision }
+                OriginalCellQ24TaskLedgerStatusV1::AwaitingOutcome {
+                    decision: Box::new(decision),
+                }
             }
             Err(error) => return Err(error.into()),
             Ok(bytes) => {
@@ -156,7 +158,10 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
                 {
                     return Err(Error::Binding("original historical Observer"));
                 }
-                OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome }
+                OriginalCellQ24TaskLedgerStatusV1::Complete {
+                    decision: Box::new(decision),
+                    outcome: Box::new(outcome),
+                }
             }
         };
         self.require_source(captured)?;

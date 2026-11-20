@@ -71,11 +71,11 @@ struct ResidentChannelV3 {
 
 enum ClientOriginV3 {
     Fresh,
-    Readback(RootResidentLearningReadbackAuthorizationV3),
+    Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
 }
 
 enum ResidentExchangeV3 {
-    Observed(RootResidentLearningObservationV3),
+    Observed(Box<RootResidentLearningObservationV3>),
     Refused(Error),
 }
 
@@ -88,6 +88,13 @@ impl Drop for ResidentExchangeDropV3 {
     fn drop(&mut self) {
         self.0.store(true, Ordering::Release);
     }
+}
+
+/// Original transport values only; binding still authenticates the live Root peer.
+pub struct RootResidentLearningConnectionV3 {
+    pub stream: UnixStream,
+    pub root: AgentdRootAuthorityPeer,
+    pub held_root_pidfd: OwnedFd,
 }
 
 /// No owner writer or execution token crosses this process boundary. A lost
@@ -113,9 +120,11 @@ impl AgentdRootResidentLearningClientV3 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind(
-            stream,
-            root,
-            held_root_pidfd,
+            RootResidentLearningConnectionV3 {
+                stream,
+                root,
+                held_root_pidfd,
+            },
             profile,
             verifier,
             ClientOriginV3::Fresh,
@@ -129,9 +138,7 @@ impl AgentdRootResidentLearningClientV3 {
     /// A saved tuple is only an exact comparison pin. It cannot recreate fresh
     /// custody, an execution token, a source lease or a stage signature.
     pub fn recover_original_root_stream(
-        stream: UnixStream,
-        root: AgentdRootAuthorityPeer,
-        held_root_pidfd: OwnedFd,
+        connection: RootResidentLearningConnectionV3,
         profile: RootResidentLearningProfileV3,
         authorization: RootResidentLearningReadbackAuthorizationV3,
         verifier: LearningEvidenceVerifierV1,
@@ -140,12 +147,10 @@ impl AgentdRootResidentLearningClientV3 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind(
-            stream,
-            root,
-            held_root_pidfd,
+            connection,
             profile,
             verifier,
-            ClientOriginV3::Readback(authorization),
+            ClientOriginV3::Readback(Box::new(authorization)),
             expected.map(|(snapshot, attestations)| ResidentReadbackPinV3 {
                 snapshot,
                 attestations,
@@ -157,9 +162,7 @@ impl AgentdRootResidentLearningClientV3 {
     }
 
     fn bind(
-        stream: UnixStream,
-        root: AgentdRootAuthorityPeer,
-        held_root_pidfd: OwnedFd,
+        connection: RootResidentLearningConnectionV3,
         profile: RootResidentLearningProfileV3,
         verifier: LearningEvidenceVerifierV1,
         origin: ClientOriginV3,
@@ -167,6 +170,11 @@ impl AgentdRootResidentLearningClientV3 {
         timeout: Duration,
         lifetime: Duration,
     ) -> Result<Self, Error> {
+        let RootResidentLearningConnectionV3 {
+            stream,
+            root,
+            held_root_pidfd,
+        } = connection;
         profile
             .require_verifier(&verifier)
             .map_err(|_| Error::WrongScope)?;
@@ -374,7 +382,7 @@ impl AgentdRootResidentLearningClientV3 {
                                 .map(ResidentOriginalModelProofV3::encode),
                         });
                     }
-                    ResidentExchangeV3::Observed(observed)
+                    ResidentExchangeV3::Observed(Box::new(observed))
                 }
             };
             Ok((outcome, channel, fresh))
@@ -405,7 +413,7 @@ impl AgentdRootResidentLearningClientV3 {
         // unknown socket result, malformed reply or cancelled await never does.
         *self.channel.lock().map_err(|_| Error::Unavailable)? = Some(channel);
         match outcome {
-            ResidentExchangeV3::Observed(observed) => Ok(observed),
+            ResidentExchangeV3::Observed(observed) => Ok(*observed),
             ResidentExchangeV3::Refused(error) => Err(error),
         }
     }

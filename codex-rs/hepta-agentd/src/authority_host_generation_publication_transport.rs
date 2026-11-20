@@ -9,6 +9,7 @@ use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -37,7 +38,7 @@ pub(crate) enum Command {
     Publish {
         expected: String,
         intent: String,
-        signed: SignedFinalUseGrant,
+        signed: Box<SignedFinalUseGrant>,
         witness: VerifiedUseTokenWitnessV1,
     },
 }
@@ -56,26 +57,24 @@ pub(crate) struct Response {
     pub(crate) grant: Option<SignedFinalUseGrant>,
 }
 
+/// Original connection and registration values; the service retains all checks.
+pub(crate) struct GenerationPublicationTransport<'a> {
+    pub(crate) config: &'a HostAuthorityServiceConfig,
+    pub(crate) registration: &'a HostAuthorityRegistration,
+    pub(crate) stream: UnixStream,
+    pub(crate) policy: HostAuthorityPeerPolicy,
+    pub(crate) owner: OwnedFd,
+}
+
 impl HostAuthorityService {
     pub(crate) fn serve_generation_publication(
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: GenerationPublicationTransport<'_>,
     ) -> io::Result<()> {
         self.serve_generation_publication_with_end(
-            slot,
-            learning,
-            config,
-            registration,
-            stream,
-            policy,
-            owner,
-            /*original_end*/ None,
+            slot, learning, transport, /*original_end*/ None,
         )
     }
 
@@ -83,36 +82,26 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: GenerationPublicationTransport<'_>,
         end: Instant,
     ) -> io::Result<()> {
-        self.serve_generation_publication_with_end(
-            slot,
-            learning,
-            config,
-            registration,
-            stream,
-            policy,
-            owner,
-            Some(end),
-        )
+        self.serve_generation_publication_with_end(slot, learning, transport, Some(end))
     }
 
     fn serve_generation_publication_with_end(
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: GenerationPublicationTransport<'_>,
         original_end: Option<Instant>,
     ) -> io::Result<()> {
+        let GenerationPublicationTransport {
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+        } = transport;
         let version = PublicationVersion::from_purpose(&slot.profile.purpose)?;
         let mut sequence = 1;
         let pin = owner.try_clone()?;
@@ -128,7 +117,7 @@ impl HostAuthorityService {
                     let request: Request = serde_json::from_slice(bytes).map_err(io::Error::other)?;
                     if matches!(&request.command, Command::IssueFinalUse { .. }) {
                         return HostAuthorityService::issue_generation_publication_grant(
-                            self, slot, learning, config, registration, &pin, &request, &mut sequence, end,
+                            self, slot, learning, HostAuthorityRegistrationInputs { config, registration, owner: &pin }, &request, &mut sequence, end,
                         ).map(|raw| (raw, None));
                     }
                     let mut successor_observed = None;
@@ -260,6 +249,7 @@ impl HostAuthorityService {
                                 signed,
                                 witness,
                             } => {
+                                let signed = signed.as_ref();
                                 if *expected != head_digest(&before)?
                                     || *requested != original_digest
                                 {

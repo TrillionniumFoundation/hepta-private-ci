@@ -79,6 +79,10 @@ impl OriginalCellQ24CandidateStageOwnersV1 {
 
     /// Only the concrete Root bundle can request this original Model readback.
     /// No generic StageOwner signature API can represent Proposal evidence.
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this original Model read boundary with no product callers"
+    )]
     pub(crate) async fn read_original_model(
         &self,
         snapshot: &LearningIterationSnapshotV1,

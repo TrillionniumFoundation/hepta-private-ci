@@ -140,13 +140,15 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             config,
             Role::Experience,
-            timeout,
-            lifetime,
             /*readback_only*/ false,
             None,
         )
@@ -161,13 +163,15 @@ impl OriginalCellQ24MaterialCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             config,
             Role::Dataset,
-            timeout,
-            lifetime,
             /*readback_only*/ false,
             None,
         )
@@ -186,13 +190,15 @@ impl OriginalCellQ24MaterialCommandClientV1 {
     ) -> Result<Self, Error> {
         let original_context = wire::context_binding(&config, now()?)?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             config,
             Role::Experience,
-            timeout,
-            lifetime,
             /*readback_only*/ true,
             expected.map(
                 |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
@@ -215,13 +221,15 @@ impl OriginalCellQ24MaterialCommandClientV1 {
     ) -> Result<Self, Error> {
         let original_context = wire::context_binding(&config, now()?)?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             config,
             Role::Dataset,
-            timeout,
-            lifetime,
             /*readback_only*/ true,
             expected.map(
                 |(snapshot, evidence)| OriginalCellQ24MaterialCommandReceiptV1 {
@@ -234,16 +242,19 @@ impl OriginalCellQ24MaterialCommandClientV1 {
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         config: OriginalCellQ24MaterialReceiptConfigV1,
         role: Role,
-        timeout: Duration,
-        lifetime: Duration,
         readback_only: bool,
         expected: Option<OriginalCellQ24MaterialCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let binding = wire::context_binding(&config, started_at)?;
         if peer.actor_id != *config.initial.owners.owner(role.stage()) {

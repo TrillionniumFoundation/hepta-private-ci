@@ -32,7 +32,7 @@ enum ResidentAccessV3 {
 
 pub(super) enum ResidentAuthorizationV3 {
     Fresh,
-    Readback(RootResidentLearningReadbackAuthorizationV3),
+    Readback(Box<RootResidentLearningReadbackAuthorizationV3>),
 }
 
 pub(super) struct ResidentRootAuthorityV3 {
@@ -69,9 +69,9 @@ pub(super) enum ResidentStoreActionV3<'a> {
 }
 
 pub(super) enum ResidentStoreValueV3 {
-    Store(ResidentCheckpointV3),
-    Snapshot(ResidentSnapshotV3),
-    Fresh(Option<FreshResidentCheckpointV3>),
+    Store(Box<ResidentCheckpointV3>),
+    Snapshot(Box<ResidentSnapshotV3>),
+    Fresh(Option<Box<FreshResidentCheckpointV3>>),
     Checked,
 }
 
@@ -185,19 +185,19 @@ impl ResidentRootAuthorityV3 {
                     return Err(invalid("resident cancelled before its local boundary"));
                 }
                 let value = match action {
-                    ResidentStoreActionV3::Register(root) => ResidentStoreValueV3::Store(
+                    ResidentStoreActionV3::Register(root) => ResidentStoreValueV3::Store(Box::new(
                         ResidentCheckpointV3::register(root, self.profile.clone())?,
-                    ),
-                    ResidentStoreActionV3::Recover(root) => ResidentStoreValueV3::Store(
+                    )),
+                    ResidentStoreActionV3::Recover(root) => ResidentStoreValueV3::Store(Box::new(
                         ResidentCheckpointV3::recover(root, self.profile.clone())?,
-                    ),
+                    )),
                     ResidentStoreActionV3::Check => ResidentStoreValueV3::Checked,
                     ResidentStoreActionV3::Read(owner) => {
-                        ResidentStoreValueV3::Snapshot(owner.read()?)
+                        ResidentStoreValueV3::Snapshot(Box::new(owner.read()?))
                     }
-                    ResidentStoreActionV3::Admit(owner) => {
-                        ResidentStoreValueV3::Fresh(ResidentCheckpointV3::admit(owner)?)
-                    }
+                    ResidentStoreActionV3::Admit(owner) => ResidentStoreValueV3::Fresh(
+                        ResidentCheckpointV3::admit(owner)?.map(Box::new),
+                    ),
                     ResidentStoreActionV3::Begin(owner, fresh, predecessor, stage) => {
                         owner.begin_dispatch(fresh, predecessor, stage)?;
                         ResidentStoreValueV3::Checked

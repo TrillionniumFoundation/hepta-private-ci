@@ -192,7 +192,7 @@ async fn original_q24_training_readback_uses_same_hq2_owners_and_rejects_substit
     let cap = fixture
         .readback_cap(training.clone(), Arc::clone(&fence))
         .await?;
-    let trainer = OriginalCellEvaluationTrainerV1::OriginalQ24(cap);
+    let trainer = OriginalCellEvaluationTrainerV1::OriginalQ24(Box::new(cap));
     trainer.require_original_owner(
         &fixture.prepared,
         &fixture.stage,

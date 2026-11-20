@@ -213,7 +213,7 @@ impl RootGenerationCurrentClient {
             Command::Publish {
                 expected: head_digest(expected)?,
                 intent: intent.digest()?.to_string(),
-                signed: record.signed.clone(),
+                signed: Box::new(record.signed.clone()),
                 witness: record.witness.clone(),
             }
         };

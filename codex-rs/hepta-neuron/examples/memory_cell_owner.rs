@@ -1,25 +1,19 @@
 //! Exact-source owner composition against an externally supplied learned artifact.
 //! The grant/calibration inputs below are explicit qualification fixtures.
-#[allow(dead_code, reason = "same numerical driver as the worker-host library")]
-#[path = "../../hepta-infer-worker-host/src/memory_cell_driver.rs"]
-mod memory_cell_driver;
-#[path = "../../hepta-infer-worker-host/src/model_manifest.rs"]
-mod model_manifest;
-#[allow(
-    dead_code,
-    reason = "exercise the exact worker source without a second implementation"
-)]
-#[path = "../../hepta-infer-worker-host/src/model_worker.rs"]
-mod model_worker;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
+use codex_hepta_infer_worker_host::MemoryCellBindingV1;
+use codex_hepta_infer_worker_host::MemoryCellDriver;
+use codex_hepta_infer_worker_host::model_worker::InferenceWorker;
+use codex_hepta_infer_worker_host::model_worker::ModelManifest;
+use codex_hepta_infer_worker_host::model_worker::NeuronFeatureRequest;
+use codex_hepta_infer_worker_host::model_worker::ResourceGrant;
+use codex_hepta_infer_worker_host::model_worker::WorkerRequest;
+use codex_hepta_infer_worker_host::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_neuron::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use memory_cell_driver::MemoryCellBindingV1;
-use memory_cell_driver::MemoryCellDriver;
-use model_worker::*;
 use serde::Deserialize;
 use std::error::Error;
 use std::fs;
@@ -124,13 +118,12 @@ impl CellInputEncoderV1 for QualificationEncoder {
         }
         let feature_vector_q24 = input
             .observation
-            .chunks_exact(8)
-            .map(|bytes| {
-                <[u8; 8]>::try_from(bytes)
-                    .map(i64::from_be_bytes)
-                    .map_err(|_| CellExecutionError::EncodingMismatch)
-            })
-            .collect::<Result<Vec<_>, _>>()?;
+            .as_chunks::<8>()
+            .0
+            .iter()
+            .copied()
+            .map(i64::from_be_bytes)
+            .collect();
         Ok(CellEncodedInputV1 {
             encoder_digest: self.encoder_digest,
             feature_vector_q24,

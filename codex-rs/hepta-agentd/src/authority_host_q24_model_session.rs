@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use super::*;
+use crate::authority_host_service::q24_model::ModelConnectionInputs;
 use crate::authority_host_service::q24_model::RegisteredQ24ModelFactory;
 
 impl PreparedHostAuthoritySession {
@@ -208,9 +209,11 @@ fn serve_optional_with_end(
                     &factory.factory,
                     config,
                     registration,
-                    stream,
-                    policy,
-                    owner.try_clone()?,
+                    ModelConnectionInputs {
+                        stream,
+                        policy,
+                        owner_pidfd: owner.try_clone()?,
+                    },
                     end,
                 ),
                 None => service.serve_q24_model_factory(

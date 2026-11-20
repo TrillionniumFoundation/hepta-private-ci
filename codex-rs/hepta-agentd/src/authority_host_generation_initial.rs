@@ -56,6 +56,7 @@ pub(crate) mod run_start_retention;
 #[path = "authority_host_generation_initial_transport.rs"]
 mod transport;
 pub(crate) use transport::Command;
+pub(crate) use transport::GenerationInitialTransport;
 pub(crate) use transport::Request;
 pub(crate) use transport::Response;
 pub(crate) use transport::SOURCE_CAPTURE_PURPOSE;

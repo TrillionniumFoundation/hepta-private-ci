@@ -12,6 +12,7 @@ use std::time::Duration;
 use std::time::Instant;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_service::generation_publication::PublicationBootstrap;
 use crate::authority_host_service::generation_publication::PublicationVersion;
 
@@ -164,9 +165,11 @@ impl PreparedHostAuthoritySession {
             .ok_or_else(|| io::Error::other("original scoped learning owner required"))?;
         let (runtime, capability, offer) = prepare_original_publication_route(
             &self.service,
-            &self.config,
-            &self.registration,
-            &self.owner_pidfd,
+            HostAuthorityRegistrationInputs {
+                config: &self.config,
+                registration: &self.registration,
+                owner: &self.owner_pidfd,
+            },
             learning,
             None,
             PublicationVersion::LegacyV1,

@@ -9,16 +9,26 @@ use serde_json::Value;
 
 use super::*;
 
+/// Raw frozen-dataset metadata, authenticated by the complete policy checks below.
+pub(super) struct PolicyDatasetInputs<'a> {
+    pub(super) ledger: Digest32,
+    pub(super) snapshot_id: &'a StableId,
+    pub(super) outcome_watermark: u64,
+}
+
 pub(super) fn verify_pre_b_policy(
     member: &Member,
     checked: &Checked,
     context: &Context,
     task: &crate::OriginalCellEvaluationPanelTaskV1,
-    ledger: Digest32,
-    snapshot_id: &StableId,
-    outcome_watermark: u64,
+    dataset: PolicyDatasetInputs<'_>,
     bytes: &[u8],
 ) -> Result<(), Error> {
+    let PolicyDatasetInputs {
+        ledger,
+        snapshot_id,
+        outcome_watermark,
+    } = dataset;
     let policy =
         crate::OriginalCircuitOnPolicyEvaluationPolicyV2::from_canonical_commitment_bytes(bytes)
             .map_err(|_| Error::Binding("full canonical original V2 policy preimage"))?;

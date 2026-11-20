@@ -67,7 +67,9 @@ fn command(
         ("CHOOSE", 9 | 12) => {
             let state = snapshot(fields)?;
             let actions = fields[6..]
-                .chunks_exact(3)
+                .as_chunks::<3>()
+                .0
+                .iter()
                 .map(|entry| {
                     Ok(FeedbackActionValueV1 {
                         action: match entry[0] {

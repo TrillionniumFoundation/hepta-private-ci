@@ -88,7 +88,7 @@ impl AgentdState {
                 ));
             }
             self.episodic_imports
-                .fetch_update(Ordering::AcqRel, Ordering::Acquire, |count| {
+                .try_update(Ordering::AcqRel, Ordering::Acquire, |count| {
                     if count < MAX_PENDING_IMPORTS {
                         Some(count + 1)
                     } else {

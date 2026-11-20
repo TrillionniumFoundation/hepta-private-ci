@@ -24,6 +24,7 @@ mod wire;
 pub use c_task::OriginalCircuitRetainedTaskInputsV1;
 pub use client::OriginalCircuitRetainedVersionClientV1;
 pub use host::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use host::OriginalCircuitRetainedPublicationTaskV1;
 pub use host::OriginalCircuitRetainedVersionHostV1;
 pub use host::OriginalCircuitRetainedVersionRecoveryV1;
 

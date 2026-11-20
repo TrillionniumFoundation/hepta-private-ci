@@ -23,8 +23,10 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         admission::validate_current_material(
             trainer,
             &dataset,
-            scope,
-            binding,
+            admission::TrainingBindingInputs {
+                scope,
+                owner_binding: binding,
+            },
             training_cut,
             training_attestation,
             material,
@@ -59,8 +61,10 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         admission::validate_current_material(
             trainer,
             &dataset,
-            scope,
-            binding,
+            admission::TrainingBindingInputs {
+                scope,
+                owner_binding: binding,
+            },
             training_cut,
             training_attestation,
             material,
@@ -147,8 +151,10 @@ impl<W: AnchorWitnessStore> CellQ24ModelProposalOwnerV1<W> {
         let admission = admission::validate_current_material(
             trainer,
             &self.dataset_cut,
-            self.scope,
-            self.binding,
+            admission::TrainingBindingInputs {
+                scope: self.scope,
+                owner_binding: self.binding,
+            },
             training_cut,
             training_attestation,
             material,

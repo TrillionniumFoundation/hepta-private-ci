@@ -70,6 +70,14 @@ impl Default for ControlRuntimePublicationHeadV1 {
     }
 }
 
+/// Unverified publication bytes with a caller-declared content digest.
+/// The publication constructor checks both; this value grants no authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ControlRuntimePublicationPayloadV1 {
+    pub subject_digest: Digest32,
+    pub bytes: Vec<u8>,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ControlRuntimePublicationV1 {
     pub owner_id: StableId,
@@ -90,11 +98,14 @@ impl ControlRuntimePublicationV1 {
         expected: ControlRuntimePublicationHeadV1,
         policy_epoch: u64,
         kind: ControlRuntimePublicationKindV1,
-        subject_digest: Digest32,
-        payload: Vec<u8>,
+        declared_payload: ControlRuntimePublicationPayloadV1,
         journal_head: PlannerJournalHeadV1,
         occurred_at_micros: u64,
     ) -> Result<Self, ControlRuntimePublicationErrorV1> {
+        let ControlRuntimePublicationPayloadV1 {
+            subject_digest,
+            bytes: payload,
+        } = declared_payload;
         if policy_epoch == 0 {
             return Err(ControlRuntimePublicationErrorV1::InvalidPolicyEpoch);
         }
@@ -736,8 +747,10 @@ mod tests {
             expected,
             1,
             ControlRuntimePublicationKindV1::DecisionCommitted,
-            Digest32::of_bytes(payload),
-            payload.to_vec(),
+            ControlRuntimePublicationPayloadV1 {
+                subject_digest: Digest32::of_bytes(payload),
+                bytes: payload.to_vec(),
+            },
             PlannerJournalHeadV1 {
                 sequence: 1,
                 entry_digest: digest("journal"),

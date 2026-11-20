@@ -21,6 +21,12 @@ jobs:
     env:
       REVIEWED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
+      - name: Enable long paths before checkout
+        shell: pwsh
+        working-directory: ${{ runner.temp }}
+        run: |
+          git config --global core.longpaths true
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Check out exact reviewed source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:

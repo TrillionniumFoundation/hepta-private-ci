@@ -16,6 +16,7 @@ use super::OriginalCircuitRetainedVersionHostV1;
 use super::RetainedVersionFinalUseOutcomeV1;
 use crate::AgentdRootAuthorityPeer;
 use crate::OriginalCellQ24MaterialReceiptConfigV1;
+use crate::OriginalCellQ24NoUpdateTaskStreamV1 as OriginalTaskStream;
 use crate::OriginalCircuitLearningReadOwnerV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
 
@@ -70,14 +71,17 @@ impl OriginalCircuitRetainedVersionHostV1 {
     /// frame starts C or supplies its RunStart/deployment permission.
     pub async fn serve_original_ordinary(
         self: Arc<Self>,
-        stream: UnixStream,
-        consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd,
-        timeout: Duration,
-        lifetime: Duration,
+        input: OriginalTaskStream,
         arg0_paths: codex_arg0::Arg0DispatchPaths,
     ) -> Result<u64, Error> {
+        let OriginalTaskStream {
+            stream,
+            peer: consumer,
+            uid: consumer_uid,
+            original_task_pidfd: original_consumer_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let (served, (), ()) = tokio::try_join!(
             Arc::clone(&self).serve_commands(
                 stream,

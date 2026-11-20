@@ -171,7 +171,7 @@ impl FileBackedFreshnessOracleV1 {
         for owner in file.owners {
             let owner_id = StableId::new(owner.owner_id.clone())
                 .map_err(|_| CanonicalIntelligenceError::FreshnessUnavailable(requested.clone()))?;
-            if seen.insert(owner_id.clone(), owner).is_some() {
+            if seen.insert(owner_id, owner).is_some() {
                 return Err(CanonicalIntelligenceError::FreshnessUnavailable(
                     requested.clone(),
                 ));

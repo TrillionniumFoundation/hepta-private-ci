@@ -16,6 +16,7 @@ use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::authority_host_runtime::owner_alive;
 use crate::authority_host_runtime::validate_lane_paths;
 use crate::authority_host_runtime::validate_runtime_lanes;
@@ -183,13 +184,15 @@ pub(in super::super) fn serve_optional(
                                 bound
                                     .runtime
                                     .observe_complete_task(
-                                        service,
-                                        config,
-                                        registration,
-                                        owner,
+                                        HostAuthorityCallInputs {
+                                            service,
+                                            config,
+                                            registration,
+                                            owner,
+                                            end: request_end,
+                                        },
                                         operation,
                                         request.request_id,
-                                        request_end,
                                     )
                                     .map_err(|_| HostIssuerTransportError::Unavailable)
                             })

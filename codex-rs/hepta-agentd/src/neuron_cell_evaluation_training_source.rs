@@ -19,8 +19,8 @@ use crate::OriginalCellQ24TrainingStageV1;
 /// Neither transport establishes independent B: the receipt owner still
 /// verifies Generator/Evaluator principals, controllers and qualification.
 pub enum OriginalCellEvaluationTrainerV1 {
-    External(LearningIterationEvidenceClientV1),
-    OriginalQ24(OriginalCellQ24TrainingReadbackV1),
+    External(Box<LearningIterationEvidenceClientV1>),
+    OriginalQ24(Box<OriginalCellQ24TrainingReadbackV1>),
 }
 
 impl OriginalCellEvaluationTrainerV1 {

@@ -46,10 +46,10 @@ pub struct OriginalCellQ24LocalDecisionFilesV1 {
 /// The host may explicitly recover one journal and create the other after a
 /// partial genesis. A Missing error never chooses a lifecycle automatically.
 pub enum OriginalCellQ24SourceInputsV1 {
-    Files(OriginalCellQ24SourceFilesV1),
+    Files(Box<OriginalCellQ24SourceFilesV1>),
     Owners {
-        experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
-        dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>,
+        experience: Box<OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>>,
+        dataset: Box<OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore>>,
     },
 }
 
@@ -69,7 +69,7 @@ impl OriginalCellQ24SourceInputsV1 {
     > {
         let (experience, dataset) = match self {
             Self::Files(files) => {
-                let files: OriginalCellQ24SourceFilesV1 = files;
+                let files: OriginalCellQ24SourceFilesV1 = *files;
                 files
                     .open_original_source_files_in_operation(
                         std::sync::Arc::clone(&prepared),
@@ -82,7 +82,7 @@ impl OriginalCellQ24SourceInputsV1 {
             Self::Owners {
                 experience,
                 dataset,
-            } => (experience, dataset),
+            } => (*experience, *dataset),
         };
         let experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = experience;
         let dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = dataset;
@@ -162,10 +162,10 @@ pub struct OriginalCellQ24TrainingFilesV1 {
 /// after a partial genesis. The actual Dataset and native provenance are still
 /// checked before assembly; neither a receipt nor an HQ24 tag supplies them.
 pub enum OriginalCellQ24TrainingInputsV1 {
-    Files(OriginalCellQ24TrainingFilesV1),
+    Files(Box<OriginalCellQ24TrainingFilesV1>),
     Owners {
-        training: CellQ24TrainingOwnerV1<FileAnchorWitnessStore>,
-        receipts: OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>,
+        training: Box<CellQ24TrainingOwnerV1<FileAnchorWitnessStore>>,
+        receipts: Box<OriginalCellQ24TrainingReceiptOwnerV1<FileAnchorWitnessStore>>,
     },
 }
 
@@ -188,7 +188,7 @@ impl OriginalCellQ24TrainingInputsV1 {
             .map_err(|_| Error::WrongScope)?;
         let (mut training, receipts) = match self {
             Self::Files(files) => files.open_in_operation(prepared, dataset.clone(), mode, read)?,
-            Self::Owners { training, receipts } => (training, receipts),
+            Self::Owners { training, receipts } => (*training, *receipts),
         };
         OriginalCellQ24TrainingStageV1::require_original_pair_with_source(
             &mut training,

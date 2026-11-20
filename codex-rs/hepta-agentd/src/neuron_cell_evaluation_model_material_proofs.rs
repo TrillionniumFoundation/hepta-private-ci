@@ -354,9 +354,11 @@ pub(in super::super) fn cohort(
             checked,
             context,
             task,
-            ledger_binding,
-            &snapshot_id,
-            outcome_watermark,
+            paired_policy::PolicyDatasetInputs {
+                ledger: ledger_binding,
+                snapshot_id: &snapshot_id,
+                outcome_watermark,
+            },
             preimage,
         )?;
     }
@@ -368,17 +370,27 @@ pub(in super::super) fn cohort(
     })
 }
 
+/// Supplied digest values; publication still recomputes and checks every commitment.
+pub(super) struct PublicationDigests {
+    pub(super) execution_digest: Digest32,
+    pub(super) authentication: Digest32,
+    pub(super) publication: Digest32,
+}
+
 pub(super) fn publication(
     member: &Member,
     context: &Context,
     bundle: &Bundle,
-    execution_digest: Digest32,
-    authentication: Digest32,
-    publication: Digest32,
+    digests: PublicationDigests,
     disposition: u8,
     failed: &[StableId],
     signatures: [&SignedLearningEvidenceV1; 3],
 ) -> Result<(), Error> {
+    let PublicationDigests {
+        execution_digest,
+        authentication,
+        publication,
+    } = digests;
     if member.execution_namespace.is_zero()
         || member.qualification_namespace.is_zero()
         || member.execution_namespace == member.qualification_namespace

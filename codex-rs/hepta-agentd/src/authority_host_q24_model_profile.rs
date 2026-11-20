@@ -23,6 +23,12 @@ pub(crate) struct FilePin {
     inode: u64,
 }
 
+/// The two original file identities supplied to profile construction.
+pub(super) struct ModelFilePins {
+    pub(super) journal: FilePin,
+    pub(super) witness: FilePin,
+}
+
 impl FilePin {
     pub(crate) fn capture(file: &File) -> io::Result<Self> {
         let metadata = file.metadata()?;
@@ -102,11 +108,11 @@ impl HostAuthorityQ24ModelFactoryProfileV1 {
         writer_proof: &str,
         initial: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
-        journal: FilePin,
-        witness: FilePin,
+        files: ModelFilePins,
         witness_domain: Digest32,
         local_policy: Digest32,
     ) -> io::Result<Self> {
+        let ModelFilePins { journal, witness } = files;
         scope.validate_snapshot(initial).map_err(io::Error::other)?;
         if journal == witness || witness_domain.is_zero() || local_policy.is_zero() {
             return Err(io::Error::other(
@@ -203,8 +209,10 @@ impl HostAuthorityQ24ModelFactoryProfileV1 {
             proof,
             initial,
             scope,
-            self.journal,
-            self.witness,
+            ModelFilePins {
+                journal: self.journal,
+                witness: self.witness,
+            },
             domain,
             policy,
         )?;

@@ -12,6 +12,7 @@ use codex_hepta_contracts::HostIssuerPeer;
 use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_independent_b_protocol::*;
 
 #[path = "authority_host_q24_evaluation_source_serve.rs"]
@@ -142,11 +143,13 @@ fn serve_evaluation_until(
                                 crate::learning_owner_evidence::decode(&training_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             let (response, candidate) = OriginalRootIndependentBEvaluationFilesV1::prepare_original_candidate(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {
+                                        service,
+                                        config,
+                                        registration,
+                                        owner,
+                                        end: frame_end,
+                                    },
                                     head,
                                     &signed,
                                     &training_work,
@@ -189,11 +192,13 @@ fn serve_evaluation_until(
                                 crate::learning_owner_evidence::decode(&plan_attestation)
                                     .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             OriginalRootIndependentBEvaluationFilesV1::complete_from_original_training(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {
+                                        service,
+                                        config,
+                                        registration,
+                                        owner,
+                                        end: frame_end,
+                                    },
                                     head,
                                     &signed,
                                     &plan_signed,
@@ -212,11 +217,13 @@ fn serve_evaluation_until(
                             let head = digest(&training_head)
                                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                             OriginalRootIndependentBEvaluationFilesV1::with_original_completed_evaluation(&bound.runtime.host,
-                                    service,
-                                    config,
-                                    registration,
-                                    owner,
-                                    frame_end,
+                                    HostAuthorityCallInputs {
+                                        service,
+                                        config,
+                                        registration,
+                                        owner,
+                                        end: frame_end,
+                                    },
                                     head,
                                     |actual| {
                                         encode_response(

@@ -247,6 +247,10 @@ pub struct OriginalCircuitCandidateLearningReadClientV1 {
 impl OriginalCircuitCandidateLearningReadClientV1 {
     /// Late bind only the already-held original channel. No reconnect, new
     /// pidfd, renewed deadline, role upgrade or future observation is accepted.
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this original-channel boundary with no product callers"
+    )]
     pub(crate) fn bind_original_stage_channel(
         peer: HostAuthorityPeerChannel,
         context: OriginalCircuitCandidateLearningReadContextV1,

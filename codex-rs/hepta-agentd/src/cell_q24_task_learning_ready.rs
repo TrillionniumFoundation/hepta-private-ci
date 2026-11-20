@@ -28,7 +28,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         trace: &CircuitCommittedTraceV2,
     ) -> CircuitTaskLearningReadinessV1 {
         match self.observe_original_learning(identity, record, trace) {
-            Ok(Some(ready)) => CircuitTaskLearningReadinessV1::Ready(ready),
+            Ok(Some(ready)) => CircuitTaskLearningReadinessV1::Ready(Box::new(ready)),
             Ok(None) => CircuitTaskLearningReadinessV1::Pending(
                 CircuitTaskLearningPendingV1::TerminalOutcome,
             ),
@@ -84,7 +84,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
         let (decision, outcome) = match self.status(&mut state, &ledger, &captured)? {
             OriginalCellQ24TaskLedgerStatusV1::AwaitingOutcome { .. } => return Ok(None),
             OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome } => {
-                (decision, outcome)
+                (*decision, *outcome)
             }
         };
         let cut = witnessed_snapshot(&ledger)?;
@@ -143,7 +143,7 @@ impl OriginalCellQ24TaskLearningReadyV1 {
             .map_err(|_| Error::Binding("ledger lock"))?;
         match self.producer.status(&mut state, &ledger, &captured)? {
             OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome }
-                if decision == self.decision && outcome == self.outcome => {}
+                if *decision == self.decision && *outcome == self.outcome => {}
             _ => return Err(Error::PendingOutcome),
         }
         let cut = witnessed_snapshot(&ledger)?;

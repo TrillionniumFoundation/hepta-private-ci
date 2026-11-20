@@ -37,6 +37,9 @@ from win32_api import (
 )
 
 
+MINIMAL_CHILD_SCRIPT = b"@echo off\r\nexit /b 71\r\n"
+
+
 def cmd_image(api):
     system = C.create_unicode_buffer(32768)
     length = api.GetSystemDirectoryW(system, len(system))
@@ -52,7 +55,13 @@ def cmd_image(api):
 
 
 def run_inline(api, variant, user, base):
-    require(variant in ("inline-exit71", "inline-stdout"), "fixed inline comparison")
+    require(
+        variant in (
+            "inline-exit71", "inline-stdout",
+            "type-original-batch", "minimal-batch-exit71",
+        ),
+        "fixed cmd entry comparison",
+    )
     record = {
         "mode": "lpac",
         "variant": variant,
@@ -81,6 +90,34 @@ def run_inline(api, variant, user, base):
         record["fixture_security"] = prepared["security"]
         record["unconfined_controls"] = prepared["unconfined_controls"]
         record["child_script_sha256"] = hashlib.sha256(CHILD_SCRIPT).hexdigest()
+        if variant in ("type-original-batch", "minimal-batch-exit71"):
+            script_name = (
+                "cmd-entry-minimal.cmd"
+                if variant == "minimal-batch-exit71" else "child-probe.cmd"
+            )
+            expected_script = (
+                MINIMAL_CHILD_SCRIPT
+                if variant == "minimal-batch-exit71" else CHILD_SCRIPT
+            )
+            script_path = workspace / script_name
+            if variant == "minimal-batch-exit71":
+                # Observe the resulting security descriptor; do not assert inheritance.
+                with script_path.open("xb") as stream:
+                    stream.write(MINIMAL_CHILD_SCRIPT)
+            script_before = script_path.read_bytes()
+            record["diagnostic_script"] = {
+                "path": script_name,
+                "creation": (
+                    "exclusive binary create without explicit security override"
+                    if variant == "minimal-batch-exit71" else "unchanged original fixture"
+                ),
+                "security_interpretation": "observed descriptor; inheritance not established",
+                "bytes_before": len(script_before),
+                "bytes_before_hex": script_before.hex(),
+                "sha256_before": hashlib.sha256(script_before).hexdigest(),
+                "security_facts_before": api.security_facts(script_path),
+            }
+            require(script_before == expected_script, "exact diagnostic script before launch")
         capture = api.open_child_stdio(workspace)
         process = api.create_suspended(
             package_sid,
@@ -158,6 +195,11 @@ def run_inline(api, variant, user, base):
         expected_stdout = (
             b"" if variant == "inline-exit71" else b"HEPTA_LPAC_INLINE_STDOUT\r\n"
         )
+        if variant == "type-original-batch":
+            expected_stdout = CHILD_SCRIPT
+        elif variant == "minimal-batch-exit71":
+            expected_exit = 71
+            expected_stdout = b""
         record["expected_exit_code"] = expected_exit
         record["expected_stdout_hex"] = expected_stdout.hex()
         record["expected_exit_observed"] = code.value == expected_exit
@@ -171,6 +213,20 @@ def run_inline(api, variant, user, base):
             (workspace / "child-probe.cmd").read_bytes() == CHILD_SCRIPT,
             "original batch bytes changed",
         )
+        if variant in ("type-original-batch", "minimal-batch-exit71"):
+            script_after = script_path.read_bytes()
+            record["diagnostic_script"].update({
+                "bytes_after": len(script_after),
+                "bytes_after_hex": script_after.hex(),
+                "sha256_after": hashlib.sha256(script_after).hexdigest(),
+                "security_facts_after": api.security_facts(script_path),
+            })
+            require(
+                record["diagnostic_script"]["security_facts_before"]
+                == record["diagnostic_script"]["security_facts_after"],
+                "diagnostic script security changed",
+            )
+            require(script_after == expected_script, "exact diagnostic script after exit")
         require(
             all(row["matches_required_hypothesis"] is not False for row in records),
             "original native access matrix differs",
@@ -253,8 +309,9 @@ def main():
         "python": sys.version,
         "diagnostic_only": True,
         "production_qualification": False,
-        "scope": "fixed LPAC inline entry comparisons and unchanged original batch",
+        "scope": "fixed LPAC inline, batch-read and minimal-batch comparisons; original whole batch required",
         "inline_cases": [],
+        "batch_entry_cases": [],
     }
     api = None
     base = HANDLE()
@@ -269,6 +326,10 @@ def main():
         report["inline_cases"] = [
             run_inline(api, variant, user, base)
             for variant in ("inline-exit71", "inline-stdout")
+        ]
+        report["batch_entry_cases"] = [
+            run_inline(api, variant, user, base)
+            for variant in ("type-original-batch", "minimal-batch-exit71")
         ]
         # The original function retains every batch/native predicate and failure.
         report["original_batch_case"] = run_case(
@@ -308,6 +369,11 @@ def main():
         and all(
             case["status"] == "observed" and case.get("diagnostic_expected_result")
             for case in report["inline_cases"]
+        )
+        and len(report["batch_entry_cases"]) == 2
+        and all(
+            case["status"] == "observed" and case.get("diagnostic_expected_result")
+            for case in report["batch_entry_cases"]
         )
         and report["original_batch_passed"]
     )

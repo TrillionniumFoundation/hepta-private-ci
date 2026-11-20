@@ -32,7 +32,7 @@ use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainer
 pub enum OriginalCellQ24EvaluationTimingV1 {
     Qualification,
     SystemLongitudinal {
-        timing: LongitudinalTimeEvidenceV1,
+        timing: Box<LongitudinalTimeEvidenceV1>,
         minimum_window_micros: u64,
     },
 }

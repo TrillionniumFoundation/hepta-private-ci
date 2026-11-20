@@ -14,9 +14,20 @@ use super::completed_files::CompletedFiles;
 use super::completed_record::RootCompletedLearningAcceptanceDataV1;
 use super::completed_signatures::verify_original_completions;
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::authority_host_service::generation_publication::OriginalCompletedPublicationDataV1;
 use crate::authority_host_service::generation_publication::OriginalCompletedPublicationModeV1;
+use crate::authority_host_service::generation_publication::OriginalCompletedPublicationReadInputs;
 use crate::authority_host_service::generation_publication::OriginalCompletedPublicationReadV1;
+
+/// Inputs to the existing completed-profile checks, without a verification claim.
+struct CompletedProfileInputs<'a> {
+    initial: &'a LearningIterationSnapshotV1,
+    observed: &'a RootOriginalHistoricalCompleteTaskObservationV1,
+    checkpoint: &'a crate::LearningIterationCheckpointRecordV1,
+    checkpoint_digest: Digest32,
+    profile: HostAuthorityLearningProfileV1,
+}
 
 pub(super) struct CheckedCompletion {
     pub(super) fact: RootCompletedLearningAcceptanceDataV1,
@@ -27,16 +38,19 @@ pub(super) struct CheckedCompletion {
 impl HistoricalTaskReadRuntime {
     pub(super) fn observe_completed_learning(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
         fixed: &CompletedLearningRuntime,
         files: &CompletedFiles,
         accepted: Option<&RootCompletedLearningAcceptanceDataV1>,
         mode: OriginalCompletedPublicationModeV1,
-        end: Instant,
     ) -> io::Result<CheckedCompletion> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
         with_original_checkpoint(&config.state_dir, |checkpoint, checkpoint_digest| {
             RootRetainedHistoricalCompleteTaskV1::with_original_historical_task(
                 &self.task,
@@ -54,20 +68,24 @@ impl HistoricalTaskReadRuntime {
                     )?;
                     let check_profile = |profile| {
                         self.observe_completed_profile(
-                            service,
-                            config,
-                            registration,
-                            owner,
+                            HostAuthorityCallInputs {
+                                service,
+                                config,
+                                registration,
+                                owner,
+                                end,
+                            },
                             fixed,
                             files,
                             accepted,
                             mode,
-                            &initial,
-                            &observed,
-                            checkpoint,
-                            checkpoint_digest,
-                            profile,
-                            end,
+                            CompletedProfileInputs {
+                                initial: &initial,
+                                observed: &observed,
+                                checkpoint,
+                                checkpoint_digest,
+                                profile,
+                            },
                         )
                     };
                     let result = if let Some(fact) = accepted {
@@ -100,9 +118,11 @@ impl HistoricalTaskReadRuntime {
                         post_a::PostALearningRuntime::with_original_derived_profile(
                             plan,
                             service,
-                            &registration.registered_identity.identity()?,
-                            &proof,
-                            &initial,
+                            post_a::PostAInitialInputs {
+                                identity: &registration.registered_identity.identity()?,
+                                proof: &proof,
+                                initial: &initial,
+                            },
                             &observed,
                             &self.learning_trust,
                             end,
@@ -125,21 +145,27 @@ impl HistoricalTaskReadRuntime {
 
     fn observe_completed_profile(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
         fixed: &CompletedLearningRuntime,
         files: &CompletedFiles,
         accepted: Option<&RootCompletedLearningAcceptanceDataV1>,
         mode: OriginalCompletedPublicationModeV1,
-        initial: &LearningIterationSnapshotV1,
-        observed: &RootOriginalHistoricalCompleteTaskObservationV1,
-        checkpoint: &crate::LearningIterationCheckpointRecordV1,
-        checkpoint_digest: Digest32,
-        profile: HostAuthorityLearningProfileV1,
-        end: Instant,
+        profile_inputs: CompletedProfileInputs<'_>,
     ) -> io::Result<CheckedCompletion> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
+        let CompletedProfileInputs {
+            initial,
+            observed,
+            checkpoint,
+            checkpoint_digest,
+            profile,
+        } = profile_inputs;
         if profile.original_initial_data()? != *initial {
             return Err(io::Error::other(
                 "original frozen completed initial differs",
@@ -162,12 +188,17 @@ impl HistoricalTaskReadRuntime {
                     &scope,
                     service,
                     config,
-                    end,
-                    mode,
+                    OriginalCompletedPublicationReadInputs { end, mode },
                     |publication| {
                         CompletedFiles::with_original_records(files, end, |journals| {
-                            self.with_original_completed_context(service, config, registration, owner,
-                            &scope, checkpoint, observed, end, |context| {
+                            self.with_original_completed_context(HostAuthorityCallInputs {
+    service,
+    config,
+    registration,
+    owner,
+    end,
+},
+                            &scope, checkpoint, observed, |context| {
                                 let b = OriginalCompletedBReadV1::observe(b, context)?;
                                 let publication = OriginalCompletedPublicationReadV1::observe(publication, context)?;
                                 let verified = verify_original_completions(context, journals, &b, accepted)?;

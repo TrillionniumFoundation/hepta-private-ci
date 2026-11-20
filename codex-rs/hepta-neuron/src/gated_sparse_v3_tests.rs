@@ -94,13 +94,11 @@ fn deterministic_and_shadow_only_with_v2_competition() {
 #[test]
 fn full_gate_matches_v2_with_zero_temporal_decay() {
     let mut cfg = config();
-    for gate in &mut cfg.gates {
-        *gate = TemporalGateV3 {
-            bias_q24: Q,
-            input_gain_q24: 0,
-            change_gain_q24: 0,
-        };
-    }
+    cfg.gates.fill(TemporalGateV3 {
+        bias_q24: Q,
+        input_gain_q24: 0,
+        change_gain_q24: 0,
+    });
     let input = tick(1, 10);
     let (next, receipt) = checked(gated_sparse_tick_v3(&cfg, &input, None));
     assert_eq!(next.temporal_q24(), &input.temporal_drive_q24);
@@ -115,13 +113,11 @@ fn full_gate_matches_v2_with_zero_temporal_decay() {
 #[test]
 fn zero_gate_retains_temporal_state_but_binds_original_input() {
     let mut cfg = config();
-    for gate in &mut cfg.gates {
-        *gate = TemporalGateV3 {
-            bias_q24: 0,
-            input_gain_q24: 0,
-            change_gain_q24: 0,
-        };
-    }
+    cfg.gates.fill(TemporalGateV3 {
+        bias_q24: 0,
+        input_gain_q24: 0,
+        change_gain_q24: 0,
+    });
     let first = checked(gated_sparse_tick_v3(&cfg, &tick(1, 10), None));
     assert_eq!(first.0.temporal_q24(), &[0, 0]);
     let second = checked(gated_sparse_tick_v3(&cfg, &tick(2, 20), Some(&first.0)));

@@ -1305,7 +1305,7 @@ fn decode_effect_wire_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
         ));
     }
     let mut output = Vec::with_capacity(value.len() / 2);
-    for pair in value.as_bytes().chunks_exact(2) {
+    for pair in value.as_bytes().as_chunks::<2>().0 {
         let high = control_hex_nibble(pair[0]).ok_or_else(|| {
             AgentdError::Invalid("automation effect wire payload contains non-hex data".to_string())
         })?;

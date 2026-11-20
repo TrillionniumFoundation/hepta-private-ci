@@ -513,30 +513,32 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
     let (stream, unused) = UnixStream::pair()?;
     assert!(
         OriginalCircuitNextUseCommandClientV1::recover_from_original_stream(
-            stream,
-            crate::LearningIterationEvidencePeerV1 {
-                pid: peer.pid,
-                uid,
-                boot_id: peer.boot_id,
-                process_start_ticks: peer.process_start_ticks,
-                actor_id: f
-                    .f
-                    .original
-                    .config
-                    .selection
-                    .owners
-                    .next_use_observer
-                    .clone(),
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer: crate::LearningIterationEvidencePeerV1 {
+                    pid: peer.pid,
+                    uid,
+                    boot_id: peer.boot_id,
+                    process_start_ticks: peer.process_start_ticks,
+                    actor_id: f
+                        .f
+                        .original
+                        .config
+                        .selection
+                        .owners
+                        .next_use_observer
+                        .clone(),
+                },
+                original_owner_pidfd: next::pidfd()?,
+                timeout: Duration::from_secs(30),
+                lifetime: Duration::from_secs(300)
             },
-            next::pidfd()?,
             f.selected.snapshot().clone(),
             f.f.original.config.scope.clone(),
             f.f.original.config.verifier.clone(),
             f.selected.training_attestation().clone(),
             f.selected.attestation().clone(),
             None,
-            Duration::from_secs(30),
-            Duration::from_secs(300),
         )
         .is_err()
     );

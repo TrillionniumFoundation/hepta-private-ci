@@ -37,6 +37,7 @@ pub use registration::register_host_q24_model_factory;
 mod transport;
 pub(crate) use transport::Command;
 pub(crate) use transport::FactoryLease;
+pub(crate) use transport::ModelConnectionInputs;
 pub(crate) use transport::Reply;
 pub(crate) use transport::Request;
 pub(crate) use transport::Response;

@@ -31,12 +31,16 @@ pub(super) fn validate(
         "--authbus-checkpoint-file",
         "--objective-profile-file",
     ] {
-        let mut found = ordinary.chunks_exact(2).filter(|pair| pair[0] == flag);
+        let mut found = ordinary
+            .as_chunks::<2>()
+            .0
+            .iter()
+            .filter(|pair| pair[0] == flag);
         if found.next().is_none_or(|pair| pair[1].is_empty()) || found.next().is_some() {
             return Err(invalid(format!("Initial Q24 requires exactly one {flag}")));
         }
     }
-    for pair in ordinary.chunks_exact(2) {
+    for pair in ordinary.as_chunks::<2>().0 {
         if pair[0].to_str().is_some_and(|flag| {
             flag.starts_with("--plasticity-")
                 || flag.starts_with("--neuron-generation-")

@@ -201,7 +201,7 @@ impl AuthorityClock for UnixPqAuthorityClock {
             return Err(AuthorityTrustError::Invalid);
         }
         self.last_ms
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |previous| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |previous| {
                 (unix_ms >= previous).then_some(unix_ms)
             })
             .map_err(|_| AuthorityTrustError::Invalid)?;

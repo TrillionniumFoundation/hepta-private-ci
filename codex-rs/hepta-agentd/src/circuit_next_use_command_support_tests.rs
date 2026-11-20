@@ -176,7 +176,7 @@ pub(crate) fn lose_ack<W: AnchorWitnessStore + Send + 'static>(
                 wire::decode_completed(
                     &owner.context,
                     snapshot,
-                    evidence,
+                    *evidence,
                     now().map_err(|_| HostIssuerTransportError::InvalidRequest)?,
                 )
                 .map_err(|_| HostIssuerTransportError::InvalidRequest)?,

@@ -121,13 +121,11 @@ fn values(bytes: &[u8], count: usize) -> Result<Vec<i64>, CellGenerationErrorV2>
         return Err(CellGenerationErrorV2::InvalidBinding);
     }
     bytes
-        .chunks_exact(8)
+        .as_chunks::<8>()
+        .0
+        .iter()
         .map(|chunk| {
-            let value = i64::from_le_bytes(
-                chunk
-                    .try_into()
-                    .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
-            );
+            let value = i64::from_le_bytes(*chunk);
             if !(-H..=H).contains(&value) {
                 return Err(CellGenerationErrorV2::InvalidBinding);
             }

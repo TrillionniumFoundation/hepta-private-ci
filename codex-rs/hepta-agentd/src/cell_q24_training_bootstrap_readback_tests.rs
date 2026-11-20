@@ -340,7 +340,7 @@ fn fault_peer(
                             .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                         wire::CommandResult::Completed {
                             snapshot,
-                            evidence: evidence_wire::Evidence::from_original(&changed),
+                            evidence: Box::new(evidence_wire::Evidence::from_original(&changed)),
                         }
                     }
                 };

@@ -184,6 +184,13 @@ impl PublicationRefusal {
 
     /// The complete writer-context call, CURRENT CAS/readback and physical
     /// postchecks belong inside action. Same-kind operations never nest arms.
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "CALLERS retains this refusal wrapper; only unit tests invoke it"
+        )
+    )]
     pub(super) fn inspect<T>(
         &self,
         original: &ReservedPublicationProfile,

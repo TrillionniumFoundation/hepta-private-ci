@@ -125,7 +125,7 @@ impl<T: CognitiveCheckpointTransport> ProtectedCognitiveCheckpoint<T> {
     ) -> Result<CognitiveCheckpointRequest, ObjectiveSenderCheckpointError> {
         let sequence = self
             .sequence
-            .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
+            .try_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
                 value.checked_add(1)
             })
             .map_err(|_| ObjectiveSenderCheckpointError::Unavailable)?;

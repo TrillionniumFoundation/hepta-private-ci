@@ -35,6 +35,7 @@ pub use previous::ProductionNotesRecoveryTarget;
 mod fence;
 pub use fence::NOTES_FENCE_TOPIC_V1;
 pub(crate) use fence::NotesFenceProof;
+pub(crate) use fence::NotesFenceTerminalEvent;
 pub(crate) use fence::cancellation_payload;
 pub(crate) use fence::fence_settlement_reference;
 pub(crate) use fence::is_notes_topic;

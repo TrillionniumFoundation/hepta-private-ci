@@ -26,13 +26,15 @@ pub(crate) fn fixture() -> anyhow::Result<(
         &Digest32::of_bytes(b"original-writer").to_string(),
         &initial,
         &scope,
-        FilePin {
-            device: 1,
-            inode: 2,
-        },
-        FilePin {
-            device: 3,
-            inode: 4,
+        ModelFilePins {
+            journal: FilePin {
+                device: 1,
+                inode: 2,
+            },
+            witness: FilePin {
+                device: 3,
+                inode: 4,
+            },
         },
         Digest32::of_bytes(b"original-witness-domain"),
         Digest32::of_bytes(b"precommitted-policy"),

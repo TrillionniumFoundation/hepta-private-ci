@@ -90,7 +90,7 @@ fn expand(encoded: Encoded, bytes: usize, digest: &str, tensors: usize) -> io::R
             return Err(invalid("synthetic fixture run exceeds bound"));
         }
         output.resize(output.len() + zeros, 0);
-        for pair in literal.as_bytes().chunks_exact(2) {
+        for pair in literal.as_bytes().as_chunks::<2>().0 {
             let text = std::str::from_utf8(pair).map_err(|_| invalid("fixture hex UTF-8"))?;
             output.push(u8::from_str_radix(text, 16).map_err(|_| invalid("fixture hex byte"))?);
         }

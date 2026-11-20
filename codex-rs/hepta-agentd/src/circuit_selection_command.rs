@@ -255,12 +255,14 @@ impl OriginalCircuitSelectionCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             false,
             None,
         )
@@ -270,17 +272,20 @@ impl OriginalCircuitSelectionCommandClientV1 {
     /// signatures. This constructor can only restore readback, including when
     /// Root has no confirmed Selection ACK. It cannot manufacture a fresh context.
     pub fn recover_from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         training: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         verifier: LearningEvidenceVerifierV1,
         training_evidence: SignedLearningEvidenceV1,
         expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let context = OriginalCircuitSelectionCommandContextV1::from_checkpoint(
             training,
             scope,
@@ -293,27 +298,32 @@ impl OriginalCircuitSelectionCommandClientV1 {
             })
             .transpose()?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             true,
             retained,
         )
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         context: OriginalCircuitSelectionCommandContextV1,
-        timeout: Duration,
-        lifetime: Duration,
         execution_requested: bool,
         retained: Option<OriginalCircuitSelectionCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let binding = context.binding(started_at)?;
         if peer.actor_id != context.training.owners.selector {
@@ -437,7 +447,7 @@ impl OriginalCircuitSelectionCommandClientV1 {
         self.context.authenticate(current)?;
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
+                let original = wire::decode_completed(&self.context, snapshot, *evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

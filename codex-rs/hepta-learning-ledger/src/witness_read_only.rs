@@ -28,7 +28,7 @@ pub(crate) fn inspect_ordinary_witness(
         return Err(DurableLedgerError::IncompleteTail);
     }
     let mut frontier = LedgerWitnessFrontier::empty();
-    for frame in bytes[HEADER..].chunks_exact(FRAME) {
+    for frame in bytes[HEADER..].as_chunks::<FRAME>().0 {
         if Digest32::of_bytes(&frame[..FRAME - 32]).as_array() != &frame[FRAME - 32..] {
             return Err(DurableLedgerError::Corrupt);
         }
@@ -39,7 +39,7 @@ pub(crate) fn inspect_ordinary_witness(
             return Err(DurableLedgerError::InvalidAnchor);
         }
         validate_advance(frontier, next)?;
-        if encode_frontier(next)? != frame {
+        if encode_frontier(next)? != frame.as_slice() {
             return Err(DurableLedgerError::Corrupt);
         }
         frontier = next;

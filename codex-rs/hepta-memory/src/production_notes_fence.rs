@@ -152,16 +152,27 @@ impl NotesFenceProof {
     }
 }
 
+/// Borrowed source-event inputs to fence settlement verification.
+/// This value is not proof of commitment and grants no authority.
+pub(crate) struct NotesFenceTerminalEvent<'a> {
+    pub(crate) event_id: &'a str,
+    pub(crate) event_sha256: &'a Sha256Digest,
+    pub(crate) receipt: &'a str,
+}
+
 pub(crate) fn verify_fence_settlement(
     settlement_json: &str,
     original_operation_id: &str,
     original_payload: &str,
     cancellation_operation_id: &str,
     cancellation_payload: &str,
-    cancellation_terminal_event_id: &str,
-    cancellation_terminal_event_sha256: &Sha256Digest,
-    cancellation_receipt: &str,
+    cancellation_terminal_event: NotesFenceTerminalEvent<'_>,
 ) -> Result<(), String> {
+    let NotesFenceTerminalEvent {
+        event_id: cancellation_terminal_event_id,
+        event_sha256: cancellation_terminal_event_sha256,
+        receipt: cancellation_receipt,
+    } = cancellation_terminal_event;
     let settlement: NotesFenceSettlement =
         serde_json::from_str(settlement_json).map_err(|_| "invalid Notes fence settlement")?;
     if settlement.schema_version != 1

@@ -136,7 +136,12 @@ fn root_publication_grant_retains_actual_signature_and_reopen_never_issues() -> 
     held.finish(&signed)?;
     assert!(held.begin().is_err());
     assert!(held.finish(&signed).is_err());
-    assert_eq!(held.load_original()?.state, GrantPhase::Issued { signed });
+    assert_eq!(
+        held.load_original()?.state,
+        GrantPhase::Issued {
+            signed: Box::new(signed)
+        }
+    );
     drop(held);
     let path = primary(directory.path(), &original)?;
     let issued = std::fs::read(&path)?;

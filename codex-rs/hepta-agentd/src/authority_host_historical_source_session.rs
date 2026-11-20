@@ -323,7 +323,7 @@ impl HistoricalSourceRuntime {
     pub(super) fn close(&self) {
         let _ = self
             .phase
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |phase| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |phase| {
                 (phase != ACKNOWLEDGED).then_some(CLOSED)
             });
     }

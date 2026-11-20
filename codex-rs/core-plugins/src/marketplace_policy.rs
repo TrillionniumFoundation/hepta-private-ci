@@ -508,6 +508,7 @@ fn managed_local_marketplace_name(codex_home: &Path, root: &Path) -> Option<&'st
 }
 
 fn is_expected_managed_path(path: &Path, expected: &Path) -> bool {
+    #[cfg(any(target_os = "macos", windows))]
     if path == expected {
         return true;
     }
@@ -532,7 +533,7 @@ fn is_expected_managed_path(path: &Path, expected: &Path) -> bool {
     }
     #[cfg(not(any(target_os = "macos", windows)))]
     {
-        false
+        path == expected
     }
 }
 

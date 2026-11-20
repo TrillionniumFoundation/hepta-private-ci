@@ -179,7 +179,7 @@ impl OriginalCellQ24ModelCommandHostV1 {
             original: inputs.original,
             context,
             evaluation: Some(evaluation),
-            observed,
+            observed: *observed,
             model,
             record,
             body,
@@ -295,7 +295,7 @@ impl OriginalModelReadHostOperation<'_> {
             return Err(Error::CommitUncertain);
         };
         let current = wire::decode_completed(&self.context, &record, fresh)?;
-        if native != self.observed
+        if *native != self.observed
             || current != self.model
             || self
                 .state

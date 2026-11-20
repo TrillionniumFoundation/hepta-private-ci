@@ -25,18 +25,28 @@ use crate::original_q24_dataset_freeze_execution_key_v1;
 use crate::original_q24_dataset_preparation_identity_v1;
 use crate::project_original_q24_dataset_v1;
 
+/// The existing initial identity, writer text and snapshot supplied to derivation.
+pub(in super::super) struct PostAInitialInputs<'a> {
+    pub(in super::super) identity: &'a AgentdIdentity,
+    pub(in super::super) proof: &'a str,
+    pub(in super::super) initial: &'a LearningIterationSnapshotV1,
+}
+
 impl PostALearningRuntime {
     pub(in super::super) fn with_original_derived_profile<T>(
         &self,
         service: &HostAuthorityService,
-        identity: &AgentdIdentity,
-        proof: &str,
-        initial: &LearningIterationSnapshotV1,
+        initial_inputs: PostAInitialInputs<'_>,
         observed: &RootOriginalHistoricalCompleteTaskObservationV1,
         trust: &RootHistoricalLearningTrustV1,
         end: Instant,
         action: impl FnOnce(HostAuthorityLearningProfileV1) -> io::Result<T>,
     ) -> io::Result<T> {
+        let PostAInitialInputs {
+            identity,
+            proof,
+            initial,
+        } = initial_inputs;
         require_end(end)?;
         self.require_original_metadata()?;
         if initial != &self.initial || trust.pin.mapping != self.learning_trust_mapping {

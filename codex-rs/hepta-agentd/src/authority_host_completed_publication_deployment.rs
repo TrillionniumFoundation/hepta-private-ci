@@ -2,15 +2,13 @@
 //! publication Arm surrounds all physical I/O, the entire new recipient
 //! context, and its independent after-reads. No live route is enrolled.
 
-use std::time::Instant;
-
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_types::Digest32;
 
 use super::*;
 use crate::HostAuthorityServiceConfig;
 use crate::authority_host_service::HostAuthorityService;
-use crate::authority_host_service::generation_publication::OriginalCompletedPublicationModeV1;
+use crate::authority_host_service::generation_publication::OriginalCompletedPublicationReadInputs;
 use crate::authority_host_service::generation_publication::OriginalCompletedPublicationReadV1;
 use crate::authority_host_service::generation_publication::with_original_publication_history;
 
@@ -23,10 +21,10 @@ pub(in crate::authority_host_runtime::session) fn with_original_completed_public
     scope: &FrozenLearningScopeV2,
     service: &HostAuthorityService,
     config: &HostAuthorityServiceConfig,
-    end: Instant,
-    mode: OriginalCompletedPublicationModeV1,
+    read_inputs: OriginalCompletedPublicationReadInputs,
     action: impl FnOnce(&mut OriginalCompletedPublicationReadV1<'_>) -> io::Result<T>,
 ) -> io::Result<(T, Digest32)> {
+    let OriginalCompletedPublicationReadInputs { end, mode } = read_inputs;
     original_root()?;
     let (metadata, bytes) = MetadataFile::open_metadata(path)?;
     let deployment: PostAPublicationData =
@@ -86,8 +84,7 @@ pub(in crate::authority_host_runtime::session) fn with_original_completed_public
                 &files.data.current_directory,
                 inputs,
                 Arc::clone(&files.successor),
-                mode,
-                end,
+                OriginalCompletedPublicationReadInputs { mode, end },
             )?;
             let result = action(&mut read);
             let finished = OriginalCompletedPublicationReadV1::finish(&mut read);

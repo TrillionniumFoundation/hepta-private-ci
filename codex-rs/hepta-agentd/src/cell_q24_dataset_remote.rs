@@ -354,14 +354,11 @@ fn decode_batch(
         return Err(Error::Binding("exact original batch length"));
     }
     let values = bytes[44..]
-        .chunks_exact(8)
-        .map(|chunk| {
-            let raw: [u8; 8] = chunk
-                .try_into()
-                .map_err(|_| Error::Binding("batch integer"))?;
-            Ok(i64::from_le_bytes(raw))
-        })
-        .collect::<Result<Vec<_>, Error>>()?;
+        .as_chunks::<8>()
+        .0
+        .iter()
+        .map(|chunk| i64::from_le_bytes(*chunk))
+        .collect::<Vec<_>>();
     let batch = CellQ24TrainingBatchV1::new(
         dataset,
         vec![CellQ24TrainingSampleV1 {

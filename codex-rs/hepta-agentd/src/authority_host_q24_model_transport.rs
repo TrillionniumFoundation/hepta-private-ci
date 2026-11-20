@@ -9,6 +9,7 @@ use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerTransportError;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 
 #[path = "authority_host_q24_model_b_transport.rs"]
 mod original_b;
@@ -61,6 +62,13 @@ pub(crate) struct Reply {
     pub(crate) newly_bound: bool,
 }
 
+/// The original stream, peer policy and owned lifetime descriptor for one connection.
+pub(crate) struct ModelConnectionInputs {
+    pub(crate) stream: UnixStream,
+    pub(crate) policy: HostAuthorityPeerPolicy,
+    pub(crate) owner_pidfd: OwnedFd,
+}
+
 impl HostAuthorityService {
     pub(crate) fn serve_q24_model_factory(
         &self,
@@ -75,9 +83,11 @@ impl HostAuthorityService {
             factory,
             config,
             registration,
-            stream,
-            policy,
-            owner_pidfd,
+            ModelConnectionInputs {
+                stream,
+                policy,
+                owner_pidfd,
+            },
             /*original_end*/ None,
         )
     }
@@ -87,20 +97,10 @@ impl HostAuthorityService {
         factory: &RegisteredQ24ModelFactory,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner_pidfd: OwnedFd,
+        connection: ModelConnectionInputs,
         end: Instant,
     ) -> io::Result<()> {
-        self.serve_q24_model_factory_with_end(
-            factory,
-            config,
-            registration,
-            stream,
-            policy,
-            owner_pidfd,
-            Some(end),
-        )
+        self.serve_q24_model_factory_with_end(factory, config, registration, connection, Some(end))
     }
 
     fn serve_q24_model_factory_with_end(
@@ -108,11 +108,14 @@ impl HostAuthorityService {
         factory: &RegisteredQ24ModelFactory,
         config: &HostAuthorityServiceConfig,
         registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner_pidfd: OwnedFd,
+        connection: ModelConnectionInputs,
         original_end: Option<Instant>,
     ) -> io::Result<()> {
+        let ModelConnectionInputs {
+            stream,
+            policy,
+            owner_pidfd,
+        } = connection;
         let mut next_request_id = 1;
         let pin = owner_pidfd.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner_pidfd)
@@ -131,14 +134,16 @@ impl HostAuthorityService {
                     == Some(crate::root_q24_model_b_protocol::PURPOSE)
                 {
                     return original_b::serve_original_b_model_request(
-                        self,
+                        HostAuthorityCallInputs {
+                            service: self,
+                            config,
+                            registration,
+                            owner: &pin,
+                            end: frame_end,
+                        },
                         factory,
-                        config,
-                        registration,
-                        &pin,
                         bytes,
                         &mut next_request_id,
-                        frame_end,
                     )
                     .map_err(|_| HostIssuerTransportError::Unavailable);
                 }

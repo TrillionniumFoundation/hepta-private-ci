@@ -616,7 +616,7 @@ impl<D: CompositionDriver> CompositionWorker<D> {
             consumed_tokens: observed.consumed_tokens,
             shared_memory_bytes: self
                 .pool
-                .fanout(&key, &[head.cell_id.clone()])?
+                .fanout(&key, std::slice::from_ref(&head.cell_id))?
                 .shared_memory_bytes,
             private_head_memory_bytes: head.private_memory_bytes,
         })

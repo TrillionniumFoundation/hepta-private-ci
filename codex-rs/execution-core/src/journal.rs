@@ -1,6 +1,5 @@
 //! Deterministic single-operation sequence validator without effect privileges.
 
-use crate::ApprovalRequest;
 use crate::EffectReceipt;
 use crate::ExecutionClass;
 use crate::ExecutionError;

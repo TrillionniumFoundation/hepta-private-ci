@@ -5,6 +5,7 @@ use super::super::Origin;
 use super::super::wire;
 use super::OriginalCircuitModelVersionHostV1 as Host;
 use crate::AgentdRootAuthorityPeer;
+use crate::OriginalCellQ24NoUpdateTaskStreamV1 as OriginalTaskStream;
 use crate::OriginalCircuitCandidateLearningReadContextV1 as ReadContext;
 use crate::OriginalCircuitCandidateLearningReadOwnerV1 as ReadOwner;
 use crate::OriginalCircuitModelPublicationContextV1 as PublicationContext;
@@ -120,14 +121,17 @@ impl Host {
     /// C's authenticated RunStart; the unchanged runtime still requires it.
     pub async fn serve_original_ordinary(
         self: Arc<Self>,
-        stream: UnixStream,
-        consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd,
-        timeout: Duration,
-        lifetime: Duration,
+        input: OriginalTaskStream,
         arg0_paths: codex_arg0::Arg0DispatchPaths,
     ) -> Result<u64, Error> {
+        let OriginalTaskStream {
+            stream,
+            peer: consumer,
+            uid: consumer_uid,
+            original_task_pidfd: original_consumer_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let (served, ()) = tokio::try_join!(
             Arc::clone(&self).serve_commands(
                 stream,
@@ -262,13 +266,16 @@ impl Host {
     pub async fn serve_original_next_use_readback(
         self: Arc<Self>,
         selection: Selection,
-        stream: UnixStream,
-        consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd,
-        timeout: Duration,
-        lifetime: Duration,
+        input: OriginalTaskStream,
     ) -> Result<u64, Error> {
+        let OriginalTaskStream {
+            stream,
+            peer: consumer,
+            uid: consumer_uid,
+            original_task_pidfd: original_consumer_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("original published C exchange bound"));
         }
@@ -304,13 +311,16 @@ impl Host {
     pub async fn serve_original_completion_readiness(
         self: Arc<Self>,
         selection: Selection,
-        stream: UnixStream,
-        consumer: AgentdRootAuthorityPeer,
-        consumer_uid: u32,
-        original_consumer_pidfd: OwnedFd,
-        timeout: Duration,
-        lifetime: Duration,
+        input: OriginalTaskStream,
     ) -> Result<u64, Error> {
+        let OriginalTaskStream {
+            stream,
+            peer: consumer,
+            uid: consumer_uid,
+            original_task_pidfd: original_consumer_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         if timeout.is_zero() || timeout > Duration::from_millis(500) {
             return Err(Error::Binding("original published C exchange bound"));
         }

@@ -42,6 +42,7 @@ pub use enrollment::RootPublicationFinalUseConsumerV1;
 #[path = "authority_host_generation_publication_transport.rs"]
 mod transport;
 pub(crate) use transport::Command;
+pub(crate) use transport::GenerationPublicationTransport;
 pub(crate) use transport::Request;
 pub(crate) use transport::Response;
 
@@ -69,6 +70,7 @@ mod completed;
 mod completed_files;
 pub(crate) use completed::OriginalCompletedPublicationDataV1;
 pub(crate) use completed::OriginalCompletedPublicationModeV1;
+pub(crate) use completed::OriginalCompletedPublicationReadInputs;
 pub(crate) use completed::OriginalCompletedPublicationReadV1;
 pub(crate) use completed::with_original_publication_history;
 pub(crate) use completed_files::OriginalControlRecord;

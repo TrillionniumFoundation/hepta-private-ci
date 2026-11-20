@@ -71,6 +71,7 @@ mod post_a_freeze;
 mod post_a_provider;
 #[path = "authority_host_post_a_worker.rs"]
 mod post_a_worker;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustResponseV1;
 use crate::root_historical_learning_trust_data::TRUST_PURPOSE;
 use learning_trust::RootHistoricalLearningTrustV1;
@@ -225,14 +226,17 @@ impl HistoricalTaskReadRuntime {
 
     fn observe_complete_task(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
         operation: HistoricalReadOperationV1,
         request_id: u64,
-        end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
         let trust_requested = match operation {
             HistoricalReadOperationV1::Task => false,
             HistoricalReadOperationV1::LearningTrust => true,
@@ -250,13 +254,15 @@ impl HistoricalTaskReadRuntime {
             | HistoricalReadOperationV1::CaptureCompletedHistory
             | HistoricalReadOperationV1::ReadCompletedHistory => {
                 return self.completed_learning_operation(
-                    service,
-                    config,
-                    registration,
-                    owner,
+                    HostAuthorityCallInputs {
+                        service,
+                        config,
+                        registration,
+                        owner,
+                        end,
+                    },
                     operation,
                     request_id,
-                    end,
                 );
             }
         };
