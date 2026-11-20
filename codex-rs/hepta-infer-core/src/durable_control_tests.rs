@@ -1,6 +1,21 @@
 use super::*;
+use std::io::SeekFrom;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
+
+// Inspect the original locked file without reopening its pathname. Restore the
+// real cursor even after a read failure, and propagate restoration failures.
+pub(super) fn held_journal_bytes(mut file: &File) -> std::io::Result<Vec<u8>> {
+    let position = file.stream_position()?;
+    let read = (|| {
+        file.rewind()?;
+        let mut bytes = Vec::new();
+        file.read_to_end(&mut bytes)?;
+        Ok(bytes)
+    })();
+    file.seek(SeekFrom::Start(position))?;
+    read
+}
 
 fn path(label: &str) -> PathBuf {
     let nonce = SystemTime::now()
@@ -558,3 +573,59 @@ fn checkpoint_roundtrips_every_reachable_legacy_state_shape() {
 
 #[path = "durable_incremental_tests.rs"]
 mod incremental;
+
+#[test]
+fn held_journal_observation_preserves_physical_bytes_cursor_and_lock() {
+    let path = path("held-journal-observation");
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&path)
+        .expect("physical journal fixture");
+    file.try_lock().expect("exclusive journal lock");
+    let original = b"original journal evidence\n".to_vec();
+    file.write_all(&original).expect("write original bytes");
+    let contender = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&path)
+        .expect("independent contender handle");
+    assert!(matches!(
+        contender.try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
+
+    file.seek(SeekFrom::Start(3)).expect("initial cursor");
+    assert_eq!(held_journal_bytes(&file).expect("original bytes"), original);
+    assert_eq!(file.stream_position().expect("restored cursor"), 3);
+    let mut changed = original;
+    changed[0] ^= 1;
+    file.rewind().expect("rewind physical fixture");
+    file.write_all(&changed).expect("same-length physical mutation");
+    file.seek(SeekFrom::Start(3)).expect("changed cursor");
+    assert_eq!(held_journal_bytes(&file).expect("changed bytes"), changed);
+    assert_eq!(file.stream_position().expect("restored cursor"), 3);
+    assert!(matches!(
+        contender.try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
+    drop(file);
+
+    let mut write_only = OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .expect("actual unreadable descriptor");
+    write_only.try_lock().expect("exclusive write-only lock");
+    write_only.seek(SeekFrom::Start(3)).expect("failure cursor");
+    assert!(held_journal_bytes(&write_only).is_err());
+    assert_eq!(write_only.stream_position().expect("restored cursor"), 3);
+    assert!(matches!(
+        contender.try_lock(),
+        Err(std::fs::TryLockError::WouldBlock)
+    ));
+    drop(write_only);
+    contender.try_lock().expect("owner drop releases lock");
+    drop(contender);
+    fs::remove_file(path).expect("cleanup");
+}

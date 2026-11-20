@@ -1,11 +1,13 @@
 use super::*;
+use crate::durable_control::tests::held_journal_bytes;
 
 fn input() -> NativePreparedInputV2 {
     NativePreparedInputV2 {
         schema_version: 2,
         prompt: "Use only the original admitted evidence.".to_string(),
         context_query: Some("original query".to_string()),
-        agentd_socket: PathBuf::from("/tmp/original-owner.sock"),
+        agentd_socket: std::path::absolute("/tmp/original-owner.sock")
+            .expect("absolute original-owner socket fixture"),
         timeout_ms: 5_000,
         intelligence: Some(NativeIntelligenceInputBindingV2 {
             snapshot: NativeRunSnapshotV2 {
@@ -45,7 +47,7 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
         drop(control);
         control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
         assert_eq!(control.native_record("r1"), Some(&expected));
-        let bytes = std::fs::read(&path).unwrap();
+        let bytes = held_journal_bytes(&control.file).unwrap();
         assert_eq!(
             control
                 .reserve_native_prepared_v2(
@@ -56,7 +58,7 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
                 .unwrap(),
             expected
         );
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     }
     control.dispatch_native("r1", dispatch()).unwrap();
     control.native_started("r1", "turn-1".to_string()).unwrap();
@@ -78,7 +80,7 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
 fn v2_payload_mutations_fail_before_reservation_or_io() {
     let path = path("prepared-v2-mutation");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     for field in [
         "prompt",
         "query",
@@ -102,7 +104,7 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
         match field {
             "prompt" => changed.prompt.push('!'),
             "query" => changed.context_query = Some("replacement".to_string()),
-            "socket" => changed.agentd_socket = PathBuf::from("/tmp/other-owner.sock"),
+            "socket" => changed.agentd_socket.set_file_name("other-owner.sock"),
             "timeout" => changed.timeout_ms += 1,
             "run" => binding.snapshot.run_id.push_str("-other"),
             "request" => binding.snapshot.request_digest = "6".repeat(64),
@@ -127,7 +129,7 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
             Err(Error::Conflict),
             "{field}"
         );
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
         assert!(control.native_record("r1").is_none());
     }
     control
@@ -239,7 +241,7 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
     let legacy = control
         .reserve_native(prepared_request(), /*maximum_in_flight*/ 1)
         .unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     assert_eq!(
         control
             .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
@@ -253,7 +255,7 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
             .prepared_input_v2
             .is_none()
     );
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     drop(control);
     let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert!(
