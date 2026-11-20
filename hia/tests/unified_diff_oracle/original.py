@@ -2,12 +2,19 @@
 import hashlib
 import subprocess
 from .common import BASE as COMMIT, CRATE_TREE
+from file_update_oracle import identity
 
 def extract_original(context):
     OUT, REPO, REPORT, common = context.output, context.args.original_root.resolve(strict=True), context.report, context
     assert subprocess.check_output(['git', '-C', REPO, 'rev-parse', f'{COMMIT}:codex-rs/apply-patch']).decode().strip() == CRATE_TREE
     for relative in ('codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'codex-rs/apply-patch/Cargo.toml'):
-        assert subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}']) == (context.repo / relative).read_bytes()
+        original_bytes = subprocess.check_output(['git', '-C', REPO, 'show', f'{COMMIT}:{relative}'])
+        current_bytes = (context.repo / relative).read_bytes()
+        if relative == 'codex-rs/Cargo.lock':
+            REPORT['reviewed_cargo_lock_projection'] = identity.reviewed_lock_projection(
+                current_bytes, original_bytes)
+        else:
+            assert original_bytes == current_bytes
     root = OUT / 'original-source'
     root.mkdir()
     rows = []

@@ -242,13 +242,49 @@ def _exec_server_test_projection(relative, expected, actual, listing):
     }
 
 
+
+# The complete original lock stays pinned. A single reviewed transitive-graph
+# change is admitted solely by reproducing the exact approved byte deletion.
+# Subsequent dependency migrations require a new explicit projection.
+_LOCK_PREFIX = (b'[[package]]\nname = "codex-network-proxy"\nversion = "0.0.0"\n'
+                b'dependencies = [\n "anyhow",\n "base64 0.22.1",\n')
+_LOCK_BEFORE = _LOCK_PREFIX + b' "chrono",\n'
+_LOCK_ORIGINAL_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
+_LOCK_REVIEWED_BLOB = "0300a2a9ff4eafb582f90e27161eec4faa50c196"
+
+
+def reviewed_lock_projection(current, original):
+    def blob(data):
+        return hashlib.sha1(f"blob {len(data)}\0".encode() + data).hexdigest()
+
+    original_blob = blob(original)
+    current_blob = blob(current)
+    if current == original:
+        return {"scope": "unchanged original Cargo.lock",
+                "original_blob": original_blob, "current_blob": current_blob,
+                "byte_exact": True}
+    if (original_blob != _LOCK_ORIGINAL_BLOB
+            or original.count(_LOCK_BEFORE) != 1
+            or current != original.replace(_LOCK_BEFORE, _LOCK_PREFIX, 1)
+            or current_blob != _LOCK_REVIEWED_BLOB):
+        raise RuntimeError("unreviewed Cargo.lock dependency change")
+    return {"scope": "codex-network-proxy only: remove direct chrono",
+            "original_blob": original_blob, "current_blob": current_blob,
+            "inverse_original_blob": blob(current.replace(_LOCK_PREFIX, _LOCK_BEFORE, 1)),
+            "byte_exact": True}
+
+
 def producer_inputs(producer, original_root, original_manifest):
     current = clean_identity(producer)
-    # Equality to immutable originals rejects manifest/default-feature changes even
-    # if an attacker updates a self-reported manifest SHA to match that change.
+    # Full manifest and type identity is immutable; Cargo.lock admits only the
+    # byte-exact separately reviewed chrono edge removal.
     matched = {}
+    lock_projection = None
     for path in ("codex-rs/Cargo.toml", "codex-rs/Cargo.lock", CRATE + "/Cargo.toml", *TYPE_SOURCES):
-        if sha(producer / path) != sha(original_root / path):
+        if path == "codex-rs/Cargo.lock":
+            lock_projection = reviewed_lock_projection(
+                (producer / path).read_bytes(), (original_root / path).read_bytes())
+        elif sha(producer / path) != sha(original_root / path):
             raise RuntimeError(f"original dependency/type declaration changed: {path}")
         matched[path] = sha(producer / path)
     # The producing Actions checkout may be shallow. Baseline trees came from
@@ -270,6 +306,7 @@ def producer_inputs(producer, original_root, original_manifest):
               "exact_routing_inverse": recover_owner(producer)}
     if projections:
         result["path_dependency_projections"] = projections
+    result["reviewed_cargo_lock_projection"] = lock_projection
     return result
 
 
