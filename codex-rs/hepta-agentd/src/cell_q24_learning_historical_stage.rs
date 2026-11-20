@@ -38,6 +38,16 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             cancelled: Arc::clone(&self.inner.cancelled),
             armed: true,
         };
+        let successor_snapshot = match &work {
+            OriginalHistoricalWorkV1::Stage { snapshot, stage }
+                if crate::learning_iteration::historical_context::original_stage_needs_successor(
+                    snapshot, *stage,
+                ) =>
+            {
+                Some(snapshot.clone())
+            }
+            _ => None,
+        };
         let inner = Arc::clone(&self.inner);
         let runtime = Handle::current();
         let result = tokio::task::spawn_blocking(move || {
@@ -59,6 +69,13 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                     .map_err(unavailable)?;
                 if inner.cancelled.load(Ordering::Acquire) {
                     return Err(Error::CommitUncertain);
+                }
+                if let Some(snapshot) = &successor_snapshot {
+                    context.require_successor_stage_in_operation(
+                        read,
+                        inner.successor.get(),
+                        snapshot,
+                    )?;
                 }
                 let result = OriginalCellQ24TrainingStageV1::with_original_training_operation(
                     &inner.training,
@@ -84,6 +101,13 @@ impl OriginalCellQ24LearningStageOwnersV1 {
                 // A failed owner call still receives the actual source, state,
                 // factory and cancellation postchecks before the lane leaves.
                 context.require_in_operation(read, OriginalHistoricalStageAdmissionV1::ReadOnly)?;
+                if let Some(snapshot) = &successor_snapshot {
+                    context.require_successor_stage_in_operation(
+                        read,
+                        inner.successor.get(),
+                        snapshot,
+                    )?;
+                }
                 runtime
                     .block_on(crate::AgentdRootQ24ModelFactoryV1::require_current(
                         &mut owners.factory,

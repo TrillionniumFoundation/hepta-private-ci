@@ -8,6 +8,35 @@ use crate::cell_q24_learning_stage_owners::OriginalHistoricalRestoreModeV1;
 use crate::cell_q24_learning_stage_owners::OriginalHistoricalWorkV1;
 
 impl LearningIterationRuntimeBootstrapV1 {
+    // This is only the direct predecessor of a real historical Stage operation.
+    // Recovery keeps the original complete wait and separate ConfirmRecovery.
+    async fn wait_original_historical_successor_stage(
+        &self,
+        state: &AgentdState,
+        snapshot: &LearningIterationSnapshotV1,
+        stage: LearningIterationStageV1,
+    ) -> Result<(), LearningIterationRuntimeErrorV1> {
+        let Some(slot) = &self.successor else {
+            return Ok(());
+        };
+        if !super::historical_context::original_stage_needs_successor(snapshot, stage) {
+            return Ok(());
+        }
+        // A Ready hint only selects scheduling. The actual Stage operation
+        // below revalidates the same registered slot and all admissions before
+        // and after its effect; no Source observation survives this branch.
+        if stage == LearningIterationStageV1::NextUse && slot.original_generation_ready_hint() {
+            self.require_frozen_scope(&snapshot.request)?;
+            return Ok(());
+        }
+        self.require_stage_admission(state)?;
+        self.require_frozen_scope(&snapshot.request)?;
+        // Keep the original pre-wait authorization and bounded, cancellable
+        // wait. Its post-wait admission is performed by the immediately
+        // following real Stage operation, under a fresh physical Source pair.
+        slot.wait_original_generation(snapshot).await
+    }
+
     pub(super) async fn process_original_historical(
         &self,
         state: Arc<AgentdState>,
@@ -63,7 +92,7 @@ impl LearningIterationRuntimeBootstrapV1 {
             else {
                 return Ok(current.snapshot);
             };
-            self.wait_original_successor_stage(&state, &current.snapshot, stage)
+            self.wait_original_historical_successor_stage(&state, &current.snapshot, stage)
                 .await?;
             let operation = original.run_original_historical_stage(
                 Arc::clone(&context),
