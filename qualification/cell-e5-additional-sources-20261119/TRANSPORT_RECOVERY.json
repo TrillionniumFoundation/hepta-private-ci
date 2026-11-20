@@ -1,0 +1,33 @@
+{
+  "execution_scope": "all original runtime package files, full test trees, required fixtures and root metadata",
+  "experiment": "E5",
+  "first_result": "18 codeload request timeouts; four full-tree nonregular-file guards; no downloaded source, no dependency setup and no native execution",
+  "full_git_metadata_retained": true,
+  "model_and_training_budgets_unchanged": true,
+  "native_limits_unchanged": true,
+  "new_admitted_sources": 0,
+  "new_model_calls": 0,
+  "new_native_children": 0,
+  "new_root": "/home/qian/work/hepta-e5-additional-sources-20261120-e9e051-v2",
+  "new_training_updates": 0,
+  "old_root": "/home/qian/work/hepta-e5-additional-sources-20261120-e9e051",
+  "omitted_nonruntime_symlinks": [
+    {
+      "path": "docs/CONTRIBUTING.md",
+      "project_id": "pyparsing/pyparsing",
+      "reason": "documentation outside execution snapshot"
+    },
+    {
+      "path": "json/tests/latest",
+      "project_id": "python-jsonschema/jsonschema",
+      "reason": "unused convenience alias; original Suite selects explicit draft directories; descriptor retained and never followed"
+    }
+  ],
+  "original_acquisition_sha256": "298f65dc30c778511c43c709ba7f33eb4ed177c777bde73efe2c90eb1008acd5",
+  "original_owner_exit_code": 2,
+  "original_owner_session": "dpty-4421e6f8ba36a4addbc96910ee385770cde58e844e6af38c16c49439f10008b2",
+  "original_source_commit": "3accf7bce411fe4cbf9adce0589e91875cc7d288",
+  "schema": "hepta.e5-acquisition-transport-recovery.v1",
+  "source_commits_and_task_selection_unchanged": true,
+  "transport": "exact raw Git blobs as in original E5 acquisition"
+}
