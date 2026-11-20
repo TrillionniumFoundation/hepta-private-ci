@@ -97,6 +97,30 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             ledger.append_outcome(predecessor, original, &signed, now()?)?;
         }
         self.require_source(captured)?;
+        // Only this original effect owner holds the active task retirement
+        // capability. Readback and retained Source observations stay read-only.
+        let before = self.status(state, ledger, captured)?;
+        if !matches!(before, OriginalCellQ24TaskLedgerStatusV1::Complete { .. }) {
+            return Err(Error::PendingOutcome);
+        }
+        let OriginalTaskCustodyV1::Active { cell, published } = &self.task else {
+            return Err(Error::Binding(
+                "original active task retirement owner required",
+            ));
+        };
+        let completed = PublishedCircuitFeatureTaskV1::drain_completed_task(
+            published,
+            cell,
+            self.source.as_ref(),
+            &self.identity,
+        )
+        .map_err(Error::Retirement)?;
+        if completed.source_publication() != &captured.publication {
+            return Err(Error::Binding("original task retirement source differs"));
+        }
+        if self.status(state, ledger, captured)? != before {
+            return Err(LearningOriginalOwnerErrorV1::CommitUncertain.into());
+        }
         Ok(())
     }
 
