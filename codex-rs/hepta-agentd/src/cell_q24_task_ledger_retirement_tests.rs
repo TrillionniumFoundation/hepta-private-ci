@@ -2,6 +2,8 @@
 
 use std::io::Read;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 fn generation_bytes(f: &Fixture) -> anyhow::Result<Vec<Vec<u8>>> {

@@ -1,5 +1,7 @@
 //! Real generation files at the original Drain durability boundary.
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 #[test]
