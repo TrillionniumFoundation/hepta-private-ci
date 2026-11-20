@@ -1,0 +1,82 @@
+{
+  "schema": "hepta.e5.final-evidence-head-original-blob-gate.v1",
+  "tested_head": "78eb0dfdb28563f2527aa1cfc27f9b40997f70ea",
+  "tested_tree": "551a7a9122037050d0d7b98880eebac80d69a8f3",
+  "base": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "checkout_head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+  "maximum_bytes": 512000,
+  "expected_pack_sha256": "09e60fa88a5e8fddea442b47067538aaa8af3562687fffed3846d29786a6fefd",
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "new_native_task_children": 0,
+  "before": {
+    "head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+    "refs_sha256": "36ca0177f648745586dd7e09bce0fe14c991cb624d3202bd211398e8b49b397b",
+    "config_sha256": "832829caf0c47275c9c89b3f9a83d2205feb7c2a393310e3db4ce0b13713f919",
+    "index_entries_sha256": "f5db1388b42ca40048c31fceda40cf53d2942d9497388018c92c7ab4d6c01a30",
+    "gate_sha256": {
+      "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+      ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+    }
+  },
+  "stdout_first_line": [
+    "Checked 139 changed file(s) against the 512000-byte limit."
+  ],
+  "after": {
+    "head": "1818fde55d964a87cfc8aed49f26a6a866a0e0a5",
+    "refs_sha256": "36ca0177f648745586dd7e09bce0fe14c991cb624d3202bd211398e8b49b397b",
+    "config_sha256": "832829caf0c47275c9c89b3f9a83d2205feb7c2a393310e3db4ce0b13713f919",
+    "index_entries_sha256": "f5db1388b42ca40048c31fceda40cf53d2942d9497388018c92c7ab4d6c01a30",
+    "gate_sha256": {
+      "scripts/check_blob_size.py": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+      ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+    }
+  },
+  "repository_identity_unchanged": true,
+  "stages": [
+    {
+      "name": "fetch-final-tree",
+      "argv": [
+        "git",
+        "fetch",
+        "--no-tags",
+        "--no-write-fetch-head",
+        "--filter=blob:none",
+        "origin",
+        "78eb0dfdb28563f2527aa1cfc27f9b40997f70ea"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 2.2042932000476867,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "original-full-pr-blob-gate",
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+        "--head",
+        "78eb0dfdb28563f2527aa1cfc27f9b40997f70ea",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 1.2003263129736297,
+      "stdout_bytes": 20075,
+      "stdout_sha256": "0ca7d0fcaaabc13ac1b0dbe80382eb23cf10186bd50a4d0ca89eba82a3c4bcbb",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "wall_seconds": 3.5888982850010507,
+  "error": null,
+  "exit_code": 0
+}
