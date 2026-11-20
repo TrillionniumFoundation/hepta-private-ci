@@ -64,16 +64,20 @@ use ledger_support::sign;
 
 // This test module also reopens the real durable ledger after dropping its owner.
 impl Fixture {
-    fn recover_writer(&self, limit: usize, frontier: LedgerWitnessFrontier) -> LedgerWriter {
+    fn recover_writer(
+        &self,
+        limit: usize,
+        frontier: LedgerWitnessFrontier,
+    ) -> anyhow::Result<LedgerWriter> {
         let ledger = DurableLedger::recover(
             self.file("ledger"),
             ledger_support::binding(),
             limit,
             LedgerRecovery::Acknowledged(frontier.anchor),
         )
-        .unwrap();
-        let witness =
-            LedgerWitnessStore::recover(self.file("witness"), ledger_support::binding()).unwrap();
+        .context("recover terminal fixture ledger")?;
+        let witness = LedgerWitnessStore::recover(self.file("witness"), ledger_support::binding())
+            .context("recover terminal fixture witness")?;
         LedgerWriter::from_durable(
             ledger,
             witness,
@@ -81,7 +85,7 @@ impl Fixture {
             &self.directory(),
             &self.directory(),
         )
-        .unwrap()
+        .context("recover terminal fixture writer")
     }
 }
 
@@ -513,7 +517,9 @@ async fn recovered_ledger_does_not_invent_a_durable_iteration_checkpoint() -> an
         .into_inner()
         .unwrap();
     drop(writer);
-    let recovered = fixtures.ledger_root.recover_writer(/*limit*/ 64, frontier);
+    let recovered = fixtures
+        .ledger_root
+        .recover_writer(/*limit*/ 64, frontier)?;
     recovered
         .revalidate_dataset_snapshot(receipt.candidate.dataset(), /*now*/ 50)
         .unwrap();
