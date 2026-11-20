@@ -1,0 +1,140 @@
+"""Offline protocol checks; no network, model runtime, or experiment tasks."""
+
+import hashlib
+import importlib.util
+import io
+import json
+import os
+from pathlib import Path
+import tempfile
+import time
+import unittest
+import urllib.error
+
+SOURCE = Path(__file__).with_name('range_recovery_v2.py')
+spec = importlib.util.spec_from_file_location('recovery_under_test', SOURCE)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+
+
+class Response:
+    def __init__(self, body, status=206, content_range='bytes 3-9/13', length='7', encoding=None):
+        self.status = status
+        self.headers = {'Content-Range': content_range}
+        if length is not None:
+            self.headers['Content-Length'] = length
+        if encoding is not None:
+            self.headers['Content-Encoding'] = encoding
+        self.body = io.BytesIO(body)
+        self.reads = 0
+
+    def read(self, amount):
+        self.reads += 1
+        return self.body.read(amount)
+
+
+class RangeChecks(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryFile()
+        self.tmp.write(b'PRE' + b'_' * 7 + b'END')
+        self.tmp.flush()
+        self.segment = {'start': 3, 'end_inclusive': 9, 'bytes': 7,
+                        'expected_content_range': 'bytes 3-9/13'}
+        self.receipt = {'written_bytes': 0, 'observed_http_body_bytes': 0,
+                        'stream_sha256': hashlib.sha256(b'').hexdigest()}
+
+    def tearDown(self):
+        self.tmp.close()
+
+    def run_response(self, response):
+        module.consume_body(response, self.segment, self.tmp.fileno(), self.receipt, time.monotonic() + 3)
+
+    def test_exact_extent_preserves_neighbors_and_hashes(self):
+        self.run_response(Response(b'PAYLOAD'))
+        self.assertEqual(os.pread(self.tmp.fileno(), 13, 0), b'PREPAYLOADEND')
+        self.assertEqual(self.receipt['observed_http_body_bytes'], 7)
+        self.assertEqual(self.receipt['local_extent_sha256'], hashlib.sha256(b'PAYLOAD').hexdigest())
+
+    def test_wrong_status_or_range_or_encoding_rejects_before_any_body_read(self):
+        responses = [Response(b'PAYLOAD', status=200),
+                     Response(b'PAYLOAD', content_range='bytes 4-10/13'),
+                     Response(b'PAYLOAD', length='8'),
+                     Response(b'PAYLOAD', encoding='gzip')]
+        for response in responses:
+            with self.subTest(headers=response.headers, status=response.status):
+                with self.assertRaises(ValueError):
+                    self.run_response(response)
+                self.assertEqual(response.reads, 0)
+                self.assertEqual(os.pread(self.tmp.fileno(), 13, 0), b'PRE_______END')
+
+    def test_missing_length_exact_eof_is_accepted(self):
+        self.run_response(Response(b'PAYLOAD', length=None))
+        self.assertEqual(self.receipt['observed_http_body_bytes'], 7)
+
+    def test_overlong_body_cannot_overwrite_neighbor(self):
+        with self.assertRaisesRegex(ValueError, 'exceeds'):
+            self.run_response(Response(b'PAYLOADX', length=None))
+        self.assertEqual(os.pread(self.tmp.fileno(), 13, 0), b'PREPAYLOADEND')
+        self.assertEqual(self.receipt['observed_http_body_bytes'], 8)
+        self.assertEqual(self.receipt['written_bytes'], 7)
+
+    def test_short_body_retains_exact_partial_count(self):
+        with self.assertRaisesRegex(ValueError, 'early'):
+            self.run_response(Response(b'PAY', length=None))
+        self.assertEqual(self.receipt['written_bytes'], 3)
+        self.assertEqual(self.receipt['observed_http_body_bytes'], 3)
+        self.assertEqual(os.pread(self.tmp.fileno(), 13, 0), b'PREPAY____END')
+
+    def test_deadline_rejects_before_body(self):
+        response = Response(b'PAYLOAD')
+        with self.assertRaises(module.OwnerDeadline):
+            module.consume_body(response, self.segment, self.tmp.fileno(), self.receipt, time.monotonic() - 1)
+        self.assertEqual(response.reads, 0)
+
+
+class RedirectChecks(unittest.TestCase):
+    def test_redirect_preserves_range_and_does_not_read_error_body(self):
+        class Opener:
+            requests = []
+            body = io.BytesIO(b'UNREAD-REDIRECT-BODY')
+
+            def open(self, req, timeout):
+                self.requests.append(req)
+                if len(self.requests) == 1:
+                    raise urllib.error.HTTPError(req.full_url, 302, 'found',
+                        {'Location': 'https://cas-bridge.xethub.hf.co/public-artifact?temporary=redacted'}, self.body)
+                return 'response'
+        opener = Opener()
+        receipt = {}
+        actual = module.open_public_segment(opener, 'https://huggingface.co/a/b/resolve/exact/model.safetensors',
+                    {'Range': 'bytes=3-9', 'Accept-Encoding': 'identity'}, 1, receipt)
+        self.assertEqual(actual, 'response')
+        self.assertEqual(len(opener.requests), 2)
+        self.assertTrue(all(r.get_header('Range') == 'bytes=3-9' for r in opener.requests))
+        self.assertTrue(opener.body.closed)
+        self.assertEqual(receipt['redirects'][0]['body_consumed_bytes'], 0)
+        self.assertNotIn('temporary', json.dumps(receipt))
+
+    def test_redirect_to_other_domain_stops_before_second_request(self):
+        class Opener:
+            calls = 0
+
+            def open(self, req, timeout):
+                self.calls += 1
+                raise urllib.error.HTTPError(req.full_url, 302, 'found', {'Location': 'https://example.invalid/model'}, io.BytesIO())
+        opener = Opener()
+        with self.assertRaisesRegex(ValueError, 'outside'):
+            module.open_public_segment(opener, 'https://huggingface.co/a/b/resolve/exact/model.safetensors', {}, 1, {})
+        self.assertEqual(opener.calls, 1)
+
+    def test_frozen_partition_is_gapless_and_bad_overlap_fails(self):
+        plan_path = Path('/workspace/scratch/e9e051ab0825/learning_work/e3_publication/qualification/cell-e3-independent-base-materials-20261120/final/range-recovery-plan-2/PLAN.json')
+        plan = json.loads(plan_path.read_bytes())
+        module.check_segments(plan)
+        plan['segments'][1]['start'] -= 1
+        with self.assertRaisesRegex(ValueError, 'gap, overlap'):
+            module.check_segments(plan)
+
+
+if __name__ == '__main__':
+    unittest.main(verbosity=2)

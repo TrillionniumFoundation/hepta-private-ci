@@ -1,0 +1,116 @@
+"""Archive only terminal public-material receipts; never archive model bytes."""
+
+from pathlib import Path
+import hashlib
+import io
+import json
+import os
+import stat
+import tarfile
+import time
+
+ROOT = Path('/home/qian-qi/work/hepta-e3-smollm2-materials-20261120-e9e051')
+RUN = ROOT / 'range-recovery-run-1'
+OUT = ROOT / 'range-recovery-readback-1'
+
+
+def digest_extent(path, start, size):
+    h = hashlib.sha256()
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        offset = 0
+        while offset < size:
+            chunk = os.pread(fd, min(1024 * 1024, size - offset), start + offset)
+            if not chunk:
+                raise ValueError('terminal retained extent is shorter than declared')
+            h.update(chunk)
+            offset += len(chunk)
+    finally:
+        os.close(fd)
+    return h.hexdigest()
+
+
+def dump(path, value):
+    data = (json.dumps(value, sort_keys=True, separators=(',', ':')) + '\n').encode()
+    with path.open('xb') as f:
+        f.write(data)
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+start = time.monotonic()
+cpu = time.process_time()
+terminal = json.loads((RUN / 'RESULT.json').read_bytes())
+assert terminal['status'] in ('FAILED_RETAIN_PARTIAL_NO_MODEL_EXECUTION', 'COMPLETE_FILES_VERIFIED_NO_MODEL_EXECUTION')
+assert len(terminal['worker_exit_codes']) == 4 and all(code is not None for code in terminal['worker_exit_codes'])
+OUT.mkdir(exist_ok=False)
+plan = json.loads((ROOT / 'range-recovery-plan-2/PLAN.json').read_bytes())
+data_path = Path(terminal.get('ready_weight_path', str(RUN / 'model.safetensors.partial')))
+assert data_path.is_file() and not data_path.is_symlink()
+original_prefix = Path(plan['preserved_prefix']['path'])
+original_prefix_sha = digest_extent(original_prefix, 0, plan['preserved_prefix']['bytes'])
+copied_prefix_sha = digest_extent(data_path, 0, plan['preserved_prefix']['bytes'])
+assert original_prefix_sha == copied_prefix_sha == plan['preserved_prefix']['sha256']
+extents = []
+for receipt_path in sorted((RUN / 'segments').glob('*.RESULT.json')):
+    receipt = json.loads(receipt_path.read_bytes())
+    segment = receipt['segment']
+    size = receipt['written_bytes']
+    actual_sha = digest_extent(data_path, segment['start'], size)
+    assert actual_sha == receipt['stream_sha256'] == receipt['local_extent_sha256']
+    extents.append({'ordinal': segment['ordinal'], 'start': segment['start'], 'known_written_bytes': size,
+                    'sha256': actual_sha, 'status': receipt['status'],
+                    'independent_disk_extent_readback_matches_terminal_receipt': True})
+extent_report = {'schema': 'hepta.e3-range-recovery-terminal-extent-readback.v1',
+    'download_result_sha256': hashlib.sha256((RUN / 'RESULT.json').read_bytes()).hexdigest(),
+    'data_path': str(data_path), 'original_prefix_sha256': original_prefix_sha,
+    'copied_prefix_sha256': copied_prefix_sha, 'prefix_bytes': plan['preserved_prefix']['bytes'],
+    'extents': extents, 'known_unique_retained_weight_bytes': plan['preserved_prefix']['bytes'] + sum(e['known_written_bytes'] for e in extents),
+    'complete_lfs_identity_verified': terminal['full_lfs_sha256_verified'],
+    'segment_hashes_bind_received_bytes_but_do_not_replace_full_upstream_lfs_hash': True,
+    'new_model_calls': 0, 'new_training_updates': 0,
+    'self_cpu_seconds': time.process_time() - cpu, 'wall_seconds': time.monotonic() - start}
+dump(OUT / 'RETAINED_EXTENTS.json', extent_report)
+paths = []
+for folder in [ROOT / 'range-recovery-execution-freeze-1', RUN]:
+    for path in sorted(folder.rglob('*')):
+        if path.is_dir():
+            continue
+        assert not path.is_symlink() and path.is_file()
+        if path.name == 'model.safetensors.partial':
+            continue
+        allowed_temporary_receipt = path.name.endswith('PROGRESS.json.tmp') or path.name == 'STATUS.json.tmp'
+        assert path.suffix in ('.json', '.py', '.stdout', '.stderr') or allowed_temporary_receipt, str(path)
+        assert path.stat().st_size <= 512000, str(path)
+        paths.append(path)
+paths.append(ROOT / 'RANGE_RECOVERY_OWNER.json')
+paths.append(OUT / 'RETAINED_EXTENTS.json')
+paths.append(Path(__file__))
+index = []
+archive = OUT / 'terminal-public-receipts.tar.gz'
+with tarfile.open(archive, mode='x:gz') as tar:
+    for path in paths:
+        data = path.read_bytes()
+        info = path.stat()
+        relative = path.relative_to(ROOT).as_posix()
+        row = {'path': relative, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest(), 'mode': stat.S_IMODE(info.st_mode)}
+        index.append(row)
+        member = tarfile.TarInfo(relative)
+        member.size = len(data)
+        member.mode = row['mode']
+        member.mtime = info.st_mtime
+        tar.addfile(member, io.BytesIO(data))
+dump(OUT / 'RAW_FILE_INDEX.json', {'schema': 'hepta.e3-range-recovery-receipt-index.v1', 'files': index})
+data = archive.read_bytes()
+result = {'schema': 'hepta.e3-range-recovery-terminal-archive.v1', 'archive_path': str(archive),
+    'collector_source_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    'archive_bytes': len(data), 'archive_sha256': hashlib.sha256(data).hexdigest(),
+    'file_count': len(index), 'raw_file_bytes': sum(r['bytes'] for r in index),
+    'model_weight_bytes_excluded_from_repository_archive': True,
+    'whole_weight_file_ready': terminal['full_lfs_sha256_verified'],
+    'known_unique_retained_weight_bytes': extent_report['known_unique_retained_weight_bytes'],
+    'download_owner_wall_seconds_separate': terminal['wall_seconds'],
+    'readback_owner_wall_seconds': time.monotonic() - start,
+    'readback_owner_self_cpu_seconds': time.process_time() - cpu,
+    'new_model_calls': 0, 'new_training_updates': 0, 'new_network_material_bytes': 0}
+dump(OUT / 'ARCHIVE.json', result)
+print(json.dumps(result))

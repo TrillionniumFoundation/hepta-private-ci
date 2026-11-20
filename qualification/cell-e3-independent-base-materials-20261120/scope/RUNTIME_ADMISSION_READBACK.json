@@ -1,0 +1,14 @@
+{
+  "schema": "hepta.e3-runtime-admission-static-source.v1",
+  "source_path": "/workspace/scratch/e9e051ab0825/metrics_integration/scripts/cell_experiments/causal_probe_v3.py",
+  "source_sha256": "1517c622909deb5f8cf9ac65fb738da13cf4987018d5ac211a903a3c95cc8ae6",
+  "static_only_no_model_import_or_execution": true,
+  "excerpt_first_line": 72,
+  "excerpt_last_line": 118,
+  "source_excerpt": "        raise ValueError(\"configuration file exceeds its bound\")\n    value = data._parse(path.read_bytes())\n    if not isinstance(value, dict):\n        raise ValueError(\"configuration must be an object\")\n    return value\n\n\ndef _snapshot(base, files):\n    names = {row[\"path\"] for row in files}\n    required = {\n        \"config.json\",\n        \"tokenizer.json\",\n        \"tokenizer_config.json\",\n        \"generation_config.json\",\n    }\n    if not required <= names:\n        raise ValueError(\n            \"complete model, tokenizer and generation configuration required\"\n        )\n    if \"adapter_config.json\" in names or any(\n        name.endswith((\".bin\", \".pt\", \".pth\", \".ckpt\")) for name in names\n    ):\n        raise ValueError(\"only the standalone safetensors base is supported\")\n    weights = {name for name in names if name.endswith(\".safetensors\")}\n    if \"model.safetensors.index.json\" in names:\n        mapping = _json(base / \"model.safetensors.index.json\").get(\"weight_map\")\n        if (\n            not isinstance(mapping, dict)\n            or not mapping\n            or set(mapping.values()) != weights\n        ):\n            raise ValueError(\"safetensors shard index does not bind every weight file\")\n        if \"model.safetensors\" in names:\n            raise ValueError(\"ambiguous sharded and unsharded model\")\n    elif weights != {\"model.safetensors\"}:\n        raise ValueError(\"one complete safetensors model or exact shard index required\")\n    config = _json(base / \"config.json\")\n    tokenizer = _json(base / \"tokenizer_config.json\")\n    if config.get(\"model_type\") != \"qwen2\" or config.get(\"architectures\") != [\n        \"Qwen2ForCausalLM\"\n    ]:\n        raise ValueError(\"the pinned Qwen coder architecture is required\")\n    if config.get(\"quantization_config\") is not None:\n        raise ValueError(\"quantized model loading is outside this readiness profile\")\n    template = tokenizer.get(\"chat_template\")\n    if \"chat_template.jinja\" in names:\n        standalone = (base / \"chat_template.jinja\").read_text(encoding=\"utf-8\")\n",
+  "smollm2_config_sha256": "994f50b16abb4ae00880baefe03c10260b5bd608d2bf586f7056ca05a534feea",
+  "smollm2_architectures": [
+    "LlamaForCausalLM"
+  ],
+  "smollm2_model_type": "llama"
+}

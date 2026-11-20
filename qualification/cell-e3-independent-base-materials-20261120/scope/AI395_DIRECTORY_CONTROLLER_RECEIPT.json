@@ -1,0 +1,43 @@
+{
+  "script": "import os,json,stat,time,hashlib\nfrom pathlib import Path\nstart=time.monotonic();cpu=time.process_time()\nroot=Path('/home/qq/local-llm/models')\nallow={'config.json','adapter_config.json','generation_config.json','manifest.json','MODEL_MANIFEST.json','README.md','README','LICENSE','LICENSE.txt','LICENSE.md','NOTICE','METADATA.json','metadata.json'}\nout={'schema':'hepta.e3-known-ai395-model-directory-stat-readonly.v1','root':str(root),'depth_cap':2,'entry_cap':256,'metadata_file_bytes_cap':65536,'metadata_total_bytes_cap':524288,'files':[],'metadata':[],'errors':[],'truncated':False,'weights_opened':False,'weights_hashed':False,'model_loaded':False,'network_requests':0,'model_calls':0,'native_task_children':0}\nseen=0;metadata_bytes=0\nstack=[(root,0)]\nwhile stack:\n d,depth=stack.pop()\n try:entries=sorted(os.scandir(d),key=lambda e:e.name)\n except OSError as e:out['errors'].append({'path':str(d),'error':type(e).__name__});continue\n for entry in entries:\n  seen+=1\n  if seen>256:out['truncated']=True;break\n  p=Path(entry.path)\n  try:st=p.lstat()\n  except OSError as e:out['errors'].append({'path':str(p),'error':type(e).__name__});continue\n  kind='symlink' if stat.S_ISLNK(st.st_mode) else 'directory' if stat.S_ISDIR(st.st_mode) else 'regular' if stat.S_ISREG(st.st_mode) else 'other'\n  row={'path':str(p.relative_to(root)),'kind':kind,'bytes':st.st_size,'mtime_ns':st.st_mtime_ns,'ctime_ns':st.st_ctime_ns,'device':st.st_dev,'inode':st.st_ino,'mode':oct(stat.S_IMODE(st.st_mode))}\n  out['files'].append(row)\n  if kind=='directory' and depth<2:stack.append((p,depth+1))\n  if kind=='regular' and p.name in allow and st.st_size<=65536 and metadata_bytes+st.st_size<=524288:\n   flags=os.O_RDONLY|getattr(os,'O_NOFOLLOW',0)\n   fd=os.open(p,flags)\n   try:\n    b=os.read(fd,65537);after=os.fstat(fd)\n    assert len(b)==st.st_size and after.st_ino==st.st_ino and after.st_mtime_ns==st.st_mtime_ns\n   finally:os.close(fd)\n   metadata_bytes+=len(b);out['metadata'].append({'path':str(p.relative_to(root)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'text':b.decode('utf-8','replace')})\n if out['truncated']:break\nout.update(entries_observed=len(out['files']),metadata_bytes=metadata_bytes,wall_seconds=time.monotonic()-start,self_cpu_seconds=time.process_time()-cpu)\nprint(json.dumps(out,sort_keys=True))\n",
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"ai395\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-ce4f2f242ad224d4ab435d20883bb2d9726f1facba38572d14b95dbc1d984ad9\",\"status\":{\"boot\":\"b1620269-aaef-43e7-bf47-bc6eb1c1a447\",\"bytes_seen\":962,\"bytes_stored\":962,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795152864331,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":3578818,\"pid\":3578831,\"state\":\"exited\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "receipt": {
+    "archive_path": "/home/qq/.local/state/hepta-runtime-mac-worker/terminals/dpty-ce4f2f242ad224d4ab435d20883bb2d9726f1facba38572d14b95dbc1d984ad9/output.log",
+    "available_end": 962,
+    "bytes_hex": "7b2264657074685f636170223a20322c2022656e74726965735f6f62736572766564223a20322c2022656e7472795f636170223a203235362c20226572726f7273223a205b5d2c202266696c6573223a205b7b226279746573223a2039383430333335363232342c20226374696d655f6e73223a20313739343736303235343936393032333431342c2022646576696365223a2036363330362c2022696e6f6465223a2034363237393835382c20226b696e64223a2022726567756c6172222c20226d6f6465223a2022306f343434222c20226d74696d655f6e73223a20313739313235343039313035313738393839332c202270617468223a20225177656e332e382d466c6173682d4e6578742d556e63656e736f7265642d49513458532d4e4751342e67677566227d2c207b226279746573223a20323739303334313732382c20226374696d655f6e73223a20313739353132303238363033353638393438332c2022646576696365223a2036363330362c2022696e6f6465223a2034363332343834382c20226b696e64223a2022726567756c6172222c20226d6f6465223a2022306f343434222c20226d74696d655f6e73223a20313739353030373636313439333939393539362c202270617468223a20227177656e33382d666c6173682d6e6578742d6d74702d51345f4b5f4d2e67677566227d5d2c20226d65746164617461223a205b5d2c20226d657461646174615f6279746573223a20302c20226d657461646174615f66696c655f62797465735f636170223a2036353533362c20226d657461646174615f746f74616c5f62797465735f636170223a203532343238382c20226d6f64656c5f63616c6c73223a20302c20226d6f64656c5f6c6f61646564223a2066616c73652c20226e61746976655f7461736b5f6368696c6472656e223a20302c20226e6574776f726b5f7265717565737473223a20302c2022726f6f74223a20222f686f6d652f71712f6c6f63616c2d6c6c6d2f6d6f64656c73222c2022736368656d61223a202268657074612e65332d6b6e6f776e2d61693339352d6d6f64656c2d6469726563746f72792d737461742d726561646f6e6c792e7631222c202273656c665f6370755f7365636f6e6473223a20382e3934343939393939393939393936652d30352c20227472756e6361746564223a2066616c73652c202277616c6c5f7365636f6e6473223a20392e303539373139373431333434343532652d30352c2022776569676874735f686173686564223a2066616c73652c2022776569676874735f6f70656e6564223a2066616c73657d0d0a",
+    "chunk_sha256": "a14e97c7f5514d8af02a4f4de8adce3aee97eddbe6edcb7e847bc383c7f1d0d7",
+    "host": "ai395",
+    "next_offset": 962,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-ce4f2f242ad224d4ab435d20883bb2d9726f1facba38572d14b95dbc1d984ad9",
+    "status": {
+      "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+      "bytes_seen": 962,
+      "bytes_stored": 962,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795152864331,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 3578818,
+      "pid": 3578831,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"depth_cap\": 2, \"entries_observed\": 2, \"entry_cap\": 256, \"errors\": [], \"files\": [{\"bytes\": 98403356224, \"ctime_ns\": 1794760254969023414, \"device\": 66306, \"inode\": 46279858, \"kind\": \"regular\", \"mode\": \"0o444\", \"mtime_ns\": 1791254091051789893, \"path\": \"Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf\"}, {\"bytes\": 2790341728, \"ctime_ns\": 1795120286035689483, \"device\": 66306, \"inode\": 46324848, \"kind\": \"regular\", \"mode\": \"0o444\", \"mtime_ns\": 1795007661493999596, \"path\": \"qwen38-flash-next-mtp-Q4_K_M.gguf\"}], \"metadata\": [], \"metadata_bytes\": 0, \"metadata_file_bytes_cap\": 65536, \"metadata_total_bytes_cap\": 524288, \"model_calls\": 0, \"model_loaded\": false, \"native_task_children\": 0, \"network_requests\": 0, \"root\": \"/home/qq/local-llm/models\", \"schema\": \"hepta.e3-known-ai395-model-directory-stat-readonly.v1\", \"self_cpu_seconds\": 8.94499999999996e-05, \"truncated\": false, \"wall_seconds\": 9.059719741344452e-05, \"weights_hashed\": false, \"weights_opened\": false}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  }
+}

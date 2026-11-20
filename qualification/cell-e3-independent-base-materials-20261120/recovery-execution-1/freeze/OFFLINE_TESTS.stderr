@@ -1,0 +1,14 @@
+test_deadline_rejects_before_body (__main__.RangeChecks.test_deadline_rejects_before_body) ... ok
+test_exact_extent_preserves_neighbors_and_hashes (__main__.RangeChecks.test_exact_extent_preserves_neighbors_and_hashes) ... ok
+test_missing_length_exact_eof_is_accepted (__main__.RangeChecks.test_missing_length_exact_eof_is_accepted) ... ok
+test_overlong_body_cannot_overwrite_neighbor (__main__.RangeChecks.test_overlong_body_cannot_overwrite_neighbor) ... ok
+test_short_body_retains_exact_partial_count (__main__.RangeChecks.test_short_body_retains_exact_partial_count) ... ok
+test_wrong_status_or_range_or_encoding_rejects_before_any_body_read (__main__.RangeChecks.test_wrong_status_or_range_or_encoding_rejects_before_any_body_read) ... ok
+test_frozen_partition_is_gapless_and_bad_overlap_fails (__main__.RedirectChecks.test_frozen_partition_is_gapless_and_bad_overlap_fails) ... ok
+test_redirect_preserves_range_and_does_not_read_error_body (__main__.RedirectChecks.test_redirect_preserves_range_and_does_not_read_error_body) ... ok
+test_redirect_to_other_domain_stops_before_second_request (__main__.RedirectChecks.test_redirect_to_other_domain_stops_before_second_request) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.004s
+
+OK

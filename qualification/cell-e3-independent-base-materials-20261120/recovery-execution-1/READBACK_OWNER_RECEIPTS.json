@@ -1,0 +1,32 @@
+{
+  "freeze_launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-efb1100987bec20dde5d174aa8fccffe567ad0f64b643403983ef733faf6b5fe\",\"status\":{\"boot\":\"8c55b477-233a-4771-995a-6f666f6299b3\",\"bytes_seen\":419,\"bytes_stored\":419,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795156004170,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":3845140,\"pid\":3845144,\"state\":\"exited\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"desktop\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-43ca3619f2728878dcb89a6b95c63069311e0fdf3601d0fafd5c13bbeeea951f\",\"status\":{\"boot\":\"8c55b477-233a-4771-995a-6f666f6299b3\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1795156326500,\"output_complete\":false,\"owner_pid\":3854711,\"pid\":3854712,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-43ca3619f2728878dcb89a6b95c63069311e0fdf3601d0fafd5c13bbeeea951f/output.log\",\"available_end\":838,\"bytes_hex\":\"7b22736368656d61223a202268657074612e65332d72616e67652d7265636f766572792d7465726d696e616c2d617263686976652e7631222c2022617263686976655f70617468223a20222f686f6d652f7169616e2d71692f776f726b2f68657074612d65332d736d6f6c6c6d322d6d6174657269616c732d32303236313132302d6539653035312f72616e67652d7265636f766572792d726561646261636b2d312f7465726d696e616c2d7075626c69632d72656365697074732e7461722e677a222c2022636f6c6c6563746f725f736f757263655f736861323536223a202232633561663634613630373131343862613161626431336436663737326363393666376132366339306336653333646338373766313234396635663039636434222c2022617263686976655f6279746573223a2032343337312c2022617263686976655f736861323536223a202265636361373831333164643164646338326261643031373037643632366665643864326438363630336533356639383038356462623563663035386435333236222c202266696c655f636f756e74223a2039302c20227261775f66696c655f6279746573223a203133323135322c20226d6f64656c5f7765696768745f62797465735f6578636c756465645f66726f6d5f7265706f7369746f72795f61726368697665223a20747275652c202277686f6c655f7765696768745f66696c655f7265616479223a2066616c73652c20226b6e6f776e5f756e697175655f72657461696e65645f7765696768745f6279746573223a203930313331363630382c2022646f776e6c6f61645f6f776e65725f77616c6c5f7365636f6e64735f7365706172617465223a203839352e313837333235353131303131332c2022726561646261636b5f6f776e65725f77616c6c5f7365636f6e6473223a20332e373737363833373631303239303338362c2022726561646261636b5f6f776e65725f73656c665f6370755f7365636f6e6473223a20332e373736373134303734393939393939372c20226e65775f6d6f64656c5f63616c6c73223a20302c20226e65775f747261696e696e675f75706461746573223a20302c20226e65775f6e6574776f726b5f6d6174657269616c5f6279746573223a20307d0d0a\",\"chunk_sha256\":\"218b562934cd919d8c718b43f1b5cdf2f166cd8645d0d4eeb076c375d62c79ec\",\"host\":\"desktop\",\"next_offset\":838,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-43ca3619f2728878dcb89a6b95c63069311e0fdf3601d0fafd5c13bbeeea951f\",\"status\":{\"boot\":\"8c55b477-233a-4771-995a-6f666f6299b3\",\"bytes_seen\":838,\"bytes_stored\":838,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795156326500,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":3854711,\"pid\":3854712,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"schema\\\": \\\"hepta.e3-range-recovery-terminal-archive.v1\\\", \\\"archive_path\\\": \\\"/home/qian-qi/work/hepta-e3-smollm2-materials-20261120-e9e051/range-recovery-readback-1/terminal-public-receipts.tar.gz\\\", \\\"collector_source_sha256\\\": \\\"2c5af64a6071148ba1abd13d6f772cc96f7a26c90c6e33dc877f1249f5f09cd4\\\", \\\"archive_bytes\\\": 24371, \\\"archive_sha256\\\": \\\"ecca78131dd1ddc82bad01707d626fed8d2d86603e35f98085dbb5cf058d5326\\\", \\\"file_count\\\": 90, \\\"raw_file_bytes\\\": 132152, \\\"model_weight_bytes_excluded_from_repository_archive\\\": true, \\\"whole_weight_file_ready\\\": false, \\\"known_unique_retained_weight_bytes\\\": 901316608, \\\"download_owner_wall_seconds_separate\\\": 895.1873255110113, \\\"readback_owner_wall_seconds\\\": 3.7776837610290386, \\\"readback_owner_self_cpu_seconds\\\": 3.7767140749999997, \\\"new_model_calls\\\": 0, \\\"new_training_updates\\\": 0, \\\"new_network_material_bytes\\\": 0}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}
