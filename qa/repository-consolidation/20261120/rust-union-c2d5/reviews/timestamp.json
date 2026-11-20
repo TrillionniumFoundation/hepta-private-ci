@@ -1,0 +1,88 @@
+{
+  "base": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+  "changed_files": [
+    {
+      "after_blob": "58925ef00fe2ff3dff237e22cf47cfd59d725c31",
+      "after_path": "/workspace/scratch/c2d514464ab5/ci-repair/timestamp-compat/after/codex-rs/app-server/tests/common/rollout.rs",
+      "after_sha256": "e7f90d29886a4a801629903cdea4b8fc719655afbd1f1a9b80131b717af609f2",
+      "before_blob": "b41343f72e0e6ab7bc75deb0f04d534ca2172d23",
+      "before_path": "/workspace/scratch/c2d514464ab5/ci-repair/timestamp-compat/before/codex-rs/app-server/tests/common/rollout.rs",
+      "before_sha256": "5b53656badcf0946299721e925fd2ee0ca8e74d9402c0ac55206ad95b4d1b979",
+      "path": "codex-rs/app-server/tests/common/rollout.rs"
+    },
+    {
+      "after_blob": "b7554ef03989ed199efe83582df053b0e512c5d6",
+      "after_path": "/workspace/scratch/c2d514464ab5/ci-repair/timestamp-compat/after/codex-rs/app-server/tests/common/rollout_tests.rs",
+      "after_sha256": "4764249f187b8379bd3662ffe328907ba85d2050d654412fa4ededabce5ba1fe",
+      "before_blob": null,
+      "before_path": null,
+      "before_sha256": null,
+      "path": "codex-rs/app-server/tests/common/rollout_tests.rs"
+    }
+  ],
+  "existing_sources": [
+    {
+      "blob": "82473248b96659a42acd4d4bf04095c16458d1dc",
+      "sha256": "6189412f1ec1cdc15cb6f808027c88729672e345d63268b1f34f66d1ae2403d6",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/100e0b1a603bd7047ca77179d662dc3e9f763804/codex-rs/app-server/tests/common/BUILD.bazel"
+    },
+    {
+      "blob": "7b545e94f3b1e4cd6bed840c57cd0539467e772c",
+      "sha256": "09ab94bc0980fff7813494fba5a4516d72175ea3b3f5a5409ca8fe29dd3eee15",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/100e0b1a603bd7047ca77179d662dc3e9f763804/codex-rs/app-server/tests/common/lib.rs"
+    },
+    {
+      "blob": "a8a239fd98a0732e4baefe6b5008ea3314c54ace",
+      "sha256": "8f77841d503f07726bec3a679e13ee8cb1d185f98c37897bb5cf75b71bb0e48e",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/100e0b1a603bd7047ca77179d662dc3e9f763804/codex-rs/Cargo.toml"
+    },
+    {
+      "blob": "1fb506b1f6585c133a7b0c0487680948278f2154",
+      "sha256": "53184b52c8613b4fede0922c8e9f5b50aee7f571f11c3c337d4c7e707d4a2ad0",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/100e0b1a603bd7047ca77179d662dc3e9f763804/codex-rs/app-server/Cargo.toml"
+    },
+    {
+      "blob": "05517af1fdfdbe024ba24b5fd8485e4e4e067f51",
+      "sha256": "e591cf39739a65fafe50999595c94f1c7372e327c307b61eba37ab5d642f6914",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/100e0b1a603bd7047ca77179d662dc3e9f763804/codex-rs/utils/time/src/parse.rs"
+    }
+  ],
+  "finding": "No static blocker. The patch repairs the absent From<Timestamp> for SystemTime at the test fixture without changing Timestamp or dependencies. Native Cargo/Bazel qualification is pending.",
+  "native_tests_run": 0,
+  "portability": "All three test dates and500ms precision are representable by normal Linux/macOS/Windows SystemTime and usual CI filesystems. checked arithmetic avoids unchecked platform overflow; set_times still propagates a genuine filesystem limitation. Cross-platform execution remains unverified.",
+  "regression": {
+    "cases": [
+      "epoch plus500ms",
+      "epoch minus500ms",
+      "2016 leap second plus500ms"
+    ],
+    "kind": "Behavioral filesystem regression through create_fake_rollout, not an assertion that mirrors the conversion expression.",
+    "meaningful_risks_covered": [
+      "negative fractional sign",
+      "ordinary fractional preservation",
+      "explicit leap-second normalization",
+      "real FileTimes write and metadata read"
+    ],
+    "native_execution": "NOT_RUN by reviewer; root owns the combined native gate.",
+    "oracle": "Read actual file metadata.modified() and compare to independent exact SystemTime constants."
+  },
+  "remote_mutations": 0,
+  "reviewed_at": "2026-11-20T03:05:49.928827+00:00",
+  "schema": "hepta.independent-timestamp-fixture-review.v1",
+  "semantics": {
+    "api": "Uses existing public timestamp() and timestamp_subsec_nanos(); does not add or modify a public conversion API.",
+    "leap_second": "The existing parser stores :60 as the preceding second with nanoseconds>=1000000000. For 2016-12-31T23:59:60.500Z,1483228799s+1500000000ns maps to POSIX1483228800.5s, preserving the legacy integer-second normalization. Using calendar() directly would discard this extra second.",
+    "negative_fraction": "1969-12-31T23:59:59.500Z is seconds=-1,nanos=500000000; total=-500000000ns, so checked_sub(500ms) preserves the sign and fraction.",
+    "overflow": "i64 seconds multiplied by10^9 plus u32 nanoseconds fits i128. The quotient of the unsigned magnitude fits u64, remainder is below10^9 and fits u32. Duration receives normalized fields; checked_add/checked_sub reject SystemTime overflow and the existing anyhow Result propagates conversion and filesystem errors.",
+    "positive_fraction": "1970-01-01T00:00:00.500Z maps to checked_add(500ms)."
+  },
+  "wiring": {
+    "bazel": "app-server/tests/common/BUILD.bazel invokes codex_rust_crate(name=common,crate_name=app_test_support,crate_srcs=glob([*.rs])); the new sibling module is included automatically and the macro emits the common-unit-tests target.",
+    "cargo_lib_path": "lib.rs",
+    "cargo_package": "app_test_support",
+    "cargo_test_command": "just test --locked -p app_test_support --lib --no-tests=fail --retries 0",
+    "existing_dependencies": "pretty_assertions already exists in dev-dependencies; tempfile and anyhow already exist. Cargo.toml is byte-unchanged.",
+    "root_module": "lib.rs declares mod rollout; rollout.rs appends cfg(test),path=rollout_tests.rs module.",
+    "workspace_member_via_path_dependency": "Workspace app-server declares app_test_support.workspace=true; workspace dependency points to app-server/tests/common; the package is not excluded."
+  }
+}
