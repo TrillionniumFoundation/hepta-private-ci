@@ -39,5 +39,8 @@ jobs:
         run: just test --locked -p codex-core --lib --no-tests=fail --retries 0 -E 'test(client::provider_policy_tests::)'
       - name: Strict core library and test lint
         run: cargo +1.96.0 clippy --locked -p codex-core --lib --tests -- -D warnings
-      - name: Verify exact Rust formatting
-        run: cargo +1.96.0 fmt --all -- --check
+      - name: Format and verify the exact candidate
+        run: |
+          just fmt
+          git diff --exit-code -- .
+          cargo +1.96.0 fmt --all -- --check
