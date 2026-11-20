@@ -1,0 +1,913 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-authbus_text_product-test",
+    "source_blob": "f1ab049664d237a720b520cde5bd217fae9655f0",
+    "source_sha256": "8de4ab431d1def7be763492726f8947046d81d2760cbe345d43145c8cf0803a7",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_product_e2e-test",
+    "source_blob": "40205c5e6d3c7fa70d29a69ba46f46a9eeba8ba2",
+    "source_sha256": "d5a334f0c846c506192b814bbd7bc2a9565a633128679270c0c4001bd3afa4be",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-cognitive_store_product_writer-test",
+    "source_blob": "c367957b39a4fc36e27a23024530c92be6f9c0f7",
+    "source_sha256": "e7bc2e0eeddb2ac817f30c1bb434502fb41add807c5999391a9324314eff227f",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-five_agent_rolling_upgrade-test",
+    "source_blob": "8b44dc8ecbdc201a6ff20fb125064e2dc5865e39",
+    "source_sha256": "bf7c21b74aaf17ec316f440afec19f2fb3dca82e78634cd5053d72a0ec4b17f5",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/fleet_harness_diagnostics.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-fleet_harness_diagnostics-test",
+    "source_blob": "95a936a5f0b44af10f5329017eac99ff46968c8b",
+    "source_sha256": "88ee8863af8ad0b912055d688fd8f5eabfd04aa90e4f4acf6098b4432eb987c5",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/generation_neuron_calibration.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-generation_neuron_calibration-test",
+    "source_blob": "ea5193dbd699dd3abbcc9589b0a5f083f884d0b5",
+    "source_sha256": "e3b3581ffbf2aa92f12da250fb1140644b67f9ba07dd5bc48430767ab08cfd7f",
+    "bindings_changed": true,
+    "cargo_required_features": [
+      "composition-model-driver-qualification"
+    ],
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/generation_paired_evaluation.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-generation_paired_evaluation-test",
+    "source_blob": "1be0a98222b2fce0fa208f29b6023a0731028ae1",
+    "source_sha256": "fca37719baeff9813366cbeddc2f70b65a92267345c0d738ccde3678eed25912",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/generation_plasticity_rejection.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-generation_plasticity_rejection-test",
+    "source_blob": "b2f94e532f43651088d648b94e660844cbce12da",
+    "source_sha256": "75d90dc916e10764aa8a2d5a9cfd5b4d4a629bf965997cd645f0434e3d29723f",
+    "bindings_changed": true,
+    "cargo_required_features": [
+      "composition-model-driver-qualification"
+    ],
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/generation_terminal_owner.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-generation_terminal_owner-test",
+    "source_blob": "538cca2a98c4dadd4188f06dfba62600bfac0708",
+    "source_sha256": "c2bc34e190e468e1bf9bfef04082d0899a25ff1b0f7bff9a21f8b3a0d97f71f6",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/intuition_policy_product.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-intuition_policy_product-test",
+    "source_blob": "d7e6c014a45b47b7c2b4fe21bed02f2ce0ae1598",
+    "source_sha256": "56b4e4d17d68c81a13699e86aa5292ced15c0c8ca50101649ad15ebe8f1c3c76",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-kernel_evidence_product-test",
+    "source_blob": "2ac9d2030f0232dd25dcacd23432f7d77c5a373a",
+    "source_sha256": "3e1a37de06ad5e73e62498d082a52ed450d1599c8a9145bd1ab1a4e1f4e619bc",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/native_memory_process.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-native_memory_process-test",
+    "source_blob": "0363ffd0fc374e923dbff27145adb7a8a06ce8ab",
+    "source_sha256": "2137fdcf9f3d074cb8e5522d9ab4e567571bfe03ca3b7a07003e65b70e405aed",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/neuron_generation_process_e2e.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-neuron_generation_process_e2e-test",
+    "source_blob": "0e9045a1d3d92a868f8a61af6b17fccec38f1e3a",
+    "source_sha256": "d8756a18e8ec2453fdf5c12aa8b23ca727f946c3dbdd4187ea419edd44129c74",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/optional_module_restart.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-optional_module_restart-test",
+    "source_blob": "3daf4a52df206121125d8218a72582cc6ee3e352",
+    "source_sha256": "e73173a477410aede2ef598272a404302e81106a16b294fd834fe06a2fc141ef",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-plasticity_process_e2e-test",
+    "source_blob": "2fe9a73ea1022a12636ffb5be341c2a53ed2c918",
+    "source_sha256": "bfba7a937a0c59db5a87de2b0cd8c0e77c36c0a6324a7607c63071708aa19a3b",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/queue_capacity_product.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-queue_capacity_product-test",
+    "source_blob": "185e5432023ee756277b882b715f77614e399fec",
+    "source_sha256": "6f532318ca2265ca752acdbef6d5bb307fae0a319fe92f0f0364ae2091a4aa15",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/runtime_codex_product_e2e.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-runtime_codex_product_e2e-test",
+    "source_blob": "bd41d2a22e4b78bd9b465d9928f7623366ed215a",
+    "source_sha256": "8f5cfad6bb03f49ec9e6bbff4e0f492aa0739da24106cd655d5075effa0d24be",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/runtime_shutdown_outcomes.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-runtime_shutdown_outcomes-test",
+    "source_blob": "664da435c9da89432ea66171a9757aa3633e5bcd",
+    "source_sha256": "d43a9a674ca6e2ce3a2712e2d31fd42d3ecb604e5510734778b4afd47d6e7f04",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/supervised_two_agents.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-supervised_two_agents-test",
+    "source_blob": "58caeec071839c9f88eda4e80d19e52bd240b203",
+    "source_sha256": "7ad9b04cf6a26aad46cc7ae75726143026e0c6c88caed3c493c1104ef2c504b1",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/supervisord_product_e2e.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-supervisord_product_e2e-test",
+    "source_blob": "4d3cf83acefea8db42812f41f566565677bc26ff",
+    "source_sha256": "1e0efef34a0f48aa0cfd96a30396174a1d5f09ab8782039311ca71e1a2f30bdb",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-terminal_cell_owner-test",
+    "source_blob": "e8d2b902fa6dafeea9fda05ad638baef27b1b3ee",
+    "source_sha256": "06044dbe4811d5dc1ac3863960d63fe32b0e589ab356ac44129dcd5ee8b54e0f",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/terminal_cell_subset.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-terminal_cell_subset-test",
+    "source_blob": "1489e476bd5583f2bdd2ad241d2c1263b25ece17",
+    "source_sha256": "588362aa4896277f72665b982fdfb5e1f0bcfa1e5d4b060c6281dfcc917a7973",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/two_agent_turn_recovery.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-two_agent_turn_recovery-test",
+    "source_blob": "5ed24159c7ae6204a4f2c58fe15f2dbfeb906671",
+    "source_sha256": "ebd3c45b14d579675385c6893915f8b3abc9922db911738bdac52fbff62e8544",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs",
+    "target": "//codex-rs/hepta-agentd:hepta-agentd-verify1_kernel_evidence_product-test",
+    "source_blob": "ee6dbc355d45899b4c2111f90f0c8e710e26f702",
+    "source_sha256": "19f343364c6ddb3f5fc73713463fb3e2f6f4d11e84b2b53ca4e0b39077ea37b3",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
+        "workspace_replacements": {
+          "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-test-lib",
+          "//codex-rs/hepta-intelligence": "//codex-rs/hepta-intelligence:hepta-intelligence-test-lib",
+          "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+          "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+          "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+          "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/tests/generation_owner_execution.rs",
+    "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation_owner_execution-test",
+    "source_blob": "7e3e20871af2883b6d943995b02643cb9e083715",
+    "source_sha256": "b1f56c3c369bc8824860977c948973715d57af5aad2f937efccc1db653d6046c",
+    "bindings_changed": true,
+    "cargo_required_features": [
+      "composition-model-driver-qualification"
+    ],
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host",
+        "workspace_replacements": {}
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+        "workspace_replacements": {
+          "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
+          "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
+          "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+          "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib"
+        }
+      }
+    }
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs",
+    "target": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-native_host_process_e2e-test",
+    "source_blob": "8bed084564a7d779f6c26925882713faa224cabf",
+    "source_sha256": "b699e7f53c16c3d2aaef5e6eabf09dc83222e43298cda1ce7ddec96d449a11f8",
+    "bindings_changed": false,
+    "cargo_required_features": null,
+    "declared_source_bindings": {
+      "before": {
+        "local_library": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host",
+        "workspace_replacements": {}
+      },
+      "after": {
+        "local_library": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host",
+        "workspace_replacements": {}
+      }
+    }
+  }
+]

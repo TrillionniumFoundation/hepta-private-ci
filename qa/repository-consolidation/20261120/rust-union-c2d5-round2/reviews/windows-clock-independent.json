@@ -1,0 +1,55 @@
+{
+  "status": "ACCEPTED_SOURCE_REVIEW_NATIVE_PENDING",
+  "patch_sha256": "93d03cd81892de67bead714694d1c3cf54464a9f94e6ba5e3a7c8b3ace7526f2",
+  "manifest_sha256": "e492333e23f724609023b3eca96d3531803c39124fd04f9eff2e780ecc653122",
+  "author_report_sha256": "77f5f47dd3ec6a62749b156b126ea5f3b58f9118365b8648c011491e05a76312",
+  "parent_source_head": "674102bd42ee11807d941e0f91b56dad63c2e945",
+  "parent_source_tree": "e1abde2f90e25e8c3e462a570c2c5bba0d7a66b3",
+  "source_head": "98e627e8f55dfd781d2b43943557d5dbd2ad6cbe",
+  "source_tree": "639abd80146e2f65ce3879c030c3b9f4592e8ae8",
+  "changed_paths": 1,
+  "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+  "before_blob": "4212c00916a6da25e68ff9408dec8032ffccc55d",
+  "after_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+  "actual_failure": {
+    "job_id": 136061097394,
+    "platform": "windows-latest / x86_64-pc-windows-msvc",
+    "log_sha256": "b699f165f61290d7bcb4313d92e0e93378b890ae6f253f4d7abe987b000e8af8",
+    "observed_seconds": 0,
+    "old_expected_seconds": -1,
+    "location": "timestamp_tests.rs:111:5"
+  },
+  "primary_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/time.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-time-source.json",
+      "content_sha256": "28a33c12597bbbb33342681696734d83d1a8045c0b6f8d70e7bfb468161eae62"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/time/windows.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-windows-time-source.json",
+      "content_sha256": "4c8f96bf6a8f338fcfcbda5c2286b94d59751921a3e3d0ca6adc85d845b6e012"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rust-lang/rust/1.96.0/library/std/src/sys/pal/windows/time.rs",
+      "retrieval_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage02/std-pal-windows-time-source.json",
+      "content_sha256": "c0ba05902236fee9a5f9ff0a1305e8855c92efaffe37e315243f79dc7950fec1"
+    }
+  ],
+  "root_cause": "Rust1.96 Windows SystemTime converts Duration into100ns intervals using subsec_nanos()/100. A requested1ns subtraction changes zero intervals. The old test incorrectly required the platform clock to represent Timestamp\u2019s finer nanosecond granularity.",
+  "review": {
+    "timestamp_representation": "All three original -1s/-1ms/999999999ns assertions remain verbatim; construction now directly exercises Timestamp\u2019s nanosecond representation, independent of platform clock precision.",
+    "portable_negative_clock": "An exactly representable epoch-minus100ns clock is converted and compared as a complete Timestamp(-1,999999900), then roundtripped through to_system_time.",
+    "original_1ns_request": "The original SystemTime epoch-minus1ns request remains unconditional. Its converted Timestamp duration from epoch must equal the independently observed SystemTime interval, and conversion back must recover the original platform time. Exact1ns platforms therefore still require a1ns result; Windows requires its actual zero interval.",
+    "scope": "Exactly one existing test function changes. Restoring the single constructor expression and removing the added clock checks reconstructs the entire prior file byte-for-byte. All later millisecond, overflow, calendar-range and stage01 signed/leap/platform tests are unchanged.",
+    "no_bypass": "No conditional branch, skip, early return, cfg restriction or ignore was added. Four assertions were added, and no test declaration or original assertion was removed.",
+    "runtime_api": "The Timestamp Sub implementation returns time::Duration using signed_duration_since; Duration::try_from(std::Duration) is already used by the shared time crate. The subtraction operands are Copy and within representable epoch-near ranges."
+  },
+  "production_source_changes": 0,
+  "native_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "remote_actions": false,
+  "candidate_source_mutations_by_reviewer": false,
+  "blocking_findings": [],
+  "stage01_followup": "Resolves the source defect recorded in stage01 known_followup_stage02. Native Windows confirmation and full required CI remain pending."
+}

@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python3",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_hepta_format_scope.FormatterScopeTests.test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+    "test_hepta_format_scope.FormatterScopeTests.test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+    "test_hepta_format_scope.FormatterScopeTests.test_missing_relocated_record_fails_before_full_and_scoped_format",
+    "test_hepta_format_scope.FormatterScopeTests.test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+    "test_hepta_format_scope.FormatterScopeTests.test_relocated_inventory_rejects_production_and_noncanonical_paths",
+    "test_hepta_format_scope.FormatterScopeTests.test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+  ],
+  "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/baseline/scripts",
+  "exit_code": 1,
+  "test_methods": [
+    "test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+    "test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+    "test_missing_relocated_record_fails_before_full_and_scoped_format",
+    "test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+    "test_relocated_inventory_rejects_production_and_noncanonical_paths",
+    "test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+  ],
+  "formatter_git_blob": "5ec5819cd6441798f406a77514736baa7294ef4a",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b584b4776f61de38f1f17c25d14ed644021d56e4e774952a9b1d009c21563104"
+}

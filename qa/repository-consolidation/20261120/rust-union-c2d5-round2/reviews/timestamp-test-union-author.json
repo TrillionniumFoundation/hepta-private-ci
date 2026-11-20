@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.timestamp-original-owner-test-union.v1",
+  "status": "FROZEN_SOURCE_REVIEW_CANDIDATE_NATIVE_PENDING",
+  "change": {
+    "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+    "mode": "100644",
+    "before": {
+      "git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+      "sha256": "dc10c11e9401fe882ae2e737ad033e7c8fc0d18222764369d303861dae83da95",
+      "size": 10657
+    },
+    "after": {
+      "git_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+      "sha256": "f702e0efc037b79c4553dab223902d00385bc53f33baaa4260466b36e53a9655",
+      "size": 11591
+    },
+    "before_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/before/codex-rs/utils/time/src/timestamp_tests.rs",
+    "after_file": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/after/codex-rs/utils/time/src/timestamp_tests.rs"
+  },
+  "base_source_context": "Root round2 source step8; exact before blob is the frozen stage02 afterimage",
+  "original_owner_frozen": {
+    "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/FROZEN.json",
+    "git_blob": "ab9658a7da9c62153cd1dd4a664759f114dc7849",
+    "sha256": "97baa8363a5a2d2363c41f0118dafecb25ce2aad752e0206c98b42e8c012a1e2",
+    "size": 5417
+  },
+  "original_owner_test_module": {
+    "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/utils/time/src/timestamp_tests.rs",
+    "git_blob": "cd60e3aaf9aa0166769d59ab9f9efe36dcdb456c",
+    "sha256": "0776fd63095f2c186c0b8b0d124a82e7f29ee5dc903d497589bba325916962d6",
+    "size": 7145
+  },
+  "appended_exact_bytes": {
+    "bytes": 934,
+    "sha256": "848a5c130be9e3800cf9cdbcb5f71cdaa204d04357a1cec65517febfafe84bc8",
+    "test_name": "system_time_conversion_preserves_signed_fraction_and_normalizes_leap_seconds",
+    "test_declarations": 1,
+    "loop_cases": 5
+  },
+  "preservation": {
+    "complete_stage02_module_is_byte_exact_prefix": true,
+    "original_owner_entire_added_test_is_byte_exact_suffix": true,
+    "all_our_existing_timestamp_test_statements_unchanged": true,
+    "original_owner_five_inputs_and_assertion_unchanged": true,
+    "imports_added": 0,
+    "test_name_collisions": 0,
+    "source_paths_changed": 1,
+    "tests_ignored_or_filtered": 0,
+    "production_functions_changed": 0,
+    "all_prior_FROZEN_and_manifests_unchanged": true
+  },
+  "additional_cases": [
+    "1969-12-31T23:59:59.500Z -> epoch -500ms",
+    "1970-01-01T00:00:00Z -> epoch",
+    "1970-01-01T00:00:00.000000100Z -> epoch +100ns",
+    "1969-12-31T23:59:60.500Z -> epoch +500ms",
+    "2016-12-31T23:59:60.250Z -> epoch +1483228800s +250ms"
+  ],
+  "rationale": "Append the other active recovery owner's complete legitimate regression unchanged, retaining complementary signed/leap inputs without replacing the reviewed shared conversion, color-eyre-compatible fixture failures, range tests, or platform-clock precision regression.",
+  "validation": {
+    "patch_check": {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/timestamp-test-union.patch"
+      ],
+      "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/compile-repair-73-stage03/before",
+      "exit_code": 0,
+      "scope": "Patch applicability only; not native execution"
+    },
+    "source_byte_preservation": "PASS",
+    "native_Rust_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "tool_availability": {
+      "just": null,
+      "rustc": null,
+      "cargo": null,
+      "rustfmt": null
+    },
+    "scope": "Static and exact-byte review only; no invented candidate PASS"
+  },
+  "remote_jobs_started": 0,
+  "remote_reruns_requested": 0,
+  "remote_refs_changed": 0,
+  "HIA_changes": 0
+}

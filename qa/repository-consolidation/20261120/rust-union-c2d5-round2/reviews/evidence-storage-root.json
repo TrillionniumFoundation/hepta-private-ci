@@ -1,0 +1,22 @@
+{
+  "status": "INDEPENDENT_SOURCE_AND_BYTE_CUSTODY_REVIEW_ACCEPTED",
+  "base_source_server": "bdbdb9e555191353528d0a67946ee5f7c726de34",
+  "base_source_tree": "2326dfb516d4db967fd106265517c8c9e34c6b3f",
+  "manifest_sha256": "5d3f4f5d8c426da8d5d2fb29e9bd23eb558044510800c3ff8769341bf6bf7dce",
+  "paths": 6,
+  "production_or_verifier_changes": 0,
+  "decompressed_logs_equal_original_git_blobs": true,
+  "original_raw_git_blobs": [
+    "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+    "6d8927833da96602e5e1d31c87d8534fef3062ac"
+  ],
+  "review": [
+    "All four stored afterimages independently match Git blob, SHA256 and size, and all four original paths bind exact base-source tree modes/blobs.",
+    "Both raw log removals have explicit gzip replacements; decompression is byte-identical to original Git objects, including original whitespace.",
+    "The export index changes only one storage row, its total stored byte count, one new raw reconstruction artifact, one explanatory note, and a migration record. All prior inputs/results/coverage/artifacts remain unchanged.",
+    "The union index changes only the one log storage record and adds a migration record; all original result fields, source identities, other artifacts and failure evidence remain unchanged.",
+    "No Git attributes, whitespace exemptions, verifier code, production script, required workflow, test assertion, historical Git object or ref is changed.",
+    "The existing independent verifier was executed on both old and new storage by merge_recovery; this root review does not relabel that execution as a Rust or full-repository qualification."
+  ],
+  "full_0cee_whitespace_check": "NOT_SUCCESSFULLY_RUN_LOCALLY: missing old baseline blobs; preserved exit128; original actual head73 CI failure and new exact delta checks remain recorded; full new required CI pending"
+}

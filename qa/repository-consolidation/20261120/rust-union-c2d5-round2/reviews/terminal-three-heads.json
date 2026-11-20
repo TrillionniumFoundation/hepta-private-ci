@@ -1,0 +1,103 @@
+{
+  "base_server": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "heads": [
+    {
+      "tip": "90bb831d030e6aba8c6be546833e535e67483295",
+      "branch_names": [
+        "codex/memory-terminal-37877957390"
+      ],
+      "sole_parent_and_merge_base": "bb471d2e90f52f39c2c00a01bc817bf137c55c02",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    },
+    {
+      "tip": "6612074c96fb379ffac29affe389a1f37ca6f336",
+      "branch_names": [
+        "codex/memory-terminal-37880672927"
+      ],
+      "sole_parent_and_merge_base": "ac6a26cd280d97d8e357ec973fda719778ad7bdf",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    },
+    {
+      "tip": "086de626c32183822e47b04fbba17fb0cdc1005d",
+      "branch_names": [
+        "codex/memory-terminal-37881020611"
+      ],
+      "sole_parent_and_merge_base": "5c465bfb5715745fa26381a077990cab8f0e87e8",
+      "unique_commits": 1,
+      "protected_intersection": [],
+      "files": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+          "after_git_blob": "072e7dfd8f222f65765f0570001eec2b18f9c465",
+          "changes": 31,
+          "patch_sha256": "da6b488ef2b719fde873360ea865fd5a1d162e20ab1c6d89488c4c5b687753cb"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "after_git_blob": "bff3b270e4a39e2695ee907a5212e69dea93a21e",
+          "changes": 77,
+          "patch_sha256": "112f976a6fbb0365d40031177ccd8034600a38f3fed0fe9d73e90bde55b76499"
+        }
+      ]
+    }
+  ],
+  "all_three_exact_two_file_deltas_identical": true,
+  "current_production_blob": "4aecf51b3ad04e16eeeea0d79adb60df02a10e08",
+  "current_test_blob": "0cbd98a969ce6b3293278415b38314db726ddf13",
+  "current_item_output_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+  "original_test_assertions": [
+    {
+      "name": "terminal_summary_recovers_missing_delta_without_a_second_turn",
+      "incoming_assertion_count": 8,
+      "current_assertion_count": 8,
+      "incoming_test_sha256": "7fbbe045253761c7e2829dd1293ea0da1918c3e62b78434928d552203613f753",
+      "current_test_sha256": "5977ffd56429dddd4eca5d741862519841bb14dc59fe030dfb63894eacf31f44"
+    },
+    {
+      "name": "terminal_summary_rejects_oversize_and_foreign_transport_before_mutation",
+      "incoming_assertion_count": 4,
+      "current_assertion_count": 4,
+      "incoming_test_sha256": "f19fac8d9ccd09b1f560f8c411e00dd042df2566191ed5d649e3960f51ea8c5a",
+      "current_test_sha256": "0d589422cdeadbc3aacd8fbcf6270a78f17f6ed862eca5996b10314b9e6f60af"
+    },
+    {
+      "name": "terminal_summary_does_not_duplicate_streamed_content_or_restore_lost_authority",
+      "incoming_assertion_count": 6,
+      "current_assertion_count": 6,
+      "incoming_test_sha256": "2e117a12a37ba6757459f52ee4a6e59192a37d469dc6cc6b00fdf20c491696db",
+      "current_test_sha256": "8fedf13d00666d5974fde265120d774da7c7402e8f013a94ef92cc92e57d9aef"
+    }
+  ],
+  "qualification_status": "NOT_SOURCE_EQUIVALENT_UNTIL_AGGREGATE_ERROR_ATOMICITY_IS_RESOLVED",
+  "no_new_merges_created": true
+}

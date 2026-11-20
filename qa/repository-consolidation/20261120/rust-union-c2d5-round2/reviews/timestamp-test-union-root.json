@@ -1,0 +1,39 @@
+{
+  "status": "INDEPENDENT_SOURCE_REVIEW_ACCEPTED_NATIVE_PENDING",
+  "base_server": "5317462c3dc79bf5de26a998b68297786fdea4b4",
+  "before": {
+    "git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+    "sha256": "dc10c11e9401fe882ae2e737ad033e7c8fc0d18222764369d303861dae83da95",
+    "size": 10657
+  },
+  "after": {
+    "git_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+    "sha256": "f702e0efc037b79c4553dab223902d00385bc53f33baaa4260466b36e53a9655",
+    "size": 11591
+  },
+  "original_owner_module": {
+    "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/utils/time/src/timestamp_tests.rs",
+    "git_blob": "cd60e3aaf9aa0166769d59ab9f9efe36dcdb456c",
+    "sha256": "0776fd63095f2c186c0b8b0d124a82e7f29ee5dc903d497589bba325916962d6",
+    "size": 7145
+  },
+  "original_owner_frozen": {
+    "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/FROZEN.json",
+    "git_blob": "ab9658a7da9c62153cd1dd4a664759f114dc7849",
+    "sha256": "97baa8363a5a2d2363c41f0118dafecb25ce2aad752e0206c98b42e8c012a1e2",
+    "size": 5417
+  },
+  "original_bytes_preserved_as_prefix": 10657,
+  "exact_original_owner_test_suffix_bytes": 934,
+  "exact_original_owner_test_suffix_sha256": "848a5c130be9e3800cf9cdbcb5f71cdaa204d04357a1cec65517febfafe84bc8",
+  "test_function_count_added": 1,
+  "test_cases_added": 5,
+  "review": [
+    "Pure additive test union: complete prior stage02 file is unchanged, followed by the complete original owner test byte for byte.",
+    "No import, function-name conflict, production implementation or error type change.",
+    "Independent checks match five original expected system-time values, including three previously distinct negative/leap fractions. All vectors are representable on Windows100ns clocks.",
+    "Both owners frozen source and manifests retain their exact bytes; no native or formatting result is claimed for the union."
+  ],
+  "native_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN"
+}

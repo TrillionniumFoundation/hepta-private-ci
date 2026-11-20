@@ -385,6 +385,40 @@
         "raw_offsets_contiguous": true
       },
       "source_paths": []
+    },
+    {
+      "id": "git-fetch-help",
+      "parts": [
+        {
+          "bytes": 1110,
+          "git_blob_sha1": "5e50b7919cfc5fec83319874ae12d2a132e60853",
+          "independently_decompressible": true,
+          "path": "native/git-fetch-help.txt.gz",
+          "raw_bytes": 3097,
+          "raw_end_offset": 3097,
+          "raw_line_count": 58,
+          "raw_line_start": 0,
+          "raw_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+          "raw_start_offset": 0,
+          "role": "exact original Git help, including its final blank line",
+          "sha256": "fc1a551ae5f2f3db7ecd0be6005ccd864b317d06bb208e7cb5b09f6928da9ff9"
+        }
+      ],
+      "raw_bytes": 3097,
+      "raw_git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "raw_line_count": 58,
+      "raw_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 3097,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/git-fetch-help.txt"
+      ]
     }
   ],
   "coverage": {
@@ -438,11 +472,11 @@
       "sha256": "9cff4a397bd233d63bde46c5b32fe0ec0d85cf73a4dd724cfe1b2203b5aa4b90"
     },
     {
-      "bytes": 3097,
-      "git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
-      "path": "native/git-fetch-help.txt",
-      "role": "exact Git filtering capability help",
-      "sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8"
+      "bytes": 1110,
+      "git_blob_sha1": "5e50b7919cfc5fec83319874ae12d2a132e60853",
+      "path": "native/git-fetch-help.txt.gz",
+      "role": "deterministic gzip storage of exact Git filtering capability help",
+      "sha256": "fc1a551ae5f2f3db7ecd0be6005ccd864b317d06bb208e7cb5b09f6928da9ff9"
     },
     {
       "bytes": 19209,
@@ -620,7 +654,7 @@
       "sha256": "0dc3517aa692cab047887029708a4706c9df1ecf0c7f9f6e1b3c463512b2b72b"
     }
   ],
-  "exported_files_excluding_manifest_bytes": 2711895,
+  "exported_files_excluding_manifest_bytes": 2709908,
   "gzip": {
     "all_streams_independently_decompressible": true,
     "compression_level": 9,
@@ -788,7 +822,8 @@
     "All file and gzip part hashes include SHA256 and Git blob SHA1.",
     "The manifest is intentionally not self-hashed; its hash is returned by the native export job.",
     "The exact audit script is native/full-history-audit.py.",
-    "No native Git pack, Git reference mutation or classification rerun is part of this export."
+    "No native Git pack, Git reference mutation or classification rerun is part of this export.",
+    "The current manifest adds a byte-preserving Git-help storage migration. The native export job manifest hash identifies original Git blob cdeb42ff1ad9c5b899ab5ff289e925085b16a340, retained in history; all original audit results, inputs and graph artifacts are unchanged."
   ],
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "schema": "hepta.full-commit-ancestry-export.v1",
@@ -809,5 +844,29 @@
     "git_blob_sha1": "4e73b165baaa680dc2d8f61e7d484f66337150e0",
     "path": "full-history-result.json",
     "sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca"
+  },
+  "storage_migration": {
+    "archived_exporter_and_verifier_sources_unchanged": true,
+    "gzip": {
+      "compression_level": 9,
+      "filename": "",
+      "mtime": 0,
+      "os_header_byte": 255,
+      "python_version": "3.12.14",
+      "zlib_runtime_version": "1.3.2"
+    },
+    "historical_results_and_original_input_hashes_unchanged": true,
+    "original_exported_file": {
+      "bytes": 3097,
+      "git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "path": "native/git-fetch-help.txt",
+      "role": "exact Git filtering capability help",
+      "sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8"
+    },
+    "original_manifest_git_blob_sha1": "cdeb42ff1ad9c5b899ab5ff289e925085b16a340",
+    "original_manifest_sha256": "35408e04e4516d5e976632d3a6f4da15efd3f442389604f7af7cdfbf02e1cfd2",
+    "original_published_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+    "reason": "Preserve the complete raw command output, including original whitespace, in explicitly indexed gzip storage while retaining the unchanged whitespace gate.",
+    "schema": "hepta.audit-evidence-storage-migration.v1"
   }
 }

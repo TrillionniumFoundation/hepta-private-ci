@@ -1,0 +1,190 @@
+{
+  "schema": "hepta.evidence-custody-source-review.v1",
+  "status": "EXACT_BYTE_STORAGE_CANDIDATE_READY_FOR_INDEPENDENT_REVIEW",
+  "candidate_sha256": "3e3c224a2e014a1fc476d386640c6ec90959d108fe4b2fa908529bd8b915152d",
+  "changed_files_sha256": "5d3f4f5d8c426da8d5d2fb29e9bd23eb558044510800c3ff8769341bf6bf7dce",
+  "patch_sha256": "cf9b630a3ef0c7cbd4f14e5bfe3fe4509fb535d05d91585d2b111055498d46bc",
+  "source_commit": "1a1e97962c9aad4a08e5f147790b234d4ab0bb51",
+  "source_tree": "2326dfb516d4db967fd106265517c8c9e34c6b3f",
+  "candidate_tree": "520a6d061579bd9372baf7222369c5d46b9b4bfc",
+  "changed_path_count": 6,
+  "changed_executable_code_paths": [],
+  "source_nine_step_plan_unchanged": true,
+  "candidate_commit_created": false,
+  "remote_writes": 0,
+  "references": [
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/export-manifest.json",
+      "classification": "current storage index",
+      "resolution": "Replace only the help exported-file storage row with compressed bytes, update the aggregate size, add an exact raw artifact using the unchanged verifier format, and record original manifest and raw object identities. Preserve original input history row and all six original artifacts."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/verify_export.py",
+      "classification": "current offline storage reader",
+      "resolution": "Unchanged exact Git blob1e30983c33d693d6562a30f793ec0b1406e0cc38. Its existing all-files hash checks and raw-artifact gzip checks cover the migrated help. Both original and candidate complete history exports pass this actual verifier."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/prepare-export.py",
+      "classification": "archived producer and native request provenance",
+      "resolution": "Unchanged. Its absolute original source inputs and packaging algorithm record the original export. The current storage migration explicitly records the original published manifest identity, so the historical algorithm is not rewritten to claim it generated the new representation."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/native/full-history-audit.py",
+      "classification": "archived executed audit source",
+      "resolution": "Unchanged. EVIDENCE is the historical /home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence path; this source does not read the current repository publication path."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/native/preflight-v2-process-request.json",
+      "classification": "archived exact process request",
+      "resolution": "Unchanged. The embedded original request writes the original native help location. It is preserved provenance, not a new replay request."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-union-c2d5/b4/composite-six-modules.json",
+      "classification": "original failed run result",
+      "resolution": "Unchanged. Keep the original absolute stderr execution path and recorded results. Only the current storage index maps this raw log to gzip."
+    },
+    {
+      "repository_path": "qa/repository-consolidation/20261120/rust-union-c2d5/verification.json",
+      "classification": "current audit artifact index",
+      "resolution": "Replace only the stderr storage row, retain raw path/size/SHA256/Git object inside it, and add an explicit migration record. Preserve all tests/results/acceptance values and the other19 artifact rows."
+    }
+  ],
+  "reference_scan": {
+    "bindings_sha256": "5989a1a2ca40e650bd9a3a295f7ed257dc0210c28051852f81f545734fb0c60b",
+    "file_count": 71,
+    "matches_sha256": "a8f86e0014d35579d2fdc0b9eb4e80ec4b68b9dbb0d087ad17d4deb9aabb0dba",
+    "runtime_or_verifier_code_changed": false,
+    "scope": "Every non-gzip repository file under the two owning audit directories, pinned to the source tree. This is not a whole-repository text-content scan."
+  },
+  "byte_preservation": [
+    {
+      "decompressed_bytes_equal_original": true,
+      "gzip_header_hex": "1f8b08000000000002ff",
+      "independent_recompression_byte_equal": true,
+      "original_bytes": 3097,
+      "original_git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "original_history_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+      "original_line_count": 58,
+      "original_mode": "100644",
+      "original_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/native/git-fetch-help.txt",
+      "original_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+      "stored_bytes": 1110,
+      "stored_git_blob_sha1": "5e50b7919cfc5fec83319874ae12d2a132e60853",
+      "stored_path": "qa/repository-consolidation/20261120/rust-consolidation-safety/history/native/git-fetch-help.txt.gz",
+      "stored_sha256": "fc1a551ae5f2f3db7ecd0be6005ccd864b317d06bb208e7cb5b09f6928da9ff9"
+    },
+    {
+      "decompressed_bytes_equal_original": true,
+      "gzip_header_hex": "1f8b08000000000002ff",
+      "independent_recompression_byte_equal": true,
+      "original_bytes": 4967,
+      "original_git_blob_sha1": "6d8927833da96602e5e1d31c87d8534fef3062ac",
+      "original_history_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+      "original_line_count": 36,
+      "original_mode": "100644",
+      "original_path": "qa/repository-consolidation/20261120/rust-union-c2d5/b4/test_q24_original_outcome_control_source_closure.py.stderr",
+      "original_sha256": "0131a1ef98fe9eedd05883675ba2494fb4dee62c980be9b07d92e704f3ee250d",
+      "stored_bytes": 987,
+      "stored_git_blob_sha1": "ea4dd797bbbcf8ed16d4a68d0263f171bd74af79",
+      "stored_path": "qa/repository-consolidation/20261120/rust-union-c2d5/b4/test_q24_original_outcome_control_source_closure.py.stderr.gz",
+      "stored_sha256": "50f91b33ff11fcb19f3c1d4d2bb9b24989e84f0494f06c8126bcd3991a301530"
+    }
+  ],
+  "gate_preservation": {
+    "git_diff_check_command_changed": false,
+    "gitattributes_changed": false,
+    "whitespace_exemption_added": false,
+    "logs_trimmed": false,
+    "raw_results_rewritten": false,
+    "baseline_checks_relabelled": false
+  },
+  "validation": {
+    "source32_73_to_stage08": {
+      "command": [
+        "git",
+        "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/round2/objects.git",
+        "diff",
+        "--check",
+        "d7d1726532ef42b22cc805777dc67ce761edf618",
+        "98e627e8f55dfd781d2b43943557d5dbd2ad6cbe"
+      ],
+      "scope": "Exact complete 32-path delta from published 73a96f tree75127f to eight-step source98e627 tree639abd only; full 0cee baseline comparison not run successfully locally.",
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "recovered_before_blobs": 20
+    },
+    "source32_73_to_stage09_and_custody": [
+      {
+        "command": [
+          "git",
+          "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/round2/objects.git",
+          "diff",
+          "--check",
+          "1a1e97962c9aad4a08e5f147790b234d4ab0bb51",
+          "520a6d061579bd9372baf7222369c5d46b9b4bfc"
+        ],
+        "exit_code": 0,
+        "label": "custody-only",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      },
+      {
+        "command": [
+          "git",
+          "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/round2/objects.git",
+          "diff",
+          "--check",
+          "d7d1726532ef42b22cc805777dc67ce761edf618",
+          "520a6d061579bd9372baf7222369c5d46b9b4bfc"
+        ],
+        "exit_code": 0,
+        "label": "source32-plus-custody",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      },
+      {
+        "command": [
+          "git",
+          "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/round2/objects.git",
+          "diff",
+          "--check",
+          "d7d1726532ef42b22cc805777dc67ce761edf618",
+          "1a1e97962c9aad4a08e5f147790b234d4ab0bb51"
+        ],
+        "exit_code": 0,
+        "label": "source32-stage09",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    ],
+    "history_original_verifier_before": {
+      "classification_or_git_executed": false,
+      "coverage_source_paths_including_aliases": 12,
+      "exact_original_coverage_maps_reconstructed": 8,
+      "exact_raw_artifacts": 6,
+      "exported_files_verified": 31,
+      "network_used": false,
+      "outcome": "PASS_OFFLINE_BYTE_ROUNDTRIP"
+    },
+    "history_original_verifier_after": {
+      "classification_or_git_executed": false,
+      "coverage_source_paths_including_aliases": 12,
+      "exact_original_coverage_maps_reconstructed": 8,
+      "exact_raw_artifacts": 7,
+      "exported_files_verified": 31,
+      "network_used": false,
+      "outcome": "PASS_OFFLINE_BYTE_ROUNDTRIP"
+    },
+    "union20_artifact_checks_sha256": "c43d91e16ca4c478456b955732c21bb2ffa91529389d1bc7a3cf5065e5716749"
+  },
+  "full_range_limitation": {
+    "first_attempt_exit": 128,
+    "first_attempt_record": "initial-diff-check.json",
+    "prior_remote_job_reported_by_parent": 136061097135,
+    "reason": "Pre-existing baseline blob objects are absent; no further baseline closure was fetched. Full 0cee-to-final whitespace validation must run in the actual required CI.",
+    "status": "NOT_SUCCESSFULLY_RUN_LOCALLY"
+  },
+  "baseline_retrieval": "No missing baseline closure was fetched.20 missing source before blobs were recovered from preexisting local exact files.48 bounded owning-audit text files and one help raw blob were fetched for reference inspection; one existing4458-byte history gzip part was fetched to run the complete original offline verifier. All fetched objects matched candidate-tree Git identities.",
+  "native_Rust_Windows_and_formatter": "NOT_RUN"
+}

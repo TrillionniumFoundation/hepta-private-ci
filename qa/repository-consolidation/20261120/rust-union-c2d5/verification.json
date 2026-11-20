@@ -112,9 +112,15 @@
       "sha256": "257bd2f3dc44beeed3a7a84cd1cc143f14157d672c89399c451351a0a116f0ff"
     },
     {
-      "path": "b4/test_q24_original_outcome_control_source_closure.py.stderr",
-      "bytes": 4967,
-      "sha256": "0131a1ef98fe9eedd05883675ba2494fb4dee62c980be9b07d92e704f3ee250d"
+      "path": "b4/test_q24_original_outcome_control_source_closure.py.stderr.gz",
+      "bytes": 987,
+      "sha256": "50f91b33ff11fcb19f3c1d4d2bb9b24989e84f0494f06c8126bcd3991a301530",
+      "git_blob_sha1": "ea4dd797bbbcf8ed16d4a68d0263f171bd74af79",
+      "encoding": "gzip",
+      "raw_path": "b4/test_q24_original_outcome_control_source_closure.py.stderr",
+      "raw_bytes": 4967,
+      "raw_sha256": "0131a1ef98fe9eedd05883675ba2494fb4dee62c980be9b07d92e704f3ee250d",
+      "raw_git_blob_sha1": "6d8927833da96602e5e1d31c87d8534fef3062ac"
     },
     {
       "path": "b4/test_native_memory_authority_source_closure.py.stderr",
@@ -148,5 +154,20 @@
     }
   ],
   "final_source_candidate": "4032cecee245835b36d4f229f3855fbd7377b77f",
-  "final_source_tree": "6ceaa805d9fbe6bb03128e81c10b1300b488a2d2"
+  "final_source_tree": "6ceaa805d9fbe6bb03128e81c10b1300b488a2d2",
+  "evidence_storage_migration": {
+    "schema": "hepta.audit-evidence-storage-migration.v1",
+    "original_published_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+    "original_verification_git_blob_sha1": "f5e6c4f435fa350e0128cb69237662db22844c52",
+    "original_verification_sha256": "8287728bbbbc930d4b5e4b52dad693e157ec4ea4ab17bfb8b63ecfebe408f533",
+    "gzip": {
+      "compression_level": 9,
+      "filename": "",
+      "mtime": 0,
+      "os_header_byte": 255
+    },
+    "decoded_log_bytes_equal_original": true,
+    "original_results_and_historical_execution_paths_unchanged": true,
+    "reason": "Store the complete original failed run stderr, including trailing whitespace, as gzip; decode the indexed artifact to recover its exact original Git blob, size and SHA256. No result, test assertion or whitespace check is changed."
+  }
 }

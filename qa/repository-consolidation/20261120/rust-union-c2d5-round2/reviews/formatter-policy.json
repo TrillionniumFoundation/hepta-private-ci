@@ -1,0 +1,121 @@
+{
+  "status": "isolated candidate tested; parent review and publication pending",
+  "base_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "root_cause": "Scoped formatting treats newly relocated byte-preserved evidence as changed Rust input. Existing exact custody mechanism lacked the three original broker records.",
+  "change": "Register only three exact SHA256/size paths under one fixed broker-review namespace; preserve existing preflight refusals and exact-set subtraction. Neighboring Rust and active crates remain selected.",
+  "baseline_new_regressions": {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "-v",
+      "test_hepta_format_scope.FormatterScopeTests.test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+      "test_hepta_format_scope.FormatterScopeTests.test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+      "test_hepta_format_scope.FormatterScopeTests.test_missing_relocated_record_fails_before_full_and_scoped_format",
+      "test_hepta_format_scope.FormatterScopeTests.test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+      "test_hepta_format_scope.FormatterScopeTests.test_relocated_inventory_rejects_production_and_noncanonical_paths",
+      "test_hepta_format_scope.FormatterScopeTests.test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+    ],
+    "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/baseline/scripts",
+    "exit_code": 1,
+    "test_methods": [
+      "test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust",
+      "test_relocated_record_byte_drift_fails_before_full_and_scoped_format",
+      "test_missing_relocated_record_fails_before_full_and_scoped_format",
+      "test_relocated_record_symlink_is_rejected_even_with_identical_bytes",
+      "test_relocated_inventory_rejects_production_and_noncanonical_paths",
+      "test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope"
+    ],
+    "formatter_git_blob": "5ec5819cd6441798f406a77514736baa7294ef4a",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "b584b4776f61de38f1f17c25d14ed644021d56e4e774952a9b1d009c21563104"
+  },
+  "baseline_summary": "Ran 6 tests; FAILED (failures=13). Original formatter source matched5ec5819cd6441798f406a77514736baa7294ef4a.",
+  "candidate_full_suite": {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_format_scope.py",
+      "-v"
+    ],
+    "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/candidate",
+    "exit_code": 0,
+    "stdout_sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "stderr_sha256": "c2be754cfc5b1e39b767a866f985737e6f5f5792afec81308b70a91f38efed67",
+    "tail": [
+      "",
+      "----------------------------------------------------------------------",
+      "Ran 41 tests in 1.661s",
+      "",
+      "OK"
+    ]
+  },
+  "candidate_summary": "Ran 41 tests, all passed; no skipped tests on this Linux run.",
+  "locked_ruff": {
+    "command": [
+      "uv",
+      "tool",
+      "run",
+      "--offline",
+      "--from",
+      "ruff==0.15.13",
+      "ruff",
+      "format",
+      "scripts/format.py",
+      "scripts/test_hepta_format_scope.py"
+    ],
+    "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/candidate",
+    "exit_code": 0,
+    "stdout": "2 files left unchanged\n",
+    "stderr": "",
+    "files": [
+      {
+        "path": "scripts/format.py",
+        "tested_before_ruff": {
+          "git_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+          "sha256": "e6f3588ee95b656518b55552d65753cc09e0a7c7a5abf81a2ef88ab362dd062f",
+          "bytes": 22851
+        },
+        "final_after_ruff": {
+          "git_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+          "sha256": "e6f3588ee95b656518b55552d65753cc09e0a7c7a5abf81a2ef88ab362dd062f",
+          "bytes": 22851
+        },
+        "ast_identical": true
+      },
+      {
+        "path": "scripts/test_hepta_format_scope.py",
+        "tested_before_ruff": {
+          "git_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+          "sha256": "66a15cb6d668142c8dd62c17c870a3aea821ed8b94363d300398517d4bb30210",
+          "bytes": 29595
+        },
+        "final_after_ruff": {
+          "git_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+          "sha256": "66a15cb6d668142c8dd62c17c870a3aea821ed8b94363d300398517d4bb30210",
+          "bytes": 29595
+        },
+        "ast_identical": true
+      }
+    ]
+  },
+  "ruff_lock_git_blob": "3fd02698ddb7a4042cad2f417db92779fafd01bf",
+  "ruff_result": "Ruff0.15.13 reported2files left unchanged, so final exact candidate bytes are the tested bytes.",
+  "native_rust_tests": "NOT_RUN: this repair is formatter source selection plus Python tests, root owns full Rust gates.",
+  "code_owner_review": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/codeowner-conflict-check.json",
+  "patch": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/formatter-exact-custody.patch",
+    "bytes": 10182,
+    "git_blob": "31d1cb34ad798124073d7407056ead586ff3258b",
+    "sha256": "a1ca09224eb99cc8ffc0f8a950faf31ba76f63a97b003f0fdf77196a02378a0c"
+  },
+  "historical_byte_rewrites_applied": false,
+  "full_observed_formatter_patch_is_not_candidate": true
+}

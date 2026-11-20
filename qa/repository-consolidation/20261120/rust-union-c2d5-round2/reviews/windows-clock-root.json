@@ -1,0 +1,26 @@
+{
+  "status": "INDEPENDENT_SOURCE_REVIEW_ACCEPTED_NATIVE_PENDING",
+  "append_to_local": "674102bd42ee11807d941e0f91b56dad63c2e945",
+  "append_to_server": "e0adf8a3dd952a234f8f2cb1fd197d9ba55862b6",
+  "manifest_sha256": "e492333e23f724609023b3eca96d3531803c39124fd04f9eff2e780ecc653122",
+  "before": {
+    "git_blob": "4212c00916a6da25e68ff9408dec8032ffccc55d",
+    "sha256": "efb638dbb49bc7e02558523ee167a310efc4f6683190f28324db1c9d54f07adc",
+    "size": 9377
+  },
+  "after": {
+    "git_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+    "sha256": "dc10c11e9401fe882ae2e737ad033e7c8fc0d18222764369d303861dae83da95",
+    "size": 10657
+  },
+  "actual_failed_job": 136061097394,
+  "review": [
+    "A one-nanosecond Timestamp value is tested independently of platform SystemTime precision; all three original exact field assertions remain.",
+    "An unconditional representable 100ns pre-epoch SystemTime is checked as a complete Timestamp and round-tripped.",
+    "The original 1ns SystemTime subtraction still executes unconditionally. Its decoded signed interval must equal the actual std duration and its exact original SystemTime must be reconstructed. This preserves 1ns behavior on platforms that support it and checks quantization behavior on Windows.",
+    "No ignore, conditional skip, production change, source pin weakening, or alteration to later original/new utility tests.",
+    "All remaining bytes from the original millisecond test onward are identical."
+  ],
+  "native_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN"
+}
