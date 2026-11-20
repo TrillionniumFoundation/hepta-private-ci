@@ -1,0 +1,369 @@
+{
+  "inspected_skips": [
+    {
+      "files": [
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/agronholm/exceptiongroup/blob/862e704c982ad656a0c8e25f334334ffee1b2c43/.github%2Fworkflows%2Ftest.yml",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/agronholm/exceptiongroup/contents/.github%2Fworkflows%2Ftest.yml?ref=862e704c982ad656a0c8e25f334334ffee1b2c43",
+          "deletions": 2,
+          "filename": ".github/workflows/test.yml",
+          "patch": "@@ -10,7 +10,7 @@ jobs:\n     strategy:\n       fail-fast: false\n       matrix:\n-        python-version: [\"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\"]\n+        python-version: [\"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", \"3.15\"]\n     runs-on: ubuntu-latest\n     steps:\n     - uses: actions/checkout@v4\n@@ -36,7 +36,7 @@ jobs:\n     strategy:\n       fail-fast: false\n       matrix:\n-        python-version: [\"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", pypy-3.11]\n+        python-version: [\"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", \"3.15\", pypy-3.11]\n     runs-on: ubuntu-latest\n     steps:\n     - uses: actions/checkout@v4",
+          "raw_url": "https://github.com/agronholm/exceptiongroup/raw/862e704c982ad656a0c8e25f334334ffee1b2c43/.github%2Fworkflows%2Ftest.yml",
+          "sha": "9e94a04ac756aa64c740b79d4c2a969fe46e7199",
+          "status": "modified"
+        },
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/agronholm/exceptiongroup/blob/862e704c982ad656a0c8e25f334334ffee1b2c43/pyproject.toml",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/agronholm/exceptiongroup/contents/pyproject.toml?ref=862e704c982ad656a0c8e25f334334ffee1b2c43",
+          "deletions": 2,
+          "filename": "pyproject.toml",
+          "patch": "@@ -88,9 +88,9 @@ reportUnnecessaryTypeIgnoreComment = true\n warn_unused_ignores = true\n \n [tool.tox]\n-env_list = [\"3.7\", \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", \"pypy3\"]\n+env_list = [\"3.7\", \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", \"3.15\", \"pypy3\"]\n skip_missing_interpreters = true\n-labels = {typing = [\"3.7\", \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\"]}\n+labels = {typing = [\"3.7\", \"3.8\", \"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\", \"3.15\"]}\n requires = [\"tox >= 4.22\"]\n \n [tool.tox.env_run_base]",
+          "raw_url": "https://github.com/agronholm/exceptiongroup/raw/862e704c982ad656a0c8e25f334334ffee1b2c43/pyproject.toml",
+          "sha": "951a8874578e57453cbdcf78a5b7e9acfef1d624",
+          "status": "modified"
+        },
+        {
+          "additions": 1,
+          "blob_url": "https://github.com/agronholm/exceptiongroup/blob/862e704c982ad656a0c8e25f334334ffee1b2c43/tests%2Ftest_formatting.py",
+          "changes": 2,
+          "contents_url": "https://api.github.com/repos/agronholm/exceptiongroup/contents/tests%2Ftest_formatting.py?ref=862e704c982ad656a0c8e25f334334ffee1b2c43",
+          "deletions": 1,
+          "filename": "tests/test_formatting.py",
+          "patch": "@@ -544,7 +544,7 @@ def test_nameerror_suggestions_in_group(\n         eg = ExceptionGroup(\"a\", [e])\n         print_exception(eg)\n         output = capsys.readouterr().err\n-        assert \"Did you mean\" in output and \"'append'?\" in output\n+        assert \"Did you mean\" in output and \"append'\" in output\n \n \n def test_bug_suggestions_attributeerror_no_obj(",
+          "raw_url": "https://github.com/agronholm/exceptiongroup/raw/862e704c982ad656a0c8e25f334334ffee1b2c43/tests%2Ftest_formatting.py",
+          "sha": "ada3b0ed4e247236bf3b372865bffe3e1aa188df",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 162,
+      "project_id": "agronholm/exceptiongroup",
+      "reason": "Python 3.15 test compatibility"
+    },
+    {
+      "files": [
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/dbader/schedule/blob/223d8a406d3ecd0ca329d0ca770709470cd1089a/docs%2Finstallation.rst",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/dbader/schedule/contents/docs%2Finstallation.rst?ref=223d8a406d3ecd0ca329d0ca770709470cd1089a",
+          "deletions": 2,
+          "filename": "docs/installation.rst",
+          "patch": "@@ -14,9 +14,9 @@ Want to use Schedule on earlier Python versions? See the History.\n Dependencies\n ############\n \n-Schedule has no dependencies. None. Zero. Nada. Nopes.\n-We plan to keep it that way.\n+Schedule has 1 optional dependency:\n \n+Only when you use ``.at()`` with a timezone, you must have `pytz <https://pypi.org/project/pytz/>`_ installed.\n \n Installation instructions\n #########################",
+          "raw_url": "https://github.com/dbader/schedule/raw/223d8a406d3ecd0ca329d0ca770709470cd1089a/docs%2Finstallation.rst",
+          "sha": "82ae1904a9b5f4a5f7791c93b66fa0eef4bbb4e8",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 601,
+      "project_id": "dbader/schedule",
+      "reason": "documentation-only dependency instructions"
+    },
+    {
+      "files": [
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/litl/backoff/blob/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F__init__.py",
+          "changes": 2,
+          "contents_url": "https://api.github.com/repos/litl/backoff/contents/backoff%2F__init__.py?ref=15613afc62a5b14ce406a72fa76847422222c28f",
+          "deletions": 0,
+          "filename": "backoff/__init__.py",
+          "patch": "@@ -14,6 +14,7 @@\n \"\"\"\n from backoff._decorator import on_exception, on_predicate\n from backoff._jitter import full_jitter, random_jitter\n+from backoff._typing import Details\n from backoff._wait_gen import constant, expo, fibo, runtime\n \n __all__ = [\n@@ -25,6 +26,7 @@\n     'runtime',\n     'full_jitter',\n     'random_jitter',\n+    'Details',\n ]\n \n __version__ = \"2.1.2\"",
+          "raw_url": "https://github.com/litl/backoff/raw/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F__init__.py",
+          "sha": "b389b1d4286c5c05d86dc1f79a8f4d94f80a2cd8",
+          "status": "modified"
+        },
+        {
+          "additions": 6,
+          "blob_url": "https://github.com/litl/backoff/blob/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F_decorator.py",
+          "changes": 12,
+          "contents_url": "https://api.github.com/repos/litl/backoff/contents/backoff%2F_decorator.py?ref=15613afc62a5b14ce406a72fa76847422222c28f",
+          "deletions": 6,
+          "filename": "backoff/_decorator.py",
+          "patch": "@@ -30,9 +30,9 @@ def on_predicate(wait_gen: _WaitGenerator,\n                  max_tries: Optional[_MaybeCallable[int]] = None,\n                  max_time: Optional[_MaybeCallable[float]] = None,\n                  jitter: Union[_Jitterer, None] = full_jitter,\n-                 on_success: Union[_Handler, Iterable[_Handler]] = None,\n-                 on_backoff: Union[_Handler, Iterable[_Handler]] = None,\n-                 on_giveup: Union[_Handler, Iterable[_Handler]] = None,\n+                 on_success: Union[_Handler, Iterable[_Handler], None] = None,\n+                 on_backoff: Union[_Handler, Iterable[_Handler], None] = None,\n+                 on_giveup: Union[_Handler, Iterable[_Handler], None] = None,\n                  logger: _MaybeLogger = 'backoff',\n                  backoff_log_level: int = logging.INFO,\n                  giveup_log_level: int = logging.ERROR,\n@@ -127,9 +127,9 @@ def on_exception(wait_gen: _WaitGenerator,\n                  max_time: Optional[_MaybeCallable[float]] = None,\n                  jitter: Union[_Jitterer, None] = full_jitter,\n                  giveup: _Predicate[Exception] = lambda e: False,\n-                 on_success: Union[_Handler, Iterable[_Handler]] = None,\n-                 on_backoff: Union[_Handler, Iterable[_Handler]] = None,\n-                 on_giveup: Union[_Handler, Iterable[_Handler]] = None,\n+                 on_success: Union[_Handler, Iterable[_Handler], None] = None,\n+                 on_backoff: Union[_Handler, Iterable[_Handler], None] = None,\n+                 on_giveup: Union[_Handler, Iterable[_Handler], None] = None,\n                  raise_on_giveup: bool = True,\n                  logger: _MaybeLogger = 'backoff',\n                  backoff_log_level: int = logging.INFO,",
+          "raw_url": "https://github.com/litl/backoff/raw/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F_decorator.py",
+          "sha": "92dee1bb76178d0beaa2ae841d5d0325e3ac27d3",
+          "status": "modified"
+        },
+        {
+          "additions": 10,
+          "blob_url": "https://github.com/litl/backoff/blob/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F_typing.py",
+          "changes": 19,
+          "contents_url": "https://api.github.com/repos/litl/backoff/contents/backoff%2F_typing.py?ref=15613afc62a5b14ce406a72fa76847422222c28f",
+          "deletions": 9,
+          "filename": "backoff/_typing.py",
+          "patch": "@@ -1,11 +1,8 @@\n # coding:utf-8\n import logging\n import sys\n-from typing import (Any, Callable, Dict, Generator, Sequence, Tuple, Union,\n-                    TypeVar)\n-\n-\n-details_kwargs = {\"total\": False}\n+from typing import (Any, Callable, Coroutine, Dict, Generator, Sequence, Tuple,\n+                    TypeVar, Union)\n \n if sys.version_info >= (3, 8):  # pragma: no cover\n     from typing import TypedDict\n@@ -14,8 +11,9 @@\n     try:\n         from typing_extensions import TypedDict\n     except ImportError:\n-        TypedDict = Dict[str, Any]\n-        del details_kwargs[\"total\"]\n+        class TypedDict(dict):\n+            def __init_subclass__(cls, **kwargs: Any) -> None:\n+                return super().__init_subclass__()\n \n \n class _Details(TypedDict):\n@@ -26,15 +24,18 @@ class _Details(TypedDict):\n     elapsed: float\n \n \n-class Details(_Details, **details_kwargs):\n+class Details(_Details, total=False):\n     wait: float  # present in the on_backoff handler case for either decorator\n     value: Any  # present in the on_predicate decorator case\n \n \n T = TypeVar(\"T\")\n \n _CallableT = TypeVar('_CallableT', bound=Callable[..., Any])\n-_Handler = Callable[[Details], None]\n+_Handler = Union[\n+    Callable[[Details], None],\n+    Callable[[Details], Coroutine[Any, Any, None]],\n+]\n _Jitterer = Callable[[float], float]\n _MaybeCallable = Union[T, Callable[[], T]]\n _MaybeLogger = Union[str, logging.Logger, None]",
+          "raw_url": "https://github.com/litl/backoff/raw/15613afc62a5b14ce406a72fa76847422222c28f/backoff%2F_typing.py",
+          "sha": "20446d4f58df9cec3edb3ace8d94dd11942fcef4",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 173,
+      "project_id": "litl/backoff",
+      "reason": "Typing annotations and public Details type export; no upstream runtime regression test in this PR."
+    },
+    {
+      "files": [
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/pyparsing/pyparsing/blob/f222d450be9b5fc098b97ee763d10a5987b7fdf0/.github%2Fworkflows%2Fci.yml",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/pyparsing/pyparsing/contents/.github%2Fworkflows%2Fci.yml?ref=f222d450be9b5fc098b97ee763d10a5987b7fdf0",
+          "deletions": 2,
+          "filename": ".github/workflows/ci.yml",
+          "patch": "@@ -21,7 +21,7 @@ jobs:\n     strategy:\n       matrix:\n         os: [\"ubuntu-latest\"]\n-        toxenv: [py]\n+        toxenv: [py-unit]\n         python-version: [\"3.9\", \"3.10\", \"3.11\", \"3.12\", \"3.13\", \"3.14\"]\n         include:\n           - python-version: \"3.14\"\n@@ -30,7 +30,7 @@ jobs:\n             toxenv: mypy-check\n           - python-version: \"pypy-3.9\"\n     env:\n-      TOXENV: ${{ matrix.toxenv || 'py' }}\n+      TOXENV: ${{ matrix.toxenv || 'py-unit' }}\n     steps:\n       - uses: actions/checkout@v5\n ",
+          "raw_url": "https://github.com/pyparsing/pyparsing/raw/f222d450be9b5fc098b97ee763d10a5987b7fdf0/.github%2Fworkflows%2Fci.yml",
+          "sha": "36e67b2d903809104dca87985da8d8e4b7bf95d2",
+          "status": "modified"
+        },
+        {
+          "additions": 4,
+          "blob_url": "https://github.com/pyparsing/pyparsing/blob/f222d450be9b5fc098b97ee763d10a5987b7fdf0/CHANGES",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/pyparsing/pyparsing/contents/CHANGES?ref=f222d450be9b5fc098b97ee763d10a5987b7fdf0",
+          "deletions": 0,
+          "filename": "CHANGES",
+          "patch": "@@ -27,6 +27,10 @@ Required Python versions by pyparsing version\n \n Version 3.3.3 - in development\n ------------------------------\n+- Fixed CI unit test jobs selecting a tox environment with no test commands.\n+  The matrix and fallback now select `py-unit`, as diagnosed and proposed by\n+  glaziermag in issue #662; submitted by Neal Lin et AI.\n+\n - Added support for Python 3.15.\n \n - Fixed `Dict` returning an empty nested `ParseResults.as_dict()` as `[]`",
+          "raw_url": "https://github.com/pyparsing/pyparsing/raw/f222d450be9b5fc098b97ee763d10a5987b7fdf0/CHANGES",
+          "sha": "ada572c2b52945f869c69ea75081658ab1e91aca",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 663,
+      "project_id": "pyparsing/pyparsing",
+      "reason": "CI environment selection only"
+    },
+    {
+      "files": [
+        {
+          "additions": 1,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/a42ce02aa06a10b056bd9d4e43cf236523668613/docs%2Fconf.py",
+          "changes": 1,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/docs%2Fconf.py?ref=a42ce02aa06a10b056bd9d4e43cf236523668613",
+          "deletions": 0,
+          "filename": "docs/conf.py",
+          "patch": "@@ -89,6 +89,7 @@ def entire_domain(host):\n linkcheck_ignore = [\n     entire_domain(\"zenodo.org\"),\n     entire_domain(\"img.shields.io\"),\n+    entire_domain(\"json-schema.slack.com\"),\n     \"https://github.com/python-jsonschema/jsonschema/actions\",\n     \"https://github.com/python-jsonschema/jsonschema/workflows/CI/badge.svg\",\n ]",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/a42ce02aa06a10b056bd9d4e43cf236523668613/docs%2Fconf.py",
+          "sha": "c46464cd4f7c58acce6af00cc877e71a873edbae",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 1562,
+      "project_id": "python-jsonschema/jsonschema",
+      "reason": "documentation link checking"
+    },
+    {
+      "files": [
+        {
+          "additions": 1,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/0e5655c3884c1df030287e224f8fc1eddc4fd636/jsonschema%2Fexceptions.py",
+          "changes": 2,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/jsonschema%2Fexceptions.py?ref=0e5655c3884c1df030287e224f8fc1eddc4fd636",
+          "deletions": 1,
+          "filename": "jsonschema/exceptions.py",
+          "patch": "@@ -415,7 +415,7 @@ def by_relevance(weak=WEAK_MATCHES, strong=STRONG_MATCHES):\n     def relevance(error):\n         validator = error.validator\n         return (                        # prefer errors which are ...\n-            -len(error.path),           # 'deeper' and thereby more specific\n+            -len(error.path),           # shorter path thereby more general\n             error.path,                 # earlier (for sibling errors)\n             validator not in weak,      # for a non-low-priority keyword\n             validator in strong,        # for a high priority keyword",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/0e5655c3884c1df030287e224f8fc1eddc4fd636/jsonschema%2Fexceptions.py",
+          "sha": "2e5d4ca08a4c8b3261d58a93ad6b2f4ff0a7335f",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 1444,
+      "project_id": "python-jsonschema/jsonschema",
+      "reason": "docstring/comment correction"
+    },
+    {
+      "files": [
+        {
+          "additions": 4,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Fprotocols.py",
+          "changes": 7,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/jsonschema%2Fprotocols.py?ref=1e58409b71a9696b7bf9938ae8a3a48ef95ab29e",
+          "deletions": 3,
+          "filename": "jsonschema/protocols.py",
+          "patch": "@@ -108,10 +108,11 @@ class Validator(Protocol):\n     def __init__(\n         self,\n         schema: Mapping | bool,\n-        registry: referencing.jsonschema.SchemaRegistry,\n+        resolver: Any = None,  # deprecated\n         format_checker: jsonschema.FormatChecker | None = None,\n-    ) -> None:\n-        ...\n+        *,\n+        registry: referencing.jsonschema.SchemaRegistry = ...,\n+    ) -> None: ...\n \n     @classmethod\n     def check_schema(cls, schema: Mapping | bool) -> None:",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Fprotocols.py",
+          "sha": "b6288dcc2dfec270ec216588c4d8b56fe3fb213e",
+          "status": "modified"
+        },
+        {
+          "additions": 0,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Ftests%2Ftyping%2F__init__.py",
+          "changes": 0,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/jsonschema%2Ftests%2Ftyping%2F__init__.py?ref=1e58409b71a9696b7bf9938ae8a3a48ef95ab29e",
+          "deletions": 0,
+          "filename": "jsonschema/tests/typing/__init__.py",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Ftests%2Ftyping%2F__init__.py",
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "status": "added"
+        },
+        {
+          "additions": 38,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Ftests%2Ftyping%2Ftest_all_concrete_validators_match_protocol.py",
+          "changes": 38,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/jsonschema%2Ftests%2Ftyping%2Ftest_all_concrete_validators_match_protocol.py?ref=1e58409b71a9696b7bf9938ae8a3a48ef95ab29e",
+          "deletions": 0,
+          "filename": "jsonschema/tests/typing/test_all_concrete_validators_match_protocol.py",
+          "patch": "@@ -0,0 +1,38 @@\n+\"\"\"\n+This module acts as a test that type checkers will allow each validator\n+class to be assigned to a variable of type `type[Validator]`\n+\n+The assignation is only valid if type checkers recognize each Validator\n+implementation as a valid implementer of the protocol.\n+\"\"\"\n+from jsonschema.protocols import Validator\n+from jsonschema.validators import (\n+    Draft3Validator,\n+    Draft4Validator,\n+    Draft6Validator,\n+    Draft7Validator,\n+    Draft201909Validator,\n+    Draft202012Validator,\n+)\n+\n+my_validator: type[Validator]\n+\n+my_validator = Draft3Validator\n+my_validator = Draft4Validator\n+my_validator = Draft6Validator\n+my_validator = Draft7Validator\n+my_validator = Draft201909Validator\n+my_validator = Draft202012Validator\n+\n+\n+# in order to confirm that none of the above were incorrectly typed as 'Any'\n+# ensure that each of these assignments to a non-validator variable requires an\n+# ignore\n+none_var: None\n+\n+none_var = Draft3Validator  # type: ignore[assignment]\n+none_var = Draft4Validator  # type: ignore[assignment]\n+none_var = Draft6Validator  # type: ignore[assignment]\n+none_var = Draft7Validator  # type: ignore[assignment]\n+none_var = Draft201909Validator  # type: ignore[assignment]\n+none_var = Draft202012Validator  # type: ignore[assignment]",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Ftests%2Ftyping%2Ftest_all_concrete_validators_match_protocol.py",
+          "sha": "63e8bd4052055e387854ae8a4bb906d78502cb69",
+          "status": "added"
+        },
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Fvalidators.py",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/jsonschema%2Fvalidators.py?ref=1e58409b71a9696b7bf9938ae8a3a48ef95ab29e",
+          "deletions": 2,
+          "filename": "jsonschema/validators.py",
+          "patch": "@@ -147,7 +147,7 @@ def create(\n     applicable_validators: _typing.ApplicableValidators = methodcaller(\n         \"items\",\n     ),\n-):\n+) -> type[Validator]:\n     \"\"\"\n     Create a new validator class.\n \n@@ -511,7 +511,7 @@ def is_valid(self, instance, _schema=None):\n         Validator.__name__ = Validator.__qualname__ = f\"{safe}Validator\"\n         Validator = validates(version)(Validator)  # type: ignore[misc]\n \n-    return Validator\n+    return Validator  # type: ignore[return-value]\n \n \n def extend(",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/jsonschema%2Fvalidators.py",
+          "sha": "dbc029fc02e3c9905fb4fba6fc9b244f8a5e046b",
+          "status": "modified"
+        },
+        {
+          "additions": 4,
+          "blob_url": "https://github.com/python-jsonschema/jsonschema/blob/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/noxfile.py",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/python-jsonschema/jsonschema/contents/noxfile.py?ref=1e58409b71a9696b7bf9938ae8a3a48ef95ab29e",
+          "deletions": 0,
+          "filename": "noxfile.py",
+          "patch": "@@ -6,6 +6,7 @@\n \n ROOT = Path(__file__).parent\n PACKAGE = ROOT / \"jsonschema\"\n+TYPING_TESTS= ROOT / \"jsonschema\" / \"tests\" / \"typing\"\n BENCHMARKS = PACKAGE / \"benchmarks\"\n PYPROJECT = ROOT / \"pyproject.toml\"\n CHANGELOG = ROOT / \"CHANGELOG.rst\"\n@@ -181,6 +182,9 @@ def typing(session):\n     \"\"\"\n     session.install(\"mypy\", \"types-requests\", ROOT)\n     session.run(\"mypy\", \"--config\", PYPROJECT, PACKAGE)\n+    session.run(\n+        \"mypy\", \"--config\", PYPROJECT, \"--warn-unused-ignores\", TYPING_TESTS,\n+    )\n \n \n @session(tags=[\"docs\"])",
+          "raw_url": "https://github.com/python-jsonschema/jsonschema/raw/1e58409b71a9696b7bf9938ae8a3a48ef95ab29e/noxfile.py",
+          "sha": "05a2384591907ea3220f13e2be65ee7db9d07a34",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 1396,
+      "project_id": "python-jsonschema/jsonschema",
+      "reason": "static typing protocol signature"
+    },
+    {
+      "files": [
+        {
+          "additions": 2,
+          "blob_url": "https://github.com/python-lsp/python-lsp-jsonrpc/blob/26cc3e2c9c19bebcb0857624df73bb1047331ae9/README.md",
+          "changes": 4,
+          "contents_url": "https://api.github.com/repos/python-lsp/python-lsp-jsonrpc/contents/README.md?ref=26cc3e2c9c19bebcb0857624df73bb1047331ae9",
+          "deletions": 2,
+          "filename": "README.md",
+          "patch": "@@ -4,13 +4,13 @@ A Python 3.6+ server implementation of the [JSON RPC 2.0](http://www.jsonrpc.org\n \n ## Installation\n \n-    pip install -U python-jsonrpc-server\n+    pip install -U python-lsp-jsonrpc\n \n ## Examples\n \n The examples directory contains two examples of running language servers over websockets. `examples/langserver.py` shows how to run a language server in-memory. `examples/langserver_ext.py` shows how to run a subprocess language server, in this case the Python LSP Server.\n \n-Start by installing `tornado` and `python-language-server`\n+Start by installing `tornado` and `python-lsp-server`\n \n     pip install python-lsp-server[all] tornado\n ",
+          "raw_url": "https://github.com/python-lsp/python-lsp-jsonrpc/raw/26cc3e2c9c19bebcb0857624df73bb1047331ae9/README.md",
+          "sha": "6d89a75ce5e1dd8bcbd30cf07fe9e817d8aacd83",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 4,
+      "project_id": "python-lsp/python-lsp-jsonrpc",
+      "reason": "README typos"
+    },
+    {
+      "files": [
+        {
+          "additions": 14,
+          "blob_url": "https://github.com/python-lsp/python-lsp-jsonrpc/blob/4a91ccdd7f4628b9bc403f843e463ca01e696af0/test%2Ftest_streams.py",
+          "changes": 21,
+          "contents_url": "https://api.github.com/repos/python-lsp/python-lsp-jsonrpc/contents/test%2Ftest_streams.py?ref=4a91ccdd7f4628b9bc403f843e463ca01e696af0",
+          "deletions": 7,
+          "filename": "test/test_streams.py",
+          "patch": "@@ -82,13 +82,20 @@ def test_writer(wfile, writer):\n         'method': 'method',\n         'params': {}\n     })\n-\n-    assert wfile.getvalue() == (\n-        b'Content-Length: 44\\r\\n'\n-        b'Content-Type: application/vscode-jsonrpc; charset=utf8\\r\\n'\n-        b'\\r\\n'\n-        b'{\"id\":\"hello\",\"method\":\"method\",\"params\":{}}'\n-    )\n+    if 'ujson' in sys.modules:\n+        assert wfile.getvalue() == (\n+            b'Content-Length: 44\\r\\n'\n+            b'Content-Type: application/vscode-jsonrpc; charset=utf8\\r\\n'\n+            b'\\r\\n'\n+            b'{\"id\":\"hello\",\"method\":\"method\",\"params\":{}}'\n+        )\n+    else:\n+        assert wfile.getvalue() == (\n+            b'Content-Length: 49\\r\\n'\n+            b'Content-Type: application/vscode-jsonrpc; charset=utf8\\r\\n'\n+            b'\\r\\n'\n+            b'{\"id\": \"hello\", \"method\": \"method\", \"params\": {}}'\n+        )\n \n \n class JsonDatetime(datetime.datetime):",
+          "raw_url": "https://github.com/python-lsp/python-lsp-jsonrpc/raw/4a91ccdd7f4628b9bc403f843e463ca01e696af0/test%2Ftest_streams.py",
+          "sha": "14fe1bb8fedcb6133094c67a04e29cb46e7514c7",
+          "status": "modified"
+        }
+      ],
+      "pr_number": 26,
+      "project_id": "python-lsp/python-lsp-jsonrpc",
+      "reason": "Only changes test expectations for json versus ujson; no runtime implementation correction."
+    }
+  ],
+  "intent_commit": "2018cfb216117a6b2eb7bc33c7726f41cc7fa8f0",
+  "native_results_observed_before_selection": false,
+  "projects_with_no_candidate": [
+    "python-lsp/python-lsp-jsonrpc"
+  ],
+  "schema": "hepta.e5-upstream-selection-audit.v1",
+  "search_rule": "repo scoped merged PRs; fix in:title; created descending; first 10 only",
+  "searches_preserved": 12,
+  "selected": [
+    {
+      "after_commit": "0c6cfbf677f6b50df17311cfdad01e9ff17310aa",
+      "before_commit": "2cba84352c3f01e8af2f37bf102d0dd515e15dc0",
+      "pr_number": 155,
+      "project_id": "agronholm/exceptiongroup",
+      "selected_keyword": "test_exceptions_mutate_original_sequence"
+    },
+    {
+      "after_commit": "3863effe15ec8239ba88c65a4231a67e43b116df",
+      "before_commit": "a3ecd3548aff70bef15a61baee0d2d7f22f57992",
+      "pr_number": 569,
+      "project_id": "dbader/schedule",
+      "selected_keyword": "test_to_repr"
+    },
+    {
+      "after_commit": "f85a973c06d73e3dc9affe8a95e507c1ecf175d9",
+      "before_commit": "26fc3e4a15f2a24d363c62b89c4d8651e4fdfb94",
+      "pr_number": 1541,
+      "project_id": "Delgan/loguru",
+      "selected_keyword": "test_exception_modern"
+    },
+    {
+      "after_commit": "7d67c8231becca2f957bc32e2603f7ee930394df",
+      "before_commit": "0d3f5f93c98ae55707f0958366900275d1ce094f",
+      "pr_number": 250,
+      "project_id": "erikrose/parsimonious",
+      "selected_keyword": "test_sequence_choice_bug"
+    },
+    {
+      "after_commit": "59f596665ef8d99e416c61f66aaf70b9e295ddb2",
+      "before_commit": "2b4025f970a462a82cec58ff8f9adb287a90d419",
+      "pr_number": 237,
+      "project_id": "jaraco/path",
+      "selected_keyword": "test_constructor_dir_argument or test_constructor_prefix_argument or test_constructor_suffix_argument"
+    },
+    {
+      "after_commit": "3c560f150689eefcea04ee934fb2232ab5f96a1f",
+      "before_commit": "e52699e94551235841e45e03a76ceed95f9af15d",
+      "pr_number": 823,
+      "project_id": "jawah/charset_normalizer",
+      "selected_keyword": "test_filter_alt_coherence_matches or test_alternative_language_above_threshold"
+    },
+    {
+      "after_commit": "732eaa34f782e31e891bbbd4aa524e42b27f3bc7",
+      "before_commit": "92e7b6e910accee30118a6f3d2cef4c62caa38f5",
+      "pr_number": 161,
+      "project_id": "litl/backoff",
+      "selected_keyword": "test_on_exception_callable_max_tries_reads_every_time"
+    },
+    {
+      "after_commit": "5761beab3985d654d712f9326e08bfb2e2ec9c4c",
+      "before_commit": "d08471b17880c62b789971ada638707a11d3f8d4",
+      "pr_number": 3082,
+      "project_id": "marshmallow-code/marshmallow",
+      "selected_keyword": "test_pluck_empty_data_key"
+    },
+    {
+      "after_commit": "efd56db4e59f36b1673ce0eb0823e3afaa9d1201",
+      "before_commit": "038ff39cbc29b77a74ac21674206d5bf170ca769",
+      "pr_number": 653,
+      "project_id": "pyparsing/pyparsing",
+      "selected_keyword": "testRepeaterNested or testRepeaterReusedParser"
+    },
+    {
+      "after_commit": "9ff926f4588f0e4a8f5726cb69529c05c7921cc6",
+      "before_commit": "8290667beb239282529430b59e2d4ea51777b33e",
+      "pr_number": 1351,
+      "project_id": "python-jsonschema/jsonschema",
+      "selected_keyword": "TestDraft202012 and unevaluatedProperties"
+    },
+    {
+      "after_commit": "39f9dd234aabc0859c703e7d9747fbefe7133f4c",
+      "before_commit": "f4f288579dc3c8f82f62d0eaca7774303d9d3768",
+      "pr_number": 441,
+      "project_id": "tkem/cachetools",
+      "selected_keyword": "test_ttl_expiration_overflow"
+    }
+  ]
+}
