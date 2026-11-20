@@ -1,0 +1,107 @@
+{
+  "source_file": "/workspace/scratch/e9e051ab0825/metrics_integration/CURRENT_PROGRESS_e4b_original.json",
+  "source_sha256": "34dd98019a7a009761ede6732688e313735b5e9707dce2f47dd376c350e7152a",
+  "E3": {
+    "status": "COMPLETE",
+    "source": "16f21699a4cd661ed998333369f3734a572caf96",
+    "pr": 6705,
+    "evidence_commit": "5e027a1d0c49a2b1408e90491b4cc0bc1660725f",
+    "teacher_1": {
+      "checkpoint": "Qwen2.5-Coder-1.5B-Instruct",
+      "first": 0,
+      "last": 0,
+      "model_digest": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+      "reused_calls": 12,
+      "selected": 0,
+      "tasks": 6
+    },
+    "teacher_2": {
+      "checkpoint": "Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4",
+      "first": 1,
+      "last": 1,
+      "new_calls": 12,
+      "recovered": 0,
+      "regressed": 0,
+      "selected": 1,
+      "tasks": 6,
+      "weight_sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e"
+    },
+    "union_selected": 1,
+    "gain_over_best_teacher": 0,
+    "mutual_complementarity_observed": false,
+    "physical_compute_matched": false,
+    "same_logical_information_and_call_caps": true,
+    "negative_transfer_measured": false,
+    "license_scope": "authorized internal private research; upstream community license/local Apache label conflict retained; external commercial rights not asserted",
+    "cost": {
+      "baseline_model_calls_reused": 12,
+      "baseline_recheck_verifier_calls": 12,
+      "baseline_recheck_wall_seconds": 0.011964878998696804,
+      "cancelled_readonly_watch_job": "1a1ef0f5a91-ffbe-3e4",
+      "energy_joules": null,
+      "first_hash_attempt_failed_before_weight_read": "1a1eefdc153-ffbe-3b4",
+      "full_system_cost_known": false,
+      "http_wall_seconds": 106.19503192626871,
+      "input_tokens": 5207,
+      "nested_windows_are_not_additive": true,
+      "new_candidate_verifier_calls": 12,
+      "new_model_calls": 12,
+      "output_limit_calls": 3,
+      "output_tokens": 2398,
+      "reference_verifier_calls": 6,
+      "service_compute_cost_known": false,
+      "successful_owner_stage_windows": [
+        {
+          "automatic_retry": false,
+          "client_cpu_seconds": 0.211382563,
+          "full_system_cost_known": false,
+          "model_calls": 6,
+          "observations": 5,
+          "runner_returned": true,
+          "status": "COMPLETE",
+          "wall_seconds": 111.32666154298931
+        },
+        {
+          "automatic_retry": false,
+          "child_system_cpu_seconds": 0.061699,
+          "child_user_cpu_seconds": 0.135738,
+          "service_cost_included": false,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wait_returncode": 0,
+          "wall_seconds": 55.589848316973075
+        }
+      ],
+      "superseded_zero_call_exit": {
+        "automatic_retry": false,
+        "child_system_cpu_seconds": 0.014782,
+        "child_user_cpu_seconds": 0.072855,
+        "service_cost_included": false,
+        "stderr_sha256": "19eae885941ea9bad40919d6b11d9ddbd90d92f13d85c67b40a6607ac35bd379",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false,
+        "wait_returncode": 1,
+        "wall_seconds": 0.16455749003216624
+      },
+      "verification_wall_seconds": 1.159541368993814,
+      "weight_bytes_hashed": 98403356224,
+      "weight_hash_cpu_seconds": 49.02022946,
+      "weight_hash_wall_seconds": 134.143754767
+    },
+    "original_archive_sha256": "0ee947fdd6833a46b52a1165795268ac697969c0f2b167ca261c1b71a0e5f132",
+    "current_actual_maintenance_collection": {
+      "reference": "next_actual_student_collection",
+      "teacher": "T2",
+      "tasks": 4,
+      "calls": 8,
+      "first_success": 1,
+      "final_success": 1,
+      "failed_task_recovery": 0,
+      "failed_task_opportunities": 3,
+      "preserved_successes": 1,
+      "union_better_than_best": false,
+      "physical_compute_matched": false
+    }
+  }
+}
