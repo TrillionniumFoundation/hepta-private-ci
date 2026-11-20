@@ -27,6 +27,24 @@ BINARY_ARCHIVE_PATHS = frozenset(
         "qa/repository-consolidation/20261118/round-03/evidence.tar.gz.part-0004",
         "qa/repository-consolidation/20261118/round-03/evidence.tar.gz.part-0009",
         "qa/repository-consolidation/20261118/round-03/evidence.tar.gz.part-0020",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0016.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0023.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0066.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0075.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0079.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0080.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0083.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/ci-observations/part-0084.bin",
+        "qa/repository-consolidation/20261120/rust-union-c2d5-round3/"
+        "evidence/held-work/part-0015.bin",
     }
 )
 
