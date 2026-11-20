@@ -1,0 +1,176 @@
+{
+  "authenticated_users": 0,
+  "by_source": [
+    {
+      "after": {
+        "identities": [
+          {
+            "class": "tests.test_subscripts",
+            "name": "test_callable",
+            "original_class": "replay-1.0-after.work.tests.test_subscripts"
+          }
+        ],
+        "receipt": {
+          "cases": [
+            {
+              "class": "replay-1.0-after.work.tests.test_subscripts",
+              "error": null,
+              "failure": null,
+              "name": "test_callable",
+              "skipped": false
+            }
+          ],
+          "completed_child_cpu_seconds": 0.46069400000000005,
+          "errors": 0,
+          "failures": 0,
+          "junit_sha256": "a78e3ec37adf75a3538b616c93836556bbdb9d1882f60e0a5dec4775dc0f9a20",
+          "passed": 1,
+          "project_id": "coady/multimethod",
+          "revision": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+          "skipped": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "8f0f74a759e0ed122632c628f93def4bd13a3647e8713dd51bcf21441ab278c4",
+          "tests": 1,
+          "timed_out": false,
+          "variant": "after",
+          "wait_returncode": 0,
+          "wall_seconds": 0.4686259040609002
+        }
+      },
+      "after_passed": 1,
+      "before": {
+        "identities": [
+          {
+            "class": "tests.test_subscripts",
+            "name": "test_callable",
+            "original_class": "replay-1.0-before.work.tests.test_subscripts"
+          }
+        ],
+        "receipt": {
+          "cases": [
+            {
+              "class": "replay-1.0-before.work.tests.test_subscripts",
+              "error": null,
+              "failure": "IndexError: tuple index out of range",
+              "name": "test_callable",
+              "skipped": false
+            }
+          ],
+          "completed_child_cpu_seconds": 0.49369699999999994,
+          "errors": 0,
+          "failures": 1,
+          "junit_sha256": "c6cb43657c449fc6e97630e57bac57d98b00d6821adec35c6f56efbd1192734f",
+          "passed": 0,
+          "project_id": "coady/multimethod",
+          "revision": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+          "skipped": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "8be0cbe228f98a42cb88ea050d4f5bb07b693453e2998d466fe83a971d0f5d35",
+          "tests": 1,
+          "timed_out": false,
+          "variant": "before",
+          "wait_returncode": 1,
+          "wall_seconds": 0.5164078893139958
+        }
+      },
+      "before_failures": 1,
+      "case_identity_equal": true,
+      "original_failed_readout_preserved": true,
+      "original_regression_demonstrated": true,
+      "project_id": "coady/multimethod",
+      "source_id": "github:coady/multimethod:pull:157"
+    },
+    {
+      "after": {
+        "identities": [
+          {
+            "class": "tests.test_compat_locale",
+            "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+            "original_class": "replay-1.1-after.work.tests.test_compat_locale"
+          }
+        ],
+        "receipt": {
+          "cases": [
+            {
+              "class": "replay-1.1-after.work.tests.test_compat_locale",
+              "error": null,
+              "failure": null,
+              "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+              "skipped": false
+            }
+          ],
+          "completed_child_cpu_seconds": 0.5463410000000001,
+          "errors": 0,
+          "failures": 0,
+          "junit_sha256": "a0a8fd9a17fd331d29d92513e0ebbde7ab29123c5b32e07b36c7da0cbe50ed6b",
+          "passed": 1,
+          "project_id": "SethMMorton/natsort",
+          "revision": "e2328c20b62253bea75227b62763ea83874171dc",
+          "skipped": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "35d86279d96ed65491ba8ff0748e1c8e7891711531404dc5d4b9cd6ae33de3ec",
+          "tests": 1,
+          "timed_out": false,
+          "variant": "after",
+          "wait_returncode": 0,
+          "wall_seconds": 0.5689676543697715
+        }
+      },
+      "after_passed": 1,
+      "before": {
+        "identities": [
+          {
+            "class": "tests.test_compat_locale",
+            "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+            "original_class": "replay-1.1-before.work.tests.test_compat_locale"
+          }
+        ],
+        "receipt": {
+          "cases": [
+            {
+              "class": "replay-1.1-before.work.tests.test_compat_locale",
+              "error": null,
+              "failure": "AssertionError: assert b'x7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7f' > (b'\\xff' * 49)\n[+1 more line; full report in element text]",
+              "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+              "skipped": false
+            }
+          ],
+          "completed_child_cpu_seconds": 0.572333,
+          "errors": 0,
+          "failures": 1,
+          "junit_sha256": "00bd3e26517cf1a43b3abe9db08a0cdda7522017b913254171ca712f7c345008",
+          "passed": 0,
+          "project_id": "SethMMorton/natsort",
+          "revision": "e90771d7c39157d079425b655763938c2709d486",
+          "skipped": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "c1007853ae10657fa17e63e76b7e5a80b3e995ac3019040df46e72fc4be88101",
+          "tests": 1,
+          "timed_out": false,
+          "variant": "before",
+          "wait_returncode": 1,
+          "wall_seconds": 0.6169418096542358
+        }
+      },
+      "before_failures": 1,
+      "case_identity_equal": true,
+      "original_failed_readout_preserved": true,
+      "original_regression_demonstrated": true,
+      "project_id": "SethMMorton/natsort",
+      "source_id": "github:SethMMorton/natsort:pull:196"
+    }
+  ],
+  "full_system_cost_known": false,
+  "identity_rule": "Strip only the exact known work-directory prefix imposed by pytest's configured root. Preserve full original test module, class, function, parameter identity, order and count.",
+  "new_admitted_sources": 2,
+  "new_model_calls": 0,
+  "new_native_children": 0,
+  "new_training_updates": 0,
+  "original_native_children_reused": 4,
+  "original_plan_sha256": "e9dfd6b20be1bd6efa1177daeb6dc39ee9b01fd754fd8e2378a128960b35d789",
+  "original_replay_result_sha256": "a1691e8dca5760449794ab7c48ea6b07c3141a399fd078b2c31851407afee138",
+  "schema": "hepta.original-native-relative-case-readback.v1",
+  "source_commit": "611a0dd96a648277912d2cd4c9b0a44adc57972b",
+  "source_growth_qualified": false,
+  "wall_seconds": 0.008174219634383917
+}

@@ -1,0 +1,641 @@
+{
+  "schema": "hepta.e5-additional-source-acquisition.v1",
+  "experiment": "E5",
+  "intent_commit": "2018cfb216117a6b2eb7bc33c7726f41cc7fa8f0",
+  "intent_sha256": "71cbf2614b2302e5de082144b788b7fac36e18e926761889dad4c35ec5ab4f1e",
+  "root": "/home/qian/work/hepta-e5-additional-sources-20261120-e9e051",
+  "source_sizes": [
+    1,
+    4,
+    16,
+    64
+  ],
+  "budget_regimes": [
+    "fixed_total",
+    "fixed_per_source"
+  ],
+  "units_per_source": 32,
+  "native": {
+    "max_seconds_per_test_child": 120,
+    "pytest_per_case_timeout_seconds": 3,
+    "parallel_test_children": 1,
+    "automatic_retry": false,
+    "full_parameter_sets": true
+  },
+  "projects": [
+    {
+      "index": 0,
+      "project_id": "agronholm/exceptiongroup",
+      "source_id": "github:agronholm/exceptiongroup:pull:155",
+      "pr_number": 155,
+      "before_commit": "2cba84352c3f01e8af2f37bf102d0dd515e15dc0",
+      "after_commit": "0c6cfbf677f6b50df17311cfdad01e9ff17310aa",
+      "owner": {
+        "login": "agronholm",
+        "id": 130003,
+        "node_id": "MDQ6VXNlcjEzMDAwMw==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/130003?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/agronholm",
+        "html_url": "https://github.com/agronholm",
+        "followers_url": "https://api.github.com/users/agronholm/followers",
+        "following_url": "https://api.github.com/users/agronholm/following{/other_user}",
+        "gists_url": "https://api.github.com/users/agronholm/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/agronholm/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/agronholm/subscriptions",
+        "organizations_url": "https://api.github.com/users/agronholm/orgs",
+        "repos_url": "https://api.github.com/users/agronholm/repos",
+        "events_url": "https://api.github.com/users/agronholm/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/agronholm/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 447694800,
+      "original_author_account": {
+        "login": "worksbyfriday",
+        "id": 262019507,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-02-18T21:55:23Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "50d4fa5e68439ce837f6eef437b299c0dd7c8594",
+          "commit": "0c6cfbf677f6b50df17311cfdad01e9ff17310aa"
+        }
+      ],
+      "package": "exceptiongroup",
+      "product_roots": [
+        "src/exceptiongroup"
+      ],
+      "import_root": "src",
+      "test_files": [
+        "tests/test_exceptions.py"
+      ],
+      "keyword": "test_exceptions_mutate_original_sequence",
+      "python_requires": "<3.11 for backport regression assertion"
+    },
+    {
+      "index": 1,
+      "project_id": "dbader/schedule",
+      "source_id": "github:dbader/schedule:pull:569",
+      "pr_number": 569,
+      "before_commit": "a3ecd3548aff70bef15a61baee0d2d7f22f57992",
+      "after_commit": "3863effe15ec8239ba88c65a4231a67e43b116df",
+      "owner": {
+        "login": "dbader",
+        "id": 306708,
+        "node_id": "MDQ6VXNlcjMwNjcwOA==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/306708?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/dbader",
+        "html_url": "https://github.com/dbader",
+        "followers_url": "https://api.github.com/users/dbader/followers",
+        "following_url": "https://api.github.com/users/dbader/following{/other_user}",
+        "gists_url": "https://api.github.com/users/dbader/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/dbader/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/dbader/subscriptions",
+        "organizations_url": "https://api.github.com/users/dbader/orgs",
+        "repos_url": "https://api.github.com/users/dbader/repos",
+        "events_url": "https://api.github.com/users/dbader/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/dbader/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 10155460,
+      "original_author_account": {
+        "login": "CPickens42",
+        "id": 97478551,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2023-04-09T21:10:57Z",
+      "licenses": [
+        {
+          "path": "LICENSE.txt",
+          "sha": "7c51781e88c8933284572fb4f24d55f4359b7c05",
+          "commit": "3863effe15ec8239ba88c65a4231a67e43b116df"
+        }
+      ],
+      "package": "schedule",
+      "product_roots": [
+        "schedule"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "test_schedule.py"
+      ],
+      "keyword": "test_to_repr"
+    },
+    {
+      "index": 2,
+      "project_id": "Delgan/loguru",
+      "source_id": "github:Delgan/loguru:pull:1541",
+      "pr_number": 1541,
+      "before_commit": "26fc3e4a15f2a24d363c62b89c4d8651e4fdfb94",
+      "after_commit": "f85a973c06d73e3dc9affe8a95e507c1ecf175d9",
+      "owner": {
+        "login": "Delgan",
+        "id": 4193924,
+        "node_id": "MDQ6VXNlcjQxOTM5MjQ=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/4193924?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Delgan",
+        "html_url": "https://github.com/Delgan",
+        "followers_url": "https://api.github.com/users/Delgan/followers",
+        "following_url": "https://api.github.com/users/Delgan/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Delgan/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Delgan/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Delgan/subscriptions",
+        "organizations_url": "https://api.github.com/users/Delgan/orgs",
+        "repos_url": "https://api.github.com/users/Delgan/repos",
+        "events_url": "https://api.github.com/users/Delgan/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Delgan/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 100401612,
+      "original_author_account": {
+        "login": "JeremyL691",
+        "id": 159617378,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-11-11T10:12:25Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "5285f420ff222526f9afa7acf507362367132f9c",
+          "commit": "f85a973c06d73e3dc9affe8a95e507c1ecf175d9"
+        }
+      ],
+      "package": "loguru",
+      "product_roots": [
+        "loguru"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "tests/test_exceptions_formatting.py"
+      ],
+      "keyword": "test_exception_modern"
+    },
+    {
+      "index": 3,
+      "project_id": "erikrose/parsimonious",
+      "source_id": "github:erikrose/parsimonious:pull:250",
+      "pr_number": 250,
+      "before_commit": "0d3f5f93c98ae55707f0958366900275d1ce094f",
+      "after_commit": "7d67c8231becca2f957bc32e2603f7ee930394df",
+      "owner": {
+        "login": "erikrose",
+        "id": 295816,
+        "node_id": "MDQ6VXNlcjI5NTgxNg==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/295816?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/erikrose",
+        "html_url": "https://github.com/erikrose",
+        "followers_url": "https://api.github.com/users/erikrose/followers",
+        "following_url": "https://api.github.com/users/erikrose/following{/other_user}",
+        "gists_url": "https://api.github.com/users/erikrose/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/erikrose/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/erikrose/subscriptions",
+        "organizations_url": "https://api.github.com/users/erikrose/orgs",
+        "repos_url": "https://api.github.com/users/erikrose/repos",
+        "events_url": "https://api.github.com/users/erikrose/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/erikrose/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 3343080,
+      "original_author_account": {
+        "login": "lucaswiman",
+        "id": 123110,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2025-01-02T02:29:18Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "0a523bece3e50519653c4d7a38399baa487fefa1",
+          "commit": "7d67c8231becca2f957bc32e2603f7ee930394df"
+        }
+      ],
+      "package": "parsimonious",
+      "product_roots": [
+        "parsimonious"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "parsimonious/tests/test_grammar.py"
+      ],
+      "keyword": "test_sequence_choice_bug"
+    },
+    {
+      "index": 4,
+      "project_id": "jaraco/path",
+      "source_id": "github:jaraco/path:pull:237",
+      "pr_number": 237,
+      "before_commit": "2b4025f970a462a82cec58ff8f9adb287a90d419",
+      "after_commit": "59f596665ef8d99e416c61f66aaf70b9e295ddb2",
+      "owner": {
+        "login": "jaraco",
+        "id": 308610,
+        "node_id": "MDQ6VXNlcjMwODYxMA==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/308610?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/jaraco",
+        "html_url": "https://github.com/jaraco",
+        "followers_url": "https://api.github.com/users/jaraco/followers",
+        "following_url": "https://api.github.com/users/jaraco/following{/other_user}",
+        "gists_url": "https://api.github.com/users/jaraco/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/jaraco/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/jaraco/subscriptions",
+        "organizations_url": "https://api.github.com/users/jaraco/orgs",
+        "repos_url": "https://api.github.com/users/jaraco/repos",
+        "events_url": "https://api.github.com/users/jaraco/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/jaraco/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 4093296,
+      "original_author_account": {
+        "login": "aniederl",
+        "id": 82451,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2025-07-27T20:08:14Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "1bb5a44356f00884a71ceeefd24ded6caaba2418",
+          "commit": "797fa31a138e7cdc9ae34b30dbfe524de51871ce",
+          "external_notice": true,
+          "reason": "merged revision uses coherent.licensed generation; exact PR head MIT notice retained separately"
+        }
+      ],
+      "package": "path",
+      "product_roots": [
+        "path"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "tests/test_path.py"
+      ],
+      "keyword": "test_constructor_dir_argument or test_constructor_prefix_argument or test_constructor_suffix_argument"
+    },
+    {
+      "index": 5,
+      "project_id": "jawah/charset_normalizer",
+      "source_id": "github:jawah/charset_normalizer:pull:823",
+      "pr_number": 823,
+      "before_commit": "e52699e94551235841e45e03a76ceed95f9af15d",
+      "after_commit": "3c560f150689eefcea04ee934fb2232ab5f96a1f",
+      "owner": {
+        "login": "jawah",
+        "id": 139072305,
+        "node_id": "O_kgDOCEoTMQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/139072305?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/jawah",
+        "html_url": "https://github.com/jawah",
+        "followers_url": "https://api.github.com/users/jawah/followers",
+        "following_url": "https://api.github.com/users/jawah/following{/other_user}",
+        "gists_url": "https://api.github.com/users/jawah/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/jawah/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/jawah/subscriptions",
+        "organizations_url": "https://api.github.com/users/jawah/orgs",
+        "repos_url": "https://api.github.com/users/jawah/repos",
+        "events_url": "https://api.github.com/users/jawah/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/jawah/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 200259335,
+      "original_author_account": {
+        "login": "hulkbig",
+        "id": 4527334,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-10-20T06:12:36Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "9725772c7967075d97dc78d60f3735435eccba63",
+          "commit": "3c560f150689eefcea04ee934fb2232ab5f96a1f"
+        },
+        {
+          "path": "data/NOTICE.md",
+          "sha": "4154617cac3cec807c2adb51f297266faeb5abc1",
+          "commit": "3c560f150689eefcea04ee934fb2232ab5f96a1f"
+        }
+      ],
+      "package": "charset_normalizer",
+      "product_roots": [
+        "src/charset_normalizer"
+      ],
+      "import_root": "src",
+      "test_files": [
+        "tests/test_coherence_detection.py"
+      ],
+      "keyword": "test_filter_alt_coherence_matches or test_alternative_language_above_threshold",
+      "backend": "original pure Python .py; compiled .pyx counterpart retained but not compiled"
+    },
+    {
+      "index": 6,
+      "project_id": "litl/backoff",
+      "source_id": "github:litl/backoff:pull:161",
+      "pr_number": 161,
+      "before_commit": "92e7b6e910accee30118a6f3d2cef4c62caa38f5",
+      "after_commit": "732eaa34f782e31e891bbbd4aa524e42b27f3bc7",
+      "owner": {
+        "login": "litl",
+        "id": 190361,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjE5MDM2MQ==",
+        "avatar_url": "https://avatars.githubusercontent.com/u/190361?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/litl",
+        "html_url": "https://github.com/litl",
+        "followers_url": "https://api.github.com/users/litl/followers",
+        "following_url": "https://api.github.com/users/litl/following{/other_user}",
+        "gists_url": "https://api.github.com/users/litl/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/litl/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/litl/subscriptions",
+        "organizations_url": "https://api.github.com/users/litl/orgs",
+        "repos_url": "https://api.github.com/users/litl/repos",
+        "events_url": "https://api.github.com/users/litl/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/litl/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 19746601,
+      "original_author_account": {
+        "login": "jvrsantacruz",
+        "id": 1549418,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2022-06-07T14:27:16Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "9dc3cea50bac35595e74acd86a29fcd69bb336e0",
+          "commit": "732eaa34f782e31e891bbbd4aa524e42b27f3bc7"
+        }
+      ],
+      "package": "backoff",
+      "product_roots": [
+        "backoff"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "tests/test_backoff.py",
+        "tests/test_backoff_async.py"
+      ],
+      "keyword": "test_on_exception_callable_max_tries_reads_every_time",
+      "plugins": [
+        "pytest_asyncio.plugin"
+      ]
+    },
+    {
+      "index": 7,
+      "project_id": "marshmallow-code/marshmallow",
+      "source_id": "github:marshmallow-code/marshmallow:pull:3082",
+      "pr_number": 3082,
+      "before_commit": "d08471b17880c62b789971ada638707a11d3f8d4",
+      "after_commit": "5761beab3985d654d712f9326e08bfb2e2ec9c4c",
+      "owner": {
+        "login": "marshmallow-code",
+        "id": 10334301,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjEwMzM0MzAx",
+        "avatar_url": "https://avatars.githubusercontent.com/u/10334301?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/marshmallow-code",
+        "html_url": "https://github.com/marshmallow-code",
+        "followers_url": "https://api.github.com/users/marshmallow-code/followers",
+        "following_url": "https://api.github.com/users/marshmallow-code/following{/other_user}",
+        "gists_url": "https://api.github.com/users/marshmallow-code/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/marshmallow-code/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/marshmallow-code/subscriptions",
+        "organizations_url": "https://api.github.com/users/marshmallow-code/orgs",
+        "repos_url": "https://api.github.com/users/marshmallow-code/repos",
+        "events_url": "https://api.github.com/users/marshmallow-code/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/marshmallow-code/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 14284859,
+      "original_author_account": {
+        "login": "lafrech",
+        "id": 1767010,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-10-19T16:55:44Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "b20df7cab259cfce3d02bd8da515ce65870612b7",
+          "commit": "5761beab3985d654d712f9326e08bfb2e2ec9c4c"
+        },
+        {
+          "path": "NOTICE",
+          "sha": "3dccd6be9940be23c7aef2850243b3bc6bb230c0",
+          "commit": "5761beab3985d654d712f9326e08bfb2e2ec9c4c"
+        }
+      ],
+      "package": "marshmallow",
+      "product_roots": [
+        "src/marshmallow"
+      ],
+      "import_root": "src",
+      "test_files": [
+        "tests/test_fields.py"
+      ],
+      "keyword": "test_pluck_empty_data_key"
+    },
+    {
+      "index": 8,
+      "project_id": "pyparsing/pyparsing",
+      "source_id": "github:pyparsing/pyparsing:pull:653",
+      "pr_number": 653,
+      "before_commit": "038ff39cbc29b77a74ac21674206d5bf170ca769",
+      "after_commit": "efd56db4e59f36b1673ce0eb0823e3afaa9d1201",
+      "owner": {
+        "login": "pyparsing",
+        "id": 28690438,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjI4NjkwNDM4",
+        "avatar_url": "https://avatars.githubusercontent.com/u/28690438?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/pyparsing",
+        "html_url": "https://github.com/pyparsing",
+        "followers_url": "https://api.github.com/users/pyparsing/followers",
+        "following_url": "https://api.github.com/users/pyparsing/following{/other_user}",
+        "gists_url": "https://api.github.com/users/pyparsing/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/pyparsing/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/pyparsing/subscriptions",
+        "organizations_url": "https://api.github.com/users/pyparsing/orgs",
+        "repos_url": "https://api.github.com/users/pyparsing/repos",
+        "events_url": "https://api.github.com/users/pyparsing/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/pyparsing/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 91262163,
+      "original_author_account": {
+        "login": "rajeshkanade",
+        "id": 121803689,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-08-18T04:25:14Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "f9f48d0619a386cd812261b41b04016207b72d5b",
+          "commit": "efd56db4e59f36b1673ce0eb0823e3afaa9d1201"
+        }
+      ],
+      "package": "pyparsing",
+      "product_roots": [
+        "pyparsing"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "tests/test_unit.py"
+      ],
+      "keyword": "testRepeaterNested or testRepeaterReusedParser"
+    },
+    {
+      "index": 9,
+      "project_id": "python-jsonschema/jsonschema",
+      "source_id": "github:python-jsonschema/jsonschema:pull:1351",
+      "pr_number": 1351,
+      "before_commit": "8290667beb239282529430b59e2d4ea51777b33e",
+      "after_commit": "9ff926f4588f0e4a8f5726cb69529c05c7921cc6",
+      "owner": {
+        "login": "python-jsonschema",
+        "id": 100241624,
+        "node_id": "O_kgDOBfmQ2A",
+        "avatar_url": "https://avatars.githubusercontent.com/u/100241624?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/python-jsonschema",
+        "html_url": "https://github.com/python-jsonschema",
+        "followers_url": "https://api.github.com/users/python-jsonschema/followers",
+        "following_url": "https://api.github.com/users/python-jsonschema/following{/other_user}",
+        "gists_url": "https://api.github.com/users/python-jsonschema/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/python-jsonschema/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/python-jsonschema/subscriptions",
+        "organizations_url": "https://api.github.com/users/python-jsonschema/orgs",
+        "repos_url": "https://api.github.com/users/python-jsonschema/repos",
+        "events_url": "https://api.github.com/users/python-jsonschema/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/python-jsonschema/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 3072629,
+      "original_author_account": {
+        "login": "V02460",
+        "id": 1291108,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2025-05-26T16:50:39Z",
+      "licenses": [
+        {
+          "path": "COPYING",
+          "sha": "af9cfbdb134f42e5205ecbad597421d778826481",
+          "commit": "9ff926f4588f0e4a8f5726cb69529c05c7921cc6"
+        },
+        {
+          "path": "json/LICENSE",
+          "sha": "c28adbadd9114a30a302fef37c3d14f490645c1c",
+          "commit": "9ff926f4588f0e4a8f5726cb69529c05c7921cc6"
+        }
+      ],
+      "package": "jsonschema",
+      "product_roots": [
+        "jsonschema"
+      ],
+      "import_root": ".",
+      "test_files": [
+        "jsonschema/tests/test_jsonschema_test_suite.py"
+      ],
+      "keyword": "TestDraft202012 and unevaluatedProperties",
+      "suite_environment": "JSON_SCHEMA_TEST_SUITE"
+    },
+    {
+      "index": 11,
+      "project_id": "tkem/cachetools",
+      "source_id": "github:tkem/cachetools:pull:441",
+      "pr_number": 441,
+      "before_commit": "f4f288579dc3c8f82f62d0eaca7774303d9d3768",
+      "after_commit": "39f9dd234aabc0859c703e7d9747fbefe7133f4c",
+      "owner": {
+        "login": "tkem",
+        "id": 2833077,
+        "node_id": "MDQ6VXNlcjI4MzMwNzc=",
+        "avatar_url": "https://avatars.githubusercontent.com/u/2833077?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/tkem",
+        "html_url": "https://github.com/tkem",
+        "followers_url": "https://api.github.com/users/tkem/followers",
+        "following_url": "https://api.github.com/users/tkem/following{/other_user}",
+        "gists_url": "https://api.github.com/users/tkem/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/tkem/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/tkem/subscriptions",
+        "organizations_url": "https://api.github.com/users/tkem/orgs",
+        "repos_url": "https://api.github.com/users/tkem/repos",
+        "events_url": "https://api.github.com/users/tkem/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/tkem/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "repository_id": 18006791,
+      "original_author_account": {
+        "login": "muneikh",
+        "id": 14274448,
+        "type": "User",
+        "authenticated_human": false
+      },
+      "merged_at": "2026-10-12T14:51:49Z",
+      "licenses": [
+        {
+          "path": "LICENSE",
+          "sha": "f980a19c78c25959f922b8cc93854d91a89e686f",
+          "commit": "39f9dd234aabc0859c703e7d9747fbefe7133f4c"
+        }
+      ],
+      "package": "cachetools",
+      "product_roots": [
+        "src/cachetools"
+      ],
+      "import_root": "src",
+      "test_files": [
+        "tests/test_ttl.py"
+      ],
+      "keyword": "test_ttl_expiration_overflow"
+    }
+  ],
+  "excluded_no_runtime": [
+    "python-lsp/python-lsp-jsonrpc"
+  ],
+  "package_dependency_scope": "isolated native replay dependencies only; dependency packages do not count as training projects",
+  "new_authenticated_users": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0
+}

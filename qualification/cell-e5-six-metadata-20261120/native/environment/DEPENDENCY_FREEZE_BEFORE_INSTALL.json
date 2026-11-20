@@ -1,0 +1,116 @@
+{
+  "added_dependencies": [
+    {
+      "bytes": 1169869,
+      "distribution": "hypothesis",
+      "metadata_sha256": "f8d0cd195b4148494492fead3be4a015e9ade996a1efe77675b095b9591e29fe",
+      "metadata_url": "https://pypi.org/pypi/hypothesis/json",
+      "requires_dist": [
+        "sortedcontainers<3.0.0,>=2.1.0",
+        "black>=20.8b0; extra == \"all\"",
+        "click>=7.0; extra == \"all\"",
+        "crosshair-tool>=0.0.113; extra == \"all\"",
+        "django>=5.2; extra == \"all\"",
+        "dpcontracts>=0.4; extra == \"all\"",
+        "hypothesis-crosshair>=0.0.32; extra == \"all\"",
+        "lark>=0.10.1; extra == \"all\"",
+        "libcst>=0.3.16; extra == \"all\"",
+        "numpy>=1.23.2; extra == \"all\"",
+        "pandas>=1.5; extra == \"all\"",
+        "pytest>=4.6; extra == \"all\"",
+        "python-dateutil>=1.4; extra == \"all\"",
+        "pytz>=2014.1; extra == \"all\"",
+        "redis>=3.0.0; extra == \"all\"",
+        "rich>=9.0.0; extra == \"all\"",
+        "tzdata>=2026.6; (sys_platform == \"emscripten\" and extra == \"all\") or (sys_platform == \"win32\" and extra == \"all\")",
+        "watchdog>=4.0.0; extra == \"all\"",
+        "click>=7.0; extra == \"cli\"",
+        "black>=20.8b0; extra == \"cli\"",
+        "rich>=9.0.0; extra == \"cli\"",
+        "libcst>=0.3.16; extra == \"codemods\"",
+        "hypothesis-crosshair>=0.0.32; extra == \"crosshair\"",
+        "crosshair-tool>=0.0.113; extra == \"crosshair\"",
+        "python-dateutil>=1.4; extra == \"dateutil\"",
+        "django>=5.2; extra == \"django\"",
+        "dpcontracts>=0.4; extra == \"dpcontracts\"",
+        "black>=20.8b0; extra == \"ghostwriter\"",
+        "lark>=0.10.1; extra == \"lark\"",
+        "numpy>=1.23.2; extra == \"numpy\"",
+        "pandas>=1.5; extra == \"pandas\"",
+        "pytest>=4.6; extra == \"pytest\"",
+        "pytz>=2014.1; extra == \"pytz\"",
+        "redis>=3.0.0; extra == \"redis\"",
+        "watchdog>=4.0.0; extra == \"watchdog\"",
+        "tzdata>=2026.6; (sys_platform == \"emscripten\" and extra == \"zoneinfo\") or (sys_platform == \"win32\" and extra == \"zoneinfo\")"
+      ],
+      "requires_python": ">=3.11",
+      "sha256": "8c5723915273793d8ffc7495667d331ada57211c0b734e1db4942602a390eb33",
+      "version": "6.170.16",
+      "wheel": "hypothesis-6.170.16-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "wheel_url": "https://files.pythonhosted.org/packages/5f/cc/8b9fb4dec3b28ce135b8dd21ea6e8e626b0fc87a0dd4c85a2f7f87a2525e/hypothesis-6.170.16-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl"
+    },
+    {
+      "bytes": 29575,
+      "distribution": "sortedcontainers",
+      "metadata_sha256": "7a3dd4add04aa96d28a3ebeb4208ff5ed4868ceffc81c7cf6047f6c5b305b8cb",
+      "metadata_url": "https://pypi.org/pypi/sortedcontainers/json",
+      "requires_dist": null,
+      "requires_python": "",
+      "sha256": "a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0",
+      "version": "2.4.0",
+      "wheel": "sortedcontainers-2.4.0-py2.py3-none-any.whl",
+      "wheel_url": "https://files.pythonhosted.org/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl"
+    }
+  ],
+  "direct_exact_requirements": [
+    "attrs==26.1.0",
+    "iniconfig==2.3.1",
+    "packaging==26.3",
+    "pluggy==1.7.0",
+    "pygments==2.21.0",
+    "pytest==9.2.0",
+    "pytest_timeout==2.4.0",
+    "hypothesis==6.170.16",
+    "sortedcontainers==2.4.0"
+  ],
+  "new_native_children": 0,
+  "purpose": "Original conftest import only; selected test has no generated Hypothesis examples. Both variants use this identical environment.",
+  "reused_wheels": [
+    {
+      "bytes": 67548,
+      "name": "attrs-26.1.0-py3-none-any.whl",
+      "sha256": "c647aa4a12dfbad9333ca4e71fe62ddc36f4e63b2d260a37a8b83d2f043ac309"
+    },
+    {
+      "bytes": 7552,
+      "name": "iniconfig-2.3.1-py3-none-any.whl",
+      "sha256": "9121e2c1fdb355232495be3194c8dfe87ccc2d5dee45947b78e68f499790d7a7"
+    },
+    {
+      "bytes": 129956,
+      "name": "packaging-26.3-py3-none-any.whl",
+      "sha256": "d7193f7c8e4e93f444fde0262bf90af30e16fa0ad0ad44cb553c87339b23cd1c"
+    },
+    {
+      "bytes": 27082,
+      "name": "pluggy-1.7.0-py3-none-any.whl",
+      "sha256": "7dd7b0d8832ba3cb632c306926ded123429211b83641b35dc5c41ad2d34f9bec"
+    },
+    {
+      "bytes": 1250147,
+      "name": "pygments-2.21.0-py3-none-any.whl",
+      "sha256": "2363c69b61c4a97c838da3b130dcd6468f4848992b21a82f2a63ec34377137d9"
+    },
+    {
+      "bytes": 411776,
+      "name": "pytest-9.2.0-py3-none-any.whl",
+      "sha256": "07acdcf88ec174f907dc01af70bf52d49b014bbab03faeeade31c96b18c2e588"
+    },
+    {
+      "bytes": 14382,
+      "name": "pytest_timeout-2.4.0-py3-none-any.whl",
+      "sha256": "c42667e5cdadb151aeb5b26d114aff6bdf5a907f176a007a30b940d3d865b5c2"
+    }
+  ],
+  "reused_wheels_manifest_sha256": "f2d87178a1da20cf9e04abc0a6728b040cc60c9f071a648c837fa068d534fece"
+}

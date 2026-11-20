@@ -1,0 +1,38 @@
+{
+  "schema": "hepta.e5-two-source-native-continuation-intent.v1",
+  "metadata_freeze_commit": "a71fbe4a66d81e733cee9284a8b578b54095659f",
+  "metadata_intent_commit": "2da9714aba0288590dbcdc8febdb9ed549f9f5d2",
+  "authorization": "Parent task explicitly authorizes source review and at most four native children for only multimethod#157 and natsort#196 after metadata freeze; no models/training.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6782,
+  "branch": "research/e5-six-metadata-20261120-e9e051",
+  "candidate_order": [
+    {
+      "repository": "coady/multimethod",
+      "pr": 157,
+      "before": "ddd47812ed846149a6a65a006927c7d9e696ad86",
+      "after": "e7b2c416219b7f8c9c7f67d81613241f01a75825"
+    },
+    {
+      "repository": "SethMMorton/natsort",
+      "pr": 196,
+      "before": "e90771d7c39157d079425b655763938c2709d486",
+      "after": "e2328c20b62253bea75227b62763ea83874171dc"
+    }
+  ],
+  "selection_rule_unchanged": true,
+  "other_four_metadata_outcomes_unchanged": true,
+  "source_files_read_before_this_commit": 0,
+  "test_functions_and_full_parameter_sets": "Derive from exact upstream runtime/test source during authorized review; bind their identities and dependencies before any native outcome is observed.",
+  "host": "x230",
+  "fresh_isolated_directory_required": true,
+  "max_native_children": 4,
+  "max_seconds_per_child": 120,
+  "max_seconds_per_pytest_case": 3,
+  "parallel_native_children": 1,
+  "admission_rule": "Exact before fails relevant original upstream assertions and after passes the same full parameterized upstream function set under the original identity checks. Infrastructure or dependency errors are not bug failures. Preserve all original logs and normalize JUnit identity only by exact before/after root prefix.",
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "new_authenticated_users": 0,
+  "qualified": false
+}

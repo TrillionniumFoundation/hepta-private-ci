@@ -1,0 +1,10 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________ test_icu_null_string_locale_max_sorts_after_any_bytes _____________
+tests/test_compat_locale.py:44: in test_icu_null_string_locale_max_sorts_after_any_bytes
+    assert icu_locale_module.null_string_locale_max > b"\xff" * 49
+E   AssertionError: assert b'x7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7f' > (b'\xff' * 49)
+E    +  where b'x7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7f' = <module '_icu_locale' from '/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1/1-before/work/natsort/compat/locale.py'>.null_string_locale_max
+=========================== short test summary info ============================
+FAILED tests/test_compat_locale.py::test_icu_null_string_locale_max_sorts_after_any_bytes
+1 failed in 0.05s

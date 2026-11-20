@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.148" timestamp="2026-11-20T05:29:32.126075+00:00" hostname="qian-ThinkPad-X230"><testcase classname="replay-1.0-before.work.tests.test_subscripts" name="test_callable" time="0.002"><failure message="IndexError: tuple index out of range">tests/test_subscripts.py:171: in test_callable
+    assert not issubclass(Callable, subtype(Callable[[], int]))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+multimethod/__init__.py:109: in __subclasscheck__
+    and issubclass(args[-1], self.__args__[-1])  # covariant return
+                   ^^^^^^^^
+E   IndexError: tuple index out of range</failure></testcase></testsuite></testsuites>

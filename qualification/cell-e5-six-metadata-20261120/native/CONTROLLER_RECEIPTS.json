@@ -1,0 +1,102 @@
+{
+  "e5_two_setup_pty_raw": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"x230\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-ed3c5896f25fc78acb299385bd37dfb488200170afef9ac0f513b24ad25b834e\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1795152336097,\"output_complete\":false,\"owner_pid\":4084233,\"pid\":4084234,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_setup_pty_read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qian/.local/state/hepta-runtime-mac-worker/terminals/dpty-ed3c5896f25fc78acb299385bd37dfb488200170afef9ac0f513b24ad25b834e/output.log\",\"available_end\":416,\"bytes_hex\":\"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0d0a202046696c6520222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f73657475705f6e61746976655f656e7669726f6e6d656e742e7079222c206c696e652037362c20696e203c6d6f64756c653e0d0a202020206966205f5f6e616d655f5f203d3d20275f5f6d61696e5f5f273a206d61696e28290d0a202020202020202020202020202020202020202020202020202020202020205e5e5e5e5e5e0d0a202046696c6520222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f73657475705f6e61746976655f656e7669726f6e6d656e742e7079222c206c696e652035342c20696e206d61696e0d0a20202020617373657274206c656e28636f6d70617469626c6529203d3d20310d0a20202020202020202020205e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0d0a417373657274696f6e4572726f720d0a\",\"chunk_sha256\":\"fe3f04180ada255a0ff2f11a1d0ee0372fbdc7e16c769dda8888c13384e0eaa2\",\"host\":\"x230\",\"next_offset\":416,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-ed3c5896f25fc78acb299385bd37dfb488200170afef9ac0f513b24ad25b834e\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":416,\"bytes_stored\":416,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795152336097,\"exit_code\":1,\"output_complete\":true,\"owner_pid\":4084233,\"pid\":4084234,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"Traceback (most recent call last):\\r\\n  File \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/setup_native_environment.py\\\", line 76, in <module>\\r\\n    if __name__ == '__main__': main()\\r\\n                               ^^^^^^\\r\\n  File \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/setup_native_environment.py\\\", line 54, in main\\r\\n    assert len(compatible) == 1\\r\\n           ^^^^^^^^^^^^^^^^^^^^\\r\\nAssertionError\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_setup_recovery_pty": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"x230\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-27ce887c22f9289d0b2b01da50b679497b5c717c4ef29fbccd3181a641465575\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1795152430032,\"output_complete\":false,\"owner_pid\":4090868,\"pid\":4090869,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_setup_recovery_read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qian/.local/state/hepta-runtime-mac-worker/terminals/dpty-27ce887c22f9289d0b2b01da50b679497b5c717c4ef29fbccd3181a641465575/output.log\",\"available_end\":275,\"bytes_hex\":\"7b22737461747573223a202252454144595f464f525f5052455f4e41544956455f465245455a45222c202265786163745f726571756972656d656e7473223a205b2261747472733d3d32362e312e30222c2022696e69636f6e6669673d3d322e332e31222c20227061636b6167696e673d3d32362e33222c2022706c756767793d3d312e372e30222c20227079676d656e74733d3d322e32312e30222c20227079746573743d3d392e322e30222c20227079746573745f74696d656f75743d3d322e342e30222c20226879706f7468657369733d3d362e3137302e3136222c2022736f72746564636f6e7461696e6572733d3d322e342e30225d2c20226e61746976655f6368696c6472656e223a20307d0d0a\",\"chunk_sha256\":\"f4138cd6cc2c85c115fa0a21212a9c407d8f91e9050af07dae5964365639a5ff\",\"host\":\"x230\",\"next_offset\":275,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-27ce887c22f9289d0b2b01da50b679497b5c717c4ef29fbccd3181a641465575\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":275,\"bytes_stored\":275,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795152430032,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":4090868,\"pid\":4090869,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"status\\\": \\\"READY_FOR_PRE_NATIVE_FREEZE\\\", \\\"exact_requirements\\\": [\\\"attrs==26.1.0\\\", \\\"iniconfig==2.3.1\\\", \\\"packaging==26.3\\\", \\\"pluggy==1.7.0\\\", \\\"pygments==2.21.0\\\", \\\"pytest==9.2.0\\\", \\\"pytest_timeout==2.4.0\\\", \\\"hypothesis==6.170.16\\\", \\\"sortedcontainers==2.4.0\\\"], \\\"native_children\\\": 0}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_native_owner_pty": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"x230\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-66363eaed16d57a42eca5bad69ca3cfa93735029d0ccee0e053399a968b11c0b\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1795152571679,\"output_complete\":false,\"owner_pid\":4101410,\"pid\":4101420,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_native_owner_read": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"archive_path\":\"/home/qian/.local/state/hepta-runtime-mac-worker/terminals/dpty-66363eaed16d57a42eca5bad69ca3cfa93735029d0ccee0e053399a968b11c0b/output.log\",\"available_end\":1337,\"bytes_hex\":\"7b227374616765223a20302c202261726776223a205b222f7573722f62696e2f707974686f6e33222c20222d75222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f7265706c61795f736f75726365732e7079222c20226f776e6572222c20222d2d726f6f74222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d653965303531222c20222d2d6f7574707574222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f7265706c61792d31222c20222d2d736f757263652d636f6d6d6974222c202236313161306464393661363438323737393132643263643463396230613434616463353739373262225d2c2022657869745f636f6465223a20322c202277616c6c5f7365636f6e6473223a20322e333937353834353536313336323830332c20227374646f75745f736861323536223a202236323264346234386235333638363330623162343133393961386534343862666431623464386363366265323233353463363365616664333133646433376339222c20227374646572725f736861323536223a202265336230633434323938666331633134396166626634633839393666623932343237616534316534363439623933346361343935393931623738353262383535227d0d0a7b227374616765223a20312c202261726776223a205b222f7573722f62696e2f707974686f6e33222c20222d75222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f7665726966795f7265706c61795f6964656e746974792e7079222c20222d2d726f6f74222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d653965303531222c20222d2d7265706c6179222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f7265706c61792d31222c20222d2d6f7574707574222c20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312f6964656e746974792d726561646261636b2d31222c20222d2d736f757263652d636f6d6d6974222c202236313161306464393661363438323737393132643263643463396230613434616463353739373262225d2c2022657869745f636f6465223a20302c202277616c6c5f7365636f6e6473223a20302e30373130303836333938373537393934322c20227374646f75745f736861323536223a202230353537306661303035656264623965653630666530306561376438343766623833306562663261613337343730336234633535653339326539333034303730222c20227374646572725f736861323536223a202265336230633434323938666331633134396166626634633839393666623932343237616534316534363439623933346361343935393931623738353262383535227d0d0a7b22726561646261636b5f61646d69747465645f736f7572636573223a20322c20226f726967696e616c5f6368696c6472656e223a20342c20226e65775f726561646261636b5f6e61746976655f6368696c6472656e223a20302c20226d6f64656c5f63616c6c73223a20302c2022747261696e696e675f75706461746573223a20307d0d0a\",\"chunk_sha256\":\"f9096c15cdbb2d90b789b808d708339df522d17678f585602ee1c90875fef257\",\"host\":\"x230\",\"next_offset\":1337,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-66363eaed16d57a42eca5bad69ca3cfa93735029d0ccee0e053399a968b11c0b\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":1337,\"bytes_stored\":1337,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795152571679,\"exit_code\":0,\"output_complete\":true,\"owner_pid\":4101410,\"pid\":4101420,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"{\\\"stage\\\": 0, \\\"argv\\\": [\\\"/usr/bin/python3\\\", \\\"-u\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay_sources.py\\\", \\\"owner\\\", \\\"--root\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051\\\", \\\"--output\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1\\\", \\\"--source-commit\\\", \\\"611a0dd96a648277912d2cd4c9b0a44adc57972b\\\"], \\\"exit_code\\\": 2, \\\"wall_seconds\\\": 2.3975845561362803, \\\"stdout_sha256\\\": \\\"622d4b48b5368630b1b41399a8e448bfd1b4d8cc6be22354c63eafd313dd37c9\\\", \\\"stderr_sha256\\\": \\\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\\"}\\r\\n{\\\"stage\\\": 1, \\\"argv\\\": [\\\"/usr/bin/python3\\\", \\\"-u\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/verify_replay_identity.py\\\", \\\"--root\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051\\\", \\\"--replay\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/replay-1\\\", \\\"--output\\\", \\\"/home/qian/work/hepta-e5-two-native-20261120-e9e051/identity-readback-1\\\", \\\"--source-commit\\\", \\\"611a0dd96a648277912d2cd4c9b0a44adc57972b\\\"], \\\"exit_code\\\": 0, \\\"wall_seconds\\\": 0.07100863987579942, \\\"stdout_sha256\\\": \\\"05570fa005ebdb9ee60fe00ea7d847fb830ebf2aa374703b4c55e392e9304070\\\", \\\"stderr_sha256\\\": \\\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\\\"}\\r\\n{\\\"readback_admitted_sources\\\": 2, \\\"original_children\\\": 4, \\\"new_readback_native_children\\\": 0, \\\"model_calls\\\": 0, \\\"training_updates\\\": 0}\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_archive_pty": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"audit_recorded\":true,\"automatic_retry\":false,\"host\":\"x230\",\"persistent_across_runtime_restart\":true,\"reused\":false,\"session_id\":\"dpty-c5eaa9de0221d4566c9c112939fa4dd9d232a0c7a03cb27c218e372b1b077902\",\"status\":{\"boot\":\"b19bd1b9-4dbe-4335-96cf-ed98d393efea\",\"bytes_seen\":0,\"bytes_stored\":0,\"capture_error\":null,\"created_unix_ms\":1795152650602,\"output_complete\":false,\"owner_pid\":4101799,\"pid\":4101800,\"state\":\"running\"}}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "e5_two_archive_pty_read": {
+    "archive_path": "/home/qian/.local/state/hepta-runtime-mac-worker/terminals/dpty-c5eaa9de0221d4566c9c112939fa4dd9d232a0c7a03cb27c218e372b1b077902/output.log",
+    "available_end": 392,
+    "bytes_hex": "7b2270617468223a20222f686f6d652f7169616e2f776f726b2f68657074612d65352d74776f2d6e61746976652d32303236313132302d6539653035312d65766964656e63652e7461722e677a222c20226279746573223a20343636373635392c2022736861323536223a202261346430643035646262353932396535643032396161333531666239663336613930386434336332663132636137373062303233316362333766393765633466222c20226d656d62657273223a203239322c20227061796c6f61645f66696c6573223a203239312c20227061796c6f61645f6279746573223a2031313433303437342c20226d616e69666573745f736861323536223a202237336439326438623039353134353933666634383363313835646132663065336538353034306230363666623534616464653636333635363439343366643462222c202261637475616c5f6e61746976655f6368696c6472656e223a20342c20226e65775f617263686976655f6e61746976655f6368696c6472656e223a20307d0d0a",
+    "chunk_sha256": "6e7844109426d5ebb157ba38c5a29e6f2bfdd4409768bc34d0dcd1a8d6878c7e",
+    "host": "x230",
+    "next_offset": 392,
+    "offset": 0,
+    "output_complete": true,
+    "persistent_across_runtime_restart": true,
+    "session_id": "dpty-c5eaa9de0221d4566c9c112939fa4dd9d232a0c7a03cb27c218e372b1b077902",
+    "status": {
+      "boot": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+      "bytes_seen": 392,
+      "bytes_stored": 392,
+      "capture_error": null,
+      "closed": false,
+      "created_unix_ms": 1795152650602,
+      "exit_code": 0,
+      "output_complete": true,
+      "owner_pid": 4101799,
+      "pid": 4101800,
+      "state": "exited"
+    },
+    "storage": "target_archive",
+    "text": "{\"path\": \"/home/qian/work/hepta-e5-two-native-20261120-e9e051-evidence.tar.gz\", \"bytes\": 4667659, \"sha256\": \"a4d0d05dbb5929e5d029aa351fb9f36a908d43c2f12ca770b0231cb37f97ec4f\", \"members\": 292, \"payload_files\": 291, \"payload_bytes\": 11430474, \"manifest_sha256\": \"73d92d8b09514593ff483c185da2f0e3e85040b066fb54adde6636564943fd4b\", \"actual_native_children\": 4, \"new_archive_native_children\": 0}\r\n",
+    "text_is_lossy": false,
+    "truncated_before_offset": false,
+    "utf8_pending": false
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "all_frozen_inputs_unchanged": true,
+  "archives": [
+    {
+      "bytes": 4667659,
+      "manifest": "NATIVE_ORIGINALS_MANIFEST.json",
+      "path": "native-originals.tar.gz",
+      "sha256": "a4d0d05dbb5929e5d029aa351fb9f36a908d43c2f12ca770b0231cb37f97ec4f"
+    },
+    {
+      "bytes": 227188,
+      "manifest": "SOURCE_REVIEW_ORIGINALS_MANIFEST.json",
+      "path": "source-review-originals.tar.gz",
+      "sha256": "6a9211f55f00cf9d0b199ea7d6b9cfde202dc586db743e6831af400de4c16378"
+    }
+  ],
+  "by_source": [
+    {
+      "after": {
+        "cases": [
+          {
+            "class": "replay-1.0-after.work.tests.test_subscripts",
+            "error": null,
+            "failure": null,
+            "name": "test_callable",
+            "skipped": false
+          }
+        ],
+        "completed_child_cpu_seconds": 0.46069400000000005,
+        "errors": 0,
+        "failures": 0,
+        "junit_sha256": "a78e3ec37adf75a3538b616c93836556bbdb9d1882f60e0a5dec4775dc0f9a20",
+        "passed": 1,
+        "project_id": "coady/multimethod",
+        "revision": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+        "skipped": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "8f0f74a759e0ed122632c628f93def4bd13a3647e8713dd51bcf21441ab278c4",
+        "tests": 1,
+        "timed_out": false,
+        "variant": "after",
+        "wait_returncode": 0,
+        "wall_seconds": 0.4686259040609002
+      },
+      "after_commit": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+      "before": {
+        "cases": [
+          {
+            "class": "replay-1.0-before.work.tests.test_subscripts",
+            "error": null,
+            "failure": "IndexError: tuple index out of range",
+            "name": "test_callable",
+            "skipped": false
+          }
+        ],
+        "completed_child_cpu_seconds": 0.49369699999999994,
+        "errors": 0,
+        "failures": 1,
+        "junit_sha256": "c6cb43657c449fc6e97630e57bac57d98b00d6821adec35c6f56efbd1192734f",
+        "passed": 0,
+        "project_id": "coady/multimethod",
+        "revision": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+        "skipped": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "8be0cbe228f98a42cb88ea050d4f5bb07b693453e2998d466fe83a971d0f5d35",
+        "tests": 1,
+        "timed_out": false,
+        "variant": "before",
+        "wait_returncode": 1,
+        "wall_seconds": 0.5164078893139958
+      },
+      "before_commit": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+      "case_identity_equal": true,
+      "full_original_functions": [
+        "test_callable"
+      ],
+      "identity_after": [
+        {
+          "class": "tests.test_subscripts",
+          "name": "test_callable",
+          "original_class": "replay-1.0-after.work.tests.test_subscripts"
+        }
+      ],
+      "identity_before": [
+        {
+          "class": "tests.test_subscripts",
+          "name": "test_callable",
+          "original_class": "replay-1.0-before.work.tests.test_subscripts"
+        }
+      ],
+      "native_children": 2,
+      "original_regression_demonstrated": true,
+      "pr_number": 157,
+      "project_id": "coady/multimethod",
+      "source_id": "github:coady/multimethod:pull:157",
+      "test_files": [
+        "tests/test_subscripts.py"
+      ]
+    },
+    {
+      "after": {
+        "cases": [
+          {
+            "class": "replay-1.1-after.work.tests.test_compat_locale",
+            "error": null,
+            "failure": null,
+            "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+            "skipped": false
+          }
+        ],
+        "completed_child_cpu_seconds": 0.5463410000000001,
+        "errors": 0,
+        "failures": 0,
+        "junit_sha256": "a0a8fd9a17fd331d29d92513e0ebbde7ab29123c5b32e07b36c7da0cbe50ed6b",
+        "passed": 1,
+        "project_id": "SethMMorton/natsort",
+        "revision": "e2328c20b62253bea75227b62763ea83874171dc",
+        "skipped": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "35d86279d96ed65491ba8ff0748e1c8e7891711531404dc5d4b9cd6ae33de3ec",
+        "tests": 1,
+        "timed_out": false,
+        "variant": "after",
+        "wait_returncode": 0,
+        "wall_seconds": 0.5689676543697715
+      },
+      "after_commit": "e2328c20b62253bea75227b62763ea83874171dc",
+      "before": {
+        "cases": [
+          {
+            "class": "replay-1.1-before.work.tests.test_compat_locale",
+            "error": null,
+            "failure": "AssertionError: assert b'x7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7fx7f' > (b'\\xff' * 49)\n[+1 more line; full report in element text]",
+            "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+            "skipped": false
+          }
+        ],
+        "completed_child_cpu_seconds": 0.572333,
+        "errors": 0,
+        "failures": 1,
+        "junit_sha256": "00bd3e26517cf1a43b3abe9db08a0cdda7522017b913254171ca712f7c345008",
+        "passed": 0,
+        "project_id": "SethMMorton/natsort",
+        "revision": "e90771d7c39157d079425b655763938c2709d486",
+        "skipped": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "c1007853ae10657fa17e63e76b7e5a80b3e995ac3019040df46e72fc4be88101",
+        "tests": 1,
+        "timed_out": false,
+        "variant": "before",
+        "wait_returncode": 1,
+        "wall_seconds": 0.6169418096542358
+      },
+      "before_commit": "e90771d7c39157d079425b655763938c2709d486",
+      "case_identity_equal": true,
+      "full_original_functions": [
+        "test_icu_null_string_locale_max_sorts_after_any_bytes"
+      ],
+      "identity_after": [
+        {
+          "class": "tests.test_compat_locale",
+          "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+          "original_class": "replay-1.1-after.work.tests.test_compat_locale"
+        }
+      ],
+      "identity_before": [
+        {
+          "class": "tests.test_compat_locale",
+          "name": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+          "original_class": "replay-1.1-before.work.tests.test_compat_locale"
+        }
+      ],
+      "native_children": 2,
+      "original_regression_demonstrated": true,
+      "pr_number": 196,
+      "project_id": "SethMMorton/natsort",
+      "source_id": "github:SethMMorton/natsort:pull:196",
+      "test_files": [
+        "tests/test_compat_locale.py"
+      ]
+    }
+  ],
+  "cost_observations": {
+    "complete_physical_or_monetary_cost_known": false,
+    "completed_native_child_cpu_seconds": 2.073065,
+    "driver_owner_wall_seconds": 2.4897998650558293,
+    "nested_wall_and_cpu_not_summed": true,
+    "original_replay_owner_wall_seconds": 2.3179598208516836,
+    "outer_binding_owner_wall_seconds": 2.585887225344777
+  },
+  "execution_freeze_sha256": "43109653cb450f27af0bd2e25ef33cd48f64751a10dbe32efea1a22da0bf69e6",
+  "full_system_cost_known": false,
+  "host": "x230",
+  "material_scope_notes": [
+    "Each project contributes one original upstream bug-fix source with one complete unparameterized regression function. This is not32 independent trajectories per source and not a learning curve.",
+    "Natsort uses its original stub ICU fixture. Real PyICU integration is not measured. Hypothesis is an original conftest import, with no generated examples in the selected regression.",
+    "Multimethod emits the same unknown benchmark-marker warning during collection in both variants; no tests or warnings were modified.",
+    "The original first-parent baseline inference and universal-wheel setup failure remain archived. Both were corrected before any native child, using upstream merge history and the same frozen dependency release.",
+    "The other four declared repositories retain their metadata no-result, unavailable or unresolved outcomes.",
+    "The prior4 and newly checked10 sources are outside this two-source readout. A joint owner must validate aggregation before reporting16."
+  ],
+  "metadata_intent_commit": "2da9714aba0288590dbcdc8febdb9ed549f9f5d2",
+  "metadata_snapshot_commit": "a71fbe4a66d81e733cee9284a8b578b54095659f",
+  "native_adoption": false,
+  "native_intent_commit": "92d2c62288b7afa9293d31bfb8ab99a511139e32",
+  "native_retries": 0,
+  "new_admitted_source_materials": 2,
+  "new_authenticated_users": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "old_collector_result": {
+    "exit_code": 2,
+    "new_admitted_sources": 0,
+    "reason": "The unchanged old collector includes exact before/after temporary work directory names in JUnit class identity. Its zero readout and all failures are preserved.",
+    "sha256": "a1691e8dca5760449794ab7c48ea6b07c3141a399fd078b2c31851407afee138"
+  },
+  "original_budget": {
+    "automatic_retry": false,
+    "full_parameter_sets": true,
+    "max_seconds_per_test_child": 120,
+    "maximum_owned_native_children": 4,
+    "parallel_test_children": 1,
+    "pytest_per_case_timeout_seconds": 3
+  },
+  "original_native_children": 4,
+  "owner_key": "e5-two-native-20261120-e9e051-owner-1",
+  "owner_session": "dpty-66363eaed16d57a42eca5bad69ca3cfa93735029d0ccee0e053399a968b11c0b",
+  "pretraining_overlap_known": false,
+  "read_only_identity_verification": {
+    "complete_original_parameter_sets": true,
+    "exit_code": 0,
+    "new_admitted_sources": 2,
+    "rule": "Strip only the exact known work-directory prefix imposed by pytest's configured root. Preserve full original test module, class, function, parameter identity, order and count.",
+    "sha256": "352314b2eff9d4c475cc5e896e7dfdc4a47f9e87344b78d08acfa037887fc15c",
+    "unchanged_module_function_parameter_order_and_count": true
+  },
+  "readback_additional_native_children": 0,
+  "schema": "hepta.e5-two-source-native-final.v1",
+  "source_and_dependency_bindings": 132,
+  "source_commit_before_native": "611a0dd96a648277912d2cd4c9b0a44adc57972b",
+  "source_growth_qualified": false
+}

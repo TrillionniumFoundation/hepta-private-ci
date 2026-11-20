@@ -1,0 +1,21 @@
+{
+  "stage": "dependency_setup_before_native",
+  "session_id": "dpty-ed3c5896f25fc78acb299385bd37dfb488200170afef9ac0f513b24ad25b834e",
+  "idempotency_key": "e5-two-native-20261120-e9e051-setup-1",
+  "status": {
+    "boot": "b19bd1b9-4dbe-4335-96cf-ed98d393efea",
+    "bytes_seen": 416,
+    "bytes_stored": 416,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1795152336097,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 4084233,
+    "pid": 4084234,
+    "state": "exited"
+  },
+  "output": "Traceback (most recent call last):\r\n  File \"/home/qian/work/hepta-e5-two-native-20261120-e9e051/setup_native_environment.py\", line 76, in <module>\r\n    if __name__ == '__main__': main()\r\n                               ^^^^^^\r\n  File \"/home/qian/work/hepta-e5-two-native-20261120-e9e051/setup_native_environment.py\", line 54, in main\r\n    assert len(compatible) == 1\r\n           ^^^^^^^^^^^^^^^^^^^^\r\nAssertionError\r\n",
+  "native_children": 0,
+  "reason": "Frozen Hypothesis6.170.16 has platform wheels; universal-only selector stopped before installation. Preserve original release and select compatible platform wheel."
+}
