@@ -243,14 +243,22 @@ def _exec_server_test_projection(relative, expected, actual, listing):
 
 
 
-# The complete original lock stays pinned. A single reviewed transitive-graph
-# change is admitted solely by reproducing the exact approved byte deletion.
-# Subsequent dependency migrations require a new explicit projection.
-_LOCK_PREFIX = (b'[[package]]\nname = "codex-network-proxy"\nversion = "0.0.0"\n'
-                b'dependencies = [\n "anyhow",\n "base64 0.22.1",\n')
-_LOCK_BEFORE = _LOCK_PREFIX + b' "chrono",\n'
+# The original lock is immutable. Each allowed migration removes exactly one
+# pinned first-party Chrono edge, and every intermediate snapshot has a
+# verified Git blob identity. This never admits arbitrary lockfile changes.
+_LOCK_PROXY_PREFIX = (
+    b'[[package]]\nname = "codex-network-proxy"\nversion = "0.0.0"\n'
+    b'dependencies = [\n "anyhow",\n "base64 0.22.1",\n'
+)
+_LOCK_PROXY_BEFORE = _LOCK_PROXY_PREFIX + b' "chrono",\n'
+_LOCK_MOCK_PREFIX = (
+    b'[[package]]\nname = "codex-cloud-tasks-mock-client"\n'
+    b'version = "0.0.0"\ndependencies = [\n'
+)
+_LOCK_MOCK_BEFORE = _LOCK_MOCK_PREFIX + b' "chrono",\n'
 _LOCK_ORIGINAL_BLOB = "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd"
-_LOCK_REVIEWED_BLOB = "0300a2a9ff4eafb582f90e27161eec4faa50c196"
+_LOCK_NETWORK_BLOB = "0300a2a9ff4eafb582f90e27161eec4faa50c196"
+_LOCK_MOCK_BLOB = "1f5836e464b07f7fbd6fa5e4fd8b5f5ad0e79bdc"
 
 
 def reviewed_lock_projection(current, original):
@@ -259,19 +267,37 @@ def reviewed_lock_projection(current, original):
 
     original_blob = blob(original)
     current_blob = blob(current)
+    if original_blob != _LOCK_ORIGINAL_BLOB:
+        raise RuntimeError("original Cargo.lock identity changed")
+    if original.count(_LOCK_PROXY_BEFORE) != 1:
+        raise RuntimeError("network-proxy original Chrono edge is not unique")
+    network_only = original.replace(_LOCK_PROXY_BEFORE, _LOCK_PROXY_PREFIX, 1)
+    if blob(network_only) != _LOCK_NETWORK_BLOB:
+        raise RuntimeError("unreviewed network-proxy Cargo.lock projection")
+    if network_only.count(_LOCK_MOCK_BEFORE) != 1:
+        raise RuntimeError("mock-client original Chrono edge is not unique")
+    network_and_mock = network_only.replace(_LOCK_MOCK_BEFORE, _LOCK_MOCK_PREFIX, 1)
+    if blob(network_and_mock) != _LOCK_MOCK_BLOB:
+        raise RuntimeError("unreviewed mock-client Cargo.lock projection")
+
     if current == original:
         return {"scope": "unchanged original Cargo.lock",
                 "original_blob": original_blob, "current_blob": current_blob,
                 "byte_exact": True}
-    if (original_blob != _LOCK_ORIGINAL_BLOB
-            or original.count(_LOCK_BEFORE) != 1
-            or current != original.replace(_LOCK_BEFORE, _LOCK_PREFIX, 1)
-            or current_blob != _LOCK_REVIEWED_BLOB):
+    if current == network_only:
+        restored = current.replace(_LOCK_PROXY_PREFIX, _LOCK_PROXY_BEFORE, 1)
+        scope = "codex-network-proxy only: remove direct chrono"
+    elif current == network_and_mock:
+        restored = current.replace(_LOCK_MOCK_PREFIX, _LOCK_MOCK_BEFORE, 1)
+        restored = restored.replace(_LOCK_PROXY_PREFIX, _LOCK_PROXY_BEFORE, 1)
+        scope = "codex-network-proxy and codex-cloud-tasks-mock-client: remove direct chrono"
+    else:
         raise RuntimeError("unreviewed Cargo.lock dependency change")
-    return {"scope": "codex-network-proxy only: remove direct chrono",
+    if restored != original:
+        raise RuntimeError("Cargo.lock projection is not exactly reversible")
+    return {"scope": scope,
             "original_blob": original_blob, "current_blob": current_blob,
-            "inverse_original_blob": blob(current.replace(_LOCK_PREFIX, _LOCK_BEFORE, 1)),
-            "byte_exact": True}
+            "inverse_original_blob": blob(restored), "byte_exact": True}
 
 
 def producer_inputs(producer, original_root, original_manifest):
