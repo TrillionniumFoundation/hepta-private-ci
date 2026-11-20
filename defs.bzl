@@ -249,7 +249,8 @@ def codex_rust_crate(
         extra_binaries = [],
         extra_binaries_non_windows = [],
         run_tests_with_wine_exec = False,
-        crate_root = None):
+        crate_root = None,
+        integration_test_dependency_replacements = {}):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -290,6 +291,10 @@ def codex_rust_crate(
         deps_extra: Extra normal deps beyond @crates resolution.
             Typically only needed when features add additional deps.
         integration_compile_data_extra: Extra compile_data for integration tests.
+        integration_test_dependency_replacements: Test-only workspace dependency
+            replacements keyed by generated integration test target name. Retains
+            the complete unit-test dependency mapping when that graph is selected;
+            production libraries and binaries are unchanged.
         integration_test_args: Optional args for integration test binaries.
         unit_test_args: Optional args for the unit test binary.
         binary_test_target_compatible_with: Platform constraints for binary unit tests.
@@ -636,6 +641,23 @@ def codex_rust_crate(
             test_kwargs["shard_count"] = test_shard_count
             test_kwargs["flaky"] = True
 
+        test_deps = integration_test_deps
+        test_aliases = integration_test_aliases
+        test_replacements = integration_test_dependency_replacements.get(test_name, {})
+        if test_replacements:
+            if integration_test_use_unit_test_dependencies:
+                test_replacements = unit_test_dependency_replacements | test_replacements
+            test_deps = rust_test_dependencies(test_replacements, normal_dev = True)
+            test_deps += [
+                unit_test_library if integration_test_use_unit_test_dependencies and dependency == name else dependency
+                for dependency in maybe_deps
+            ] + deps_extra
+            test_aliases = cargo_crate_aliases(
+                normal = True,
+                normal_dev = True,
+                workspace_replacements = test_replacements,
+            )
+
         integration_test_binary = test_name + "-bin"
 
         # There are four generated integration-test shapes:
@@ -667,8 +689,8 @@ def codex_rust_crate(
                 srcs = [test] + extra_test_srcs,
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                aliases = integration_test_aliases,
-                deps = integration_test_deps,
+                aliases = test_aliases,
+                deps = test_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -709,8 +731,8 @@ def codex_rust_crate(
                 srcs = [test] + extra_test_srcs,
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                aliases = integration_test_aliases,
-                deps = integration_test_deps,
+                aliases = test_aliases,
+                deps = test_deps,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -786,8 +808,8 @@ def codex_rust_crate(
             srcs = [test] + extra_test_srcs,
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            aliases = integration_test_aliases,
-            deps = integration_test_deps,
+            aliases = test_aliases,
+            deps = test_deps,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",
