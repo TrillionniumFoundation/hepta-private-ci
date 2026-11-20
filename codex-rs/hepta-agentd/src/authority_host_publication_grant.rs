@@ -10,6 +10,7 @@ use super::*;
 use crate::HostAuthorityWriterRegistration;
 use crate::HostSignedWriterAuthorizationV1;
 use crate::NeuronGenerationPredecessorCompletionV1;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_runtime::verify_pinned_process;
 
 /// Not cloneable or deserializable. Only this original-slot handler can create
@@ -78,13 +79,16 @@ impl HostAuthorityService {
         &self,
         slot: &RegisteredGenerationPublication,
         learning: &RegisteredHostLearningCheckpointV1,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         request: &Request,
         sequence: &mut u64,
         end: Instant,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        } = peer_inputs;
         refusal::require_end(end)?;
         let Command::IssueFinalUse { expected, intent } = &request.command else {
             return Err(io::Error::other("original FinalUse command required"));

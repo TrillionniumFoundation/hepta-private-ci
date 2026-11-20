@@ -4,11 +4,8 @@
 //! instance proves only the original cohort is still current; the panel must
 //! separately read completed execution, holdout and qualification owners.
 
-use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
-use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
@@ -19,8 +16,6 @@ use super::Error;
 use super::OriginalCircuitOnPolicyCohortV1;
 use super::binding;
 use crate::CellEvaluationPlanV1;
-use crate::OriginalCellEvaluationPanelRegistrationV1;
-use crate::OriginalCellEvaluationPanelTaskV1;
 
 /// Metadata from one actual read. It is neither a serializable capability nor
 /// a lease. Its equality excludes the observation time so two unchanged reads
@@ -162,14 +157,17 @@ impl OriginalCircuitOnPolicyCohortReadbackV1 {
     /// to a member. No supplied digest can replace the complete original cut.
     pub(crate) fn require_original_member(
         &self,
-        registration: &OriginalCellEvaluationPanelRegistrationV1,
-        task: &OriginalCellEvaluationPanelTaskV1,
-        training: &LearningIterationSnapshotV1,
-        scope: &FrozenLearningScopeV2,
-        plan: &CellEvaluationPlanV1,
-        training_evidence: &SignedLearningEvidenceV1,
-        verifier: &LearningEvidenceVerifierV1,
+        inputs: crate::circuit_on_policy_evaluation::CohortMemberInputs<'_>,
     ) -> Result<(), Error> {
+        let crate::circuit_on_policy_evaluation::CohortMemberInputs {
+            registration,
+            task,
+            training,
+            scope,
+            plan,
+            training_evidence,
+            verifier,
+        } = inputs;
         let config = &self.original.config;
         let registered = std::iter::once(registration.primary())
             .chain(registration.retention())

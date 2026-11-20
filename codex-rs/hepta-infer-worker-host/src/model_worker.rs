@@ -771,20 +771,29 @@ fn validate_neuron_feature_output(
 
 // Keep experimental physical batch dispatch private until signed Final-use
 // authorization and an independently owned model artifact loader are wired.
+#[cfg(test)]
 #[path = "model_worker_batch.rs"]
 mod batch;
+#[cfg(test)]
 pub(crate) use batch::NeuronFeatureBatchDriver;
+#[cfg(test)]
 pub(crate) use batch::NeuronFeatureBatchItemObservationV2;
 
+#[cfg(test)]
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;
+#[cfg(test)]
 pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
 pub use shared_v2::SharedNeuronFeatureRequestV2;
 pub use shared_v2::SharedNeuronFeatureResultV2;
 pub use shared_v2::SharedNeuronFeatureResultV3;
+#[expect(
+    deprecated,
+    reason = "Retain the deprecated V2 compatibility export; callers keep its original deprecation."
+)]
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v3;
 

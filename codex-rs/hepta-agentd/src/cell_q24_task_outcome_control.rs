@@ -128,7 +128,9 @@ fn unhex(value: &str, maximum: usize) -> Result<Vec<u8>, AgentdError> {
     };
     value
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| Ok(digit(pair[0])? * 16 + digit(pair[1])?))
         .collect()
 }

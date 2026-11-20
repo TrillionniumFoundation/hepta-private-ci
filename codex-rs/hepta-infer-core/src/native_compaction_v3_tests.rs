@@ -18,11 +18,11 @@ fn held_journal_bytes(control: &DurableInferenceControl) -> Vec<u8> {
 }
 
 #[test]
-fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() {
+fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() -> TestResult<()> {
     let path = path("checkpoint-v3");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
     let (_, token) = control
         .dispatch_native_with_pre_effect_abort("r1", dispatch())
@@ -33,7 +33,7 @@ fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() 
     drop(control);
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&dispatching));
-    assert_eq!(dispatching.prepared_input_v2, Some(input()));
+    assert_eq!(dispatching.prepared_input_v2, Some(input()?));
     assert_eq!(
         control.dispatch_native("r1", dispatch()),
         Err(Error::InvalidTransition)
@@ -56,19 +56,20 @@ fn checkpoint_retains_complete_v3_input_authority_loss_and_uncertain_dispatch() 
     drop(control);
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
-    assert_eq!(expected.prepared_input_v2, Some(input()));
+    assert_eq!(expected.prepared_input_v2, Some(input()?));
     assert_eq!(expected.dispatch, dispatching.dispatch);
     assert!(!expected.observation.as_ref().unwrap().succeeded());
     observed.owner_authority = NativeOwnerAuthority::ObservedReady;
     assert_eq!(control.settle_native("r1", observed), Err(Error::Conflict));
+    Ok(())
 }
 
 #[test]
-fn checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair() {
+fn checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair() -> TestResult<()> {
     let path = path("checkpoint-v3-corruption");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
     control.compact_journal().unwrap();
     drop(control);
@@ -87,16 +88,17 @@ fn checkpoint_v3_rejects_changed_snapshot_and_wrong_version_without_repair() {
     let restored = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert_eq!(
         restored.native_record("r1").unwrap().prepared_input_v2,
-        Some(input())
+        Some(input()?)
     );
+    Ok(())
 }
 
 #[test]
-fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
+fn legacy_checkpoint_without_prepared_input_remains_digest_only() -> TestResult<()> {
     let path = path("checkpoint-v1-digest-only");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let expected = control
-        .reserve_native(prepared_request(), /*maximum_in_flight*/ 1)
+        .reserve_native(prepared_request()?, /*maximum_in_flight*/ 1)
         .unwrap();
     control.compact_journal().unwrap();
     drop(control);
@@ -108,7 +110,7 @@ fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
     let bytes = held_journal_bytes(&control);
     assert_eq!(
         control
-            .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+            .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
             .unwrap(),
         expected
     );
@@ -120,4 +122,5 @@ fn legacy_checkpoint_without_prepared_input_remains_digest_only() {
             .is_none()
     );
     assert_eq!(held_journal_bytes(&control), bytes);
+    Ok(())
 }

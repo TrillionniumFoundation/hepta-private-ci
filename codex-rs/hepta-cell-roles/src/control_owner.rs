@@ -907,7 +907,7 @@ fn decode_durable_control(bytes: &[u8]) -> Result<InMemoryControlRoleOwnerV1, Co
         }
         if owner
             .idempotency_index
-            .insert(intent.idempotency_key_digest, intent.dispatch_id.clone())
+            .insert(intent.idempotency_key_digest, intent.dispatch_id)
             .is_some()
         {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);

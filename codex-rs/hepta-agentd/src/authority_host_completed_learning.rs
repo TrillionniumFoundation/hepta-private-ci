@@ -13,6 +13,7 @@ use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_historical_learning_trust_data::HistoricalLearningTrustPayloadV1;
 
 pub(crate) struct OriginalCompletedLearningContextV1<'a> {
@@ -20,6 +21,10 @@ pub(crate) struct OriginalCompletedLearningContextV1<'a> {
     scope: &'a FrozenLearningScopeV2,
     terminal: &'a LearningIterationSnapshotV1,
     writer: &'a str,
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this recipient binding without a product reader"
+    )]
     profile: &'a str,
     verifier: &'a LearningEvidenceVerifierV1,
     trust: &'a HistoricalLearningTrustPayloadV1,
@@ -42,12 +47,6 @@ impl OriginalCompletedLearningContextV1<'_> {
     }
     pub(crate) fn original_writer_proof(&self) -> &str {
         self.writer
-    }
-    pub(crate) fn recipient_profile(&self) -> &str {
-        self.profile
-    }
-    pub(crate) fn original_end(&self) -> Instant {
-        self.end
     }
     pub(crate) fn current_verifier(&self) -> &LearningEvidenceVerifierV1 {
         self.verifier
@@ -144,16 +143,19 @@ impl OriginalCompletedLearningContextV1<'_> {
 impl HistoricalTaskReadRuntime {
     pub(super) fn with_original_completed_context<T>(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        call_inputs: HostAuthorityCallInputs<'_>,
         scope: &FrozenLearningScopeV2,
         checkpoint: &crate::LearningIterationCheckpointRecordV1,
         observed: &RootOriginalHistoricalCompleteTaskObservationV1,
-        end: Instant,
         action: impl FnOnce(&OriginalCompletedLearningContextV1<'_>) -> io::Result<T>,
     ) -> io::Result<T> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end,
+        } = call_inputs;
         require_end(end)?;
         self.metadata.require_metadata_unchanged()?;
         let result = service.with_learning_profile(

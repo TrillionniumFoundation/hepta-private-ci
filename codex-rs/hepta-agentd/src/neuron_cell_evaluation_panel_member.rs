@@ -88,7 +88,6 @@ impl<C: AnchorWitnessStore, F: AnchorWitnessStore, X: AnchorWitnessStore, Q: Anc
                 training,
             )
             .await?;
-        drop(sources);
         let after = self.read_cells()?;
         let cohort_after = OriginalCellEvaluationCohortCustodyV1::read_current(&mut self.cohort)?;
         if before != after || cohort_before != cohort_after {

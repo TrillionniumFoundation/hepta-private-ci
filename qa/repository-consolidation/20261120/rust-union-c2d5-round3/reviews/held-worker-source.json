@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.root-worker-binary-source-review.v1",
+  "reviewed_at": "2026-11-20T04:49:30.052111+00:00",
+  "current_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "current_tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "frozen_sha256": "0dc101c4fe620e5ce2407366fb80a0e61b4878880d52fab915d4223c29c11f9d",
+  "independent_preservation": "Exact inverse of the import and two binary-resolution expressions reconstructs complete original test bytes, including all two test bodies, six original assertions, commands and output/status predicates. Cargo.toml semantic delta is solely one explicit existing workspace dev-dependency. Before blobs directly match final2b tree.",
+  "accepted_source_paths": [
+    "codex-rs/hepta-infer-worker-host/tests/native_host_process_e2e.rs",
+    "codex-rs/hepta-infer-worker-host/Cargo.toml"
+  ],
+  "accepted_after_git_blobs": [
+    "dd82b40a8e7f9b25ed7dda083b452b18e5274caf",
+    "9118113bf0b27c7f37d720bcc7f20a56b4c49afa"
+  ],
+  "generated_lock_claim": "NONE. Manually predicted Cargo.lock edge remains unaccepted. Cargo/MODULE paired locks require normal actual resolver, just bazel-lock-update/check and metadata validation.",
+  "native_and_rustfmt": "NOT_RUN",
+  "publication_decision": "HOLD until canonical paired-lock generation/verification; source-level two-file repair accepted for the existing original owner normal task.",
+  "remote_writes": 0,
+  "jobs_started": 0
+}

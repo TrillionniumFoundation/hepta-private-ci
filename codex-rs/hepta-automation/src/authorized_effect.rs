@@ -1550,7 +1550,7 @@ fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError
         return Err(AuthorizedEffectError::BindingMismatch);
     }
     let mut output = [0_u8; 32];
-    for (index, pair) in value.chunks_exact(2).enumerate() {
+    for (index, pair) in value.as_chunks::<2>().0.iter().enumerate() {
         output[index] = (hex(pair[0])? << 4) | hex(pair[1])?;
     }
     if output == [0; 32] {

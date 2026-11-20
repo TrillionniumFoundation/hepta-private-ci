@@ -1,12 +1,9 @@
 //! Original initial connection, consumed into one readonly T/E-bound client.
 //! Lifetime and process identity begin at delivery, not at late binding.
-use std::os::fd::OwnedFd;
-use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD_NO_PAD;
@@ -29,7 +26,6 @@ use super::Receipt;
 use super::verify;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
-use crate::LearningIterationEvidencePeerV1;
 use crate::OriginalCellEvaluationPanelRegistrationV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
@@ -45,16 +41,19 @@ pub struct OriginalCellEvaluationModelMaterialConnectionV1 {
 
 impl OriginalCellEvaluationModelMaterialConnectionV1 {
     pub fn from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         verifier: LearningEvidenceVerifierV1,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let empty =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;

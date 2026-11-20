@@ -2,6 +2,8 @@
 //! All successful material bytes originate in the actual consumed Panel host.
 use std::os::fd::FromRawFd;
 use std::os::fd::OwnedFd;
+use std::os::unix::net::UnixStream;
+use std::time::Duration;
 
 use codex_hepta_contracts::HostAuthorityPeerPolicy;
 use codex_hepta_contracts::HostIssuerPeer;

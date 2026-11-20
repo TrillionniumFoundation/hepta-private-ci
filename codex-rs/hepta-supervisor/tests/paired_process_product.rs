@@ -39,6 +39,9 @@ use codex_hepta_supervisor::AgentSupervisorSnapshot;
 use codex_hepta_supervisor::Supervisor;
 use codex_hepta_supervisor::SupervisorConfig;
 use codex_hepta_supervisor::UnixProcessDriver;
+use codex_utils_cargo_bin::CargoBinError;
+use codex_utils_cargo_bin::cargo_bin;
+use codex_utils_cargo_bin::runfiles_available;
 
 const IDS: [&str; 5] = [
     "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
@@ -269,18 +272,24 @@ impl PairFleet {
             "paired-stage fixture_image_start pairs={count} current_exe_bytes={current_exe_bytes:?} elapsed={:?}",
             started.elapsed()
         );
-        // A system strip with GNU/Darwin -S -o support is required. Only this
-        // private child image loses debug data; the running test stays intact.
-        // The catalog still copies, seals and fully hashes the actual image.
+        // Bazel supplies its declared LLVM strip through test runfiles. Cargo
+        // uses the system strip with GNU/Darwin -S -o support. Only this private
+        // child image loses debug data; the running test stays intact. The
+        // catalog still copies, seals and fully hashes the actual image.
         let fixture_binary = temp.path().join("paired-child-image");
-        let stripped = std::process::Command::new("strip")
+        let strip = match cargo_bin("llvm-strip") {
+            Ok(path) => path,
+            Err(CargoBinError::NotFound { .. }) if !runfiles_available() => PathBuf::from("strip"),
+            Err(error) => return Err(error.into()),
+        };
+        let stripped = std::process::Command::new(strip)
             .env_remove("STRIP_NLISTS")
             .arg("-S")
             .arg("-o")
             .arg(&fixture_binary)
             .arg(&current_exe)
             .status()
-            .context("paired process fixtures require system strip with -S -o support")?;
+            .context("paired process fixtures require a strip tool with -S -o support")?;
         anyhow::ensure!(
             stripped.success(),
             "paired process fixture debug strip failed: {stripped}"

@@ -1,0 +1,65 @@
+{
+  "status": "ACCEPTED_SOURCE_REVIEW_NATIVE_PENDING",
+  "frozen_patch_sha256": "57ee4a45b0314268241398317913670b3cae16d3c1c6f1e5c0eede740dc5094a",
+  "frozen_manifest_sha256": "9f2de460fadc3a8e790bb0ebe942895ffc0840a18786a922134909dc2a2bb8b1",
+  "author_report_sha256": "d61b23b93d257bf579eff06143d61338ee2740c9bb722b9d52a9c2e14bf1e29e",
+  "base_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "base_tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "composed_source_head": "674102bd42ee11807d941e0f91b56dad63c2e945",
+  "composed_source_tree": "e1abde2f90e25e8c3e462a570c2c5bba0d7a66b3",
+  "changed_paths": 15,
+  "exact_source_inputs_bound": 28,
+  "new_files": 1,
+  "actual_ci_jobs_reviewed": [
+    136061096823,
+    136061097396,
+    136061097210
+  ],
+  "actual_error_sites_matched": 46,
+  "timestamp_conversion": {
+    "result": "accepted",
+    "signed_arithmetic": "Compute signed i128 nanoseconds before magnitude/sign separation, so -2s+750ms is -1.25s and -1s+999999900ns is -100ns. i64 seconds times1e9 cannot overflow i128; Duration receives a <1e9 ns remainder.",
+    "leap_seconds": "The existing preceding-second plus >=1e9 ns representation becomes the following ordinary second, including crossing the Unix epoch. This is documented normalization; persisted Timestamp formatting and ordering are unchanged.",
+    "range": "SystemTime checked_add/checked_sub determine platform limits. u64/u32 conversions are fallible and no unchecked platform clock addition is introduced in the API.",
+    "precision": "SystemTime retains its platform-defined precision. New roundtrip vectors are100ns-aligned and do not claim arbitrary-nanosecond roundtrip fidelity on every OS.",
+    "regression_coverage": "Three new real Rust tests cover negative/positive fractional instants, explicit leap seconds, and both Timestamp calendar bounds using each platform's checked clock result; all prior Timestamp tests are byte-preserved.",
+    "deduplication": "The previously reviewed signed-nanosecond algorithm in common/rollout.rs is moved into the shared conversion API; the common fixture and six other call sites report an explicit conversion error instead of relying on a nonexistent From implementation."
+  },
+  "fixture_errors": {
+    "result": "accepted",
+    "color_eyre_sites": "Exactly three new conversion failure sites use std::io::Error::other: tui/lib.rs and the two named-session tests. These are compatible with their existing color_eyre::Result return types.",
+    "anyhow_sites": "App-server helpers/tests retain anyhow::Result and use anyhow errors. Parsing and file mutation errors still propagate.",
+    "duration_fixture": "Two one-hour Timestamp fixture increments use the existing checked_add API and descriptive expect assertions; fixture values and all lookup/archive assertions are retained."
+  },
+  "box_and_import_repairs": {
+    "result": "accepted",
+    "owned_values": "Both boxed ledger records and the boxed bootstrap custody are moved out once to existing owned-value APIs. Recovered optional receipt/evidence uses Option.map(Box::new), preserving None/Some and value identity.",
+    "imports": "UnixStream and Duration imports resolve the actual reported names in the existing platform-specific test support. No production owner, custody guard, deadline or channel policy changes."
+  },
+  "tui_shift": {
+    "result": "accepted",
+    "semantics": "checked_add_signed applies the isize offset to both usize range bounds without truncating or reinterpreting negative values. Underflow/overflow returns None; the existing start>=end rejection remains. TextElement.map_range preserves the placeholder.",
+    "tests": "Two real sibling-module tests compare complete TextElement values for positive/zero/negative shifts and check negative underflow, isize::MIN, usize overflow, isize::MAX and an empty range.",
+    "documentation": "The bottom-pane AGENTS instruction is satisfied by the matching two-line module-doc description. The new test file is wired by cfg(test), an explicit path module and the existing recursive Rust source glob."
+  },
+  "original_assertion_macros_preserved": 1392,
+  "unchanged_support_input_assertions": 4,
+  "new_native_test_declarations": 5,
+  "original_tests_removed": 0,
+  "new_skips": 0,
+  "new_allowances": 0,
+  "production_features_changed": false,
+  "native_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "verification_scope": "Independent frozen-byte binding, actual CI error review, production/API semantics and exact assertion preservation. No substitute model tests and no native execution.",
+  "remaining_gate": "Actual project tests, formatting and required CI compilation must still run on the exact composed source; static review is not a native PASS.",
+  "known_followup_stage02": {
+    "status": "PENDING_SEPARATE_REVIEW",
+    "actual_windows_job": 136061097394,
+    "site": "codex-rs/utils/time/src/timestamp_tests.rs:111",
+    "finding": "Root reports the original unchanged epoch-minus1ns SystemTime test quantizes to epoch on Windows, producing seconds0 instead of-1. This is outside stage01's added100ns-aligned tests. Stage02 will preserve the1ns Timestamp representation assertions, condition exact1ns SystemTime coverage on representability, and add a100ns negative roundtrip."
+  },
+  "remote_actions": false,
+  "candidate_source_mutations_by_reviewer": false,
+  "blocking_findings": []
+}

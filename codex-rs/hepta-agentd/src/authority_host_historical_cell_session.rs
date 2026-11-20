@@ -10,7 +10,7 @@ use crate::authority_host_service::generation_initial::cell_retention::RootHisto
 pub(super) enum OriginalCellCustody {
     Absent,
     Held(PreparedOriginalCellFiles),
-    Registered(RegisteredOriginalCellCaptureV1),
+    Registered(Box<RegisteredOriginalCellCaptureV1>),
 }
 
 impl PreparedHostAuthoritySession {
@@ -96,7 +96,7 @@ impl HistoricalSourceRuntime {
         );
         match registered {
             Ok(registered) => {
-                *held = OriginalCellCustody::Registered(registered);
+                *held = OriginalCellCustody::Registered(Box::new(registered));
                 Ok(())
             }
             Err(error) => {
@@ -115,7 +115,7 @@ impl HistoricalSourceRuntime {
             .map_err(|_| io::Error::other("original Cell custody busy"))?;
         match std::mem::replace(&mut *held, OriginalCellCustody::Absent) {
             OriginalCellCustody::Absent => Ok(None),
-            OriginalCellCustody::Registered(original) => Ok(Some(original)),
+            OriginalCellCustody::Registered(original) => Ok(Some(*original)),
             OriginalCellCustody::Held(_) => {
                 self.close();
                 Err(io::Error::other(

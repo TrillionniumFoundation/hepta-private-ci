@@ -1,0 +1,251 @@
+{
+  "schema": "hepta.merge-ancestor-discovery-correction.v1",
+  "status": "NORMAL_ANCESTOR_DISCOVERY_ATTEMPTED_BUT_BLOCKED_BY_MISSING_ORIGINAL_COMMIT_OBJECTS",
+  "corrects_frozen_proposal_sha256": "9b6742d55c8e2a75c1ff356680b4ea3edf39b02c96d265a9d3b6a8c1a402b109",
+  "frozen_files_unchanged": true,
+  "correction": "The earlier recorded merge-tree commands explicitly supplied --merge-base. They are real three-way content merges at the independently proven sole common ancestor, but they did not exercise Git default ancestor discovery. Earlier phrases actual default/default merge are overbroad and must be read with this correction. No successful default ancestor-discovery merge is claimed.",
+  "retained_evidence_scope": [
+    "Exact original source/commit/tree identities and complete incoming file deltas.",
+    "Independent full authoritative parent-graph proof of the sole common ancestors, protected ancestry exclusion and branch coverage.",
+    "Actual Git three-way content merge/conflict outputs with explicit --merge-base and the proposed per-hunk semantic resolutions.",
+    "Original Python CLI source regression; no native Rust result."
+  ],
+  "actual_normal_commands": [
+    {
+      "tip": "e304674acbadedede0b9b1ddf0afe2bf331181e6",
+      "command": [
+        "git",
+        "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/objects.git",
+        "merge-tree",
+        "--write-tree",
+        "--messages",
+        "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+        "e304674acbadedede0b9b1ddf0afe2bf331181e6"
+      ],
+      "started_at_utc": "2026-11-20T04:46:07.696066+00:00",
+      "finished_at_utc": "2026-11-20T04:46:07.705528+00:00",
+      "exit_code": 128,
+      "stdout_bytes": 0,
+      "stderr_bytes": 134,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5e3e9ec8b296401e7ff761edc797588c7f4645a335f40261de9d8c156a8c83c2",
+      "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/e304674acbadedede0b9b1ddf0afe2bf331181e6.stdout",
+      "stderr_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/e304674acbadedede0b9b1ddf0afe2bf331181e6.stderr"
+    },
+    {
+      "tip": "f3a38f633069de15f1fc5636363eec37f8bde535",
+      "command": [
+        "git",
+        "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/objects.git",
+        "merge-tree",
+        "--write-tree",
+        "--messages",
+        "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+        "f3a38f633069de15f1fc5636363eec37f8bde535"
+      ],
+      "started_at_utc": "2026-11-20T04:46:07.705858+00:00",
+      "finished_at_utc": "2026-11-20T04:46:07.709641+00:00",
+      "exit_code": 128,
+      "stdout_bytes": 0,
+      "stderr_bytes": 134,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5e3e9ec8b296401e7ff761edc797588c7f4645a335f40261de9d8c156a8c83c2",
+      "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/f3a38f633069de15f1fc5636363eec37f8bde535.stdout",
+      "stderr_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/f3a38f633069de15f1fc5636363eec37f8bde535.stderr"
+    },
+    {
+      "tip": "219108a0c7ac2b0fcd208612a8a89358480705e2",
+      "command": [
+        "git",
+        "--git-dir=/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/objects.git",
+        "merge-tree",
+        "--write-tree",
+        "--messages",
+        "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+        "219108a0c7ac2b0fcd208612a8a89358480705e2"
+      ],
+      "started_at_utc": "2026-11-20T04:46:07.709962+00:00",
+      "finished_at_utc": "2026-11-20T04:46:07.713530+00:00",
+      "exit_code": 128,
+      "stdout_bytes": 0,
+      "stderr_bytes": 134,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5e3e9ec8b296401e7ff761edc797588c7f4645a335f40261de9d8c156a8c83c2",
+      "stdout_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/219108a0c7ac2b0fcd208612a8a89358480705e2.stdout",
+      "stderr_file": "/workspace/scratch/c2d514464ab5/merge-recovery/frontier-round3/normal-ancestry-supplement/219108a0c7ac2b0fcd208612a8a89358480705e2.stderr"
+    }
+  ],
+  "history_integrity": {
+    "shallow_files_created": false,
+    "existing_local_shallow_file": false,
+    "grafts_file": false,
+    "replace_refs": 0,
+    "history_override_environment_variables": [],
+    "original_commits_fabricated": false,
+    "ours_strategy_used": false,
+    "remote_or_native_calls_for_this_supplement": 0
+  },
+  "missing_objects": {
+    "server_base": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "local_equivalent": "0a455dcc702e89dc44d951a8ecfce2458fe2fdac",
+    "head_tips": [
+      "e304674acbadedede0b9b1ddf0afe2bf331181e6",
+      "f3a38f633069de15f1fc5636363eec37f8bde535",
+      "219108a0c7ac2b0fcd208612a8a89358480705e2"
+    ],
+    "first_missing_commit_observed_by_all_three_real_commands": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+    "immediate_missing_commit_boundary": [
+      {
+        "missing_original_commit": "03f5aadfa59c92b7e1a47235f9e8ce86f659d1a2",
+        "readable_direct_children": [
+          "a2cd828aad47c56ac8c01dc2e423454eca7eafae"
+        ],
+        "authoritative_graph_parents": [
+          "38069398cef4372c8e189545970f9fe2e6c24ae2"
+        ]
+      },
+      {
+        "missing_original_commit": "0893ac7a2e8e8126d67f77bad7086df1d739fbc6",
+        "readable_direct_children": [
+          "a2cd828aad47c56ac8c01dc2e423454eca7eafae"
+        ],
+        "authoritative_graph_parents": [
+          "a5694833dee37aeebf44f2d8c2053b10b649bf52"
+        ]
+      },
+      {
+        "missing_original_commit": "327c53d98a114173ed1566cf3dc5d5aaab32452b",
+        "readable_direct_children": [
+          "52591dba2de2b5bd48bb48cab03f9bef195b141a"
+        ],
+        "authoritative_graph_parents": [
+          "c91dd8644273c574c29f49a7a62e0a50b9dc68f3"
+        ]
+      },
+      {
+        "missing_original_commit": "403ae7a243fdce76631f07a6127340c7d8dd4acf",
+        "readable_direct_children": [
+          "c7b6aae6e902d3ba0b066e8ba59d03c17a4b6506"
+        ],
+        "authoritative_graph_parents": [
+          "98479ec65bee84a904e773cfcc5a479082d8bd94"
+        ]
+      },
+      {
+        "missing_original_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+        "readable_direct_children": [
+          "100e0b1a603bd7047ca77179d662dc3e9f763804"
+        ],
+        "authoritative_graph_parents": [
+          "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+        ]
+      },
+      {
+        "missing_original_commit": "508b5a435e562dec890e3c775adae016c2aec155",
+        "readable_direct_children": [
+          "0985d7d4ccf70f13670776ff2e4e8e3e44fbfb7d"
+        ],
+        "authoritative_graph_parents": [
+          "b8378c54e402f6beabc3f7f127849b3e9b342520"
+        ]
+      },
+      {
+        "missing_original_commit": "541f880b9ab102f28e01626cc2ea0639a529080c",
+        "readable_direct_children": [
+          "c30249d388d6d5038374cd8872c695096b284a37"
+        ],
+        "authoritative_graph_parents": [
+          "74fa2098330d738463626bafdf0a34385f321efe"
+        ]
+      },
+      {
+        "missing_original_commit": "9a24aa7f372186a8947b38e094584bbe0100bf14",
+        "readable_direct_children": [
+          "4235d49823cb408ffdbaa1127c70f27c273f20b6"
+        ],
+        "authoritative_graph_parents": [
+          "805d96401bf87ad51ca40815bd20d0ae2d597d6d"
+        ]
+      },
+      {
+        "missing_original_commit": "9a39f5bb2b353d0c678bf45cad65d8115882c5b8",
+        "readable_direct_children": [
+          "bb471d2e90f52f39c2c00a01bc817bf137c55c02"
+        ],
+        "authoritative_graph_parents": [
+          "cecec1b61a11381e4db49c2ddff0a5e20b056262"
+        ]
+      },
+      {
+        "missing_original_commit": "b1b495f6a6b1b3e57ba894734180ae47f66975c8",
+        "readable_direct_children": [
+          "e1c187164e9497ca283bc73c20cbf50598ac2ebd"
+        ],
+        "authoritative_graph_parents": [
+          "8892896601243ab1b8751820a2bba042f6eb9966"
+        ]
+      },
+      {
+        "missing_original_commit": "b6d8e3a135094117b8ba9cf187ed629f78311c7b",
+        "readable_direct_children": [
+          "b8d94f455998078a70f1d6174d21f915dc5f8c52"
+        ],
+        "authoritative_graph_parents": [
+          "b2297042dd8a62f2cb356f544039b193ec843aa2"
+        ]
+      },
+      {
+        "missing_original_commit": "d7ca10d1390f1b372145e573a95c23e714bf26b3",
+        "readable_direct_children": [
+          "0cee57ca617e0324e2df8e9447a2c075a6c76952"
+        ],
+        "authoritative_graph_parents": [
+          "73e307cae6537bff831ae6abcc7e8ababedfa8c6",
+          "1ef506b9e7a6bc1d9235f7473059768b2c091cb9"
+        ]
+      },
+      {
+        "missing_original_commit": "db16f23a0013e6525bde7dac15b71c852ca27522",
+        "readable_direct_children": [
+          "00654bf5d01e143c491249fd4c9019a45087908e"
+        ],
+        "authoritative_graph_parents": [
+          "7a887343015043351da5b0560121dee6a248a434"
+        ]
+      },
+      {
+        "missing_original_commit": "e1c836e0d3f99ce0f8e812eea4bb9327d2f9893e",
+        "readable_direct_children": [
+          "59db1216ce3ea110b398751f2d437428bc0d25e7"
+        ],
+        "authoritative_graph_parents": [
+          "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        ]
+      }
+    ],
+    "immediate_missing_commit_boundary_count": 14,
+    "already_readable_reachable_commit_count_before_boundary": 53,
+    "full_authoritative_ancestor_union_nodes": 44837,
+    "full_ancestor_union_locally_absent_original_or_server_commit_nodes": 44808,
+    "full_ancestor_union_missing_ids_file": "full-ancestor-union-missing-commit-ids.json",
+    "minimality_limit": "The first observed missing commit is proven necessary for this local default command. The immediate readable-boundary cut is exact. The full absent-ancestor set is a conservative complete-history upper bound, not a proven minimal set Git needs before finding the merge base; the traversal depends on authentic commit metadata. No missing commit was downloaded and no shallow/graft/replace boundary was created.",
+    "graph_sha256": "428e22978fd243d0765b30fdb9b2b4187f2d3b009d6aa619af4768bc51b171ba",
+    "network_or_native_calls": 0
+  },
+  "handoff": {
+    "owner": "Existing sole native/integration owner coordinated by root",
+    "required_operation": "Use the already complete original native Git object store and fresh actual publication first parent. Run git merge-tree --write-tree --messages <actual-current-head> <original-tip> without --merge-base or a strategy replacement, preserve complete output, and only then apply independently approved semantic resolutions.",
+    "initial_actual_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+    "ordered_original_tips": [
+      "e304674acbadedede0b9b1ddf0afe2bf331181e6",
+      "f3a38f633069de15f1fc5636363eec37f8bde535",
+      "219108a0c7ac2b0fcd208612a8a89358480705e2"
+    ],
+    "sequential_requirement": "Later real merges use the actual preceding merge head and independently rediscover the merge base; the review proposal never substitutes empty parent commits.",
+    "no_duplicate_native_job_started": true,
+    "no_full_fetch_started": true
+  },
+  "merge_commits_created": 0,
+  "refs_changed": 0,
+  "native_tests": "NOT_RUN"
+}

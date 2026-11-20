@@ -166,7 +166,7 @@ pub(super) fn request(
 }
 
 pub(super) fn require_request(bytes: &[u8], request: &CircuitTaskRequestV1) -> Result<(), Error> {
-    let mut reader = Reader::new(bytes, b"HCSTREQ1")?;
+    let mut reader = Reader::new(bytes, *b"HCSTREQ1")?;
     if reader.blob()? != request_identity(request)? {
         return Err(Error::InvalidBinding);
     }
@@ -180,7 +180,7 @@ pub(super) fn original_record(bytes: &[u8]) -> Result<RunStartRecordV1, Error> {
     use codex_hepta_learning_ledger::RunStartAuthenticationV1;
     use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
     use codex_hepta_learning_ledger::RunStartSnapshotV1;
-    let mut r = Reader::new(bytes, b"HCSTREQ1")?;
+    let mut r = Reader::new(bytes, *b"HCSTREQ1")?;
     r.blob()?; // Derived request, revalidated by read_publication.
     let issuer_id = r.id()?;
     let message_id = r.id()?;
@@ -317,7 +317,7 @@ fn encode_input(input: &CellStepInputV1) -> Result<Vec<u8>, Error> {
 }
 
 pub(super) fn decode_input(bytes: &[u8]) -> Result<CellStepInputV1, Error> {
-    let mut outer = Reader::new(bytes, b"HCSTINP1")?;
+    let mut outer = Reader::new(bytes, *b"HCSTINP1")?;
     outer.blob()?; // Original serialized dispatch, compared in resolve/publish.
     let encoded = outer.blob()?;
     outer.end()?;
@@ -426,7 +426,7 @@ pub(super) fn result(
 }
 
 pub(super) fn publication(bytes: &[u8], input: &[u8]) -> Result<(Sha256Digest, Vec<u8>), Error> {
-    let mut r = Reader::new(bytes, b"HCSTRES1")?;
+    let mut r = Reader::new(bytes, *b"HCSTRES1")?;
     if r.blob()? != input {
         return Err(Error::InvalidBinding);
     }
@@ -450,7 +450,7 @@ pub(super) fn require_decision(
     bytes: &[u8],
     decision: &codex_hepta_neuron::CellDecisionReceiptV1,
 ) -> Result<(), Error> {
-    let mut r = Reader::new(bytes, b"HCSTRES1")?;
+    let mut r = Reader::new(bytes, *b"HCSTRES1")?;
     for _ in 0..4 {
         r.blob()?;
     }
@@ -467,7 +467,7 @@ pub(super) fn require_decision(
 }
 
 pub(super) fn decision_metadata(bytes: &[u8]) -> Result<(Digest32, Digest32), Error> {
-    let mut r = Reader::new(bytes, b"HCSTRES1")?;
+    let mut r = Reader::new(bytes, *b"HCSTRES1")?;
     for _ in 0..4 {
         r.blob()?;
     }
@@ -511,10 +511,10 @@ fn blob(bytes: &mut Vec<u8>, value: &[u8]) {
 
 struct Reader<'a>(&'a [u8]);
 impl<'a> Reader<'a> {
-    fn new(bytes: &'a [u8], magic: &[u8; 8]) -> Result<Self, Error> {
+    fn new(bytes: &'a [u8], magic: [u8; 8]) -> Result<Self, Error> {
         bounded(bytes)?;
         Ok(Self(
-            bytes.strip_prefix(magic).ok_or(Error::InvalidBinding)?,
+            bytes.strip_prefix(&magic).ok_or(Error::InvalidBinding)?,
         ))
     }
     fn take<const N: usize>(&mut self) -> Result<[u8; N], Error> {

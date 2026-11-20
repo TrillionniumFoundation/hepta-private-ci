@@ -1,0 +1,128 @@
+{
+  "status": "PASS_STATIC_SOURCE_REVIEW_NATIVE_PENDING",
+  "reviewed_at": "2026-11-20T05:08:24.248930+00:00",
+  "base_head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "composition_parent_tree": "9cdeda5fba5b4cb02036c62f75781878497931ea",
+  "frozen_sha256": "276fc50750e4f02ae29c7d08b3de9e0e46d0b9eefdb34a4c5268ce92ea534133",
+  "frozen_files_verified": 21,
+  "patch_sha256": "a4f0d7f5ab8a3b77e9a9edd3f892bb2492e6790dc4cc8bfb9cc92de87e10b60d",
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "before_blob": "22ea70c61e8a09846aee51d9546c4f29bebf8c05",
+      "after_blob": "089bd0bfa2947c039556c7c6c34fae3f70ad772c",
+      "before_sha256": "26ca5ebd966f41f126560e6ca70ba5d00734aa2e0c7f270a471af49691d7ac59",
+      "after_sha256": "33f990b909cf87744bbd2a00ce39ce60f914dd478aafc957fa66660e9132cbb7",
+      "before_bytes": 66016,
+      "after_bytes": 66020,
+      "full_inverse_reconstructs_before": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_operation_tests.rs",
+      "before_blob": "3a6cec34c8e158996dbb64e01282634944242546",
+      "after_blob": "8fb356816f87daf11d7b9e0fb4feea3590f6360d",
+      "before_sha256": "a9f5fea1e57a37441b9cd8091dee5a6b42825fa785e2af33fecc518375323ac4",
+      "after_sha256": "1f807afbf23d499d1004473b664186fdc77c2c9be7375acd0ff98f4f6e494f23",
+      "before_bytes": 9049,
+      "after_bytes": 9204,
+      "full_inverse_reconstructs_before": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_model_material_tests.rs",
+      "before_blob": "0fc3fd2fec8a1a9584dfd4e714af30b14f552152",
+      "after_blob": "0c643d58ab7e883618a49f0df19c4ab5045ec8e1",
+      "before_sha256": "b5f7da692b58048902879475be3e88acc6d6a08f39fcce5159333eb855264b43",
+      "after_sha256": "787a82e915697ae5cd28272756941a8851570174df230d6e10429736f035fdb0",
+      "before_bytes": 15163,
+      "after_bytes": 15739,
+      "full_inverse_reconstructs_before": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_serving_process_tests.rs",
+      "before_blob": "6cdf6f104ca32bf6584eba67160f973427a29e98",
+      "after_blob": "24f32c65455e8c67abd3968410c17d88fe9d67c8",
+      "before_sha256": "efaaa9ad030a0f29e0f8e6e9bcae2eb6da5c42baff14a0ed3e5d08857f686748",
+      "after_sha256": "34ec919cc61c12e7b5860b707c39d2601628e866f1fc0eeb37e5bd9a03f82575",
+      "before_bytes": 12667,
+      "after_bytes": 13138,
+      "full_inverse_reconstructs_before": true
+    }
+  ],
+  "support_types": [
+    {
+      "path": "codex-rs/clippy.toml",
+      "blob": "f16a05180ad8d17b97f449f0a9d204071f951bfe",
+      "available": true,
+      "bytes": 2754,
+      "sha256": "323037ae6e8136646a8a80fd59724b32bbb3e3b2b7ea745ac79841443d4a71a9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/memory_serving_process.rs",
+      "blob": "7d2e1f78af07a260ed35c8ced54083954834b4e0",
+      "available": true,
+      "bytes": 13848,
+      "sha256": "ed739443f74337a02f0c54e2d130f48ea07ab5f2dadb21aced658c1499ccae88"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "blob": "5f94e0f7e5c314c64d8ce3838971f2cae77d559f",
+      "available": true,
+      "bytes": 41967,
+      "sha256": "a67f26a11ed4ca6b20f2a315dfd88b86b42f9f7e849bde85a841e7f54b3a7880"
+    }
+  ],
+  "original_tests": [
+    "host_dispatches_exact_wire_payload_once",
+    "host_preserves_ordinary_opaque_and_non_skill_json_payloads",
+    "plain_host_rejects_skill_envelopes_before_claim_or_provider_contact",
+    "original_evaluation_operation_reads_two_trainers_per_call_and_whole_export",
+    "original_evaluation_operation_rejects_equal_evidence_on_another_connection",
+    "original_evaluation_operation_changed_tail_preserves_effect_and_fences_retry",
+    "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel",
+    "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel_withdraw",
+    "original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel_changed_tail",
+    "original_evaluation_model_material_reads_actual_panel_and_identical_local_digest",
+    "original_evaluation_model_material_rejects_wrong_page_order",
+    "original_evaluation_model_material_rejects_wrong_page_total",
+    "original_evaluation_model_material_rejects_wrong_page_offset",
+    "original_evaluation_model_material_rejects_wrong_last_page",
+    "original_evaluation_model_material_rejects_lost_finish",
+    "original_evaluation_model_material_rejects_completed_to_missing_regression",
+    "original_evaluation_model_material_rejects_completed_to_pending_regression",
+    "original_evaluation_model_material_rejects_pages_renewal_and_completed_regression",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute_pending_claim",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute_withdrawn_outcome",
+    "original_evaluation_model_material_pending_cancel_and_withdrawal_never_execute_original_cell_current",
+    "actual_subprocess_requires_single_use_and_matching_observation",
+    "revocation_between_claim_and_spawn_prevents_effect",
+    "wrong_node_generation_or_selection_cannot_reuse_grant",
+    "cancellation_reaps_child_and_missing_completion_cannot_be_success",
+    "changed_dependency_or_payload_rejects_before_execution",
+    "runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation"
+  ],
+  "original_test_count": 28,
+  "assertions": {
+    "total": 144,
+    "byte_identical": 142,
+    "operand_error_extraction_only": 2,
+    "all_recorded_macro_literals_verified_at_source_lines": true
+  },
+  "inverse_patch": {
+    "exit_code": 0,
+    "all_four_originals_reconstructed": true
+  },
+  "semantic_findings": [
+    "Existing anyhow helpers propagate lookup failures with Context; production automation code is untouched.",
+    "The material peer join keeps its inner Err for the original served.is_err() assertion; trainer inner failure propagates; child panic payloads remain failures via resume_unwind.",
+    "Every post-recovery host lookup remains at the original point; no stale host cached across recover.",
+    "Five String-returning call occurrences are converted by anyhow::Error::msg before Context; FinalUseError implements std::error::Error.",
+    "Memory fixture and job builders return Result; eight fixture invocations and six original entry tests propagate failures; real reader script and fault cases remain unchanged."
+  ],
+  "limitations": [
+    "Rust compile, actual Clippy, Rustfmt and native tests NOT_RUN on this candidate.",
+    "The original29 violations are source-reviewed as addressed; this does not assert a passed CI run."
+  ],
+  "remote_writes": 0,
+  "production_lint_dependency_policy_changes": 0
+}

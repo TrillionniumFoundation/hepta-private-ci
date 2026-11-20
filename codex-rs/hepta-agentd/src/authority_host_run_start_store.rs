@@ -1,6 +1,7 @@
 //! Guarded primary operations. Every possible primary read belongs to the
 //! independent refusal arm; CAS and final real postchecks finish before Ready.
 
+use super::inputs::RunStartOwnerIds;
 use super::*;
 
 impl RunStartRecordStore {
@@ -197,6 +198,13 @@ impl RootRetainedRunStartDataV1 {
         Ok(Self { state, refusal })
     }
 
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "CALLERS retains the cold digest boundary with no product callers"
+        )
+    )]
     pub(crate) fn readback_digest(&self) -> io::Result<Digest32> {
         RootDataRefusalV1::inspect(&self.refusal, || {
             self.state.require_exact_unchecked()?;
@@ -208,6 +216,10 @@ impl RootRetainedRunStartDataV1 {
     /// durably retained observation time, not treated as today's permission.
     /// The caller must independently join actual retirement, current AuthBus
     /// and the new recipient's Root learning scope before using this history.
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains this guarded cold read with no product callers"
+    )]
     pub(crate) fn read_original_publication(
         &self,
         files: &RootInitialRunStartFilesV1,
@@ -246,8 +258,10 @@ impl RootRetainedRunStartDataV1 {
             original_identity,
             &original.target,
             &observed.publication,
-            original.publisher.uid,
-            original.publisher_gid,
+            RunStartOwnerIds {
+                uid: original.publisher.uid,
+                gid: original.publisher_gid,
+            },
             observed.observed_unix_ms,
         )?;
         if frame.frame_start != observed.frame_start

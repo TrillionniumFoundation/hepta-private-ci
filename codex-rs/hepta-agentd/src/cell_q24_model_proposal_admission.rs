@@ -163,4 +163,6 @@ impl Admission {
 #[path = "cell_q24_model_current_admission.rs"]
 mod current;
 #[cfg(target_os = "linux")]
+pub(super) use current::TrainingBindingInputs;
+#[cfg(target_os = "linux")]
 pub(super) use current::validate_current_material;

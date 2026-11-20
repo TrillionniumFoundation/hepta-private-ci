@@ -222,13 +222,9 @@ impl FastMemoryV1 {
         for (weight, chunk) in restored
             .weights
             .iter_mut()
-            .zip(bytes[HEADER_BYTES..].chunks_exact(8))
+            .zip(bytes[HEADER_BYTES..].as_chunks::<8>().0)
         {
-            *weight = f64::from_be_bytes(
-                chunk
-                    .try_into()
-                    .map_err(|_| FastMemoryErrorV1::InvalidCheckpoint)?,
-            );
+            *weight = f64::from_be_bytes(*chunk);
             if !weight.is_finite() || weight.abs() > WEIGHT_BOUND {
                 return Err(FastMemoryErrorV1::InvalidCheckpoint);
             }

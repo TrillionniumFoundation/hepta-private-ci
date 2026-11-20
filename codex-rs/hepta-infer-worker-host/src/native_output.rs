@@ -9,6 +9,7 @@ use super::NativeRunOutput;
 
 const MAX_MESSAGE_ITEMS: usize = 1024;
 
+#[derive(Clone)]
 struct AgentMessage {
     id: String,
     text: String,
@@ -21,7 +22,7 @@ enum Update<'a> {
     Completed(&'a str),
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub(super) struct AgentMessageOutput {
     items: Vec<AgentMessage>,
     metadata_bytes: usize,
@@ -79,11 +80,17 @@ impl AgentMessageOutput {
         items: &[ThreadItem],
         output: &mut NativeRunOutput,
     ) -> Result<(), String> {
+        // A terminal summary is one observation. Reject all of its items
+        // without changing retained messages or visible text if any item fails.
+        let mut next = self.clone();
+        let mut next_output = output.clone();
         for item in items {
             if let ThreadItem::AgentMessage { id, text, .. } = item {
-                self.apply_message(id, Update::Completed(text), output)?;
+                next.apply_message(id, Update::Completed(text), &mut next_output)?;
             }
         }
+        *self = next;
+        output.output = next_output.output;
         Ok(())
     }
 

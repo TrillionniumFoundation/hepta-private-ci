@@ -372,15 +372,15 @@ fn physical_weights(
         let payload = &data[start..end];
         if dtype == "F32" {
             let mut out = Vec::with_capacity(elements);
-            for chunk in payload.chunks_exact(4) {
-                let value = f32::from_le_bytes(chunk.try_into().map_err(|_| fail("bad float"))?);
+            for chunk in payload.as_chunks::<4>().0 {
+                let value = f32::from_le_bytes(*chunk);
                 out.push(f32_to_q24_head(value)?);
             }
             weights.insert(name.to_owned(), out);
         } else {
             let mut out = Vec::with_capacity(elements);
-            for chunk in payload.chunks_exact(8) {
-                let value = i64::from_le_bytes(chunk.try_into().map_err(|_| fail("bad Q24"))?);
+            for chunk in payload.as_chunks::<8>().0 {
+                let value = i64::from_le_bytes(*chunk);
                 let admitted = if name == "structure.projection" {
                     value == Q
                 } else if name == "temporal.gate_bias" && arm == "v3"

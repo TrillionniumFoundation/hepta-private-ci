@@ -1,0 +1,47 @@
+{
+  "step": 4,
+  "local_commit": "a42c6d7e2f854576f3881ea826f5078731faf24a",
+  "server_commit": "a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+  "tree": "65c5b34b173eaf0ada48d7fbd9858ee6abdd6121",
+  "ordered_parents": [
+    "0773c74ad41874b0e3e76e26cb83fd600b44b3ca"
+  ],
+  "created": {
+    "sha": "a77de5192593836ccd0b1321ba9f678b6f7dcbad"
+  },
+  "official_get": {
+    "sha": "a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+    "node_id": "C_kwDOTrgxoNoAKGE3N2RlNTE5MjU5MzgzNmNjZDBiMTMyMWJhOWY2NzhiNmY3ZGNiYWQ",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/a77de5192593836ccd0b1321ba9f678b6f7dcbad",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T05:12:22Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T05:12:22Z"
+    },
+    "tree": {
+      "sha": "65c5b34b173eaf0ada48d7fbd9858ee6abdd6121",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/65c5b34b173eaf0ada48d7fbd9858ee6abdd6121"
+    },
+    "message": "test: propagate fixture helper errors through original harnesses\n\nRemove the29 strict-Clippy expect/unwrap sites from ordinary fixture\nhelpers. Preserve original error context, convert String errors explicitly\nand propagate failures through existing test results. Preserve both thread\nresult layers: material peer errors remain asserted, Trainer errors remain\npropagated, and outer thread panics resume unchanged.\n\nKeep all28 original tests and144 assertions, all real subprocess and\nauthority controls, the wiremock request expectation and the complete\nautomation production prefix. No lint policy or dependency changes.\n\nBoth source reviews and independent exact preservation checks passed.\nNative test execution, Rustfmt and strict Clippy remain pending CI.",
+    "parents": [
+      {
+        "sha": "0773c74ad41874b0e3e76e26cb83fd600b44b3ca",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/0773c74ad41874b0e3e76e26cb83fd600b44b3ca",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/0773c74ad41874b0e3e76e26cb83fd600b44b3ca"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

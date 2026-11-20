@@ -144,7 +144,7 @@ impl DesktopThreadSeedReceipt {
 
 fn request_id(action: &str) -> Result<RequestId, AgentdError> {
     let sequence = NEXT_REQUEST
-        .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
+        .try_update(Ordering::SeqCst, Ordering::SeqCst, |value| {
             value.checked_add(1)
         })
         .map_err(|_| invalid("original seed request counter exhausted"))?;

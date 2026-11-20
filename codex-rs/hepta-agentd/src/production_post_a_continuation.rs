@@ -59,8 +59,8 @@ pub(crate) struct OriginalPostAContinuationV1 {
 }
 
 enum PreparedCTask {
-    New(OriginalNewCTask),
-    Existing(OriginalExistingCTask),
+    New(Box<OriginalNewCTask>),
+    Existing(Box<OriginalExistingCTask>),
 }
 
 impl PreparedCTask {
@@ -181,36 +181,42 @@ impl OriginalPostAContinuationV1 {
             snapshot.clone(),
             final_use,
             clock,
-            &mut files,
-            &cancelled,
+            super::artifacts::OriginalArtifactReadInputs {
+                files: &mut files,
+                cancelled: &cancelled,
+            },
         )
         .await?;
         require_continuation(&state, &identity, &cancelled, end)?;
         let recovering = OriginalCTaskPlan::require_original_mode(&task, &publication)?;
         OriginalGenerationFiles::require_original_lifecycle(&generation, recovering)?;
         let original = if recovering {
-            PreparedCTask::Existing(
+            PreparedCTask::Existing(Box::new(
                 OriginalCTaskPlan::open_original_existing_task(
                     task,
-                    &publication,
-                    &identity,
-                    &decision,
-                    selected.selected_manifest(),
+                    super::c_task::OriginalCTaskSelectionInputs {
+                        route: &publication,
+                        identity: &identity,
+                        decision: &decision,
+                        selected: selected.selected_manifest(),
+                    },
                     baseline,
                     &owners,
                     &mut files,
                     &cancelled,
                 )
                 .await?,
-            )
+            ))
         } else {
-            PreparedCTask::New(
+            PreparedCTask::New(Box::new(
                 OriginalCTaskPlan::open_original_new_task(
                     task,
-                    &publication,
-                    &identity,
-                    &decision,
-                    selected.selected_manifest(),
+                    super::c_task::OriginalCTaskSelectionInputs {
+                        route: &publication,
+                        identity: &identity,
+                        decision: &decision,
+                        selected: selected.selected_manifest(),
+                    },
                     baseline,
                     &owners,
                     &receipt,
@@ -218,7 +224,7 @@ impl OriginalPostAContinuationV1 {
                     &cancelled,
                 )
                 .await?,
-            )
+            ))
         };
         artifact_custody.require_original()?;
         original.require_original_custody()?;
@@ -256,7 +262,7 @@ impl OriginalPostAContinuationV1 {
                     execution,
                     ingress,
                     custody: task_custody,
-                } = original;
+                } = *original;
                 let prepared =
                     crate::OriginalCellQ24RootPublicationDriverV1::prepare_original_successor(
                         driver,
@@ -309,7 +315,7 @@ impl OriginalPostAContinuationV1 {
                     .map_err(refused)?;
                 require_continuation(&state, &identity, &cancelled, end)?;
                 let (recovery, custody, mode) = OriginalExistingCTask::into_original_recovery(
-                    original,
+                    *original,
                     intent,
                     Arc::clone(&receipt),
                 )?;

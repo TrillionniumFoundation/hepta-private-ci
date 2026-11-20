@@ -35,7 +35,7 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.1
 
       - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc
         with:
           toolchain: 1.96.0
           components: clippy,rustfmt,llvm-tools-preview
@@ -188,7 +188,7 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Install pinned Rust toolchain
-        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc
         with:
           toolchain: 1.96.0
           components: clippy,rustfmt

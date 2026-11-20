@@ -1,0 +1,48 @@
+{
+  "command": [
+    "uv",
+    "tool",
+    "run",
+    "--offline",
+    "--from",
+    "ruff==0.15.13",
+    "ruff",
+    "format",
+    "scripts/format.py",
+    "scripts/test_hepta_format_scope.py"
+  ],
+  "cwd": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new73a96f/formatter-policy-review/candidate",
+  "exit_code": 0,
+  "stdout": "2 files left unchanged\n",
+  "stderr": "",
+  "files": [
+    {
+      "path": "scripts/format.py",
+      "tested_before_ruff": {
+        "git_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+        "sha256": "e6f3588ee95b656518b55552d65753cc09e0a7c7a5abf81a2ef88ab362dd062f",
+        "bytes": 22851
+      },
+      "final_after_ruff": {
+        "git_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+        "sha256": "e6f3588ee95b656518b55552d65753cc09e0a7c7a5abf81a2ef88ab362dd062f",
+        "bytes": 22851
+      },
+      "ast_identical": true
+    },
+    {
+      "path": "scripts/test_hepta_format_scope.py",
+      "tested_before_ruff": {
+        "git_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+        "sha256": "66a15cb6d668142c8dd62c17c870a3aea821ed8b94363d300398517d4bb30210",
+        "bytes": 29595
+      },
+      "final_after_ruff": {
+        "git_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+        "sha256": "66a15cb6d668142c8dd62c17c870a3aea821ed8b94363d300398517d4bb30210",
+        "bytes": 29595
+      },
+      "ast_identical": true
+    }
+  ]
+}

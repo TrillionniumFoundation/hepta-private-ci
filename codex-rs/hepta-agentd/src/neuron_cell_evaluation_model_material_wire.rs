@@ -50,11 +50,6 @@ impl Request {
         }
         Ok(())
     }
-    pub(super) fn context(&self) -> Result<Digest32, Error> {
-        self.context
-            .parse()
-            .map_err(|_| Error::Binding("original material context"))
-    }
 }
 
 #[derive(Deserialize, Serialize)]

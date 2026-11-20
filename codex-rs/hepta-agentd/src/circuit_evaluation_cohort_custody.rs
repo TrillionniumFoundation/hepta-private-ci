@@ -16,13 +16,24 @@ use crate::OriginalCircuitEvaluationCohortCurrentV1;
 use crate::OriginalCircuitEvaluationCohortReadbackV1;
 use crate::OriginalCircuitEvaluationProviderErrorV1 as Error;
 
+/// Borrowed original panel membership inputs; this value confers no authority.
+pub(crate) struct CohortMemberInputs<'a> {
+    pub(crate) registration: &'a OriginalCellEvaluationPanelRegistrationV1,
+    pub(crate) task: &'a OriginalCellEvaluationPanelTaskV1,
+    pub(crate) training: &'a LearningIterationSnapshotV1,
+    pub(crate) scope: &'a FrozenLearningScopeV2,
+    pub(crate) plan: &'a CellEvaluationPlanV1,
+    pub(crate) training_evidence: &'a SignedLearningEvidenceV1,
+    pub(crate) verifier: &'a LearningEvidenceVerifierV1,
+}
+
 pub struct OriginalCellEvaluationCohortCustodyV1 {
     original: OriginalCohort,
 }
 
 enum OriginalCohort {
-    Shared(OriginalCircuitEvaluationCohortReadbackV1),
-    Paired(OriginalCircuitOnPolicyCohortReadbackV1),
+    Shared(Box<OriginalCircuitEvaluationCohortReadbackV1>),
+    Paired(Box<OriginalCircuitOnPolicyCohortReadbackV1>),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -39,7 +50,7 @@ enum OriginalCurrent {
 impl From<OriginalCircuitEvaluationCohortReadbackV1> for OriginalCellEvaluationCohortCustodyV1 {
     fn from(original: OriginalCircuitEvaluationCohortReadbackV1) -> Self {
         Self {
-            original: OriginalCohort::Shared(original),
+            original: OriginalCohort::Shared(Box::new(original)),
         }
     }
 }
@@ -47,7 +58,7 @@ impl From<OriginalCircuitEvaluationCohortReadbackV1> for OriginalCellEvaluationC
 impl From<OriginalCircuitOnPolicyCohortReadbackV1> for OriginalCellEvaluationCohortCustodyV1 {
     fn from(original: OriginalCircuitOnPolicyCohortReadbackV1) -> Self {
         Self {
-            original: OriginalCohort::Paired(original),
+            original: OriginalCohort::Paired(Box::new(original)),
         }
     }
 }
@@ -76,16 +87,10 @@ impl OriginalCellEvaluationCohortCustodyV1 {
 
     pub(crate) fn require_original_member(
         &self,
-        registration: &OriginalCellEvaluationPanelRegistrationV1,
-        task: &OriginalCellEvaluationPanelTaskV1,
-        training: &LearningIterationSnapshotV1,
-        scope: &FrozenLearningScopeV2,
-        plan: &CellEvaluationPlanV1,
-        training_evidence: &SignedLearningEvidenceV1,
-        verifier: &LearningEvidenceVerifierV1,
+        inputs: CohortMemberInputs<'_>,
     ) -> Result<(), Error> {
         use codex_hepta_intelligence_eval::ProductComparisonModeV1;
-        match (&self.original, plan.product_plan().comparison_mode()) {
+        match (&self.original, inputs.plan.product_plan().comparison_mode()) {
             (OriginalCohort::Shared(_), ProductComparisonModeV1::SharedBehavior)
             | (OriginalCohort::Paired(_), ProductComparisonModeV1::PairedOnPolicy(_)) => (),
             _ => {
@@ -96,28 +101,10 @@ impl OriginalCellEvaluationCohortCustodyV1 {
         }
         match &self.original {
             OriginalCohort::Shared(owner) => {
-                OriginalCircuitEvaluationCohortReadbackV1::require_original_member(
-                    owner,
-                    registration,
-                    task,
-                    training,
-                    scope,
-                    plan,
-                    training_evidence,
-                    verifier,
-                )
+                OriginalCircuitEvaluationCohortReadbackV1::require_original_member(owner, inputs)
             }
             OriginalCohort::Paired(owner) => {
-                OriginalCircuitOnPolicyCohortReadbackV1::require_original_member(
-                    owner,
-                    registration,
-                    task,
-                    training,
-                    scope,
-                    plan,
-                    training_evidence,
-                    verifier,
-                )
+                OriginalCircuitOnPolicyCohortReadbackV1::require_original_member(owner, inputs)
             }
         }
     }

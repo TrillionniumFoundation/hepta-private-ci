@@ -79,9 +79,9 @@ pub struct OriginalGenerationLearningReceiptSourcesV1 {
 }
 
 enum OriginalLearningReceiptSourceV1 {
-    Generation(OriginalGenerationLearningReceiptSourcesV1),
-    Feature(OriginalCircuitFeatureLearningSourcesV1),
-    HistoricalFeature(OriginalHistoricalCircuitFeatureSourcesV1),
+    Generation(Box<OriginalGenerationLearningReceiptSourcesV1>),
+    Feature(Box<OriginalCircuitFeatureLearningSourcesV1>),
+    HistoricalFeature(Box<OriginalHistoricalCircuitFeatureSourcesV1>),
 }
 
 pub struct OriginalGenerationLearningReceiptOwnerV1<W: AnchorWitnessStore> {
@@ -100,7 +100,7 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         key: SigningKey,
         source: OriginalHistoricalCircuitFeatureSourcesV1,
     ) -> Result<Self, Error> {
-        let source = OriginalLearningReceiptSourceV1::HistoricalFeature(source);
+        let source = OriginalLearningReceiptSourceV1::HistoricalFeature(Box::new(source));
         let binding = validate_config(&config, &key, &source)?;
         Ok(Self {
             journal: LearningOwnerJournalV1::recover(file, witness, binding)?,
@@ -144,7 +144,7 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         key: SigningKey,
         source: OriginalGenerationLearningReceiptSourcesV1,
     ) -> Result<Self, Error> {
-        let source = OriginalLearningReceiptSourceV1::Generation(source);
+        let source = OriginalLearningReceiptSourceV1::Generation(Box::new(source));
         let binding = validate_config(&config, &key, &source)?;
         Ok(Self {
             journal: LearningOwnerJournalV1::create(file, witness, binding)?,
@@ -164,7 +164,7 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         key: SigningKey,
         source: OriginalGenerationLearningReceiptSourcesV1,
     ) -> Result<Self, Error> {
-        let source = OriginalLearningReceiptSourceV1::Generation(source);
+        let source = OriginalLearningReceiptSourceV1::Generation(Box::new(source));
         let binding = validate_config(&config, &key, &source)?;
         Ok(Self {
             journal: LearningOwnerJournalV1::recover(file, witness, binding)?,
@@ -184,7 +184,7 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         key: SigningKey,
         source: OriginalCircuitFeatureLearningSourcesV1,
     ) -> Result<Self, Error> {
-        let source = OriginalLearningReceiptSourceV1::Feature(source);
+        let source = OriginalLearningReceiptSourceV1::Feature(Box::new(source));
         let binding = validate_config(&config, &key, &source)?;
         Ok(Self {
             journal: LearningOwnerJournalV1::create(file, witness, binding)?,
@@ -204,7 +204,7 @@ impl<W: AnchorWitnessStore> OriginalGenerationLearningReceiptOwnerV1<W> {
         key: SigningKey,
         source: OriginalCircuitFeatureLearningSourcesV1,
     ) -> Result<Self, Error> {
-        let source = OriginalLearningReceiptSourceV1::Feature(source);
+        let source = OriginalLearningReceiptSourceV1::Feature(Box::new(source));
         let binding = validate_config(&config, &key, &source)?;
         Ok(Self {
             journal: LearningOwnerJournalV1::recover(file, witness, binding)?,

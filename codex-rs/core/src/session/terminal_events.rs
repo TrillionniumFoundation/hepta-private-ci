@@ -100,9 +100,9 @@ impl TerminalPublications {
         sender: &Sender<Event>,
         event: Event,
         completion: Option<Arc<StartTransitionCompletion>>,
-    ) -> Result<(), SendError<Event>> {
+    ) -> Result<(), Box<SendError<Event>>> {
         let Some(kind) = TerminalKind::from_event(&event.msg) else {
-            return sender.send(event).await;
+            return sender.send(event).await.map_err(Box::new);
         };
         // Serialize terminal registration and actual send, including ownerless
         // terminal events. Ordinary events retain their original send path.
@@ -129,7 +129,7 @@ impl TerminalPublications {
         // not deliver if cancelled while pending. The RAII guard removes only
         // this receipt on cancellation/error. No await separates successful
         // enqueue from commit; the short registry lock never spans send.await.
-        sender.send(event).await?;
+        sender.send(event).await.map_err(Box::new)?;
         publication.delivered = true;
         Ok(())
     }

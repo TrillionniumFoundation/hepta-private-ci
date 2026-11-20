@@ -28,6 +28,8 @@ CMD_DIAGNOSTIC_COMMANDS = {
     "original-batch": "child-probe.cmd",
     "inline-exit71": '"exit /b 71"',
     "inline-stdout": '"echo HEPTA_LPAC_INLINE_STDOUT"',
+    "type-original-batch": '"type child-probe.cmd"',
+    "minimal-batch-exit71": "cmd-entry-minimal.cmd",
 }
 
 
@@ -612,7 +614,13 @@ class Api:
         require(not errors, f"close owned child standard handles: {errors}")
 
     def create_suspended(
-        self, package_sid, cwd, lpac, stdio_handles, *, diagnostic_command="original-batch"
+        self,
+        package_sid,
+        cwd,
+        lpac,
+        stdio_handles,
+        *,
+        diagnostic_command="original-batch",
     ):
         require(
             diagnostic_command in CMD_DIAGNOSTIC_COMMANDS,

@@ -7,20 +7,24 @@ use std::time::Instant;
 use super::refusal::PublicationRefusalBinding;
 use super::refusal::require_end;
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_runtime::verify_pinned_process;
 
 impl HostAuthorityService {
     pub(crate) fn enroll_generation_publication(
         &self,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
         version: PublicationVersion,
         end: Instant,
         successor: Option<Arc<crate::authority_host_runtime::RootOriginalSuccessorFilesV1>>,
     ) -> io::Result<RegisteredGenerationPublication> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        } = peer_inputs;
         original_root()?;
         require_end(end)?;
         let initial = learning.profile.original_initial_data()?;
@@ -35,9 +39,11 @@ impl HostAuthorityService {
             end,
             |refusal| {
                 let mut enrolled = self.enroll_armed_generation_publication(
-                    config,
-                    registration,
-                    owner,
+                    HostAuthorityRegistrationInputs {
+                        config,
+                        registration,
+                        owner,
+                    },
                     learning,
                     inputs,
                     version,

@@ -72,7 +72,7 @@ impl OriginalCellQ24TaskLedgerProducerV1 {
             else {
                 return Err(refused("retained source has no accepted Terminal outcome"));
             };
-            (captured, decision, outcome)
+            (captured, *decision, *outcome)
         };
         let request = &prepared.initial().request;
         let facts = prepared.read_validated_facts().map_err(refused)?;
@@ -181,7 +181,7 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
                 .map_err(ledger_error)?
             {
                 OriginalCellQ24TaskLedgerStatusV1::Complete { decision, outcome }
-                    if decision == self.decision && outcome == self.outcome => {}
+                    if *decision == self.decision && *outcome == self.outcome => {}
                 _ => return Err(refused("original accepted source changed")),
             }
             let snapshot = witnessed_snapshot(&ledger).map_err(ledger_error)?;

@@ -255,7 +255,7 @@ impl StageFilesData {
         prepared.revalidate_source().map_err(refused)?;
         Ok(crate::OriginalCellQ24LearningInputsV1 {
             prepared,
-            sources: crate::OriginalCellQ24SourceInputsV1::Files(
+            sources: crate::OriginalCellQ24SourceInputsV1::Files(Box::new(
                 crate::OriginalCellQ24SourceFilesV1 {
                     experience: crate::OriginalCellQ24SourceJournalV1 {
                         journal: experience,
@@ -274,8 +274,8 @@ impl StageFilesData {
                         maximum_signature_lifetime_seconds: self.dataset.signature_lifetime_seconds,
                     },
                 },
-            ),
-            training: crate::OriginalCellQ24TrainingInputsV1::Files(
+            )),
+            training: crate::OriginalCellQ24TrainingInputsV1::Files(Box::new(
                 crate::OriginalCellQ24TrainingFilesV1 {
                     training,
                     training_witness,
@@ -288,7 +288,7 @@ impl StageFilesData {
                         .training_receipt
                         .signature_lifetime_seconds,
                 },
-            ),
+            )),
             local: crate::OriginalCellQ24LocalDecisionFilesV1 {
                 journal: local,
                 witness: local_witness,

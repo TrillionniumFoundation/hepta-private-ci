@@ -278,12 +278,14 @@ impl OriginalCircuitNextUseCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             false,
             None,
         )
@@ -293,18 +295,21 @@ impl OriginalCircuitNextUseCommandClientV1 {
     /// signatures. This constructor can only restore readback, including when
     /// Root has no confirmed NextUse ACK. It cannot manufacture a fresh context.
     pub fn recover_from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         selection: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         verifier: LearningEvidenceVerifierV1,
         training_evidence: SignedLearningEvidenceV1,
         selection_evidence: SignedLearningEvidenceV1,
         expected: Option<(LearningIterationSnapshotV1, SignedLearningEvidenceV1)>,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let context = OriginalCircuitNextUseCommandContextV1::from_checkpoint(
             selection,
             scope,
@@ -318,27 +323,32 @@ impl OriginalCircuitNextUseCommandClientV1 {
             })
             .transpose()?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             true,
             retained,
         )
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         context: OriginalCircuitNextUseCommandContextV1,
-        timeout: Duration,
-        lifetime: Duration,
         execution_requested: bool,
         retained: Option<OriginalCircuitNextUseCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let binding = context.binding(started_at)?;
         if peer.actor_id != context.selection.owners.next_use_observer {
@@ -473,7 +483,7 @@ impl OriginalCircuitNextUseCommandClientV1 {
         }
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                let original = wire::decode_completed(&self.context, snapshot, evidence, current)?;
+                let original = wire::decode_completed(&self.context, snapshot, *evidence, current)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

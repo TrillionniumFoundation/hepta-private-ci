@@ -263,7 +263,9 @@ fn exact_stdout(output: &Value, job_id: &str, terminal_size: u64) -> Result<Vec<
     }
     let bytes = hex
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|pair| {
             let digit = |b: u8| {
                 if b.is_ascii_digit() {

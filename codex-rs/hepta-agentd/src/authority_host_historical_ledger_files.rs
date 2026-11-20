@@ -36,7 +36,7 @@ pub(super) struct OriginalLedgerObservation {
 pub(super) enum OriginalLedgerReadModeV1 {
     Capture,
     Retained {
-        ledger: LedgerReadOnlyCutV1,
+        ledger: Box<LedgerReadOnlyCutV1>,
         signatures: JournalAnchor,
     },
 }
@@ -147,7 +147,7 @@ impl OriginalLedgerFiles {
                     witness,
                     context.ledger_binding,
                     data.maximum_records,
-                    expected,
+                    *expected,
                 )
                 .map_err(io::Error::other)?,
                 Some(signatures),

@@ -1,0 +1,42 @@
+{
+  "base_commit": "7d667faba0fbcefb1880e97064b1137209290964",
+  "source_subset_binding": "../root-qa-7d667/source-bindings.json",
+  "relative_path": "qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+  "before": {
+    "bytes": 15108,
+    "git_blob": "0d82c774b845749ba312aec5510a9fb67a52830d",
+    "sha256": "4f9acc1320724beb88ed569b1b98b3d98b84fb3a80696da6068f8b90ad47157e"
+  },
+  "after": {
+    "bytes": 15109,
+    "git_blob": "c6a204d9ab8f08fdf51745652a8786b7425793df",
+    "sha256": "352f216179825a418edfc96bba5835c79371a21600e43f5ad5135f6f187d331a"
+  },
+  "after_path": "/workspace/scratch/c2d514464ab5/root-patches/qa/b4-no-bypass/test_q24_original_outcome_control_source_closure.py",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qa/b4-no-bypass",
+    "-p",
+    "test_q24_original_outcome_control_source_closure.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c2d514464ab5/root-qa-q24-after/source",
+  "exit_code": 0,
+  "seconds": 2.682009547999769,
+  "stdout": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr": {
+    "bytes": 3397,
+    "git_blob": "0a0c23ec9451fcd2c7a438e9509b1d5256ff41cf",
+    "sha256": "60bc3cb20cff1d56a567d0d6f7c6d5f04482c138d6cb5fe4d3de6539251d4716"
+  },
+  "change": "Replace only obsolete chunks_exact method marker with actual checked as_chunks::<2> grouping marker after recovered Rust lint repair. All test methods, assertions, length/lowercase/signature checks and production/verifier bytes preserved."
+}

@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use super::*;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
 
 impl PreparedHostAuthoritySession {
@@ -286,9 +287,11 @@ fn serve_optional_with_end(
                 learning.publication.as_ref(),
                 &learning.learning,
                 service,
-                config,
-                registration,
-                owner,
+                HostAuthorityRegistrationInputs {
+                    config,
+                    registration,
+                    owner,
+                },
                 end,
                 run_model,
             ),

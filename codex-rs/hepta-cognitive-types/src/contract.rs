@@ -172,11 +172,6 @@ impl<T: ValidateContractV1> Validated<T> {
 
 impl<T> Validated<T> {
     #[must_use]
-    pub fn as_ref(&self) -> &T {
-        &self.0
-    }
-
-    #[must_use]
     pub fn into_inner(self) -> T {
         self.0
     }

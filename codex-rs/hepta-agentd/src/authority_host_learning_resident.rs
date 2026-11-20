@@ -38,6 +38,7 @@ mod transport;
 #[path = "authority_host_learning_resident_wire.rs"]
 mod wire;
 pub use transport::AgentdRootResidentLearningClientV3;
+pub use transport::RootResidentLearningConnectionV3;
 pub use transport::RootResidentLearningObservationV3;
 
 use authority::ResidentAuthorizationV3;
@@ -71,7 +72,10 @@ impl HostAuthorityService {
         profile: RootResidentLearningProfileV3,
         authorization: RootResidentLearningReadbackAuthorizationV3,
     ) -> io::Result<RootResidentLearningRegistrationV3> {
-        self.resident_learning_v3(profile, ResidentAuthorizationV3::Readback(authorization))
+        self.resident_learning_v3(
+            profile,
+            ResidentAuthorizationV3::Readback(Box::new(authorization)),
+        )
     }
 
     fn resident_learning_v3(
@@ -129,7 +133,7 @@ impl RootResidentLearningRegistrationV3 {
             issuer,
             registry,
             profile,
-            ResidentAuthorizationV3::Readback(authorization),
+            ResidentAuthorizationV3::Readback(Box::new(authorization)),
         )
     }
 
@@ -153,7 +157,7 @@ impl RootResidentLearningRegistrationV3 {
             ));
         };
         Ok(RootResidentLearningRegistrationV3 {
-            owner: Arc::new(ResidentRegisteredStateV3::new(authority, checkpoint)),
+            owner: Arc::new(ResidentRegisteredStateV3::new(authority, *checkpoint)),
         })
     }
 }
@@ -172,7 +176,7 @@ impl RootResidentLearningRegistrationV3 {
     {
         runtime::compose(
             self.owner,
-            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),
+            stages::ResidentOriginalStageOwnersV3::NoUpdate(Box::new(stages)),
             verifier,
             capacity,
         )
@@ -194,7 +198,7 @@ impl RootResidentLearningRegistrationV3 {
     {
         runtime::compose(
             self.owner,
-            stages::ResidentOriginalStageOwnersV3::Candidate(stages),
+            stages::ResidentOriginalStageOwnersV3::Candidate(Box::new(stages)),
             verifier,
             capacity,
         )

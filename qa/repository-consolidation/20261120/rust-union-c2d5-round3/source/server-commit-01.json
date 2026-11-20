@@ -1,0 +1,47 @@
+{
+  "step": 1,
+  "local_commit": "c1f5b72fe0fd6ecd3052e8991d3daa41a000e138",
+  "server_commit": "752aeac9343e6c8e365188fd8240aecbc320d088",
+  "tree": "4e939824a9c4888650bfb0cb13623636d69be1f1",
+  "ordered_parents": [
+    "2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+  ],
+  "created": {
+    "sha": "752aeac9343e6c8e365188fd8240aecbc320d088"
+  },
+  "official_get": {
+    "sha": "752aeac9343e6c8e365188fd8240aecbc320d088",
+    "node_id": "C_kwDOTrgxoNoAKDc1MmFlYWM5MzQzZTZjOGUzNjUxODhmZDgyNDBhZWNiYzMyMGQwODg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/752aeac9343e6c8e365188fd8240aecbc320d088",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/752aeac9343e6c8e365188fd8240aecbc320d088",
+    "author": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:42Z"
+    },
+    "committer": {
+      "name": "Qian QI",
+      "email": "102159240+ProfHepta@users.noreply.github.com",
+      "date": "2026-11-20T04:57:42Z"
+    },
+    "tree": {
+      "sha": "4e939824a9c4888650bfb0cb13623636d69be1f1",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/4e939824a9c4888650bfb0cb13623636d69be1f1"
+    },
+    "message": "style: apply exact five-file formatter output from CI\n\nApply the five afterimages produced by the existing formatter jobs for\npublished safety head2b538380. Preserve the complete timestamp test union,\nQ24 assertions and app-server behavior. These bytes are independently\nbound to the original CI artifacts and the reviewed before images.\n\nNo formatter or native Rust test was run locally. New-head qualification\nremains pending the original required CI gates.",
+    "parents": [
+      {
+        "sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/2b5383809fb9c2c81b8a2e109a8e76409bce23bd"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  }
+}

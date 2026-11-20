@@ -1,0 +1,121 @@
+{
+  "status": "STATIC_REVIEW_ACCEPTED_NATIVE_PENDING",
+  "base_head": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "base_tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "patch_sha256": "7e9c2b30f2a66fb38310eb6dc044227122f30047d0a37fa21081b1d77c4389d1",
+  "changed_files": [
+    {
+      "path": "defs.bzl",
+      "before_blob": "51274a0b4d6aec875723993e2b16cb94ed4114a7",
+      "after_blob": "9894b3dd30ee58b734120db72103138f4f8d80c1",
+      "before_sha256": "0711e0b7365b2e010a0a6eafd7c027a77d555501fc2d9d72af47665367ce3319",
+      "after_sha256": "493f4a32487ec80e0dba03496a2be7449653844545d9735bad67073f646a3508",
+      "after_bytes": 39757
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "before_blob": "2e206a84941f699d1faf98518a6f31c675115cb0",
+      "after_blob": "780b341a7792f68a2b13f3015622fa1e41b4472f",
+      "before_sha256": "608e35e74d5ed879bb76813f93e6fc585f854e53afc86c334722788e1969cffd",
+      "after_sha256": "00d11a3c37687e7090dcc8c8d8bdb7008cc077a2d61a6e52c575ef1bfcd4bb9a",
+      "after_bytes": 2410
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "before_blob": "83e289ed8012721dbdebc3e9f8a57ab33f0e81e2",
+      "after_blob": "b49f26518847103ca41b66c9fbb4ee1ee03b395c",
+      "before_sha256": "a6f77739c07a646121d6c07c982973d98bfbcbc7a8ffd2779e5c30a8d40d39f1",
+      "after_sha256": "40e47be0dcc25a54eb7a150f2b26fb92382508b864b6e8d00c3d386670cdda16",
+      "after_bytes": 15174
+    }
+  ],
+  "actual_failure_evidence": "../../ci-repair/ci-monitor/new73a96f/compiler-error-inventory-snapshot05.json",
+  "actual_failure_jobs": [
+    136061097396,
+    136061097210
+  ],
+  "root_cause": "Bazel glob creates three Cargo opt-in generation harnesses but selects worker libraries without composition/legacy feature cfgs; the original per-test API also bypassed the worker harness own-library edge.",
+  "repair": "One dedicated testonly worker library; three exact harness maps; normalized own-library override in the existing per-test API.",
+  "build_macro_preservation": {
+    "codex-rs/hepta-agentd": {
+      "unit_replacement_count": 8,
+      "unit_replacement_map_preserved": true,
+      "production_features": [
+        "production-cognitive-write"
+      ],
+      "existing_unit_extra_features": [],
+      "all_other_macro_arguments_unchanged": true
+    },
+    "codex-rs/hepta-infer-worker-host": {
+      "unit_replacement_count": 3,
+      "unit_replacement_map_preserved": true,
+      "production_features": [],
+      "existing_unit_extra_features": [],
+      "all_other_macro_arguments_unchanged": true
+    }
+  },
+  "generic_macro_signature_preserved": true,
+  "generic_original_rule_calls": {
+    "lib_rule": {
+      "count": 2,
+      "all_original_call_arguments_unchanged": true
+    },
+    "rust_binary": {
+      "count": 1,
+      "all_original_call_arguments_unchanged": true
+    },
+    "rust_test": {
+      "count": 5,
+      "all_original_call_arguments_unchanged": true
+    },
+    "cargo_build_script": {
+      "count": 1,
+      "all_original_call_arguments_unchanged": true
+    },
+    "workspace_root_test": {
+      "count": 5,
+      "all_original_call_arguments_unchanged": true
+    },
+    "wine_test_runtime": {
+      "count": 1,
+      "all_original_call_arguments_unchanged": true
+    }
+  },
+  "harnesses": {
+    "audited": 26,
+    "binding_changes": 3,
+    "unchanged_bindings": 23,
+    "rust_source_changes": 0,
+    "new_skips": 0,
+    "new_retries": 0,
+    "shard_changes": 0
+  },
+  "qualification_library": {
+    "label": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+    "testonly": true,
+    "features": [
+      "composition-model-driver-qualification",
+      "legacy-local-model-boundary"
+    ],
+    "visibility": [
+      "//codex-rs/hepta-agentd:__pkg__"
+    ],
+    "same_package_access": true,
+    "infer_core_variant": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
+    "experimental_local_model_enabled": false
+  },
+  "public_type_review": "Newly enabled generation/model modules exchange infer-core and hepta-types values. Worker library and affected harnesses use the same infer-core test-lib. Existing app-server-client/codex-adapter test variants and aliases are retained. No new legacy module public dependency on Agentd/Neuron variant types was found.",
+  "git_apply_check": {
+    "status": "PASS",
+    "whitespace": "error-all",
+    "stdout": "",
+    "stderr": ""
+  },
+  "syntax_check": "Python-compatible AST parsing only; not a Starlark evaluator or Bazel analysis.",
+  "bazel_cquery": "NOT_RUN: no local bazel/bazelisk; required on the actual configured candidate.",
+  "native_build_or_test": "NOT_RUN",
+  "rust_format": "NOT_APPLICABLE: no Rust file modified",
+  "buildifier": "NOT_RUN: no local executable",
+  "remaining_gate": "Run actual configured Bazel cquery plus the same required release/Clippy targets; source inspection does not prove newly enabled legacy modules compile on every platform.",
+  "remote_changes": false
+}

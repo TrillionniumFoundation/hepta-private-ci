@@ -1,0 +1,872 @@
+{
+  "artifacts": [
+    {
+      "id": "captured-refs",
+      "parts": [
+        {
+          "bytes": 201206,
+          "git_blob_sha1": "36f76fd35f923286cc6cd11246689a5cde112140",
+          "independently_decompressible": true,
+          "path": "parts/captured-refs.part-001.gz",
+          "raw_bytes": 524224,
+          "raw_end_offset": 524224,
+          "raw_line_count": 5494,
+          "raw_line_start": 0,
+          "raw_sha256": "1a43773a2e171ef038998463b5b4ead38776e45c0f57b9dc3839b455b542b808",
+          "raw_start_offset": 0,
+          "role": "exact captured refs; identical before/fresh snapshots are aliases",
+          "sha256": "46e87755072af8dbd0b0c8738c646c19ac4afadcf9c10ce7f2af7840f786ca9c"
+        },
+        {
+          "bytes": 80288,
+          "git_blob_sha1": "dcc51a27d0006b5558d413e6ccf5a2d3a7f2105f",
+          "independently_decompressible": true,
+          "path": "parts/captured-refs.part-002.gz",
+          "raw_bytes": 208711,
+          "raw_end_offset": 732935,
+          "raw_line_count": 2162,
+          "raw_line_start": 5494,
+          "raw_sha256": "59b479ccadcf627c38a65405c15a15760a904cc0215ac23530a0b64deb1e6fa9",
+          "raw_start_offset": 524224,
+          "role": "exact captured refs; identical before/fresh snapshots are aliases",
+          "sha256": "3dfa8f23cd9ec54b58a2981ae50f23f33132030a8bc4c9243f96578775711fba"
+        }
+      ],
+      "raw_bytes": 732935,
+      "raw_git_blob_sha1": "64c126087009276afc5804cfd0a92e07e45d10ef",
+      "raw_line_count": 7656,
+      "raw_sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 732935,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/captured-refs.json",
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/refs-before-fetch.json",
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/fresh-remote-refs.json"
+      ]
+    },
+    {
+      "id": "complete-parent-graph",
+      "parts": [
+        {
+          "bytes": 176829,
+          "git_blob_sha1": "06ed253d0bc8ae7befa8efbdd3724b3fa2c1f22a",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-001.gz",
+          "raw_bytes": 524267,
+          "raw_end_offset": 524267,
+          "raw_line_count": 6394,
+          "raw_line_start": 0,
+          "raw_sha256": "62f2e6fc0b22fbea2faffe90ee5bafada9150f5795015c7b3ea65d2e241b897f",
+          "raw_start_offset": 0,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "3988eabf09165704fedd294939eba4eee4a0f54d580c2fa2b5140bc353653d71"
+        },
+        {
+          "bytes": 176646,
+          "git_blob_sha1": "986dcab91b3932e763f57df926330019c30a96aa",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-002.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 1048493,
+          "raw_line_count": 6381,
+          "raw_line_start": 6394,
+          "raw_sha256": "647e417c4ad40baa2e5882cebbaf3478fc076fc2d2575cfd1e206ee2958d76e6",
+          "raw_start_offset": 524267,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "8190871d7babbe040d1b938af458e46e292ed9e3f419f9ed4e0a5a34dd7ead6d"
+        },
+        {
+          "bytes": 164050,
+          "git_blob_sha1": "d164a10a11dad6038956fffc4d6ba892d0abe2fb",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-003.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 1572719,
+          "raw_line_count": 5378,
+          "raw_line_start": 12775,
+          "raw_sha256": "71eb7da6d0dfefaf67987a0de45af429b5a40ed5ae43152521477613ac4c999b",
+          "raw_start_offset": 1048493,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "dc6fbb8719e504ff7715714c8c9fcb0da27a118f69ae8e03841cccced2e142de"
+        },
+        {
+          "bytes": 176944,
+          "git_blob_sha1": "f006126e059e2e9e98e7aab45d6036f47e4050ac",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-004.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 2096945,
+          "raw_line_count": 6320,
+          "raw_line_start": 18153,
+          "raw_sha256": "eee5b354f4bee245fa99dd2c4ad1b87c217ee5400dfa424c2b0378f4228612de",
+          "raw_start_offset": 1572719,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "3b804608a196fada22d8e537e77c34115211dd992c2ee17b1e4632dc40a2a761"
+        },
+        {
+          "bytes": 178060,
+          "git_blob_sha1": "92248d246a317dc073739becc6b3fcb096856b60",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-005.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 2621171,
+          "raw_line_count": 6316,
+          "raw_line_start": 24473,
+          "raw_sha256": "4cb4bc471864beb61ec3368a66292c76174bd61385714d3532fabd127dc8bbda",
+          "raw_start_offset": 2096945,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "97414940d439b7dd77f837b89e3baaaf560ed03797b5aae957a3c7a4a5f99896"
+        },
+        {
+          "bytes": 177563,
+          "git_blob_sha1": "e4138b985aea408b89a74dc845ef85723833c7f3",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-006.gz",
+          "raw_bytes": 524267,
+          "raw_end_offset": 3145438,
+          "raw_line_count": 6301,
+          "raw_line_start": 30789,
+          "raw_sha256": "5600dbd08ad979d98a3b8bcca8aed60ec0e8ccdf078e3a01b9485391a40d7387",
+          "raw_start_offset": 2621171,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "a1a507f9f7e005b432a48d9a32bb4d5155a376791bf86c57709718d9e2502e40"
+        },
+        {
+          "bytes": 178445,
+          "git_blob_sha1": "771a49ce9eba5c5f94936cf529eb0aa8c24490b0",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-007.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 3669664,
+          "raw_line_count": 6367,
+          "raw_line_start": 37090,
+          "raw_sha256": "d42d745e5a520fd4aab36a6ea2d4a93c7e59c9c2a55a898bc4130f2ec9330b09",
+          "raw_start_offset": 3145438,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "379612634673a96736ccb3a1e59631ae3bf0aea4db74763005b378cb36193f1a"
+        },
+        {
+          "bytes": 177109,
+          "git_blob_sha1": "c4f485941bedd5af312b48734547f513f078bc45",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-008.gz",
+          "raw_bytes": 524267,
+          "raw_end_offset": 4193931,
+          "raw_line_count": 6339,
+          "raw_line_start": 43457,
+          "raw_sha256": "59b1da6b2d26c40ca15cb026d67ffeb111f1fd540a74b88c0e2d0b72b5c4b628",
+          "raw_start_offset": 3669664,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "e3bc450baf084011f3ce3da609d32ea0eea7d8c2a70a9e86584ca077e3bdaac0"
+        },
+        {
+          "bytes": 176470,
+          "git_blob_sha1": "d814e0dc89c4c419d8164652580172767f784a3b",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-009.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 4718157,
+          "raw_line_count": 6259,
+          "raw_line_start": 49796,
+          "raw_sha256": "3ebf85fc168de53c66f274d51ba72c67e65f05d10487882f06d69a0fc5969bbe",
+          "raw_start_offset": 4193931,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "2e395fdcbf4cd73eea620d9192a22b89e50c40269331b64dc8d95fa26fb5f670"
+        },
+        {
+          "bytes": 176228,
+          "git_blob_sha1": "9b801ffe3e8f6c3f095daf0fab11e4a3dfe66046",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-010.gz",
+          "raw_bytes": 524226,
+          "raw_end_offset": 5242383,
+          "raw_line_count": 6269,
+          "raw_line_start": 56055,
+          "raw_sha256": "a1a25c58fb22f2229238af63a74319194c9a7b1ec1b004efce3202272e99e54a",
+          "raw_start_offset": 4718157,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "4b4165a485a68eeff2f3b0e42b6872e1ebcc11bf3ca7d7e04d6b2774f79eecf6"
+        },
+        {
+          "bytes": 174514,
+          "git_blob_sha1": "713ded4b39d0ff4ee4955fa313afbca103ba60c6",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-011.gz",
+          "raw_bytes": 524267,
+          "raw_end_offset": 5766650,
+          "raw_line_count": 6231,
+          "raw_line_start": 62324,
+          "raw_sha256": "c282a8e1c846f75212d0de2ab715d9589e1a793db2605577c6eba7e61ae8606f",
+          "raw_start_offset": 5242383,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "2b0a0c465675a03d0ccf236335563b6dcd2312b3148fd7fa313cdb54d4e84586"
+        },
+        {
+          "bytes": 174295,
+          "git_blob_sha1": "ea3eadf5469ac90492c113b04aa1583659da3d34",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-012.gz",
+          "raw_bytes": 524267,
+          "raw_end_offset": 6290917,
+          "raw_line_count": 6144,
+          "raw_line_start": 68555,
+          "raw_sha256": "ab13555122fdd4199f2e4b491ddb4ce0ce5472625381063bc2df2b54d52c4f03",
+          "raw_start_offset": 5766650,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "18bf92e0b3ac832631215dd597d2fcba28ae8d60f9d0bd127b5b2bfe3aaf954e"
+        },
+        {
+          "bytes": 122301,
+          "git_blob_sha1": "f6fd4c65cdd008b03fdd257a6a53aa9546b9b6d3",
+          "independently_decompressible": true,
+          "path": "parts/complete-parent-graph.part-013.gz",
+          "raw_bytes": 359324,
+          "raw_end_offset": 6650241,
+          "raw_line_count": 4031,
+          "raw_line_start": 74699,
+          "raw_sha256": "9e80e0329c57cfb0a7b834bf4e6b393e810bb6359fa7c8c48f307efcb5ccdcdf",
+          "raw_start_offset": 6290917,
+          "role": "exact complete parent graph, split only on line boundaries",
+          "sha256": "a172f472ee1c4235c626983d7a844317b5abb15b6bcf3014a17180ac4688765c"
+        }
+      ],
+      "raw_bytes": 6650241,
+      "raw_git_blob_sha1": "b40876b3e091a69b81fb14a48dbbef89e81af296",
+      "raw_line_count": 78730,
+      "raw_sha256": "f8d88bda78f351aa29d41b0f0cb3e77b1de23c23b9e9e948d0c175099817df2e",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 6650241,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "f8d88bda78f351aa29d41b0f0cb3e77b1de23c23b9e9e948d0c175099817df2e",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/complete-parent-graph.tsv"
+      ]
+    },
+    {
+      "id": "protected-classification",
+      "parts": [
+        {
+          "bytes": 4458,
+          "git_blob_sha1": "24bd4e44c8718334da21d83f448eef4732a62c94",
+          "independently_decompressible": true,
+          "path": "parts/protected-classification.part-001.gz",
+          "raw_bytes": 45468,
+          "raw_end_offset": 45468,
+          "raw_line_count": 1543,
+          "raw_line_start": 0,
+          "raw_sha256": "94b60690b7f97eeb7d52d9b4837639bcb73b06d25c2fe46a4b2a8fb9ab0c14f2",
+          "raw_start_offset": 0,
+          "role": "exact native classification output",
+          "sha256": "0fe469b092c3eef6b75cdfce5e1a44d01b7dbf6305219b2a6f0dc7dcc56812ee"
+        }
+      ],
+      "raw_bytes": 45468,
+      "raw_git_blob_sha1": "87650a415d3240a9cd6c794921fcf1de501c7cd9",
+      "raw_line_count": 1543,
+      "raw_sha256": "94b60690b7f97eeb7d52d9b4837639bcb73b06d25c2fe46a4b2a8fb9ab0c14f2",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 45468,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "94b60690b7f97eeb7d52d9b4837639bcb73b06d25c2fe46a4b2a8fb9ab0c14f2",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/protected-classification.json"
+      ]
+    },
+    {
+      "id": "input-protection-manifest",
+      "parts": [
+        {
+          "bytes": 25766,
+          "git_blob_sha1": "e73d288a41a24b1b927c9135e89ea51f387ae51c",
+          "independently_decompressible": true,
+          "path": "parts/input-protection-manifest.part-001.gz",
+          "raw_bytes": 71298,
+          "raw_end_offset": 71298,
+          "raw_line_count": 1002,
+          "raw_line_start": 0,
+          "raw_sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+          "raw_start_offset": 0,
+          "role": "exact reviewed protection input",
+          "sha256": "ab1883d4bdd2423002bce054f24f90f6b50d30b5351517b79faaf670eaff72b3"
+        }
+      ],
+      "raw_bytes": 71298,
+      "raw_git_blob_sha1": "76a6a14151db8a2cc37b10f31985c0d2782a850d",
+      "raw_line_count": 1002,
+      "raw_sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 71298,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/protected-branches.json"
+      ]
+    },
+    {
+      "id": "observed-protection",
+      "parts": [
+        {
+          "bytes": 25771,
+          "git_blob_sha1": "360b98cd15b9743fefee6b411737e5e1f50a1e60",
+          "independently_decompressible": true,
+          "path": "parts/observed-protection.part-001.gz",
+          "raw_bytes": 71298,
+          "raw_end_offset": 71298,
+          "raw_line_count": 1002,
+          "raw_line_start": 0,
+          "raw_sha256": "e1814cd6d4f8048b842d6a4888e4a112ef4b160cea3e92a381c961cc84225cb0",
+          "raw_start_offset": 0,
+          "role": "exact frozen protection output",
+          "sha256": "193b40195f04e1a95ae1569f3f4964c9441811680f7cbea8ccab5602cdb3113a"
+        }
+      ],
+      "raw_bytes": 71298,
+      "raw_git_blob_sha1": "f2809c9256630d2e3cd9b88780aee3d9899b084f",
+      "raw_line_count": 1002,
+      "raw_sha256": "e1814cd6d4f8048b842d6a4888e4a112ef4b160cea3e92a381c961cc84225cb0",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 71298,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "e1814cd6d4f8048b842d6a4888e4a112ef4b160cea3e92a381c961cc84225cb0",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/observed-protection.json"
+      ]
+    },
+    {
+      "id": "coverage-membership",
+      "parts": [
+        {
+          "bytes": 47588,
+          "git_blob_sha1": "af6fae941c6d3e94501abba5d671fd7609fbce86",
+          "independently_decompressible": true,
+          "path": "parts/coverage-membership.part-001.gz",
+          "raw_bytes": 126604,
+          "raw_end_offset": 126604,
+          "raw_line_count": 1,
+          "raw_line_start": 0,
+          "raw_sha256": "5c493afdf15c7784c8c05a0ee63ef09f63dd01cdd78dbeaf1975322bfb1ef1b7",
+          "raw_start_offset": 0,
+          "role": "lossless compact representation of original coverage maps; no classification rerun",
+          "sha256": "a70fcea4f6ee22478edcb4755f4aeb4896a4268bb42c7f71549e44503df7aa47"
+        }
+      ],
+      "raw_bytes": 126604,
+      "raw_git_blob_sha1": "2528442d099a4dd52895edf2e0fcd20c32d09c58",
+      "raw_line_count": 1,
+      "raw_sha256": "5c493afdf15c7784c8c05a0ee63ef09f63dd01cdd78dbeaf1975322bfb1ef1b7",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 126604,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "5c493afdf15c7784c8c05a0ee63ef09f63dd01cdd78dbeaf1975322bfb1ef1b7",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": []
+    },
+    {
+      "id": "git-fetch-help",
+      "parts": [
+        {
+          "bytes": 1110,
+          "git_blob_sha1": "5e50b7919cfc5fec83319874ae12d2a132e60853",
+          "independently_decompressible": true,
+          "path": "native/git-fetch-help.txt.gz",
+          "raw_bytes": 3097,
+          "raw_end_offset": 3097,
+          "raw_line_count": 58,
+          "raw_line_start": 0,
+          "raw_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+          "raw_start_offset": 0,
+          "role": "exact original Git help, including its final blank line",
+          "sha256": "fc1a551ae5f2f3db7ecd0be6005ccd864b317d06bb208e7cb5b09f6928da9ff9"
+        }
+      ],
+      "raw_bytes": 3097,
+      "raw_git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "raw_line_count": 58,
+      "raw_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+      "roundtrip_proof": {
+        "gzip_recompression_byte_equal": true,
+        "independent_parts_all_decompressed": true,
+        "joined_bytes": 3097,
+        "joined_bytes_equal_original": true,
+        "joined_sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8",
+        "raw_offsets_contiguous": true
+      },
+      "source_paths": [
+        "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/git-fetch-help.txt"
+      ]
+    }
+  ],
+  "coverage": {
+    "membership_artifact": "coverage-membership",
+    "original_source_maps": 12,
+    "roundtrip_all_original_maps_byte_equal": true,
+    "summary": "coverage-summary.json",
+    "target_aliases": [
+      {
+        "all_counts_and_map_hashes_equal": true,
+        "canonical_target": "integration_0cee",
+        "target": "live_integration"
+      }
+    ],
+    "unique_maps": 8
+  },
+  "exported_files": [
+    {
+      "bytes": 3243,
+      "git_blob_sha1": "1a621fccf9c2038b25fa32adb75195c202847fb8",
+      "path": "README.md",
+      "role": "reconstruction and scope instructions",
+      "sha256": "94f32f196858f37d0c59961343c1efdad87dbb0a2187bf2cd7a3a789cac387e8"
+    },
+    {
+      "bytes": 3356,
+      "git_blob_sha1": "4166bc2f89b4fffcb8c849ed7a6428794924b749",
+      "path": "coverage-summary.json",
+      "role": "compact coverage, pending and frontier summary with original-map hashes",
+      "sha256": "9f140189876c60902b257605352ce7a1a13c65409b7611a2eb1d615c74405a99"
+    },
+    {
+      "bytes": 8468,
+      "git_blob_sha1": "4e73b165baaa680dc2d8f61e7d484f66337150e0",
+      "path": "full-history-result.json",
+      "role": "exact native audit result",
+      "sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca"
+    },
+    {
+      "bytes": 17277,
+      "git_blob_sha1": "5c7e497a39baf61f6810802d8ba5ddef0f473abb",
+      "path": "native/full-history-audit.py",
+      "role": "exact executed native audit source; archived, not executed by export",
+      "sha256": "cc4f1000269c44238fc94dd911e94121508b242a23b29e56c73cc4442b506034"
+    },
+    {
+      "bytes": 544,
+      "git_blob_sha1": "88f3622ab4ddf31f89e612529daa2d12c90e3dec",
+      "path": "native/full-history-process-request.json",
+      "role": "exact recorded native process request",
+      "sha256": "9cff4a397bd233d63bde46c5b32fe0ec0d85cf73a4dd724cfe1b2203b5aa4b90"
+    },
+    {
+      "bytes": 1110,
+      "git_blob_sha1": "5e50b7919cfc5fec83319874ae12d2a132e60853",
+      "path": "native/git-fetch-help.txt.gz",
+      "role": "deterministic gzip storage of exact Git filtering capability help",
+      "sha256": "fc1a551ae5f2f3db7ecd0be6005ccd864b317d06bb208e7cb5b09f6928da9ff9"
+    },
+    {
+      "bytes": 19209,
+      "git_blob_sha1": "9e6588e5180ab2f3650f5a52c44334400348cbde",
+      "path": "native/hepta_branch_consolidation.py",
+      "role": "exact reviewed protection implementation; archived only",
+      "sha256": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7"
+    },
+    {
+      "bytes": 3206,
+      "git_blob_sha1": "036e705a5784ce4dbd656e68db16f8f7f3bccbdf",
+      "path": "native/preflight-v2-process-request.json",
+      "role": "exact submitted successful preflight request values",
+      "sha256": "bc407423800d6048973af492df24b879c6d7558f27feae2e6ebd792b6f397613"
+    },
+    {
+      "bytes": 1356,
+      "git_blob_sha1": "d144fc3778b61fbf8f89ef0f6917fa504bebad80",
+      "path": "native/preflight.json",
+      "role": "exact successful native preflight result",
+      "sha256": "9b53254d77a3d1f0662e7fedf75056e6fd6d685a743725b84605d51e99deebbe"
+    },
+    {
+      "bytes": 2710,
+      "git_blob_sha1": "07357768c5e954fb6def601cddf3296af2292c3c",
+      "path": "native/runtime-provenance.json",
+      "role": "native launch and terminal receipt plus preserved prior failure identity",
+      "sha256": "0c4f01e5c313a14d323084550b56434dac3edfd28f17fcbd6199b0f49154cd22"
+    },
+    {
+      "bytes": 201206,
+      "git_blob_sha1": "36f76fd35f923286cc6cd11246689a5cde112140",
+      "path": "parts/captured-refs.part-001.gz",
+      "role": "exact captured refs; identical before/fresh snapshots are aliases",
+      "sha256": "46e87755072af8dbd0b0c8738c646c19ac4afadcf9c10ce7f2af7840f786ca9c"
+    },
+    {
+      "bytes": 80288,
+      "git_blob_sha1": "dcc51a27d0006b5558d413e6ccf5a2d3a7f2105f",
+      "path": "parts/captured-refs.part-002.gz",
+      "role": "exact captured refs; identical before/fresh snapshots are aliases",
+      "sha256": "3dfa8f23cd9ec54b58a2981ae50f23f33132030a8bc4c9243f96578775711fba"
+    },
+    {
+      "bytes": 176829,
+      "git_blob_sha1": "06ed253d0bc8ae7befa8efbdd3724b3fa2c1f22a",
+      "path": "parts/complete-parent-graph.part-001.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "3988eabf09165704fedd294939eba4eee4a0f54d580c2fa2b5140bc353653d71"
+    },
+    {
+      "bytes": 176646,
+      "git_blob_sha1": "986dcab91b3932e763f57df926330019c30a96aa",
+      "path": "parts/complete-parent-graph.part-002.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "8190871d7babbe040d1b938af458e46e292ed9e3f419f9ed4e0a5a34dd7ead6d"
+    },
+    {
+      "bytes": 164050,
+      "git_blob_sha1": "d164a10a11dad6038956fffc4d6ba892d0abe2fb",
+      "path": "parts/complete-parent-graph.part-003.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "dc6fbb8719e504ff7715714c8c9fcb0da27a118f69ae8e03841cccced2e142de"
+    },
+    {
+      "bytes": 176944,
+      "git_blob_sha1": "f006126e059e2e9e98e7aab45d6036f47e4050ac",
+      "path": "parts/complete-parent-graph.part-004.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "3b804608a196fada22d8e537e77c34115211dd992c2ee17b1e4632dc40a2a761"
+    },
+    {
+      "bytes": 178060,
+      "git_blob_sha1": "92248d246a317dc073739becc6b3fcb096856b60",
+      "path": "parts/complete-parent-graph.part-005.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "97414940d439b7dd77f837b89e3baaaf560ed03797b5aae957a3c7a4a5f99896"
+    },
+    {
+      "bytes": 177563,
+      "git_blob_sha1": "e4138b985aea408b89a74dc845ef85723833c7f3",
+      "path": "parts/complete-parent-graph.part-006.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "a1a507f9f7e005b432a48d9a32bb4d5155a376791bf86c57709718d9e2502e40"
+    },
+    {
+      "bytes": 178445,
+      "git_blob_sha1": "771a49ce9eba5c5f94936cf529eb0aa8c24490b0",
+      "path": "parts/complete-parent-graph.part-007.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "379612634673a96736ccb3a1e59631ae3bf0aea4db74763005b378cb36193f1a"
+    },
+    {
+      "bytes": 177109,
+      "git_blob_sha1": "c4f485941bedd5af312b48734547f513f078bc45",
+      "path": "parts/complete-parent-graph.part-008.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "e3bc450baf084011f3ce3da609d32ea0eea7d8c2a70a9e86584ca077e3bdaac0"
+    },
+    {
+      "bytes": 176470,
+      "git_blob_sha1": "d814e0dc89c4c419d8164652580172767f784a3b",
+      "path": "parts/complete-parent-graph.part-009.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "2e395fdcbf4cd73eea620d9192a22b89e50c40269331b64dc8d95fa26fb5f670"
+    },
+    {
+      "bytes": 176228,
+      "git_blob_sha1": "9b801ffe3e8f6c3f095daf0fab11e4a3dfe66046",
+      "path": "parts/complete-parent-graph.part-010.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "4b4165a485a68eeff2f3b0e42b6872e1ebcc11bf3ca7d7e04d6b2774f79eecf6"
+    },
+    {
+      "bytes": 174514,
+      "git_blob_sha1": "713ded4b39d0ff4ee4955fa313afbca103ba60c6",
+      "path": "parts/complete-parent-graph.part-011.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "2b0a0c465675a03d0ccf236335563b6dcd2312b3148fd7fa313cdb54d4e84586"
+    },
+    {
+      "bytes": 174295,
+      "git_blob_sha1": "ea3eadf5469ac90492c113b04aa1583659da3d34",
+      "path": "parts/complete-parent-graph.part-012.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "18bf92e0b3ac832631215dd597d2fcba28ae8d60f9d0bd127b5b2bfe3aaf954e"
+    },
+    {
+      "bytes": 122301,
+      "git_blob_sha1": "f6fd4c65cdd008b03fdd257a6a53aa9546b9b6d3",
+      "path": "parts/complete-parent-graph.part-013.gz",
+      "role": "exact complete parent graph, split only on line boundaries",
+      "sha256": "a172f472ee1c4235c626983d7a844317b5abb15b6bcf3014a17180ac4688765c"
+    },
+    {
+      "bytes": 47588,
+      "git_blob_sha1": "af6fae941c6d3e94501abba5d671fd7609fbce86",
+      "path": "parts/coverage-membership.part-001.gz",
+      "role": "lossless compact representation of original coverage maps; no classification rerun",
+      "sha256": "a70fcea4f6ee22478edcb4755f4aeb4896a4268bb42c7f71549e44503df7aa47"
+    },
+    {
+      "bytes": 25766,
+      "git_blob_sha1": "e73d288a41a24b1b927c9135e89ea51f387ae51c",
+      "path": "parts/input-protection-manifest.part-001.gz",
+      "role": "exact reviewed protection input",
+      "sha256": "ab1883d4bdd2423002bce054f24f90f6b50d30b5351517b79faaf670eaff72b3"
+    },
+    {
+      "bytes": 25771,
+      "git_blob_sha1": "360b98cd15b9743fefee6b411737e5e1f50a1e60",
+      "path": "parts/observed-protection.part-001.gz",
+      "role": "exact frozen protection output",
+      "sha256": "193b40195f04e1a95ae1569f3f4964c9441811680f7cbea8ccab5602cdb3113a"
+    },
+    {
+      "bytes": 4458,
+      "git_blob_sha1": "24bd4e44c8718334da21d83f448eef4732a62c94",
+      "path": "parts/protected-classification.part-001.gz",
+      "role": "exact native classification output",
+      "sha256": "0fe469b092c3eef6b75cdfce5e1a44d01b7dbf6305219b2a6f0dc7dcc56812ee"
+    },
+    {
+      "bytes": 30697,
+      "git_blob_sha1": "d594156ab6f789b3e3628ebe64b3afaac5bdb46f",
+      "path": "prepare-export.py",
+      "role": "exact deterministic export generator, including provenance constants",
+      "sha256": "52b6e126e1a28efe609da9096d4187c009aca13b2130163845ad8400c6031b54"
+    },
+    {
+      "bytes": 4201,
+      "git_blob_sha1": "1e30983c33d693d6562a30f793ec0b1406e0cc38",
+      "path": "verify_export.py",
+      "role": "offline file, independent gzip and original-map roundtrip verifier",
+      "sha256": "0dc3517aa692cab047887029708a4706c9df1ecf0c7f9f6e1b3c463512b2b72b"
+    }
+  ],
+  "exported_files_excluding_manifest_bytes": 2709908,
+  "gzip": {
+    "all_streams_independently_decompressible": true,
+    "compression_level": 9,
+    "filename": "",
+    "initial_raw_part_bytes": 524288,
+    "maximum_part_bytes": 262144,
+    "mtime": 0,
+    "python_version": "3.14.4",
+    "split_boundaries": "complete lines; raw byte offsets are zero-based and end-exclusive",
+    "zlib_runtime_version": "1.3.1"
+  },
+  "original_inputs_verified_unchanged": [
+    {
+      "bytes": 19209,
+      "git_blob_sha1": "9e6588e5180ab2f3650f5a52c44334400348cbde",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/hepta_branch_consolidation.py",
+      "sha256": "d5d4047be9282be9760af63a9a0aa1e3e33e4cd85775025fbdf18b91e0aad5f7"
+    },
+    {
+      "bytes": 71298,
+      "git_blob_sha1": "76a6a14151db8a2cc37b10f31985c0d2782a850d",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/protected-branches.json",
+      "sha256": "262d189d478d0a072e5b2c6ae278b2fe084ca0cedba92df7960cc0d05546791f"
+    },
+    {
+      "bytes": 732935,
+      "git_blob_sha1": "64c126087009276afc5804cfd0a92e07e45d10ef",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/captured-refs.json",
+      "sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6"
+    },
+    {
+      "bytes": 6650241,
+      "git_blob_sha1": "b40876b3e091a69b81fb14a48dbbef89e81af296",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/complete-parent-graph.tsv",
+      "sha256": "f8d88bda78f351aa29d41b0f0cb3e77b1de23c23b9e9e948d0c175099817df2e"
+    },
+    {
+      "bytes": 732935,
+      "git_blob_sha1": "64c126087009276afc5804cfd0a92e07e45d10ef",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/fresh-remote-refs.json",
+      "sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6"
+    },
+    {
+      "bytes": 17277,
+      "git_blob_sha1": "5c7e497a39baf61f6810802d8ba5ddef0f473abb",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/full-history-audit.py",
+      "sha256": "cc4f1000269c44238fc94dd911e94121508b242a23b29e56c73cc4442b506034"
+    },
+    {
+      "bytes": 544,
+      "git_blob_sha1": "88f3622ab4ddf31f89e612529daa2d12c90e3dec",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/full-history-process-request.json",
+      "sha256": "9cff4a397bd233d63bde46c5b32fe0ec0d85cf73a4dd724cfe1b2203b5aa4b90"
+    },
+    {
+      "bytes": 8468,
+      "git_blob_sha1": "4e73b165baaa680dc2d8f61e7d484f66337150e0",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/full-history-result.json",
+      "sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca"
+    },
+    {
+      "bytes": 3097,
+      "git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/git-fetch-help.txt",
+      "sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8"
+    },
+    {
+      "bytes": 272509,
+      "git_blob_sha1": "3e22e18b6552520991c9b66047b06681c2cd7da2",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/integration_0cee-covered-ordinary.json",
+      "sha256": "8666d832f7ce02cdb17c6ac9ab5cf80cb06a4206a6809959b3f26ec883717a89"
+    },
+    {
+      "bytes": 169622,
+      "git_blob_sha1": "bc716ef7ab38ec2524e6ef2ed6b3cd83d770bd71",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/integration_0cee-frontier.json",
+      "sha256": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7"
+    },
+    {
+      "bytes": 414603,
+      "git_blob_sha1": "0ae261f0cfe0845651e30948bac0d202eefd0985",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/integration_0cee-pending-ordinary.json",
+      "sha256": "93f7dcca5c02a56ce97acf7b8c1d78b837531cc2ccce636fc6db39de58c3bafe"
+    },
+    {
+      "bytes": 272509,
+      "git_blob_sha1": "3e22e18b6552520991c9b66047b06681c2cd7da2",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/live_integration-covered-ordinary.json",
+      "sha256": "8666d832f7ce02cdb17c6ac9ab5cf80cb06a4206a6809959b3f26ec883717a89"
+    },
+    {
+      "bytes": 169622,
+      "git_blob_sha1": "bc716ef7ab38ec2524e6ef2ed6b3cd83d770bd71",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/live_integration-frontier.json",
+      "sha256": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7"
+    },
+    {
+      "bytes": 414603,
+      "git_blob_sha1": "0ae261f0cfe0845651e30948bac0d202eefd0985",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/live_integration-pending-ordinary.json",
+      "sha256": "93f7dcca5c02a56ce97acf7b8c1d78b837531cc2ccce636fc6db39de58c3bafe"
+    },
+    {
+      "bytes": 3,
+      "git_blob_sha1": "0967ef424bce6791893e9a57bb952f80fd536e93",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/main-covered-ordinary.json",
+      "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+    },
+    {
+      "bytes": 169622,
+      "git_blob_sha1": "bc716ef7ab38ec2524e6ef2ed6b3cd83d770bd71",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/main-frontier.json",
+      "sha256": "9b5192b805a11de4ad2903d21917ca3fc1208efd227e6045cbbb64a5e4b684b7"
+    },
+    {
+      "bytes": 687109,
+      "git_blob_sha1": "80c66d7ab7f9f877296c0de1f4a23759327e3712",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/main-pending-ordinary.json",
+      "sha256": "a612976769f4b9b39b729299fdeeb958c094030312704dfde642d825e7fa3934"
+    },
+    {
+      "bytes": 71298,
+      "git_blob_sha1": "f2809c9256630d2e3cd9b88780aee3d9899b084f",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/observed-protection.json",
+      "sha256": "e1814cd6d4f8048b842d6a4888e4a112ef4b160cea3e92a381c961cc84225cb0"
+    },
+    {
+      "bytes": 1356,
+      "git_blob_sha1": "d144fc3778b61fbf8f89ef0f6917fa504bebad80",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/preflight.json",
+      "sha256": "9b53254d77a3d1f0662e7fedf75056e6fd6d685a743725b84605d51e99deebbe"
+    },
+    {
+      "bytes": 45468,
+      "git_blob_sha1": "87650a415d3240a9cd6c794921fcf1de501c7cd9",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/protected-classification.json",
+      "sha256": "94b60690b7f97eeb7d52d9b4837639bcb73b06d25c2fe46a4b2a8fb9ab0c14f2"
+    },
+    {
+      "bytes": 732935,
+      "git_blob_sha1": "64c126087009276afc5804cfd0a92e07e45d10ef",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/refs-before-fetch.json",
+      "sha256": "569b3fdd4ddf3ba0d96cabf89bd78a820900b58c5b510e2afee0dfaab44554f6"
+    },
+    {
+      "bytes": 272602,
+      "git_blob_sha1": "13fb61345a9fa6ed7760c34b43fa2ac623474375",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/repair_4a5de714-covered-ordinary.json",
+      "sha256": "8a3ff4ca03b8711aa9997c64ae8b5cd6835239dacdd04bba96aabb2aee0cd49f"
+    },
+    {
+      "bytes": 169529,
+      "git_blob_sha1": "017f077cbca0e78b135b1df3212afde938f6822b",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/repair_4a5de714-frontier.json",
+      "sha256": "ddfa75969012a96bca7091d488c7ccfa33dd175b8c48df9eadc3376de294e028"
+    },
+    {
+      "bytes": 414510,
+      "git_blob_sha1": "127c3b0fcc59695f03efabb6e3ac517234cd9633",
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/repair_4a5de714-pending-ordinary.json",
+      "sha256": "5f52b03a5bd9f762309566453e5f120b0110722732230d46e9a1d805684b47a0"
+    }
+  ],
+  "publication_notes": [
+    "All file and gzip part hashes include SHA256 and Git blob SHA1.",
+    "The manifest is intentionally not self-hashed; its hash is returned by the native export job.",
+    "The exact audit script is native/full-history-audit.py.",
+    "No native Git pack, Git reference mutation or classification rerun is part of this export.",
+    "The current manifest adds a byte-preserving Git-help storage migration. The native export job manifest hash identifies original Git blob cdeb42ff1ad9c5b899ab5ff289e925085b16a340, retained in history; all original audit results, inputs and graph artifacts are unchanged."
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "hepta.full-commit-ancestry-export.v1",
+  "snapshot": {
+    "captured_ref_count": 7654,
+    "finished_at_utc": "2026-11-20T02:09:19.768496+00:00",
+    "fresh_matches_captured": true,
+    "missing_parent_count": 0,
+    "no_protected_intersection_all_targets": true,
+    "ordinary_distinct_head_count": 6784,
+    "ordinary_name_count": 7170,
+    "parent_graph_nodes": 78730,
+    "protected_name_count": 483,
+    "protected_pin_count": 504
+  },
+  "source_audit_result": {
+    "bytes": 8468,
+    "git_blob_sha1": "4e73b165baaa680dc2d8f61e7d484f66337150e0",
+    "path": "full-history-result.json",
+    "sha256": "1a94c299150ebad0feb080d7aa666c8624d16fcd1325c0f9c5b6cb2f3c7fd8ca"
+  },
+  "storage_migration": {
+    "archived_exporter_and_verifier_sources_unchanged": true,
+    "gzip": {
+      "compression_level": 9,
+      "filename": "",
+      "mtime": 0,
+      "os_header_byte": 255,
+      "python_version": "3.12.14",
+      "zlib_runtime_version": "1.3.2"
+    },
+    "historical_results_and_original_input_hashes_unchanged": true,
+    "original_exported_file": {
+      "bytes": 3097,
+      "git_blob_sha1": "c0726b9b0fca16b2b6966cf17a133497a54e7225",
+      "path": "native/git-fetch-help.txt",
+      "role": "exact Git filtering capability help",
+      "sha256": "530d9283cffb6001ea68e02ddbd45c26bd44b31308085973b46e450a3ea583a8"
+    },
+    "original_manifest_git_blob_sha1": "cdeb42ff1ad9c5b899ab5ff289e925085b16a340",
+    "original_manifest_sha256": "35408e04e4516d5e976632d3a6f4da15efd3f442389604f7af7cdfbf02e1cfd2",
+    "original_published_commit": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+    "reason": "Preserve the complete raw command output, including original whitespace, in explicitly indexed gzip storage while retaining the unchanged whitespace gate.",
+    "schema": "hepta.audit-evidence-storage-migration.v1"
+  }
+}

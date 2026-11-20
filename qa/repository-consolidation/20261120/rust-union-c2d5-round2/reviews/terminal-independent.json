@@ -1,0 +1,67 @@
+{
+  "status": "REVIEWED_NO_SOURCE_BLOCKER; native test qualification still required",
+  "base": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output.rs",
+      "mode": "100644",
+      "before_git_blob": "3cc279a9bfe85443c7a64f40d39898397a23618f",
+      "after_git_blob": "9925c81e4f5df5ba7122c59c896eac4388c07ed6",
+      "after_sha256": "7682ecfc8efe9ff2718689153eb3723b929d17409a764fc5971034bff1802946",
+      "bytes": 5886
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_output_tests.rs",
+      "mode": "100644",
+      "before_git_blob": "42f35deccbf558be66ddd906fb423a18ebfb84f7",
+      "after_git_blob": "495984a21073698ce27cfac61304b37b9884ce4d",
+      "after_sha256": "b1e8f43485e2c8b2e9c070c082b233bbc9129ae70a2829ce22fde864f017142c",
+      "bytes": 8009
+    }
+  ],
+  "patch_sha256": "a5d12abcc9144a0098f848a487d9f9b75b71780234698e0bfe404083c85fb1dd",
+  "git_apply_check": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "semantic_review": [
+    "complete_turn now stages helper and full NativeRunOutput clone. Every fallible apply_message precedes either externally visible assignment, so returned Err cannot retain earlier successful items of the same terminal batch.",
+    "On success only helper state and output.output are committed; status, boundary, usage, correlation, stop reason and authority fields retain original values. Later terminal witness processing stays unchanged.",
+    "apply_message exact error strings, item ordering/replacement/idempotence and byte/metadata limits are byte-identical; observe exact thread/turn filtering is byte-identical.",
+    "Current observe_event checks bound transport and terminal witness before complete_turn; no changes to terminal/usage/owner-loss guards or native_app_server.rs.",
+    "All four existing helper tests are byte-identical prefix. Two added tests use actual helper after one valid item then later oversize/conflicting completed ID; full output equality plus retry/locked-item rejection detects hidden helper state leaks.",
+    "Existing source already clones NativeRunOutput and moves its output String in terminal_message_from_observed_response, consistent with the new clone-and-move use.",
+    "Additional copies are temporary and proportional to bounded retained helper text/metadata and output; MAX_OUTPUT_BYTES remains1MiB and MAX_MESSAGE_ITEMS remains1024. No benchmark or native execution performed."
+  ],
+  "old_head_review": {
+    "heads": [
+      {
+        "tip": "90bb831d030e6aba8c6be546833e535e67483295",
+        "merge_base": "bb471d2e90f52f39c2c00a01bc817bf137c55c02",
+        "new_commits": 1,
+        "protected_pin_intersection": []
+      },
+      {
+        "tip": "6612074c96fb379ffac29affe389a1f37ca6f336",
+        "merge_base": "ac6a26cd280d97d8e357ec973fda719778ad7bdf",
+        "new_commits": 1,
+        "protected_pin_intersection": []
+      },
+      {
+        "tip": "086de626c32183822e47b04fbba17fb0cdc1005d",
+        "merge_base": "5c465bfb5715745fa26381a077990cab8f0e87e8",
+        "new_commits": 1,
+        "protected_pin_intersection": []
+      }
+    ],
+    "deltas_identical": true,
+    "source_equivalence_claimed": false,
+    "intentional_test_difference": "The incoming third test directly seeded output=already streamed but supplied terminal text=last message summary; current test first emits a real message-ID delta and supplies the matching same-text summary. Current helper intentionally treats completed text as canonical replacement for partial deltas. Equal assertion counts do not establish source or behavior equivalence for different terminal text. Keep newer replacement semantics and document this resolution.",
+    "original_current_native_app_server_tests_modified": false
+  },
+  "native_tests": "NOT_RUN",
+  "formatter": "NOT_RUN",
+  "source_or_ref_mutations": "None outside this review evidence/apply-check directory",
+  "required_validation": "Run the real hepta-infer-worker-host Rust package/helper tests and existing native_app_server terminal/transport/owner-loss regressions on the final composed source. This receipt is static review plus patch applicability, not native PASS."
+}

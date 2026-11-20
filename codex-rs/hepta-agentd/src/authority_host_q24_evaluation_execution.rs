@@ -9,6 +9,7 @@ use std::sync::Mutex;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_artifacts::LearningIterationSnapshotV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_neuron::FileAnchorWitnessStore;
 use codex_hepta_types::Digest32;
 use ed25519_dalek::SigningKey;
@@ -31,6 +32,14 @@ use super::record::OriginalBOutputHeads;
 
 #[path = "authority_host_q24_evaluation_execute.rs"]
 mod execute;
+
+/// Borrowed execution inputs, validated by the original execution method.
+pub(super) struct OriginalBExecutionInputs<'a> {
+    pub(super) training: &'a LearningIterationSnapshotV1,
+    pub(super) training_attestation: &'a SignedLearningEvidenceV1,
+    pub(super) protocol: &'a OriginalBProtocolData,
+    pub(super) authorities: &'a OriginalBAuthorities,
+}
 
 pub(super) struct OriginalBCompleted {
     pub(super) training: LearningIterationSnapshotV1,

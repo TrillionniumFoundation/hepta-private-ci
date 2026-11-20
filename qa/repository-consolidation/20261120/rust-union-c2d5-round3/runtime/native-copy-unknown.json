@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.native-source-copy-dispatch-reconciliation.v1",
+  "request_path": "runtime/native-copy-request.json",
+  "idempotency_key": "hepta-rust-c2d514464ab5-exact-source-copy-01",
+  "attempts": 2,
+  "second_attempt_exact_original_request": true,
+  "result": "UNKNOWN",
+  "job_id": null,
+  "observations": "Both start and exact-key reconciliation returned MCP request timed out. Paginated inventory and request archive unavailable. Exact output parent directory absent on one observed read; does not establish no dispatch. No further start attempted, no alternate key, no native build started by this task.",
+  "original_error": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "reconcile_error": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  }
+}

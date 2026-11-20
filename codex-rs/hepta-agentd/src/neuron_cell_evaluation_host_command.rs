@@ -2,13 +2,10 @@
 //! Late binding consumes the same original channel and never restarts its
 //! monotonic lifetime or restores a spent execution request.
 
-use std::os::fd::OwnedFd;
-use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
@@ -26,7 +23,6 @@ use super::now;
 use super::require_clock;
 use super::wire;
 use crate::AgentdRootAuthorityPeer;
-use crate::LearningIterationEvidencePeerV1;
 use crate::OriginalCellEvaluationPanelRegistrationV1;
 use crate::OriginalCellQ24TrainingCommandReceiptV1;
 use crate::learning_owner_command_channel::original_owner_command_channel_v1;
@@ -49,67 +45,80 @@ pub struct OriginalCellEvaluationCommandConnectionV1 {
 
 impl OriginalCellEvaluationCommandConnectionV1 {
     pub fn from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         verifier: LearningEvidenceVerifierV1,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_initial(
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
             stream,
             peer,
             original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
+        Self::bind_initial(
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             initial,
             scope,
             registration,
             verifier,
-            timeout,
-            lifetime,
             Origin::Fresh,
         )
     }
 
     pub fn recover_from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         verifier: LearningEvidenceVerifierV1,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
-        Self::bind_initial(
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
             stream,
             peer,
             original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
+        Self::bind_initial(
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             initial,
             scope,
             registration,
             verifier,
-            timeout,
-            lifetime,
             Origin::ReadbackOnly,
         )
     }
 
     fn bind_initial(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         verifier: LearningEvidenceVerifierV1,
-        timeout: Duration,
-        lifetime: Duration,
         origin: Origin,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let expected =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;

@@ -15,8 +15,8 @@ use super::unavailable;
 use crate::LearningIterationRuntimeErrorV1 as Error;
 
 pub(super) enum OriginalCommandEvidenceV1 {
-    Training(OriginalTrainingReadbackV1),
-    Selection(OriginalSelectionReadbackV1),
+    Training(Box<OriginalTrainingReadbackV1>),
+    Selection(Box<OriginalSelectionReadbackV1>),
 }
 
 impl LearningIterationEvidenceClientV1 {

@@ -13,13 +13,13 @@ use std::sync::atomic::Ordering;
 pub(super) enum Observed {
     Missing,
     Pending,
-    Completed(CellQ24ModelProposalReceiptV1),
+    Completed(Box<CellQ24ModelProposalReceiptV1>),
 }
 pub(super) fn observe(
     result: Result<CellQ24ModelProposalReceiptV1, Error>,
 ) -> Result<Observed, Error> {
     match result {
-        Ok(receipt) => Ok(Observed::Completed(receipt)),
+        Ok(receipt) => Ok(Observed::Completed(Box::new(receipt))),
         Err(Error::Stage(OriginalCellQ24TrainingStageErrorV1::ModelProposal(
             CellQ24ModelProposalErrorV1::Pending,
         ))) => Ok(Observed::Pending),

@@ -112,6 +112,7 @@ pub use retained_publication::PreparedOriginalCircuitRetainedPublicationV1;
 pub use retained_publication::prepare_original_circuit_retained_publication_v1;
 pub use retained_publication::recover_original_circuit_retained_publication_v1;
 pub use retained_publication::version::OriginalCircuitRetainedArtifactCheckpointV1;
+pub use retained_publication::version::OriginalCircuitRetainedPublicationTaskV1;
 pub use retained_publication::version::OriginalCircuitRetainedTaskInputsV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionClientV1;
 pub use retained_publication::version::OriginalCircuitRetainedVersionErrorV1;
@@ -162,7 +163,7 @@ enum Publication {
     Initial(PublishedNeuronGenerationInitialV1),
     Update {
         original: PublishedNeuronGenerationUpdateV1,
-        previous: PublishedCircuitFeatureCompletionV1,
+        previous: Box<PublishedCircuitFeatureCompletionV1>,
     },
 }
 
@@ -294,7 +295,10 @@ impl PublishedCircuitFeatureTaskV1 {
         }
         Self::from_parts(
             journal,
-            Publication::Update { original, previous },
+            Publication::Update {
+                original,
+                previous: Box::new(previous),
+            },
             current,
             definition,
             source,

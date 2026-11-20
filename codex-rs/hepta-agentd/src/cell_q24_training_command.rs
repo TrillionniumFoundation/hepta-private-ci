@@ -192,12 +192,14 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             false,
             None,
         )
@@ -221,27 +223,32 @@ impl OriginalCellQ24TrainingCommandClientV1 {
             })
             .transpose()?;
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             context,
-            timeout,
-            lifetime,
             true,
             retained,
         )
     }
 
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         context: OriginalCellQ24TrainingCommandContextV1,
-        timeout: Duration,
-        lifetime: Duration,
         execution_requested: bool,
         retained: Option<OriginalCellQ24TrainingCommandReceiptV1>,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let binding = context.binding()?;
         if peer.actor_id != context.dataset.owners.trainer {
             return Err(Error::Binding("original Trainer process"));
@@ -372,7 +379,7 @@ impl OriginalCellQ24TrainingCommandClientV1 {
         let result = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
                 let completed =
-                    wire::decode_completed(&self.context, snapshot, evidence, fresh_now)?;
+                    wire::decode_completed(&self.context, snapshot, *evidence, fresh_now)?;
                 let mut retained = self.retained.try_lock().map_err(|_| Error::Unavailable)?;
                 if retained
                     .as_ref()

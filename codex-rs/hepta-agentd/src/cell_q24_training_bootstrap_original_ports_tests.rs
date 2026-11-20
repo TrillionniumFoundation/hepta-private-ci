@@ -104,7 +104,7 @@ pub(crate) fn renew_second_actual_read<
                         .map_err(|_| HostIssuerTransportError::InvalidRequest)?;
                     response.result = wire::CommandResult::Completed {
                         snapshot,
-                        evidence: evidence_wire::Evidence::from_original(&changed),
+                        evidence: Box::new(evidence_wire::Evidence::from_original(&changed)),
                     };
                 }
                 serde_json::to_vec(&response).map_err(|_| HostIssuerTransportError::InvalidRequest)

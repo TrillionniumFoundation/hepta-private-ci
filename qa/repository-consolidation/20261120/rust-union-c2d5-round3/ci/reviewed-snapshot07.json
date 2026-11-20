@@ -1,0 +1,1014 @@
+{
+  "head": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+  "tree": "d1903542d575c59aef35543bc5c0a153d8c9dfa8",
+  "snapshot": 7,
+  "capture_is_nonatomic_across_requests": true,
+  "pagination": {
+    "checks": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-checks.json",
+        "bytes": 914874,
+        "sha256": "26e708fd53a7639b9d73ad258d32a3e8cbac338e1c31dab76a52a996413a2d8f"
+      },
+      "pages": 2,
+      "unique_rows": 110,
+      "reported_total": 110,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:21.041Z",
+        "2026-11-20T05:01:23.945Z"
+      ],
+      "states": {
+        "in_progress": 17,
+        "success": 59,
+        "failure": 20,
+        "skipped": 14
+      }
+    },
+    "runs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-runs.json",
+        "bytes": 1225466,
+        "sha256": "cc942e3b5fd0c253869dc103f7093da49f5428cec5cd47f6a882094df4610eb2"
+      },
+      "pages": 1,
+      "unique_rows": 37,
+      "reported_total": 37,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:21.051Z"
+      ],
+      "states": {
+        "pending": 1,
+        "skipped": 4,
+        "in_progress": 6,
+        "success": 18,
+        "failure": 8
+      }
+    },
+    "blocking-jobs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-blocking-jobs.json",
+        "bytes": 268469,
+        "sha256": "e4352dbae7bb78c32b45d7cdcbd56dafc839d8570a7841ba5762908378ffe686"
+      },
+      "pages": 1,
+      "unique_rows": 44,
+      "reported_total": 44,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:21.230Z"
+      ],
+      "states": {
+        "success": 19,
+        "skipped": 6,
+        "in_progress": 10,
+        "failure": 9
+      }
+    },
+    "architecture-jobs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-architecture-jobs.json",
+        "bytes": 32005,
+        "sha256": "e84cfb0f4d14e76cbba1b07b73a89de8fe2d301309e800e31b423d3894bb0c8d"
+      },
+      "pages": 1,
+      "unique_rows": 2,
+      "reported_total": 2,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:20.669Z"
+      ],
+      "states": {
+        "success": 1,
+        "in_progress": 1
+      }
+    },
+    "provider-jobs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-provider-jobs.json",
+        "bytes": 7363,
+        "sha256": "e5543b9274f549e2c6904304e1d600d953f24019c6c07f07c74884bd7a0119d9"
+      },
+      "pages": 1,
+      "unique_rows": 1,
+      "reported_total": 1,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:20.765Z"
+      ],
+      "states": {
+        "failure": 1
+      }
+    },
+    "learning-artifacts-jobs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-learning-artifacts-jobs.json",
+        "bytes": 16481,
+        "sha256": "eafe67b7430d45dea6dfa4e620520891d5657f04976f6f951d3c7aff6be5f603"
+      },
+      "pages": 1,
+      "unique_rows": 3,
+      "reported_total": 3,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:20.328Z"
+      ],
+      "states": {
+        "in_progress": 1,
+        "success": 2
+      }
+    },
+    "windows-jobs": {
+      "evidence": {
+        "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/snapshot07-windows-jobs.json",
+        "bytes": 12573,
+        "sha256": "26aab206f65b79c9f3993683b05d8853e677b4438cfc4cc341ff2d5e442a6b1b"
+      },
+      "pages": 1,
+      "unique_rows": 2,
+      "reported_total": 2,
+      "complete": true,
+      "observed_times": [
+        "2026-11-20T05:01:20.352Z"
+      ],
+      "states": {
+        "in_progress": 2
+      }
+    }
+  },
+  "required_blocking_run_id": 44675040532,
+  "required_qualification": "NOT_PASSED: required original jobs have actual failures and running jobs; no main/ref/branch deletion qualification.",
+  "critical_jobs": {
+    "blocking-jobs": [
+      {
+        "id": 136084758253,
+        "name": "Select blocking CI scope",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084758551,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084758745,
+        "name": "Blob size policy / Blob size policy",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084758780,
+        "name": "Current TaskFlow v1 migration prospective-merge replay",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084759055,
+        "name": "Current TaskFlow v1 migration source-head replay",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084760067,
+        "name": "LedgerWriter Bazel ${{ matrix.lane }} replay",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084760430,
+        "name": "Historical TaskFlow v1 migration ${{ matrix.lane }} replay",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684199,
+        "name": "rust-ci / Detect changed areas",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684259,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684264,
+        "name": "repo-checks / build-test",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Verify Hepta privileged caller closed set",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684270,
+        "name": "sdk / sdks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684288,
+        "name": "cargo-deny / cargo-deny",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684299,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout"
+        ]
+      },
+      {
+        "id": 136085684334,
+        "name": "repo-checks / Native Hepta paths on macos-15",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout"
+        ]
+      },
+      {
+        "id": 136085684339,
+        "name": "sdk / python-sdk",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684388,
+        "name": "repo-checks / Native Hepta paths on windows-latest",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684631,
+        "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684634,
+        "name": "learning.operator qualification / learning.operator deterministic merge",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "Compile and test deterministic merge candidate"
+        ],
+        "skipped_steps": [
+          "Refresh deterministic-merge implementation map",
+          "Emit deterministic-merge immutable receipt",
+          "Retain deterministic-merge evidence"
+        ]
+      },
+      {
+        "id": 136085684670,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Run native Core and app-server integration with host namespace support",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [
+          "bazel test //..."
+        ],
+        "skipped_steps": [
+          "Check rusty_v8 MODULE.bazel checksums",
+          "Check MODULE.bazel.lock is up to date"
+        ]
+      },
+      {
+        "id": 136085684678,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Run native Core and app-server integration with host namespace support",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [
+          "bazel test //..."
+        ],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684690,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel test //...",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Check rusty_v8 MODULE.bazel checksums",
+          "Check MODULE.bazel.lock is up to date",
+          "Install OpenSSH for the native operator-acceptance test action"
+        ]
+      },
+      {
+        "id": 136085684731,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel test //...",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Check rusty_v8 MODULE.bazel checksums",
+          "Check MODULE.bazel.lock is up to date",
+          "Install OpenSSH for the native operator-acceptance test action"
+        ]
+      },
+      {
+        "id": 136085684870,
+        "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel build --config=clippy lint targets",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684880,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel test shard",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684889,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout"
+        ]
+      },
+      {
+        "id": 136085684910,
+        "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel build verify-release-build targets",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085684937,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "bazel test shard"
+        ],
+        "skipped_steps": [
+          "Test BuildBuddy Bazel wrapper",
+          "Smoke test the native MSVC header parser"
+        ]
+      },
+      {
+        "id": 136085684940,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "bazel test shard"
+        ],
+        "skipped_steps": [
+          "Test BuildBuddy Bazel wrapper",
+          "Smoke test the native MSVC header parser"
+        ]
+      },
+      {
+        "id": 136085684949,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "bazel test shard",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Test BuildBuddy Bazel wrapper",
+          "Smoke test the native MSVC header parser"
+        ]
+      },
+      {
+        "id": 136085684979,
+        "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "bazel build verify-release-build targets"
+        ],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout",
+          "Verify Bazel builds bwrap"
+        ]
+      },
+      {
+        "id": 136085684988,
+        "name": "learning.operator qualification / learning.operator exact source",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "Exact-source compile, final-use, shadow, revocation and rollback tests"
+        ],
+        "skipped_steps": [
+          "Independent operator coverage floor",
+          "Kill all required safety mutants",
+          "Measure bounded scale and enforce runaway guards",
+          "Refresh exact-source implementation map",
+          "Emit exact-source immutable receipt",
+          "Retain exact-source evidence"
+        ]
+      },
+      {
+        "id": 136085685034,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout"
+        ]
+      },
+      {
+        "id": 136085685090,
+        "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "bazel build --config=clippy lint targets"
+        ],
+        "skipped_steps": [
+          "Enable Windows long paths before checkout"
+        ]
+      },
+      {
+        "id": 136085685216,
+        "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085685721,
+        "name": "Lightweight prose and derived checks",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085686333,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136085686552,
+        "name": "Hepta scoped native checks / shard ${{ matrix.shard }}",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136086222567,
+        "name": "rust-ci / Rust format",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "cargo fmt"
+        ],
+        "skipped_steps": []
+      },
+      {
+        "id": 136086222609,
+        "name": "rust-ci / Cargo manifest preflight",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136086222641,
+        "name": "rust-ci / cargo shear",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136086224944,
+        "name": "rust-ci / Argument comment lint package",
+        "status": "completed",
+        "conclusion": "skipped",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136086681936,
+        "name": "rust-ci / Rust benchmark smoke",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136087635036,
+        "name": "rust-ci / CI results (required)",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "Summarize"
+        ],
+        "skipped_steps": []
+      },
+      {
+        "id": 136095049659,
+        "name": "learning.operator qualification / learning.operator qualification required",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Set up job",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      }
+    ],
+    "architecture-jobs": [
+      {
+        "id": 136084757281,
+        "name": "Architecture convergence (base-merge)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Prepare native prerequisites",
+          "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+          "Expose DotSlash for existing integration tests",
+          "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "Resolve verified V8 artifacts",
+          "Verify Cargo lock resolution and print exact resolver drift",
+          "Neuron legacy Tick production denial and mechanism parity",
+          "Inference owner regressions and streaming digest",
+          "Durable operation and external-effect recovery",
+          "Cell Split reference anti-replay and rollback qualification",
+          "Module lifecycle generations and migration rollback",
+          "Objective and prompt policy convergence",
+          "Converged authority and browser semantics",
+          "Selected-artifact adoption and explicit rollback",
+          "Compiled service lifecycle and actual process restart",
+          "Retain exact source input on failure for reproducible diagnosis"
+        ]
+      },
+      {
+        "id": 136084757555,
+        "name": "Architecture convergence (source-head)",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Converged authority and browser semantics",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": [
+          "Verify GitHub prospective merge ref matches this exact candidate",
+          "Construct the canonical prospective merge"
+        ]
+      }
+    ],
+    "provider-jobs": [
+      {
+        "id": 136084756833,
+        "name": "native-provider-policy",
+        "status": "completed",
+        "conclusion": "failure",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [
+          "Format and verify the exact candidate"
+        ],
+        "skipped_steps": []
+      }
+    ],
+    "learning-artifacts-jobs": [
+      {
+        "id": 136084755896,
+        "name": "learning.artifacts (source)",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Execute all diagnostics and bind receipts",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084756358,
+        "name": "learning.artifacts (merge)",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084756430,
+        "name": "source-inventory",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [],
+        "failed_steps": [],
+        "skipped_steps": []
+      }
+    ],
+    "windows-jobs": [
+      {
+        "id": 136084755898,
+        "name": "Original regressions (process)",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Run the original process, transport and backend regressions",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      },
+      {
+        "id": 136084756237,
+        "name": "Original regressions (owners)",
+        "status": "in_progress",
+        "conclusion": null,
+        "head_sha": "2b5383809fb9c2c81b8a2e109a8e76409bce23bd",
+        "current_steps": [
+          {
+            "name": "Run the original process, transport and backend regressions",
+            "status": "in_progress",
+            "conclusion": null
+          }
+        ],
+        "failed_steps": [],
+        "skipped_steps": []
+      }
+    ]
+  },
+  "root_cause_groups": [
+    {
+      "id": "actual-format5",
+      "jobs": [
+        136086222567,
+        136084756872,
+        136084757208,
+        136084756833,
+        136084757682
+      ],
+      "root_cause": "Actual formatter differences in five active Rust paths; Windows durability job shows the Q24 member of the same set.",
+      "owner": "ci_repair/root",
+      "coverage": "Accepted immutable formatter-active-stage01; not published at observed 2b head and no after-native claim.",
+      "candidate": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/formatter-active-stage01/FROZEN.json"
+    },
+    {
+      "id": "required-rust-format-aggregate",
+      "jobs": [
+        136087635036
+      ],
+      "root_cause": "Required rust-ci summary propagates failed Rust format.",
+      "owner": "root",
+      "coverage": "Upstream formatter candidate; aggregate still actually failed."
+    },
+    {
+      "id": "strict-test-helper-lints",
+      "jobs": [
+        136085685034,
+        136085685090
+      ],
+      "root_cause": "GNU exposes 29 test-only expect/unwrap diagnostics across four agentd paths; Mac exposes overlapping 18 plus separate Apple mknodat.",
+      "owner": "branch_audit/root",
+      "coverage": "Four-source clippy-helper-stage01 frozen; native and rustfmt NOT_RUN.",
+      "candidate": "/workspace/scratch/c2d514464ab5/branch-audit/clippy-helper-stage01/FROZEN.json"
+    },
+    {
+      "id": "apple-fifo",
+      "jobs": [
+        136085685090,
+        136085684979
+      ],
+      "root_cause": "E0425 rustix::fs::mknodat unavailable at hepta-ndu/src/projection_store_tests.rs:756 on Apple.",
+      "owner": "original recovery dependency/CI owner",
+      "coverage": "Original-owner Apple nix/fs source edge awaiting the sole canonical paired-lock task; not published in 2b."
+    },
+    {
+      "id": "learning-example-lints",
+      "jobs": [
+        136085684634,
+        136085684988
+      ],
+      "root_cause": "Actual native subsets pass, then strict all-target Clippy fails qualification_performance.rs with 15 expect, 2 unwrap and 1 collapsible_if diagnostics.",
+      "owner": "ci_repair read-only design; root decides future batch",
+      "coverage": "No source change; excluded from current bounded round3 source. Original-owner Bellman all-target validation pending.",
+      "source": "codex-rs/hepta-bellman-operator/examples/qualification_performance.rs",
+      "git_blob": "b456c2364345a07f7367bc7e7b688a99ba3c04e5"
+    },
+    {
+      "id": "infer-core-windows-fixtures",
+      "jobs": [
+        136085684940
+      ],
+      "root_cause": "9 top-level locked-file second-handle reads (OS33), 6 upstream InvalidIdentity prepared-input failures, 1 dependent parent failure; nested child failure retained separately.",
+      "owner": "branch_audit/root",
+      "coverage": "Six test-only paths accepted for next round3; no production weakening and no after-native PASS.",
+      "candidate": "/workspace/scratch/c2d514464ab5/branch-audit/windows-test-repair-stage01/FROZEN.json"
+    },
+    {
+      "id": "unsafe-retirement-checkpoint",
+      "jobs": [
+        136085684940
+      ],
+      "root_cause": "Two hepta-evidence retirement cases fail UnsafeCheckpoint at authbus_retirement_pq_tests.rs:72 and authbus_recovery_tests.rs:305.",
+      "owner": "root/original Windows owner",
+      "coverage": "Uncovered; no checkpoint guard change authorized."
+    },
+    {
+      "id": "windows-private-state-and-boundary",
+      "jobs": [
+        136085684937
+      ],
+      "root_cause": "Shadow private artifact rejected for unsafe owner/DACL; network ingress and three core elevated cases refuse ambient parent FILE_DELETE_CHILD; setup read ACL fixture reports busy; standalone runner typed error downcast is None.",
+      "owner": "root read-only Windows permission/root-cause review",
+      "coverage": "Uncovered; no permission widening, skip, retry or error-type broadening."
+    },
+    {
+      "id": "acl-native-observation",
+      "jobs": [
+        136084758170
+      ],
+      "root_cause": "One original positive elevated-token case refused FILE_DELETE_CHILD boundary; isolated ACL probe compilation omitted real token module dependency closure.",
+      "owner": "root full probe closure read-only review",
+      "coverage": "Uncovered; not fixed by copying only the first missing module."
+    },
+    {
+      "id": "appcontainer-child",
+      "jobs": [
+        136084758723
+      ],
+      "root_cause": "Actual child ordinary operations false for AppContainer and LPAC although access-check/impersonation predicates pass.",
+      "owner": "original Windows diagnostic owner/root",
+      "coverage": "Uncovered actual-child qualification; no permission weakening."
+    },
+    {
+      "id": "research-three-causes",
+      "jobs": [
+        136084757859
+      ],
+      "root_cause": "Original full suite 1105 tests: 1 RNG failure, 34 max_depth errors, 6 PIL import errors, existing 1 skip.",
+      "owner": "ci_repair/root",
+      "coverage": "Four-source frozen repair independently accepted; selected six-module 39 PASS and all 8 image tests actual, pre-Ruff full AST bound. Torch/RNG/full 1105 NOT_RUN; local NumPy differs from unchanged CI pin.",
+      "candidate": "/workspace/scratch/c2d514464ab5/ci-repair/research-repair-2b-stage01/FROZEN.json"
+    },
+    {
+      "id": "daemon-b4",
+      "jobs": [
+        136084757548
+      ],
+      "root_cause": "Actual source-closure suite 1215 tests, 6 failures and 84 errors; historical fixtures/markers/moved production surfaces require original-owner B4 source union.",
+      "owner": "original recovery B4 owner",
+      "coverage": "Known original-owner B4 fixes not yet in 2b; no duplicate implementation and C2D production hold remains."
+    },
+    {
+      "id": "ui-workflow-trigger",
+      "jobs": [
+        136084757615,
+        136084757461
+      ],
+      "root_cause": "10-test UI suite has 1 failure: gateway closure lacks codex-rs/utils/windows-private-state/** trigger.",
+      "owner": "original recovery UI owner",
+      "coverage": "Original-owner candidate not yet in 2b."
+    },
+    {
+      "id": "helper-dependency-transport",
+      "jobs": [
+        136084757453
+      ],
+      "root_cause": "Locked worker helper build exits101 while downloading rama-http-types, curl[16] HTTP2 framing-layer failure; no compiler error or helper test execution is inferred.",
+      "owner": "root/original native owner",
+      "coverage": "No automatic rerun; keep original network transport failure."
+    }
+  ],
+  "actual_failed_job_count": 20,
+  "full_failure_evidence": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/FAILURES-snapshot07.json",
+    "bytes": 121747,
+    "sha256": "2b5c9887567f5a8ad0871838910fe5a05e58a822acb4290ce7cadda265654244"
+  },
+  "verified_artifact_evidence": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/ci-monitor/new2b538380/ARTIFACT-EVIDENCE-snapshot07.json",
+    "bytes": 18365,
+    "sha256": "74d149d58ecc72a3e722217aa5015eca47e000832ea157cfcd4c32c7acf56394"
+  },
+  "scope_notes": [
+    "Architecture base-merge success is source/Python/drift scope with native steps skipped by existing selector. Source-head native convergence remains running at captured snapshot.",
+    "Provider actual6 selected tests PASS /2479 skipped plus strict core Clippy PASS; final format fails. This is not all core tests.",
+    "Learning artifacts source job was still running in snapshot07 API, but subsequently downloaded source and merge artifacts both record all9 diagnostics passed with exact raw log SHA. This later evidence is separately timestamped by download receipts.",
+    "Original Windows process and owner jobs are still running original regressions in this snapshot.",
+    "All round3 candidate statuses are static/source or precisely scoped Python evidence only; they have not been executed by the new-head original native gates.",
+    "C2D stale-history/exclusive-lease production hold remains untouched. Worker Cargo.lock902c remains manual prediction, not canonical paired-lock generation."
+  ],
+  "actions_taken": {
+    "remote_reads_only": true,
+    "reruns_or_dispatches": 0,
+    "refs_or_commits_written": 0,
+    "native_jobs_started": 0,
+    "frozen_source_modified": false
+  }
+}

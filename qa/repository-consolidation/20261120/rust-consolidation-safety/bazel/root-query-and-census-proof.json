@@ -1,0 +1,336 @@
+{
+  "schema": "hepta.bazel-library-root-proof.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "published_commit": "4a5de714ce95889fca83abd3da33cbd74aaac748",
+  "source_scope": "Native checkout of exact base plus only the four reviewed Bazel files, byte-for-byte matching published commit. Other published Python/protection files are outside this compile projection.",
+  "source_record": {
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/four-file-source-record.json",
+    "size": 48302,
+    "sha256": "108184691e9e659c4eb0a985899864e99a72fd7891b96d9cab8749a2056105b6"
+  },
+  "workspace_census": {
+    "command": [
+      "cargo",
+      "metadata",
+      "--no-deps",
+      "--format-version=1",
+      "--locked",
+      "--offline"
+    ],
+    "total_members": 200,
+    "explicit_entries": 194,
+    "implicit_members": [
+      "windows-sandbox-rs",
+      "core/tests/common",
+      "chatgpt",
+      "app-server/tests/common",
+      "message-history",
+      "mcp-server/tests/common"
+    ],
+    "nondefault_library_roots": 8,
+    "wrong_bazel_roots_before": 3,
+    "extra_five_custom_roots": "lib.rs with explicit matching crate_srcs already supplied; no changes required."
+  },
+  "bazel": {
+    "version": "9.3.0",
+    "official_binary_sha256": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+    "official_binary_bytes": 77023347,
+    "original_wrapper": ".github/scripts/run-bazel-ci.sh",
+    "configuration": "Original keyless local fallback; no authenticated remote execution",
+    "resources": {
+      "cpu_quota_percent": 200,
+      "memory_max_bytes": 6442450944,
+      "nice": 10,
+      "jvm_max_heap": "2048m",
+      "jobs": 2,
+      "local_resources": {
+        "cpu": 2,
+        "memory": 4096
+      }
+    }
+  },
+  "query_arguments": [
+    ".github/scripts/run-bazel-ci.sh",
+    "--",
+    "--batch",
+    "--host_jvm_args=-Xmx2048m",
+    "cquery",
+    "--jobs=2",
+    "--local_resources=cpu=2",
+    "--local_resources=memory=4096",
+    "--lockfile_mode=error",
+    "--output=starlark",
+    "--starlark:expr=str(target.label) + \" roots=\" + str([p.root.path for p in providers(target).values() if hasattr(p, \"root\")])",
+    "--",
+    "set(//codex-rs/ext/extension-api:extension-api //codex-rs/hepta-context-compiler:hepta-context-compiler //codex-rs/ext/hepta-prompt:hepta-prompt)"
+  ],
+  "baseline": {
+    "job_id": "1a1f6a37ddc-ffbe-1520",
+    "outcome": {
+      "at_unix_ms": 1795140082016,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1f6a37ddc-ffbe-1520",
+      "launch_nonce": "198812979ea2260f9a9337f04bd929fb",
+      "log_bytes": {
+        "stderr": {
+          "seen": 56,
+          "stored": 56
+        },
+        "stdout": {
+          "seen": 44953,
+          "stored": 44953
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "invocation_id": "27e96c53-6f0d-4a01-bee7-e915f8d08e5f",
+    "elapsed_seconds": 729.295,
+    "targets": 3,
+    "configured_packages": 1120,
+    "configured_targets": 102950,
+    "aspect_applications": 732,
+    "executed_actions": 0,
+    "crate_info_roots": [
+      [
+        "//codex-rs/ext/extension-api:extension-api",
+        "codex-rs/ext/extension-api/src/lib.rs"
+      ],
+      [
+        "//codex-rs/ext/extension-api:extension-api",
+        "codex-rs/ext/extension-api/src/lib.rs"
+      ],
+      [
+        "//codex-rs/hepta-context-compiler:hepta-context-compiler",
+        "codex-rs/hepta-context-compiler/src/lib.rs"
+      ],
+      [
+        "//codex-rs/ext/hepta-prompt:hepta-prompt",
+        "codex-rs/ext/hepta-prompt/src/lib.rs"
+      ]
+    ],
+    "stderr_note": "Original wrapper temporary log reported /tmp/tmp.YzbN6d0V1c: Disk quota exceeded (os error 122). Native Bazel query and durable job both exit 0; complete 44,953-byte stdout was preserved from durable runtime. Later query/build TMPDIR is owned runtime/tmp."
+  },
+  "published_query": {
+    "job_id": "1a1f6b66d0c-ffbe-1535",
+    "outcome": {
+      "at_unix_ms": 1795140542831,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1f6b66d0c-ffbe-1535",
+      "launch_nonce": "b06485db6e302cbcf193848ce69b5646",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 4748,
+          "stored": 4748
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "invocation_id": "9b0f72d1-9eda-4834-afda-99fae6242380",
+    "elapsed_seconds": 28.227,
+    "targets": 3,
+    "configured_packages": 1120,
+    "configured_targets": 102950,
+    "aspect_applications": 732,
+    "executed_actions": 0,
+    "crate_info_roots": [
+      [
+        "//codex-rs/ext/extension-api:extension-api",
+        "codex-rs/ext/extension-api/src/root.rs"
+      ],
+      [
+        "//codex-rs/ext/extension-api:extension-api",
+        "codex-rs/ext/extension-api/src/root.rs"
+      ],
+      [
+        "//codex-rs/hepta-context-compiler:hepta-context-compiler",
+        "codex-rs/hepta-context-compiler/src/root.rs"
+      ],
+      [
+        "//codex-rs/ext/hepta-prompt:hepta-prompt",
+        "codex-rs/ext/hepta-prompt/src/root.rs"
+      ]
+    ],
+    "stderr_bytes": 0
+  },
+  "effective_cache": {
+    "output_user_root": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/output-user-root",
+    "repository_cache": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/repository-cache",
+    "repo_contents_cache": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/repo-contents-cache",
+    "disk_cache": "/home/qian-qi/.cache/bazel-disk-cache",
+    "disk_cache_origin": "Original .bazelrc default; the keyless fallback drops ci config so this content-addressed cache remains enabled. Its permitted reuse is recorded rather than represented as a private cache.",
+    "published_query_tmpdir": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/tmp"
+  },
+  "cancelled_build": {
+    "job_id": "1a1f6b82b2f-ffbe-1539",
+    "outcome": {
+      "at_unix_ms": 1795140805106,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": true,
+      "exit_code": -15,
+      "job_id": "1a1f6b82b2f-ffbe-1539",
+      "launch_nonce": "179a5f5f14dbde6ac91681e40343758f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 9043,
+          "stored": 9043
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "cancelled",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "invocation_id": "02795413-5aec-4d11-9179-0632e2e160de",
+    "reason": "Owned runtime cancellation was requested while reviewing cache-isolation preference, before coordinator clarified permitted reuse. This attempt is incomplete, not a build pass or source failure. Partial output is preserved; no shared cache cleanup or source rollback was performed.",
+    "arguments": [
+      ".github/scripts/run-bazel-ci.sh",
+      "--print-failed-action-summary",
+      "--",
+      "--batch",
+      "--host_jvm_args=-Xmx2048m",
+      "build",
+      "--jobs=2",
+      "--local_resources=cpu=2",
+      "--local_resources=memory=4096",
+      "--lockfile_mode=error",
+      "--show_progress_rate_limit=10",
+      "--",
+      "//codex-rs/ext/extension-api:extension-api",
+      "//codex-rs/hepta-context-compiler:hepta-context-compiler",
+      "//codex-rs/ext/hepta-prompt:hepta-prompt"
+    ]
+  },
+  "build_continuation": {
+    "job_id": "1a1f6bdfade-ffbe-153f",
+    "invocation_id": "1079ee9f-c8ab-4f91-a28e-a20e056d33c0",
+    "arguments": [
+      ".github/scripts/run-bazel-ci.sh",
+      "--print-failed-action-summary",
+      "--",
+      "--batch",
+      "--host_jvm_args=-Xmx2048m",
+      "build",
+      "--jobs=2",
+      "--local_resources=cpu=2",
+      "--local_resources=memory=4096",
+      "--lockfile_mode=error",
+      "--disk_cache=/home/qian-qi/.cache/bazel-disk-cache",
+      "--show_progress_rate_limit=10",
+      "--",
+      "//codex-rs/ext/extension-api:extension-api",
+      "//codex-rs/hepta-context-compiler:hepta-context-compiler",
+      "//codex-rs/ext/hepta-prompt:hepta-prompt"
+    ],
+    "status_at_report": "running; final result must be supplied separately",
+    "scope": "Exactly the three library targets, no Core/full-workspace/test expansion."
+  },
+  "artifacts": [
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/baseline.stdout.log",
+      "size": 44953,
+      "sha256": "469389c4cf53aaccf9fedd762b706c136e8e2b1b4eb7890f12caee846b68b74c",
+      "job_id": "1a1f6a37ddc-ffbe-1520",
+      "stream": "stdout"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/baseline.stderr.log",
+      "size": 56,
+      "sha256": "aebdd59dc136be991369a9c601ab315e70b93542415f8a4c1188d0df795df5bf",
+      "job_id": "1a1f6a37ddc-ffbe-1520",
+      "stream": "stderr"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/published-query.stdout.log",
+      "size": 4748,
+      "sha256": "51701b2e1d706501117b5ee996629f73ae0b215c7ff12b0e0fbe15f08b484cda",
+      "job_id": "1a1f6b66d0c-ffbe-1535",
+      "stream": "stdout"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/published-query.stderr.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "job_id": "1a1f6b66d0c-ffbe-1535",
+      "stream": "stderr"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/cancelled-build-v1.stdout.log",
+      "size": 9043,
+      "sha256": "cd4f70b60fd17ffefeadcad09ec5349c9402b3578ce6dc96801024813dc8c6d7",
+      "job_id": "1a1f6b82b2f-ffbe-1539",
+      "stream": "stdout"
+    },
+    {
+      "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/root-parity-runtime/cancelled-build-v1.stderr.log",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "job_id": "1a1f6b82b2f-ffbe-1539",
+      "stream": "stderr"
+    }
+  ],
+  "limits": "Configured queries establish actual library roots, not successful Rust compilation. Native three-library build completion and unchanged source hashes remain separate evidence. Full repository CI and cross-platform gates remain required."
+}

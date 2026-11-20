@@ -1,0 +1,102 @@
+{
+  "assertion_review": {
+    "new_dependencies": 0,
+    "new_skips_or_environment_guards": 0,
+    "physical_test": "Preserves real byte corruption/restoration, checks repeated exact Store(Indeterminate), explicitly exercises consume Indeterminate->Poisoned, verifies later raw read Poisoned and restored bytes unchanged.",
+    "production_changed": 0,
+    "regression_quality": "Existing actual file-backed and runner/provider tests strengthened; no implementation-mirroring mock suite introduced.",
+    "release_tests": "Preserve original callback/receipt observations and counters, add first postrestore Indeterminate and unchanged counters, then retain Poisoned and unchanged counters.",
+    "test_names_removed": 0
+  },
+  "base": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+  "baseline_ci_evidence": {
+    "job": 136047703996,
+    "log": "/workspace/scratch/c2d514464ab5/ci-repair/ci-100e/job-136047703996.log",
+    "log_sha256": "ae8efb1be11ef24058eb628c3d9d407534feed3ee745be9cd108c5473a0443e9",
+    "observed": "All three prior failures reported Store(Indeterminate) versus stale owner Indeterminate or Poisoned expectations. The unchanged reference recovery test passed. This is prior CI, not candidate qualification.",
+    "source_sha": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+    "tested_sha": "8185e71de8549502b7b13a0038e2156475b0ab95",
+    "tested_tree": "521fb1ed3dff980955f205f521d1f59ea828f72f"
+  },
+  "changed_files": [
+    {
+      "after": {
+        "bytes": 7599,
+        "git_blob": "e1af0decd9640a7bc150ef867eb8a93dcd0c0cc7",
+        "sha256": "95e26c4d91f1d43e4a4a9589b0d5fa9268161cf9e59b0db57e35fbc6378e5c85",
+        "source_file": "/workspace/scratch/c2d514464ab5/ci-repair/ndu-error-taxonomy/after/codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_physical_tests.rs"
+      },
+      "before": {
+        "bytes": 7120,
+        "git_blob": "a53320f980d0883854139452d866fa2c947ee9a7",
+        "sha256": "922ea41d2bddf507df3ba1a8ad9d496d8df4bdf59c385cef3b39a049a3e12173",
+        "source_file": "/workspace/scratch/c2d514464ab5/ci-repair/ndu-error-taxonomy/before/codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_physical_tests.rs"
+      },
+      "changed": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_physical_tests.rs",
+      "source_commit": "100e0b1a603bd7047ca77179d662dc3e9f763804"
+    },
+    {
+      "after": {
+        "bytes": 11324,
+        "git_blob": "ad138da131010cc303c746513406c4da9bce3887",
+        "sha256": "767cd0184d1d8b2ca6ab383c7f93665dc9a3f3c2cbea757ed8a5d1dfd0baa7ef",
+        "source_file": "/workspace/scratch/c2d514464ab5/ci-repair/ndu-error-taxonomy/after/codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs"
+      },
+      "before": {
+        "bytes": 10777,
+        "git_blob": "1b8e8bf26df798f10b78d50966ce467e407c3c24",
+        "sha256": "d8003c6236d0aed4a9c47cee36ae7d1b8ba22d136f5dc33fb73cc894a736092f",
+        "source_file": "/workspace/scratch/c2d514464ab5/ci-repair/ndu-error-taxonomy/before/codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs"
+      },
+      "changed": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release_tests.rs",
+      "source_commit": "100e0b1a603bd7047ca77179d662dc3e9f763804"
+    }
+  ],
+  "finding": "No static blocker. These tests now distinguish raw store uncertainty from the later owner/execution transition while strengthening permanent refusal after restoration. Production sources and the reference recovery/execution tests are byte-identical. Native qualification of the new assertions is pending.",
+  "native_required": "just test --locked -p codex-hepta-intelligence-eval; root owns execution and formatter gate",
+  "native_tests_run": 0,
+  "patch": {
+    "path": "/workspace/scratch/c2d514464ab5/ci-repair/ndu-error-taxonomy/ndu-error-taxonomy.patch",
+    "sha256": "7e0d46b6adfeb437809bf0f1664cd371193b2e950ac571873166c582a782059f"
+  },
+  "preserved_source_and_reference_files": [
+    {
+      "blob": "62ba9fd000428ac7855c951d36de0bdd812fe06d",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
+      "sha256": "c827294751c1a5eda8cb8c1d2dc795658b43a9c3e22a1790ddad3a5fbbca6f51"
+    },
+    {
+      "blob": "454b286b8fa67ad3909790915f8e7ed696405f46",
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_tests.rs",
+      "sha256": "3ea2da67b5b9176a615e58b0eb7621ebb31696c4aa25ab1e53a4497ce0399e10"
+    },
+    {
+      "blob": "6bf6fc11b486e503e6a4b3ea3a4ab7c78a7444d5",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution_holdout_current_tests.rs",
+      "sha256": "9bfef3ae7bc23824bf56f6b60eb5907ab830d15ea54cd083973cefb72d830fea"
+    },
+    {
+      "blob": "010b2f536fad9d8bd334e0ea70cb737f65e79e54",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_holdout_release.rs",
+      "sha256": "1f18d4ab03303809c8a22cc31bff3f6773a69a6667d84b6f16f29d0cc80c2441"
+    },
+    {
+      "blob": "d3c3e8054d4ab07fe3aa6bf06acf8445cb1adeb5",
+      "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
+      "sha256": "8800b0b66a2100ca3d15267d1634306b1625b6ff9e20e3e4df857de55575225a"
+    }
+  ],
+  "remote_mutations": 0,
+  "reviewed_at": "2026-11-20T03:08:03.993865+00:00",
+  "schema": "hepta.independent-ndu-error-taxonomy-review.v1",
+  "source_reasoning": {
+    "execution_read_wrapper": "read_consumption_for_execution has a distinct owner-boundary mapping and remains unchanged; release borrows intentionally invoke raw read_consumption.",
+    "execution_transition": "consume first checks poisoned, then read_error; the first consume after a latched observation sets poisoned and returns Indeterminate before journal clone or CAS. Subsequent consume/read returns Poisoned.",
+    "postrestore_runner": "evaluate_temporal_comparison calls holdout.consume before release. The added first postrestore attempt returns owner Indeterminate with no additional release callback; the next returns Poisoned.",
+    "raw_observation": "read_consumption returns Store(Indeterminate) on the first uncertain load and saves read_error; subsequent raw reads return the saved category before reaching store.load. is_poisoned is true for either saved read_error or the terminal poisoned flag.",
+    "recovery": "The existing reference indeterminate_original_read_remains_fenced_after_store_recovers asserts stable load_count, cas_count and retained record across repeated reads/consume, then permits recovery only with a new fenced owner.",
+    "release_postcheck": "release_original_holdout checks original state after the provider even when it ignores the borrow. Corruption discovered inside the borrow is latched, and the runner postcheck returns identical Store(Indeterminate); fitting is reached only after this returns successfully."
+  }
+}

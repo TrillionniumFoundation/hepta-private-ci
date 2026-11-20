@@ -71,7 +71,7 @@ fn minimum_neuron_batch_input_bytes(requests: &[NeuronFeatureRequest]) -> Result
     })
 }
 
-impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceWorker<D> {
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Admit the entire batch before dispatch and reject partial/aliased results.
     /// Every item binds an independently admitted request, lease and reservation;
     /// requests share the loaded model, encoder and tensor shapes, not authority.
@@ -80,7 +80,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         now_ms: u64,
         model_id: &str,
         requests: Vec<NeuronFeatureRequest>,
-    ) -> Result<Vec<NeuronFeatureExecutionObservation>, Error> {
+    ) -> Result<Vec<NeuronFeatureExecutionObservation>, Error>
+    where
+        D: NeuronFeatureBatchDriver,
+    {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         if requests.is_empty() || requests.len() > 32 {
@@ -266,7 +269,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         now_ms: u64,
         model_id: &str,
         requests: Vec<NeuronFeatureRequest>,
-    ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> {
+    ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error>
+    where
+        D: NeuronFeatureBatchDriver,
+    {
         let copies = requests.clone();
         let outcomes = self.run_neuron_features_batch(now_ms, model_id, requests)?;
         let receipts: Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> = copies

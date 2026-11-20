@@ -1,11 +1,14 @@
 use super::*;
+use crate::durable_control::tests::held_journal_bytes;
 
-fn input() -> NativePreparedInputV2 {
-    NativePreparedInputV2 {
+type TestResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+
+fn input() -> TestResult<NativePreparedInputV2> {
+    Ok(NativePreparedInputV2 {
         schema_version: 2,
         prompt: "Use only the original admitted evidence.".to_string(),
         context_query: Some("original query".to_string()),
-        agentd_socket: PathBuf::from("/tmp/original-owner.sock"),
+        agentd_socket: std::path::absolute("/tmp/original-owner.sock")?,
         timeout_ms: 5_000,
         intelligence: Some(NativeIntelligenceInputBindingV2 {
             snapshot: NativeRunSnapshotV2 {
@@ -23,40 +26,40 @@ fn input() -> NativePreparedInputV2 {
             context_digest: "b".repeat(64),
             envelope_digest: "c".repeat(64),
         }),
-    }
+    })
 }
 
-fn prepared_request() -> NativeRequest {
-    NativeRequest {
-        payload_digest: input().payload_digest().unwrap(),
+fn prepared_request() -> TestResult<NativeRequest> {
+    Ok(NativeRequest {
+        payload_digest: input()?.payload_digest()?,
         ..request("r1")
-    }
+    })
 }
 
 #[test]
-fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
+fn v2_input_survives_reopen_exact_retry_and_all_later_events() -> TestResult<()> {
     let path = path("prepared-v2-reopen");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let mut expected = control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
-    assert_eq!(expected.prepared_input_v2, Some(input()));
+    assert_eq!(expected.prepared_input_v2, Some(input()?));
     for _ in 0..3 {
         drop(control);
         control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
         assert_eq!(control.native_record("r1"), Some(&expected));
-        let bytes = std::fs::read(&path).unwrap();
+        let bytes = held_journal_bytes(&control.file).unwrap();
         assert_eq!(
             control
                 .reserve_native_prepared_v2(
-                    prepared_request(),
+                    prepared_request()?,
                     /*maximum_in_flight*/ 1,
-                    input()
+                    input()?
                 )
                 .unwrap(),
             expected
         );
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     }
     control.dispatch_native("r1", dispatch()).unwrap();
     control.native_started("r1", "turn-1".to_string()).unwrap();
@@ -64,7 +67,7 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
     expected = control
         .settle_native("r1", output(NativeRunStatus::Interrupted, None))
         .unwrap();
-    assert_eq!(expected.prepared_input_v2, Some(input()));
+    assert_eq!(expected.prepared_input_v2, Some(input()?));
     assert!(expected.cancel_requested);
     assert_eq!(expected.state, NativeReservationState::Released);
     drop(control);
@@ -72,13 +75,14 @@ fn v2_input_survives_reopen_exact_retry_and_all_later_events() {
     assert_eq!(control.native_record("r1"), Some(&expected));
     drop(control);
     std::fs::remove_file(path).unwrap();
+    Ok(())
 }
 
 #[test]
-fn v2_payload_mutations_fail_before_reservation_or_io() {
+fn v2_payload_mutations_fail_before_reservation_or_io() -> TestResult<()> {
     let path = path("prepared-v2-mutation");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     for field in [
         "prompt",
         "query",
@@ -97,12 +101,12 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
         "context",
         "envelope",
     ] {
-        let mut changed = input();
+        let mut changed = input()?;
         let binding = changed.intelligence.as_mut().unwrap();
         match field {
             "prompt" => changed.prompt.push('!'),
             "query" => changed.context_query = Some("replacement".to_string()),
-            "socket" => changed.agentd_socket = PathBuf::from("/tmp/other-owner.sock"),
+            "socket" => changed.agentd_socket.set_file_name("other-owner.sock"),
             "timeout" => changed.timeout_ms += 1,
             "run" => binding.snapshot.run_id.push_str("-other"),
             "request" => binding.snapshot.request_digest = "6".repeat(64),
@@ -120,31 +124,32 @@ fn v2_payload_mutations_fail_before_reservation_or_io() {
         }
         assert_eq!(
             control.reserve_native_prepared_v2(
-                prepared_request(),
+                prepared_request()?,
                 /*maximum_in_flight*/ 1,
                 changed
             ),
             Err(Error::Conflict),
             "{field}"
         );
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
         assert!(control.native_record("r1").is_none());
     }
     control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
-    let mut replacement = prepared_request();
+    let mut replacement = prepared_request()?;
     replacement.model = "replacement-model".to_string();
     assert_eq!(
-        control.reserve_native_prepared_v2(replacement, /*maximum_in_flight*/ 1, input()),
+        control.reserve_native_prepared_v2(replacement, /*maximum_in_flight*/ 1, input()?),
         Err(Error::Conflict)
     );
     drop(control);
     std::fs::remove_file(path).unwrap();
+    Ok(())
 }
 
 #[test]
-fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
+fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() -> TestResult<()> {
     for field in [
         "schema",
         "empty",
@@ -158,7 +163,7 @@ fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
         "deadline",
         "digest",
     ] {
-        let mut changed = input();
+        let mut changed = input()?;
         match field {
             "schema" => changed.schema_version = 1,
             "empty" => changed.prompt.clear(),
@@ -188,7 +193,7 @@ fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
         }
         assert!(changed.payload_digest().is_err(), "{field}");
     }
-    let value = serde_json::to_value(input()).unwrap();
+    let value = serde_json::to_value(input()?).unwrap();
     for field in [
         "run_id",
         "request_digest",
@@ -213,14 +218,15 @@ fn v2_malformed_input_and_missing_snapshot_fields_are_rejected() {
     let mut unknown = value;
     unknown["intelligence"]["snapshot"]["current_snapshot_fallback"] = true.into();
     assert!(serde_json::from_value::<NativePreparedInputV2>(unknown).is_err());
+    Ok(())
 }
 
 #[test]
-fn v2_replay_rejects_replaced_input_without_repairing_bytes() {
+fn v2_replay_rejects_replaced_input_without_repairing_bytes() -> TestResult<()> {
     let path = path("prepared-v2-corruption");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
     drop(control);
     let original = std::fs::read_to_string(&path).unwrap();
@@ -230,19 +236,20 @@ fn v2_replay_rejects_replaced_input_without_repairing_bytes() {
     assert!(DurableInferenceControl::open(&path, /*capacity*/ 8).is_err());
     assert_eq!(std::fs::read_to_string(&path).unwrap(), changed);
     std::fs::remove_file(path).unwrap();
+    Ok(())
 }
 
 #[test]
-fn v2_never_upgrades_digest_only_history_from_ambient_input() {
+fn v2_never_upgrades_digest_only_history_from_ambient_input() -> TestResult<()> {
     let path = path("prepared-v2-legacy");
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let legacy = control
-        .reserve_native(prepared_request(), /*maximum_in_flight*/ 1)
+        .reserve_native(prepared_request()?, /*maximum_in_flight*/ 1)
         .unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     assert_eq!(
         control
-            .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+            .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
             .unwrap(),
         legacy
     );
@@ -253,7 +260,7 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
             .prepared_input_v2
             .is_none()
     );
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     drop(control);
     let control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     assert!(
@@ -265,11 +272,12 @@ fn v2_never_upgrades_digest_only_history_from_ambient_input() {
     );
     drop(control);
     std::fs::remove_file(path).unwrap();
+    Ok(())
 }
 
 #[test]
-fn v1_run_id_only_input_cannot_be_reinterpreted_as_v3() {
-    let mut legacy = serde_json::to_value(input()).unwrap();
+fn v1_run_id_only_input_cannot_be_reinterpreted_as_v3() -> TestResult<()> {
+    let mut legacy = serde_json::to_value(input()?).unwrap();
     legacy["schema_version"] = 1.into();
     legacy["intelligence"]
         .as_object_mut()
@@ -277,23 +285,24 @@ fn v1_run_id_only_input_cannot_be_reinterpreted_as_v3() {
         .remove("snapshot");
     legacy["intelligence"]["run_id"] = "original-intelligence-run".into();
     assert!(serde_json::from_value::<NativePreparedInputV2>(legacy).is_err());
+    Ok(())
 }
 
 #[test]
-fn v2_prepared_input_crash_child() {
+fn v2_prepared_input_crash_child() -> TestResult<()> {
     let Some(path) = std::env::var_os("HEPTA_NATIVE_PREPARED_V2_CHILD") else {
-        return;
+        return Ok(());
     };
     let mut control = DurableInferenceControl::open(PathBuf::from(path), /*capacity*/ 8).unwrap();
     control
-        .reserve_native_prepared_v2(prepared_request(), /*maximum_in_flight*/ 1, input())
+        .reserve_native_prepared_v2(prepared_request()?, /*maximum_in_flight*/ 1, input()?)
         .unwrap();
     control.dispatch_native("r1", dispatch()).unwrap();
     std::process::exit(0);
 }
 
 #[test]
-fn v2_process_loss_retains_original_input_and_uncertain_slot() {
+fn v2_process_loss_retains_original_input_and_uncertain_slot() -> TestResult<()> {
     let path = path("prepared-v2-process-loss");
     let status = std::process::Command::new(std::env::current_exe().unwrap())
         .args([
@@ -306,7 +315,7 @@ fn v2_process_loss_retains_original_input_and_uncertain_slot() {
     assert!(status.success());
     let mut control = DurableInferenceControl::open(&path, /*capacity*/ 8).unwrap();
     let recovered = control.native_record("r1").unwrap();
-    assert_eq!(recovered.prepared_input_v2, Some(input()));
+    assert_eq!(recovered.prepared_input_v2, Some(input()?));
     assert_eq!(recovered.state, NativeReservationState::Dispatching);
     assert_eq!(
         control.reserve_native(request("new"), /*maximum_in_flight*/ 1),
@@ -318,6 +327,7 @@ fn v2_process_loss_retains_original_input_and_uncertain_slot() {
     );
     drop(control);
     std::fs::remove_file(path).unwrap();
+    Ok(())
 }
 
 #[path = "native_compaction_v3_tests.rs"]

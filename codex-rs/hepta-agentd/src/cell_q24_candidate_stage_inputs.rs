@@ -111,27 +111,31 @@ pub(super) fn bind(
     .map_err(|_| Error::OwnerUnavailable("original Candidate initial connection"))?;
     let evaluator = match origin {
         Origin::Fresh => OriginalCellEvaluationCommandConnectionV1::from_original_stream(
-            evaluator.stream,
-            evaluator.peer,
-            evaluator.original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream: evaluator.stream,
+                peer: evaluator.peer,
+                original_owner_pidfd: evaluator.original_owner_pidfd,
+                timeout: evaluator.timeout,
+                lifetime: evaluator.lifetime,
+            },
             material.initial.clone(),
             material.scope.clone(),
             protocol.clone(),
             material.verifier.clone(),
-            evaluator.timeout,
-            evaluator.lifetime,
         ),
         Origin::Recovered => {
             OriginalCellEvaluationCommandConnectionV1::recover_from_original_stream(
-                evaluator.stream,
-                evaluator.peer,
-                evaluator.original_owner_pidfd,
+                crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                    stream: evaluator.stream,
+                    peer: evaluator.peer,
+                    original_owner_pidfd: evaluator.original_owner_pidfd,
+                    timeout: evaluator.timeout,
+                    lifetime: evaluator.lifetime,
+                },
                 material.initial.clone(),
                 material.scope.clone(),
                 protocol.clone(),
                 material.verifier.clone(),
-                evaluator.timeout,
-                evaluator.lifetime,
             )
         }
     }
@@ -147,14 +151,10 @@ pub(super) fn bind(
             model.lifetime,
         ),
         Origin::Recovered => OriginalCellQ24ModelCommandConnectionV1::recover_from_original_stream(
-            model.stream,
-            model.peer,
-            model.original_owner_pidfd,
+            model,
             material.clone(),
             protocol.clone(),
             /*expected*/ None,
-            model.timeout,
-            model.lifetime,
         ),
     }
     .map_err(|_| Error::OwnerUnavailable("original Model initial connection"))?;

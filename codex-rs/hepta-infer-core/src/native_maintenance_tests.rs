@@ -1,5 +1,6 @@
 //! Storage regression matrix; child entry points are invoked by parent tests.
 use super::*;
+use crate::durable_control::tests::held_journal_bytes;
 use std::io::Write;
 
 #[test]
@@ -55,11 +56,11 @@ fn compaction_failure_retains_old_bytes_and_all_responsibilities() {
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     start(&mut control, "live");
     let before = control.native_record("live").unwrap().clone();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     let temp = crate::durable_control::compaction_path(&path);
     std::fs::create_dir(&temp).unwrap();
     assert!(control.compact_journal().is_err());
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     assert_eq!(control.native_record("live"), Some(&before));
     assert!(!control.poisoned);
     std::fs::remove_dir(&temp).unwrap();
@@ -187,7 +188,7 @@ fn checkpoint_truncation_at_a_complete_record_never_publishes_a_prefix() {
     control.reserve_native(request("first"), 2).unwrap();
     control.reserve_native(request("second"), 2).unwrap();
     control.compact_journal().unwrap();
-    let full = std::fs::read_to_string(&path).unwrap();
+    let full = String::from_utf8(held_journal_bytes(&control.file).unwrap()).unwrap();
     drop(control);
     let lines: Vec<_> = full.split_inclusive('\n').collect();
     assert_eq!(lines.len(), 4);
@@ -223,7 +224,7 @@ fn checkpoint_state_mutation_is_rejected_without_repairing_the_source() {
         .settle_native("live", output(NativeRunStatus::Completed, Some(1)))
         .unwrap();
     control.compact_journal().unwrap();
-    let full = std::fs::read_to_string(&path).unwrap();
+    let full = String::from_utf8(held_journal_bytes(&control.file).unwrap()).unwrap();
     drop(control);
     let lines: Vec<_> = full.lines().collect();
     let checkpoint: serde_json::Value =

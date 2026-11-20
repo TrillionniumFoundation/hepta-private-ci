@@ -31,7 +31,7 @@ pub enum CircuitTaskLearningReadinessV1 {
     NonLearning,
     Pending(CircuitTaskLearningPendingV1),
     #[cfg(target_os = "linux")]
-    Ready(crate::OriginalCellQ24TaskLearningReadyV1),
+    Ready(Box<crate::OriginalCellQ24TaskLearningReadyV1>),
     #[cfg(target_os = "linux")]
     Retained(crate::OriginalCellQ24RetainedLearningReadyV1),
 }
@@ -157,7 +157,7 @@ impl AgentdState {
             }
             #[cfg(target_os = "linux")]
             CircuitTaskLearningReadinessV1::Ready(ready) => {
-                let ready: crate::OriginalCellQ24TaskLearningReadyV1 = ready;
+                let ready: crate::OriginalCellQ24TaskLearningReadyV1 = *ready;
                 if origin.is_none() {
                     return Ok(());
                 }

@@ -567,7 +567,7 @@ fn decode_claims(bytes: &[u8], authority_epoch: u64) -> Result<BTreeSet<[u8; 32]
         return Err(FinalUseError::InvalidTrust);
     }
     let mut claims = BTreeSet::new();
-    for frame in bytes.chunks_exact(CLAIM_FRAME_BYTES) {
+    for frame in bytes.as_chunks::<CLAIM_FRAME_BYTES>().0 {
         let mut epoch_bytes = [0u8; 8];
         epoch_bytes.copy_from_slice(&frame[..8]);
         let epoch = u64::from_be_bytes(epoch_bytes);

@@ -13,8 +13,8 @@ from typing import Any
 
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 REMOTE_URL = f"https://github.com/{REPOSITORY}.git"
-SCHEMA = "hepta.branch-retirement.v2"
-PROTECTION_SCHEMA = "hepta.branch-protection.v1"
+SCHEMA = "hepta.branch-retirement.v3"
+PROTECTION_SCHEMA = "hepta.branch-protection.v2"
 DEFAULT_PROTECTION = Path(__file__).with_name("protected-branches.json")
 
 
@@ -22,9 +22,15 @@ class RefSafetyError(RuntimeError):
     """The requested ref operation cannot be proved safe."""
 
 
-def git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+def git(
+    root: Path,
+    *args: str,
+    check: bool = True,
+    input_text: str | None = None,
+) -> subprocess.CompletedProcess[str]:
     result = subprocess.run(
-        ["git", "-C", str(root), *args],
+        ["git", "--no-replace-objects", "-C", str(root), *args],
+        input=input_text,
         capture_output=True,
         text=True,
         encoding="utf-8",
@@ -84,18 +90,21 @@ def protected_branches(
     heads: dict[str, str],
     manifest: dict[str, Any],
 ) -> dict[str, list[str]]:
-    """Protect exact names, HIA descendants, and bases used by protected PRs."""
+    """Protect historical names, exact pins and every descendant of those pins."""
     if (
         manifest.get("schema") != PROTECTION_SCHEMA
         or manifest.get("repository") != REPOSITORY
     ):
         raise RefSafetyError("Wrong protection manifest schema or repository")
-    roots = manifest.get("hiaRootCommits")
-    if not isinstance(roots, list) or any(
-        not isinstance(sha, str) or not re.fullmatch(r"[0-9a-f]{40}", sha)
-        for sha in roots
-    ):
-        raise RefSafetyError("Invalid protected ancestry roots")
+    seeds = set()
+    for key in ("hiaRootCommits", "historicalProtectedCommits"):
+        records = manifest.get(key)
+        if not isinstance(records, list) or any(
+            not isinstance(sha, str) or not re.fullmatch(r"[0-9a-f]{40}", sha)
+            for sha in records
+        ):
+            raise RefSafetyError("Invalid protected ancestry pins")
+        seeds.update(records)
     for key in ("protectedHeads", "protectedBaseHeads"):
         records = manifest.get(key)
         if not isinstance(records, dict):
@@ -113,23 +122,103 @@ def protected_branches(
                 or not re.fullmatch(r"[0-9a-f]{40}", sha)
             ):
                 raise RefSafetyError("Invalid protected branch identity")
-    for sha in roots:
-        git(root, "cat-file", "-e", f"{sha}^{{commit}}")
-    protected = {}
+        seeds.update(records.values())
+
+    named = {}
     for name, sha in heads.items():
+        if not isinstance(sha, str) or not re.fullmatch(r"[0-9a-f]{40}", sha):
+            raise RefSafetyError("Invalid live protected ancestry input")
         reasons = []
-        if re.search(r"(?:^|[/._-])hia(?:$|[/._-])", name, re.IGNORECASE):
+        if "hia" in name.lower():
             reasons.append("hia_branch_name")
         if name in manifest["protectedHeads"]:
             reasons.append("explicit_protected_branch")
         if name in manifest["protectedBaseHeads"]:
             reasons.append("protected_pr_base")
-        reasons += [
-            f"hia_ancestor:{seed}" for seed in roots if ancestor(root, seed, sha)
-        ]
+        if reasons:
+            named[name] = reasons
+            seeds.add(sha)
+
+    if git(root, "rev-parse", "--is-shallow-repository").stdout.strip() != "false":
+        raise RefSafetyError("Protected ancestry requires complete, non-shallow history")
+    grafts = Path(git(root, "rev-parse", "--git-path", "info/grafts").stdout.strip())
+    if not grafts.is_absolute():
+        grafts = root / grafts
+    if grafts.exists() and grafts.read_text().strip():
+        raise RefSafetyError("Protected ancestry refuses grafted history")
+
+    # One complete graph avoids a subprocess for each branch/pin pair.
+    ordered_seeds = sorted(seeds)
+    seed_bits = {sha: 1 << index for index, sha in enumerate(ordered_seeds)}
+    revisions = seeds | set(heads.values())
+    graph = git(
+        root,
+        "rev-list",
+        "--parents",
+        "--topo-order",
+        "--reverse",
+        "--stdin",
+        input_text="\n".join(sorted(revisions)) + "\n",
+    )
+    masks = {}
+    for row in graph.stdout.splitlines():
+        parts = row.split()
+        if not parts or any(not re.fullmatch(r"[0-9a-f]{40}", sha) for sha in parts):
+            raise RefSafetyError("Invalid commit parent graph")
+        sha, *parents = parts
+        if sha in masks:
+            raise RefSafetyError("Duplicate commit in parent graph")
+        mask = seed_bits.get(sha, 0)
+        for parent in parents:
+            if parent not in masks:
+                raise RefSafetyError("Missing or unordered commit parent")
+            mask |= masks[parent]
+        masks[sha] = mask
+    if revisions - masks.keys():
+        raise RefSafetyError("Protected pin or live head is missing from history")
+
+    protected = {}
+    for name, sha in heads.items():
+        reasons = named.get(name, [])
+        if not reasons:
+            reasons = [
+                f"hia_ancestor:{seed}"
+                for index, seed in enumerate(ordered_seeds)
+                if masks[sha] & (1 << index)
+            ]
         if reasons:
             protected[name] = reasons
     return protected
+
+
+def freeze_protection(
+    heads: dict[str, str],
+    protection: dict[str, Any],
+    protected: dict[str, list[str]],
+) -> dict[str, Any]:
+    """Retain previous pins before advancing observed protected names."""
+    frozen_protection = {
+        **protection,
+        "protectedHeads": dict(protection["protectedHeads"]),
+        "protectedBaseHeads": dict(protection["protectedBaseHeads"]),
+        "historicalProtectedCommits": sorted(
+            set(protection["historicalProtectedCommits"])
+            | set(protection["hiaRootCommits"])
+            | set(protection["protectedHeads"].values())
+            | set(protection["protectedBaseHeads"].values())
+            | {heads[name] for name in protected if name != "main"}
+        ),
+    }
+    for name in protected:
+        if name == "main":
+            continue
+        key = (
+            "protectedBaseHeads"
+            if name in frozen_protection["protectedBaseHeads"]
+            else "protectedHeads"
+        )
+        frozen_protection[key][name] = heads[name]
+    return frozen_protection
 
 
 def plan_retirement(
@@ -140,6 +229,7 @@ def plan_retirement(
     heads = remote_heads(root)
     default = remote_default(root)
     protected = protected_branches(root, heads, protection)
+    frozen_protection = freeze_protection(heads, protection, protected)
     rows = []
     for name, sha in sorted(heads.items()):
         local_ref = f"refs/remotes/origin/{name}"
@@ -212,7 +302,7 @@ def plan_retirement(
         "main": heads["main"],
         "defaultBranch": default,
         "branches": rows,
-        "protectionManifest": protection,
+        "protectionManifest": frozen_protection,
         "bundleSha256": sha256(bundle),
         "backupVerified": True,
         "allHeadsRetainedByMain": all(row["ancestorOfMain"] for row in rows),
@@ -235,6 +325,11 @@ def apply_retirement(
     path = output / "plan.json"
     if sha256(path) != expected_plan_sha256:
         raise RefSafetyError("Plan digest mismatch")
+    attempt_path = output / "attempt.json"
+    if attempt_path.exists():
+        raise RefSafetyError(
+            "Plan already attempted; reconcile its journal and create a fresh plan"
+        )
     plan = json.loads(path.read_text())
     bundle = output / "all-branches.bundle"
     if plan.get("schema") != SCHEMA or plan.get("repository") != REPOSITORY:
@@ -251,6 +346,7 @@ def apply_retirement(
     if not isinstance(protection, dict):
         raise RefSafetyError("Frozen protection manifest missing")
     protected = protected_branches(root, current, protection)
+    observed_protection = freeze_protection(current, protection, protected)
     if not ancestor(root, plan["main"], current["main"]):
         raise RefSafetyError("Main history was replaced; abort all deletions")
     deletions = []
@@ -270,7 +366,7 @@ def apply_retirement(
         else:
             deletions.append((name, sha))
     receipt: dict[str, Any] = {
-        "schema": "hepta.branch-retirement-receipt.v2",
+        "schema": "hepta.branch-retirement-receipt.v3",
         "planSha256": expected_plan_sha256,
         "main": current["main"],
         "defaultBranch": default,
@@ -280,7 +376,33 @@ def apply_retirement(
         "sourceChangesMade": False,
         "singleMainRefVerified": False,
         "protectedBranches": protected,
+        "protectionManifest": observed_protection,
+        "attemptJournal": attempt_path.name,
     }
+    attempt = {
+        "schema": "hepta.branch-retirement-attempt.v1",
+        "planSha256": expected_plan_sha256,
+        "main": current["main"],
+        "defaultBranch": default,
+        "protectionManifest": observed_protection,
+        "requestedDeletions": [
+            {"branch": name, "sha": sha} for name, sha in deletions
+        ],
+    }
+    try:
+        with attempt_path.open("x", encoding="utf-8") as stream:
+            json.dump(attempt, stream, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        if os.name == "posix":
+            directory_fd = os.open(output, os.O_RDONLY | os.O_DIRECTORY)
+            try:
+                os.fsync(directory_fd)
+            finally:
+                os.close(directory_fd)
+    except FileExistsError as error:
+        raise RefSafetyError("Another application attempt already owns this plan") from error
     if deletions:
         args = ["push", "--atomic", "--porcelain"]
         args += [

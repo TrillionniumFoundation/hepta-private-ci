@@ -2,6 +2,7 @@
 //! historical refusal arms. No owner handoff escapes until their postchecks.
 
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_historical_task_read_protocol::POST_A_PURPOSE;
 use crate::root_historical_task_read_protocol::PostAFrozenLearningResponseV1;
 
@@ -90,15 +91,17 @@ impl HistoricalTaskReadRuntime {
                             .to_string();
                     let installation = post_a::PostALearningRuntime::prepare_original_installation(
                         post_a,
-                        service,
-                        config,
-                        registration,
-                        owner,
+                        HostAuthorityCallInputs {
+                            service,
+                            config,
+                            registration,
+                            owner,
+                            end,
+                        },
                         &proof,
                         &initial,
                         &observed,
                         &self.learning_trust,
-                        end,
                         session_end,
                     )?;
                     let reply = serde_json::to_vec(&PostAFrozenLearningResponseV1 {

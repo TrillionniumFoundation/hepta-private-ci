@@ -135,15 +135,28 @@ fn original_holdout_consumption_refuses_corruption_then_restoration() {
     let last = corrupt.len() - 1;
     corrupt[last] ^= 1;
     overwrite(&mut observation, &corrupt);
-    assert_eq!(
-        original.read_consumption(&frozen),
-        Err(crate::FencedHoldoutError::Indeterminate)
-    );
+    let read_error = Err(crate::FencedHoldoutError::Store(
+        FinalHoldoutCasStoreError::Indeterminate,
+    ));
+    assert_eq!(original.read_consumption(&frozen), read_error);
     assert!(original.is_poisoned());
     overwrite(&mut observation, &saved);
+    assert_eq!(original.read_consumption(&frozen), read_error);
+    assert_eq!(
+        original.consume(&frozen),
+        Err(crate::FencedHoldoutError::Indeterminate)
+    );
+    assert_eq!(
+        original.consume(&frozen),
+        Err(crate::FencedHoldoutError::Poisoned)
+    );
     assert_eq!(
         original.read_consumption(&frozen),
         Err(crate::FencedHoldoutError::Poisoned)
+    );
+    assert_eq!(
+        read_held_bytes(&mut observation).unwrap_or_else(|error| panic!("read restore: {error}")),
+        saved
     );
 }
 

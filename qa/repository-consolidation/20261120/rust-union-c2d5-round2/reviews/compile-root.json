@@ -1,0 +1,228 @@
+{
+  "status": "INDEPENDENT_SOURCE_REVIEW_ACCEPTED_NATIVE_PENDING",
+  "base_server": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "base_tree": "75127f7175708277f28974daff78cc6e7d92ab0c",
+  "manifest_sha256": "9f2de460fadc3a8e790bb0ebe942895ffc0840a18786a922134909dc2a2bb8b1",
+  "patch_sha256": "57ee4a45b0314268241398317913670b3cae16d3c1c6f1e5c0eede740dc5094a",
+  "files": [
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor_tests.rs",
+      "before": {
+        "git_blob": "2b608ef0738f54c455565866e92d90e66e480156",
+        "sha256": "1d8aceada0f8a994b80d1da351e0caa1100f19fa0283d6cef6d46049686c4493",
+        "size": 57628
+      },
+      "after": {
+        "git_blob": "d5f05481849b7441e17de109a67efed59ce184b1",
+        "sha256": "bcd5beb67c99de5c74c436014ce6797dba4a00ce0bd3cd90ee830a8a7638d6c9",
+        "size": 57788
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/rollout.rs",
+      "before": {
+        "git_blob": "58925ef00fe2ff3dff237e22cf47cfd59d725c31",
+        "sha256": "e7f90d29886a4a801629903cdea4b8fc719655afbd1f1a9b80131b717af609f2",
+        "size": 13043
+      },
+      "after": {
+        "git_blob": "28365554da578b5723e0a2baffd5788b4e093664",
+        "sha256": "e8c283c6de59478c47b170f8c64a0d022ef940fbacd82196acae93749ccf7c22",
+        "size": 12605
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "before": {
+        "git_blob": "60a8683da6529cba031112483555f9a800a5bff2",
+        "sha256": "c6857cb225112f97590ebd4c07ca20680ed27c212059a104e7507f089d7f41ef",
+        "size": 78551
+      },
+      "after": {
+        "git_blob": "73134fa2d2a1af3ba17e30749f382a29b4c8f8ce",
+        "sha256": "ec8a2104c2982a68f3e7c90a02f9a1c40ed8cf7bf8196e0a3f1e2d3a6daf283a",
+        "size": 78701
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "before": {
+        "git_blob": "a13ae5ee872d9ac889c1ee2f0a4d393cf9286a2a",
+        "sha256": "57bb68e35b7cf9d727cf794c4a25fd1e9f43705beb2cc627155e2057a3799716",
+        "size": 194711
+      },
+      "after": {
+        "git_blob": "efc0c62ce6326637e5626f943375197035973cd3",
+        "sha256": "a0df96d0717a0c0c026586138585f01ea5cd1ba7bff5303571291f98201234c7",
+        "size": 194861
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_task_ledger_history_tests.rs",
+      "before": {
+        "git_blob": "189e634f6685c27c4b163263d879724646ee1d28",
+        "sha256": "4318980772f45bdad09bf1a9f4b4637b79e47af03d5abeab3d126a431a77ffa8",
+        "size": 8163
+      },
+      "after": {
+        "git_blob": "f017dd6f3e5d0861faa7ee3c4244f3a0ac1ceff9",
+        "sha256": "a5287aa5875cbb99d9cd6208c506e78f640101ce2b4b7c2e62ab295523364376",
+        "size": 8165
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_candidate_tests.rs",
+      "before": {
+        "git_blob": "1974bc6355cbe6f9cfce96eb91ae93bbb03ea778",
+        "sha256": "1b578ca868ed2044dadb3831b564c76986ffd4c7b363d8f2974993410b2ed645",
+        "size": 26091
+      },
+      "after": {
+        "git_blob": "4cb19cd82cf986b78900539cb352e0b1058dcffa",
+        "sha256": "a5ad71eb62ff5dea339e1d1112e78746f5d0cb9146095b2360f64423a8c97654",
+        "size": 26092
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_command_connection_support_tests.rs",
+      "before": {
+        "git_blob": "3546571b4cb448383c76b7ff11bf14a19104e86f",
+        "sha256": "7a2759950fc8def989df0d65965489f3c6ea03c6283ac057d70c89149cb6d4c7",
+        "size": 2282
+      },
+      "after": {
+        "git_blob": "1a6da84fd666213a8753f071e1bcbaebed092e22",
+        "sha256": "2f5d49bc5d215002aa054c9784da9dc6a1bbc0d88ae9f3b7791129ef6d24b881",
+        "size": 2296
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_connection_support_tests.rs",
+      "before": {
+        "git_blob": "8b70bdb504fda547e75e7942803f3b440540a68c",
+        "sha256": "6e798d493d7c27713da780b5d7f712dfc4eeb1606e7f8945f2aa084cca97b6b4",
+        "size": 20930
+      },
+      "after": {
+        "git_blob": "b17c3a262913b8cd05b80adafd62d6df027eda37",
+        "sha256": "69437d6ccfe9f923623449b042300afe63aa525f7db3bb62494d9b4f50614f9e",
+        "size": 20991
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/bottom_pane/chat_composer.rs",
+      "before": {
+        "git_blob": "2d380c56c37cd667cfe37f3f045286db109f0fa1",
+        "sha256": "63b7f250528c5dd5fbdad6cf5c7712c8dc7548debd0a3a42cfb1fd4ecb9abfc3",
+        "size": 507665
+      },
+      "after": {
+        "git_blob": "fd07ca585c019205eb3299b77cef1cfd7de3a717",
+        "sha256": "b83dd76a4b7b3852ede526a3aeed2e112e95be4628efcf5bf1aa3455d7ab94e8",
+        "size": 507869
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/bottom_pane/chat_composer_shift_tests.rs",
+      "before": null,
+      "after": {
+        "git_blob": "da88d735dcb532045c8f32d209fc94c51cd53ff7",
+        "sha256": "5f11cd7b05a1e81864a92ea33c71a75e8b30c7cc4eee08d43a6c47cc65cbfa29",
+        "size": 1014
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/lib.rs",
+      "before": {
+        "git_blob": "7400fdb968a00926b979ddcd2c6dadb66befb741",
+        "sha256": "3a3f1ef5cf36644c4babcad44fd487b07ec26dec0aad33af8c2d1ef5fc42b5b5",
+        "size": 123162
+      },
+      "after": {
+        "git_blob": "bde176578cba8f8dc7890c2a3f85574460e19c2e",
+        "sha256": "fe41a089e5d3046c23258cf1739133f0bc797ff0f7117e3767986e1e7f7dce79",
+        "size": 123328
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/named_session_lookup_tests.rs",
+      "before": {
+        "git_blob": "9a218d14b3e8e4030bceb8229ae876837a5a2f66",
+        "sha256": "5ac4140ae08101f648b4d042d1d259bd5190a9b36e1f624d8b69803bbd90bb5d",
+        "size": 16029
+      },
+      "after": {
+        "git_blob": "5904c01a8f4edd2bd164cabe50fce05c011303de",
+        "sha256": "8bcdb53279c475dcb091a9df27b4a4a681c5d5cdce9c056de566a15cf219b12b",
+        "size": 16363
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/tui/src/session_archive_commands_tests.rs",
+      "before": {
+        "git_blob": "f864858c50b7a67555aef8e6a9e61076167f2fb8",
+        "sha256": "a5d9a609a679af73d0e4d9c9f7d1b2ddadc4d749425f5c381015a387f867086c",
+        "size": 15300
+      },
+      "after": {
+        "git_blob": "6bdeb9d1408e9b6eaf4b1ff0f42f32face01c7f8",
+        "sha256": "49494245579ce28b44077d52d25b5775f5d7d5bb8f1fb7a3dabcc2bcdfd963f3",
+        "size": 15531
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/time/src/lib.rs",
+      "before": {
+        "git_blob": "ada3d522975c221122fd2df318d98075c72143fd",
+        "sha256": "6a526157aaa3ec685d177aae7f268cecd6dd2943cd0f08c34bcc219866f468f3",
+        "size": 14793
+      },
+      "after": {
+        "git_blob": "da9eefdc92e9e1e29a23d99b2b31a0a3291501fd",
+        "sha256": "a1e49c21db9ee909b7720c17488b472e2b8d1c55bd6c4c7c016084a3908f689d",
+        "size": 15473
+      },
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/time/src/timestamp_tests.rs",
+      "before": {
+        "git_blob": "6f174dd0722f9bb8c3bbdb244b5396b3aa5ead25",
+        "sha256": "e9b0f4c037bba5f1ba7813e8c8f54845f6d0657b5e24d6a1a3e7b2f497165eb7",
+        "size": 6211
+      },
+      "after": {
+        "git_blob": "4212c00916a6da25e68ff9408dec8032ffccc55d",
+        "sha256": "efb638dbb49bc7e02558523ee167a310efc4f6683190f28324db1c9d54f07adc",
+        "size": 9377
+      },
+      "mode": "100644"
+    }
+  ],
+  "review_findings": [
+    "All 15 final afterimages independently match Git blob, SHA256 and byte size; 14 existing before modes/blobs match exact base tree; new test path is absent.",
+    "Full minimal patch reviewed against actual compiler categories; no assertion weakening or production ledger/lease/signature edits.",
+    "Timestamp conversion computes i128 signed total nanoseconds, safely decomposes its unsigned magnitude, and performs one checked epoch operation; negative fractions and leap normalization preserve the prior rollout behavior.",
+    "Every original utility implementation byte remains after removing the one additive conversion method; the original timestamp tests remain an exact prefix.",
+    "The TUI signed shift handles both positive and negative offsets and retains empty-range refusal. New sibling tests cover positive, zero, negative, underflow, overflow and empty ranges.",
+    "Three incompatible anyhow-to-eyre fixture error constructions were corrected before freezing. Final TUI conversions use std::io::Error::other and retain the original Result type.",
+    "Fixture increments retain an explicit failure if checked arithmetic cannot represent the expected time; Box adaptations match the existing API without changing production ownership logic.",
+    "Existing rollout regression is one test with three real mtime cases and remains composed with the earlier exact formatter afterimage."
+  ],
+  "tests": "NOT_RUN: local just/rustc/cargo/rustfmt unavailable; exact newly published CI must qualify",
+  "rustfmt": "NOT_RUN",
+  "remote_changes": false
+}

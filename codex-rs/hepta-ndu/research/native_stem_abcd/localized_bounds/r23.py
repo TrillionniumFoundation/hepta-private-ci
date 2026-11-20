@@ -29,7 +29,7 @@ def cert(n,out,cap=4000):
                 if keep:heappush(heap,(float(lo),idx,lo,child))
                 else:pruned+=1
                 children.append(dict(id=idx,box=c.old.encode_box(child),lower=str(lo),kept=keep))
-            f.write(json.dumps(dict(id=ident,lower=str(low),parent=c.old.encode_box(box),axis=axis,children=children)+'\n')
+            f.write(json.dumps(dict(id=ident,lower=str(low),parent=c.old.encode_box(box),axis=axis,children=children))+'\n')
             count+=1
     with (out/'FRONTIER.jsonl').open('x') as f:
         for _,i,lo,box in sorted(heap,key=lambda z:z[1]):

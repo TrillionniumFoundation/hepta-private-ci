@@ -51,7 +51,7 @@ class OriginalMaterialCommandClosureTests(unittest.TestCase):
 
     def rows(self, path):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), {PAIR: 2}.get(path, 1))
+        self.assertEqual(len(rows), 1)
         return rows
 
     def rejects(self, path, function, marker, replacement=""):

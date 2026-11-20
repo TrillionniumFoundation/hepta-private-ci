@@ -21,15 +21,16 @@ pub(in crate::production_launcher::post_a_q24) struct OriginalExistingCTask {
 impl OriginalCTaskPlan {
     pub(in crate::production_launcher::post_a_q24) async fn open_original_existing_task(
         self,
-        route: &OriginalPreparedPublicationRoute,
-        identity: &AgentdIdentity,
-        decision: &Decision,
-        selected: &CellBackendManifestV2,
+        selection: OriginalCTaskSelectionInputs<'_>,
         baseline: Arc<LoadedCellQ24ModelV1>,
         owners: &OriginalCellQ24LearningStageOwnersV1,
         files: &mut OriginalFiles,
         cancelled: &CancellationToken,
     ) -> Result<OriginalExistingCTask, AgentdError> {
+        let route: &OriginalPreparedPublicationRoute = selection.route;
+        let identity: &AgentdIdentity = selection.identity;
+        let decision: &Decision = selection.decision;
+        let selected: &CellBackendManifestV2 = selection.selected;
         if !OriginalCTaskPlan::require_original_mode(&self, route)? {
             return Err(refused("existing C requires the original Recover route"));
         }

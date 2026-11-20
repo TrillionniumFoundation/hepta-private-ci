@@ -19,6 +19,7 @@ use codex_hepta_types::StableId;
 use crate::WorkControlError;
 use crate::WorkControlV1;
 
+#[cfg(any(test, feature = "compatibility-api"))]
 const MAX_COMPATIBILITY_SAMPLES: usize = 16_384;
 const MAX_QUALIFIED_SAMPLES: usize = 65_536;
 const MAX_STATE_ACTIONS: usize = 16_384;
@@ -119,6 +120,7 @@ struct Group {
 }
 
 /// Compatibility fit with a reduced default ceiling.
+#[cfg(any(test, feature = "compatibility-api"))]
 pub fn fit_transition_model(
     model_id: StableId,
     dataset_digest: Digest32,

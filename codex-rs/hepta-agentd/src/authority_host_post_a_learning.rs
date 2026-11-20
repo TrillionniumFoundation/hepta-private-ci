@@ -4,7 +4,6 @@
 
 use std::fs::File;
 use std::io;
-use std::os::fd::OwnedFd;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -34,6 +33,8 @@ use crate::HostAuthorityRegistration;
 use crate::HostAuthorityService;
 use crate::HostAuthorityServiceConfig;
 use crate::RootQ24ModelFactoryOfferV1;
+use crate::authority_host_config::HostAuthorityCallInputs;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 use crate::authority_host_runtime::OriginalRootIndependentBEvaluationFilesV1;
 use crate::authority_host_runtime::PreparedRootIndependentBEvaluationV1;
 use crate::authority_host_service::OriginalDerivedLearningMode;
@@ -41,9 +42,11 @@ use crate::authority_host_service::RegisteredHostLearningCheckpointV1;
 use crate::authority_host_service::generation_initial::historical_source_pin::RootOriginalHistoricalCompleteTaskObservationV1;
 use crate::authority_host_service::generation_initial::original_root;
 use crate::authority_host_service::generation_publication::PublicationVersion;
+use std::os::fd::OwnedFd;
 
 #[path = "authority_host_post_a_derive.rs"]
 mod derive;
+pub(super) use derive::PostAInitialInputs;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -121,17 +124,18 @@ impl PostALearningRuntime {
     }
     pub(super) fn prepare_original_installation(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        inputs: HostAuthorityCallInputs<'_>,
         proof: &str,
         initial: &LearningIterationSnapshotV1,
         observed: &RootOriginalHistoricalCompleteTaskObservationV1,
         trust: &RootHistoricalLearningTrustV1,
-        end: Instant,
         session_end: Instant,
     ) -> io::Result<PostALearningInstallation> {
+        let service: &HostAuthorityService = inputs.service;
+        let config: &HostAuthorityServiceConfig = inputs.config;
+        let registration: &HostAuthorityRegistration = inputs.registration;
+        let owner: &OwnedFd = inputs.owner;
+        let end: Instant = inputs.end;
         original_root()?;
         if end > session_end {
             return Err(io::Error::other(
@@ -141,9 +145,11 @@ impl PostALearningRuntime {
         let identity = registration.registered_identity.identity()?;
         self.with_original_derived_profile(
             service,
-            &identity,
-            proof,
-            initial,
+            PostAInitialInputs {
+                identity: &identity,
+                proof,
+                initial,
+            },
             observed,
             trust,
             end,
@@ -184,24 +190,28 @@ impl PostALearningRuntime {
                             OriginalRootIndependentBEvaluationFilesV1::register_original_b(
                                 path,
                                 initial,
-                                service,
-                                config,
-                                registration,
-                                owner,
+                                HostAuthorityCallInputs {
+                                    service,
+                                    config,
+                                    registration,
+                                    owner,
+                                    end,
+                                },
                                 &learning,
-                                end,
                                 session_end,
                             )?
                         } else {
                             OriginalRootIndependentBEvaluationFilesV1::reopen_original_b(
                                 path,
                                 initial,
-                                service,
-                                config,
-                                registration,
-                                owner,
+                                HostAuthorityCallInputs {
+                                    service,
+                                    config,
+                                    registration,
+                                    owner,
+                                    end,
+                                },
                                 &learning,
-                                end,
                                 session_end,
                             )?
                         };
@@ -239,9 +249,11 @@ impl PostALearningRuntime {
                         Some(files) => {
                             let (runtime, capability, offer) = prepare_original_publication_route(
                                 service,
-                                config,
-                                registration,
-                                owner,
+                                HostAuthorityRegistrationInputs {
+                                    config,
+                                    registration,
+                                    owner,
+                                },
                                 &learning,
                                 Some(session_end),
                                 PublicationVersion::DurableV2,

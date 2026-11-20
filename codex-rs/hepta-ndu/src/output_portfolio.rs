@@ -148,8 +148,7 @@ pub fn select_output_portfolio_v1(
             &weights,
             &scores,
             &covariance,
-            budget.risk_aversion,
-            budget.switch_penalty,
+            budget,
             candidates[index].protocol.requires_whole_candidate(),
         )?;
         weights[index] = weight;
@@ -415,10 +414,11 @@ fn covariance_positive_gain_weight(
     weights: &[FixedQ32],
     scores: &[FixedQ32],
     covariance: &[FixedQ32],
-    risk_aversion: FixedQ32,
-    switch_penalty: FixedQ32,
+    budget: &OutputPortfolioBudgetV1,
     atomic: bool,
 ) -> Result<FixedQ32, NduError> {
+    let risk_aversion = budget.risk_aversion;
+    let switch_penalty = budget.switch_penalty;
     let count = weights.len();
     let diagonal = covariance[index * count + index];
     let mut cross = FixedQ32::ZERO;

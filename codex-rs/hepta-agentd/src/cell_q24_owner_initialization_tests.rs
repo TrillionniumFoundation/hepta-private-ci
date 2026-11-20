@@ -35,12 +35,12 @@ fn sources(root: &Path, fixture: &Fixture) -> anyhow::Result<OriginalCellQ24Sour
             maximum_signature_lifetime_seconds: 600,
         })
     };
-    Ok(OriginalCellQ24SourceInputsV1::Files(
+    Ok(OriginalCellQ24SourceInputsV1::Files(Box::new(
         OriginalCellQ24SourceFilesV1 {
             experience: journal("experience")?,
             dataset: journal("dataset")?,
         },
-    ))
+    )))
 }
 
 fn trainers(
@@ -48,7 +48,7 @@ fn trainers(
     fixture: &Fixture,
     cut: &LearningIterationSnapshotV1,
 ) -> anyhow::Result<OriginalCellQ24TrainingInputsV1> {
-    Ok(OriginalCellQ24TrainingInputsV1::Files(
+    Ok(OriginalCellQ24TrainingInputsV1::Files(Box::new(
         OriginalCellQ24TrainingFilesV1 {
             training: file(&root.join("native"), "training")?,
             training_witness: original_witness(&root.join("native"), cut)?,
@@ -65,7 +65,7 @@ fn trainers(
                 .clone(),
             maximum_signature_lifetime_seconds: 600,
         },
-    ))
+    )))
 }
 
 fn initialize(root: &Path, fixture: &Fixture, mode: Mode) -> anyhow::Result<Initialized> {

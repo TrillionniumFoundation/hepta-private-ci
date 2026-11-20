@@ -42,6 +42,19 @@ codex_rust_crate(
     integration_compile_data_extra = [
         "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
     ],
+    # Retain the full qualification graph. Only the two Cargo opt-in generation
+    # harnesses select the worker's legacy composition qualification feature.
+    integration_test_dependency_replacements = {
+        "hepta-agentd-generation_neuron_calibration-test": {
+            "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+        },
+        "hepta-agentd-generation_plasticity_rejection-test": {
+            "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-generation-qualification-lib",
+        },
+        "hepta-agentd-plasticity_process_e2e-test": {
+            "//codex-rs/hepta-learning-ledger": "//codex-rs/hepta-learning-ledger:hepta-learning-ledger-qualification-lib",
+        },
+    },
     integration_test_extra_srcs = {
         "tests/neuron_generation_process_e2e.rs": [
             "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",

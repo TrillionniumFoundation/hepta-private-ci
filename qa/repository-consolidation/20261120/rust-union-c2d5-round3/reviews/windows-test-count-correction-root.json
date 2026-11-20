@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.root-test-count-correction.v1",
+  "observed_at": "2026-11-20T04:53:35.429680+00:00",
+  "supersedes_count_only": "/workspace/scratch/c2d514464ab5/root-review/round3-windows-test/ROOT-REVIEW.json",
+  "old_receipt_sha256": "a1b4ff0ec9b0d1d4abfe5780582561457081aef00b3be8035d23415ec288746c",
+  "correct_original_tests": 41,
+  "new_tests": 1,
+  "correct_after_tests": 42,
+  "cause": "Original count40 missed writer_process_child, whose original #[ignore] occurs between #[test] and fn. Every #[test] and intervening attribute was independently counted. The existing child and original --ignored invocation remain byte-for-byte unchanged; no test skip/ignore was introduced.",
+  "source_artifacts_changed": false,
+  "prior_source_semantic_decision_changed": false,
+  "original_assertions_unchanged_count": 177,
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "before_tests": [
+        "reopens_exact_committed_state",
+        "cancellation_after_assignment_waits_for_observation_and_accounts_usage",
+        "missing_terminal_observation_becomes_indeterminate",
+        "one_writer_is_held_until_owner_drop",
+        "invalid_event_is_rejected_before_append",
+        "owner_drop_releases_lock_with_duplicate_descriptor",
+        "qualification_observes_physical_same_length_changes_and_retains_the_lock_and_cursor",
+        "qualification_bound_failure_preserves_the_cursor_and_fences_further_writes",
+        "native_and_legacy_wal_fsync_emit_non_authorizing_phase_metrics",
+        "evidence_outage_is_not_an_authorization_failure_or_wal_retry",
+        "production_control_refuses_unsupported_platform",
+        "checkpoint_roundtrips_every_reachable_legacy_state_shape"
+      ],
+      "after_test_count": 13
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_incremental_tests.rs",
+      "before_tests": [
+        "one_record_commit_retains_unrelated_allocations_and_rejects_before_append",
+        "replay_rejects_cross_namespace_collision_in_both_orders"
+      ],
+      "after_test_count": 2
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_incremental_tests.rs",
+      "before_tests": [
+        "unrelated_updates_do_not_copy_historical_output_or_lose_other_reservations",
+        "rejected_transition_and_failed_append_preserve_records_and_slot_count",
+        "active_count_survives_unknown_outcome_reopen_and_terminal_refinement",
+        "owner_drop_releases_locks_held_by_duplicate_descriptors"
+      ],
+      "after_test_count": 4
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_maintenance_tests.rs",
+      "before_tests": [
+        "old_overcommitted_journal_can_release_without_admitting_new_work",
+        "compaction_failure_retains_old_bytes_and_all_responsibilities",
+        "checkpoint_revision_does_not_expand_into_historical_observation_copies",
+        "oversized_total_journal_is_rejected_without_rewriting_source",
+        "writer_process_child",
+        "writer_exclusion_survives_compaction_and_process_handoff",
+        "reserved_metadata_and_maximum_terminal_can_consume_their_own_headroom",
+        "checkpoint_truncation_at_a_complete_record_never_publishes_a_prefix",
+        "checkpoint_state_mutation_is_rejected_without_repairing_the_source"
+      ],
+      "after_test_count": 9
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_usage_tests.rs",
+      "before_tests": [
+        "terminal_without_usage_retains_settlement_liability_across_reopen",
+        "full_journal_accepts_small_usage_delta_without_rewriting_terminal_body",
+        "usage_delta_rejects_stale_predecessor_and_nonmonotonic_usage_before_append",
+        "usage_optimization_does_not_hide_terminal_identity_or_body_mutation",
+        "failed_usage_append_preserves_missing_usage_and_poisoned_owner_cannot_retry",
+        "legacy_full_observation_usage_refinement_replays_and_compacts"
+      ],
+      "after_test_count": 6
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/native_prepared_input_v2_tests.rs",
+      "before_tests": [
+        "v2_input_survives_reopen_exact_retry_and_all_later_events",
+        "v2_payload_mutations_fail_before_reservation_or_io",
+        "v2_malformed_input_and_missing_snapshot_fields_are_rejected",
+        "v2_replay_rejects_replaced_input_without_repairing_bytes",
+        "v2_never_upgrades_digest_only_history_from_ambient_input",
+        "v1_run_id_only_input_cannot_be_reinterpreted_as_v3",
+        "v2_prepared_input_crash_child",
+        "v2_process_loss_retains_original_input_and_uncertain_slot"
+      ],
+      "after_test_count": 8
+    }
+  ],
+  "author_correction_sha256": "282fd93fbe1374fc60e2b172c5187354abdb10ea5ae9c5b8e20c53d07d9551de"
+}

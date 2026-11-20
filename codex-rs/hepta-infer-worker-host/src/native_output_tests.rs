@@ -190,3 +190,68 @@ fn empty_messages_and_item_ids_cannot_grow_unbounded_metadata() {
     );
     assert_eq!(output, super::super::tests::output());
 }
+#[test]
+fn terminal_summary_is_atomic_when_a_later_item_exceeds_the_byte_limit() {
+    let mut output = output();
+    output.boundary_status = NativeBoundaryStatus::TimedOut;
+    output.observed_output_tokens = Some(17);
+    let mut messages = AgentMessageOutput::default();
+    messages
+        .observe(&delta("existing", "retained "), &mut output)
+        .unwrap();
+    let before = output.clone();
+    let items = [
+        message("new", "candidate "),
+        message("oversized", &"x".repeat(MAX_OUTPUT_BYTES)),
+    ];
+
+    assert_eq!(
+        messages.complete_turn(&items, &mut output).unwrap_err(),
+        "output byte limit exceeded",
+    );
+    assert_eq!(output, before);
+
+    // Failure must not retain the first item's text or completed marker.
+    messages
+        .observe(&delta("new", "retry"), &mut output)
+        .unwrap();
+    let mut expected = before;
+    expected.output.push_str("retry");
+    assert_eq!(output, expected);
+}
+
+#[test]
+fn terminal_summary_is_atomic_when_a_later_completed_item_conflicts() {
+    let mut output = output();
+    let mut messages = AgentMessageOutput::default();
+    messages
+        .observe(
+            &completed("thread-a", "turn-a", "locked", "original "),
+            &mut output,
+        )
+        .unwrap();
+    let before = output.clone();
+    let items = [
+        message("new", "candidate "),
+        message("locked", "conflicting completion"),
+    ];
+
+    assert_eq!(
+        messages.complete_turn(&items, &mut output).unwrap_err(),
+        "completed agent message changed its text",
+    );
+    assert_eq!(output, before);
+
+    messages
+        .observe(&delta("new", "retry"), &mut output)
+        .unwrap();
+    let mut expected = before;
+    expected.output.push_str("retry");
+    assert_eq!(output, expected);
+    assert!(
+        messages
+            .observe(&delta("locked", "suffix"), &mut output)
+            .is_err()
+    );
+    assert_eq!(output, expected);
+}

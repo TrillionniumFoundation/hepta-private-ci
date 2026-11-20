@@ -25,7 +25,7 @@ use std::time::Duration;
 
 enum Origin {
     Fresh,
-    Recovered(Option<(LearningIterationSnapshotV1, Digest32)>),
+    Recovered(Option<Box<(LearningIterationSnapshotV1, Digest32)>>),
 }
 pub struct OriginalCellQ24ModelCommandConnectionV1 {
     peer: HostAuthorityPeerChannel,
@@ -46,49 +46,46 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
         lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+                stream,
+                peer,
+                original_owner_pidfd,
+                timeout,
+                lifetime,
+            },
             material,
             registration,
-            timeout,
-            lifetime,
             Origin::Fresh,
         )
     }
     /// A checkpoint can pin the original record. It never grants Execute and
     /// is authenticated only after the actual original D/T/E have been read.
     pub fn recover_from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        transport: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         material: OriginalCellQ24MaterialReceiptConfigV1,
         registration: OriginalCellEvaluationPanelRegistrationV1,
         expected: Option<(LearningIterationSnapshotV1, Digest32)>,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
         Self::bind_original_stream(
-            stream,
-            peer,
-            original_owner_pidfd,
+            transport,
             material,
             registration,
-            timeout,
-            lifetime,
-            Origin::Recovered(expected),
+            Origin::Recovered(expected.map(Box::new)),
         )
     }
     fn bind_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        transport: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         material: OriginalCellQ24MaterialReceiptConfigV1,
         registration: OriginalCellEvaluationPanelRegistrationV1,
-        timeout: Duration,
-        lifetime: Duration,
         origin: Origin,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = transport;
         let (initial_binding, started) =
             OriginalCellQ24MaterialReceiptConfigV1::require_original_command_initial(&material)?;
         if peer.actor_id != material.initial.owners.proposal
@@ -156,7 +153,8 @@ impl OriginalCellQ24ModelCommandConnectionV1 {
             Origin::Fresh => (false, None),
             Origin::Recovered(expected) => {
                 let retained = expected
-                    .map(|(snapshot, material)| {
+                    .map(|original| {
+                        let (snapshot, material) = *original;
                         let original = snapshot
                             .receipts
                             .last()

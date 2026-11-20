@@ -1,0 +1,47 @@
+{
+  "base": "73a96f64bfcf13380a62f6271b65d18ebf290799",
+  "baseline": {
+    "workflow_run": 44663401733,
+    "job": 136047704201,
+    "tested_merge": "8185e71de8549502b7b13a0038e2156475b0ab95",
+    "result": "two original paired-process tests fail before launching children because remote executor lacks strip",
+    "source_unchanged_in_base": true,
+    "log": "../ci-repair/ci-monitor/old100e-logs/job-136047704201.log"
+  },
+  "binding": {
+    "repository_module": "MODULE.bazel",
+    "module_name": "llvm",
+    "module_version": "0.8.11",
+    "registry_source_sha": "2e8b6248f0502646a6300054c9dc0485f922062d",
+    "registry_url": "https://github.com/bazelbuild/bazel-central-registry/blob/main/modules/llvm/0.8.11/source.json",
+    "hermetic_source": "https://github.com/hermeticbuild/hermetic-llvm/tree/v0.8.11",
+    "llvm_version": "22.1.8",
+    "llvm_build_sha": "e617ce4cfd8439ff8362bb5d121cc6e532c64bcc",
+    "llvm_build_url": "https://github.com/llvm/llvm-project/blob/llvmorg-22.1.8/utils/bazel/llvm-project-overlay/llvm/BUILD.bazel",
+    "target": "@llvm-project//llvm:llvm-strip",
+    "declaration": "binary_alias(name = \"llvm-strip\", binary = \":llvm-objcopy\")",
+    "cargo_bin_source": "1e5dc88d75c94041228cb3e098402fb31928de4f"
+  },
+  "behavior": {
+    "build_macro_changed": false,
+    "cargo_dependencies_changed": false,
+    "production_rust_changed": false,
+    "windows_tool_excluded_by_existing_macro": true,
+    "cargo_fallback": "strip",
+    "bazel_resolution": "existing extra_binaries_non_windows -> CARGO_BIN_EXE_llvm-strip rlocationpath -> existing cargo_bin Runfiles/rlocation! -> absolute existing path",
+    "strip_args_preserved": [
+      "-S",
+      "-o",
+      "fixture_binary",
+      "current_exe"
+    ],
+    "failure_behavior": "missing or failing selected tool still fails the test; no retry or skip",
+    "all_original_assertions_preserved": true,
+    "fallback": "only CargoBinError::NotFound outside RUNFILES_MANIFEST_ONLY falls back to system strip; all invalid metadata and missing Bazel metadata fail"
+  },
+  "validation": {
+    "native_tests": "NOT_RUN",
+    "formatter": "NOT_RUN",
+    "independent_review": "PENDING"
+  }
+}

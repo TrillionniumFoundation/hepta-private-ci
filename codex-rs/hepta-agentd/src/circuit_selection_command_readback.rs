@@ -170,7 +170,7 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
         }
         let selection = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                wire::decode_completed(&context, snapshot, evidence, current)?
+                wire::decode_completed(&context, snapshot, *evidence, current)?
             }
             wire::CommandResult::Missing => return Err(Error::Missing),
             wire::CommandResult::Pending => return Err(Error::Pending),
@@ -255,7 +255,7 @@ impl OriginalCircuitSelectionReadbackConnectionV1 {
         Ok(LearningIterationEvidenceClientV1 {
             channel: Mutex::new(None),
             command: Some(Mutex::new(Some(OriginalCommandEvidenceV1::Selection(
-                reader,
+                Box::new(reader),
             )))),
             initial,
             actor_id,
@@ -311,7 +311,7 @@ impl OriginalSelectionReadbackV1 {
         }
         let completed = match response.result {
             wire::CommandResult::Completed { snapshot, evidence } => {
-                wire::decode_completed(&self.context, snapshot, evidence, current)?
+                wire::decode_completed(&self.context, snapshot, *evidence, current)?
             }
             wire::CommandResult::Missing | wire::CommandResult::Pending => {
                 return Err(Error::CommitUncertain);

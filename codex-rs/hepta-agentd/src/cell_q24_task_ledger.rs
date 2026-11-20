@@ -104,11 +104,11 @@ pub struct OriginalCellQ24TaskDatasetFreezeInputsV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum OriginalCellQ24TaskLedgerStatusV1 {
     AwaitingOutcome {
-        decision: LedgerRecord,
+        decision: Box<LedgerRecord>,
     },
     Complete {
-        decision: LedgerRecord,
-        outcome: LedgerRecord,
+        decision: Box<LedgerRecord>,
+        outcome: Box<LedgerRecord>,
     },
 }
 

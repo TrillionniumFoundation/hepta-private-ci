@@ -1,11 +1,8 @@
 //! An original Material Source connection bound before Dataset exists.
 //! Finalization consumes this sealed value and keeps the same transport and
 //! session deadline; it cannot accept a decoded batch or reset peer lifetime.
-use std::os::fd::OwnedFd;
-use std::os::unix::net::UnixStream;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::time::Duration;
 
 use codex_hepta_learning_artifacts::FrozenLearningScopeV2;
 use codex_hepta_learning_artifacts::LearningIterationCoordinatorV1;
@@ -17,7 +14,6 @@ use super::OriginalCellQ24RemoteMaterialClientV1;
 use super::now;
 use super::verify_context;
 use crate::AgentdRootAuthorityPeer;
-use crate::LearningIterationEvidencePeerV1;
 use crate::LoadedCellQ24ModelV1;
 use crate::OriginalCellQ24TrainingSourceConfigV1;
 use crate::root_observation_stream::RootObservationStream;
@@ -33,15 +29,18 @@ impl OriginalCellQ24MaterialSourceConnectionV1 {
     /// Bind the original descriptor, process and lifetime immediately. No
     /// Dataset receipt, future head, batch, label or signer is supplied.
     pub fn from_original_stream(
-        stream: UnixStream,
-        peer: LearningIterationEvidencePeerV1,
-        original_owner_pidfd: OwnedFd,
+        input: crate::OriginalCellQ24NoUpdatePeerStreamV1,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
         baseline: Arc<LoadedCellQ24ModelV1>,
-        timeout: Duration,
-        lifetime: Duration,
     ) -> Result<Self, Error> {
+        let crate::OriginalCellQ24NoUpdatePeerStreamV1 {
+            stream,
+            peer,
+            original_owner_pidfd,
+            timeout,
+            lifetime,
+        } = input;
         let started_at = now()?;
         let coordinator =
             LearningIterationCoordinatorV1::new(initial.request.clone(), initial.owners.clone())?;

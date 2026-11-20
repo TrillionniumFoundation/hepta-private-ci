@@ -4935,9 +4935,11 @@ fn verify_notes_fence_settlement_pairing(
             &original_outbox.payload_json,
             &cancellation_id,
             &cancellation_outbox.payload_json,
-            &terminal_event.event_id,
-            &terminal_event.event_sha256,
-            &terminal_event.payload_json,
+            crate::production_notes::NotesFenceTerminalEvent {
+                event_id: &terminal_event.event_id,
+                event_sha256: &terminal_event.event_sha256,
+                receipt: &terminal_event.payload_json,
+            },
         )
         .map_err(corrupt)?;
     }
@@ -5186,9 +5188,11 @@ async fn verify_notes_fence_proof_in_transaction(
         &original_outbox.payload_json,
         proof.cancellation_operation_id(),
         &cancellation_outbox.payload_json,
-        &terminal.event_id,
-        &terminal.event_sha256,
-        &terminal.payload_json,
+        crate::production_notes::NotesFenceTerminalEvent {
+            event_id: &terminal.event_id,
+            event_sha256: &terminal.event_sha256,
+            receipt: &terminal.payload_json,
+        },
     )
     .map_err(LocalLeaseOutboxError::Invalid)
 }

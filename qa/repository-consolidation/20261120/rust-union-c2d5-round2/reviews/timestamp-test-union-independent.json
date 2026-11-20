@@ -1,0 +1,35 @@
+{
+  "status": "EXACT_ADDITIVE_TEST_UNION_ACCEPTED_NATIVE_PENDING",
+  "source_local_head": "1a1e97962c9aad4a08e5f147790b234d4ab0bb51",
+  "source_tree": "2326dfb516d4db967fd106265517c8c9e34c6b3f",
+  "before_blob": "f87d8dd948cb88b87ffa4bd0124e427032f1a420",
+  "after_blob": "06dfc4157651fe72d23400bb834e15278633724b",
+  "before_complete_prefix_bytes": 10657,
+  "original_owner_exact_test_suffix_bytes": 934,
+  "suffix_sha256": "848a5c130be9e3800cf9cdbcb5f71cdaa204d04357a1cec65517febfafe84bc8",
+  "original_owner_bindings": {
+    "original_owner_frozen": {
+      "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/FROZEN.json",
+      "git_blob": "ab9658a7da9c62153cd1dd4a664759f114dc7849",
+      "sha256": "97baa8363a5a2d2363c41f0118dafecb25ce2aad752e0206c98b42e8c012a1e2",
+      "size": 5417
+    },
+    "original_owner_test_module": {
+      "file": "/workspace/scratch/hepta-recovery-7246-20261120/current73a-ci-review/time-callers-repair-stage01/after/codex-rs/utils/time/src/timestamp_tests.rs",
+      "git_blob": "cd60e3aaf9aa0166769d59ab9f9efe36dcdb456c",
+      "sha256": "0776fd63095f2c186c0b8b0d124a82e7f29ee5dc903d497589bba325916962d6",
+      "size": 7145
+    }
+  },
+  "patch_sha256": "2848eea1d60cd82a9fbc6580898fcd7da9a05b1f2d6426c3312d9ea65c0a78ce",
+  "checks": [
+    "Entire stage02 afterimage is an unchanged byte prefix, preserving every prior test and assertion.",
+    "Appended suffix is the original recovery owner complete test, verified against its frozen module and manifest hashes.",
+    "Five expected instants agree with signed fraction and leap normalization semantics; each vector is representable at100ns precision.",
+    "One new test name has no collision; no import, production API, fixture error type, conditional skip or existing assertion changes."
+  ],
+  "native_tests": "NOT_RUN",
+  "rustfmt": "NOT_RUN",
+  "remote_mutations": false,
+  "candidate_edits_by_reviewer": false
+}

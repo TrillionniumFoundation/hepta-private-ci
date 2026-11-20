@@ -8,8 +8,8 @@ use crate::authority_host_service::generation_initial::historical_source_pin::le
 
 pub(super) enum OriginalLedgerCustody {
     Absent,
-    Held(OriginalLedgerFiles),
-    Registered(RegisteredOriginalLedgerCaptureV1),
+    Held(Box<OriginalLedgerFiles>),
+    Registered(Box<RegisteredOriginalLedgerCaptureV1>),
 }
 
 impl PreparedHostAuthoritySession {
@@ -68,9 +68,9 @@ impl PreparedHostAuthoritySession {
                 "original Ledger custody already selected or released",
             ));
         }
-        *held = OriginalLedgerCustody::Held(
+        *held = OriginalLedgerCustody::Held(Box::new(
             retained.ok_or_else(|| io::Error::other("original Ledger input custody missing"))?,
-        );
+        ));
         Ok(())
     }
 }
@@ -87,7 +87,7 @@ impl HistoricalSourceRuntime {
             .map_err(|_| io::Error::other("original Ledger custody busy"))?;
         let files = match std::mem::replace(&mut *held, OriginalLedgerCustody::Absent) {
             OriginalLedgerCustody::Absent => return Ok(()),
-            OriginalLedgerCustody::Held(files) => files,
+            OriginalLedgerCustody::Held(files) => *files,
             OriginalLedgerCustody::Registered(_) => {
                 self.close();
                 return Err(io::Error::other(
@@ -105,7 +105,7 @@ impl HistoricalSourceRuntime {
         );
         match registered {
             Ok(registered) => {
-                *held = OriginalLedgerCustody::Registered(registered);
+                *held = OriginalLedgerCustody::Registered(Box::new(registered));
                 Ok(())
             }
             Err(error) => {
@@ -124,7 +124,7 @@ impl HistoricalSourceRuntime {
             .map_err(|_| io::Error::other("original Ledger custody busy"))?;
         match std::mem::replace(&mut *held, OriginalLedgerCustody::Absent) {
             OriginalLedgerCustody::Absent => Ok(None),
-            OriginalLedgerCustody::Registered(original) => Ok(Some(original)),
+            OriginalLedgerCustody::Registered(original) => Ok(Some(*original)),
             OriginalLedgerCustody::Held(_) => {
                 self.close();
                 Err(io::Error::other(

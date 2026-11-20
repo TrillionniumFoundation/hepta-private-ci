@@ -26,6 +26,10 @@ pub(crate) struct OriginalPublicationStream {
 }
 
 impl OriginalPublicationStream {
+    #[expect(
+        dead_code,
+        reason = "CALLERS retains the bounded lifetime adapter; product callers use the absolute deadline"
+    )]
     pub(crate) fn from_stream(
         stream: UnixStream,
         root: OwnedFd,

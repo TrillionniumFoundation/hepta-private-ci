@@ -26,7 +26,7 @@ fn one_record_commit_retains_unrelated_allocations_and_rejects_before_append() {
             .as_ptr(),
         allocation
     );
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     assert_eq!(
         control.commit(Event::Assign {
             request_id: "request.1".to_string(),
@@ -35,7 +35,7 @@ fn one_record_commit_retains_unrelated_allocations_and_rejects_before_append() {
         }),
         Err(Error::InvalidTransition)
     );
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     assert_eq!(control.get("request.1"), Some(&original));
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();

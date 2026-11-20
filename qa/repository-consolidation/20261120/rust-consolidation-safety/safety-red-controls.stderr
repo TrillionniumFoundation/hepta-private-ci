@@ -1,0 +1,61 @@
+test_new_hia_tip_protects_unnamed_aliases_and_descendants (regression_tests.RetirementTests.test_new_hia_tip_protects_unnamed_aliases_and_descendants) ... FAIL
+test_new_hia_name_at_apply_protects_existing_merged_alias (regression_tests.RetirementTests.test_new_hia_name_at_apply_protects_existing_merged_alias) ... FAIL
+test_recorded_named_pin_survives_unrelated_name_replacement (regression_tests.RetirementTests.test_recorded_named_pin_survives_unrelated_name_replacement) ... FAIL
+test_historical_pin_list_protects_unnamed_alias (regression_tests.RetirementTests.test_historical_pin_list_protects_unnamed_alias) ... FAIL
+
+======================================================================
+FAIL: test_new_hia_tip_protects_unnamed_aliases_and_descendants (regression_tests.RetirementTests.test_new_hia_tip_protects_unnamed_aliases_and_descendants)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/test_hepta_branch_consolidation.py", line 328, in test_new_hia_tip_protects_unnamed_aliases_and_descendants
+    self.assertEqual(rows[name]["disposition"], "keep_protected")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'eligible_merged' != 'keep_protected'
+- eligible_merged
++ keep_protected
+
+
+======================================================================
+FAIL: test_new_hia_name_at_apply_protects_existing_merged_alias (regression_tests.RetirementTests.test_new_hia_name_at_apply_protects_existing_merged_alias)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/test_hepta_branch_consolidation.py", line 343, in test_new_hia_name_at_apply_protects_existing_merged_alias
+    self.assertEqual(receipt["branchesDeleted"], [])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['merged'] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+'merged'
+
+- ['merged']
++ []
+
+======================================================================
+FAIL: test_recorded_named_pin_survives_unrelated_name_replacement (regression_tests.RetirementTests.test_recorded_named_pin_survives_unrelated_name_replacement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/test_hepta_branch_consolidation.py", line 361, in test_recorded_named_pin_survives_unrelated_name_replacement
+    self.assertEqual(row["disposition"], "keep_protected")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'eligible_merged' != 'keep_protected'
+- eligible_merged
++ keep_protected
+
+
+======================================================================
+FAIL: test_historical_pin_list_protects_unnamed_alias (regression_tests.RetirementTests.test_historical_pin_list_protects_unnamed_alias)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hepta-rust-protection-20261120-0cee/candidate/tools/branch-consolidation/test_hepta_branch_consolidation.py", line 379, in test_historical_pin_list_protects_unnamed_alias
+    self.assertEqual(row["disposition"], "keep_protected")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'eligible_merged' != 'keep_protected'
+- eligible_merged
++ keep_protected
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.330s
+
+FAILED (failures=4)

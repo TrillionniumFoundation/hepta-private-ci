@@ -1,0 +1,268 @@
+{
+  "schema": "hepta.gzip-fragment-evidence.v1",
+  "status": "PROTOCOL_SINGLE_SOURCE_WITH_PRIOR_HEAD_ACTUAL_CI_EVIDENCE",
+  "source_head": "7123198849d8967ac670975c1704926e00b72e69",
+  "source_tree": "40b8ecb6202d5cccef107fe37f0dd14ca1f40ed1",
+  "source_parent": "3bc225d0c1b2aaa1dc3fa77fb0bcbcfe5c55a37f",
+  "source_parent_tree": "54f55621e909c528acc8619c7d3140e31197fbde",
+  "groups": [
+    {
+      "id": "protocol-and-ci",
+      "storage_format": "gzip_of_each_sequential_fragment_of_deterministic_tar_gzip",
+      "fragment_bytes": 196608,
+      "archive": {
+        "bytes": 2232277,
+        "sha256": "dea3b08ebcf70f1cf52bb8eaf9a6f1053501985931d84955e842ab8dcb0aa5e6",
+        "git_blob": "6e9278ebcd2d2a1e9a242ab4f7bffca54d60c59e"
+      },
+      "member_count": 141,
+      "member_bytes": 16925014,
+      "parts": [
+        {
+          "number": 0,
+          "path": "groups/protocol-and-ci/part-0000.bin.gz",
+          "offset": 0,
+          "stored": {
+            "bytes": 195522,
+            "sha256": "d6203b493f53fe6d4fca001acaac95afe3a6443259f7d410489acb146daf50ce",
+            "git_blob": "39a6f26d09b7bd4b19119a2a49ccb4c541119194"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "c68957da9fcba12a860d516b997d4c9520077656d247c90767323f8296523137",
+            "git_blob": "11b4b2b68e0a398bbcf8a0754e692c67b183c294"
+          }
+        },
+        {
+          "number": 1,
+          "path": "groups/protocol-and-ci/part-0001.bin.gz",
+          "offset": 196608,
+          "stored": {
+            "bytes": 196674,
+            "sha256": "74d37b46261006984c3632f650759c17c226fa0af8f8f1d019e3d44823414f77",
+            "git_blob": "910c42c712d094a2843a02ad3a4ad86f42ec98e6"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "ba2eb78bd4479a37aaad23e1432469b23de2dea0db5dfe6e27ec7d64a66703f5",
+            "git_blob": "398c53c00efce4dcb6adbf6a1622dd78ca11339a"
+          }
+        },
+        {
+          "number": 2,
+          "path": "groups/protocol-and-ci/part-0002.bin.gz",
+          "offset": 393216,
+          "stored": {
+            "bytes": 196640,
+            "sha256": "fb1c721927b4e91a75c538993581d4162151548e2c06480e5581e6888e732afe",
+            "git_blob": "a99e989e6e471065c624c4566d0fc8bf885a3878"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "5d1735134803552d07a41672991e6886b8733902706bd111b71a16809cb97a2d",
+            "git_blob": "1c9575f45386d1c1214ee002803418634f84333a"
+          }
+        },
+        {
+          "number": 3,
+          "path": "groups/protocol-and-ci/part-0003.bin.gz",
+          "offset": 589824,
+          "stored": {
+            "bytes": 196380,
+            "sha256": "99c10a6f446cc85e2da67235e14f19137577c91b565f7075c1ab5f23f7780101",
+            "git_blob": "f9eed8c6a0c0841aeef082d5f79b509b2985d70a"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "688929acefc36cc0bf8aadab9886c0e2af0bb896eaf502c738c2549bdcd0b899",
+            "git_blob": "67b5836d999682f9b4e7f313d74c3aa73b358788"
+          }
+        },
+        {
+          "number": 4,
+          "path": "groups/protocol-and-ci/part-0004.bin.gz",
+          "offset": 786432,
+          "stored": {
+            "bytes": 195245,
+            "sha256": "8f8b419116f56b4c604da71a03c1b7ac75a977f965a4a19c709491c94957cb6d",
+            "git_blob": "f03d6672246e92032b310d0bf0e1fe1840bc5a8c"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "db2c480316f1c9b0a71761d33cc4622c71d24f171ba6d51ebb38ea9e29f3422a",
+            "git_blob": "8b30c5ff6cc183f9292b3be29e73036a8f7b086e"
+          }
+        },
+        {
+          "number": 5,
+          "path": "groups/protocol-and-ci/part-0005.bin.gz",
+          "offset": 983040,
+          "stored": {
+            "bytes": 194954,
+            "sha256": "10645ddc96bffbf9094027fae32697649d1132cba6cda94f00bc8576d39926e8",
+            "git_blob": "15f230d799385272541c2861657d13e7dffa94f2"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "a6b745e06364e02787c89310aa5dcbb6bbd548a8effe9f1925b9d1713731f07c",
+            "git_blob": "c50dd04d651e060da5ecc857e2ec114d2eadb8e1"
+          }
+        },
+        {
+          "number": 6,
+          "path": "groups/protocol-and-ci/part-0006.bin.gz",
+          "offset": 1179648,
+          "stored": {
+            "bytes": 196491,
+            "sha256": "111b803d519faef97bc3598fd3ae82b80770e6e79f6b6e191e349576f3cd4a22",
+            "git_blob": "3b3f2639ab65a3016d595e95724bcde4bad09424"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "4a697192784d3af4b1235e872413fca3f44da433d45f057bdf9955963c6c8609",
+            "git_blob": "9c3a4b476b8268d9f3d27144822170d94a9bfe4f"
+          }
+        },
+        {
+          "number": 7,
+          "path": "groups/protocol-and-ci/part-0007.bin.gz",
+          "offset": 1376256,
+          "stored": {
+            "bytes": 194629,
+            "sha256": "4e322c01885abf5ff1476476dee3f9e8e53b395fe98fe574db2ddc7d6131bc0b",
+            "git_blob": "6b06785ccb94646683bda3ba9088a560cf2308f6"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "30282846c010f85c6a7f09b5229f0dba17e4dd153ae2888a6ecccf564bef58e0",
+            "git_blob": "4a108da5e723bc298fd54b469d1176066ffd301b"
+          }
+        },
+        {
+          "number": 8,
+          "path": "groups/protocol-and-ci/part-0008.bin.gz",
+          "offset": 1572864,
+          "stored": {
+            "bytes": 194879,
+            "sha256": "fe7b1303e4d7f4385af4211c25a3a84f208349cd8b4404a29dc973cd3e6cbe96",
+            "git_blob": "00f0753166a3aeb3a9f9162aebcfa2fa96d2650d"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "ff733d3f1157b821a753bbfc92487760fe57cf1b8a39cfdf0b5f673a9fd3be4c",
+            "git_blob": "cd59459b51a4feceec4d91331994b2d4131f61ff"
+          }
+        },
+        {
+          "number": 9,
+          "path": "groups/protocol-and-ci/part-0009.bin.gz",
+          "offset": 1769472,
+          "stored": {
+            "bytes": 196092,
+            "sha256": "a5e9b31724a1f27392bea610381f61c9dde8ce42a77843d9cd9b2dd398dd8271",
+            "git_blob": "f7629fa25e8a9ee2973c39d43946f44d94f06fba"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "6ba91a96ce7a8c09039d14701fcf5f414fa2679b6be980cac6c24676ae98f3d6",
+            "git_blob": "6d760f6872a1892fed013e9d09d42fb8839b2658"
+          }
+        },
+        {
+          "number": 10,
+          "path": "groups/protocol-and-ci/part-0010.bin.gz",
+          "offset": 1966080,
+          "stored": {
+            "bytes": 196481,
+            "sha256": "0cef2af7502af6aa4ded86251a6cc5929d359fad970d1e2f4f9cbfeea5e78ca8",
+            "git_blob": "16f87a99434c979481a7a466dcab9d2c4ea76544"
+          },
+          "fragment": {
+            "bytes": 196608,
+            "sha256": "1fd00eda2bbe86c94028229b11dc4e9167aeda5413cb397070f627cf1ba49e0c",
+            "git_blob": "284e4273b6d4c6efc665e952c0935822bcac95f6"
+          }
+        },
+        {
+          "number": 11,
+          "path": "groups/protocol-and-ci/part-0011.bin.gz",
+          "offset": 2162688,
+          "stored": {
+            "bytes": 69598,
+            "sha256": "26ee14c21ff58920f527cb7e65ccc5407d149db690a48aabe4da0914279d5eda",
+            "git_blob": "d1269019c363ba91f0b39338480805b1be1bbe40"
+          },
+          "fragment": {
+            "bytes": 69589,
+            "sha256": "ec7a6a1306b705be20a10e78f63f0157affac20b57a843c5d655a36474d21c6d",
+            "git_blob": "d6ae1ab3a664e1ec0d36df118b129ef637f19a8e"
+          }
+        }
+      ],
+      "member_manifest": {
+        "path": "groups/protocol-and-ci/members.json",
+        "bytes": 75291,
+        "sha256": "b264328399d94bc8fb299c1d6bc09ea379edc4e07462e0febbf30fa10f580e1f",
+        "git_blob": "bf0cef0e46d11ab6c83b6a21df2740039e2f60a2"
+      }
+    },
+    {
+      "id": "completed-status",
+      "storage_format": "gzip_of_each_sequential_fragment_of_deterministic_tar_gzip",
+      "fragment_bytes": 196608,
+      "archive": {
+        "bytes": 4468,
+        "sha256": "ffc3cb4aa1b7813f3accf3e0dbc716a45806828f976063ef343864347e40404f",
+        "git_blob": "b4abf16cbd0d7a0a262c64645c5d7910c4605c31"
+      },
+      "member_count": 5,
+      "member_bytes": 36242,
+      "parts": [
+        {
+          "number": 0,
+          "path": "groups/completed-status/part-0000.bin.gz",
+          "offset": 0,
+          "stored": {
+            "bytes": 4391,
+            "sha256": "5845da4f97b90584813ab16e0382e391a0eb6db76d05c65650b00a331b3c55d4",
+            "git_blob": "4ef99329ff2ee8d77040ffbff8e8b00a2dba7e14"
+          },
+          "fragment": {
+            "bytes": 4468,
+            "sha256": "ffc3cb4aa1b7813f3accf3e0dbc716a45806828f976063ef343864347e40404f",
+            "git_blob": "b4abf16cbd0d7a0a262c64645c5d7910c4605c31"
+          }
+        }
+      ],
+      "member_manifest": {
+        "path": "groups/completed-status/members.json",
+        "bytes": 3275,
+        "sha256": "df83126b41d92ad9cd668b87c79509abb5de43e2945dc29c8acb743456fbf29b",
+        "git_blob": "a26ef46033d049af5152e03d47b7f449a0e57ef0"
+      }
+    }
+  ],
+  "source_change": {
+    "path": "codex-rs/exec-server-protocol/src/protocol.rs",
+    "before_blob": "a0b3b4e2444869de7ee8735f4c87b53fbe7f0d79",
+    "after_blob": "56187ab174ec9998b3a0a4b74f06e734d3b111fb",
+    "removed_byte": "&",
+    "original_offset": 8441,
+    "all_other_source_bytes_preserved": true
+  },
+  "source_after_qualification": {
+    "native": "NOT_RUN",
+    "Rustfmt": "NOT_RUN",
+    "Clippy": "NOT_RUN",
+    "required_CI": "NOT_RUN"
+  },
+  "observed_CI_source": "3bc225d0c1b2aaa1dc3fa77fb0bcbcfe5c55a37f",
+  "observed_CI_source_tree": "54f55621e909c528acc8619c7d3140e31197fbde",
+  "observed_CI_state": "Architecture, Bellman and GNU required-related failures remain open; exact status boundaries and cached/filtered distinctions are retained.",
+  "C2D_precise_denial_path_intersection": "NOT_EVALUATED; denied production repair remains STOP",
+  "native_copy_unknown": "NOT_QUERIED_OR_REPLAYED",
+  "full_tree_inventory_omissions": "Explicit identities recorded in the immutable source selection; full-file source and actual Git commit/tree/compare receipts retained.",
+  "main_or_ref_retirement_authorized": false,
+  "original_inputs_modified": false,
+  "archive_members_extracted_or_executed": false
+}

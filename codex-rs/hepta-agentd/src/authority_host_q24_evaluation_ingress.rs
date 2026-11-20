@@ -10,20 +10,24 @@ use super::super::admission::OriginalBAuthorities;
 use super::super::provider::OriginalBReleasedSource;
 use super::super::source_peer::OriginalBSourcePeer;
 use super::*;
+use crate::authority_host_config::HostAuthorityCallInputs;
 use crate::root_independent_b_protocol::digest;
 use crate::root_independent_b_source_protocol::*;
 
 impl OriginalRootIndependentBEvaluationFilesV1 {
     pub(in super::super) fn retain_original_signed_source(
         &self,
-        service: &HostAuthorityService,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        inputs: HostAuthorityCallInputs<'_>,
         source_peer: &OriginalBSourcePeer,
-        frame_end: Instant,
         request: &SourceRequest,
     ) -> io::Result<Vec<u8>> {
+        let HostAuthorityCallInputs {
+            service,
+            config,
+            registration,
+            owner,
+            end: frame_end,
+        } = inputs;
         let end = self.end.min(frame_end);
         OriginalBRecord::inspect(&self.record, end, |enrollment| {
             if request.schema != 1

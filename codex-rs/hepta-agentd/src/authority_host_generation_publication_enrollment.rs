@@ -16,6 +16,7 @@ use codex_hepta_neuron::CellGenerationObserverConfigV1;
 use super::*;
 use crate::AgentdGenerationSelectionFilesV1;
 use crate::NeuronGenerationPredecessorCompletionV1;
+use crate::authority_host_config::HostAuthorityRegistrationInputs;
 
 /// The original non-Root journal and independent witness. These are retained
 /// descriptors, not paths supplied by the daemon's publication request.
@@ -94,14 +95,17 @@ pub struct RootGenerationPublicationEnrollmentV1 {
 impl HostAuthorityService {
     pub(super) fn enroll_armed_generation_publication(
         &self,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        owner: &OwnedFd,
+        peer_inputs: HostAuthorityRegistrationInputs<'_>,
         learning: &RegisteredHostLearningCheckpointV1,
         inputs: RootGenerationPublicationEnrollmentV1,
         version: PublicationVersion,
         refusal: Arc<PublicationRefusal>,
     ) -> io::Result<RegisteredGenerationPublication> {
+        let HostAuthorityRegistrationInputs {
+            config,
+            registration,
+            owner,
+        } = peer_inputs;
         original_root()?;
         self.with_learning_profile(
             config,

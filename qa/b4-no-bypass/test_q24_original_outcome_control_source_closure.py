@@ -145,7 +145,7 @@ class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
         self.rejects_removal(ADAPTER, "id", ("!(1..=128).contains(&value.len())",))
         self.rejects_removal(ADAPTER, "unhex", (
             "value.is_empty() || !value.len().is_multiple_of(2) || value.len() > maximum * 2",
-            ".chunks_exact(2)", ".map(|pair| Ok(digit(pair[0])? * 16 + digit(pair[1])?))",
+            ".as_chunks::<2>()", ".map(|pair| Ok(digit(pair[0])? * 16 + digit(pair[1])?))",
         ))
 
     def test_wire_has_no_authority_fields_or_unknown_field_fallback(self):
@@ -175,7 +175,7 @@ class OriginalQ24OutcomeControlSourceTests(unittest.TestCase):
         ))
 
     def test_runtime_moves_original_custody_after_real_circuit_attachment(self):
-        self.rejects_removal(RUNTIME, "run_with_shutdown", (
+        self.rejects_removal(RUNTIME, "run_composed_with_shutdown", (
             "config.take_original_q24_outcome_control()",
             ".circuit_task\n            .set(bootstrap.handle())",
             ".circuit_task_invocation\n            .set(invocation)",

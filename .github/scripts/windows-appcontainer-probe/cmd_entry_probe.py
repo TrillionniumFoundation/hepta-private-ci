@@ -37,6 +37,9 @@ from win32_api import (
 )
 
 
+MINIMAL_CHILD_SCRIPT = b"@echo off\r\nexit /b 71\r\n"
+
+
 def cmd_image(api):
     system = C.create_unicode_buffer(32768)
     length = api.GetSystemDirectoryW(system, len(system))
@@ -52,7 +55,16 @@ def cmd_image(api):
 
 
 def run_inline(api, variant, user, base):
-    require(variant in ("inline-exit71", "inline-stdout"), "fixed inline comparison")
+    require(
+        variant
+        in (
+            "inline-exit71",
+            "inline-stdout",
+            "type-original-batch",
+            "minimal-batch-exit71",
+        ),
+        "fixed cmd entry comparison",
+    )
     record = {
         "mode": "lpac",
         "variant": variant,
@@ -68,7 +80,11 @@ def run_inline(api, variant, user, base):
     root = process = capture = None
     try:
         code = api.CreateAppContainerProfile(
-            profile, profile, "Owned LPAC cmd entry comparison", None, 0,
+            profile,
+            profile,
+            "Owned LPAC cmd entry comparison",
+            None,
+            0,
             C.byref(package_sid),
         )
         require(code == 0 and package_sid.value is not None, "fresh owned profile")
@@ -81,6 +97,40 @@ def run_inline(api, variant, user, base):
         record["fixture_security"] = prepared["security"]
         record["unconfined_controls"] = prepared["unconfined_controls"]
         record["child_script_sha256"] = hashlib.sha256(CHILD_SCRIPT).hexdigest()
+        if variant in ("type-original-batch", "minimal-batch-exit71"):
+            script_name = (
+                "cmd-entry-minimal.cmd"
+                if variant == "minimal-batch-exit71"
+                else "child-probe.cmd"
+            )
+            expected_script = (
+                MINIMAL_CHILD_SCRIPT
+                if variant == "minimal-batch-exit71"
+                else CHILD_SCRIPT
+            )
+            script_path = workspace / script_name
+            if variant == "minimal-batch-exit71":
+                # Observe the resulting security descriptor; do not assert inheritance.
+                with script_path.open("xb") as stream:
+                    stream.write(MINIMAL_CHILD_SCRIPT)
+            script_before = script_path.read_bytes()
+            record["diagnostic_script"] = {
+                "path": script_name,
+                "creation": (
+                    "exclusive binary create without explicit security override"
+                    if variant == "minimal-batch-exit71"
+                    else "unchanged original fixture"
+                ),
+                "security_interpretation": "observed descriptor; inheritance not established",
+                "bytes_before": len(script_before),
+                "bytes_before_hex": script_before.hex(),
+                "sha256_before": hashlib.sha256(script_before).hexdigest(),
+                "security_facts_before": api.security_facts(script_path),
+            }
+            require(
+                script_before == expected_script,
+                "exact diagnostic script before launch",
+            )
         capture = api.open_child_stdio(workspace)
         process = api.create_suspended(
             package_sid,
@@ -100,7 +150,8 @@ def run_inline(api, variant, user, base):
         facts = api.token_facts(token)
         record["child_token"] = facts
         require(
-            facts == {
+            facts
+            == {
                 "is_appcontainer": 1,
                 "package_sid": package,
                 "integrity_sid": "S-1-16-4096",
@@ -114,7 +165,8 @@ def run_inline(api, variant, user, base):
         access = api.lpac_access_check(token)
         record["lpac_native_access_check"] = access
         require(
-            access["access_status"] and access["granted_access"] == 2
+            access["access_status"]
+            and access["granted_access"] == 2
             and access["privilege_count"] == 0,
             "actual inline child is not LPAC",
         )
@@ -158,6 +210,11 @@ def run_inline(api, variant, user, base):
         expected_stdout = (
             b"" if variant == "inline-exit71" else b"HEPTA_LPAC_INLINE_STDOUT\r\n"
         )
+        if variant == "type-original-batch":
+            expected_stdout = CHILD_SCRIPT
+        elif variant == "minimal-batch-exit71":
+            expected_exit = 71
+            expected_stdout = b""
         record["expected_exit_code"] = expected_exit
         record["expected_stdout_hex"] = expected_stdout.hex()
         record["expected_exit_observed"] = code.value == expected_exit
@@ -171,6 +228,24 @@ def run_inline(api, variant, user, base):
             (workspace / "child-probe.cmd").read_bytes() == CHILD_SCRIPT,
             "original batch bytes changed",
         )
+        if variant in ("type-original-batch", "minimal-batch-exit71"):
+            script_after = script_path.read_bytes()
+            record["diagnostic_script"].update(
+                {
+                    "bytes_after": len(script_after),
+                    "bytes_after_hex": script_after.hex(),
+                    "sha256_after": hashlib.sha256(script_after).hexdigest(),
+                    "security_facts_after": api.security_facts(script_path),
+                }
+            )
+            require(
+                record["diagnostic_script"]["security_facts_before"]
+                == record["diagnostic_script"]["security_facts_after"],
+                "diagnostic script security changed",
+            )
+            require(
+                script_after == expected_script, "exact diagnostic script after exit"
+            )
         require(
             all(row["matches_required_hypothesis"] is not False for row in records),
             "original native access matrix differs",
@@ -185,10 +260,14 @@ def run_inline(api, variant, user, base):
         if process is not None:
             try:
                 if api.WaitForSingleObject(process.hProcess, 0) == WAIT_TIMEOUT:
-                    api.checked(api.TerminateProcess(process.hProcess, 71),
-                                "stop only the owned inline child")
-                    require(api.WaitForSingleObject(process.hProcess, 5000) == 0,
-                            "owned inline child stopped")
+                    api.checked(
+                        api.TerminateProcess(process.hProcess, 71),
+                        "stop only the owned inline child",
+                    )
+                    require(
+                        api.WaitForSingleObject(process.hProcess, 5000) == 0,
+                        "owned inline child stopped",
+                    )
                 api.close(process.hThread)
                 api.close(process.hProcess)
                 cleanup["owned_child_closed"] = True
@@ -217,9 +296,10 @@ def run_inline(api, variant, user, base):
         if package_sid.value:
             api.FreeSid(package_sid)
         record["cleanup"] = cleanup
-        if any(name.endswith("error") for name in cleanup) or cleanup.get(
-            "profile_delete_hresult", 0
-        ) != 0:
+        if (
+            any(name.endswith("error") for name in cleanup)
+            or cleanup.get("profile_delete_hresult", 0) != 0
+        ):
             record["status"] = "failed"
     return record
 
@@ -232,8 +312,10 @@ def main():
     args = parser.parse_args()
     require(os.name == "nt", "native Windows is required; no substitute pass")
     require(not args.output.exists(), "output must be a new receipt")
-    require(re.fullmatch(r"[0-9a-f]{40}", args.source_head) is not None,
-            "exact source commit required")
+    require(
+        re.fullmatch(r"[0-9a-f]{40}", args.source_head) is not None,
+        "exact source commit required",
+    )
     actual_head = subprocess.check_output(
         ["git", "-C", str(args.repo), "rev-parse", "HEAD"], text=True
     ).strip()
@@ -253,8 +335,9 @@ def main():
         "python": sys.version,
         "diagnostic_only": True,
         "production_qualification": False,
-        "scope": "fixed LPAC inline entry comparisons and unchanged original batch",
+        "scope": "fixed LPAC inline, batch-read and minimal-batch comparisons; original whole batch required",
         "inline_cases": [],
+        "batch_entry_cases": [],
     }
     api = None
     base = HANDLE()
@@ -270,6 +353,10 @@ def main():
             run_inline(api, variant, user, base)
             for variant in ("inline-exit71", "inline-stdout")
         ]
+        report["batch_entry_cases"] = [
+            run_inline(api, variant, user, base)
+            for variant in ("type-original-batch", "minimal-batch-exit71")
+        ]
         # The original function retains every batch/native predicate and failure.
         report["original_batch_case"] = run_case(
             api, lpac=True, user=user, base_token=base
@@ -284,7 +371,8 @@ def main():
                 report["cmd_image_after"] = cmd_image(api)
         except Exception as error:
             report["finalization_error"] = {
-                "type": type(error).__name__, "message": str(error)
+                "type": type(error).__name__,
+                "message": str(error),
             }
         report["source_sha256_after"] = {
             path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in sources
@@ -292,9 +380,10 @@ def main():
         report["source_unchanged"] = (
             report["source_sha256_before"] == report["source_sha256_after"]
         )
-        report["cmd_image_unchanged"] = (
-            report.get("cmd_image_before") is not None
-            and report.get("cmd_image_before") == report.get("cmd_image_after")
+        report["cmd_image_unchanged"] = report.get(
+            "cmd_image_before"
+        ) is not None and report.get("cmd_image_before") == report.get(
+            "cmd_image_after"
         )
         report["finished_at"] = datetime.now(timezone.utc).isoformat()
     report["original_batch_passed"] = (
@@ -302,12 +391,19 @@ def main():
         == "passed_bounded_hypotheses"
     )
     report["all_expected_results_observed"] = (
-        "error" not in report and "finalization_error" not in report
-        and report["source_unchanged"] and report["cmd_image_unchanged"]
+        "error" not in report
+        and "finalization_error" not in report
+        and report["source_unchanged"]
+        and report["cmd_image_unchanged"]
         and len(report["inline_cases"]) == 2
         and all(
             case["status"] == "observed" and case.get("diagnostic_expected_result")
             for case in report["inline_cases"]
+        )
+        and len(report["batch_entry_cases"]) == 2
+        and all(
+            case["status"] == "observed" and case.get("diagnostic_expected_result")
+            for case in report["batch_entry_cases"]
         )
         and report["original_batch_passed"]
     )
@@ -315,11 +411,17 @@ def main():
     with args.output.open("x", encoding="utf-8") as output:
         json.dump(report, output, indent=2)
         output.write("\n")
-    print(json.dumps({
-        "output": str(args.output),
-        "original_batch_passed": report["original_batch_passed"],
-        "all_expected_results_observed": report["all_expected_results_observed"],
-    }))
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "original_batch_passed": report["original_batch_passed"],
+                "all_expected_results_observed": report[
+                    "all_expected_results_observed"
+                ],
+            }
+        )
+    )
     return 0 if report["all_expected_results_observed"] else 1
 
 

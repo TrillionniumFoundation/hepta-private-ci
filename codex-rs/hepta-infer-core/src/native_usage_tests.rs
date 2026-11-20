@@ -1,5 +1,6 @@
 //! Late settlement is a durable responsibility even after execution releases.
 use super::*;
+use crate::durable_control::tests::held_journal_bytes;
 
 #[test]
 fn terminal_without_usage_retains_settlement_liability_across_reopen() {
@@ -66,7 +67,7 @@ fn usage_delta_rejects_stale_predecessor_and_nonmonotonic_usage_before_append() 
     start(&mut control, "live");
     let terminal = output(NativeRunStatus::Completed, Some(2));
     let settled = control.settle_native("live", terminal).unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     for (revision, tokens) in [
         (settled.revision - 1, 3),
         (settled.revision, 1),
@@ -84,7 +85,7 @@ fn usage_delta_rejects_stale_predecessor_and_nonmonotonic_usage_before_append() 
             Err(Error::Conflict)
         );
         assert_eq!(control.native_record("live"), Some(&settled));
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     }
     let delta = Event::RefineUsage {
         request_id: "live".into(),
@@ -103,7 +104,7 @@ fn usage_optimization_does_not_hide_terminal_identity_or_body_mutation() {
     start(&mut control, "live");
     let terminal = output(NativeRunStatus::Completed, None);
     let settled = control.settle_native("live", terminal.clone()).unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     for variant in 0..5 {
         let mut changed = terminal.clone();
         changed.observed_output_tokens = Some(4);
@@ -117,7 +118,7 @@ fn usage_optimization_does_not_hide_terminal_identity_or_body_mutation() {
         }
         assert!(control.settle_native("live", changed).is_err());
         assert_eq!(control.native_record("live"), Some(&settled));
-        assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        assert_eq!(held_journal_bytes(&control.file).unwrap(), bytes);
     }
 }
 
@@ -128,7 +129,7 @@ fn failed_usage_append_preserves_missing_usage_and_poisoned_owner_cannot_retry()
     start(&mut control, "live");
     let terminal = output(NativeRunStatus::Completed, None);
     let before = control.settle_native("live", terminal.clone()).unwrap();
-    let bytes = std::fs::read(&path).unwrap();
+    let bytes = held_journal_bytes(&control.file).unwrap();
     let writable = std::mem::replace(&mut control.file, std::fs::File::open(&path).unwrap());
     let mut usage = terminal;
     usage.observed_output_tokens = Some(5);
@@ -147,7 +148,7 @@ fn failed_usage_append_preserves_missing_usage_and_poisoned_owner_cannot_retry()
         control.settle_native("live", usage),
         Err(Error::WriterUnavailable)
     );
-    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+    assert_eq!(held_journal_bytes(&writable).unwrap(), bytes);
     drop(writable);
     drop(control);
     let reopened = DurableInferenceControl::open(&path, 8).unwrap();

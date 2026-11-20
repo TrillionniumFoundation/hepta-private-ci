@@ -1,0 +1,46 @@
+name: Hepta Core Provider Terminal Policy Regression
+
+on:
+  push:
+    branches:
+      - fix/core-provider-policy-test-context-20261012
+      - integration/hepta-single-main-20261113-ab5b
+  pull_request:
+    paths:
+      - codex-rs/core/src/client_provider_policy_tests.rs
+      - codex-rs/core/src/client.rs
+      - codex-rs/rust-toolchain.toml
+      - scripts/run-nextest.py
+      - justfile
+      - .github/workflows/hepta-core-provider-policy-regression.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-provider-policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust formatter and Clippy
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy
+      - name: Install the repository's pinned native test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Execute real provider terminal-policy and streaming acknowledgement tests
+        run: just test --locked -p codex-core --lib --no-tests=fail --retries 0 -E 'test(client::provider_policy_tests::)'
+      - name: Strict core library and test lint
+        run: cargo +1.96.0 clippy --locked -p codex-core --lib --tests -- -D warnings
+      - name: Format and verify the exact candidate
+        run: |
+          just fmt
+          git diff --exit-code -- .
+          cargo +1.96.0 fmt --all -- --check

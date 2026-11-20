@@ -94,7 +94,7 @@ impl<C: AnchorWitnessStore, S: AnchorWitnessStore> OriginalCircuitLearningReadOw
         let result = match current {
             None => readiness::Readiness::NotReady,
             Some(read) => readiness::Readiness::Ready {
-                read: wire::OriginalRead::from_original(read)?,
+                read: Box::new(wire::OriginalRead::from_original(read)?),
             },
         };
         let bytes = serde_json::to_vec(&readiness::Response { request, result })?;

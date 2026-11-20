@@ -1,0 +1,55 @@
+{
+  "status": "candidate prepared; native validation pending parent",
+  "source_commit": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+  "scope": "Three stale exact error-category assertions in two Rust test files; no production source or frozen verifier changes.",
+  "rationale": {
+    "read_observation": "read_consumption latches FinalHoldoutCasStoreError::Indeterminate and returns FencedHoldoutError::Store with that exact error on every subsequent observation, until execution transitions the owner.",
+    "execution": "consume notices read_error before cloning the journal or touching CAS, sets poisoned, and returns owner Indeterminate once; later consume/read calls return Poisoned.",
+    "distinct_execution_read_wrapper": "read_consumption_for_execution intentionally maps raw Store(Indeterminate) to owner Indeterminate and sets poisoned; release observations continue to use raw read_consumption.",
+    "recovery": "Restoring bytes does not revive the original owner. Existing passing reference test requires a new fenced owner for recovery and verifies no further load/CAS after a read fault.",
+    "runner_order": "evaluate_temporal_comparison calls holdout.consume before provider release and fitting. Postrestore test attempts therefore fail before any further release callback or fitting."
+  },
+  "baseline_evidence": {
+    "workflow_run": 44663401733,
+    "job": 136047703996,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44663401733/job/136047703996",
+    "tested_commit": "8185e71de8549502b7b13a0038e2156475b0ab95",
+    "tested_tree": "521fb1ed3dff980955f205f521d1f59ea828f72f",
+    "source_commit": "100e0b1a603bd7047ca77179d662dc3e9f763804",
+    "command": "just test --locked -p codex-hepta-ndu -p codex-hepta-bellman-operator -p codex-hepta-intelligence-eval",
+    "summary_literal": "632 tests run: 629 passed, 3 failed, 2 skipped",
+    "note": "This is downloaded preexisting GitHub Actions evidence, not a test run performed by this agent.",
+    "log_file": "/workspace/scratch/c2d514464ab5/ci-repair/ci-100e/job-136047703996.log",
+    "log_sha256": "ae8efb1be11ef24058eb628c3d9d407534feed3ee745be9cd108c5473a0443e9",
+    "failures": [
+      "fenced_holdout_file::tests::physical::original_holdout_consumption_refuses_corruption_then_restoration",
+      "product_runner::tests::original_release::original_holdout_release_corruption_then_restore_never_reaches_fit",
+      "product_runner::tests::original_release::original_holdout_release_postcheck_survives_provider_ignoring_borrow"
+    ],
+    "passing_reference_control": "fenced_holdout::tests::indeterminate_original_read_remains_fenced_after_store_recovers"
+  },
+  "candidate_validation": {
+    "native_tests": "NOT_RUN",
+    "rustfmt": "NOT_RUN",
+    "reason": "No cargo, rustc, or just on local PATH; root owns native resource qualification and full candidate gates to avoid duplicate jobs.",
+    "recommended_package_command": "just test --locked -p codex-hepta-intelligence-eval",
+    "required_formatter": "just fmt",
+    "static_checks": "Seven original Git blob identities checked; five production/reference inputs byte-identical; all old test names retained and exact negative assertions added."
+  },
+  "artifacts": {
+    "patch": "ndu-error-taxonomy.patch",
+    "patch_identity": {
+      "bytes": 3894,
+      "git_blob": "b01686e0257b3212ab94c0a2965b532eaf5f8fcd",
+      "sha256": "7e0d46b6adfeb437809bf0f1664cd371193b2e950ac571873166c582a782059f"
+    },
+    "manifest": "source-manifest.json",
+    "manifest_identity": {
+      "bytes": 6081,
+      "git_blob": "e964038d20f27bd4f6e3e461415f59d3cf5fdb74",
+      "sha256": "acd643690559d52df81fbdbb61d93f4367750d3ecaf88755d1da7c51604f9a18"
+    },
+    "changed_files": "changed-files.json",
+    "preservation": "preservation-proof.json"
+  }
+}

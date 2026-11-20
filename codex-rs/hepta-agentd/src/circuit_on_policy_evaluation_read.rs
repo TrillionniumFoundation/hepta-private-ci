@@ -86,9 +86,11 @@ impl OriginalCircuitOnPolicyCohortV1 {
         let inputs = records::assemble(
             &self.config,
             &self.owners.ledger,
-            &receipt,
-            &records,
-            &sources,
+            records::CohortReadInputs {
+                dataset: &receipt,
+                records: &records,
+                publications: &sources,
+            },
             &self.owners.sources,
             &training,
             &pairing,

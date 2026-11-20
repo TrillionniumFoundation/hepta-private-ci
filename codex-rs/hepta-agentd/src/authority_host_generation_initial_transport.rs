@@ -49,7 +49,7 @@ pub(crate) enum Command {
     Publish {
         expected: String,
         intent: String,
-        signed: SignedFinalUseGrant,
+        signed: Box<SignedFinalUseGrant>,
         witness: VerifiedUseTokenWitnessV1,
     },
 }
@@ -65,19 +65,31 @@ pub(crate) struct Response {
     pub(crate) head: Option<CurrentHead>,
 }
 
+/// Original connection and registration values; the service retains all checks.
+pub(crate) struct GenerationInitialTransport<'a> {
+    pub(crate) config: &'a HostAuthorityServiceConfig,
+    pub(crate) registration: &'a HostAuthorityRegistration,
+    pub(crate) stream: UnixStream,
+    pub(crate) policy: HostAuthorityPeerPolicy,
+    pub(crate) owner: OwnedFd,
+}
+
 impl HostAuthorityService {
     pub(crate) fn serve_generation_initial(
         &self,
         slot: &RegisteredGenerationInitial,
-        config: &HostAuthorityServiceConfig,
-        registration: &HostAuthorityRegistration,
-        stream: UnixStream,
-        policy: HostAuthorityPeerPolicy,
-        owner: OwnedFd,
+        transport: GenerationInitialTransport<'_>,
         source_capability: Option<&Mutex<Option<crate::RootHistoricalSourceCaptureCapabilityV1>>>,
         session_end: Instant,
         retained_run_start: Option<&RegisteredInitialRunStartRetentionV1>,
     ) -> io::Result<()> {
+        let GenerationInitialTransport {
+            config,
+            registration,
+            stream,
+            policy,
+            owner,
+        } = transport;
         let mut sequence = 1_u64;
         let pin = owner.try_clone()?;
         let mut channel = HostAuthorityPeerChannel::from_stream(stream, policy, owner)
@@ -192,6 +204,7 @@ impl HostAuthorityService {
                                 signed,
                                 witness,
                             } => {
+                                let signed = signed.as_ref();
                                 if slot.mode != RootGenerationInitialModeV1::Reserve
                                     || before.as_ref() != Some(&slot.profile.prepared)
                                     || *expected != head_digest(&before)?

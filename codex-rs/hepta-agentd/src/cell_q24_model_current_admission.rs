@@ -17,16 +17,24 @@ use super::original_binding;
 use crate::CellQ24TrainingOwnerV1;
 use crate::OriginalCellEvaluationModelMaterialV1;
 
+pub(in super::super) struct TrainingBindingInputs {
+    pub(in super::super) scope: Digest32,
+    pub(in super::super) owner_binding: Digest32,
+}
+
 pub(in super::super) fn validate_current_material<T: AnchorWitnessStore>(
     trainer: &mut CellQ24TrainingOwnerV1<T>,
     dataset_cut: &LearningIterationSnapshotV1,
-    scope: Digest32,
-    owner_binding: Digest32,
+    binding: TrainingBindingInputs,
     training_cut: &LearningIterationSnapshotV1,
     training_attestation: &SignedLearningEvidenceV1,
     material: &OriginalCellEvaluationModelMaterialV1,
     now: u64,
 ) -> Result<Admission, Error> {
+    let TrainingBindingInputs {
+        scope,
+        owner_binding,
+    } = binding;
     let mut coordinator = LearningIterationCoordinatorV1::from_snapshot(training_cut.clone())?;
     let original = CellQ24TrainingOwnerV1::read_learning_observation(trainer, dataset_cut)?;
     let training = training_cut
