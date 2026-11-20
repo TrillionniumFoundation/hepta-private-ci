@@ -1311,8 +1311,8 @@ mod tests {
             .store
             .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
             .await
-            .expect("read durable provider attempt")
-            .expect("provider attempt");
+            .context("read durable provider attempt")?
+            .context("provider attempt")?;
         assert_eq!(
             durable_attempt.provider_effect_key.as_ref(),
             Some(&provider_key)

@@ -1,6 +1,7 @@
 //! Real subprocess and authority-boundary tests with an explicitly fake reader.
 //! The separate ignored test uses a pinned pretrained checkpoint in hosted CI.
 use super::*;
+use anyhow::Context;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
@@ -29,8 +30,8 @@ out = dict(schema='hepta.memory-serving.observation.v1', job_digest=hashlib.sha2
 fn digest(name: &str) -> String {
     Digest32::of_bytes(name.as_bytes()).to_string()
 }
-fn job(process: &MemoryServingProcessV1) -> MemoryServingJobV1 {
-    MemoryServingJobV1 {
+fn job(process: &MemoryServingProcessV1) -> anyhow::Result<MemoryServingJobV1> {
+    Ok(MemoryServingJobV1 {
         schema: "hepta.memory-serving.job.v1",
         request_id: "request.1".into(),
         subject_id: "agent.1".into(),
@@ -49,8 +50,8 @@ fn job(process: &MemoryServingProcessV1) -> MemoryServingJobV1 {
         interpreter_digest: process.interpreter_digest().to_string(),
         question: "What was learned?".into(),
         question_time: "2026-10-09T00:00:00Z".into(),
-        deadline_unix_millis: now_ms().expect("clock") + 30_000,
-    }
+        deadline_unix_millis: now_ms().map_err(anyhow::Error::msg).context("clock")? + 30_000,
+    })
 }
 struct Fixture {
     root: tempfile::TempDir,
@@ -59,7 +60,7 @@ struct Fixture {
     signed: SignedFinalUseGrant,
     job: MemoryServingJobV1,
 }
-fn fixture(script: &str) -> Fixture {
+fn fixture(script: &str) -> anyhow::Result<Fixture> {
     // PATH discovery is confined to test setup, never the product consumer.
     let python = Command::new("python3")
         .args([
@@ -67,14 +68,14 @@ fn fixture(script: &str) -> Fixture {
             "import os,sys;print(os.path.realpath(sys.executable))",
         ])
         .output()
-        .expect("Python test prerequisite");
+        .context("Python test prerequisite")?;
     assert!(python.status.success());
     let python = PathBuf::from(
         String::from_utf8(python.stdout)
-            .expect("Python path")
+            .context("Python path")?
             .trim(),
     );
-    let root = tempfile::tempdir().expect("fixture directory");
+    let root = tempfile::tempdir().context("fixture directory")?;
     for name in [
         "native.py",
         "pretrained.py",
@@ -82,28 +83,31 @@ fn fixture(script: &str) -> Fixture {
         "sessions.py",
         "tensor_contract.py",
     ] {
-        fs::write(root.path().join(name), b"# fixture only\n").expect("fixture source");
+        fs::write(root.path().join(name), b"# fixture only\n").context("fixture source")?;
     }
     let program = root.path().join("serving_worker.py");
-    fs::write(&program, script).expect("fixture reader");
+    fs::write(&program, script).context("fixture reader")?;
     let scratch = root.path().join("scratch");
-    fs::create_dir(&scratch).expect("scratch root");
+    fs::create_dir(&scratch).context("scratch root")?;
     let process = MemoryServingProcessV1::new(MemoryServingProcessConfigV1 {
-        interpreter_digest: Digest32::of_bytes(&fs::read(&python).expect("interpreter")),
+        interpreter_digest: Digest32::of_bytes(&fs::read(&python).context("interpreter")?),
         python_executable: python,
-        code_digest: MemoryServingProcessV1::code_digest(&program).expect("code identity"),
+        code_digest: MemoryServingProcessV1::code_digest(&program)
+            .map_err(anyhow::Error::msg)
+            .context("code identity")?,
         program,
         model_directory: root.path().to_owned(),
         scratch_root: scratch,
     })
-    .expect("admitted fixture installation");
-    let job = job(&process);
+    .map_err(anyhow::Error::msg)
+    .context("admitted fixture installation")?;
+    let job = job(&process)?;
     let key = SigningKey::from_bytes(&[93; 32]);
     let authority_dir = root.path().join("authority");
-    fs::create_dir(&authority_dir).expect("authority directory");
+    fs::create_dir(&authority_dir).context("authority directory")?;
     use std::os::unix::fs::PermissionsExt;
     fs::set_permissions(&authority_dir, fs::Permissions::from_mode(0o700))
-        .expect("authority privacy");
+        .context("authority privacy")?;
     let authority = FinalUseAuthority::open_state_dir(
         &authority_dir,
         "fixture-issuer".into(),
@@ -114,33 +118,33 @@ fn fixture(script: &str) -> Fixture {
             revoked_grant_ids: BTreeSet::new(),
         },
     )
-    .expect("fixture authority");
+    .context("fixture authority")?;
     let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "fixture-issuer".into(),
         authority_epoch: 1,
         grant_id: "use.1".into(),
         nonce: [12; 32],
-        binding: job.binding().expect("binding"),
-        not_before_unix_ms: now_ms().expect("clock") - 1,
+        binding: job.binding().map_err(anyhow::Error::msg).context("binding")?,
+        not_before_unix_ms: now_ms().map_err(anyhow::Error::msg).context("clock")? - 1,
         expires_at_unix_ms: job.deadline_unix_millis,
     };
     let signature = key
-        .sign(&grant.signing_bytes().expect("grant bytes"))
+        .sign(&grant.signing_bytes().context("grant bytes")?)
         .to_bytes()
         .to_vec();
-    Fixture {
+    Ok(Fixture {
         root,
         process,
         authority,
         signed: SignedFinalUseGrant { grant, signature },
         job,
-    }
+    })
 }
 
 #[test]
-fn actual_subprocess_requires_single_use_and_matching_observation() {
-    let f = fixture(READER);
+fn actual_subprocess_requires_single_use_and_matching_observation() -> anyhow::Result<()> {
+    let f = fixture(READER)?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -165,11 +169,12 @@ fn actual_subprocess_requires_single_use_and_matching_observation() {
             .count(),
         0
     );
+    Ok(())
 }
 
 #[test]
-fn revocation_between_claim_and_spawn_prevents_effect() {
-    let f = fixture(READER);
+fn revocation_between_claim_and_spawn_prevents_effect() -> anyhow::Result<()> {
+    let f = fixture(READER)?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -192,12 +197,13 @@ fn revocation_between_claim_and_spawn_prevents_effect() {
             .count(),
         0
     );
+    Ok(())
 }
 
 #[test]
-fn wrong_node_generation_or_selection_cannot_reuse_grant() {
+fn wrong_node_generation_or_selection_cannot_reuse_grant() -> anyhow::Result<()> {
     for field in ["node", "generation", "selection", "question"] {
-        let mut f = fixture(READER);
+        let mut f = fixture(READER)?;
         let token = f
             .authority
             .claim(&f.signed, &f.signed.grant.binding)
@@ -215,11 +221,12 @@ fn wrong_node_generation_or_selection_cannot_reuse_grant() {
                 .is_err()
         );
     }
+    Ok(())
 }
 
 #[test]
-fn cancellation_reaps_child_and_missing_completion_cannot_be_success() {
-    let f = fixture("import time\ntime.sleep(30)\n");
+fn cancellation_reaps_child_and_missing_completion_cannot_be_success() -> anyhow::Result<()> {
+    let f = fixture("import time\ntime.sleep(30)\n")?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -242,7 +249,7 @@ fn cancellation_reaps_child_and_missing_completion_cannot_be_success() {
             .count(),
         0
     );
-    let f = fixture("pass\n");
+    let f = fixture("pass\n")?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -252,11 +259,12 @@ fn cancellation_reaps_child_and_missing_completion_cannot_be_success() {
             .execute(f.job, b"adapter".to_vec(), token, CancellationToken::new())
             .is_err()
     );
+    Ok(())
 }
 
 #[test]
-fn changed_dependency_or_payload_rejects_before_execution() {
-    let f = fixture(READER);
+fn changed_dependency_or_payload_rejects_before_execution() -> anyhow::Result<()> {
+    let f = fixture(READER)?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -267,7 +275,7 @@ fn changed_dependency_or_payload_rejects_before_execution() {
             .execute(f.job, b"adapter".to_vec(), token, CancellationToken::new())
             .is_err()
     );
-    let f = fixture(READER);
+    let f = fixture(READER)?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -282,18 +290,20 @@ fn changed_dependency_or_payload_rejects_before_execution() {
             )
             .is_err()
     );
+    Ok(())
 }
 
 #[cfg(target_os = "linux")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation() {
+async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation()
+-> anyhow::Result<()> {
     use crate::AgentdError;
     use crate::RuntimeTasks;
     use codex_hepta_types::Generation;
 
     let f = fixture(
         "import os,sys,time\nfrom pathlib import Path\n(Path(sys.argv[2])/'child-started').write_text(str(os.getpid()))\ntime.sleep(30)\n",
-    );
+    )?;
     let token = f
         .authority
         .claim(&f.signed, &f.signed.grant.binding)
@@ -369,4 +379,5 @@ async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generatio
             )
             .is_err()
     );
+    Ok(())
 }
