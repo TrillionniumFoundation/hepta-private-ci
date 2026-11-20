@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "cell_experiments.test_source_metrics_v3",
+    "-v"
+  ],
+  "source_base_commit": "325218ec2e5f085637e78e192bf188842e51fad5",
+  "production_git_blob": "1a8fd3c43fd09d6aafee81b74275a7b57571abda",
+  "regression_test_git_blob": "3bd61299f923e1f3ce2f80d92780991dfab4434e",
+  "exit_code": 1,
+  "wall_seconds": 0.33707356452941895,
+  "child_cpu_seconds": 0.32982999999999996,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "model_calls": 0,
+  "training_updates": 0,
+  "original_native_e6_executions": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "6a7b447596a4a56c6dde916e016db348e8f2253b963724fb383086a5c3b339bc"
+}
