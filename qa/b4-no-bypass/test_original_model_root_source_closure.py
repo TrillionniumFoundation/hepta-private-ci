@@ -331,7 +331,7 @@ class OriginalModelRootClosureTests(unittest.TestCase):
 
     def test_cold_model_pin_is_readonly_and_wire_none_preserves_prior_shape(self):
         for marker in (
-            "ClientOriginV3::Readback(authorization)", "model: Some(model)",
+            "ClientOriginV3::Readback(Box::new(authorization))", "model: Some(model)",
         ):
             self.rejects(RECOVERY, "fn recover_original_model_root_stream(", marker)
         for function, marker in (

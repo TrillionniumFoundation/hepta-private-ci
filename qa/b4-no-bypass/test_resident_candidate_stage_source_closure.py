@@ -96,9 +96,9 @@ class ResidentCandidateStageClosureTests(unittest.TestCase):
     def test_both_factories_consume_original_values_under_the_same_root_registration(self):
         for function, marker in (
             ("fn into_runtime(", "stages: crate::OriginalCellQ24NoUpdateStageOwnersV1"),
-            ("fn into_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::NoUpdate(stages),\n            verifier,\n            capacity"),
+            ("fn into_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::NoUpdate(Box::new(stages)),\n            verifier,\n            capacity"),
             ("fn into_candidate_runtime(", "stages: crate::OriginalCellQ24CandidateStageOwnersV1"),
-            ("fn into_candidate_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::Candidate(stages),\n            verifier,\n            capacity"),
+            ("fn into_candidate_runtime(", "self.owner,\n            stages::ResidentOriginalStageOwnersV3::Candidate(Box::new(stages)),\n            verifier,\n            capacity"),
         ):
             self.rejects(FACTORY, function, marker)
         for marker in (

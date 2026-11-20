@@ -57,12 +57,16 @@ def require_structure(path, source):
             raise PROOF.VerificationFailure("raw data fields must remain private")
         if re.search(r"\bpub(?:\([^)]*\))?\s+fn decode_data\(", code):
             raise PROOF.VerificationFailure("raw decoder is not a capability constructor")
-        # Keep exact purpose/domain/prefix literals at the actual code spans.
-        for name, literal in (
-            ("decode_data", 'b"HCSTREQ1"'),
-            ("decode_data", 'b"HCSTRES1"'),
-            ("decode_data", 'b"hepta.circuit.original-source-publication.v1\\0"'),
-            ("validate_against", 'b"hepta.root.original-ledger-cell-decision.v1\\0"'),
+        # Bind each literal to its input/hash; Reader takes an eight-byte value.
+        for name, literal, prefix_pattern in (
+            ("decode_data", 'b"HCSTREQ1"',
+             r"Reader::new\(\s*&request_bytes,\s*\*\s*$"),
+            ("decode_data", 'b"HCSTRES1"',
+             r"Reader::new\(\s*&result_bytes,\s*\*\s*$"),
+            ("decode_data", 'b"hepta.circuit.original-source-publication.v1\\0"',
+             r"Digest32::of_parts\(\s*&\[\s*$"),
+            ("validate_against", 'b"hepta.root.original-ledger-cell-decision.v1\\0"',
+             r"Digest32::of_parts\(\s*&\[\s*$"),
         ):
             body, raw = route.function(source, "fn " + name + "(")
             matches = list(re.finditer(re.escape(literal), raw))
@@ -70,8 +74,7 @@ def require_structure(path, source):
                 raise PROOF.VerificationFailure("one original commitment domain required")
             match = matches[0]
             # A quoted marker inside a comment is not an actual literal.
-            prefix = re.search(r"(?:Reader::new\(\s*&(?:request|result)_bytes,|"
-                               r"Digest32::of_parts\(\s*&\[)\s*$", raw[:match.start()])
+            prefix = re.search(prefix_pattern, raw[:match.start()])
             if (body[match.start():match.end()] != PROOF._strip_rust_non_code(literal)
                     or prefix is None
                     or body[prefix.start():prefix.end()] != prefix.group()):

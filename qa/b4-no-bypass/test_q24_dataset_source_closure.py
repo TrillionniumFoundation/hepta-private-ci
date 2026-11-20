@@ -6,6 +6,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = "codex-rs/hepta-agentd/src/cell_q24_dataset.rs"
@@ -81,7 +83,15 @@ class Q24DatasetSourceClosureTests(unittest.TestCase):
         self.rejects(before + after)
         # The public new-material path always enforces its work deadline; the
         # separate closed receipt path can only re-read original completed work.
-        self.rejects(self.source.replace("true, clock)", "false, clock)", 1))
+        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(self.source))
+        function = "fn read_current_with_clock("
+        self.assertEqual(code.count(function), 1)
+        start = code.index(function)
+        end = PROOF._rust_item_end(code, start)
+        self.assertIsNotNone(end)
+        lo, _ = source_marker_span(code, "true, clock)", start, end + 1)
+        self.assertEqual(self.source[lo:lo + 4], "true")
+        self.rejects(self.source[:lo] + "false" + self.source[lo + 4:])
         guard = "if fresh_now < started_at"
         self.rejects(self.source.replace(guard, "if false && fresh_now < started_at", 1))
 
