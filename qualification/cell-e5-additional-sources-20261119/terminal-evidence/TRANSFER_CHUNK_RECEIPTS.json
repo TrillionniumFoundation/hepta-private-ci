@@ -1,0 +1,4033 @@
+{
+  "schema": "hepta.e5-exact-archive-transfer-receipts.v1",
+  "host": "x230",
+  "source_root": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051",
+  "purpose": "Read-only byte retention; no model, native task, commit, branch or ref mutation",
+  "small_metadata": [
+    {
+      "rel": "PARTS.json",
+      "sha256": "aaf236e146642c29728307e92abc284775afcc6aa0c202089c5b74b70f83a486",
+      "bytes": 7405,
+      "version": "2053:4093715:7405:1795151649107897889:1795151649107897889"
+    },
+    {
+      "rel": "READOUT.json",
+      "sha256": "9d95f161166c2a1a6e7e60f87622da78aca2b4b654a82191dd4ed78fdb368816",
+      "bytes": 7036,
+      "version": "2053:4093670:7036:1795151603227703797:1795151603227703797"
+    },
+    {
+      "rel": "ARCHIVE.json",
+      "sha256": "941512e144df9e8e9fb0f70f92d02b4c7b838d72425cc81d4d1780aba17d19d5",
+      "bytes": 487,
+      "version": "2053:4093674:487:1795151649024897548:1795151649024897548"
+    },
+    {
+      "rel": "EXCLUDED_RECONSTRUCTIBLE_ENVIRONMENTS.json",
+      "sha256": "c441623ca71abcdc291f6f3ab8e13e7cb7a7d4fa9b63907067bf67e392c91248",
+      "bytes": 548,
+      "version": "2053:4093673:548:1795151648942897212:1795151648942897212"
+    }
+  ],
+  "files": [
+    {
+      "spec": {
+        "id": "part000",
+        "rel": "parts/raw-all-attempts.tar.xz.part000",
+        "expected_sha256": "5f9e7c3e2e31b63d7d95885fb62239c4d49e99c474d9b4ca1d13de99bd5b497f",
+        "bytes": 500000,
+        "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "56429bdd66f867740a71c317b65cfd65bd5845aa94342c828bf4b396a7ddad96",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "008f39e169b886a8e3bfbb38386214dba230256ebe4612651411c53b640e14a1",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "bb49be9ec41382769fce2deb22ae5b9f7ada6d647ce09306da3a4fd48f42e01c",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "9cfd54f86cadd2eb3f4031f11aa33b86029d0cc080e3e5fc1a2c388062529fa3",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "8f4cbff03db87451ca5d22465ea68f6e8d8406f1969d0c500270081a55bc96e6",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "f76e24eb0dd7dd1ee8ca9fadcae70358578a3a8bef3470a00677fc411095162d",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "56c5e14d5309fa4bca64412688e84f8e44c1456aeaaa543c6f0a9348a08eb464",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "4298cc38761827b41604b6e20b61112264c63514a491205783ec66aa9dae32e5",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        },
+        {
+          "chunk_sha256": "f0cd791497b53a832d69961f1e6b186731eb7bd6eb6b32eadfa7ca4b2479df2a",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part000",
+          "size": 500000,
+          "version": "2053:4093676:500000:1795151649024897548:1795151649024897548"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part001",
+        "rel": "parts/raw-all-attempts.tar.xz.part001",
+        "expected_sha256": "0fe4b2d8c61adafe9ebf103b0faa8d46a2b50f2c59b40c0b9d6147e65fbfc0dc",
+        "bytes": 500000,
+        "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "e2a0ebad384737cab1af43acda1631b431ff589638ac8e17c60f185b3de1ee43",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "abe563e19e246cbf1ea91c396fc1f7168e645e021df6ab2fc9f95806469c069d",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "7020a38fa4a8a73a82edc683ff3f91e6bea027caca412c42e892ccbc9cbf8600",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "31311884e5db42cc103a728a1f41dee05bc87d8ccfec566c213777cdea9f41a5",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "8e74bd067ea1cc00a5c9d1411131fd121996855c801183723538f16566092814",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "154bf5889d1fd820fba5d6bca90ca877108da69d4545937d2208d542cf4cf76f",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "770b659b985cf00690c59492a6a86577d3d60aba5ac03e9ed1fe9ad184dd2581",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "508e67aeb6496d6c97e35cc5e150e2fff3e87d6cc035e7d23f76f574d2526693",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        },
+        {
+          "chunk_sha256": "eb72aee4ff2398324d66248552262c256a13075de24d64e5c924bd4552a3f43a",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part001",
+          "size": 500000,
+          "version": "2053:4093677:500000:1795151649027897561:1795151649027897561"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part002",
+        "rel": "parts/raw-all-attempts.tar.xz.part002",
+        "expected_sha256": "fc5e9c417ecd5ead8ca40d503d1bcd8b2a6d835e3f1ab3d27586dc4d34b91626",
+        "bytes": 500000,
+        "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "d70b39a3b2f4ec13b40085f6a7b8680f3d1cb9697673cc4685b08829566646c6",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "12b24c5e61f52fdb3766fad3c2e04ea4998e20db4729375534d395cec1abe135",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "bcb81ac4def92c48152ba43a8e46383e4aab80ff06953d1a6d4e18d45c57baab",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "f35f05c583b782d70f9ac1efb37c973d76b1856c4f89a0226e66a9505f342351",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "40298fb3be1c9227847ded075bb0d4d8ad3a4f3ab147061ca46a683dbf1b50e1",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "913859d3d097f3d503112656eebde58ed71e5ab30a4b7b22114d9fc2e7cd0f8a",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "d0c8f6bec7f6ac366903ca20351d7dff863df0ed127432b75914a3f9b97c4042",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "ab160326f26e335eb187621583bddd0379ff23d28a782eb55111dc11cfe060ab",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        },
+        {
+          "chunk_sha256": "336841aea12d3f27a99881b06134b89a2e994689930838be666c79b6be84f26b",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part002",
+          "size": 500000,
+          "version": "2053:4093678:500000:1795151649029897569:1795151649029897569"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part003",
+        "rel": "parts/raw-all-attempts.tar.xz.part003",
+        "expected_sha256": "1a524b0bbe08d21833b7145bda5284153e425467eb70c2031b9fb710e18355d4",
+        "bytes": 500000,
+        "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "d00b648cefbe3c9099665d1ef9621bb1a567eefc7d06adb8b80080e7c8f682a4",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "f7668f0c9626a7359ea0049d1b2cb8af702a66f83bbcb5a9c90d464cf7a618e8",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "c92c3c52d88595c4b976f11b914ffab73e398ca7ff24e5b5ce119b6b622e80d2",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "cff785a0a32920c78b05ceb63048e097c06f07ee513155b42e6a4895cbfe7bd0",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "b6877062e4b3d08a1877467896e6695b1b367e84bd66c65d9c3878e66b6327c2",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "715325ff4bbb20cd2e0a63cf1b0ac8e57aaf2a8fe48b4e6e4ae96d127ba04c44",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "42cacfb62f4382b9df8dedc849bdbe99263c07ada99aff67ecdd043def6883d4",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "83fb406924fedc3ad2e09b156acd4ebac2c1bf5a7028f7b59331345991861efa",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        },
+        {
+          "chunk_sha256": "dda1912d035583d18831b29283f647349e6cec998eced62bc2f48c343cce243e",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part003",
+          "size": 500000,
+          "version": "2053:4093679:500000:1795151649031897577:1795151649031897577"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part004",
+        "rel": "parts/raw-all-attempts.tar.xz.part004",
+        "expected_sha256": "7bebe5f4ed57168332065a31b80d2f698ff5425e02ef6fbef0a999c6fa14719c",
+        "bytes": 500000,
+        "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "5bdff55f9bc206650ce40ed57681702799db2ba34a00bbe16d1253274fe80da7",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "d6e22875d1a760908576573e3178b3251c184df0d895a9e20fbb893ec68ecd13",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "7edc5e0c248bd7fefdba3840a99af8596aadc7d3b4b7e885c9687c41de5991e9",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "8ec1481a89bd60b001ee1d9828b10c8502ac69e654c7ec17ea73173c257d8262",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "87594ba475681bd750994133aa5107136ed9b0783b2ca4da26865ef857d1c456",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "071e0793ab273f822061166a84fb85c44dda4e1da288a18f97a4a275fd34cbce",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "c623a943e128d0b2c23fa517d144101f7a08cd78ab544e1ad6d8aedb403b5e75",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "e1158d367d164272483d94f48a38bcb5c4cf00204cca0629a784d1c5b78e7801",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        },
+        {
+          "chunk_sha256": "baa8eea2e576be541125bc625f21c2b590ed90e2283f71206ee9fe06d51c50dd",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part004",
+          "size": 500000,
+          "version": "2053:4093680:500000:1795151649033897585:1795151649033897585"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part005",
+        "rel": "parts/raw-all-attempts.tar.xz.part005",
+        "expected_sha256": "54e5fb197714029fead5f3af9b5f8f0c9c29945f3f3d86bb59d68e151515c7df",
+        "bytes": 500000,
+        "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "38e6ba7dedbfce2daf6b67a4d9896c0d0abbe81df1d22111e5077e77e1316b1c",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "f6893ef94c71ad61deb50170c2f8ff9f0be17f1d7619e51b2d6e3934c4609944",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "213563eced85e97e211715a38b1a1c8af14be80c5cc4ddcdecde470dc5cac7c9",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "af414112bb8f2fb9650982b107e980a2e9aee2b6f07b4abfe88f56c51b9f9c92",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "0fa90f180b245f397d70274af91275847d772ac08e020ee19e19363b9d45e88f",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "8387689215e6972ccc9494466eead50b90aa813aeea69eea92742f2e16ed63d9",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "70d0dbb7e097a68dd2619997fef05a12329d3741fa3b0f1597f6774236dbf634",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "bce26a1c0ad2d987d650fbf7e87779583933c43e837bf785a3d3596053ad121e",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        },
+        {
+          "chunk_sha256": "959d290f4b3b89d1e888adb9842b75c16d78929a0ca52f31a30a61f0fa6c4b1c",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part005",
+          "size": 500000,
+          "version": "2053:4093681:500000:1795151649035897594:1795151649035897594"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part006",
+        "rel": "parts/raw-all-attempts.tar.xz.part006",
+        "expected_sha256": "f6245cbe2ff7dbae337c1863d236001a9c948849bac3efda13258c807fd6a0c9",
+        "bytes": 500000,
+        "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "916908342064a4676f9a15bb98b87b36a0eb1af89e53439a2fdb58b15d94348c",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "f9ee034668588255591126856c91f6dc6bd33453349324fced1d8f65dc3c5858",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "8a25b655c4b3a5e6988ebbfe6a0390ab940d193a14b628219aa14c83a0a120ca",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "914b39508ca64c6ccea8f18de44f9eed452fbf064be0e1042c94e1aeca22d010",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "e74783869ca42d225b5c18ddb8066e700e72b64a3c3222c7c0b62d766ae42603",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "07bb3be294ef8a43f4367dc089f8e44e90aedfe75919e5cc990497bb0fce38e6",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "940452e3ccb110dc7be114b1ae70aad7970f6e80db36c94e1b079077d38bb6b1",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "e0ea7ea3aa72d5a1f093f3ce44b73b7d6546f334f4fd850025bfe6ac24184bb8",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        },
+        {
+          "chunk_sha256": "dc02730c73cd902524ab878531cb393126128d42996c15815a8fa863555dfd7d",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part006",
+          "size": 500000,
+          "version": "2053:4093682:500000:1795151649037897602:1795151649037897602"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part007",
+        "rel": "parts/raw-all-attempts.tar.xz.part007",
+        "expected_sha256": "2cbd442f7693f9feadbe9c21e2a4167b0df182c045a4e87b583e3356923d8e93",
+        "bytes": 500000,
+        "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "06d0ab48e17582b82dd7c9fff059ce89e4126be349bc48bdb590d5179061ef1a",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "53884d59726e90fe0b16285dbc90b7303caff68ba97bf295475baf12d99b1937",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "b478adb9c660514f27ac4c4059dc48fd762ceda562adf7c67cbb972983d90e9c",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "a397ad6189dc2ae39a14c4c2a952f6e0a6da1eb4833e96f4219f389dbaf56189",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "3136a8ce67b9375ef9ae629d7af1eeb35654125b54ccd46182b662100275b595",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "20ea9b306e9153423b8a1edd4e5b3b660ab1c3bd6b904739b5c607a702f5f73c",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "888f38df594b16d3b4924308a4ce879679bcf4ec6168d1d9d386e7691e22ee29",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "bb2824b8fe79d39a8f089ac84340d2b974206df7c8344a1d10f04acc99bcc05c",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        },
+        {
+          "chunk_sha256": "b5e4b614f73ec1bda5138353f4cd11c8687d095ef93c00f2365ca0bcde0d3ffa",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part007",
+          "size": 500000,
+          "version": "2053:4093683:500000:1795151649040897614:1795151649040897614"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part008",
+        "rel": "parts/raw-all-attempts.tar.xz.part008",
+        "expected_sha256": "601bee3204f7622188f965eda8cf888e5d61ec66718a1af63f59bc68c4f7c291",
+        "bytes": 500000,
+        "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "d657ef1707911dd8aa3efac44910c618e927976b0c7a58a61e752edeb22b3d2d",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "b083ba7b0e264b1e2cf76b702bab7f67017aea2923144c83a660bde895fe86c3",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "543836184347fa678ed65317c290e569d994cdbd0ff00192e9320fbfdc165489",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "109435e49478792d69e8a7b1bf1431efc87bf953428cb2dde3b8da56f4a50703",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "531b3cb1044bd058ea1f097d0a7a29aa66ba8c8a25b41526217b83f2de784b6c",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "37cafc841d76ca8f3ef106a2293b5859c8ce4a2012349fc2d2b8c0e7b72192fd",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "d6c036161b69cb079e6572a0d495e656950811caffab221a108d66d4406dbb80",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "fb436556b3b4f2ab957d4e4d9f2ad974c90c07402015433ae9880b352e161f9d",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        },
+        {
+          "chunk_sha256": "4d75d2ace3d86849f0b077a59ec4638a7faa6f1f3788c89be810b6eb523f457c",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part008",
+          "size": 500000,
+          "version": "2053:4093684:500000:1795151649042897622:1795151649042897622"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part009",
+        "rel": "parts/raw-all-attempts.tar.xz.part009",
+        "expected_sha256": "1b9d9840e4da03d306097d3d8abd6aec6d4005a67868a245976ef8d10c8651d1",
+        "bytes": 500000,
+        "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "a7b6272875cf4420359281bf32adb1d59614985e7867df4153d2798b4794d026",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "a5ff50d9f445570a0a380c8194fcf3e0579aad665af67a94e402d0c1fc1070d6",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "ea3d7fa0d76eb34de0ca111771e1ebc6ddeda4bffe639ffcbe858b275270025a",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "3e6785d6bf355916d7bf0946c8c63f16813a0e110148e2e2d7ca04c044f4508f",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "fad67bc9c692e7fc2736605677d2d12a076915594c8f334c89c38f14c802f5f5",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "2b5eded3ac4dc80ea59fd460c3618e644e7092e4a0751233016fc10ae5aa012a",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "59766cd6253441ff7b92da7a901a1f572e39239c5dc0a3c03b71e0ea71c89c8d",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "e4c286cca3cfcb8179836d15e6c51316b858dda3a271ae301519162be9449306",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        },
+        {
+          "chunk_sha256": "d5728c2a21cb944939b608c28a5f03c779221dacfadf57b43d1492793daf04c0",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part009",
+          "size": 500000,
+          "version": "2053:4093685:500000:1795151649044897631:1795151649044897631"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part010",
+        "rel": "parts/raw-all-attempts.tar.xz.part010",
+        "expected_sha256": "812d94eefae0977334d27a5f598405dd1cfeb11c04d5a5141dd73217d819b578",
+        "bytes": 500000,
+        "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "0887caddf0308b07ce42eee1d75dd3ff65d618fc28ac2caf0668155fefb55183",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "079a849b11e0ec1551519cd562c9501659e56bf78ae47b11cb945a2eef4177b2",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "27b230f769a6065e6a700c8550da7160916e4716650764338e0ac52a5825e6a7",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "0adf57024b389da52daf5f9c1747e8d60b7d441dfdfe570a3cdfd419baa1e167",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "452bebef9ed05f95f192711e37c579f5f0ab9e67c4587d2c5f4e94ddc465047f",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "08cb476e00c339f233f1b839f86b2174aaa1fdadd86dc253f10828071cc6b25e",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "75987880814390275e1c63c5b3b9c938cb743d1ed8fb0a0416f384661eb78c1d",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "d87af4f6b81fc69bbbbc39fc91e20999b95b203c87f22f4b3cb57d585fd816eb",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        },
+        {
+          "chunk_sha256": "89bc9690bbb823d5e54751e54b7d3b4548a55fa58a39f0776ab2976f9c92483b",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part010",
+          "size": 500000,
+          "version": "2053:4093686:500000:1795151649046897639:1795151649046897639"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part011",
+        "rel": "parts/raw-all-attempts.tar.xz.part011",
+        "expected_sha256": "d2bde15c9e47c93f43f86d5abfa20831f858bf756c9a0b5982e2c7da8e1f7ab7",
+        "bytes": 500000,
+        "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "81e99d89322b1bcc8346177377f3966e32e34691a0b4f8ccd56f8bd0f5df5a70",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "a41b785ca42eda55434305ab1f2503906652160f682a2b915969120aca4904b0",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "041c822ca5084b08f1a7963c7e37f7d07b18283f5c456cdf46821656d4712b35",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "bfa8c3cf273da7c9defb031cffe6cf6640d8b3545f23de7904bc2b83f749292e",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "4a5e8a7ecb2d83b26c87c82be5c79eecdde37001b125d61a1d0a4ea7ada0034c",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "911472980aef51d7f5a8c73ab60613f311c1a07d029f04f75577cb36d48cc4fa",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "80e2371e1c917a871110ccdb2ac278950fcd7bb22bcf51e00b423297f8795e95",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "7ce336010ffb7b82f37c4fe3e2ac688cea95f1d6cfaad8fa0df792251e4d879c",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        },
+        {
+          "chunk_sha256": "2d00fceadbb09f64b267aea16e5465cf8aa3165357780efc16ca1ba6fbbf99b7",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part011",
+          "size": 500000,
+          "version": "2053:4093687:500000:1795151649048897647:1795151649048897647"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part012",
+        "rel": "parts/raw-all-attempts.tar.xz.part012",
+        "expected_sha256": "6612293c51e99bd90fde72a87abc6a337231d51c59f78f0232c7648ca7ec7ef5",
+        "bytes": 500000,
+        "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "e424095bc050630945ea661c29157eca7d313425e8fe27db13323a4dbcb35cb8",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "3d8e47ee1b4ee8fd54d8c30f35cd4041b3f691ff89958cec135918ff706626e7",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "f9cf2a82d089d69f72e54a1f6fcd0d03b69958ef76f9b2ec1637f0109bcf0bb0",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "1bcd3b3693ea852d272a078b4a41fa20eb40f6260d556e313a0b98a33bad9ebd",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "fd5e643e4e278b5ff559d82417984c503d82340cdc23961d16c820c247e0cb61",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "bda5b61918e7ee534b281bd557b8cd2784c069117b08c232d19d6e8c0065a977",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "ebe59e5d539c673ff1f68e0546f9868497ce4d3680034d5436ca6eae9a2d281e",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "76b11dc33bd80b25f2aa54e86de5c6665ebe9cc41d984cf587e9acdf2c77cea1",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        },
+        {
+          "chunk_sha256": "0fb5240b73aadcef97b12767ecf1ab1811d6fa5828cf4f5972028747beb9647f",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part012",
+          "size": 500000,
+          "version": "2053:4093688:500000:1795151649050897655:1795151649050897655"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part013",
+        "rel": "parts/raw-all-attempts.tar.xz.part013",
+        "expected_sha256": "a992d3ab2fb24f0c13f913ae086e0a054e949088fcf1fe933df560ec4e5b0c49",
+        "bytes": 500000,
+        "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "1e1f709e48b991312d54f2cce6f3619a9f68aad85ca4b22e73bc5e22c62945d4",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "27ca4f6dae97a562d84b4c245d14942af3ce9d12edb72284cf97e0c850b288d8",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "1e4e2395676e9cf58f940aa08604af95ee5a0c232730579a32f00e9fb7d934c0",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "5f7e3955dac7ba9bca26b6c89b84fd4505a2874024e5478f275e4f6c37e5e4bd",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "cb5ae2b9af7b428070aa6458118831791d6ae824f5ef74f9785ac82a602678c4",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "b90b67c16e02d9e1d58da2c71092ea1d09b1a1d3ebd190cbf2d695599e1a3bd4",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "67bd6c09814f6c0b5faeb6553dc2c33b5248b42587a22b49c5d52d6c1a85a4fa",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "ffc7ef5e74cc12372619936c073cb4cd9cf2f3ad913c2442ef0f2c57644d9d0e",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        },
+        {
+          "chunk_sha256": "c505a4a68df700e6b29cb2ff51d731adc4edb85670a80a56145a74a25d5e0c21",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part013",
+          "size": 500000,
+          "version": "2053:4093689:500000:1795151649052897663:1795151649052897663"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part014",
+        "rel": "parts/raw-all-attempts.tar.xz.part014",
+        "expected_sha256": "1e4e8041a59907721f20e01fd39fcf0993bcc3bf3009d3624de37a3542ff5229",
+        "bytes": 500000,
+        "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "7b9f213cc9f28c4aad0a8618c1c5ec9aa612d4ab29b2c39c24d4e03e2057ce5c",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "87c9dca39090e2a22fe6d0150a1a7e37338f78d495b6e0bd6246a0c7a38c3abc",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "a3f4717142064dfe1d3f2243c31d87c4a75904f7a290fd20629a5d6b2cabd211",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "7b69957f05a049ed1f182911e86d545b1e450f941e9ee49c35b75852baaad6f7",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "627031f0adb1b34b637321ec1992e8faebaceba4d67c395b910ec4d4d6385429",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "964eb534ab34fc961fa894bd0b01d73154e41fe06248e285cb6685b65e90f65a",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "11fb702de1b481336d313df470507249bc28cd007655fe25765b44e8f3a10b4e",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "4117c0c3637974592eb8770a216d05a50bd219b8d588e83d8a9864efea55eb92",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        },
+        {
+          "chunk_sha256": "990ee38f8f9dfd3909c398ef68518cb93a9d99fdcde4b888c3068a3003733710",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part014",
+          "size": 500000,
+          "version": "2053:4093690:500000:1795151649055897676:1795151649055897676"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part015",
+        "rel": "parts/raw-all-attempts.tar.xz.part015",
+        "expected_sha256": "ae32405b0374ab9620a453a7ce26894c028f68affdda0a2af24f96e14e8ff55d",
+        "bytes": 500000,
+        "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "1425e44240be234b21498dd76859cd91919b20222967afd521e78abf5376b1d6",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "62bcc4a30c3044bdbd7c30ccc43b667f84db24019b9887252420d7766658c658",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "1eaaf3c33dfd5e781fdda01aca3ac53b0e836e935b2ff33a803d1f099cb0c259",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "817a8ceb60413b74d6f222d29d6925da7f0e59d2385827c6e17bd6afd613b1c0",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "fc06ab9506c44d119d05077fc148d31df67f2029ddd8dfb4608d50335482d62f",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "8e85af68e74d15358adecfad0c3238abd222553a3c64a67e320bd760a5dd7c9f",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "b5f5b10230b55f0cf717a02109b69f0d677518c803e18a0b7052549b75ce7f78",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "8727a574f5636f5809dcb1f7e1f7b56e09d57eea8c63b9896d836651f32430e1",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        },
+        {
+          "chunk_sha256": "d368598270af7ea83c9ed64189bc835b8ae38edaf2c95f70baa361a1168ed40f",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part015",
+          "size": 500000,
+          "version": "2053:4093691:500000:1795151649057897684:1795151649057897684"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part016",
+        "rel": "parts/raw-all-attempts.tar.xz.part016",
+        "expected_sha256": "13ceb09e1393f186f4a3f5ce494a5f0a532a139f4202b029b8b820ec234cab91",
+        "bytes": 500000,
+        "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "eb3f90bc8bc7601986bd4c17aead59dabef852a124c73644dc35a1f9ba94cfa0",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "08d9363516804d2241778e787b98750438bd50a46a97a623cfc0cf3f2e65a701",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "a631e04e396b411651e4ea80c5a941d06421dd841480ea3a7fd1fc975574a9b2",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "b3bedfd692a8659f03645857b4510116e168dbf28470eb8e8afef44b4a6934ac",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "f94d7b4c6a81792170f42689b67f076b4ed35d923527ec707e6df5c04d12f8a5",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "92d79d26a03c02ae84732dc6c8d234bb76664ba5db9144485aa11d9ae50ee196",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "92e5092d617d8798e13f7cdf1ba04bd4fbfad58d9bbb1a530e1755d92e217c91",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "c5c29fe047abba2c55ec1a3f1faa330a2651951a456730c6fe890cfecd2ad0ed",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        },
+        {
+          "chunk_sha256": "97186abecc5a95ffa121052dbfec5e67a833b21cc0e09e53d3cce7f2f6864810",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part016",
+          "size": 500000,
+          "version": "2053:4093692:500000:1795151649059897692:1795151649059897692"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part017",
+        "rel": "parts/raw-all-attempts.tar.xz.part017",
+        "expected_sha256": "4e7567613f3c9bf2b1d22cb561efdb660cd43a1331129674398f3ba0e354af14",
+        "bytes": 500000,
+        "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "7bc59478173d5e345ef06acc2a1a4373d07324da8a3fd99baf9c504a8ef4fac5",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "d1462790bb767a4b620ec133f0ca80224165f3b5bc4b308608e73fae16b1efec",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "5377a27d8dd6bff90af8f3366f22709f59481bef95786e405cf40372c17f80f4",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "8c95333a80ec4daa7da9a9a2e11ebbd2074044532e6bbc1e8d560c3e2bd73485",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "b040bde9f644058a635c82645dc2aa1a908392efacca3181ff3b8325bcbe89a4",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "113f629579bbd7f5c40758a9ef8d1924bceab0eb0dd05e7cd149a4753ed01d22",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "5428ab48ffa86a0199d82e73cf56a2575b07a321e2df203b4c5f3ab8830fd876",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "b9c029b81ce231fed58bd7d1cd7630d5e2c2e5e11aaa7fef43e16fb3909544a9",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        },
+        {
+          "chunk_sha256": "74ad2e58310d71831df1e22ea7e725008665564b149490e2ed1077cef5b9ccba",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part017",
+          "size": 500000,
+          "version": "2053:4093693:500000:1795151649061897700:1795151649061897700"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part018",
+        "rel": "parts/raw-all-attempts.tar.xz.part018",
+        "expected_sha256": "1017beeec69a03febd0bc8d69895be2b4b7fdda5e6199e8b55a142cd4b6f1bd6",
+        "bytes": 500000,
+        "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "ae37d67634731bb2378fce5273124c440eb5a7f5c730b70e685518a0d465af55",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "4b57912b7a67176a13e4b43d72b578fa2ee1b8b8931b7e45029b9a00ead51c40",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "a62fb8a9886eb155e1cf709033d741f36e0d6d3b9f9ba6110005a318f995be76",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "7bcf08983994ef2b03d5b9e14aba93ca4983eb91a64a2c6769029d1b9fa5187e",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "f676f373eebf11db7688f55dadefe7373854bed4f2f5d269ee1e138217be69ab",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "0d1c414856bbe879f0b24856fb2f27b50453152f323fc92827afa986f1844b99",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "a8e9d0448b75aab4d5b665df03ac92dcdc601bfbbe0e551688c866b030e1a7c4",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "aece114a8700d318775715fc02c507f2677fbb8add068e392e0679c23dc0ef6a",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        },
+        {
+          "chunk_sha256": "1981943c867aaaac138f3f723d1962a5e8c7fec4e55227271ccd1e35c239eb46",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part018",
+          "size": 500000,
+          "version": "2053:4093694:500000:1795151649063897708:1795151649063897708"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part019",
+        "rel": "parts/raw-all-attempts.tar.xz.part019",
+        "expected_sha256": "4f171ae783675c2c6343ceeecd6bb0a0170fb6ec7450722ae4464f48afda169b",
+        "bytes": 500000,
+        "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "af227350f641394c3385a15e01f5b6dac8ca60cf04b90eeb39112a25c2392298",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "b6fdfcc942f0275be54055e1963ad8273778cdd6cc5a555ce2d41b56a16f8446",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "e8b2eba97e386d821d2bea243561e3dae4666221b7d81c046bff64d1b925a65f",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "8ff3ca48a25f786469dfbabd6cb39c2b14fa3513fe023d9c549de9be9925fa9f",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "8223357e74ec114ed1f90c3110a5369caabba961589365a884d4257625132dad",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "167b0d03809eb34149297cb4413ebc28b35b7264075e0ccfeba088925106740e",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "5580382aafae083ce955bb9a4f5eee944d0f267aa5988ff067ff4dba8bd90d36",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "53316a010d9d23f207b1666537f961847341dea10065f5febff7db6762eacf51",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        },
+        {
+          "chunk_sha256": "8d5eaabaced2c93ab92864d6f462b888db34317c0468dbfdc515ae87e6c30e1a",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part019",
+          "size": 500000,
+          "version": "2053:4093695:500000:1795151649065897717:1795151649065897717"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part020",
+        "rel": "parts/raw-all-attempts.tar.xz.part020",
+        "expected_sha256": "d5d7db2dfd57682197628df84e623d917f2498c08bc77dcba5f56fb36d0f675d",
+        "bytes": 500000,
+        "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "4c367e548ea928c3f8b3d78f2da8f156f36aa1e34554914f14db60461e4df3aa",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "7da7295e0e4b6bd4f9f0eab7f7afa02a04b1f7211ece056532fff87d298e2a02",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "9c3d5c4548f8a8c39856d27667f838164e8c729c72e559b90db7ee4c01524799",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "0be436b31f8d9f8ca9926e9bb66f7405ac4664fa5caf17b69893fc51b4f25145",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "3a5d62879b5c803a7bc8a4ff112baed60a0b121b6abef67ed13957f503b2ae31",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "f0dfa682207bf1dd670dec46cce2ffa00970498b349b5a72234e3852cfb52030",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "08d61ce358ae2389aef718b2598c9391bd680974eea5d986a353a2a150e877d8",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "9d5af15755494187ca61ed668dbc5d5ae6ddee7da326d3120f3c68c9c426ce4c",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        },
+        {
+          "chunk_sha256": "371bdeb2ea1349eaeea9d7998a98bfeb89a961e6e72140189067b3262b32e313",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part020",
+          "size": 500000,
+          "version": "2053:4093696:500000:1795151649067897725:1795151649067897725"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part021",
+        "rel": "parts/raw-all-attempts.tar.xz.part021",
+        "expected_sha256": "a16e9a5d739135564d6ba420d0ede1cca4a2baadba191fba2e394caa77ec06bc",
+        "bytes": 500000,
+        "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "939cb8e56654a7ccb43ea3c1fe5ebd73f353469fda659248b90f8068f15f52b3",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "ef7eaf507e318d8e316ac397df3a728f17e17f7bc161e85c984cb21ad179c71f",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "0553d1276572c1c5cb05b6f90b6db8c0acb2ba5a7fba4d54ab4ede5ec4cb6f47",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "2d6dfffa5ce3dc96879ee9c553cae7ef2179b0ad923cb32770db02ad642d8452",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "e1531a77fea1ca9058085f6617c8f3de1e5a764e575fa669c9b807cdad15ed25",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "fff4bff60e7d01428370ebe149cb0ce4182dbde2e3a67d627bb780cd5b9730d6",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "a942a7f21a1a98bd5ae0b9a325c3b2126ddcb4f7e8846f1313953aa7a1d7917a",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "e74d7fe4e53c1824b55b75e0eb47fd4925d14b1b00c38022951f376e851f5ebf",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        },
+        {
+          "chunk_sha256": "27790a0ff6351afc3b5ec0398250985e1f94d092078b030baddba0fb0d288acb",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part021",
+          "size": 500000,
+          "version": "2053:4093697:500000:1795151649070897737:1795151649070897737"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part022",
+        "rel": "parts/raw-all-attempts.tar.xz.part022",
+        "expected_sha256": "780b2bf096e1a91376b9dbc9f2dc87bf8dcdadbfbeab34bf581b1979f06ceb45",
+        "bytes": 500000,
+        "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "463521a4391739041c6a781a9376a522da0bb6adc4073690847687fa7a3e2fec",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "50daf8f250db7b99e6e576debce0a8e7a8f5839e29d90ea67d7fc1ed9c0ec335",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "9d6e5013a1f26adf4507b398def59b51159d5a07530fd9a653b4c4db66db8000",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "c3863ba197169f2652a7f09197a693a8333c412585b40be130acfed96620aad2",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "a312368abf25d81a039d00075f41353fe534c8c2cdb41b5da2a1083408d0f727",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "eab90578039629aec7285100496a0cfd97a369fdc57053785120a97a31f82ff5",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "400e18c35ff85ccd7163aa7403aea4e2fc12cc4a9f3503eb1b4512a222ed1db8",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "64ca5c143be9fb3f88c2eee2777f3e8b2525480d4b0b7d6f665e95aa94a38455",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        },
+        {
+          "chunk_sha256": "1e9e24eca78219ad1596c08b0ce32b771f0e09f44f2b7c649a2b628546e55ae1",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part022",
+          "size": 500000,
+          "version": "2053:4093698:500000:1795151649072897745:1795151649072897745"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part023",
+        "rel": "parts/raw-all-attempts.tar.xz.part023",
+        "expected_sha256": "2f4e22eeee34de14247424ab1a0370a1cb5b2eec74212e113321ae4e17204255",
+        "bytes": 500000,
+        "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "588c48c101d383c8e6133ef5a5693181c109f6ec72e618677df572a2c4dd36f3",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "2da94863c51a436e76e30be0385d77ce79a7a618572e94094979740cadccbe67",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "ddf438e7819571e0ca0164daf91b8bed50c569f521fd712e29607f1b63c7567e",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "dc2b72d2ad9dfe681b3d61b267c99d4694dbd89803a0a0c10078a25ff36754e7",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "b04e0b19182e81d68fc862575b2dcade5882557e5ff83fb5cae01f6aca0cda60",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "55e72b0d075a65c2a8f83dcb60ff98e0f14e85c21b962ff083a1bdffc2c8c4ee",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "a4a8066bbbf374e5363c715098b4d100d7c518dc21e7ccd286352e24fb6b8bb7",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "9bd35c08d92bf9006b72d767468aa645888f8ffa99d2608c7141f28d3d05d2d3",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        },
+        {
+          "chunk_sha256": "8b3b22754adf54479913432daba14f0641c6c89642962ef3494b064b521cfa7e",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part023",
+          "size": 500000,
+          "version": "2053:4093699:500000:1795151649074897754:1795151649074897754"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part024",
+        "rel": "parts/raw-all-attempts.tar.xz.part024",
+        "expected_sha256": "25f3bb44eb132345392b7c0450a2554c0db9a280ab8cf926ffe28b52cedaca6a",
+        "bytes": 500000,
+        "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "a0561f05679da2276c98167884d15c76c35bb59d7ad4e16e114cc1464a902acb",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "432028b0d48ccd753a395cc89d8bdfb3defbb39ead81d858d709db2ffd2edd0e",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "2c3ba8ba07abba2cec983ec4d4f6e1086421ad79cd254701334a8ac8010fbaa0",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "585bb13656b70b327f63d4a7467cf6a41a4e39644c9255445fdfd786b1589276",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "6f2ba0968149a2fcdfe6ecd455b52c0c2d4e624ddc8f13f8283853c4f5906f67",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "d6bc8cd4290130212539be4073b27d7fa70897a21cb0f5ffc0f10f696d07ee26",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "b8286f9e75a18a45f7d71132221d97a5f28ff0406e1d05938cbe9a6684b3e21f",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "013648f2258851466540f79321bfeebd37ad82ade079cc8e458016668b59413f",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        },
+        {
+          "chunk_sha256": "1739fd05bb4e5adbec82975742033f1ab73063fad48e94a82e91b28ffadc313c",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part024",
+          "size": 500000,
+          "version": "2053:4093700:500000:1795151649076897762:1795151649076897762"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part025",
+        "rel": "parts/raw-all-attempts.tar.xz.part025",
+        "expected_sha256": "67378a00453a556dfe7a944dabd6c55d556408b8ed16cc86f9257e103f58fb89",
+        "bytes": 500000,
+        "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "0a6b4dce1422ca80fc00528c42fa3c129a4e443496c45e3d66f48612303c1500",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "20bec04b578101e4df48bfc8bdecf519fd6a1ac914d40aad89f13ccf3a113ab0",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "007e78873e75ea6bf226f455cc5d42cf1ea8f95b40f9aaed9032e676b94966ed",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "8d8eca25430270b0f89cdb46aea1729b48c5891b9e23cba06bee256267f0005b",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "0a18ebae3e6c9d2ce079535bed908f42dddf1693821a7b56cee08aa3e7674fd3",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "8682ca5ab90f97acccf586b6cbbbbb10008ac49a7a21762059d6cfa3cf76e6d9",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "30fc48c690cb2fceda9d9865102e698f789f8e7995780480ebf88b2e8590eb5a",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "3e0d5045c81beeff6663927e726869f1b1b18301c3fd74b5a7ece4e028d4cef1",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        },
+        {
+          "chunk_sha256": "3d610ea0e1b3791eb13f2196585d9d95a42710392856ba388afd78d305da0f9d",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part025",
+          "size": 500000,
+          "version": "2053:4093701:500000:1795151649078897770:1795151649078897770"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part026",
+        "rel": "parts/raw-all-attempts.tar.xz.part026",
+        "expected_sha256": "180d714f214f621a1348700de11c7cd0054fd44ecc510d81dfb0f703c33ced53",
+        "bytes": 500000,
+        "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "c49b8e1ebd4b1620f5148ca46d603064ab4461a138c35b11070f00de5ba17e3e",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "ea2d0d4bccdeda46f6faec607a2103c61c6c9a3fcbfbd296d2b09b720dbdb02f",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "fdd9a150ee2971524ef14d37da509f5906c3c6e463db60d9d68ed1d2e05d51c7",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "c19a8cbd15948a4ee43a6e78f97add613447f23f60b9fbf311612b40a2167325",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "104cc989642dfce8df983ae5b389ffba496154022d3ad609ed5834619f920643",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "d0b3c9edd9f04d05cd6e1d3a0d1de79005e98e2b71da754eb12ca969634d2c88",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "15d5ce66c70c137407d43464256031b024dd563eda772674a6c5e71c07fb5c2e",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "8bfdf5f7911bd98d8b3cb3ff1515818335db1fcf09280a6f8dccc5621ac453aa",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        },
+        {
+          "chunk_sha256": "53d6b892d5923e120328404c3a44e763464f9938ca38cb36e776cc1efe9a04bf",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part026",
+          "size": 500000,
+          "version": "2053:4093702:500000:1795151649080897778:1795151649080897778"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part027",
+        "rel": "parts/raw-all-attempts.tar.xz.part027",
+        "expected_sha256": "b7baaa3ba8b67eb1885e6dc437789428ce722e57f5d68845c503a2c868a8a8a1",
+        "bytes": 500000,
+        "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "2926b8bedb9157c55a36e1a5176d69aafe07c299d7f46914ebb3a1d31b5af560",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "05aeb5d43868ae2c0bf4057cb9d3daf8aa59fb2c16ccc9108666f9063723e159",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "72704e639a88993983628b5802e52b5533742c2a8a8c7d1800d86d3bbc3928a1",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "6d0f068e833e4a91c9e183719908e1904e9dac41f3d01fd64e471baba114129a",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "ae0f160e092aba09898de70c3001e8bad12e2b66c7128163222ae4e43db19088",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "d318b9e8297c6777d24423e9081350a71eb3fce0c61a7223a96b9f0c8ceb7e8b",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "5b945862147a521106dd958c0636f7fd2b0797915c0d68aeeb06ecce121d8436",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "6f2145364689975bc75fb00c7f9d13c1488b8995552449db0e4838eae8912de2",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        },
+        {
+          "chunk_sha256": "00db01515bde6dd09dc66471ad2984a1936cfc8b34160040e0ec6f00dc20ecb0",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part027",
+          "size": 500000,
+          "version": "2053:4093703:500000:1795151649082897786:1795151649082897786"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part028",
+        "rel": "parts/raw-all-attempts.tar.xz.part028",
+        "expected_sha256": "849a5d6e1f9e97026797a63b611aabb88651af7ea378ea9ebce997515640a069",
+        "bytes": 500000,
+        "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "ec78ab81b3f935404c3994fd5eb78c3dd8ec09ada55ac1d8c4c45bdb0cf56e79",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "9ed4d58310464f640bbca3259d77115305af5b4b16bd3792601b7a40371d7e81",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "9c19aaa9cd941bfc6615a29be7a3555f98f31ab1f9888f12b2575f0f1c62fa75",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "508643a2d4c707e89f98e1ec357471a0db51a09226048e10a07bd06423ec4f17",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "56cd8ae946e6a2321cea800e0519d8413c941cc36c796547f4618984c351c733",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "4bc88bfeb91b7e49134e89d3d16269633e4ec43f275bfffaabb7bde4558c54db",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "e1dc564e111107ed68e8d355d1222eb3533f261be9b70006eb2f1ace5a1f6622",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "6e5b3a0cc661b9d264bef978cfd488dbe3c5be5df1c1c97e7d480a222dc4a5e3",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        },
+        {
+          "chunk_sha256": "ce9096fac680885444ac250cd16a7a4fbf18665e391b057bde185e1ab1aee9dc",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part028",
+          "size": 500000,
+          "version": "2053:4093704:500000:1795151649085897799:1795151649085897799"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part029",
+        "rel": "parts/raw-all-attempts.tar.xz.part029",
+        "expected_sha256": "d48076c348dff5bd268952fb4c554cd37aebc4536ffe14080324acaf5b734a72",
+        "bytes": 500000,
+        "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "4aaea678e402cea8241cd9ebaf43815fabd3b2fc543119c07d06de2889ee1e2b",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "4008608024b9690927e4c3f1c504bc519e5006b004df057d75fa464194a555bd",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "1a0a96d9dcad0d5ea1ab448cf2b354d190fee53fc38aff16ebed94a23d4ee119",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "8c9f822912cb636eebf18c98046e74d2ac71cda8817a3b697fb61dc189b92ed9",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "f020d7ffc0979073647c84b69d1dfcb81d57a36925121a41d50464c9c384c411",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "c253c58db3dee3e539197c1767c1e80a5cc6b54210e54027c9f47fef062b979e",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "4113908a9e5a1e420dff4435c1193f03e97fcc106e21642fcc9488127c3ba425",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "23ea7258a5f3baba29250e352165897e85b305b56a52c9aa4983602f9db9ac4d",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        },
+        {
+          "chunk_sha256": "0566000445f5e919bfbdb4a2ebd4945db40a4f92b56b51d6516adbb94d2daf3d",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part029",
+          "size": 500000,
+          "version": "2053:4093705:500000:1795151649087897807:1795151649087897807"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part030",
+        "rel": "parts/raw-all-attempts.tar.xz.part030",
+        "expected_sha256": "c6dfa56db10a55ce851bb6ca1c2361938e302ed07c5c720810afab4c0f90dab1",
+        "bytes": 500000,
+        "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "d915f888825179ba912cb3929d473df1f6748481f0fde422b6fe66699d007def",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "81cad086e1b4600c845b1afefdd87f61acb993a70421e800e977b3b8ec3fc793",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "3fddbdf513e3d98829b70f38e45d5fdc2e2eac9c19d711f2c5866656d3ba2dcb",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "e3a5beac3fe3390c752a590d2a0353c981807a7b140dababba5dcdc59f08364d",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "c15a988419403fc685c600cf52e824b730da41bc737a0ffff16658aabd78402a",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "bc466b69b8a1e014b5ca47ffd1006c48493b7328470f69369886215ba9659529",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "be055945568b4e66381f6603b88107db2e8e6f1214dbc4ddba9f7b973874267c",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "f2fef3d51fd0796b3591c154dd2ed7965406d3bf8cdcd7889aeec235da1a037e",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        },
+        {
+          "chunk_sha256": "b5916321c152ec7bcadef8c4d02084cc9c64d1e8c9f8ad3a96aaeeae3f66e86e",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part030",
+          "size": 500000,
+          "version": "2053:4093706:500000:1795151649089897815:1795151649089897815"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part031",
+        "rel": "parts/raw-all-attempts.tar.xz.part031",
+        "expected_sha256": "27b862a405278d0587e7d04baa651bf9b68d6ec1ddc570e8df6b50bce9d86466",
+        "bytes": 500000,
+        "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "ce8dd616eee0c48c33ec8c54e611975e1db9722268f021b868076dc9137a3708",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "c672550d1eb0222a38f64be7d2d5f7f08632290b54c0e7aae8a43f659bf2b4ef",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "9b1be42c6eedb5193694a3e3f7f3faa0a47fbe3705703e6014c898cb9dab24f4",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "078d9ef07e002c526bc8ae751b73f39eef898ad9aa53bf256ddafb2dd29fde0f",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "f60917e38f4ffb1b324c550fbe9a7f917da59c553e535d603ae688661c7df067",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "073bf5a72caad8f437f9358f2d4ff3d0cdf475dca0e29cf771fb4afb9245e100",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "d736ed51e942309f60006fb15f991bb4c42ba431ca7ffa77f244038d3552e5f9",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "5e35f94bfd5f9113f3976a686ed9a44d445be7d3c895efe12c07b4ce93e0c5e9",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        },
+        {
+          "chunk_sha256": "a0fc5792669e2087cffa2219acb291bc56dac03fe1a965e89fbfa6f2cb66fd11",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part031",
+          "size": 500000,
+          "version": "2053:4093707:500000:1795151649091897823:1795151649091897823"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part032",
+        "rel": "parts/raw-all-attempts.tar.xz.part032",
+        "expected_sha256": "5e81f22e14adb2e5f94787a09d524f7f1e4f111f24dc41c80e8e788758c81bf1",
+        "bytes": 500000,
+        "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "a1c2c9d100a19914e071b3dff852ec2c099eea66ec525cb001c779de6c70ceff",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "a7213332320cf376506284c69c13fa7d0a76d7b02fdb5acf28e53392060fbf43",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "7ed5368010afcdf54169e04583157818caa8fb342ed74ab9c36abb7d295f8df7",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "85c9d1446196d8dbbd095a103bfb1e6bd19870a1ae651e2dc2191377c9de3b3c",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "f3eec4d625e5557b5d77d815c910e2e41b59e212a6f92f51a363557a5a292966",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "41e906246944acd2f2b60d9fc2749a7147161391cde4d24a511a29ad93b4f399",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "19bb9364ef2d07c46685e93d180cbd00646845810bb079f2564c2f51979eb66f",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "bc09c5c2c73bf1e700e909ca9e50857f8e232e405710840d497f87487ce5b7d4",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        },
+        {
+          "chunk_sha256": "0650caf564010e02c42d26b2ab526c12137cf9325555de67b662c1bab5e445f4",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part032",
+          "size": 500000,
+          "version": "2053:4093708:500000:1795151649093897832:1795151649093897832"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part033",
+        "rel": "parts/raw-all-attempts.tar.xz.part033",
+        "expected_sha256": "eaa260d84b7cf6d3b19011be06176f82ea3961670dff27832fbb53c6c2a991d5",
+        "bytes": 500000,
+        "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "aedbe0fae77246c15c2e580ea09b0722c7aa5b3a99a4a3d1a3e61e5bd40831d1",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "1a684d583a4dd98b1db93b405ecb4185b0ae51c767c68794229200b7a53f944d",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "83337ee1880db3751499b7332349c38c7c3d49ebbe38b055dede9bf00829aef9",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "939c04202abdb2a6b7fce273af3f409c703c705e1741f0b20d964638be05ff30",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "d5f23a6b88fb66c4a5916cf52011cec747aa096156a7c45aadb9af5f007ff9ed",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "34f6627cf6d5db42cc78ddfa62e5b8646cd1fed799af68068a74557a1a759bc1",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "0fe16ba5b89186ac405bc02e3ea4f58027e5cba6d6301736b54bf2e1ea4cd5bf",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "0dc041cc680d8729a2810e18a64cac6b4bff32ba79e0d83a2ec63a3840e7b5ad",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        },
+        {
+          "chunk_sha256": "84319a4308afb1a30490483ddfd8ca490a52af17873b803d8c4d901b5507fcc9",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part033",
+          "size": 500000,
+          "version": "2053:4093709:500000:1795151649095897840:1795151649095897840"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part034",
+        "rel": "parts/raw-all-attempts.tar.xz.part034",
+        "expected_sha256": "1af4ca1c8ee50117c55413117c8283989127f6fdeddf052b190c7f264968e1d6",
+        "bytes": 500000,
+        "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "9d623779be25279c00ca7329cea3871db690ba4d8b2b6b797f725ca98caea5d2",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "1622aa67175b2b33f7a9bb7ae36cce77924971e82abea54eaaa577db0ba5cb48",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "6effacfbc50966ca6209cb2b590be2a9a89871ce2edd4d1b1bb26749cae0f78d",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "4aeed904f835f4523ad8adecc84d4c9775dfdbef908cbef525d0e1f726afa8ad",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "385f4dc1930d6fc4afac0b6c90cb63144bca03df84b354be23951692d01bdca2",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "e91f1747fe7cceb01deae502eea173eb047c5633be4add61d24239178f60f970",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "c7ea17d0f368dbea660c6fc77240f59b92393c6e6e192d5efac09e243fe4c7b9",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "db7794bc2d2a587716c1527c74a7b5dd261473d44c24b4b51ebcb99eaeefc3f9",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        },
+        {
+          "chunk_sha256": "3bdc901914495d8334cbf02f8a3b0983bdce5b28418f0f61e1f2340db9e3b96b",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part034",
+          "size": 500000,
+          "version": "2053:4093710:500000:1795151649097897848:1795151649097897848"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part035",
+        "rel": "parts/raw-all-attempts.tar.xz.part035",
+        "expected_sha256": "02a4d8606d201ee99690d05c645b22761ff1f421b71def5c730d2eac08051951",
+        "bytes": 500000,
+        "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "ed75284ed9db193015136ed95009fc41c96857e50e84ce1330179b842eb8a9f2",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "75095ee641c402199451a6a6761cdf4c0eb0410e97926879506da8fe562fd5be",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "895e613e452ccf16f034c0d011b719fdc87502940ecbb452acd8b501c83d7db0",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "a8e1fdd027f5bbefca798e3fcd1cc761f194333ba2df0bd1207a8996012f28fe",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "52ad0c60a05c9fbcc9d17bcf3a3b6af1f36f0e395ace10587dc269e6682b7fbf",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "8b74755a21af3acff15e6af7eb5cc09215290c482df051763b2a98c7417e891f",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "8f38fee8478c9e652a7c8131bd123a524b48959d1fc4bf2e661181b06e835e85",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "3896aecfc92e5c77fd61a8a68222bffffd25c1b2d6fbce6d65759f2e8438570f",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        },
+        {
+          "chunk_sha256": "c6b8c258c761d890b9aa5e3df952bf6a8d8d2651df156a6d07f5beb3e5fc1d5a",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part035",
+          "size": 500000,
+          "version": "2053:4093711:500000:1795151649100897860:1795151649100897860"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part036",
+        "rel": "parts/raw-all-attempts.tar.xz.part036",
+        "expected_sha256": "5a8d8527963dc8390e08aef221ddcfc106ab234bb36d45e98b21af7aa9260d72",
+        "bytes": 500000,
+        "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "1265df330afee4889081cfe77d6ed0a8f73b9915ff997865782c6b33da6b6d02",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "7cf56863f61ea19746af2e54e4d107c2064beb3a06f23ac2eb774eff922e026f",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "7559bf2ddf1d3101d891553f3581726da2a1dc8d97b4248fb441fc53f25c54ad",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "3e6b77901a3f4a2235d48d2f7f6567ced53c15cca6df26a35018821b06915f22",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "e0d4171c6aac1a4de51748044dab5d25ab92a9756f6284d76d3d400bc9cb4f64",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "855118b0fe785695cb21a43978bbba8803a3a0ceb2e873754a532ae2cf13319d",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "9322e4001a9cf4d09e5b00df65114aa923955d78b0ef427bfbdc7148ab49e0a3",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "03219e73d59c09bc790ac402319abd5e74ae2e1cbe13f0d477f92a44d344be26",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        },
+        {
+          "chunk_sha256": "d31f9bbe30f9da2f73be3034045ee90d5e78f42154beb81d7afebbf0ab1ab401",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part036",
+          "size": 500000,
+          "version": "2053:4093712:500000:1795151649102897868:1795151649102897868"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part037",
+        "rel": "parts/raw-all-attempts.tar.xz.part037",
+        "expected_sha256": "ca7bd829e58615427a71887a3ac2ebce26dd99492a0bb5d8c41b4e8ea6e992d5",
+        "bytes": 500000,
+        "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "41fa0b186678ec2f11b7f6542bebf9081e71e383e74c6014ab52643bd47fef6e",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "595870c01a051bf562c26d3073eb2b2d88f99630e57fe394473eb2a475dc901a",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "6e910d0aeecc76a8b566c03f426f10888ff98878317e5690b80fb8fa5350e6db",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "73c76bb91035f9b44ce4d5dff30c64db79f75a968a6720b1d8c13b437839d6ae",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "51eb40cf0ee5b56db71183c9f41b06933f1e0ac8133b8a76ce6cfd8e1a2f59e7",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "278f81f0f2d84259f7a3bfc93451dfa0dc89a9728905876f83f2f6ea4676809a",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "a455f2eea679a19b6db301b4d9d1b470906ab47132359993c36a6a755c26e0a3",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "ada38599e6f625062d7d2e93ee2539bc62a2d2cbdb034086ab003f3572859da8",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        },
+        {
+          "chunk_sha256": "1aef74a87892a632bcb10a3e8345d3f69f21490258d9e9964737bd3486b38de8",
+          "eof": true,
+          "next_offset": 500000,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part037",
+          "size": 500000,
+          "version": "2053:4093713:500000:1795151649104897877:1795151649104897877"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "part038",
+        "rel": "parts/raw-all-attempts.tar.xz.part038",
+        "expected_sha256": "7d0a431ece2dab5b93d86fd5c42fcc8e7b47610e0453bedcccfadbf3acd216a2",
+        "bytes": 191740,
+        "version": "2053:4093714:191740:1795151649106897885:1795151649106897885"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "1b5e42738a82425889e2128f75e7a9a90ffdc3a945cb71fd16fea41018ae6edf",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part038",
+          "size": 191740,
+          "version": "2053:4093714:191740:1795151649106897885:1795151649106897885"
+        },
+        {
+          "chunk_sha256": "ecee7a75c33bbc4fa8779ba48eb89bf2f3f28e801dd2c6fe85f6c8917ca07d35",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part038",
+          "size": 191740,
+          "version": "2053:4093714:191740:1795151649106897885:1795151649106897885"
+        },
+        {
+          "chunk_sha256": "ea50cc9990f97021910fa44bb92271a16850b2a63ac3d504a3a92cf3c8f2f1c3",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part038",
+          "size": 191740,
+          "version": "2053:4093714:191740:1795151649106897885:1795151649106897885"
+        },
+        {
+          "chunk_sha256": "9e9d59ed7932f29e65d59e0da44d897d813d70015ae1089abe50b27731df61f7",
+          "eof": true,
+          "next_offset": 191740,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/parts/raw-all-attempts.tar.xz.part038",
+          "size": 191740,
+          "version": "2053:4093714:191740:1795151649106897885:1795151649106897885"
+        }
+      ]
+    },
+    {
+      "spec": {
+        "id": "index",
+        "rel": "RAW_FILE_INDEX.json",
+        "expected_sha256": "0201d75de783acc1907b5f8213decfee7b685a53c04a158d64340a4e6a15116e",
+        "bytes": 2184241,
+        "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+      },
+      "chunks": [
+        {
+          "chunk_sha256": "541bf0afd74c1913140eaa5828e0bd54406004065ac101bb5b028416cfab0fd4",
+          "eof": false,
+          "next_offset": 61440,
+          "offset": 0,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "5c912112fac59777d0c81264badae121079bf3979a8369e95cbfb81a614868f0",
+          "eof": false,
+          "next_offset": 122880,
+          "offset": 61440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "1fe3c2685df3bc85828aa0e39d31c63a6eb2fc860ce394838678ef96b2b2457d",
+          "eof": false,
+          "next_offset": 184320,
+          "offset": 122880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "5bc28c9ab7aef6431cc54bfe965a02bcb23569448f8325a363e38bd70887f7b0",
+          "eof": false,
+          "next_offset": 245760,
+          "offset": 184320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "3344260cdae9aa0194e992e8b51a0a630b0d98a1c28c5196c97ceb05b074c4d5",
+          "eof": false,
+          "next_offset": 307200,
+          "offset": 245760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "18991dbd0ca71fac9fc8a3a39a2d26b7e6f9d7545032f376f938f21ab8f272d5",
+          "eof": false,
+          "next_offset": 368640,
+          "offset": 307200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "c562f976fe5e5cd34cbaee9c868af91bfa48f7e8ae462d6f4e78fb3227fe580d",
+          "eof": false,
+          "next_offset": 430080,
+          "offset": 368640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "997c2ffe4c5b088d2014031dc5abf8068fda9637141bf3779bcc80eb12cb0704",
+          "eof": false,
+          "next_offset": 491520,
+          "offset": 430080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "6eb2252c5067bbd64eaecab76ab813f8c257acac5709e04a9d41f37c039754b0",
+          "eof": false,
+          "next_offset": 552960,
+          "offset": 491520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "1562c02eb9a52d0809d8f5d6f391927f7d0d3f185adc78a99f97d7be925e508d",
+          "eof": false,
+          "next_offset": 614400,
+          "offset": 552960,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "94811ab511ca5f6a5067484d797f9db5138fab5e6dcfadf57a1c326c4c1a3202",
+          "eof": false,
+          "next_offset": 675840,
+          "offset": 614400,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "4dd2e39bbfe8c69bf4309360854a9da612816c3f87aebf27bb6dd43de3403f5a",
+          "eof": false,
+          "next_offset": 737280,
+          "offset": 675840,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "6dcdc1a1063dc54ef5feba1776368fc46de011bdeda23b41a24782deeae0142f",
+          "eof": false,
+          "next_offset": 798720,
+          "offset": 737280,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "dc613dcc55103e28ba4e0015b2fd3fe96bc5030e591738a016e2ee81eed9f413",
+          "eof": false,
+          "next_offset": 860160,
+          "offset": 798720,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "78f959667ec9a921b17d37e455c3c4b11d4c3e17efab5d5dbaed8be620d728ae",
+          "eof": false,
+          "next_offset": 921600,
+          "offset": 860160,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "0e33c687f74e071c5a7712518191cd274b38bf21704ddc473a8536f12a640808",
+          "eof": false,
+          "next_offset": 983040,
+          "offset": 921600,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "2b306ae48d038c72fc6499d7052110845c6c1951f413077c7a3b32de2d6f274d",
+          "eof": false,
+          "next_offset": 1044480,
+          "offset": 983040,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "31b62553a27d5bb89e1974c7933e61295314c59422fe4ad11f5ccf7a8970e5cd",
+          "eof": false,
+          "next_offset": 1105920,
+          "offset": 1044480,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "c77dc16cb9c07a5686e24565556e4bee31067d053a0604d943544e8b14556663",
+          "eof": false,
+          "next_offset": 1167360,
+          "offset": 1105920,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "af6821df7a12f0a42d7ab30235cc05c9e660b5188696ea3ab155d13c8023750d",
+          "eof": false,
+          "next_offset": 1228800,
+          "offset": 1167360,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "1e3563d3d54f3eb9f47f7b2c22237ff4b4614f051e517ae5bb0e367aafcb15c1",
+          "eof": false,
+          "next_offset": 1290240,
+          "offset": 1228800,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "580bb8040c6aa947b7b54136e6e4ed595d41a3f7160065fdfad7d332b642adb3",
+          "eof": false,
+          "next_offset": 1351680,
+          "offset": 1290240,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "9bb55b0c1eae37a87f931ca5d48188e0ba7bc9cc625f357ce7603dd326d856d4",
+          "eof": false,
+          "next_offset": 1413120,
+          "offset": 1351680,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "c96a78b162067ed0dce429242f973b6db0472f9c3a0983e9ee5e534d12324c88",
+          "eof": false,
+          "next_offset": 1474560,
+          "offset": 1413120,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "438ebc318d10066a13a27e039ee627e7819ccf9deae598a592d93cbeece0d8d9",
+          "eof": false,
+          "next_offset": 1536000,
+          "offset": 1474560,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "a0721a24ec7f99a2b0d58f236354c483cd1d606eccf088690a3c6507bd653f89",
+          "eof": false,
+          "next_offset": 1597440,
+          "offset": 1536000,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "672af4c3d57edf33189134536b3964c6c64081a670b431174a5b6a8958dadd7b",
+          "eof": false,
+          "next_offset": 1658880,
+          "offset": 1597440,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "8cb15ff0d40b9721b16565039f46b71afb926c3e27b1a76bd24ea4985f1ab235",
+          "eof": false,
+          "next_offset": 1720320,
+          "offset": 1658880,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "33fb746ba7779bf13f73843e95d98055ea41f63c28c17f4174a7201a713d8bd8",
+          "eof": false,
+          "next_offset": 1781760,
+          "offset": 1720320,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "76b63e27ea4659afb4dd23114e3b985a148a0486363accf077890f16585fa44b",
+          "eof": false,
+          "next_offset": 1843200,
+          "offset": 1781760,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "4fdd47b9175329f52e6937a5065605107905d2b7997d95b0f24733b7d1720559",
+          "eof": false,
+          "next_offset": 1904640,
+          "offset": 1843200,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "9a74e650f58975c13543c0c2cbae6d8633cc63d1707bb68513126d5abb6687ad",
+          "eof": false,
+          "next_offset": 1966080,
+          "offset": 1904640,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "0530e4302459edd859582743033adacf2cb841f45cdea745383145744b851684",
+          "eof": false,
+          "next_offset": 2027520,
+          "offset": 1966080,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "3a2084f1934ab81707486bc121ed60a36bd65f2f42e082a546358b26fec1e04f",
+          "eof": false,
+          "next_offset": 2088960,
+          "offset": 2027520,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "5c967c5e93bf9e84f95c945b9095ba8ff5de6452385afa397eda0767f6a02805",
+          "eof": false,
+          "next_offset": 2150400,
+          "offset": 2088960,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        },
+        {
+          "chunk_sha256": "d037e3a4abc7ecd33c04f6bb0cd682464de703ddc91ab281f7173d4fa8b9ecc8",
+          "eof": true,
+          "next_offset": 2184241,
+          "offset": 2150400,
+          "path": "/home/qian/work/hepta-e5-intake-readback-20261120-e9e051/RAW_FILE_INDEX.json",
+          "size": 2184241,
+          "version": "2053:4093672:2184241:1795151648940897204:1795151648940897204"
+        }
+      ]
+    }
+  ],
+  "read_only_helper_errors": [
+    {
+      "request": {
+        "part": 9,
+        "offset": 0
+      },
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on x230-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2235"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "request": {
+        "part": 19,
+        "offset": 0
+      },
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on x230-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2235"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "request": {
+        "id": "part004",
+        "rel": "parts/raw-all-attempts.tar.xz.part004",
+        "offset": 368640,
+        "version": "2053:4093680:500000:1795151649033897585:1795151649033897585",
+        "size": 500000
+      },
+      "reason": "Error: SyntaxError: Unexpected token 'r', \"remote hel\"... is not valid JSON",
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on x230-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2235"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "request": {
+        "id": "part010",
+        "rel": "parts/raw-all-attempts.tar.xz.part010",
+        "offset": 184320,
+        "version": "2053:4093686:500000:1795151649046897639:1795151649046897639",
+        "size": 500000
+      },
+      "reason": "Error: SyntaxError: Unexpected token 'r', \"remote hel\"... is not valid JSON",
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on x230-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2235"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "request": {
+        "id": "part015",
+        "rel": "parts/raw-all-attempts.tar.xz.part015",
+        "offset": 184320,
+        "version": "2053:4093691:500000:1795151649057897684:1795151649057897684",
+        "size": 500000
+      },
+      "reason": "Error: SyntaxError: Unexpected token 'r', \"remote hel\"... is not valid JSON",
+      "raw": {
+        "content": [
+          {
+            "type": "text",
+            "text": "remote helper on x230-ts failed with 255\nstdout:\n\nstderr:\nConnection closed by 10.77.0.2 port 2235"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    }
+  ],
+  "specific_retry_outcomes": [
+    {
+      "id": "part004",
+      "offset": 368640,
+      "success": true
+    },
+    {
+      "id": "part010",
+      "offset": 184320,
+      "success": true
+    },
+    {
+      "id": "part015",
+      "offset": 184320,
+      "success": true
+    }
+  ]
+}

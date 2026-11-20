@@ -1,13 +1,50 @@
-# E5 additional upstream source intake
+# E5 additional public source intake: actual terminal results
 
-This continues original E5 under its original 1/4/16/64 source sizes, fixed-total/fixed-per-source schedules, 32 update units per source, 120-second native child limit, 3-second testcase limit, one test child at a time, and complete selected test-function parameter sets. No training or model calls are performed by this intake.
+This continuation admitted **10 additional public project repair lineages**, bringing its own combined material count to **14**, including the original four sources in #6715. A separate, prospectively frozen continuation in #6782 subsequently admitted two further projects. The combined material inventory is therefore 16. Neither result is a completed source-growth training curve or a count of authenticated users.
 
-The twelve-project roster was committed before reading candidate contents in `2018cfb216117a6b2eb7bc33c7726f41cc7fa8f0`. Every prior development/evaluation project and all 24 declared future-source candidates are excluded. Raw search responses and each inspected rejection are retained in `deployment.tar.gz` with exact before/after tree metadata, the acquisition plan, complete license notices, and the two runners.
+The original source-count points remain 1/4/16/64. The fixed-total and fixed-per-source budgets, original 32 units per source, selected regression functions and complete parameter sets remain unchanged. The first twelve candidate repository identities were frozen before their candidate contents were read. Every project in the prior and future evaluation pools was excluded before acquisition.
 
-Eleven projects have an upstream runtime correction and regression candidate. `python-lsp/python-lsp-jsonrpc` has no eligible runtime correction in the bounded search. The exceptiongroup regression requires Python below 3.11; this is a prerequisite, not a pass on a newer interpreter whose builtin implementation bypasses the assertion. All selections are provisional until the original native admission succeeds.
+## Actual native results in this intake
 
-For both variants the runner copies identical, original after-fix tests and fixtures into separate execution directories, then binds runtime package files to the exact before or after Git blobs. This also binds subprocess tests that set their own cwd/PYTHONPATH. No upstream assertion or parameter is rewritten. Before must actually fail, after must pass, and both must execute the same case identities. The admission retains the original predicate and adds exact case-identity equality.
+| Project | Original pull request | Ordered original case pairs | Fixed revision |
+| --- | ---: | ---: | --- |
+| dbader/schedule | 569 | 1 | 1 pass |
+| Delgan/loguru | 1541 | 18 | 17 pass, 1 original skip |
+| erikrose/parsimonious | 250 | 1 | 1 pass |
+| jaraco/path | 237 | 3 | 3 pass |
+| jawah/charset_normalizer | 823 | 10 | 10 pass |
+| litl/backoff | 161 | 2 | 2 pass |
+| marshmallow-code/marshmallow | 3082 | 2 | 2 pass |
+| pyparsing/pyparsing | 653 | 12 | 12 pass |
+| python-jsonschema/jsonschema | 1351 | 124 | 124 pass |
+| tkem/cachetools | 441 | 1 | 1 pass |
 
-`deployment.tar.gz` SHA256: `c18e9f3d85241a21e550527755329fccabbf83c056ac3d2c95ceb5fe28f6c1a2` (291775 bytes; 76 files). `DEPLOYMENT_MANIFEST.json` binds its contents. The merged path revision generates its MIT notice during packaging; the exact PR-head notice is retained separately with its commit provenance. Other notices, including PSF and Django notices, remain in the source snapshots.
+Each admitted source has at least one failure against the exact original before-fix runtime and no failures or errors against the exact fixed runtime, using identical after-fix test bytes. All **174 ordered case identities** retain the original module, class, function, parameter, order and count. The loguru skip remains visible and is not counted as a pass. Exceptiongroup's selected backport test is incompatible with the fixed Python 3.12 interpreter and produced no native child; this does not claim that no older interpreter exists elsewhere. Python-lsp-jsonrpc had no eligible candidate under the original search rule.
 
-At this source freeze: acquisition/native execution pending, zero newly admitted sources, zero authenticated users, zero model calls, zero training updates, no new learning-gain claim, no native adoption, no E5 qualification. The four original source records and all historical negative results remain unchanged. A final evidence commit will append raw acquisition, replay results, costs, failures, and the actual source count.
+The first real replay executed 20 native children. Four further children recovered only the two projects with missing declared prerequisites: marshmallow's simplejson dependency and pyparsing's original example parser/package initializer. Total actual native children: **24**, with zero outer timeouts. All attempts contain 350 XML case instances, including 18 failures, 2 errors and 2 skips; repeated executions are not independent tasks.
+
+## Preserved failures and the collector repair
+
+1. The original archive acquisition failed after 18 request timeouts and four conservative nonregular-file guards. It ran no native test.
+2. Exact Git blobs then produced 22 verified before/after snapshots, but the first dependency setup failed on a 4 MiB-truncated PyPI response. It ran no native test.
+3. Complete dependency metadata enabled the first 20 native children. Two projects failed on missing prerequisites. In addition, the original collector incorrectly compared pytest's temporary before/after directory prefix as part of test identity and recorded zero admitted sources.
+4. An independent reader checked the unchanged original XML, wait receipts, source bytes, stdout and stderr. It removes only the exact known temporary-root prefix and retains all original test identities. It confirmed eight sources. The two prerequisite recoveries then confirmed two more.
+
+The permanent collector repair at `1818fde55d964a87cfc8aed49f26a6a866a0e0a5` was checked against all 24 existing native children: 12 before/after records, 10 admitted sources and 30 rejection controls for changed parameters, foreign paths and dropped cases. These checks added **zero native executions**. The old zero-admission result files remain unchanged.
+
+## Complete evidence
+
+The `terminal-evidence/` directory contains 39 archive parts and five original-index parts, each below the unchanged 512,000-byte repository limit. Concatenate the paths in `PARTS.json` order to reconstruct `raw-all-attempts.tar.xz`; concatenate `INDEX_PARTS.json` in order to reconstruct `RAW_FILE_INDEX.json`. Check each part's bytes and SHA256 before concatenation and check the resulting full hashes before reading archive members.
+
+- Archive: 19,191,740 bytes; SHA256 `d07ef17c982e44340fcd2825177ee1bdf2ea32b310738db9096070f2dfee9fd9`.
+- Original index: 2,184,241 bytes; SHA256 `0201d75de783acc1907b5f8213decfee7b685a53c04a158d64340a4e6a15116e`.
+- All 10,408 original regular files, totaling 113,148,963 bytes, were independently checked for path, size, SHA256 and mode. Missing, duplicate and unexpected members: zero.
+- Reconstructible virtual environments and pip caches are excluded. Exact source files, dependency wheels and metadata, freezes, all four owners, failures, XML and readbacks are retained.
+
+The four sequential owner windows sum to 835.6992183225229 seconds. This sum is not added to the nested native process costs. Archive construction, transfer and validation have separate records; full-system network, energy and financial cost remain unknown.
+
+## Interpretation and continuation
+
+This intake adds **zero model generations, zero training updates and zero authenticated users**. Public maintainer repairs are useful source material; they are not observed original AI-agent trajectories. Pretraining overlap is unknown. The historical 14-source `READOUT.json` is unchanged; #6782 supplies the separate two-source continuation that makes 16 materials available.
+
+The next E5 work is to bind the 16 real sources to the original training input schema and run the two frozen budget curves on an unexposed evaluation panel. The 64-source point remains unavailable. Source-growth, independent learning gain, native adoption, FinalUse and settlement eligibility remain false.
