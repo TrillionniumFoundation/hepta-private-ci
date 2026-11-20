@@ -1,0 +1,391 @@
+{
+  "schema": "hepta.audit.ca77-clippy-fixture-followup.v1",
+  "created_at_utc": "2026-11-20T11:22:33.403270+00:00",
+  "pr": 6800,
+  "parent_commit": "b03f199bffbc442c9fbcbdd214519439469a503a",
+  "parent_tree": "fb99dd67277a6a2aa687fc083ad23363da2134b5",
+  "intent": "Repair test fixtures exposed by original PR6800 automatic CI while preserving production selector/query behavior and existing gate assertions.",
+  "original_failures_retained": [
+    {
+      "head_sha": "b03f199bffbc442c9fbcbdd214519439469a503a",
+      "job": {
+        "id": 136248708160,
+        "run_id": 44724249217,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-20T11:05:00Z",
+        "completed_at": "2026-11-20T11:07:51Z",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44724249217/job/136248708160",
+        "labels": [
+          "windows-latest"
+        ]
+      },
+      "synthetic_binding": {
+        "schema": "hepta.audit.pr6800.actual-synthetic.v1",
+        "pr": 6800,
+        "synthetic": "d97727ba60685ce50333ddd53b38e7c4bab80a6f",
+        "parents": [
+          "dfc152ae12baaf34a39d32ac205be786c3c3011d",
+          "b03f199bffbc442c9fbcbdd214519439469a503a"
+        ],
+        "tree": "fb99dd67277a6a2aa687fc083ad23363da2134b5",
+        "parent_order_matches_actual_pr_base_head": true,
+        "tree_equals_published_head_tree": true,
+        "source_record": "root-review/pr6800-ci-monitor/synthetic-commit.raw.json",
+        "source_record_sha256": "e5ae682954420859f838d65a9a53eea8a6a36d1309755d05a4a5d5da5df97259",
+        "new_native_or_dispatch": false
+      },
+      "full_log": {
+        "path": "root-review/pr6800-ci-monitor/windows-wrapper-136248708160.log",
+        "bytes": 33597,
+        "sha256": "beef8944438d05912e8d04d592744f90129e62c655f7bf79b54eab51e0631fcf"
+      },
+      "command": "python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py'",
+      "result": {
+        "tests": 82,
+        "seconds": 24.708,
+        "failures": 3,
+        "process_exit": 1
+      },
+      "failure_headers": [
+        "FAIL: test_detected_hosts_keep_selection_and_msys_argument_boundaries (test_run_bazel_clippy_targets.ConfiguredClippyTargetSelectionTests.test_detected_hosts_keep_selection_and_msys_argument_boundaries) (system='Linux')",
+        "FAIL: test_detected_hosts_keep_selection_and_msys_argument_boundaries (test_run_bazel_clippy_targets.ConfiguredClippyTargetSelectionTests.test_detected_hosts_keep_selection_and_msys_argument_boundaries) (system='Darwin')",
+        "FAIL: test_unsupported_host_and_nonwindows_cross_fail_before_query (test_run_bazel_clippy_targets.ConfiguredClippyTargetSelectionTests.test_unsupported_host_and_nonwindows_cross_fail_before_query)"
+      ],
+      "receipt": {
+        "path": "root-review/pr6800-ci-monitor/WINDOWS-WRAPPER-PRIMARY-FAILURE.json",
+        "bytes": 7248,
+        "sha256": "b572034d9adb9d9d87af3b569583e62edfb0fc927d71d42c00b65c53d9ab776e"
+      }
+    },
+    {
+      "head_sha": "b03f199bffbc442c9fbcbdd214519439469a503a",
+      "job": {
+        "id": 136247514366,
+        "run_id": 44724249217,
+        "name": "Current TaskFlow v1 migration source-head replay",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-20T11:02:29Z",
+        "completed_at": "2026-11-20T11:05:36Z",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44724249217/job/136247514366",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "synthetic_binding": {
+        "schema": "hepta.audit.pr6800.actual-synthetic.v1",
+        "pr": 6800,
+        "synthetic": "d97727ba60685ce50333ddd53b38e7c4bab80a6f",
+        "parents": [
+          "dfc152ae12baaf34a39d32ac205be786c3c3011d",
+          "b03f199bffbc442c9fbcbdd214519439469a503a"
+        ],
+        "tree": "fb99dd67277a6a2aa687fc083ad23363da2134b5",
+        "parent_order_matches_actual_pr_base_head": true,
+        "tree_equals_published_head_tree": true,
+        "source_record": "root-review/pr6800-ci-monitor/synthetic-commit.raw.json",
+        "source_record_sha256": "e5ae682954420859f838d65a9a53eea8a6a36d1309755d05a4a5d5da5df97259",
+        "new_native_or_dispatch": false
+      },
+      "full_log": {
+        "path": "root-review/pr6800-ci-monitor/taskflow-source-136247514366.log",
+        "bytes": 1883586,
+        "sha256": "ceb7274348643f87d11d2e636189adc985f4a167b410c91ab51c3db7ab3e4853"
+      },
+      "command": [
+        "python3 .github/scripts/rusty_v8_bazel.py check-module-bazel",
+        "just test-github-scripts",
+        "python3 -m unittest discover -s /home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts -p 'test_*.py'"
+      ],
+      "result": {
+        "tests": 328,
+        "seconds": 6.604,
+        "failures": 6,
+        "process_exit": 1
+      },
+      "failure_headers": [
+        "FAIL: test_exact_exclusion_does_not_match_similarly_named_native_helper (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_exact_exclusion_does_not_match_similarly_named_native_helper)",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='MINGW64_NT-10.0')",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='MSYS_NT-10.0')",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='CYGWIN_NT-10.0')",
+        "FAIL: test_windows_native_normalizes_crlf_query_records_before_filtering (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_windows_native_normalizes_crlf_query_records_before_filtering)",
+        "FAIL: test_windows_native_omits_only_cross_and_declared_unix_only_helpers (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_windows_native_omits_only_cross_and_declared_unix_only_helpers)"
+      ],
+      "receipt": {
+        "path": "root-review/pr6800-ci-monitor/TASKFLOW-SOURCE-PRIMARY-FAILURE.json",
+        "bytes": 15142,
+        "sha256": "4b0e1cdb57b666d853dd6ea41eb24af0a9f479a1df69a5378f375bd021b5ad55"
+      }
+    },
+    {
+      "head_sha": "b03f199bffbc442c9fbcbdd214519439469a503a",
+      "job": {
+        "id": 136247513926,
+        "run_id": 44724249217,
+        "name": "Current TaskFlow v1 migration prospective-merge replay",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-20T11:02:29Z",
+        "completed_at": "2026-11-20T11:05:18Z",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44724249217/job/136247513926",
+        "labels": [
+          "ubuntu-24.04"
+        ]
+      },
+      "synthetic_binding": {
+        "schema": "hepta.audit.pr6800.actual-synthetic.v1",
+        "pr": 6800,
+        "synthetic": "d97727ba60685ce50333ddd53b38e7c4bab80a6f",
+        "parents": [
+          "dfc152ae12baaf34a39d32ac205be786c3c3011d",
+          "b03f199bffbc442c9fbcbdd214519439469a503a"
+        ],
+        "tree": "fb99dd67277a6a2aa687fc083ad23363da2134b5",
+        "parent_order_matches_actual_pr_base_head": true,
+        "tree_equals_published_head_tree": true,
+        "source_record": "root-review/pr6800-ci-monitor/synthetic-commit.raw.json",
+        "source_record_sha256": "e5ae682954420859f838d65a9a53eea8a6a36d1309755d05a4a5d5da5df97259",
+        "new_native_or_dispatch": false
+      },
+      "full_log": {
+        "path": "root-review/pr6800-ci-monitor/taskflow-merge-136247513926.log",
+        "bytes": 1884037,
+        "sha256": "9a29c07d59552708ffff277757e3778da59fdc3c721d3a3a1a7bf96d1d3ec4d7"
+      },
+      "command": [
+        "python3 .github/scripts/rusty_v8_bazel.py check-module-bazel",
+        "just test-github-scripts",
+        "python3 -m unittest discover -s /home/runner/work/hepta-private-ci/hepta-private-ci/.github/scripts -p 'test_*.py'"
+      ],
+      "result": {
+        "tests": 328,
+        "seconds": 6.26,
+        "failures": 6,
+        "process_exit": 1
+      },
+      "failure_headers": [
+        "FAIL: test_exact_exclusion_does_not_match_similarly_named_native_helper (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_exact_exclusion_does_not_match_similarly_named_native_helper)",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='MINGW64_NT-10.0')",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='MSYS_NT-10.0')",
+        "FAIL: test_unset_runner_os_detects_supported_hosts (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts) (host='CYGWIN_NT-10.0')",
+        "FAIL: test_windows_native_normalizes_crlf_query_records_before_filtering (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_windows_native_normalizes_crlf_query_records_before_filtering)",
+        "FAIL: test_windows_native_omits_only_cross_and_declared_unix_only_helpers (test_verify_bazel_clippy_lints.ClippyTargetSelectionTests.test_windows_native_omits_only_cross_and_declared_unix_only_helpers)"
+      ],
+      "receipt": {
+        "path": "root-review/pr6800-ci-monitor/TASKFLOW-MERGE-PRIMARY-FAILURE.json",
+        "bytes": 15311,
+        "sha256": "60d7beec16f13273324e827338a59428bd5100bf289b6d95ca03480f9bb7146f"
+      }
+    }
+  ],
+  "changes": [
+    {
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "before_blob": "d14c15895095e8de26e2fcc5a545b9c34609ecda",
+      "after_blob": "770777774f0dc6f535e2fd1934a8d61967c8ff77",
+      "bytes": 18597,
+      "sha256": "cb4dfeebdbb5855ef93883c1769562b798a5bb57caa50a082910705675e1ddb4",
+      "test_methods": 18,
+      "same_ast_test_methods": [
+        "ClippyTargetSelectionTests.test_linux_and_native_windows_preserve_native_test_helpers",
+        "ClippyTargetSelectionTests.test_explicit_windows_cross_leg_preserves_cross_helpers",
+        "ClippyTargetSelectionTests.test_failed_query_emits_no_partial_target_list",
+        "ClippyTargetSelectionTests.test_unknown_selector_option_is_rejected",
+        "ConfiguredClippyTargetSelectionTests.test_linux_and_macos_preserve_native_and_unix_manual_helpers",
+        "ConfiguredClippyTargetSelectionTests.test_native_windows_keeps_all_configured_manual_helpers",
+        "ConfiguredClippyTargetSelectionTests.test_explicit_windows_cross_leg_preserves_cross_helpers",
+        "ConfiguredClippyTargetSelectionTests.test_failed_query_emits_no_partial_target_list",
+        "ConfiguredClippyTargetSelectionTests.test_empty_configured_helpers_do_not_silently_drop_test_lints",
+        "ConfiguredClippyTargetSelectionTests.test_unknown_selector_and_malformed_configured_query_are_rejected",
+        "ConfiguredClippyTargetSelectionTests.test_configured_failure_preserves_no_partial_patterns_and_cleans_query",
+        "ConfiguredClippyTargetSelectionTests.test_empty_set_at_either_stage_is_fatal_before_build_output",
+        "ConfiguredClippyTargetSelectionTests.test_large_complete_set_uses_a_query_file_and_keeps_literal_label_words",
+        "ConfiguredClippyTargetSelectionTests.test_unrepresentable_label_fails_instead_of_omitting_a_required_helper",
+        "ConfiguredClippyTargetSelectionTests.test_explicit_query_file_transport_does_not_change_wrapper_scope",
+        "ConfiguredClippyTargetSelectionTests.test_crlf_is_normalized_on_every_unconfigured_selection_path"
+      ],
+      "changed_ast_test_methods": [
+        "ConfiguredClippyTargetSelectionTests.test_detected_hosts_keep_selection_and_msys_argument_boundaries",
+        "ConfiguredClippyTargetSelectionTests.test_unsupported_host_and_nonwindows_cross_fail_before_query"
+      ],
+      "format_ast_equivalent": true
+    },
+    {
+      "path": ".github/scripts/test_verify_bazel_clippy_lints.py",
+      "before_blob": "76a5c779494c2bbdee89d4caadd27126fd12b07c",
+      "after_blob": "cd2e10e28093f34b4d9c6c327c95d34456fd6439",
+      "bytes": 14712,
+      "sha256": "bfe4881aa645aefd293007b058d8ae602f1a9b649ccd822d99403e2b2247dc72",
+      "test_methods": 16,
+      "same_ast_test_methods": [
+        "LintSynchronizationTests.test_prioritized_group_and_string_level_match_actual_bazel_flags",
+        "LintSynchronizationTests.test_level_mismatch_remains_failure_for_table_lint",
+        "LintSynchronizationTests.test_invalid_tables_do_not_bypass_synchronization",
+        "ClippyTargetSelectionTests.test_linux_native_retains_unix_qualification_and_all_native_helpers",
+        "ClippyTargetSelectionTests.test_macos_native_retains_unix_qualification_and_all_native_helpers",
+        "ClippyTargetSelectionTests.test_windows_cross_keeps_existing_cross_and_unit_coverage",
+        "ClippyTargetSelectionTests.test_cross_mode_rejects_non_windows_runner_before_query",
+        "ClippyTargetSelectionTests.test_unknown_explicit_platform_fails_before_query",
+        "ClippyTargetSelectionTests.test_unknown_mode_fails_before_query",
+        "ClippyTargetSelectionTests.test_query_failure_never_emits_partial_targets",
+        "ClippyTargetSelectionTests.test_known_exclusion_tracks_actual_unix_only_build_declaration"
+      ],
+      "changed_ast_test_methods": [
+        "ClippyTargetSelectionTests.test_windows_native_omits_only_cross_and_declared_unix_only_helpers",
+        "ClippyTargetSelectionTests.test_windows_native_normalizes_crlf_query_records_before_filtering",
+        "ClippyTargetSelectionTests.test_unset_runner_os_detects_supported_hosts",
+        "ClippyTargetSelectionTests.test_unknown_detected_platform_fails_before_query",
+        "ClippyTargetSelectionTests.test_exact_exclusion_does_not_match_similarly_named_native_helper"
+      ],
+      "format_ast_equivalent": true
+    }
+  ],
+  "behavior": [
+    "Autodetected-host tests supply a Bash uname function through a fixture-local BASH_ENV and verify that the real selector called uname -s. This avoids relying on native Windows PATH ordering for a fake executable.",
+    "The old lint-verifier fixture separately records unconfigured discovery and configured compatibility queries, returns distinct fixture records for each stage, and checks the complete raw roster in the temporary query file.",
+    "Target expectations for native Unix, native Windows, Windows cross helpers, a similarly named compatible helper, unsupported hosts, CRLF and query failure remain. All 34 pre-existing test method names are retained; no skip is added.",
+    "Configured-query argument checks include both platform flags, Clippy configuration, the IncompatiblePlatformProvider expression, relative query-file transport, and cleanup."
+  ],
+  "host_failure_cause_precision": "Original Windows logs prove fake Linux/Darwin and Plan9 host selection did not take effect. PATH reordering is a fixture diagnosis; this record does not claim a separately instrumented native Windows root-cause experiment.",
+  "unchanged_production_inputs": [
+    {
+      "path": ".github/scripts/verify_bazel_clippy_lints.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32d33b94e40e140a7f4a6a4172edb6a49d3f86fc",
+      "bytes": 7546,
+      "sha256": "53b333372778d74e94384b3a3fb1fbcbdb38db23868b0098a6d6a222f02991cd"
+    },
+    {
+      "path": ".github/scripts/run-bazel-query-ci.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "bytes": 1556,
+      "sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d"
+    },
+    {
+      "path": "scripts/list-bazel-clippy-targets.sh",
+      "mode": "100755",
+      "type": "blob",
+      "sha": "6c8891572f700ec1e52920746e74775d1789efed",
+      "bytes": 5329,
+      "sha256": "608d54fbfe4a581d3ce9317112e536f543d9f33085343e37ac4ec01bd7c65fe1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/BUILD.bazel",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b49f26518847103ca41b66c9fbb4ee1ee03b395c",
+      "bytes": 15174,
+      "sha256": "40e47be0dcc25a54eb7a150f2b26fb92382508b864b6e8d00c3d386670cdda16"
+    }
+  ],
+  "local_validation": {
+    "original_verifier_before": "16 tests, 6 failures reproduced on Linux against exact original blobs.",
+    "after": "18 selector tests + 16 lint-verifier tests pass on Linux; zero skipped.",
+    "records": [
+      {
+        "receipt": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/before-lint-verifier.json",
+          "bytes": 571,
+          "sha256": "03997e051f0a1bb376aab7ceeba4a7e3f3e6c685bb4429db7375cba5c56585b6"
+        },
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          ".github/scripts",
+          "-p",
+          "test_verify_bazel_clippy_lints.py",
+          "-v"
+        ],
+        "exit_code": 1,
+        "log": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/before-lint-verifier.log",
+          "bytes": 13668,
+          "sha256": "6eacc1870fcb7bad6268f5d50ce28c8cae02764048090d0e2b8d8bdf75ef4f07"
+        },
+        "native_windows": false
+      },
+      {
+        "receipt": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/after-clippy-targets.json",
+          "bytes": 572,
+          "sha256": "4b73da3c5b88723e80eab91ba13fc25dc87edb0445c788ef347e76e640eae570"
+        },
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          ".github/scripts",
+          "-p",
+          "test_run_bazel_clippy_targets.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/after-clippy-targets.log",
+          "bytes": 3579,
+          "sha256": "a77da5231dd4d9fe3a88c5b3e0fe8a6a74b2b443e88ad0efcd5a99233a886642"
+        },
+        "native_windows": false
+      },
+      {
+        "receipt": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/after-lint-verifier.json",
+          "bytes": 573,
+          "sha256": "a6db1ae822ff1f741dbb7a783cdafdbf720627880a2d113bea20f47d559dd60d"
+        },
+        "command": [
+          "python",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          ".github/scripts",
+          "-p",
+          "test_verify_bazel_clippy_lints.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "log": {
+          "path": "publication-pr6800-fixture-followup-20261120/receipts/after-lint-verifier.log",
+          "bytes": 2983,
+          "sha256": "9eed446425976b2410de51da9f040d6bf69c08e8964b23a0db1041a751c87ea1"
+        },
+        "native_windows": false
+      }
+    ],
+    "formatting": "Repository-locked Ruff 0.15.13 offline; both final Python ASTs including decorators equal tested pre-format ASTs; tests were not rerun after formatting.",
+    "format_postimage_record": {
+      "path": "publication-pr6800-fixture-followup-20261120/FINAL-POSTIMAGES.json",
+      "bytes": 6173,
+      "sha256": "7526be7b9e9fca670af0cc34842af0c74ccab80dc52f8dc11b4b394c28a62440"
+    },
+    "native_windows_or_complete_CI_on_new_commit": "NOT_RUN_AT_RECORD_CREATION"
+  },
+  "independent_review": {
+    "path": "publication-pr6800-fixture-followup-20261120/INDEPENDENT-REVIEW.json",
+    "bytes": 22512,
+    "sha256": "049cb53025a5962055dc96c2b081821b900f843cddcb47c06f6a10d4bd2d36c7"
+  },
+  "qualification": "Draft repair candidate. Existing complete required gates remain required; original failures and unrelated blockers are not cleared by scoped local tests.",
+  "publication_boundary": {
+    "only_branch": "fix/rust-ca77-tooling-20261120-75cf",
+    "required_expected_sha": "b03f199bffbc442c9fbcbdd214519439469a503a",
+    "force": false,
+    "sole_commit_parent": "b03f199bffbc442c9fbcbdd214519439469a503a",
+    "requires_fresh_protected_scope_check_before_ref_update": true,
+    "main_or_integration_update": false,
+    "HIA_ref_update": false,
+    "branch_deletion": false,
+    "CA77_history_merged": false
+  }
+}

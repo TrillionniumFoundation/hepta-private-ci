@@ -57,6 +57,10 @@ RELOCATED_BROKER_EVIDENCE_PREFIX = (
     "qualification/main-consolidation/historical-continuations/"
     "continuation-20261021/os/broker-review"
 )
+RELOCATED_RECURSIVE_EVIDENCE_PREFIX = (
+    "qualification/main-consolidation/historical-continuations/"
+    "continuation-20261021/research/reader-2969/source/codex-rs/hepta-ndu/src"
+)
 ORIGINAL_EVIDENCE_FILES = {
     "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs": (
         "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177",
@@ -78,6 +82,10 @@ ORIGINAL_EVIDENCE_FILES = {
         "00c6368be54a58ada1fda01d74294c78cd7d415ed24d25f70de295ff7876f87a",
         1796,
     ),
+    f"{RELOCATED_RECURSIVE_EVIDENCE_PREFIX}/recursive.rs": (
+        "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
+        5219,
+    ),
 }
 
 
@@ -87,6 +95,7 @@ def verified_original_evidence_paths() -> frozenset[str]:
     prefixes = (
         Path(ORIGINAL_EVIDENCE_PREFIX),
         Path(RELOCATED_BROKER_EVIDENCE_PREFIX),
+        Path(RELOCATED_RECURSIVE_EVIDENCE_PREFIX),
     )
     for relative, (expected_sha256, expected_size) in ORIGINAL_EVIDENCE_FILES.items():
         path = Path(relative)
@@ -200,9 +209,9 @@ def rust_formatter_group(*, check: bool) -> FormatterGroup:
 
 def is_starlark_file(path: Path) -> bool:
     name = path.name
-    # BUILD.json and similar metadata are retained execution records, not
-    # Starlark sources. Keep them out of both full and changed-file formatting.
-    if path.suffix == ".json":
+    # Keep documentation and execution records out of both formatter scopes,
+    # while retaining Starlark fixtures such as tools/BUILD.fixture.
+    if path.suffix in {".json", ".md", ".txt", ".lock", ".stdout", ".stderr"}:
         return False
     return (
         name in {"BUILD", "WORKSPACE", "MODULE.bazel"}
@@ -388,6 +397,9 @@ def changed_paths(base: str | None = None) -> list[str]:
 
 
 def rust_file_command(path: str, *, check: bool) -> Command:
+    source = (REPO_ROOT / path).resolve()
+    if not source.is_relative_to(REPO_ROOT.resolve()):
+        raise ValueError("Rust formatting source escapes repository")
     manifest = next(
         (
             parent / "Cargo.toml"
@@ -397,6 +409,28 @@ def rust_file_command(path: str, *, check: bool) -> Command:
         None,
     )
     edition = "2021"
+    standalone_config = None
+    if manifest is None:
+        standalone_config = next(
+            (
+                parent / name
+                for parent in (REPO_ROOT / path).parents
+                if parent.is_relative_to(REPO_ROOT)
+                for name in (".rustfmt.toml", "rustfmt.toml")
+                if (parent / name).is_file()
+            ),
+            None,
+        )
+        if standalone_config is not None:
+            if not standalone_config.resolve().is_relative_to(REPO_ROOT.resolve()):
+                raise ValueError("Rust formatter configuration escapes repository")
+            if tomllib is None:
+                raise ValueError(
+                    "Python 3.11+ is required to read standalone Rust formatter configuration"
+                )
+            edition = tomllib.loads(standalone_config.read_text()).get(
+                "edition", "2021"
+            )
     if manifest is not None and tomllib is None:
         metadata = json.loads(
             subprocess.check_output(
@@ -447,18 +481,14 @@ def rust_file_command(path: str, *, check: bool) -> Command:
                     break
             else:
                 raise ValueError(f"owning Rust workspace missing for {manifest}")
-    args = [
-        "rustfmt",
-        "--edition",
-        str(edition),
-        "--config",
-        "imports_granularity=Item,skip_children=true",
-    ]
+    if not isinstance(edition, str) or edition not in {"2015", "2018", "2021", "2024"}:
+        raise ValueError(f"invalid Rust edition: {edition!r}")
+    args = ["rustfmt", "--edition", edition]
+    if standalone_config is not None:
+        args.extend(("--config-path", str(standalone_config)))
+    args.extend(("--config", "imports_granularity=Item,skip_children=true"))
     if check:
         args.append("--check")
-    source = (REPO_ROOT / path).resolve()
-    if not source.is_relative_to(REPO_ROOT.resolve()):
-        raise ValueError("Rust formatting source escapes repository")
     # rustup selects a pinned toolchain from the process working directory,
     # not the filename passed to rustfmt. Preserve the owning crate's context.
     directory = manifest.parent if manifest is not None else source.parent

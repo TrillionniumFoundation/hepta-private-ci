@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -87,6 +88,7 @@ class CleanupConsumerTests(unittest.TestCase):
             for reference in (
                 "openai/fence/.github/workflows/release.yml",
                 "https://github.com/openai/fence/.github/workflows/release.yml",
+                "https://github.com/openai/fence/blob/main/.github/workflows/release.yml",
                 "https://github.com/openai/fence/blob/64acdc94f531728494efbdf2d8f05faa26e90f7a/.github/workflows/release.yml",
             ):
                 with self.subTest(reference=reference):
@@ -203,6 +205,99 @@ class CleanupConsumerTests(unittest.TestCase):
     def test_exact_deletion_inventory_is_not_relaxed(self):
         with self.assertRaisesRegex(SystemExit, "cleanup exact inventory count"):
             self.check_history("no_consumer = True", wrong_count=True)
+
+    def verify_reference_text(self, text, *, existing=False):
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-qualified-workflow-"
+        ) as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "docs/reference.md").write_text(text, encoding="utf-8")
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            if existing:
+                workflow = root / ".github/workflows/current.yml"
+                workflow.parent.mkdir(parents=True)
+                workflow.write_text("name: current\n", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                VERIFIER.verify_exact_workflow_references()
+
+    def test_explicit_foreign_workflow_identity_keeps_its_repository(self):
+        identity = "openai/fence/.github/workflows/missing.yml"
+        for text in (
+            identity,
+            f"`{identity}`",
+            f'"{identity}"',
+            f"'{identity}'",
+            f"({identity})",
+            f"[{identity}]",
+            f"<{identity}>",
+            json.dumps({"manifest": json.dumps({"signer_workflow": identity})}),
+            "o/repo_name.ext/.github/workflows/missing.yml",
+            "o" * 39 + "/" + "r" * 100 + "/.github/workflows/missing.yml",
+        ):
+            with self.subTest(text=text):
+                self.verify_reference_text(text)
+
+    def test_local_and_unrecognized_workflow_prefixes_still_require_a_file(self):
+        for prefix in (
+            "",
+            "./",
+            "../",
+            "/",
+            VERIFIER.REPO + "/",
+            VERIFIER.REPO.swapcase() + "/",
+            "base/openai/fence/",
+            "./openai/fence/",
+            "openai/fence/extra/",
+            "openai/",
+            "openai//",
+            "openai/fence//",
+            "bad_owner/fence/",
+            "-owner/fence/",
+            "owner-/fence/",
+            "openai/./",
+            "openai/../",
+            "o" * 40 + "/fence/",
+            "openai/" + "r" * 101 + "/",
+            "prefix+openai/fence/",
+            "prefix:openai/fence/",
+            "workflow=openai/fence/",
+            "prefix(openai/fence/",
+            "base/[openai/fence/",
+            "https://example.invalid/?signer=openai/fence/",
+            "https://example.invalid/(openai/fence/",
+            "https://example.invalid/#(openai/fence/",
+            "git@github.com:openai/fence/",
+        ):
+            with self.subTest(prefix=prefix):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    self.verify_reference_text(prefix + ".github/workflows/missing.yml")
+
+    def test_qualified_identity_does_not_hide_adjacent_local_references(self):
+        foreign = "openai/fence/.github/workflows/missing.yml"
+        for local in (
+            ".github/workflows/missing.yml",
+            "./.github/workflows/missing.yml",
+            VERIFIER.REPO + "/.github/workflows/missing.yml",
+        ):
+            with self.subTest(local=local):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    self.verify_reference_text(f'"{foreign}", "{local}"')
+        for local in (
+            ".github/workflows/current.yml",
+            "./.github/workflows/current.yml",
+            VERIFIER.REPO + "/.github/workflows/current.yml",
+            VERIFIER.REPO.swapcase() + "/.github/workflows/current.yml",
+        ):
+            with self.subTest(existing=local):
+                self.verify_reference_text(f'"{foreign}", "{local}"', existing=True)
 
 
 if __name__ == "__main__":

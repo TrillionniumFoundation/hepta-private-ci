@@ -30,6 +30,15 @@ RELOCATED_BROKER_RECORDS = tuple(
     )
 )
 
+CONTINUATION_PREFIX = (
+    "qualification/main-consolidation/historical-continuations/continuation-20261021"
+)
+RELOCATED_RECURSIVE_PREFIX = (
+    f"{CONTINUATION_PREFIX}/research/reader-2969/source/codex-rs/hepta-ndu/src"
+)
+RELOCATED_RECURSIVE_RECORD = f"{RELOCATED_RECURSIVE_PREFIX}/recursive.rs"
+RELOCATED_RECORDS = (*RELOCATED_BROKER_RECORDS, RELOCATED_RECURSIVE_RECORD)
+
 
 class FormatterScopeTests(unittest.TestCase):
     def setUp(self):
@@ -47,7 +56,7 @@ class FormatterScopeTests(unittest.TestCase):
             (
                 *FMT.VERBATIM_FIXTURES,
                 *FMT.ORIGINAL_EVIDENCE_FILES,
-                *RELOCATED_BROKER_RECORDS,
+                *RELOCATED_RECORDS,
             )
         ):
             destination = self.root / relative
@@ -202,14 +211,14 @@ class FormatterScopeTests(unittest.TestCase):
     def test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust(self):
         original = {
             relative: (self.root / relative).read_bytes()
-            for relative in RELOCATED_BROKER_RECORDS
+            for relative in RELOCATED_RECORDS
         }
         neighbor = self.write(
             f"{RELOCATED_BROKER_PREFIX}/active.rs", "fn neighbor(){}\n"
         )
         active = self.write("codex-rs/example/src/lib.rs", "fn active(){}\n")
         paths = [
-            *RELOCATED_BROKER_RECORDS,
+            *RELOCATED_RECORDS,
             str(neighbor.relative_to(self.root)),
             str(active.relative_to(self.root)),
         ]
@@ -237,7 +246,7 @@ class FormatterScopeTests(unittest.TestCase):
             self.assertTrue(path.read_text().endswith("// formatted\n"))
 
     def test_relocated_record_byte_drift_fails_before_full_and_scoped_format(self):
-        for relative in RELOCATED_BROKER_RECORDS:
+        for relative in RELOCATED_RECORDS:
             with self.subTest(path=relative):
                 source = self.root / relative
                 original = source.read_bytes()
@@ -256,7 +265,7 @@ class FormatterScopeTests(unittest.TestCase):
                     source.write_bytes(original)
 
     def test_missing_relocated_record_fails_before_full_and_scoped_format(self):
-        for relative in RELOCATED_BROKER_RECORDS:
+        for relative in RELOCATED_RECORDS:
             with self.subTest(path=relative):
                 source = self.root / relative
                 original = source.read_bytes()
@@ -271,7 +280,7 @@ class FormatterScopeTests(unittest.TestCase):
 
     @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
     def test_relocated_record_symlink_is_rejected_even_with_identical_bytes(self):
-        for relative in RELOCATED_BROKER_RECORDS:
+        for relative in RELOCATED_RECORDS:
             with self.subTest(path=relative), tempfile.TemporaryDirectory() as outside:
                 source = self.root / relative
                 original = source.read_bytes()
@@ -293,6 +302,11 @@ class FormatterScopeTests(unittest.TestCase):
             f"{RELOCATED_BROKER_PREFIX}/../active.rs",
             f"{RELOCATED_BROKER_PREFIX}\\broker-original.rs",
             str(self.root / RELOCATED_BROKER_RECORDS[0]),
+            f"{RELOCATED_RECURSIVE_PREFIX}/../active.rs",
+            f"{RELOCATED_RECURSIVE_PREFIX}\\recursive.rs",
+            str(self.root / RELOCATED_RECURSIVE_RECORD),
+            f"{CONTINUATION_PREFIX}/../actual.rs",
+            f"{CONTINUATION_PREFIX}/unregistered.rs",
         ):
             with self.subTest(path=relative):
                 with patch.object(FMT, "ORIGINAL_EVIDENCE_FILES", {relative: digest}):
@@ -306,6 +320,41 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("add", ".")
         self.git("commit", "-qm", "unregistered historical neighbor")
         self.write(f"{RELOCATED_BROKER_PREFIX}/rustfmt.toml", "max_width=88\n")
+        active = self.write("codex-rs/example/src/lib.rs", "fn active(){}\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        self.assertEqual(
+            {Path(command.args[-1]) for command in groups[0].commands},
+            {neighbor, active},
+        )
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_continuation_symlink_alias_is_rejected_even_with_identical_bytes(self):
+        for relative in RELOCATED_RECORDS:
+            with self.subTest(path=relative):
+                source = self.root / relative
+                original = source.read_bytes()
+                alias = source.with_name(source.name + ".original")
+                alias.write_bytes(original)
+                source.unlink()
+                source.symlink_to(alias.name)
+                try:
+                    with self.assertRaisesRegex(ValueError, "escapes or aliases"):
+                        FMT.verified_original_evidence_paths()
+                finally:
+                    source.unlink()
+                    source.write_bytes(original)
+                    alias.unlink()
+
+    def test_relocated_recursive_rust_configuration_keeps_neighbor_and_active_source(
+        self,
+    ):
+        neighbor = self.write(
+            f"{RELOCATED_RECURSIVE_PREFIX}/active.rs", "fn neighbor(){}\n"
+        )
+        self.git("add", ".")
+        self.git("commit", "-qm", "unregistered recursive historical neighbor")
+        self.write(f"{RELOCATED_RECURSIVE_PREFIX}/rustfmt.toml", "max_width=88\n")
         active = self.write("codex-rs/example/src/lib.rs", "fn active(){}\n")
         groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
         self.assertEqual([group.name for group in groups], ["Rust"])
@@ -634,6 +683,144 @@ class FormatterScopeTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "workspace edition missing"):
             FMT.rust_file_command("codex-rs/member/src/lib.rs", check=True)
+
+    def test_full_and_scoped_starlark_discovery_preserve_sources_and_templates(self):
+        sources = [
+            "BUILD",
+            "BUILD.bazel",
+            "WORKSPACE",
+            "WORKSPACE.bazel",
+            "MODULE.bazel",
+            "third_party/example.BUILD.bazel",
+            "modules/example.MODULE.bazel",
+            "rules/example.bzl",
+            "rules/example.bzl.template",
+            "rules/example.sky",
+            "rules/example.sky.in",
+            "nested directory/BUILD.bazel",
+        ]
+        documents = [
+            "verification/BUILD.json",
+            "reports/WORKSPACE.json",
+            "docs/BUILD.md",
+            "docs/WORKSPACE.txt",
+            "evidence/windows_mutation44/owner/BUILD.stdout",
+            "evidence/windows_mutation44/owner/BUILD.stderr",
+        ]
+        for path in sources:
+            self.write(path, 'filegroup(name = "example")\n')
+        for path in documents:
+            self.write(path, '{"verified": true, "error": null}\n')
+        originals = {path: (self.root / path).read_bytes() for path in documents}
+        full = FMT.buildifier_formatter_group(check=True)
+        (scoped,) = FMT.scoped_formatter_groups(sources + documents, check=True)
+        self.assertEqual(full, scoped)
+        self.assertEqual(full.commands[0].args[4:], tuple(sorted(sources)))
+        self.assertEqual(full.commands[0].args[2:4], ("-mode=check", "-lint=off"))
+        self.assertEqual(
+            {path: (self.root / path).read_bytes() for path in documents}, originals
+        )
+
+    def test_document_prefixes_do_not_start_starlark_formatting(self):
+        self.assertEqual(
+            FMT.scoped_formatter_groups(
+                ["BUILD.json", "BUILD.md", "WORKSPACE.json", "WORKSPACE.lock"],
+                check=True,
+            ),
+            (),
+        )
+
+    def test_standalone_rust_uses_nearest_config_and_preserves_source_context(self):
+        self.write("rustfmt.toml", 'edition = "2018"\n')
+        source = self.write("experiments/native/deeper/example.rs", "fn main() {}\n")
+        for name in ("rustfmt.toml", ".rustfmt.toml"):
+            with self.subTest(name=name):
+                config = self.write(f"experiments/native/{name}", 'edition = "2024"\n')
+                command = FMT.rust_file_command(
+                    str(source.relative_to(self.root)), check=True
+                )
+                self.assertEqual(
+                    command.args[command.args.index("--edition") + 1], "2024"
+                )
+                self.assertEqual(
+                    command.args[command.args.index("--config-path") + 1], str(config)
+                )
+                self.assertEqual(command.cwd, source.parent)
+                self.assertIn("--check", command.args)
+                config.unlink()
+
+    def test_standalone_nearest_config_without_edition_keeps_original_default(self):
+        self.write("rustfmt.toml", 'edition = "2024"\n')
+        self.write("standalone/rustfmt.toml", "max_width = 88\n")
+        command = FMT.rust_file_command("standalone/example.rs", check=False)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+
+    def test_standalone_config_search_stops_at_repository_boundary(self):
+        self.write("rustfmt.toml", 'edition = "2024"\n')
+        nested_repo = self.root / "repo"
+        nested_repo.mkdir()
+        with patch.object(FMT, "REPO_ROOT", nested_repo):
+            command = FMT.rust_file_command("example.rs", check=False)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.assertNotIn("--config-path", command.args)
+
+    def test_manifest_edition_takes_priority_over_standalone_config(self):
+        self.write("crate/Cargo.toml", '[package]\nname="fixture"\nedition="2018"\n')
+        self.write("crate/src/rustfmt.toml", 'edition = "2024"\n')
+        command = FMT.rust_file_command("crate/src/example.rs", check=True)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2018")
+        self.assertEqual(command.cwd, self.root / "crate")
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink fixture")
+    def test_standalone_config_symlink_and_source_cannot_escape_repository(self):
+        outside = self.write("outside.toml", 'edition = "2024"\n')
+        nested_repo = self.root / "repo"
+        nested_repo.mkdir()
+        (nested_repo / "rustfmt.toml").symlink_to(outside)
+        with patch.object(FMT, "REPO_ROOT", nested_repo):
+            with self.assertRaisesRegex(ValueError, "configuration escapes"):
+                FMT.rust_file_command("example.rs", check=True)
+            with self.assertRaisesRegex(ValueError, "source escapes"):
+                FMT.rust_file_command("../outside.rs", check=True)
+
+    def test_standalone_invalid_edition_or_malformed_toml_is_rejected(self):
+        for document in (
+            'edition="2027"\n',
+            "edition=2024\n",
+            "edition=true\n",
+            "edition=[]\n",
+            'edition="2024',
+        ):
+            with self.subTest(document=document):
+                self.write("rustfmt.toml", document)
+                with self.assertRaises(ValueError):
+                    FMT.rust_file_command("example.rs", check=False)
+
+    def test_python_310_standalone_does_not_silently_override_declared_edition(self):
+        with patch.object(FMT, "tomllib", None):
+            command = FMT.rust_file_command("example.rs", check=False)
+            self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+            self.write("rustfmt.toml", 'edition = "2024"\n')
+            with self.assertRaisesRegex(ValueError, "Python 3.11"):
+                FMT.rust_file_command("example.rs", check=False)
+
+    def test_python_310_manifest_keeps_cargo_metadata_priority(self):
+        import json
+
+        manifest = self.write(
+            "crate/Cargo.toml", '[package]\nname="fixture"\nedition="2021"\n'
+        )
+        self.write("crate/src/rustfmt.toml", 'edition = "2024"\n')
+        metadata = {"packages": [{"manifest_path": str(manifest), "edition": "2021"}]}
+        with (
+            patch.object(FMT, "tomllib", None),
+            patch.object(
+                subprocess, "check_output", return_value=json.dumps(metadata)
+            ) as cargo,
+        ):
+            command = FMT.rust_file_command("crate/src/example.rs", check=True)
+        self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
+        self.assertEqual(cargo.call_args.args[0][:2], ["cargo", "metadata"])
 
 
 if __name__ == "__main__":

@@ -1,0 +1,171 @@
+{
+  "schema": "hepta.rust-consolidation.tooling-union-audit.v1",
+  "created_at_utc": "2026-11-20T10:52:07.987792+00:00",
+  "status": "SOURCE_COMMIT_CREATED_NO_NEW_SOURCE_GITHUB_CI_RESULT_YET",
+  "parent_head": "dfc152ae12baaf34a39d32ac205be786c3c3011d",
+  "parent_tree": "e20e2b2390f3bc6a39142bdc145dc480943c9c41",
+  "source_commit": "24f069ec044f363b3cba6b1189d550ff92581d77",
+  "source_tree": "4c5140db6ff3285434f03e62955e5db0b48c5a2e",
+  "base_leaves": 59346,
+  "source_leaves": 59346,
+  "unchanged_base_leaves": 59339,
+  "changes": [
+    {
+      "path": "scripts/format.py",
+      "mode": "100644",
+      "before_blob": "44eedef2a4a6d7d9e6bff953267d534416b2bb74",
+      "after_blob": "c4b1b4fb87f1826d08e25acb5c16ca5a312c083a",
+      "before_bytes": 22851,
+      "after_bytes": 24404,
+      "after_sha256": "f25e9112e14dd4574aa7adecd676c31fa462b32f2a957d7bf05494e550e5b012",
+      "private945_extra_explicitly_reconciled": true
+    },
+    {
+      "path": "scripts/test_hepta_format_scope.py",
+      "mode": "100644",
+      "before_blob": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f",
+      "after_blob": "fd54cfdb86b5aa66a4960189de1bc82e6a514fc7",
+      "before_bytes": 29595,
+      "after_bytes": 38383,
+      "after_sha256": "7369a0c55bc5f664f66950d611b519348c59595173cd4fc4b7fbb1117c94a8b9",
+      "private945_extra_explicitly_reconciled": true
+    },
+    {
+      "path": "scripts/hepta-docs.py",
+      "mode": "100644",
+      "before_blob": "483726841b99fbceb9ceb8f2d4fd46d2789d7eb0",
+      "after_blob": "280668f89480a74d00c40d9014e6277989a8ace2",
+      "before_bytes": 79809,
+      "after_bytes": 79882,
+      "after_sha256": "7b56c0ef1355589198de5a618f779805025aea8d289f31b6ecc26238f7aa14df",
+      "private945_extra_explicitly_reconciled": false
+    },
+    {
+      "path": "scripts/test_hepta_cleanup_consumers.py",
+      "mode": "100644",
+      "before_blob": "740bc191f15344406c50e3c9bb1eee97230565b9",
+      "after_blob": "fb171f4f473746150bfafde93c9418c9b644df76",
+      "before_bytes": 9791,
+      "after_bytes": 13743,
+      "after_sha256": "e67439539a7570b93b1bd5b28b83ec110ca5eb3e4ef435544582061676a7f1ce",
+      "private945_extra_explicitly_reconciled": false
+    },
+    {
+      "path": "scripts/list-bazel-clippy-targets.sh",
+      "mode": "100755",
+      "before_blob": "de897fdc72cb3019edda75f8c0ba367f5bae50bf",
+      "after_blob": "6c8891572f700ec1e52920746e74775d1789efed",
+      "before_bytes": 3398,
+      "after_bytes": 5329,
+      "after_sha256": "608d54fbfe4a581d3ce9317112e536f543d9f33085343e37ac4ec01bd7c65fe1",
+      "private945_extra_explicitly_reconciled": false
+    },
+    {
+      "path": ".github/scripts/test_run_bazel_clippy_targets.py",
+      "mode": "100644",
+      "before_blob": "7084bf40d39f024f06347b8588e4ef3024e2f7a3",
+      "after_blob": "d14c15895095e8de26e2fcc5a545b9c34609ecda",
+      "before_bytes": 2952,
+      "after_bytes": 18377,
+      "after_sha256": "ea2b36b9bb6e22920bf71b1a309ba47bf323d97f432b848155218095f19d3221",
+      "private945_extra_explicitly_reconciled": false
+    },
+    {
+      "path": ".github/scripts/run-bazel-query-ci.sh",
+      "mode": "100755",
+      "before_blob": "39fa04c47de0dbe9aec1a7c23ec4d1ab645db822",
+      "after_blob": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "before_bytes": 1160,
+      "after_bytes": 1556,
+      "after_sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d",
+      "private945_extra_explicitly_reconciled": false
+    }
+  ],
+  "semantic_scope": [
+    "Preserve fixed original/vendor evidence path, size, hash and symlink checks. Add the already existing recursive historical record to the exact guard inventory with its original bytes; do not exempt a directory or neighboring Rust source.",
+    "Support the nearest repository-contained standalone Rust formatter configuration, validate its edition, preserve manifest priority and original rustup working-directory context.",
+    "Keep genuine BUILD.fixture and Starlark template discovery while excluding document and stdout/stderr execution records from full and scoped buildifier input.",
+    "Bound repository identity token grammar without losing current valid foreign GitHub URL recognition or local .git-suffix checking. Valid URLs intentionally supersede the two conflicting incoming negative expectations; all malformed/local negative cases remain.",
+    "Preserve current host auto-detection, unsupported-host and non-Windows-cross refusal and CRLF normalization. Propagate resolved host to the query wrapper, preserving MSYS argument boundaries.",
+    "Native Windows queries the full manual Rust helper set before cquery, then selects its target configuration and declared compatibility via a relative query file; failures, empty sets and unrepresentable labels remain fatal before emitting partial build patterns. Keep Linux/macOS native and Windows-cross selection semantics."
+  ],
+  "reconciled_public_preimages": {
+    "initial_guard": "Five of seven current945 preimages matched publicdfc. The two formatter mismatches stopped publication and were explicitly reviewed.",
+    "formatter": "44eedef2a4a6d7d9e6bff953267d534416b2bb74 -> current945304df5bd1f887198cb7920cabb42022eb88d9253 -> reviewed union",
+    "formatter_tests": "c4fd93bf57b0982d74e618df8c0c0526e5174e7f -> current9456dc270710eb75f552c3583922a2b6b8eaeaf29ab -> reviewed union",
+    "additional_original_record": {
+      "path": "qualification/main-consolidation/historical-continuations/continuation-20261021/research/reader-2969/source/codex-rs/hepta-ndu/src/recursive.rs",
+      "git_blob": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+      "bytes": 5219,
+      "sha256": "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb",
+      "already_present_in_parent": true
+    },
+    "public41_original_formatter_tests": "All intent and assertions retained; fixed-record loops/negative cases expanded and two stronger existing integration tests added, then10incoming tests."
+  },
+  "local_validation": {
+    "format_scope_unittest": {
+      "passed": 53,
+      "failed": 0,
+      "skipped": 0,
+      "receipt_sha256": "3d0bfc4da2fa95bfdbfcfa803a71003f558393c44cfef835ba2e57b15c9ebc9f"
+    },
+    "cleanup_consumer_unittest": {
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "receipt_sha256": "e895f381f90ab88c61ad9695589de1f82533925e030638cb9401c17f53981f81"
+    },
+    "clippy_transport_unittest": {
+      "passed": 18,
+      "failed": 0,
+      "skipped": 0,
+      "receipt_sha256": "dc2af0737590c0e328890c20826a99111c8142dad1d4c3fca21e02e92ef35b64"
+    },
+    "unique_tests": 88,
+    "bash_syntax_checks_passed": 2,
+    "review_discovered_issue": "Restored one original incoming POSIX-only symlink decorator omitted by source slicing; reran only the53affected formatter tests. The earlier53result is retained but not added to totals.",
+    "final_formatting": {
+      "ruff": "0.15.13",
+      "matches_parent_scripts_uv_lock_blob": "3fd02698ddb7a4042cad2f417db92779fafd01bf",
+      "offline": true,
+      "five_python_files_format_check_exit": 0,
+      "two_test_files_layout_only": true,
+      "all_five_full_AST_including_decorators_equal_reviewed_source": true,
+      "format_equivalence_sha256": "48cf41cb0f27d70e272f996ca18617122314375504a28f7b1a5ba8a3d42cfadf",
+      "no_claim_of_postformat_unittest_rerun": true
+    },
+    "limits": "Local unittest transports are disposable mocks. Actual Windows/Bazel native target completeness and all required GitHub workflows remain unqualified on this new source."
+  },
+  "independent_review": {
+    "supplement_sha256": "d186a0cd71f1dc56c8e95a80d9ce1c018b20d5c3ab265d65eecd5ba6a9abeb4e",
+    "scope": "All7actual public preimages, the two explicit945bridges, test/decorator preservation, full AST equivalence and original execution receipts."
+  },
+  "HIA_preflight": {
+    "scope_receipt_sha256": "39d85dd02786d822f6211d496c47dbcc86c2de9aec5595d154e48e6d4582f496",
+    "observed_utc": "2026-11-20T10:48:02Z",
+    "heads": 7680,
+    "protected_names": 506,
+    "historical_pins": 542,
+    "protected_descendants": 1420,
+    "parent_protected_ancestry_intersection": 0,
+    "final_ref_write_requires_fresh_full_map": true
+  },
+  "publication_scope": {
+    "new_ordinary_branch": "fix/rust-ca77-tooling-20261120-75cf",
+    "planned_base_branch": "fix/rust-windows-fixtures-20261120-75cf",
+    "changes_existing_parent_PR_head": false,
+    "changes_main_or_integration_or_external_fix_or_HIA_refs": false,
+    "deletes_branches": false,
+    "attaches_CA77_as_merge_parent": false
+  },
+  "required_gates_unchanged": true,
+  "excluded_changes": [
+    "Rust production code",
+    "dependencies and locks",
+    "NDU v7 records and new profiles",
+    "evidence-publisher workflow",
+    "any active owner source or native task",
+    "denied production repair and UNKNOWN copy task"
+  ],
+  "final_merge_eligibility": false
+}

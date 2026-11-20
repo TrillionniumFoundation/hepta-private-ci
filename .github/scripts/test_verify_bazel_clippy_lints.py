@@ -107,33 +107,64 @@ class ClippyTargetSelectionTests(unittest.TestCase):
         query = self.root / ".github/scripts/run-bazel-query-ci.sh"
         query.write_text(
             "#!/usr/bin/env bash\n"
-            'printf "%s\\n" "$@" > "$QUERY_ARGS_FILE"\n'
-            'cat "$QUERY_TARGETS_FILE"\n'
+            'if [[ "${1:-}" == "--configured" ]]; then\n'
+            '  printf "cquery\\n" >> "$QUERY_CALLS_FILE"\n'
+            '  printf "%s\\n" "$@" > "$CONFIGURED_QUERY_ARGS_FILE"\n'
+            '  cat -- "${!#}" > "$CONFIGURED_QUERY_INPUT_FILE"\n'
+            '  cat "$CONFIGURED_QUERY_TARGETS_FILE"\n'
+            "else\n"
+            '  printf "query\\n" >> "$QUERY_CALLS_FILE"\n'
+            '  printf "%s\\n" "$@" > "$QUERY_ARGS_FILE"\n'
+            '  cat "$QUERY_TARGETS_FILE"\n'
+            "fi\n"
             'exit "${QUERY_EXIT_CODE:-0}"\n',
             newline="\n",
         )
         query.chmod(0o755)
-        fake_bin = self.root / "bin"
-        fake_bin.mkdir()
-        uname = fake_bin / "uname"
-        uname.write_text(
-            '#!/usr/bin/env bash\nprintf "%s\\n" "$TEST_UNAME"\n', newline="\n"
+        host_env = self.root / "host-env.sh"
+        host_env.write_text(
+            "uname() {\n"
+            '  printf "%s\\n" "$*" > "$UNAME_ARGS_FILE"\n'
+            '  printf "%s\\n" "$TEST_UNAME"\n'
+            "}\n",
+            newline="\n",
         )
-        uname.chmod(0o755)
         self.targets = self.root / "targets.txt"
         self.targets.write_text("\n".join(DISCOVERED) + "\n", newline="\n")
+        self.configured_targets = self.root / "configured-targets.txt"
+        self.configured_targets.write_text(
+            "\n".join([UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL, "", "", ""]) + "\n",
+            newline="\n",
+        )
         self.query_args = self.root / "query-args.txt"
+        self.configured_query_args = self.root / "configured-query-args.txt"
+        self.configured_query_input = self.root / "configured-query-input.txt"
+        self.query_calls = self.root / "query-calls.txt"
+        self.uname_args = self.root / "uname-args.txt"
         self.env = dict(os.environ)
         self.env.pop("RUNNER_OS", None)
         self.env.update(
-            PATH=str(fake_bin) + os.pathsep + self.env["PATH"],
-            QUERY_ARGS_FILE=str(self.query_args),
-            QUERY_TARGETS_FILE=str(self.targets),
+            BASH_ENV=host_env.as_posix(),
+            UNAME_ARGS_FILE=self.uname_args.as_posix(),
+            QUERY_ARGS_FILE=self.query_args.as_posix(),
+            QUERY_TARGETS_FILE=self.targets.as_posix(),
+            CONFIGURED_QUERY_ARGS_FILE=self.configured_query_args.as_posix(),
+            CONFIGURED_QUERY_TARGETS_FILE=self.configured_targets.as_posix(),
+            CONFIGURED_QUERY_INPUT_FILE=self.configured_query_input.as_posix(),
+            QUERY_CALLS_FILE=self.query_calls.as_posix(),
             QUERY_EXIT_CODE="0",
             TEST_UNAME="Linux",
         )
 
     def invoke(self, runner_os=None, args=()):
+        for path in (
+            self.query_args,
+            self.configured_query_args,
+            self.configured_query_input,
+            self.query_calls,
+            self.uname_args,
+        ):
+            path.unlink(missing_ok=True)
         env = dict(self.env)
         if runner_os is not None:
             env["RUNNER_OS"] = runner_os
@@ -146,12 +177,45 @@ class ClippyTargetSelectionTests(unittest.TestCase):
             timeout=10,
         )
 
-    def assert_targets(self, result, targets):
+    def assert_targets(self, result, targets, *, configured=False):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.splitlines(), [*BASE_PATTERNS, *targets])
         self.assertEqual(
             self.query_args.read_text().splitlines(), ["--output=label", "--", QUERY]
         )
+        self.assertEqual(
+            self.query_calls.read_text().splitlines(),
+            ["query", "cquery"] if configured else ["query"],
+        )
+        if configured:
+            arguments = self.configured_query_args.read_text().splitlines()
+            self.assertEqual(
+                arguments[:-1],
+                [
+                    "--configured",
+                    "--config=ci-windows",
+                    "--config=clippy",
+                    "--platforms=//:windows_x86_64_msvc",
+                    "--host_platform=//:local_windows_msvc",
+                    "--output=starlark",
+                    '--starlark:expr="//%s:%s" % (target.label.package, target.label.name) if "IncompatiblePlatformProvider" not in providers(target) else ""',
+                    "--query-file",
+                ],
+            )
+            self.assertFalse(Path(arguments[-1]).is_absolute())
+            self.assertTrue(arguments[-1].startswith(".bazel-clippy-query."))
+            self.assertEqual(
+                self.configured_query_input.read_text(),
+                "config(set(\n"
+                + "".join(
+                    f'"{label}"\n' for label in self.targets.read_text().splitlines()
+                )
+                + "), target)\n",
+            )
+        else:
+            self.assertFalse(self.configured_query_args.exists())
+            self.assertFalse(self.configured_query_input.exists())
+        self.assertEqual(list(self.root.glob(".bazel-clippy-query.*")), [])
 
     def test_linux_native_retains_unix_qualification_and_all_native_helpers(self):
         self.assert_targets(
@@ -167,13 +231,23 @@ class ClippyTargetSelectionTests(unittest.TestCase):
 
     def test_windows_native_omits_only_cross_and_declared_unix_only_helpers(self):
         self.assert_targets(
-            self.invoke("Windows"), [UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL]
+            self.invoke("Windows"),
+            [UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL],
+            configured=True,
         )
 
     def test_windows_native_normalizes_crlf_query_records_before_filtering(self):
         self.targets.write_bytes(("\r\n".join(DISCOVERED) + "\r\n").encode())
+        self.configured_targets.write_bytes(
+            (
+                "\r\n".join([UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL, "", "", ""])
+                + "\r\n"
+            ).encode()
+        )
         self.assert_targets(
-            self.invoke("Windows"), [UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL]
+            self.invoke("Windows"),
+            [UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL],
+            configured=True,
         )
 
     def test_windows_cross_keeps_existing_cross_and_unit_coverage(self):
@@ -195,7 +269,8 @@ class ClippyTargetSelectionTests(unittest.TestCase):
                 expected = [UNIT, NATIVE, OTHER_NATIVE, OTHER_MANUAL]
                 if not is_windows:
                     expected.append(UNIX_QUALIFICATION)
-                self.assert_targets(self.invoke(), expected)
+                self.assert_targets(self.invoke(), expected, configured=is_windows)
+                self.assertEqual(self.uname_args.read_text(), "-s\n")
 
     def test_cross_mode_rejects_non_windows_runner_before_query(self):
         for platform in ("Linux", "macOS"):
@@ -216,6 +291,7 @@ class ClippyTargetSelectionTests(unittest.TestCase):
     def test_unknown_detected_platform_fails_before_query(self):
         self.env["TEST_UNAME"] = "Plan9"
         result = self.invoke()
+        self.assertEqual(self.uname_args.read_text(), "-s\n")
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(result.stdout, "")
         self.assertIn("Unsupported host platform", result.stderr)
@@ -237,7 +313,8 @@ class ClippyTargetSelectionTests(unittest.TestCase):
     def test_exact_exclusion_does_not_match_similarly_named_native_helper(self):
         near_match = UNIX_QUALIFICATION + "-other"
         self.targets.write_text(near_match + "\n", newline="\n")
-        self.assert_targets(self.invoke("Windows"), [near_match])
+        self.configured_targets.write_text(near_match + "\n", newline="\n")
+        self.assert_targets(self.invoke("Windows"), [near_match], configured=True)
 
     def test_known_exclusion_tracks_actual_unix_only_build_declaration(self):
         tree = ast.parse((REPO_ROOT / "codex-rs/hepta-agentd/BUILD.bazel").read_text())
