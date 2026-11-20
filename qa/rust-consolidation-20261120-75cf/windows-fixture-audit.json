@@ -1,0 +1,106 @@
+{
+  "schema": "hepta.windows-test-fixture-audit.v1",
+  "prepared_at_utc": "2026-11-20T09:55:01.502091+00:00",
+  "source_commit": "2cb2b10285a1a6664e6f96db22580399cd4e608f",
+  "source_tree": "1cc783963f7b28988fd0467ce015f5a88d6fbd88",
+  "sole_parent": "69ec34ac53176ff1e46a1689048817c91adb5be2",
+  "parent_tree": "92ed914339a01cd388febdb788426de20627620b",
+  "source_changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_tests.rs",
+      "mode": "100644",
+      "before_blob": "f289141d2ed15cbfdc1f982125cd39d7f3509ff0",
+      "after_blob": "481785e08fba4d7166e336c02522301038a3e4a0",
+      "before_bytes": 4362,
+      "after_bytes": 4640,
+      "after_sha256": "d361b49b01a7f5b83834d1bb4cfac206e59f95705d6de9a171ace90a01250ee4",
+      "original_bytes_recovered_by_exact_inverse": true,
+      "assert_macro_count": 12
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_cross_root_tests.rs",
+      "mode": "100644",
+      "before_blob": "b88ac1cbb14a1eeed2cc7aa0cbf83adb513bac26",
+      "after_blob": "25af829c8ab603ed7e473987f89633c5439004c9",
+      "before_bytes": 7954,
+      "after_bytes": 8027,
+      "after_sha256": "9b87d6dfa92e70a662e142d3d6fd775d0c96c9c95f10d9182df6f25ac74ce9c4",
+      "original_bytes_recovered_by_exact_inverse": true,
+      "assert_macro_count": 20
+    },
+    {
+      "path": "codex-rs/hepta-shadow-qualification/src/durable.rs",
+      "mode": "100644",
+      "before_blob": "70c2eb28f8ccda23f197d9b6bfeb5e819ebc8cd9",
+      "after_blob": "b718e79e95261cf1bc8233f6f78aa765be031579",
+      "before_bytes": 7153,
+      "after_bytes": 7230,
+      "after_sha256": "cac48ab571ba8b36c4e96b43db12750e0127bcefaf42267714303267d0ce0a54",
+      "original_bytes_recovered_by_exact_inverse": true,
+      "assert_macro_count": 2
+    }
+  ],
+  "unchanged_source_tree_leaves": 59342,
+  "source_tree_leaf_count": 59345,
+  "review": {
+    "acl": "The existing cfg(test) modules alone acquire one shared process-local mutex at test entry. Guards are held until all temporary data and production handles drop. The original internal competing prepare_roots refusal, drop/reacquire, exact ACL bytes, readback deny checks, and real old-token disjoint-root refusal stay unchanged.",
+    "shadow": "The Windows positive fixture creates a fresh private child through existing create_private_directory, which delegates to atomic CreateNew with explicit current-user owner and protected DACL, then validates the returned handle. Production verify/flush/write/read logic and regular-file negative fixture are unchanged.",
+    "limits": "The ACL guard coordinates only threads in the same libtest process, not separate nextest processes. The original failing log does not identify the actual mutex owner. No source-head runtime success is claimed."
+  },
+  "integrity": {
+    "parent_full_inventory_reconstructed_root": "92ed914339a01cd388febdb788426de20627620b",
+    "candidate_full_inventory_reconstructed_root": "1cc783963f7b28988fd0467ce015f5a88d6fbd88",
+    "all_three_latest_parent_sources_fetched_and_git_hashed": true,
+    "every_original_assertion_retained": true,
+    "production_code_changed": false,
+    "dependency_or_workflow_changed": false,
+    "added_skip_retry_timeout_or_lint_suppression": false,
+    "independent_review_sha256": "057e10ea57b1b383104c3a8996f6888bf3536a0db018118369afcc596cfeb3dd",
+    "shadow_second_review_sha256": "b01e41681127037a24b9869b8c8dce34318bf5bf0b5d8bced62efc27ba4eb577",
+    "root_source_plan_sha256": "3c617bb9a8617fa3935e34a02c0480c8a8c9faf69f7b2768bc8eb7657380b49e"
+  },
+  "original_failure_evidence": {
+    "source_head": "3bc225d0c1b2aaa1dc3fa77fb0bcbcfe5c55a37f",
+    "tested_pr_merge_commit": "c198d6a2db92a85fcaceb356dc47cd68dea1fab5",
+    "tested_tree": "54f55621e909c528acc8619c7d3140e31197fbde",
+    "run_id": 44701505623,
+    "windows_shard4_job_id": 136171750547,
+    "log_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44701505623/job/136171750547",
+    "full_log_bytes": 611198,
+    "full_log_sha256": "5f4ed95773ce0ced1a63cd8594c0658e062dd828817cdbe0871cca6ee5a3b0a0",
+    "acl_target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+    "acl_result": {
+      "pass": 22,
+      "fail": 1,
+      "total": 23
+    },
+    "acl_failed_test": "win::read_acl::tests::broad_normal_rx_cannot_skip_same_plan_restrictive_readback",
+    "acl_error": "read ACL setup is busy; no same-plan completion",
+    "actual_named_mutex_owner": "NOT_RECORDED",
+    "shadow_result": {
+      "pass": 36,
+      "fail": 1,
+      "total": 37
+    },
+    "shadow_failed_test": "durable::windows_directory_sync_tests::directory_flush_persists_a_private_artifact",
+    "shadow_error": "private state owner or DACL is unsafe"
+  },
+  "qualification_at_preparation": {
+    "status": "STATIC_REVIEW_ONLY_RUNTIME_CI_PENDING",
+    "actual_new_source_windows_tests": "NOT_RUN",
+    "actual_new_source_rustfmt": "NOT_RUN",
+    "old_native_results_transferred": false,
+    "required_next_evidence": [
+      "Actual new-PR Bazel Windows shard4 with both complete target result blocks",
+      "New-PR Rustfmt and required CI conclusions"
+    ],
+    "coverage_limit": "The ACL mutex is process-local and does not serialize separate nextest processes. The existing failure log does not prove the sole owner of the competing native mutex."
+  },
+  "integration": {
+    "purpose": "Independent reviewable repair for the ongoing ordinary Rust branch consolidation.",
+    "history_merge_performed_by_this_change": false,
+    "main_updated": false,
+    "branches_deleted": false,
+    "hia_branches_modified": false
+  }
+}
