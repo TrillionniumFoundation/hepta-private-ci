@@ -1,0 +1,733 @@
+{
+  "all_search_results_retained": true,
+  "base_source_commit": "705797ce07ca90ab4c520f0c6ae632b2e783acc8",
+  "intent_commit_before_all_candidate_reads": "2da9714aba0288590dbcdc8febdb9ed549f9f5d2",
+  "intent_sha256": "bdccd51d67e80f12e4c7b7915dd251de7eb68018059dbe7980062422ff34ff60",
+  "license_adapter_note": "The GitHub /license endpoint is not allowlisted by this connector; its errors are retained. Contents GET returns decoded text rather than JSON for files. Exact base64 bytes and Git blob SHAs were subsequently retrieved with fetch_file and verified locally.",
+  "maximum_search_results_per_repository": 10,
+  "new_admitted_training_sources": 0,
+  "new_authenticated_users": 0,
+  "new_model_calls": 0,
+  "new_native_test_children": 0,
+  "new_training_updates": 0,
+  "provisional_clear_runtime_and_test_path_candidates": [
+    "coady/multimethod#157",
+    "SethMMorton/natsort#196"
+  ],
+  "query_adapter_note": "The connector search_issues wrapper returned empty issues arrays for all five reachable repositories. Those responses are retained but not used to conclude absence. The exact same frozen query, sort, order and per_page=10 were executed through the canonical GitHub search/issues GET endpoint; its result arrays are authoritative for this metadata stage.",
+  "query_and_order_unchanged": true,
+  "recorded_at": "2026-11-20T05:19:39.135287+00:00",
+  "repos": [
+    {
+      "admitted": false,
+      "all_merge_parents": [
+        "ddd47812ed846149a6a65a006927c7d9e696ad86"
+      ],
+      "canonical_repository": "coady/multimethod",
+      "declared_repository": "coady/multimethod",
+      "exact_after_commit": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+      "exact_before_first_parent": "ddd47812ed846149a6a65a006927c7d9e696ad86",
+      "fork": false,
+      "fork_parent": null,
+      "inspected_prs": [
+        {
+          "base_sha_from_pr_metadata": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+          "changed_filenames": [
+            "multimethod/__init__.py",
+            "tests/test_subscripts.py"
+          ],
+          "decision": "provisional_runtime_and_regression_paths",
+          "head_sha": "957f4d5c64c7ba8e87d1b0a3f43845becaf60f06",
+          "merge_commit_sha": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+          "merged": true,
+          "merged_at": "2026-11-20T00:49:52Z",
+          "pr_number": 157,
+          "pr_url": "https://github.com/coady/multimethod/pull/157",
+          "reason": "The merged PR describes a callable dispatch correction and an assertion in an existing upstream test; both runtime and test paths changed. Runtime/test contents, complete parameters, dependencies and native before/after outcomes have not been read or verified.",
+          "search_position": 1,
+          "title": "Fix registration of bare Callable fallbacks"
+        }
+      ],
+      "later_search_results_inspected": false,
+      "license": {
+        "all_retrieved_before_after_notice_bytes_equal": true,
+        "bindings": [
+          {
+            "bytes": 576,
+            "git_blob_sha": "9c2e1e01ba602fd2bb9802eefa1c3650190358f8",
+            "ref": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+            "repository": "coady/multimethod",
+            "retained_notice_path": "licenses/coady__multimethod.txt",
+            "role": "after",
+            "sha256": "50477e9b01163e9f1754d3318cc38059278cc6586316c4e627de3076691c8bea",
+            "source_url": "https://github.com/coady/multimethod/blob/e7b2c416219b7f8c9c7f67d81613241f01a75825/LICENSE.txt",
+            "upstream_path": "LICENSE.txt"
+          },
+          {
+            "bytes": 576,
+            "git_blob_sha": "9c2e1e01ba602fd2bb9802eefa1c3650190358f8",
+            "ref": "ddd47812ed846149a6a65a006927c7d9e696ad86",
+            "repository": "coady/multimethod",
+            "retained_notice_path": "licenses/coady__multimethod.txt",
+            "role": "before",
+            "sha256": "50477e9b01163e9f1754d3318cc38059278cc6586316c4e627de3076691c8bea",
+            "source_url": "https://github.com/coady/multimethod/blob/ddd47812ed846149a6a65a006927c7d9e696ad86/LICENSE.txt",
+            "upstream_path": "LICENSE.txt"
+          }
+        ],
+        "dependency_and_file_specific_licenses_reviewed": false,
+        "notice_label": "Apache License 2.0 notice (repository API labels Other/NOASSERTION)",
+        "status": "notice_identity_precheck_only"
+      },
+      "model_calls": 0,
+      "native_children": 0,
+      "provisional_next_content_pr": 157,
+      "query": "repo:coady/multimethod is:pr is:merged fix in:title",
+      "repository_metadata_license": {
+        "key": "other",
+        "name": "Other",
+        "node_id": "MDc6TGljZW5zZTA=",
+        "spdx_id": "NOASSERTION",
+        "url": null
+      },
+      "runtime_or_test_file_reads": 0,
+      "search_incomplete": false,
+      "search_results": [
+        {
+          "created_at": "2026-11-17T13:17:09Z",
+          "number": 157,
+          "position": 1,
+          "title": "Fix registration of bare Callable fallbacks",
+          "url": "https://github.com/coady/multimethod/pull/157"
+        },
+        {
+          "created_at": "2026-10-31T13:23:43Z",
+          "number": 155,
+          "position": 2,
+          "title": "fix(dispatch): preserve callable type errors",
+          "url": "https://github.com/coady/multimethod/pull/155"
+        },
+        {
+          "created_at": "2023-01-06T07:49:19Z",
+          "number": 80,
+          "position": 3,
+          "title": "Fix creating unnecessary instances",
+          "url": "https://github.com/coady/multimethod/pull/80"
+        },
+        {
+          "created_at": "2020-12-31T16:11:51Z",
+          "number": 27,
+          "position": 4,
+          "title": "fix: Check that homonym is a multimethod when getting the base multimethod object",
+          "url": "https://github.com/coady/multimethod/pull/27"
+        },
+        {
+          "created_at": "2020-12-31T15:31:22Z",
+          "number": 26,
+          "position": 5,
+          "title": "fix: Allow parameters annotated with meta-types",
+          "url": "https://github.com/coady/multimethod/pull/26"
+        }
+      ],
+      "search_total_count": 5,
+      "search_url": "https://api.github.com/search/issues?q=repo%3Acoady%2Fmultimethod%20is%3Apr%20is%3Amerged%20fix%20in%3Atitle&sort=created&order=desc&per_page=10",
+      "selected_source": null,
+      "status": "provisional_runtime_and_regression_paths",
+      "training_updates": 0
+    },
+    {
+      "admitted": false,
+      "all_merge_parents": [
+        "e90771d7c39157d079425b655763938c2709d486",
+        "607eeee21c03f953ecc4fa67a8c3fb456129a970"
+      ],
+      "canonical_repository": "SethMMorton/natsort",
+      "declared_repository": "SethMMorton/natsort",
+      "exact_after_commit": "e2328c20b62253bea75227b62763ea83874171dc",
+      "exact_before_first_parent": "e90771d7c39157d079425b655763938c2709d486",
+      "fork": false,
+      "fork_parent": null,
+      "inspected_prs": [
+        {
+          "base_sha_from_pr_metadata": "e90771d7c39157d079425b655763938c2709d486",
+          "changed_filenames": [
+            "natsort/compat/locale.py",
+            "tests/test_compat_locale.py"
+          ],
+          "decision": "provisional_runtime_and_regression_paths",
+          "head_sha": "607eeee21c03f953ecc4fa67a8c3fb456129a970",
+          "merge_commit_sha": "e2328c20b62253bea75227b62763ea83874171dc",
+          "merged": true,
+          "merged_at": "2026-09-10T01:20:30Z",
+          "pr_number": 196,
+          "pr_url": "https://github.com/SethMMorton/natsort/pull/196",
+          "reason": "The merged PR describes a locale sentinel correction and a new regression module using a stub ICU. Runtime/test contents, complete parameters, dependencies and native before/after outcomes have not been read or verified. The PR author did not verify real PyICU integration locally; that statement is not this experiment evidence.",
+          "search_position": 1,
+          "title": "Fix null_string_locale_max so it sorts after every PyICU key"
+        }
+      ],
+      "later_search_results_inspected": false,
+      "license": {
+        "all_retrieved_before_after_notice_bytes_equal": true,
+        "bindings": [
+          {
+            "bytes": 1063,
+            "git_blob_sha": "cc66046c2017bbe247e245258bedc95f5ef89587",
+            "ref": "e2328c20b62253bea75227b62763ea83874171dc",
+            "repository": "SethMMorton/natsort",
+            "retained_notice_path": "licenses/SethMMorton__natsort.txt",
+            "role": "after",
+            "sha256": "81d078140eae25b31f257407190f4cdcb80177979749726e2aae4f2cdd90f623",
+            "source_url": "https://github.com/SethMMorton/natsort/blob/e2328c20b62253bea75227b62763ea83874171dc/LICENSE",
+            "upstream_path": "LICENSE"
+          },
+          {
+            "bytes": 1063,
+            "git_blob_sha": "cc66046c2017bbe247e245258bedc95f5ef89587",
+            "ref": "e90771d7c39157d079425b655763938c2709d486",
+            "repository": "SethMMorton/natsort",
+            "retained_notice_path": "licenses/SethMMorton__natsort.txt",
+            "role": "before",
+            "sha256": "81d078140eae25b31f257407190f4cdcb80177979749726e2aae4f2cdd90f623",
+            "source_url": "https://github.com/SethMMorton/natsort/blob/e90771d7c39157d079425b655763938c2709d486/LICENSE",
+            "upstream_path": "LICENSE"
+          }
+        ],
+        "dependency_and_file_specific_licenses_reviewed": false,
+        "notice_label": "MIT notice",
+        "status": "notice_identity_precheck_only"
+      },
+      "model_calls": 0,
+      "native_children": 0,
+      "provisional_next_content_pr": 196,
+      "query": "repo:SethMMorton/natsort is:pr is:merged fix in:title",
+      "repository_metadata_license": {
+        "key": "mit",
+        "name": "MIT License",
+        "node_id": "MDc6TGljZW5zZTEz",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit"
+      },
+      "runtime_or_test_file_reads": 0,
+      "search_incomplete": false,
+      "search_results": [
+        {
+          "created_at": "2026-09-01T23:49:19Z",
+          "number": 196,
+          "position": 1,
+          "title": "Fix null_string_locale_max so it sorts after every PyICU key",
+          "url": "https://github.com/SethMMorton/natsort/pull/196"
+        },
+        {
+          "created_at": "2026-06-24T19:55:46Z",
+          "number": 185,
+          "position": 2,
+          "title": "fix IndexError in fake_fastnumbers when input is an empty string",
+          "url": "https://github.com/SethMMorton/natsort/pull/185"
+        },
+        {
+          "created_at": "2021-12-30T12:32:21Z",
+          "number": 144,
+          "position": 3,
+          "title": "Fix typos",
+          "url": "https://github.com/SethMMorton/natsort/pull/144"
+        },
+        {
+          "created_at": "2021-12-10T06:19:39Z",
+          "number": 141,
+          "position": 4,
+          "title": "Fix sorting in ce locale",
+          "url": "https://github.com/SethMMorton/natsort/pull/141"
+        },
+        {
+          "created_at": "2021-05-04T11:32:45Z",
+          "number": 133,
+          "position": 5,
+          "title": "fix typo",
+          "url": "https://github.com/SethMMorton/natsort/pull/133"
+        },
+        {
+          "created_at": "2020-02-14T10:49:05Z",
+          "number": 113,
+          "position": 6,
+          "title": "fix DepricationWarning typo",
+          "url": "https://github.com/SethMMorton/natsort/pull/113"
+        },
+        {
+          "created_at": "2020-01-28T06:52:42Z",
+          "number": 111,
+          "position": 7,
+          "title": "Investigate and fix odd locale behavior",
+          "url": "https://github.com/SethMMorton/natsort/pull/111"
+        },
+        {
+          "created_at": "2019-06-21T02:53:49Z",
+          "number": 94,
+          "position": 8,
+          "title": "Fix typo \"the the\"",
+          "url": "https://github.com/SethMMorton/natsort/pull/94"
+        },
+        {
+          "created_at": "2018-05-17T04:44:53Z",
+          "number": 56,
+          "position": 9,
+          "title": "Fix install error on old setuptools",
+          "url": "https://github.com/SethMMorton/natsort/pull/56"
+        },
+        {
+          "created_at": "2018-03-31T08:59:56Z",
+          "number": 53,
+          "position": 10,
+          "title": "fix \"fastnumbers\" version check (issue #51)",
+          "url": "https://github.com/SethMMorton/natsort/pull/53"
+        }
+      ],
+      "search_total_count": 10,
+      "search_url": "https://api.github.com/search/issues?q=repo%3ASethMMorton%2Fnatsort%20is%3Apr%20is%3Amerged%20fix%20in%3Atitle&sort=created&order=desc&per_page=10",
+      "selected_source": null,
+      "status": "provisional_runtime_and_regression_paths",
+      "training_updates": 0
+    },
+    {
+      "admitted": false,
+      "canonical_repository": "Tinche/cattrs",
+      "declared_repository": "Tinche/cattrs",
+      "default_head_for_license_only": "46be811135633aee3fc97cd8c171bccdd14c5a93",
+      "fork": true,
+      "fork_parent": "python-attrs/cattrs",
+      "inspected_prs": [],
+      "license": {
+        "all_retrieved_before_after_notice_bytes_equal": true,
+        "bindings": [
+          {
+            "bytes": 1074,
+            "git_blob_sha": "340022c335c359953f29e61e4beb8049ea038d7c",
+            "ref": "46be811135633aee3fc97cd8c171bccdd14c5a93",
+            "repository": "Tinche/cattrs",
+            "retained_notice_path": "licenses/Tinche__cattrs.txt",
+            "role": "default_head",
+            "sha256": "f5fb9d1ede37a88ca47f420c499dca0f4a05bc993e12c77d23520aad291c01bf",
+            "source_url": "https://github.com/Tinche/cattrs/blob/46be811135633aee3fc97cd8c171bccdd14c5a93/LICENSE",
+            "upstream_path": "LICENSE"
+          }
+        ],
+        "dependency_and_file_specific_licenses_reviewed": false,
+        "notice_label": "MIT notice",
+        "status": "notice_identity_precheck_only"
+      },
+      "model_calls": 0,
+      "native_children": 0,
+      "query": "repo:Tinche/cattrs is:pr is:merged fix in:title",
+      "repository_identity_note": "The declared Tinche/cattrs repository is a fork of python-attrs/cattrs. The original query returned zero matches. The parent repository was not substituted or searched.",
+      "repository_metadata_license": {
+        "key": "mit",
+        "name": "MIT License",
+        "node_id": "MDc6TGljZW5zZTEz",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit"
+      },
+      "runtime_or_test_file_reads": 0,
+      "search_incomplete": false,
+      "search_results": [],
+      "search_total_count": 0,
+      "search_url": "https://api.github.com/search/issues?q=repo%3ATinche%2Fcattrs%20is%3Apr%20is%3Amerged%20fix%20in%3Atitle&sort=created&order=desc&per_page=10",
+      "selected_source": null,
+      "status": "no_result_under_frozen_query",
+      "training_updates": 0
+    },
+    {
+      "admitted": false,
+      "all_merge_parents": [
+        "ee03e4af449032b9a45264c7ecb0c5920e213dc7"
+      ],
+      "canonical_repository": "benjaminp/six",
+      "declared_repository": "benjaminp/six",
+      "exact_after_commit": "7783c9e983b1fa37299a1db5c9e116462cbb53b8",
+      "exact_before_first_parent": "ee03e4af449032b9a45264c7ecb0c5920e213dc7",
+      "fork": false,
+      "fork_parent": null,
+      "inspected_prs": [
+        {
+          "base_sha_from_pr_metadata": "e9da069f35bb9add9b17ecb405b474981227fcb8",
+          "changed_filenames": [
+            "CHANGES",
+            "documentation/index.rst"
+          ],
+          "decision": "reject_metadata_documentation_only",
+          "head_sha": "82a17759aeff15df3068451c53c5e60ef8f5f21f",
+          "merge_commit_sha": "39e2879215265e26c395f54389670af768c37757",
+          "merged": true,
+          "merged_at": "2026-02-13T05:19:08Z",
+          "pr_number": 402,
+          "pr_url": "https://github.com/benjaminp/six/pull/402",
+          "reason": "Changed paths are CHANGES and documentation/index.rst; PR explicitly describes docs-only corrections.",
+          "search_position": 1,
+          "title": "Fix typos and grammar in documentation and CHANGES"
+        },
+        {
+          "base_sha_from_pr_metadata": "02c3bcab0b94eb7a86f6606bc8b02e3ee0a72860",
+          "changed_filenames": [
+            "setup.cfg"
+          ],
+          "decision": "reject_metadata_packaging_only",
+          "head_sha": "bcbeaae9a04d8035d77b51db53332bad4bc073d7",
+          "merge_commit_sha": "c1b416f24de52ebd8eaed3e379ab85ec9c3e935b",
+          "merged": true,
+          "merged_at": "2024-03-27T00:12:53Z",
+          "pr_number": 382,
+          "pr_url": "https://github.com/benjaminp/six/pull/382",
+          "reason": "Only setup.cfg changed for a setuptools warning.",
+          "search_position": 2,
+          "title": "Fix deprecation warning from setuptools"
+        },
+        {
+          "base_sha_from_pr_metadata": "3974f0c4f6700a5821b451abddff8b3ba6b2a04f",
+          "changed_filenames": [
+            "documentation/index.rst",
+            "six.py"
+          ],
+          "decision": "pause_first_unresolved_runtime_candidate",
+          "head_sha": "8e8c3a0de5d811ef91efd88c68a97798352c1c40",
+          "merge_commit_sha": "7783c9e983b1fa37299a1db5c9e116462cbb53b8",
+          "merged": true,
+          "merged_at": "2021-11-21T23:00:36Z",
+          "pr_number": 365,
+          "pr_url": "https://github.com/benjaminp/six/pull/365",
+          "reason": "Runtime UserDict correction is described for Python 2, with only six.py and documentation/index.rst changed. No changed upstream test path is present. Existing regression coverage and runtime availability remain unresolved. Do not skip this item to choose a later easier PR without resolving the original selection criteria.",
+          "search_position": 3,
+          "title": "Fix `UserDict` move in Python2"
+        }
+      ],
+      "later_search_results_inspected": false,
+      "license": {
+        "all_retrieved_before_after_notice_bytes_equal": true,
+        "bindings": [
+          {
+            "bytes": 1066,
+            "git_blob_sha": "de6633112c1f9951fd688e1fb43457a1ec11d6d8",
+            "ref": "7783c9e983b1fa37299a1db5c9e116462cbb53b8",
+            "repository": "benjaminp/six",
+            "retained_notice_path": "licenses/benjaminp__six.txt",
+            "role": "after",
+            "sha256": "8bb850c565aa389fdc16f3a46965ad23d82adff60f2393fc2762b63185e8e6c9",
+            "source_url": "https://github.com/benjaminp/six/blob/7783c9e983b1fa37299a1db5c9e116462cbb53b8/LICENSE",
+            "upstream_path": "LICENSE"
+          },
+          {
+            "bytes": 1066,
+            "git_blob_sha": "de6633112c1f9951fd688e1fb43457a1ec11d6d8",
+            "ref": "ee03e4af449032b9a45264c7ecb0c5920e213dc7",
+            "repository": "benjaminp/six",
+            "retained_notice_path": "licenses/benjaminp__six.txt",
+            "role": "before",
+            "sha256": "8bb850c565aa389fdc16f3a46965ad23d82adff60f2393fc2762b63185e8e6c9",
+            "source_url": "https://github.com/benjaminp/six/blob/ee03e4af449032b9a45264c7ecb0c5920e213dc7/LICENSE",
+            "upstream_path": "LICENSE"
+          }
+        ],
+        "dependency_and_file_specific_licenses_reviewed": false,
+        "notice_label": "MIT notice",
+        "status": "notice_identity_precheck_only"
+      },
+      "model_calls": 0,
+      "native_children": 0,
+      "provisional_next_content_pr": 365,
+      "query": "repo:benjaminp/six is:pr is:merged fix in:title",
+      "repository_metadata_license": {
+        "key": "mit",
+        "name": "MIT License",
+        "node_id": "MDc6TGljZW5zZTEz",
+        "spdx_id": "MIT",
+        "url": "https://api.github.com/licenses/mit"
+      },
+      "runtime_or_test_file_reads": 0,
+      "search_incomplete": false,
+      "search_results": [
+        {
+          "created_at": "2026-02-11T16:54:16Z",
+          "number": 402,
+          "position": 1,
+          "title": "Fix typos and grammar in documentation and CHANGES",
+          "url": "https://github.com/benjaminp/six/pull/402"
+        },
+        {
+          "created_at": "2024-03-16T10:12:39Z",
+          "number": 382,
+          "position": 2,
+          "title": "Fix deprecation warning from setuptools",
+          "url": "https://github.com/benjaminp/six/pull/382"
+        },
+        {
+          "created_at": "2021-11-19T20:02:49Z",
+          "number": 365,
+          "position": 3,
+          "title": "Fix `UserDict` move in Python2",
+          "url": "https://github.com/benjaminp/six/pull/365"
+        },
+        {
+          "created_at": "2021-04-19T19:30:07Z",
+          "number": 353,
+          "position": 4,
+          "title": "docs: fix typo in CHANGES",
+          "url": "https://github.com/benjaminp/six/pull/353"
+        },
+        {
+          "created_at": "2021-01-28T05:51:37Z",
+          "number": 350,
+          "position": 5,
+          "title": "Fix typo in Changelog: itmes -> items",
+          "url": "https://github.com/benjaminp/six/pull/350"
+        },
+        {
+          "created_at": "2020-04-09T08:24:01Z",
+          "number": 326,
+          "position": 6,
+          "title": "[DOCS] Fix ensure_text docs",
+          "url": "https://github.com/benjaminp/six/pull/326"
+        },
+        {
+          "created_at": "2019-02-02T16:10:26Z",
+          "number": 276,
+          "position": 7,
+          "title": "Fix typo in docs, add missing \"as\"",
+          "url": "https://github.com/benjaminp/six/pull/276"
+        },
+        {
+          "created_at": "2019-01-18T23:37:28Z",
+          "number": 273,
+          "position": 8,
+          "title": "Minor formatting fix. 📚",
+          "url": "https://github.com/benjaminp/six/pull/273"
+        },
+        {
+          "created_at": "2018-09-20T11:05:05Z",
+          "number": 260,
+          "position": 9,
+          "title": "Fix #259--if a class has a non-trivial qualname, make sure to copy it when adding a metaclass",
+          "url": "https://github.com/benjaminp/six/pull/260"
+        },
+        {
+          "created_at": "2018-07-22T23:15:51Z",
+          "number": 251,
+          "position": 10,
+          "title": "Add update_wrapper and fix wraps handing of missing attrs",
+          "url": "https://github.com/benjaminp/six/pull/251"
+        }
+      ],
+      "search_total_count": 14,
+      "search_url": "https://api.github.com/search/issues?q=repo%3Abenjaminp%2Fsix%20is%3Apr%20is%3Amerged%20fix%20in%3Atitle&sort=created&order=desc&per_page=10",
+      "selected_source": null,
+      "status": "pause_first_unresolved_runtime_candidate",
+      "training_updates": 0
+    },
+    {
+      "admitted": false,
+      "all_merge_parents": [
+        "7ce55df0bc965c6605dd89bdb4da91610624290a"
+      ],
+      "canonical_repository": "python/typing_extensions",
+      "declared_repository": "python/typing_extensions",
+      "exact_after_commit": "404b33b90b3da532f7600fda1c0c1d17efbdd87c",
+      "exact_before_first_parent": "7ce55df0bc965c6605dd89bdb4da91610624290a",
+      "fork": false,
+      "fork_parent": null,
+      "inspected_prs": [
+        {
+          "base_sha_from_pr_metadata": "7f2361ca284ce9bfae8482d67f5f8381bd59468d",
+          "changed_filenames": [
+            ".github/workflows/third_party.yml"
+          ],
+          "decision": "reject_metadata_ci_only",
+          "head_sha": "1458fbecec27fb7593b030482bfe05a9333ea851",
+          "merge_commit_sha": "159aab02596e5318eb2083b27975d7ef125df6a9",
+          "merged": true,
+          "merged_at": "2026-10-19T18:13:57Z",
+          "pr_number": 808,
+          "pr_url": "https://github.com/python/typing_extensions/pull/808",
+          "reason": "Only .github/workflows/third_party.yml changed.",
+          "search_position": 1,
+          "title": "Fix timezone in third-party dependency cutoffs"
+        },
+        {
+          "base_sha_from_pr_metadata": "c4612236702d70527fc1ae33131591ff53484c62",
+          "changed_filenames": [
+            ".pre-commit-config.yaml",
+            "doc/index.rst"
+          ],
+          "decision": "reject_metadata_documentation_tooling_only",
+          "head_sha": "928e1239a5a12977973152da088867d4ef22929f",
+          "merge_commit_sha": "27c70f3154de9f8f4410e3f56532b88b85e823d3",
+          "merged": true,
+          "merged_at": "2026-07-02T18:25:09Z",
+          "pr_number": 779,
+          "pr_url": "https://github.com/python/typing_extensions/pull/779",
+          "reason": "Only documentation and pre-commit configuration changed.",
+          "search_position": 2,
+          "title": "Fix uses of default role in the docs"
+        },
+        {
+          "base_sha_from_pr_metadata": "7ce55df0bc965c6605dd89bdb4da91610624290a",
+          "changed_filenames": [
+            "src/test_typing_extensions.py",
+            "src/typing_extensions.py"
+          ],
+          "decision": "pause_first_ambiguous_runtime_and_test_candidate",
+          "head_sha": "d6217ebdab921ed8c7e445c15407189044e8c15f",
+          "merge_commit_sha": "404b33b90b3da532f7600fda1c0c1d17efbdd87c",
+          "merged": true,
+          "merged_at": "2026-05-29T13:57:26Z",
+          "pr_number": 760,
+          "pr_url": "https://github.com/python/typing_extensions/pull/760",
+          "reason": "The title says Fix tests on 3.15, while both runtime and test modules changed. Metadata cannot distinguish a runtime behavior correction from test/version maintenance. Resolve this first ambiguous item before considering later query results.",
+          "search_position": 3,
+          "title": "Fix tests on 3.15"
+        }
+      ],
+      "later_search_results_inspected": false,
+      "license": {
+        "all_retrieved_before_after_notice_bytes_equal": true,
+        "bindings": [
+          {
+            "bytes": 13936,
+            "git_blob_sha": "f26bcf4d2de6eb136e31006ca3ab447d5e488adf",
+            "ref": "404b33b90b3da532f7600fda1c0c1d17efbdd87c",
+            "repository": "python/typing_extensions",
+            "retained_notice_path": "licenses/python__typing_extensions.txt",
+            "role": "after",
+            "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+            "source_url": "https://github.com/python/typing_extensions/blob/404b33b90b3da532f7600fda1c0c1d17efbdd87c/LICENSE",
+            "upstream_path": "LICENSE"
+          },
+          {
+            "bytes": 13936,
+            "git_blob_sha": "f26bcf4d2de6eb136e31006ca3ab447d5e488adf",
+            "ref": "7ce55df0bc965c6605dd89bdb4da91610624290a",
+            "repository": "python/typing_extensions",
+            "retained_notice_path": "licenses/python__typing_extensions.txt",
+            "role": "before",
+            "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf",
+            "source_url": "https://github.com/python/typing_extensions/blob/7ce55df0bc965c6605dd89bdb4da91610624290a/LICENSE",
+            "upstream_path": "LICENSE"
+          }
+        ],
+        "dependency_and_file_specific_licenses_reviewed": false,
+        "notice_label": "Python Software Foundation License Version 2 with retained historical license chain and separate Zero-Clause BSD documentation clause (repository API labels Other/NOASSERTION)",
+        "status": "notice_identity_precheck_only"
+      },
+      "model_calls": 0,
+      "native_children": 0,
+      "provisional_next_content_pr": 760,
+      "query": "repo:python/typing_extensions is:pr is:merged fix in:title",
+      "repository_metadata_license": {
+        "key": "other",
+        "name": "Other",
+        "node_id": "MDc6TGljZW5zZTA=",
+        "spdx_id": "NOASSERTION",
+        "url": null
+      },
+      "runtime_or_test_file_reads": 0,
+      "search_incomplete": false,
+      "search_results": [
+        {
+          "created_at": "2026-10-19T17:00:39Z",
+          "number": 808,
+          "position": 1,
+          "title": "Fix timezone in third-party dependency cutoffs",
+          "url": "https://github.com/python/typing_extensions/pull/808"
+        },
+        {
+          "created_at": "2026-07-02T18:02:24Z",
+          "number": 779,
+          "position": 2,
+          "title": "Fix uses of default role in the docs",
+          "url": "https://github.com/python/typing_extensions/pull/779"
+        },
+        {
+          "created_at": "2026-05-29T13:39:11Z",
+          "number": 760,
+          "position": 3,
+          "title": "Fix tests on 3.15",
+          "url": "https://github.com/python/typing_extensions/pull/760"
+        },
+        {
+          "created_at": "2026-05-18T12:42:58Z",
+          "number": 756,
+          "position": 4,
+          "title": "Fix tests on PyPy3.11+",
+          "url": "https://github.com/python/typing_extensions/pull/756"
+        },
+        {
+          "created_at": "2026-03-28T05:26:05Z",
+          "number": 737,
+          "position": 5,
+          "title": "Fix litestar third party test",
+          "url": "https://github.com/python/typing_extensions/pull/737"
+        },
+        {
+          "created_at": "2025-11-11T14:34:09Z",
+          "number": 697,
+          "position": 6,
+          "title": "Fix Pydantic third-party test",
+          "url": "https://github.com/python/typing_extensions/pull/697"
+        },
+        {
+          "created_at": "2025-09-19T04:03:41Z",
+          "number": 683,
+          "position": 7,
+          "title": "fix test on 3.14",
+          "url": "https://github.com/python/typing_extensions/pull/683"
+        },
+        {
+          "created_at": "2025-09-13T09:08:36Z",
+          "number": 680,
+          "position": 8,
+          "title": "Fix doctest for get_protocol_members",
+          "url": "https://github.com/python/typing_extensions/pull/680"
+        },
+        {
+          "created_at": "2025-09-11T18:43:31Z",
+          "number": 677,
+          "position": 9,
+          "title": "Fix TypedDict qualifier inheritance with same name",
+          "url": "https://github.com/python/typing_extensions/pull/677"
+        },
+        {
+          "created_at": "2025-09-05T21:08:05Z",
+          "number": 673,
+          "position": 10,
+          "title": "Backport `__init_subclass__` fix for `@deprecated` from CPython",
+          "url": "https://github.com/python/typing_extensions/pull/673"
+        }
+      ],
+      "search_total_count": 69,
+      "search_url": "https://api.github.com/search/issues?q=repo%3Apython%2Ftyping_extensions%20is%3Apr%20is%3Amerged%20fix%20in%3Atitle&sort=created&order=desc&per_page=10",
+      "selected_source": null,
+      "status": "pause_first_ambiguous_runtime_and_test_candidate",
+      "training_updates": 0
+    },
+    {
+      "admitted": false,
+      "declared_repository": "jaraco/functools",
+      "inspected_prs": [],
+      "license": null,
+      "model_calls": 0,
+      "native_children": 0,
+      "repository_error_artifact": "jaraco__functools.repository-error.json",
+      "runtime_or_test_file_reads": 0,
+      "search_results": [],
+      "selected_source": null,
+      "status": "exact_repository_unavailable_404",
+      "substitute_repository_used": false,
+      "training_updates": 0
+    }
+  ],
+  "resume_rule": "Only an explicitly authorized content/native continuation may resolve these provisional candidates. Preserve the original order and every rejection; do not treat metadata as native admission or choose by student outcomes.",
+  "runtime_or_test_source_files_retrieved": 0,
+  "schema": "hepta.e5-six-metadata-review.v1",
+  "source_growth_qualified": false,
+  "source_material_ready": false,
+  "unresolved_earliest_candidates": [
+    "benjaminp/six#365",
+    "python/typing_extensions#760"
+  ]
+}
