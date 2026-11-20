@@ -1,0 +1,22 @@
+{
+  "actual_pre_pr_before": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+  "after_unchanged": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+  "native_children_observed_when_corrected": 0,
+  "no_replay_outcome_used_for_choice": true,
+  "old_metadata_and_intent_preserved": true,
+  "original_frozen_before": "ddd47812ed846149a6a65a006927c7d9e696ad86",
+  "original_pr_history": [
+    "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+    "007d256bd8a7bf8ca24aa5e7bb3f50453e3768ed",
+    "957f4d5c64c7ba8e87d1b0a3f43845becaf60f06"
+  ],
+  "parent_task_acknowledged_correction": true,
+  "reason": "The upstream PR was rebased as two commits. The merge result first parent is the first already-fixed commit, whose change already guards bool(args). Its parent and the original PR first commit parent both equal the original PR base8b548. The final merge commit only simplifies bool(args) to args and relocates the regression. Selecting the parent of the first PR commit reconstructs the original buggy revision, before observing any native result.",
+  "rebased_history": [
+    "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+    "ddd47812ed846149a6a65a006927c7d9e696ad86",
+    "e7b2c416219b7f8c9c7f67d81613241f01a75825"
+  ],
+  "schema": "hepta.pre-native-source-identity-correction.v1",
+  "upstream_pull_request_unchanged": 157
+}

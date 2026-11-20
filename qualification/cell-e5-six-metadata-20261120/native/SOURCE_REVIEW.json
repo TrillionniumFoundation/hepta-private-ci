@@ -1,0 +1,95 @@
+{
+  "model_calls": 0,
+  "new_native_children": 0,
+  "parameter_sets_reduced": false,
+  "schema": "hepta.e5-original-source-pre-native-review.v1",
+  "selected_sources": [
+    {
+      "authenticated_human_author_verified": false,
+      "dependencies": [
+        "Python>=3.12",
+        "pytest",
+        "pytest-timeout"
+      ],
+      "first_query_result": true,
+      "native_result_known": false,
+      "pretraining_overlap_known": false,
+      "project_id": "coady/multimethod",
+      "runtime_correction": "Guard empty Callable arguments before return-type indexing",
+      "source_id": "github:coady/multimethod:pull:157",
+      "tests": [
+        {
+          "argument_names": [],
+          "decorators": [],
+          "end_line": 171,
+          "file": "tests/test_subscripts.py",
+          "file_sha256": "3973eb5618f4f0ca0d9341a468b9315638ebfd7c3aa7f83cccf37094f8fdbe9b",
+          "full_original_function": true,
+          "function": "test_callable",
+          "start_line": 141
+        }
+      ]
+    },
+    {
+      "authenticated_human_author_verified": false,
+      "dependencies": [
+        "Python>=3.9",
+        "pytest",
+        "pytest-timeout",
+        "hypothesis imported by original conftest; sortedcontainers dependency"
+      ],
+      "first_query_result": true,
+      "native_result_known": false,
+      "pretraining_overlap_known": false,
+      "project_id": "SethMMorton/natsort",
+      "runtime_correction": "Replace ordinary ASCII x7f sentinel bytes with actual maximum byte ff",
+      "source_id": "github:SethMMorton/natsort:pull:196",
+      "tests": [
+        {
+          "argument_names": [
+            "icu_locale_module"
+          ],
+          "decorators": [],
+          "end_line": 45,
+          "file": "tests/test_compat_locale.py",
+          "file_sha256": "30403e2bd43961d0c9226cb086b575d035f08b87618d5ce511cc50bea864a091",
+          "full_original_function": true,
+          "function": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+          "start_line": 39
+        }
+      ]
+    }
+  ],
+  "snapshots": [
+    {
+      "commit": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+      "files": 10,
+      "index": 0,
+      "manifest_sha256": "c865af4524c6e9fb2c94efddd9bb4bd76deed23c1658214096542defbfd578ad",
+      "variant": "before"
+    },
+    {
+      "commit": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+      "files": 10,
+      "index": 0,
+      "manifest_sha256": "940e44218dfea095ac6dbff6eb9db4390a2a4339f33bf8f8d57d69984b618c8d",
+      "variant": "after"
+    },
+    {
+      "commit": "e90771d7c39157d079425b655763938c2709d486",
+      "files": 35,
+      "index": 1,
+      "manifest_sha256": "b2ee4428e62dc94923a34d8a3b98e2ae1f389bd45026b138df52af74a1986a7c",
+      "variant": "before"
+    },
+    {
+      "commit": "e2328c20b62253bea75227b62763ea83874171dc",
+      "files": 36,
+      "index": 1,
+      "manifest_sha256": "c2cb34d1085696bc91de23d55309b996ae6fcc88cce6d5b459826d5a40f644f0",
+      "variant": "after"
+    }
+  ],
+  "training_updates": 0,
+  "upstream_assertions_changed": false
+}

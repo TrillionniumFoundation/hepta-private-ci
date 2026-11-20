@@ -1,0 +1,79 @@
+{
+  "budget_regimes": [
+    "fixed_total",
+    "fixed_per_source"
+  ],
+  "experiment": "E5",
+  "metadata_freeze_commit": "a71fbe4a66d81e733cee9284a8b578b54095659f",
+  "metadata_intent_commit": "2da9714aba0288590dbcdc8febdb9ed549f9f5d2",
+  "native": {
+    "automatic_retry": false,
+    "full_parameter_sets": true,
+    "max_seconds_per_test_child": 120,
+    "maximum_owned_native_children": 4,
+    "parallel_test_children": 1,
+    "pytest_per_case_timeout_seconds": 3
+  },
+  "native_intent_commit": "92d2c62288b7afa9293d31bfb8ab99a511139e32",
+  "new_authenticated_users": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "projects": [
+    {
+      "after_commit": "e7b2c416219b7f8c9c7f67d81613241f01a75825",
+      "before_commit": "8b548a3a65bcb4fa028e8c430e3f38956ef53664",
+      "import_root": ".",
+      "index": 0,
+      "keyword": "test_callable",
+      "minimum_python": "3.12",
+      "original_test_functions": [
+        "test_callable"
+      ],
+      "package": "multimethod",
+      "parameter_sets": "The entire original function; no pytest parametrization or Hypothesis decorator.",
+      "pr_number": 157,
+      "product_roots": [
+        "multimethod"
+      ],
+      "project_id": "coady/multimethod",
+      "source_id": "github:coady/multimethod:pull:157",
+      "test_files": [
+        "tests/test_subscripts.py"
+      ]
+    },
+    {
+      "after_commit": "e2328c20b62253bea75227b62763ea83874171dc",
+      "backend": "Original upstream stub ICU regression; real PyICU integration is not exercised.",
+      "before_commit": "e90771d7c39157d079425b655763938c2709d486",
+      "hypothesis_scope": "Only imported by exact original tests/conftest.py to register upstream slow-tests profile. The selected test/fixture contains no @given or Hypothesis examples; no variant-specific seed or example selection.",
+      "import_root": ".",
+      "index": 1,
+      "keyword": "test_icu_null_string_locale_max_sorts_after_any_bytes",
+      "minimum_python": "3.9",
+      "original_test_functions": [
+        "test_icu_null_string_locale_max_sorts_after_any_bytes"
+      ],
+      "package": "natsort",
+      "parameter_sets": "The entire original function and original icu_locale_module fixture; no parametrization or Hypothesis decorator.",
+      "pr_number": 196,
+      "product_roots": [
+        "natsort"
+      ],
+      "project_id": "SethMMorton/natsort",
+      "source_id": "github:SethMMorton/natsort:pull:196",
+      "test_files": [
+        "tests/test_compat_locale.py"
+      ]
+    }
+  ],
+  "root": "/home/qian/work/hepta-e5-two-native-20261120-e9e051",
+  "schema": "hepta.e5-two-source-acquisition.v1",
+  "source_growth_qualified": false,
+  "source_sizes": [
+    1,
+    4,
+    16,
+    64
+  ],
+  "units_per_source": 32
+}
