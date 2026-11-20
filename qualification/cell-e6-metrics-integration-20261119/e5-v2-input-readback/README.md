@@ -1,0 +1,9 @@
+# E5 separate frozen before-only representation v2
+
+All 161 files in the frozen peer manifest were re-read and hash-verified before archiving. This is an independent source-only candidate; it does not replace v1 results or change original source order, 1/4/16/64 prefixes, 32-update-unit budgets, or native cases.
+
+The fixed before-only retrieval ran exactly once on each of the 16 original public project materials. Fifteen complete byte views were frozen. Ordinal 13 (jsonschema) was refused because the highest-ranked complete runtime group exceeded limits. It was not truncated, skipped or replaced. Sixteen synthetic source-only leakage/tampering/edit-scope controls passed. The original formatter completed and preserved all ten Python ASTs; tests were not redundantly rerun after formatting.
+
+The original pinned tokenizer then measured all fifteen immutable prompts with the complete native-chat template and generation prefix. All fifteen were at most 3200 prefix tokens: loguru was 2851, the maximum was attrs at 2986. Input-only original prefixes 1 and 4 fit; prefix 16 is refused because jsonschema has no admitted view. All sixteen rows remain in the readout. Input-only fit is not complete action or training admission: target coverage, full continuation/EOS tokens, optimizer-unit mapping, compute/verifier budgets and independent B/C bindings are still unknown at this snapshot. Every full-representation and training-prefix flag remains false.
+
+The new counter owner used 7.9085 seconds; its nested tokenizer command used 6.920589008950628 seconds, 5.764092895 CPU seconds and 705560 KiB peak RSS. These intervals overlap. No model weights, forward, generation, native replay or gradient update ran. The view is explicitly partial, with no semantic-closure claim. The cost addendum distinguishes counted lexical AST walks from other bounded parsing.

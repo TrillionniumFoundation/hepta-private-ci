@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="62f2fed4-676d-4a46-97f3-8df3be9de27f" timestamp="2026-11-18T23:22:34.708+08:00" time="61.399">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement" classname="codex-hepta-agentd" timestamp="2026-11-18T23:22:34.715+08:00" time="61.376">
+            <failure message="Error: Custom { kind: Other, error: Unavailable }" type="test failure with exit code 101">Error: Custom { kind: Other, error: Unavailable }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-oWc1QD
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 3993184, start_ticks: 204117673, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-NoGc9U
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-AU5GLX
+Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1343 filtered out; finished in 61.37s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-zN1oUs
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-q1lKAF
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-MVtx1R
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73892 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-ad21d640-20261118-v9/bind/ordinary-q24-zqAhF2
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-mVeqGK
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-ad21d640-20261118-v9/witness-bind/ordinary-post-a-model-y585la
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 3993185, start_ticks: 204117674, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=Error: original Root publication frame read response length: original Root publication poll rejected: ready=1; requested_events=0x1; root_revents=0x0; stream_revents=0x11; deadline_elapsed=false; os_error=None; io_kind=Other; os_error=None
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-0ggfwD
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 3993183, start_ticks: 204117672, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_stage=historical.observe_complete_task
+root_stage=historical.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: Unavailable }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-oWc1QD
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 3993184, start_ticks: 204117673, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-NoGc9U
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-AU5GLX
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

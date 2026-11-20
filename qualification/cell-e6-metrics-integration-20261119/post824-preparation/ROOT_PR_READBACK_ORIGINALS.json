@@ -1,0 +1,370 @@
+{
+  "packaged_at_utc": "2026-11-20T09:58:14Z",
+  "captures": [
+    [
+      "joint-824-before",
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6703",
+          "number": 6703,
+          "state": "open",
+          "merged": false,
+          "mergeable": true,
+          "draft": true,
+          "body": "## Current candidate: fixture lint correction and preserved E1–E6 evidence\n\nThe previous checkpoint introduced two `unwrap()` calls in a Mac fixture helper outside test functions, and actual Mac/Linux Clippy rejected both. This candidate changes that helper to return `std::io::Result<tempfile::TempDir>`, propagates the canonicalization error with `?`, and keeps unwrap at the six original test call sites. Canonical-path validation, product guards, original test assertions, and the second fixture remain unchanged. No lint exemption is added.\n\n- **Head:** `8240292307116aa4063f7c63d8cdf48a0e8ef773`\n- **Tree:** `2ec6ba4ee575eba4daee656ccf3d218074efd65c`\n- **Direct parent:** `d1d3896e2a2628977bc466cee1e00aea93971949`\n- **Base branch:** `feat/cell-joint-candidate-20261118-392934`, actual/base metadata `061334747ce9d87690c40df48eeedf239156b57d`\n- **Prospective merge observed after push:** `41efe113b0becba5234af5c0de197c31bb5a4581`\n- **Status:** Draft, open, unmerged; all ten joint qualification flags remain false.\n\n[Current progress](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8240292307116aa4063f7c63d8cdf48a0e8ef773/qualification/cell-joint-20261118-2e9b/CURRENT_PROGRESS.md) · [Complete current JSON](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8240292307116aa4063f7c63d8cdf48a0e8ef773/qualification/cell-joint-20261118-2e9b/CURRENT_PROGRESS.json) · [Minimal helper correction](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8240292307116aa4063f7c63d8cdf48a0e8ef773/codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs)\n\n## Validation and precise limits\n\nThe independent Mac checkout is exact `238fc484` plus the two frozen fixture patches, not the entire joint tree. Its native6 owner performed the old-to-new SHA CAS and original `just fmt` / `--check`, both exit 0, with unchanged protected source and inventory during validation. Original `just fix --locked --offline -p codex-hepta-agentd` then exited 101 after 1.062970125 seconds because the locked Inflector 0.11.4 crate archive was absent. Explicit lint and native tests were not entered. Full owner duration was 4.061430542 seconds. All five exact Git dependency refs were verified; unpacked registry directories alone did not establish usable Cargo material. No additional bulk download or native7 was launched.\n\nThe older d1d prospective merge `f8aba45b` independently passed noncached Mac hepta-agentd unit tests (92.1 seconds) and cognitive-write qualification tests (3.3 seconds). Its whole Bazel job still failed in core/app-server, and its own helper Clippy regression remained failed. These older-candidate passes are not claimed for the new helper source. Fresh-source CI for this head is pending.\n\nThe full prior blocking run returned 37 jobs: 20 success, 12 failure, 1 cancelled, 4 skipped. Engineering integrity, v8-canary and Windows private-state security passed. Historical contract failure concerns foreign Chain workflow references in base evidence; neither the verifier nor historical bytes were weakened. Cargo-deny log retrieval failed with Transport closed, so its cause remains unknown. A same-name base metadata refresh reconciled the actual base; old architecture-event failures remain intact.\n\n## E1–E6 outcomes retained\n\n| Experiment | Concrete evidence and remaining gap |\n| --- | --- |\n| E1/E2 | Original real 32-update students and exhausted evaluation calls remain ResearchNoUpdate: A 1/4 for both, future 0/4 and recovery 0/4. No additional model calls or retrospective tuning. |\n| E3 | New SmolLM2 recovery remains terminal incomplete. Original T2 history remains; no new independent-teacher load/call or complementarity claim. |\n| E4 | PP/CC/PC/CP remain 5/6 and do not beat the strong single-model baseline. Original edge/message/Cell controls and negative results remain. |\n| E5 | Sixteen public projects, zero authenticated users and zero growth training. V1 remains inadmissible. Separate before-only v2 freezes one view per original source: fifteen exact complete-template prefixes fit 3200 tokens, jsonschema ordinal 13 is refused in place. At the CURRENT observation, target coverage/output/EOS and training admission were still unknown/false. Later independent target work does not alter these frozen inputs. |\n| E6 | Independent source d035 passed 433/49 source tests, 907 protected rows, 398 affected boundaries, full 1159 CLI and exact 11+16+5+2 native case sets. Root mechanism parent then failed strict log framing before ordinary NoUpdate executed. Marker-only repair retains same-source prerequisites, exact assertions, original 64-read cap and all deadlines; it requires its own full CLI, 34 components, Root and original NoUpdate. Earlier Unavailable/read65/identity failures remain. |\n| Chain | Original liveness/F0 and full-system-cost gaps remain. No public reward expansion or automatic merge. |\n\nThe Adopt authority addendum keeps the original eight design files and default-disabled, uncompiled primitive intact. It distinguishes artifact-use grant, selector, final Root intent and original controller authorization, plus the missing live revocation/ordering semantics. Twelve added controls are planned and zero executed. This is not production authority, adoption, FinalUse or settlement.\n\nThe original #6709 metrics integration is unchanged: terminal status alone does not count completed adoption/use. Independent branch results do not become joint qualification. Original joint execution identity `e52c4f67cb58a65409256f7be263cfb49ac22557` is retained.\n\n## Exact publication gate\n\nThe exact 70-path d1d-to-current diff was reconstructed from 240 individually verified Git objects. Actual candidate tree and direct parent match the raw GitHub commit. The original blob checker and allowlist were unchanged; the original 512000-byte limit and 120-second timeout were used. Actual result was **PASS**, exit 0:\n\n- Gate command: 0.6086402000000817 seconds.\n- Complete preparation/owner: 3.5639370499993674 seconds, overlapping with the command.\n- Result SHA256: `17275ff00a228e38b789d0267e54f68bbd994c8eb2999b1e78ec8e080afb0e01`.\n- Final file manifest SHA256: `e394557da31689abf8a57b71ada6ab34bebbbc79ad1702b191f5e8a8e95bed9a`.\n- HEAD, index, config and refs of the isolated object-check repository remained unchanged.\n- Nonforce expected-head CAS advanced d1d to this candidate; fresh PR and ref reads matched.\n\nThe new local object-preparation controller was independently reviewed. The original repository checker was not edited. Complete older gate failure/success receipts are retained; this new gate is distinct from model/native qualification.\n\n## Evidence preserved in this candidate\n\n[Evidence root](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/8240292307116aa4063f7c63d8cdf48a0e8ef773/qualification/cell-e6-metrics-integration-20261119)\n\n- Full retrieved d1d CI logs, all-job observation and exact base/merge receipts.\n- Complete Mac native5 evidence: 102 archive members; complete native6 evidence: 80 members, including all 27 actual remote files and exact reconstructed full inventory with independent remote SHA verification.\n- Actual native6 source/fmt/lint-material failure receipts and minimal source diff.\n- Selected d035 source/34-component results, original failed Root JUnit and marker-only proposed repair.\n- Full frozen 161-file E5 v2 review/input/tokenizer set, independent peer review and v1 representation lower bound.\n- Default-disabled Adopt authority addendum and planned controls.\n- Exact previous CURRENT bytes, original d1d publication gate receipts, and independent comparison of 7,140 historical leaf fields.\n\nAll archive members were reopened and hash-verified; individual parts remain below 512000 bytes. Historical failures, unknown costs, exhausted budgets, and separate provenance remain explicit. This PR is not ready for merge or production qualification.\n",
+          "title": "research: continue joint E1–E6 freeze with matched learning and native repair controls",
+          "base": "feat/cell-joint-candidate-20261118-392934",
+          "base_sha": "061334747ce9d87690c40df48eeedf239156b57d",
+          "head": "research/e1e6-joint-20261118-2e9b",
+          "head_sha": "8240292307116aa4063f7c63d8cdf48a0e8ef773",
+          "head_repo_id": 1320694176,
+          "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+          "merge_commit_sha": "41efe113b0becba5234af5c0de197c31bb5a4581",
+          "user": {
+            "login": "ProfHepta",
+            "name": "ProfHepta",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+            "id": 102159240
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-11-18T14:06:18Z",
+          "updated_at": "2026-11-20T09:28:31Z",
+          "closed_at": null,
+          "merged_at": null,
+          "commits": 30,
+          "changed_files": 393,
+          "additions": 53529,
+          "deletions": 21,
+          "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6703",
+          "display_title": "research: continue joint E1–E6 freeze with matched learning and native repair controls"
+        },
+        "isError": false
+      }
+    ],
+    [
+      "e6-6776",
+      {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6776",
+          "number": 6776,
+          "state": "open",
+          "merged": false,
+          "mergeable": true,
+          "draft": true,
+          "body": "## Problem and current result\n\nThe original NoUpdate owner first masked its original failure with delivery cancellation. Preserving the first error exposed that completed A never retired its generation journal/witness, so C could not authenticate the predecessor. This PR fixes that missing product effect.\n\n**Current end-to-end status: not passed.** On executable source [e4aeaa2c](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e4aeaa2cdd1a4aa884d09cafaeef96968feb7a90), the original 11 native cases and 16 retirement/fault controls pass. The actual original NoUpdate parent now records the A drain, proceeds past the earlier predecessor-witness failure, and fails at **historical request 65 with maximum 64**. C, Adopt, cold D, FinalUse and settlement have no new successful qualification.\n\n## Changes\n\n- Preserve original transport/binding/evaluation errors. Record the first error from the original delivery/continuation futures and return it after both owned futures join; cancellation and CommitUncertain fences remain.\n- After the trusted original outcome is Complete, the shared submit/resume effect helper requires Active custody and calls the actual completed-generation drain. It checks source-publication identity and unchanged task status afterward. Retained/status paths remain read-only.\n- Add native controls for repeat/resume, readonly witness failure after the journal append, exact reopen/recovery, unchanged readback, and retained-source restrictions.\n- Register the one real drain boundary, ordered effect protection, and privileged inventory ID. All prior 1,137 boundary and 892 protected rows remain; only the already-allowed CALLERS digest is updated. The verifier, allowed paths and 512,000-byte limit are unchanged.\n- Preserve source/native/parent failures and successful controls in immutable bounded evidence archives.\n\nThe C predecessor gate, owner/signature predicates, 64-read ceiling, 500 ms frame, original 240/300/600-second constraints, original parent test body, acceptance scoring and source-metrics files remain unchanged.\n\n## Exact validation\n\n| Executable source / scope | Observed result |\n| --- | --- |\n| Initial diagnostic source candidate | Preserved failure: 244 source tests / 60 errors; original protected guard restored, verifier unchanged |\n| 27d90883 | 244 source tests, 892 protected rows, targeted proof and original 1,137-boundary CLI passed |\n| 715a7a37 and 27d90883 native rounds | 11 actual cases passed in each round; original NoUpdate failed in each round |\n| 27d90883 original first cause | C predecessor or new witness history differs; preserved original RESULT and raw logs |\n| b5da8e70 drain source | 275 source tests, 893 protected rows, 282 targeted checks and original 1,138-boundary CLI passed |\n| b5da8e70 first native attempt | Compile exit 101 from new test assert_eq imports; zero cases; no parent started |\n| e4aeaa2c compile/list | Actual two-library compile exit 0; recorder failed a name/id spelling assumption, retained unchanged and independently reconciled |\n| e4aeaa2c source delta | Exactly two explicit test imports; all other 15,734 tracked files identical to b5da. Current protected sweep passed; full caller CLI was not rerun on e4ae |\n| e4aeaa2c original native | 11 passed, zero failed/errors/skipped |\n| e4aeaa2c retirement/fault controls | 16 passed, zero failed/errors/skipped |\n| e4aeaa2c original NoUpdate | Failed at request 65 / max 64. Original RESULT SHA-256: 0f35886d2338dcb8264c7a77c341db4f10ddfa9ffaa24b7e69e7ee0073253e69 |\n\nThe current A generation journal/witness are 93/224 bytes, versus the prior 40/112-byte headers. C remains zero-byte journal / 112-byte initial witness. This is evidence of the actual A drain, not C completion.\n\n## Immutable evidence and policy\n\nThe latest [evidence directory](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/ab5e792d1bceb583c246f44d01ee8e433d5c60e8/evidence/e6-original-drain-read65-20261120-2e9b) preserves 201 originals / 55,918,596 bytes, including actual source failures/passes, compile failure and recorder correction, native and parent XML/logs, protocols/runners, physical journal/witness originals, inventories and terminal archives. All original sizes and SHA-256 values were verified after transfer.\n\nThe 2,176,776-byte archive is split 480,000 / 480,000 / 480,000 / 480,000 / 256,776 bytes, with manifest and checked reassembler. Its SHA-256 is 84f474d4f9699d3e9bc538dab820beb5e21d61d9da700007fa5b59465665cabc. Only five selected non-key physical files are copied. Broader physical data, including unconfirmed key/authority paths, is metadata-only; excluded key bodies remain on the original host.\n\nAt exact evidence head ab5e792d1bceb583c246f44d01ee8e433d5c60e8, the original seven blob-policy tests, original 512,000-byte diff policy, and published archive reassembly all passed. Policy owner RESULT SHA-256: a82ba3d62189eb3ff9ffe9135fa5858a0e8cc1342bc90daab7630ee548e37437.\n\nThe previous [177-original first-cause evidence](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/784814179ea48359f7f98c91b4a305788af1ab34/evidence/e6-original-first-cause-20261120-2e9b), its oversized-blob negative control, and historical failed NoUpdate7 RESULT c8bf40870e694e68e864e90a6856d3ba882272d2882300497cb3f724e9f82e25 remain in history.\n\n## Costs and limits\n\nThe current original NoUpdate command took 70.808666 s and enclosing owner 121.382146 s. Compile/list, failed compilation, source gates, helpers and native cases are separately retained. Nested durations overlap; complete whole-system energy, network, memory and provider-charge totals are not claimed. Small read-only RPCs occurred during the parent; zero cohost activity is not claimed.\n\nThe Adopt CURRENT 240-second versus old writer 300-second authority mismatch remains unresolved. This Draft PR is not merged or activated. No budget increase, scoring change or known-failure parent replay is performed. The next repair is to authenticate each actual successor operation within one synchronous original-owner lane while preserving every before/after check and the existing read cap.\n",
+          "title": "agentd: retire original completed generation and preserve E6 first failures",
+          "base": "research/e6-operation-scopes-20261118-2e9b",
+          "base_sha": "d83f70f38137a99a86a3afd122199ba9cdae4f79",
+          "head": "research/e6-original-error-20261120-2e9b",
+          "head_sha": "7bb71087b21b0c98998acfaf4d499b6395d929a5",
+          "head_repo_id": 1320694176,
+          "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+          "merge_commit_sha": "f441f6281c38ab1361f82a0622ac18db897478f7",
+          "user": {
+            "login": "ProfHepta",
+            "name": "ProfHepta",
+            "email": null,
+            "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+            "id": 102159240
+          },
+          "requested_reviewers": null,
+          "requested_team_reviewers": null,
+          "diff": null,
+          "comments": null,
+          "created_at": "2026-11-20T04:36:51Z",
+          "updated_at": "2026-11-20T09:54:30Z",
+          "closed_at": null,
+          "merged_at": null,
+          "commits": 13,
+          "changed_files": 136,
+          "additions": 18523,
+          "deletions": 267,
+          "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6776",
+          "display_title": "agentd: retire original completed generation and preserve E6 first failures"
+        },
+        "isError": false
+      }
+    ],
+    [
+      "e5-6793",
+      {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6793",
+            "number": 6793,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "## Problem and change\n\nThe original E5 codec's complete prompts exceed the original context limits for most fixed sources. This is the first private source layer of a separate v2 study: it freezes a uniform before-only ranking policy, pinned v1 dependencies, exact source indexing and preparatory byte/count checks. The selector receives original before runtime, already fixed native task material and before failures. It does not receive runtime-after patches or future material.\n\nThis Draft has **472 added lines**, based on the exact #6790 source `148e37c26586677e83f0e57e100def8805c1a020`. The subsequent retrieval, wire/freezer, target and evidence layers remain separately reviewable.\n\n## Limits and validation\n\nThe 250,000 AST-node counter covers lexical analysis walks, not every reused parser call. The 12,000-byte view cap is not a token estimate or semantic-context proof. Independent material provenance remains a prerequisite. This is offline preparation code; no production integration or training admission is enabled.\n\nThe complete candidate later passed 16 synthetic source/edit controls before the unchanged original formatter/check, with all ten Python ASTs preserved. Those aggregate results are retained in the evidence layer and are not claimed as native model tests on this partial source stage. Original v1 results and the fixed 1/4/16/64 order remain unchanged.",
+            "title": "Freeze private before-only E5 indexing and bounded-view policy",
+            "base": "research/e5-source-codec-freeze-20261120-e9e051",
+            "base_sha": "148e37c26586677e83f0e57e100def8805c1a020",
+            "head": "research/e5-v2-index-20261120-e9e051",
+            "head_sha": "202e42f5b841be72f8a39c5b1f756db8ea9503ee",
+            "head_repo_id": 1320694176,
+            "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+            "merge_commit_sha": "28eb0cfe684326f940536ae9964dbee28f7a94ae",
+            "user": {
+              "login": "ProfHepta",
+              "name": "ProfHepta",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+              "id": 102159240
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-11-20T09:40:11Z",
+            "updated_at": "2026-11-20T09:40:11Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 1,
+            "changed_files": 5,
+            "additions": 472,
+            "deletions": 0,
+            "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6793",
+            "display_title": "Freeze private before-only E5 indexing and bounded-view policy"
+          },
+          "isError": false
+        }
+      }
+    ],
+    [
+      "e5-6794",
+      {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6794",
+            "number": 6794,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "## Change\n\nThis dependent Draft adds single-pass whole-unit retrieval over the private frozen policy. The same ranker and packing order apply to every fixed source. Mandatory complete units that exceed the preparatory byte cap are refused; input is neither truncated nor selected using target information. The acyclic binding is payload digest, then rendered prompt, then an outer prompt hash.\n\nThe **414-line** stage includes meaningful synthetic controls for after/future API leakage, changed before/task identities, oversized mandatory units, original-loader runtime-after poison invariance, and paired Python/Cython units. The complete source/edit bundle passed 16 controls before original formatting; all ASTs were unchanged by formatting. Full exact before views and refusals are retained in the later evidence stage.\n\nThese are partial retrieved views. Original native testcases and fixtures remain in the verifier material, and semantic closure is not claimed. No model, training or upstream native task is run by this stage.",
+            "title": "Build one bounded E5 view from original before evidence",
+            "base": "research/e5-v2-index-20261120-e9e051",
+            "base_sha": "202e42f5b841be72f8a39c5b1f756db8ea9503ee",
+            "head": "research/e5-v2-retrieval-20261120-e9e051",
+            "head_sha": "cae83dc7ab46b76b4d185bb85dac9f81562b9366",
+            "head_repo_id": 1320694176,
+            "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+            "merge_commit_sha": "cb824c38d08850d928b1f340f4cd69a7fc57f3f2",
+            "user": {
+              "login": "ProfHepta",
+              "name": "ProfHepta",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+              "id": 102159240
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-11-20T09:40:14Z",
+            "updated_at": "2026-11-20T09:40:14Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 1,
+            "changed_files": 3,
+            "additions": 414,
+            "deletions": 0,
+            "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6794",
+            "display_title": "Build one bounded E5 view from original before evidence"
+          },
+          "isError": false
+        }
+      }
+    ],
+    [
+      "e5-6795",
+      {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6795",
+            "number": 6795,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "## Change\n\nThis **399-line** dependent Draft adds the bounded compact edit decoder and the original sixteen-position freeze entry. An independent expected view digest is required; self-consistent caller hashes are insufficient. The decoder rechecks exact original source/unit bytes and applies the existing source edit limits, including paired Python/Cython corrections. Every edit stays inside the admitted view, and fixed task material remains unchanged.\n\nThe freezer makes one before-only attempt per original source, retains each refusal at its original ordinal, and records successful verified blob reads plus actual preparation CPU/wall time. Its synthetic controls exercise forged views, stale sources, out-of-scope edits, overlaps, strict integer types, raw bounds and omitted coupled files.\n\nThe full frozen input run produced 15 byte views and one jsonschema refusal; it is a preparation result, not static or training qualification. The training entry remains an unconditional refusal because the execution protocol is not connected. The independent target layer is deliberately separate so adding target code does not change the already frozen input code identity.",
+            "title": "Validate source-scoped E5 edits and freeze all original source positions",
+            "base": "research/e5-v2-retrieval-20261120-e9e051",
+            "base_sha": "cae83dc7ab46b76b4d185bb85dac9f81562b9366",
+            "head": "research/e5-v2-wire-freeze-20261120-e9e051",
+            "head_sha": "3892084e9d1e5392ddc6e1abc9e9e5a20451a10e",
+            "head_repo_id": 1320694176,
+            "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+            "merge_commit_sha": "da23855a2016da26aaa189870d15522d3278e738",
+            "user": {
+              "login": "ProfHepta",
+              "name": "ProfHepta",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+              "id": 102159240
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-11-20T09:40:17Z",
+            "updated_at": "2026-11-20T09:40:17Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 1,
+            "changed_files": 4,
+            "additions": 399,
+            "deletions": 0,
+            "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6795",
+            "display_title": "Validate source-scoped E5 edits and freeze all original source positions"
+          },
+          "isError": false
+        }
+      }
+    ],
+    [
+      "e5-6796",
+      {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6796",
+            "number": 6796,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "## Change\n\nThis **383-line** dependent Draft introduces an independently frozen target-material pass after all original input/source pins are checked. It generates the complete original v1 reference edits, checks full-runtime byte reconstruction, requires every edit owner to be present in the already frozen view, then checks complete compact-action reconstruction. A missing owner rejects the entire target; no edit is dropped, split to fit, or fed back into retrieval. The original jsonschema source refusal remains in place.\n\nSix synthetic target controls passed before the unchanged original formatter/check, with all three Python ASTs preserved. The actual target pass used one independently owned 120-second-bounded child and completed in 7.747104 seconds. It covered 8 complete targets, retained 7 whole-target scope refusals and the original source refusal. Exact results and owners are retained in the evidence stage.\n\nThe producer intentionally keeps `v1_static_context_closed=False` for partial views. Consequently the unchanged original tokenizer counter's static admission remains false for every source; complete edit transport and token fit are separate observations. No model/native replay or training occurs.",
+            "title": "Construct complete E5 target actions only after input freeze",
+            "base": "research/e5-v2-wire-freeze-20261120-e9e051",
+            "base_sha": "3892084e9d1e5392ddc6e1abc9e9e5a20451a10e",
+            "head": "research/e5-v2-targets-20261120-e9e051",
+            "head_sha": "b78c319a3f6956d95331c8d89924a1d3782f6894",
+            "head_repo_id": 1320694176,
+            "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+            "merge_commit_sha": "555a0699f9281060ab933d66f2a05525cd5b97d3",
+            "user": {
+              "login": "ProfHepta",
+              "name": "ProfHepta",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+              "id": 102159240
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-11-20T09:40:19Z",
+            "updated_at": "2026-11-20T09:40:19Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 1,
+            "changed_files": 3,
+            "additions": 383,
+            "deletions": 0,
+            "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6796",
+            "display_title": "Construct complete E5 target actions only after input freeze"
+          },
+          "isError": false
+        }
+      }
+    ],
+    [
+      "e5-6797",
+      {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "Action completed."
+            }
+          ],
+          "structuredContent": {
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6797",
+            "number": 6797,
+            "state": "open",
+            "merged": false,
+            "mergeable": true,
+            "draft": true,
+            "body": "## Actual result\n\nThe original static representation counter remains **false for every source and every 1/4/16 prefix**. Its required `v1_static_context_closed` operand is false for these partial retrieved views; optimizer/compute/B/C fields are separate null gates, not operands of that static check. All training-execution admissions remain false.\n\nSeparately, 15 fixed before-only native prefixes fit the 3,200-token reservation. Eight complete original corrections are expressible inside their frozen views, and seven complete encodings fit all original byte/token bounds. Rich needs **622 continuation tokens**, exceeding 384. Seven sources retain whole-target scope refusal, and jsonschema retains the original source refusal. The **encoding-and-length-only** 1-source prefix fits; 4 and 16 do not. No original false is relabeled as acceptance.\n\nLoguru's exact frozen prefix has 2,851 tokens, its complete four-edit envelope including native suffix/EOS has 236 tokens, and full SFT has 3,087 positions. Natsort remains a refusal at ordinal 1; no source is substituted or reordered. All 290 original testcase identities and fixtures remain in the verifier material.\n\n## Preserved originals and controls\n\nThe full 274-member original archive is split into three ordered hash-bound binary parts, with full archive and member SHA256 readback. It retains the prospective local policies/freezes, all original inputs/refusals, both source control suites, formatter owners, complete reference/compact targets, exact tokenizer requests/results, independent reviews and metadata/terminology corrections. Earlier derived readout 2 is preserved; readout 3 explicitly separates encoding fits from the original static qualification. Source, inputs, targets and original counter bytes were not changed by that terminology correction.\n\nThe original input/target source controls passed 16 and 6 synthetic tests respectively. Original `just fmt` and `--check` passed for both source layers with AST equivalence; tests were not rerun after formatting per repository guidance. There are zero new model loads, forwards, generations, gradient updates or upstream native replays.\n\n## Repository validation\n\nThe staged source diffs are 472 / 414 / 399 / 383 lines; this evidence PR adds 262 text lines plus exact archive parts. The unchanged original 512,000-byte blob gate passed base `148e37c26586677e83f0e57e100def8805c1a020` to measurement candidate `5471ef62aa98fe5955df3b2b27b973682458c1dc` across 22 paths, exit 0 in 0.220103 seconds; that original receipt is published here.\n\nAfter retaining those receipts, the same unchanged gate also passed the **final head `faeed277149701a316085a0453b05480df528655`** across 26 paths, exit 0 in 0.279228 seconds. All changed Git blobs and exact commit/tree objects were independently read back; HEAD, refs, index and config were unchanged during both checks. The final receipt is retained for the combined checkpoint so the tested head is not recursively modified. The actual Codespell 2.4.3 `is_text_file` function classifies all three archive parts as binary; their first NUL offsets are 3 / 656 / 137. No archive bytes or dictionaries were changed.\n\n## Remaining gates\n\nOriginal 4,096 input / 3,584 SFT / 384 continuation / 65,536 message-byte / 32,768 answer-byte limits and both original 32-unit curves are unchanged. Executable optimizer-unit, training compute/verifier and independent B/C bindings remain null. Sixty-four sources still lack 48 materials. This is a Draft measurement and source-code stack; no merge or production activation occurs.",
+            "title": "Record E5 v2 encoding fits while preserving original static refusals",
+            "base": "research/e5-v2-targets-20261120-e9e051",
+            "base_sha": "b78c319a3f6956d95331c8d89924a1d3782f6894",
+            "head": "research/e5-v2-evidence-20261120-e9e051",
+            "head_sha": "faeed277149701a316085a0453b05480df528655",
+            "head_repo_id": 1320694176,
+            "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+            "merge_commit_sha": "3e360c8aa36255618d78c2a9b29899c48338b313",
+            "user": {
+              "login": "ProfHepta",
+              "name": "ProfHepta",
+              "email": null,
+              "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+              "id": 102159240
+            },
+            "requested_reviewers": null,
+            "requested_team_reviewers": null,
+            "diff": null,
+            "comments": null,
+            "created_at": "2026-11-20T09:40:22Z",
+            "updated_at": "2026-11-20T09:40:22Z",
+            "closed_at": null,
+            "merged_at": null,
+            "commits": 2,
+            "changed_files": 11,
+            "additions": 262,
+            "deletions": 0,
+            "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6797",
+            "display_title": "Record E5 v2 encoding fits while preserving original static refusals"
+          },
+          "isError": false
+        }
+      }
+    ]
+  ]
+}

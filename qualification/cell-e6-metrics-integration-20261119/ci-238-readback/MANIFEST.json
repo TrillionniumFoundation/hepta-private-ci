@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.joint.238-ci-intermediate-observation.v1",
+  "head": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "observed_actual_merge": "79210ce76fba767e5860b492ff35501140edc5db",
+  "observed_actual_merge_base": "061334747ce9d87690c40df48eeedf239156b57d",
+  "expected_base_from_pr_info": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+  "all_workflows_terminal": false,
+  "jobs_inventory_scope": "first page only, not full pagination",
+  "archive": {
+    "path": "original-ci-238-observations.tar.xz",
+    "bytes": 141552,
+    "sha256": "ff49055d912f409cf28ddfa909d9f5937e5b8e977420829b73dfa413d9e27b70"
+  },
+  "files": [
+    {
+      "path": "contract.log",
+      "bytes": 1798578,
+      "sha256": "b6c1d062fb5b6d8f149f98ee951cf8bd07e8102880a7f71a0ed8249e20fd7c74"
+    },
+    {
+      "path": "blocking-jobs-first-page.json",
+      "bytes": 56181,
+      "sha256": "4e71e9390617c215d4d482ee87be5046d971af963439c0e1105cdee7aac50c99"
+    },
+    {
+      "path": "architecture-jobs-first-page.json",
+      "bytes": 11646,
+      "sha256": "b5af380e8ba700ee08ee813fe311bdae91238dac5923d2bbd6144a06a4e42970"
+    },
+    {
+      "path": "cargo-deny-log-fetch-error-1.json",
+      "bytes": 210,
+      "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01"
+    },
+    {
+      "path": "cargo-deny-log-fetch-error-2.json",
+      "bytes": 210,
+      "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01"
+    }
+  ]
+}

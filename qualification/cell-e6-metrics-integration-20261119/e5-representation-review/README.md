@@ -1,0 +1,3 @@
+# E5 representation review
+
+The old exact v1 negative remains: no original 1/4/16 source prefix is training-admitted. Loguru has 82,736 bytes in its 36 complete parameter script/output fixtures alone, exceeding the original 65,536-byte prompt cap. The separate v2 proposal keeps complete verifier fixtures outside the prompt and proposes one uniformly frozen before-only retrieval. Partial views are not semantic-closure evidence. Complete native template prefixes and the entire action envelope must satisfy original token limits; unknown budgets and future evaluation stay fail-closed. This archive is review/design evidence, not trained-source growth.

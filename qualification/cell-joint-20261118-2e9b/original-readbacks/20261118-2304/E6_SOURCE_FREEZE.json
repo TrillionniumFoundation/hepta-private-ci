@@ -1,0 +1,156 @@
+{
+  "source": "4adb42883bf29357105de078359fdb44c28b2f0b",
+  "tree": "5d75a506b215b9457ef435857cbc004e446c364c",
+  "stages": [
+    {
+      "name": "head-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0016458341851830482
+    },
+    {
+      "name": "fetch-exact-frozen",
+      "argv": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "4adb42883bf29357105de078359fdb44c28b2f0b",
+        "0cdb2a4985c91327e0ae3d59ceead35b950b16e9"
+      ],
+      "exit": 0,
+      "wall_seconds": 4.690276876091957
+    },
+    {
+      "name": "tree-exact",
+      "argv": [
+        "git",
+        "rev-parse",
+        "4adb42883bf29357105de078359fdb44c28b2f0b^{tree}"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0011513009667396545
+    },
+    {
+      "name": "frozen-tree",
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "4adb42883bf29357105de078359fdb44c28b2f0b"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.10342013603076339
+    },
+    {
+      "name": "save-original-index",
+      "argv": [
+        "git",
+        "write-tree"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.012192874914035201
+    },
+    {
+      "name": "install-frozen-index",
+      "argv": [
+        "git",
+        "read-tree",
+        "--reset",
+        "4adb42883bf29357105de078359fdb44c28b2f0b"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.018523439997807145
+    },
+    {
+      "name": "materialize-metadata",
+      "argv": [
+        "git",
+        "checkout-index",
+        "--force",
+        "-z",
+        "--stdin"
+      ],
+      "exit": 0,
+      "wall_seconds": 28.60680264700204
+    },
+    {
+      "name": "detach-frozen-head",
+      "argv": [
+        "git",
+        "update-ref",
+        "--no-deref",
+        "HEAD",
+        "4adb42883bf29357105de078359fdb44c28b2f0b",
+        "6fa338217163c79fe956f8ee1ff1e3d5506ee819"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0023822791408747435
+    },
+    {
+      "name": "clean-frozen-source",
+      "argv": [
+        "git",
+        "status",
+        "--porcelain",
+        "--untracked-files=all"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.0734157501719892
+    },
+    {
+      "name": "head-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.001947313779965043
+    },
+    {
+      "name": "actual-pr-range-blob-gate",
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_blob_size.py",
+        "--base",
+        "0cdb2a4985c91327e0ae3d59ceead35b950b16e9",
+        "--head",
+        "4adb42883bf29357105de078359fdb44c28b2f0b",
+        "--max-bytes",
+        "512000",
+        "--allowlist",
+        ".github/blob-size-allowlist.txt"
+      ],
+      "exit": 0,
+      "wall_seconds": 7.052030086982995
+    }
+  ],
+  "business_cases": 0,
+  "compile": false,
+  "scanned_inputs_byte_identical": true,
+  "scanned_paths": 11591,
+  "metadata_paths": [
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-target-restoration-1/RESULT.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/ERROR.txt",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/PROTOCOL.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/RESULT.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/SOURCE_FREEZE.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/owner.py",
+    "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-3/preflight-syntax-failure.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/README.md",
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/source-closure-6/RESULT.json",
+    "docs/cell-experiments/e6-operation-scopes-20261118/read65-repair/source-closure-6/full-caller-proof.stderr"
+  ],
+  "source_files": 15643,
+  "source_inventory_sha256": "bd330eab5ddf10f76d43cff7745ea01a7a840d473fba60fd3dc618f41363f9dc",
+  "frozen_at_ns": "1795060244233450642",
+  "source_clean": true,
+  "successful": true
+}

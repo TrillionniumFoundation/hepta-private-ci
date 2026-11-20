@@ -1,0 +1,168 @@
+{
+  "schema": "hepta-cold-use-source-anchors-v1",
+  "anchors": [
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 73,
+      "exact_line": "pub struct TrustedArtifactSignerV1 {",
+      "reason": "original signer key, epoch, time and revocation fields",
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs#L73"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 84,
+      "exact_line": "pub struct ArtifactOwnerTrustV1 {",
+      "reason": "distinct head and writer roles in the original trust",
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs#L84"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 314,
+      "exact_line": "    fn verify_signed_head(",
+      "reason": "original private head-role signature verification",
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs#L314"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 1200,
+      "exact_line": "fn verify_signer_context(",
+      "reason": "historical versus current signer checks",
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs#L1200"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 1226,
+      "exact_line": "fn verify_signature(",
+      "reason": "original strict signature verification",
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs#L1226"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_read_view.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 133,
+      "exact_line": "    pub(super) fn discover_current_head_unanchored(",
+      "reason": "complete history followed by original current validation",
+      "git_blob": "f656d967b28db2aeda47674d15ee3a119a53bebc",
+      "sha256": "034ba60cb7cb1da1a53c236426a084be941d106fdb1229d382bba606d205a8a1",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_read_view.rs#L133"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_read_view.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 221,
+      "exact_line": "            return Err(ArtifactOwnerHostError::CurrentHeadExpired);",
+      "reason": "generic CURRENT expiration rejection remains unchanged",
+      "git_blob": "f656d967b28db2aeda47674d15ee3a119a53bebc",
+      "sha256": "034ba60cb7cb1da1a53c236426a084be941d106fdb1229d382bba606d205a8a1",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_read_view.rs#L221"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 103,
+      "exact_line": "    pub fn read_original_registry(",
+      "reason": "original file owner before/after checks",
+      "git_blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+      "sha256": "1e2b9905a5c8b9e70887b652d5137d9d42e4ecdf5e17cbf84dc47a4da103c604",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs#L103"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 60,
+      "exact_line": "pub struct SignedArtifactSelectionV1 {",
+      "reason": "current selection fields do not contain a new D-use grant",
+      "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+      "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/selection.rs#L60"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 76,
+      "exact_line": "    pub fn open(",
+      "reason": "current writer service is not a new historical-use reader",
+      "git_blob": "b9ac344032f3f240e7d6f51047819235e2cc458d",
+      "sha256": "fc7c314222f72d91209f45f6acef5f552eed14439e448e0d9cd1c729886f45c5",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_service.rs#L76"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 8,
+      "exact_line": "pub(crate) enum GenerationArtifactOwnerV1 {",
+      "reason": "current concrete Writer/RootInitial variants",
+      "git_blob": "a50a0b5044ef6748ead4c1103e115661c0c42b79",
+      "sha256": "78f58ce70e6f2a804e188c332fd1c186da71253132dc6ede0bb2c33fd6fcfc6e",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs#L8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "line": 28,
+      "exact_line": "    pub(crate) fn writer(&self) -> Result<&Arc<Mutex<LearningArtifactOwnerService>>, AgentdError> {",
+      "reason": "current nonwriter update rejection",
+      "git_blob": "a50a0b5044ef6748ead4c1103e115661c0c42b79",
+      "sha256": "78f58ce70e6f2a804e188c332fd1c186da71253132dc6ede0bb2c33fd6fcfc6e",
+      "public_commit": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs#L28"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_finalized_c.rs",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2",
+      "line": 12,
+      "exact_line": "pub(crate) struct RootFinalizedColdCReadV1 {",
+      "reason": "actual Root proof, never fabricated from grant conditions",
+      "git_blob": "26af3f2e9912445a4dc0ef51d189833cdb06ffa0",
+      "sha256": "6dd4dfcc0cad334bdc6e727e4ef7a5e49ff5b511f61e401289c3faaafa389a08",
+      "public_commit": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_context.rs",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2",
+      "line": 22,
+      "exact_line": "pub(super) struct OriginalColdNextTaskContextV1<'a> {",
+      "reason": "actual scoped Root session/lease context",
+      "git_blob": "777aaaae7a0facbbeeb42ef6d427898b0f2db4d6",
+      "sha256": "67244ab36e2f221cad3eac0a3520acd6fd3c8153c6c08136a90b930709524237",
+      "public_commit": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_grant.rs",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2",
+      "line": 16,
+      "exact_line": "pub(crate) struct RootPreparedColdNextTaskGrantV1<'a> {",
+      "reason": "actual Root FinalUse owner distinct from Artifact head authority",
+      "git_blob": "acb095847b219568753b214fac34a21d6182b851",
+      "sha256": "3274f9b6a3174c12f8c4c58bb1cc241a459a2f3f1028d03394f2983e0fad7ec4",
+      "public_commit": false
+    }
+  ],
+  "qualification": "exact original source locations, not executed proof of the new design"
+}

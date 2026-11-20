@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 from . import data, onpolicy_readout_v4 as readout, repo_execution
+from .protocol_v3 import execution_summary
 from .online_v4.onpolicy_rollout import collect_current
 from .online_v4.test_onpolicy_flow import CORRECT, ScriptedPredictor, prepared
 from .test_repo_execution import answer
@@ -95,6 +96,61 @@ class RecoveryReadoutTests(unittest.TestCase):
             readout.summarize_collection(
                 observed, self.records, self.identity, maximum=2
             )
+
+    def test_rehashed_outer_step_does_not_admit_another_business_receipt(self):
+        observed = self.collect([CORRECT, CORRECT])
+        other_input = copy.deepcopy(self.records[0])
+        other_input["task"]["input"] += (
+            " Use the same counter contract in another task."
+        )
+        other_receipt = data.verify_answer(other_input, CORRECT)
+        self.assertTrue(other_receipt["success"])
+        for kind in ("task", "input", "answer", "parameters", "raw_receipt"):
+            changed = copy.deepcopy(observed)
+            step = changed["rows"][0]["steps"][0]
+            if kind == "task":
+                step["verification"] = copy.deepcopy(
+                    observed["rows"][1]["steps"][0]["verification"]
+                )
+            elif kind == "input":
+                step["verification"] = copy.deepcopy(other_receipt)
+            elif kind == "answer":
+                step["output"]["answer"] = '{"edits":[]}'
+            elif kind == "parameters":
+                step["verification"]["parameters_sha256"] = data.digest({"other": True})
+            else:
+                step["verification"]["result"]["reason"] = "modified_after_execution"
+            step["execution_summary"] = execution_summary(step["verification"])
+            step["receipt_sha256"] = data.digest(
+                {k: v for k, v in step.items() if k != "receipt_sha256"}
+            )
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                readout.summarize_collection(changed, self.records, self.identity)
+
+    def test_success_requires_original_calls_and_consistent_control_observations(self):
+        observed = self.collect([CORRECT, CORRECT])
+        for kind in ("missing_calls", "control_disagrees"):
+            changed = copy.deepcopy(observed)
+            step = changed["rows"][0]["steps"][0]
+            verification = step["verification"]
+            observations = verification["result"]["result"]["observations"]
+            if kind == "missing_calls":
+                observations[0]["calls"] = []
+            else:
+                observations[1]["passed"] = True
+            verification["receipt_sha256"] = data.digest(
+                {
+                    k: v
+                    for k, v in verification.items()
+                    if k not in ("receipt_sha256", "success")
+                }
+            )
+            step["execution_summary"] = execution_summary(verification)
+            step["receipt_sha256"] = data.digest(
+                {k: v for k, v in step.items() if k != "receipt_sha256"}
+            )
+            with self.subTest(kind=kind), self.assertRaises(ValueError):
+                readout.summarize_collection(changed, self.records, self.identity)
 
 
 if __name__ == "__main__":

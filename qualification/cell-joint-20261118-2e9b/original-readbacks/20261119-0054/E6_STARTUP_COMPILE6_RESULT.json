@@ -1,0 +1,60 @@
+{
+  "status": "completed",
+  "started_at_ns": "1795066550692853589",
+  "native_cases": 0,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "prior_compile_failure_retained": true,
+  "driver_sha256": "439a3a2abc08b0e4082835949a8840d72b5d90f65d13f032c175eea421f4f277",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+        "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "wall_seconds": 0.21468232688494027,
+      "child_user_seconds": 0.022182999999999998,
+      "child_system_seconds": 0.022182,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "40fb37a0cb48659f9e05e0228f8de81e088ad05b38d0d3ef39f45fdc488dddd6"
+    },
+    {
+      "name": "check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--bins"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "wall_seconds": 20.955768784042448,
+      "child_user_seconds": 16.361061,
+      "child_system_seconds": 1.470625,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fbab9b9233b9ccd367d55b50883a0ab0a34492d4abd74c162992ccf6f11e39b4"
+    }
+  ],
+  "active_command": "check",
+  "pid": 1616681,
+  "after_sha256": {
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs": "3402696e31145b384832025051927612d19b5741ba581217054c47465b3513e5",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "0723cb7f52112d710c64d98d52f8e379ccd1faf07a1e66b1688396de9a5fbda4",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/production_post_a_q24.rs": "5ab8c1bcd080f5a9b21982b01ae4b2081a916309c4bbd14a3e77f1439578fb8c"
+  },
+  "successful": true,
+  "source_patch_sha256": "09a7da368034b1dafa55d6273c9547e707945bac0d0ceb162ab690cd81b42560",
+  "wall_seconds": 21.208000794053078,
+  "finished_at_ns": "1795066571900858893"
+}

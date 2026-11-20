@@ -1,0 +1,106 @@
+{
+  "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+  "tree": "a32fa7bda6d5bc1cde1ab9755afc0c16e47969ea",
+  "native_components": [
+    {
+      "name": "native-validation-7",
+      "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+      "cases": 11,
+      "successful": true,
+      "command_wall_seconds": 95.0210749139078,
+      "owner_wall_seconds": 96.90830890927464,
+      "result_sha256": "6ab5b3e461099cca80a8eead6525ff9d35eef32d8cd31ba1501418d1788977a1",
+      "path": "native-validation-7__RESULT.json",
+      "tests": [
+        "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+        "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion",
+        "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner"
+      ]
+    },
+    {
+      "name": "retirement-native-validation-5",
+      "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+      "cases": 16,
+      "successful": true,
+      "command_wall_seconds": 10.582551307044923,
+      "owner_wall_seconds": 11.356120876967907,
+      "result_sha256": "4c735d47b59bd0f08eaf0348c912341a0d9ca8be6c8b15eb58b8594705ca62cb",
+      "path": "retirement-native-validation-5__RESULT.json",
+      "tests": [
+        "cell_generation_journal::tests::drain_recovery::original_generation_drain_readonly_witness_failure_reopens_the_retained_frame_once",
+        "cell_generation_journal::tests::drain_recovery::original_generation_drain_reopen_and_replay_keep_exact_journal_and_witness",
+        "cell_generation_journal::tests::whole_witnessed_suffix_loss_is_rejected_without_repairing_evidence",
+        "cell_generation_journal::tests::lost_witness_ack_requires_reconciliation_then_exposes_exact_committed_bytes",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_pending_generator_claim_survives_reopen_without_signing",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_rejects_wrong_business_facts_keys_and_withdrawal",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_ack_loss_reopens_same_signature_and_appends_once",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retirement::original_task_terminal_outcome_drains_once_and_readback_never_writes",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_outcome_witness_write_failure_repairs_only_exact_retained_append",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_refuses_other_database_and_stays_fenced_after_original_replacement",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_binds_root_scope_and_consumer_without_relaxing_current_task_identity",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_keeps_task_success_until_original_outcome_and_reconcile",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::retained_source::retained_source_uses_original_outbox_after_current_advances_and_new_task_runs",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unwitnessed_expired_outcome_cannot_become_historical_ready",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::faults::original_task_unappended_expired_signatures_never_renew",
+        "runtime::tests::circuit_task_ingress::q24_tests::task_ledger::ordinary_task_ledger_reads_witnessed_history_after_signature_expiry"
+      ]
+    },
+    {
+      "name": "historical-delivery-native-validation-3",
+      "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+      "cases": 5,
+      "successful": true,
+      "command_wall_seconds": 0.7155644306913018,
+      "owner_wall_seconds": 1.4907563598826528,
+      "result_sha256": "e14da7b4de41a1f83871bc19446c57f3374f0d161900730ebcf46f6eddf4d373",
+      "path": "historical-delivery-native-validation-3__RESULT.json",
+      "tests": [
+        "learning_owner_journal::historical_delivery::tests::historical_prepared_claim_drop_before_dispatch_cold_reopen_stays_pending",
+        "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_cold_reopen_returns_exact_key_and_bytes",
+        "learning_owner_journal::historical_delivery::tests::historical_delivery_completed_claim_cold_reopen_returns_exact_head",
+        "learning_owner_journal::historical_delivery::tests::historical_delivery_cancelled_claim_cold_reopen_never_redispatches",
+        "learning_owner_journal::historical_delivery::tests::historical_prepared_completion_full_witness_keeps_exact_append_for_recovery"
+      ]
+    },
+    {
+      "name": "feature-ack-native-validation-1",
+      "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+      "cases": 2,
+      "successful": true,
+      "command_wall_seconds": 5.742846271023154,
+      "owner_wall_seconds": 6.516430175863206,
+      "result_sha256": "e3a66e8cea110d0c0faeb5b2cc8fb42e09af0ae65467df374364aacced83a3a6",
+      "path": "feature-ack-native-validation-1__RESULT.json",
+      "tests": [
+        "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_client_drop_keeps_original_source_and_cell_once",
+        "runtime::tests::circuit_task_ingress::q24_tests::feature_learning::control_completion::feature_socket_ack_timeout_recovers_original_completion_without_redispatch"
+      ]
+    }
+  ],
+  "root_mechanism_parent": {
+    "passed": false,
+    "actual_cases": 1,
+    "command_exit_code": 100,
+    "command_wall_seconds": 2.418860765,
+    "junit_sha256": "5252028cfa277914595bcb91970f3dab59af308b97428bcd3e9938fc262933bc",
+    "StalePrepare_child_lifecycle_passed": true,
+    "Revoked_child_executed": false,
+    "failure": "Parent requires an exact whole marker line; libtest prepended its test-name prefix to SourceFirst. All current-first/source-first mechanism assertions for StalePrepare completed, but the parent failed and no second branch is qualified."
+  },
+  "ordinary_NoUpdate_parent_runs": 0,
+  "fresh_C_qualified": false,
+  "cold_D_runs": 0,
+  "mechanism_is_whole_Product_ACK": false,
+  "same_run_replay_serialization_proven": false,
+  "pipeline_wall_seconds": 168.5623302697204,
+  "pipeline_result_sha256": "f9bf927ccf172c166864704e085309a99cd7652df3c66e6ad574cbe84f4846fa",
+  "time_scope": "Command, nested owner, and pipeline intervals overlap and must not be summed as separate elapsed costs."
+}

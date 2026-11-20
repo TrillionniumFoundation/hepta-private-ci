@@ -1,0 +1,51 @@
+{
+  "source_parent": "a6f9e8064f83680134af168e0500048b6942ddfd",
+  "scope": "reviewed isolated candidate with exact five changed caller/order contracts; original preliminary refusals retained",
+  "modules": [
+    "test_historical_dataset_capability_source_closure",
+    "test_historical_freezer_source_closure",
+    "test_historical_learning_delivery_source_closure",
+    "test_historical_preparation_source_closure",
+    "test_ordinary_original_callers_source_closure",
+    "test_original_owner_initialization_source_closure",
+    "test_post_a_c_recovery_source_closure",
+    "test_post_a_deadline_source_closure",
+    "test_post_a_owner_files_source_closure",
+    "test_q24_preparation_shared_checks_source_closure",
+    "test_q24_training_plan_source_closure",
+    "test_root_learning_scope_source_closure"
+  ],
+  "protected_file_sweep": {
+    "passed": true,
+    "rows": 892,
+    "wall_seconds": 1.2728340670000762
+  },
+  "before_sha256": {
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "5579c6782997fdc3261d69a8861bb891c45da3f93b59579bf41afadd4f5f55ec",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "58a72200b6d9c305906a8b21af18b6b9cf0df4537011ae3c0fcfe07410da124b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "9c55d01ea8827e23c50b646ea42922365346059e87ca5505d0e372a91cb358d5",
+    "CALLERS.toml": "f2b46c38aa92eaf4725d6af76cbe51f04f014d82068de71cab50cef562abc850"
+  },
+  "after_format_sha256": {
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "5579c6782997fdc3261d69a8861bb891c45da3f93b59579bf41afadd4f5f55ec",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "58a72200b6d9c305906a8b21af18b6b9cf0df4537011ae3c0fcfe07410da124b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "9c55d01ea8827e23c50b646ea42922365346059e87ca5505d0e372a91cb358d5",
+    "CALLERS.toml": "f2b46c38aa92eaf4725d6af76cbe51f04f014d82068de71cab50cef562abc850"
+  },
+  "just_fmt_exit": 0,
+  "tests_run": 90,
+  "source_tests_successful": true,
+  "failures": [],
+  "errors": [],
+  "skipped": [],
+  "wall_seconds": 17.858169618993998,
+  "native_tests": 0,
+  "model_calls": 0,
+  "original_executor_mutated": false
+}

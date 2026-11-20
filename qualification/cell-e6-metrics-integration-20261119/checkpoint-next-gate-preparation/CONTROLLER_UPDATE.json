@@ -1,0 +1,25 @@
+{
+  "changes_after_preparation_2": [
+    "require original static manifest SHA256 to equal its preparation freeze before Git initialization",
+    "record current controller and all exact input manifest hashes in actual check result"
+  ],
+  "controller": {
+    "bytes": 16851,
+    "git_blob": "fe54a0b9283131f67a374ffc486ce783e7f09912",
+    "path": "/workspace/scratch/e9e051ab0825/metrics_gate_work/checkpoint_blob_gate.py",
+    "sha256": "8d1a37bdde54509c2227834d7f129a21d4e2c7374753136e024ebf69d091558d"
+  },
+  "maximum_bytes": 512000,
+  "next_head_gate_executions": 0,
+  "original_allowlist_changed": false,
+  "original_gate_changed": false,
+  "preparation_2_controller": {
+    "bytes": 16360,
+    "git_blob": "9a88ae85502ecc8556bfaf3f9f429c5c62e77639",
+    "path": "/workspace/scratch/e9e051ab0825/metrics_gate_work/base-preparation-2/controller-original.py.txt",
+    "sha256": "6c07fe60f904935bcaf6a77a0c2dd5f99f2aadd4b08e6ac52f8322bb71a1e1b5"
+  },
+  "schema": "hepta.checkpoint-gate-controller-update.v1",
+  "timeout_seconds": 120,
+  "validation": "current controller parsed as a Python AST; no final head was substituted or checked"
+}

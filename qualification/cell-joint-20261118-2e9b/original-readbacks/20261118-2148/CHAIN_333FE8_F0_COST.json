@@ -1,0 +1,146 @@
+{
+  "run": 44441548029,
+  "head": "333fe8cd89f0ec855e7b856e99e40f48f56c2137",
+  "phases": [
+    {
+      "phase": "baseline",
+      "imports": 10,
+      "host_calls": 81454,
+      "client_cpu": {
+        "complete_observed_sum": 5464810135,
+        "known_sum": 5464810135,
+        "observed_rows": 10,
+        "unknown_rows": 0
+      },
+      "nested_host_cpu": {
+        "complete_observed_sum": 4555517887,
+        "known_sum": 4555517887,
+        "observed_rows": 10,
+        "unknown_rows": 0
+      },
+      "nested_account_graph": {
+        "client": {
+          "calls": 68,
+          "cpu_ns": 4226145243,
+          "wall_ns": 19193685897
+        },
+        "receiver": {
+          "calls": 76,
+          "cpu_ns": 390691881,
+          "wall_ns": 2068200830
+        }
+      },
+      "whole_public_cpu": 8398308966,
+      "whole_public_wall": 34517294799,
+      "controller_cpu_delta_usec": 2548651,
+      "phase_criteria": false,
+      "receiver_records": 24,
+      "sample_record_keys": [
+        "application_bytes_read",
+        "application_bytes_written",
+        "body_digest",
+        "cancellation",
+        "challenge_wait",
+        "complete",
+        "connection_closed",
+        "connection_id",
+        "cpu_settlement",
+        "dispatch_accepted",
+        "dispatch_error_code",
+        "dispatch_started",
+        "dispatch_thread_cpu_ns",
+        "error_diagnostics",
+        "error_timing",
+        "frames",
+        "full_work_accepted",
+        "full_work_started",
+        "full_work_thread_cpu_ns",
+        "grant_wait",
+        "lifecycle",
+        "observation_failed",
+        "operation",
+        "paid_task_queue_wait",
+        "physical_network_bytes",
+        "reactor_io",
+        "response_frame_complete",
+        "response_write",
+        "submit_phases",
+        "task_closed",
+        "task_created",
+        "terminal_error_code",
+        "terminal_phase",
+        "work_rejection"
+      ]
+    },
+    {
+      "phase": "valid-work-root",
+      "imports": 0,
+      "host_calls": 0,
+      "client_cpu": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "nested_host_cpu": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "nested_account_graph": {
+        "client": {
+          "calls": 0,
+          "cpu_ns": 0,
+          "wall_ns": 0
+        },
+        "receiver": {
+          "calls": 358,
+          "cpu_ns": 3654219795,
+          "wall_ns": 17296767099
+        }
+      },
+      "whole_public_cpu": 8749212402,
+      "whole_public_wall": 35094199441,
+      "controller_cpu_delta_usec": 4223213,
+      "phase_criteria": false,
+      "receiver_records": 403,
+      "sample_record_keys": [
+        "application_bytes_read",
+        "application_bytes_written",
+        "body_digest",
+        "cancellation",
+        "challenge_wait",
+        "complete",
+        "connection_closed",
+        "connection_id",
+        "cpu_settlement",
+        "dispatch_accepted",
+        "dispatch_error_code",
+        "dispatch_started",
+        "dispatch_thread_cpu_ns",
+        "error_diagnostics",
+        "error_timing",
+        "frames",
+        "full_work_accepted",
+        "full_work_started",
+        "full_work_thread_cpu_ns",
+        "grant_wait",
+        "lifecycle",
+        "observation_failed",
+        "operation",
+        "paid_task_queue_wait",
+        "physical_network_bytes",
+        "reactor_io",
+        "response_frame_complete",
+        "response_write",
+        "submit_phases",
+        "task_closed",
+        "task_created",
+        "terminal_error_code",
+        "terminal_phase",
+        "work_rejection"
+      ]
+    }
+  ]
+}

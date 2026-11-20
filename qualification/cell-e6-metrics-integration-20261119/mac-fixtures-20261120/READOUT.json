@@ -1,0 +1,264 @@
+{
+  "source": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+      "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+      "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+      "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+      "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+      "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+    }
+  ],
+  "status": "FIXTURE_ONLY_PATCH_FORMATTED_NATIVE4_DEPENDENCY_FAILURE_TERMINAL_EXACT_SHALLOW_PREP_SUCCEEDED_NEXT_NATIVE_PENDING",
+  "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "product_guards_changed": false,
+  "original_test_assertions_changed": false,
+  "old_control_results_relabelled": false,
+  "actual_formatter_exit": 0,
+  "actual_formatter_seconds": 0.28308525,
+  "actual_native_project_tests_completed": false,
+  "original_E6_parent_runs": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "known_inventory_materialized_paths": 11751,
+  "known_inventory_absent_skip_worktree_paths": 3813,
+  "all_codex_rs_materialized": true,
+  "prior_formatter_inventory_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+  "prior_locked_offline_missing_dependency_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+  "prior_native3_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+  "native3_no_network_progress_claim_supported": false,
+  "active_native4_owner": null,
+  "native4_tool_status": "lost/target_reboot",
+  "native4_actual_process_observation": {
+    "observed_at_utc": "2026-11-20T07:58:59.019645+00:00",
+    "tool_session_previously": "lost/target_reboot; no duplicate Cargo owner launched",
+    "actual_own_process_rows": [
+      "91954     1 91954 Ss         36:46 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+      "60091 91971 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/bin/git",
+      "60092 60091 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+      "60093 60092 91955 S+         00:09 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git-remote-https",
+      "60897 60091 91955 S+         00:02 Fri Nov 20 15:58:57 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+      "91955 91954 91955 Ss+        36:46 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+      "91964 91955 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/just",
+      "91965 91964 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+      "91968 91965 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/cargo-nextest",
+      "91971 91968 91955 S+         36:45 Fri Nov 20 15:22:14 2026       0.0 /Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo"
+    ],
+    "files": [
+      {
+        "path": "native-project.CHILD.json",
+        "bytes": 229,
+        "sha256": "83404128264bd198d464df4be87c93261a2257da242b4db0df13054a4995288c",
+        "mtime_ns": "1795159334439120905",
+        "content": "{\"pid\": 91964, \"argv\": [\"/opt/homebrew/bin/just\", \"test\", \"--locked\", \"-p\", \"codex-hepta-agentd\", \"--lib\", \"--retries\", \"0\", \"--test-threads\", \"2\", \"--no-tests\", \"fail\", \"--success-output\", \"final\", \"--failure-output\", \"final\"]}\n",
+        "tail": null
+      },
+      {
+        "path": "native-project.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mtime_ns": "1795159334437880034",
+        "content": "",
+        "tail": null
+      },
+      {
+        "path": "native-project.stderr",
+        "bytes": 1968,
+        "sha256": "02b7d8ae2b0dc3ccb9f3d3f34ab7ea29e950739d81827f27e9b77875e0fab88b",
+        "mtime_ns": "1795161523944909392",
+        "content": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\n    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n    Updating git repository `https://github.com/openai-oss-forks/crossterm`\nfatal: unable to access 'https://github.com/openai-oss-forks/crossterm/': Failed to connect to github.com port 443 after 75003 ms: Couldn't connect to server\nwarning: spurious network error (3 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 5 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (2 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 4872 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (1 try remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\n",
+        "tail": null
+      },
+      {
+        "path": "native-project.EXIT.json",
+        "observed_missing": true
+      },
+      {
+        "path": "RESULT.json",
+        "observed_missing": true
+      }
+    ],
+    "named_dependency_packs": [
+      {
+        "name": "tmp_pack_deZ82t",
+        "bytes": 16383,
+        "mtime_ns": "1795161537840606106"
+      },
+      {
+        "name": "tmp_pack_UglHd2",
+        "bytes": 12410879,
+        "mtime_ns": "1795161523934535851"
+      },
+      {
+        "name": "tmp_pack_6mmzTG",
+        "bytes": 12345343,
+        "mtime_ns": "1795160520814565376"
+      }
+    ]
+  },
+  "duplicate_Cargo_owner_started": false,
+  "PID_kill_used": false,
+  "complete_original_snapshot_sha256": "4d56a039b30841d5843f1d526adb1334a25af4b6d1fb27986c814a47fd3949ea",
+  "complete_original_snapshot_members": 50,
+  "complete_original_snapshot_bytes": 904408,
+  "complete_original_snapshot_uncompressed_bytes": 13265275,
+  "every_archive_member_read_back": true,
+  "evidence_directory": "../cell-e6-metrics-integration-20261119/mac-fixtures-20261120",
+  "native4_actual_process_observation_terminal": {
+    "observed_at_utc": "2026-11-20T08:16:38.541833+00:00",
+    "tool_session_previously": "lost/target_reboot; no duplicate Cargo owner launched",
+    "actual_own_process_rows": [],
+    "files": [
+      {
+        "path": "native-project.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "mtime_ns": "1795159334437880034",
+        "content": "",
+        "tail": null
+      },
+      {
+        "path": "native-project.stderr",
+        "bytes": 3214,
+        "sha256": "e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4",
+        "mtime_ns": "1795162420450733728",
+        "content": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\n    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n    Updating git repository `https://github.com/openai-oss-forks/crossterm`\nfatal: unable to access 'https://github.com/openai-oss-forks/crossterm/': Failed to connect to github.com port 443 after 75003 ms: Couldn't connect to server\nwarning: spurious network error (3 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 5 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (2 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 4872 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (1 try remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 29 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nerror: failed to load source for dependency `crossterm`\n\nCaused by:\n  unable to update https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb95\n\nCaused by:\n  failed to fetch into: /Users/qianqi/.cargo/git/db/crossterm-ce0318b92aca4e8d\n\nCaused by:\n  revision 45fecb9508105988f42fe6ff0441783ed3717f92 not found\n\nCaused by:\n  process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: command `/Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo '--color=auto' test --manifest-path /Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source/codex-rs/Cargo.toml --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked` exited with code 101\nerror: recipe `test` failed on line 89 with exit code 101\n",
+        "tail": null
+      },
+      {
+        "path": "native-project.EXIT.json",
+        "bytes": 676,
+        "sha256": "3e64e5a4d333f4ca96922ab86e6bea3ac3b131940b210ad4f22477bd6bd30b94",
+        "mtime_ns": "1795162420452287978",
+        "content": "{\n  \"name\": \"native-project\",\n  \"argv\": [\n    \"/opt/homebrew/bin/just\",\n    \"test\",\n    \"--locked\",\n    \"-p\",\n    \"codex-hepta-agentd\",\n    \"--lib\",\n    \"--retries\",\n    \"0\",\n    \"--test-threads\",\n    \"2\",\n    \"--no-tests\",\n    \"fail\",\n    \"--success-output\",\n    \"final\",\n    \"--failure-output\",\n    \"final\"\n  ],\n  \"exit_code\": 101,\n  \"wall_seconds\": 3085.995982125,\n  \"child_user_cpu_seconds\": 4.0883329999999996,\n  \"child_system_cpu_seconds\": 1.978144,\n  \"stdout_bytes\": 0,\n  \"stdout_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"stderr_bytes\": 3214,\n  \"stderr_sha256\": \"e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4\"\n}\n",
+        "tail": null
+      },
+      {
+        "path": "RESULT.json",
+        "bytes": 4047,
+        "sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+        "mtime_ns": "1795162421413265533",
+        "content": "{\n  \"schema\": \"hepta.joint.mac-fixture-native.v1\",\n  \"source_parent\": \"238fc48402f786db3d7f2a80b0abad6c0e5322bb\",\n  \"scope\": \"two fixture path repairs; original project unit tests; no E6 business parent or model execution\",\n  \"new_model_calls\": 0,\n  \"new_training_updates\": 0,\n  \"original_E6_parent_runs\": 0,\n  \"automatic_retry\": false,\n  \"payload_sha256\": \"fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067\",\n  \"prior_preflight_failure_sha256\": \"8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c\",\n  \"prior_locked_offline_dependency_failure_sha256\": \"14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c\",\n  \"prior_git_library_interruption_observation_sha256\": \"fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944\",\n  \"dependency_acquisition\": \"Same locked graph using supported CARGO_NET_GIT_FETCH_WITH_CLI=true after terminal Git-library dependency stall; no Cargo.lock/source change; unrelated to original E6 offline harness\",\n  \"inventory_scope\": \"all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read\",\n  \"protected_before\": {\n    \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\": \"3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5\",\n    \"codex-rs/hepta-agentd/src/circuit_cell_tests.rs\": \"a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7\",\n    \"codex-rs/Cargo.lock\": \"48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f\",\n    \".github/blob-size-allowlist.txt\": \"56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c\"\n  },\n  \"files\": [\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs\",\n      \"original_git_blob\": \"d05fa2518b039324504b204ec56d25200ff9a54f\",\n      \"original_sha256\": \"e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a\",\n      \"candidate_sha256\": \"8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f\"\n    },\n    {\n      \"path\": \"codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs\",\n      \"original_git_blob\": \"c5011894ce75799131bdbb5ae83eb5939799fd19\",\n      \"original_sha256\": \"08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca\",\n      \"candidate_sha256\": \"0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031\"\n    }\n  ],\n  \"source_inventory_sha256\": \"60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d\",\n  \"unmaterialized_tracked_paths\": 3813,\n  \"materialized_paths\": 11751,\n  \"protected_after\": {\n    \"codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs\": \"3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5\",\n    \"codex-rs/hepta-agentd/src/circuit_cell_tests.rs\": \"a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7\",\n    \"codex-rs/Cargo.lock\": \"48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f\",\n    \".github/blob-size-allowlist.txt\": \"56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c\"\n  },\n  \"protected_unchanged\": true,\n  \"source_unchanged_during_native\": true,\n  \"stages\": [\n    {\n      \"name\": \"native-project\",\n      \"argv\": [\n        \"/opt/homebrew/bin/just\",\n        \"test\",\n        \"--locked\",\n        \"-p\",\n        \"codex-hepta-agentd\",\n        \"--lib\",\n        \"--retries\",\n        \"0\",\n        \"--test-threads\",\n        \"2\",\n        \"--no-tests\",\n        \"fail\",\n        \"--success-output\",\n        \"final\",\n        \"--failure-output\",\n        \"final\"\n      ],\n      \"exit_code\": 101,\n      \"wall_seconds\": 3085.995982125,\n      \"child_user_cpu_seconds\": 4.0883329999999996,\n      \"child_system_cpu_seconds\": 1.978144,\n      \"stdout_bytes\": 0,\n      \"stdout_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n      \"stderr_bytes\": 3214,\n      \"stderr_sha256\": \"e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4\"\n    }\n  ],\n  \"owner_wall_seconds\": 3087.3457307090002,\n  \"error\": \"RuntimeError('native-project exited 101')\",\n  \"exit_code\": 1\n}\n",
+        "tail": null
+      }
+    ],
+    "named_dependency_packs": [
+      {
+        "name": "tmp_pack_deZ82t",
+        "bytes": 12410879,
+        "mtime_ns": "1795162420418711594"
+      },
+      {
+        "name": "tmp_pack_UglHd2",
+        "bytes": 12410879,
+        "mtime_ns": "1795161523934535851"
+      },
+      {
+        "name": "tmp_pack_6mmzTG",
+        "bytes": 12345343,
+        "mtime_ns": "1795160520814565376"
+      }
+    ]
+  },
+  "native4_terminal_result_sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+  "native4_terminal_result": {
+    "schema": "hepta.joint.mac-fixture-native.v1",
+    "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+    "scope": "two fixture path repairs; original project unit tests; no E6 business parent or model execution",
+    "new_model_calls": 0,
+    "new_training_updates": 0,
+    "original_E6_parent_runs": 0,
+    "automatic_retry": false,
+    "payload_sha256": "fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067",
+    "prior_preflight_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+    "prior_locked_offline_dependency_failure_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+    "prior_git_library_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+    "dependency_acquisition": "Same locked graph using supported CARGO_NET_GIT_FETCH_WITH_CLI=true after terminal Git-library dependency stall; no Cargo.lock/source change; unrelated to original E6 offline harness",
+    "inventory_scope": "all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read",
+    "protected_before": {
+      "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+      "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+      "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+    },
+    "files": [
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+        "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+        "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+        "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+        "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+        "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+        "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+      }
+    ],
+    "source_inventory_sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+    "unmaterialized_tracked_paths": 3813,
+    "materialized_paths": 11751,
+    "protected_after": {
+      "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+      "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+      "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+      ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+    },
+    "protected_unchanged": true,
+    "source_unchanged_during_native": true,
+    "stages": [
+      {
+        "name": "native-project",
+        "argv": [
+          "/opt/homebrew/bin/just",
+          "test",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "--retries",
+          "0",
+          "--test-threads",
+          "2",
+          "--no-tests",
+          "fail",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final"
+        ],
+        "exit_code": 101,
+        "wall_seconds": 3085.995982125,
+        "child_user_cpu_seconds": 4.0883329999999996,
+        "child_system_cpu_seconds": 1.978144,
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_bytes": 3214,
+        "stderr_sha256": "e495fa131f3ebb0ec3c958eff73ee5e5df0d3b5925b6131d08c7869a92fbcaf4"
+      }
+    ],
+    "owner_wall_seconds": 3087.3457307090002,
+    "error": "RuntimeError('native-project exited 101')",
+    "exit_code": 1
+  },
+  "native4_owner_terminal_by_OS_and_result": true,
+  "native4_tool_status_disagreement_retained": true,
+  "independent_dependency_preparation": {
+    "scope": "exact same locked crossterm commit; isolated shallow repository",
+    "commit": "45fecb9508105988f42fe6ff0441783ed3717f92",
+    "tree": "f43069917d73c60e5286f56fef318cb13febf204",
+    "owner_wall_seconds": 22.896533,
+    "fetch_wall_seconds": 22.761068,
+    "retained_object_bytes": 166330,
+    "fsck_full_strict_exit": 0,
+    "new_native_cases": 0,
+    "global_Cargo_cache_modified_during_preparation": false,
+    "source_or_lockfile_modified": false,
+    "status": "agent reported original readback in progress; root has not run native5"
+  }
+}

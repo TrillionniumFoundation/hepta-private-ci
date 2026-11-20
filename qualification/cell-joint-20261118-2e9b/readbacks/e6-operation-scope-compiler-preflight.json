@@ -1,0 +1,35 @@
+{
+  "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "source_mutated": false,
+  "selected_environment": {
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "environment_source": "/home/qq/hepta-learn-ff41-tools/env.json",
+  "environment_source_sha256": "c8ddd27960aa7078144c8e827713e28af4293c7e71a3ba0fba9f35225bbbd91e",
+  "libclang_path": "/home/qq/hepta-learn-ff41-tools/lib/libclang.so",
+  "libclang_resolved": "/usr/lib/x86_64-linux-gnu/libclang-21.so.21",
+  "libclang_bytes": 32691984,
+  "libclang_sha256": "2c262ccd53ce702daa87c95aa84b2936e13c14f974504dc58f3ed93b12def23b",
+  "stddef_header": "/usr/lib/gcc/x86_64-linux-gnu/15/include/stddef.h",
+  "stddef_sha256": "472a84e536689fc48e861b2415b229742e133d09bbf1c8fd8e0fe89ab5712f04",
+  "aws_lc_base_header_sha256": "5e8b1db42b3a9bc28ce1ccd894452ec38e247bf99d65ce436c44744a714b79a8",
+  "native_cases_executed": 0,
+  "model_calls": 0,
+  "clang_version": "Ubuntu clang version 21.1.8 (6ubuntu1)",
+  "parse_error_code": 0,
+  "arguments": [
+    "-isystem",
+    "/usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "-I/home/qq/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.46.0/aws-lc/include",
+    "-x",
+    "c",
+    "-std=c11"
+  ],
+  "diagnostics": [],
+  "source_sha256": "374a4bb5d4fa5582e02a8b07f5eed70821b29edbedd73915d4505906710505a3",
+  "successful": true,
+  "environment_source_unchanged": true,
+  "wall_seconds": 0.299548570998013
+}

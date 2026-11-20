@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.joint.mac-fixture-native.v1",
+  "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "scope": "two fixture path repairs; original project unit tests; no E6 business parent or model execution",
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "original_E6_parent_runs": 0,
+  "automatic_retry": false,
+  "payload_sha256": "fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067",
+  "prior_preflight_failure_sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+  "prior_locked_offline_dependency_failure_sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+  "prior_git_library_interruption_observation_sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+  "prior_git_cli_dependency_failure_sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3",
+  "exact_local_cache_seed_result_sha256": "6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70",
+  "dependency_acquisition": "Original native4 terminal; exact locked crossterm commit seeded once through local Git --update-shallow, with old partial files preserved; this native5 uses --locked --offline and no Cargo.lock/source change",
+  "inventory_scope": "all tracked Git identities plus exact materialized bytes; inherited skip-worktree absent files explicitly listed, not claimed as read",
+  "protected_before": {
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+    "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+    "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+      "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+      "candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+      "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+      "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+      "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+    }
+  ],
+  "source_inventory_sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+  "unmaterialized_tracked_paths": 3813,
+  "materialized_paths": 11751,
+  "protected_after": {
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+    "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+    "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "protected_unchanged": true,
+  "source_unchanged_during_native": true,
+  "stages": [
+    {
+      "name": "native-project",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--retries",
+        "0",
+        "--test-threads",
+        "2",
+        "--no-tests",
+        "fail",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 0.28980970899999997,
+      "child_user_cpu_seconds": 0.18189,
+      "child_system_cpu_seconds": 0.069278,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 812,
+      "stderr_sha256": "9a99fc15d540041793f501c2f79accc7af8fda0a23b59a103b5439272dc80053"
+    }
+  ],
+  "owner_wall_seconds": 1.0810116250000001,
+  "error": "RuntimeError('native-project exited 101')",
+  "exit_code": 1
+}

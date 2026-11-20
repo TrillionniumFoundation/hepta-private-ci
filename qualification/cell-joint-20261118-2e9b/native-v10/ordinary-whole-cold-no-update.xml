@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="b4fa65af-87f6-4c4d-9506-ebff447a8aef" timestamp="2026-11-18T23:45:37.298+08:00" time="60.700">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement" classname="codex-hepta-agentd" timestamp="2026-11-18T23:45:37.305+08:00" time="60.691">
+            <failure message="Error: original Root publication frame read response length: original Root publication poll rejected: ready=1; requested_events=0x1; root_revents=0x0; stream_revents=0x11; deadline_elapsed=false; os_error=None; io_kind=Other; os_error=None" type="test failure with exit code 101">Error: original Root publication frame read response length: original Root publication poll rejected: ready=1; requested_events=0x1; root_revents=0x0; stream_revents=0x11; deadline_elapsed=false; os_error=None; io_kind=Other; os_error=None
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-z2qpGd
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 4139815, start_ticks: 204255899, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_stage=historical.reply_bound
+root_stage=historical.recipient_service
+root_stage=historical_task.recipient_action
+root_stage=historical_ledger.recipient_action
+root_stage=historical_ledger.refusal_context
+root_stage=historical_task.ledger
+root_stage=historical_task.run_start
+root_stage=historical_task.source_cell
+root_stage=historical_task.handoff
+root_stage=historical.route_task
+root_stage=historical.observe_complete_task
+root_stage=historical.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: Unavailable }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-XKBJIj
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 4139818, start_ticks: 204255900, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-HscxCH
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-21F9rL
+Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1343 filtered out; finished in 60.68s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-6lManO
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-PCX92h
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-xEb4qp
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73904 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-82b1fadb-20261118-v10/bind/ordinary-q24-VwDysx
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-mPLhwq
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-82b1fadb-20261118-v10/witness-bind/ordinary-post-a-model-cQNiQg
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 4139822, start_ticks: 204255900, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=ROOT_OBSERVATION_CACHE phase=accept reason=already-fenced started=2042559641099167 ended=2042559643201508
+ROOT_SESSION_DIAGNOSTIC phase=refresh-accept started_ns=2042559641099167 ended_ns=2042559643201508 class=Unavailable
+ROOT_SESSION_DIAGNOSTIC phase=worker-refresh class=Unavailable
+ROOT_SESSION_DIAGNOSTIC phase=refresh-state-sample refresh_phase=cache-accept request_started_ns=Some(2042559641099167) response_ended_ns=Some(2042559643201508) last_successful_request_started_ns=Some(2042559538668405) last_successful_response_ended_ns=Some(2042559539304066)
+Error: original Root publication frame read response length: original Root publication poll rejected: ready=1; requested_events=0x1; root_revents=0x0; stream_revents=0x11; deadline_elapsed=false; os_error=None; io_kind=Other; os_error=None
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-z2qpGd
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 4139815, start_ticks: 204255899, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_stage=historical.reply_bound
+root_stage=historical.recipient_service
+root_stage=historical_task.recipient_action
+root_stage=historical_ledger.recipient_action
+root_stage=historical_ledger.refusal_context
+root_stage=historical_task.ledger
+root_stage=historical_task.run_start
+root_stage=historical_task.source_cell
+root_stage=historical_task.handoff
+root_stage=historical.route_task
+root_stage=historical.observe_complete_task
+root_stage=historical.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: Unavailable }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-XKBJIj
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 4139818, start_ticks: 204255900, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-HscxCH
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-21F9rL
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

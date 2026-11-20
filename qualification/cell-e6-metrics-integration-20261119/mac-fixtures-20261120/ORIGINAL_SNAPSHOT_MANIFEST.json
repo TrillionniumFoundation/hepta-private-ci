@@ -1,0 +1,330 @@
+{
+  "schema": "hepta.mac.fixture.snapshot.v1",
+  "snapshot_finished_at_unix_ns": "1795161718302722000",
+  "scope": "complete stable prepare/native1/native2/interrupted-native3; fixed native4 inputs and explicit read-only observations only, not a native4 terminal result",
+  "native4_terminal_claimed": false,
+  "source_updated": false,
+  "new_native_owners": 0,
+  "members": [
+    {
+      "path": "prepare-1/INTENT.json",
+      "bytes": 704,
+      "sha256": "a72c9931d391b08964a3b4b0fc66a001bbfb3c0c127b3f4ce77354660c7d01d8",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/RESULT.json",
+      "bytes": 2227,
+      "sha256": "2acac85f625d6fd286ed1657a48c58f3d23857970e203ae9001c94bd9d2b0297",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/fetch-exact-head.EXIT.json",
+      "bytes": 439,
+      "sha256": "ad4eb251904bc3e62b1254e02d31447264d91f823c328f30abbae7287b139c93",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/fetch-exact-head.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/fetch-exact-head.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/new-detached-worktree.EXIT.json",
+      "bytes": 462,
+      "sha256": "892adecd4b78bfbb3a3779c9d70b41f825791a2a6e5ee640ea76e45e982fce06",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/new-detached-worktree.stderr",
+      "bytes": 3558,
+      "sha256": "e9c57a197c0cb04a899a25b7b5e05edc008994772fcd6fcb49eb5710f982b170",
+      "mode": 384
+    },
+    {
+      "path": "prepare-1/new-detached-worktree.stdout",
+      "bytes": 119,
+      "sha256": "849c7dbc76243bc8c3aa891dbc4549b8c7a41afee1020d3d4cd9b63e478a3849",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/INTENT.json",
+      "bytes": 1656,
+      "sha256": "6d05f097bed0d84756dbd19aedb11225f47664ccd48217d4cb3fcf0e958b8f5c",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/RESULT.json",
+      "bytes": 2930,
+      "sha256": "8dab8db0bb5ab048862aec3b2f990536b9109dfe695d456fe5703607480b7c9c",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/candidate.diff",
+      "bytes": 4187,
+      "sha256": "a567b419fb29972664039743e1e5879183aa752d1e882b61eec73741c69e0ba6",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/circuit_cell_causal_tests.rs",
+      "bytes": 6282,
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/circuit_cell_causal_tests.rs.before",
+      "bytes": 6237,
+      "sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/error.txt",
+      "bytes": 1067,
+      "sha256": "343d4eb431769af253c19936e01064d0a994b0a07b7238e59faaea3956dab20a",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/fmt.CHILD.json",
+      "bytes": 112,
+      "sha256": "d33ffc3e5d6de59300ff2dba5687c98de81ffb76b92091003509dee577b72d33",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/fmt.EXIT.json",
+      "bytes": 492,
+      "sha256": "388749f3ec26aebb24ba3647c1b94265dbd5db1c7dd700efab8fa433a1cfa0b4",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/learning_iteration_research_external_material_tests.rs",
+      "bytes": 6857,
+      "sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-1/learning_iteration_research_external_material_tests.rs.before",
+      "bytes": 6622,
+      "sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/INTENT.json",
+      "bytes": 2086,
+      "sha256": "a1251a559e40ac772c906665545f5431568d45859e8a14de656c6ee705ef5c75",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/RESULT.json",
+      "bytes": 3603,
+      "sha256": "14ed67d3cd60d9b985d051f415902b2955ba69c46be70c32c4881d9960677a0c",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/SOURCE_INVENTORY.json",
+      "bytes": 4379000,
+      "sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/candidate.diff",
+      "bytes": 4187,
+      "sha256": "a567b419fb29972664039743e1e5879183aa752d1e882b61eec73741c69e0ba6",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/circuit_cell_causal_tests.rs",
+      "bytes": 6282,
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/error.txt",
+      "bytes": 582,
+      "sha256": "0c6311bd305ddb3fca9cb7e9c7d93919a10c406f47bf72741394e7c1244ad4c8",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/learning_iteration_research_external_material_tests.rs",
+      "bytes": 6857,
+      "sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/native-project.CHILD.json",
+      "bytes": 242,
+      "sha256": "8bd4d16c38a764dc936eca2e136b100d5d292dc827801537006011b3277f6495",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/native-project.EXIT.json",
+      "bytes": 685,
+      "sha256": "aed3ca555ff627eeac69c2bd710306b0c009ebdb8cef98637ae4357f68f0e5a5",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/native-project.stderr",
+      "bytes": 800,
+      "sha256": "0284695e7c42df635b1746979dd4fc6a278d345eb07d73861cfb4e1d6941f48d",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-2/native-project.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/INTENT.json",
+      "bytes": 2378,
+      "sha256": "88a607217db5e3d6702f709bfd16215602bafeec1cb86cec328c171b64ce7194",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/INTERRUPTION_OBSERVATION.json",
+      "bytes": 2106,
+      "sha256": "fd53ea215f8f0a41c70e41d50a4528aec55b614917b09fff9e3311fe7edfa944",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/SOURCE_INVENTORY.json",
+      "bytes": 4379000,
+      "sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/candidate.diff",
+      "bytes": 4187,
+      "sha256": "a567b419fb29972664039743e1e5879183aa752d1e882b61eec73741c69e0ba6",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/circuit_cell_causal_tests.rs",
+      "bytes": 6282,
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/learning_iteration_research_external_material_tests.rs",
+      "bytes": 6857,
+      "sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/native-project.CHILD.json",
+      "bytes": 229,
+      "sha256": "4da55aa9c75ee868649ca5e9c3f79940fee85cb192b24ed9a3a8cf705be8c075",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/native-project.stderr",
+      "bytes": 1577,
+      "sha256": "321462a7e8249109047d73f5ef7520d662d1371f20d59aa5008b99e009b887d2",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/native-project.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-3/original-owner-PTY.log",
+      "bytes": 1181,
+      "sha256": "60a210887d74d8d4f424d89ae4b01d30a03ea540cbe9eb5ec8d214e9eb650981",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/INTENT.json",
+      "bytes": 2543,
+      "sha256": "acdcdaec0bcc75ff0cf2745fa396d01e4d90c3d4f0423436117db05806b934f3",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/SOURCE_INVENTORY.json",
+      "bytes": 4379000,
+      "sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/candidate.diff",
+      "bytes": 4187,
+      "sha256": "a567b419fb29972664039743e1e5879183aa752d1e882b61eec73741c69e0ba6",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/native-project.CHILD.json",
+      "bytes": 229,
+      "sha256": "83404128264bd198d464df4be87c93261a2257da242b4db0df13054a4995288c",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/learning_iteration_research_external_material_tests.rs",
+      "bytes": 6857,
+      "sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "mode": 384
+    },
+    {
+      "path": "fixture-native-4/circuit_cell_causal_tests.rs",
+      "bytes": 6282,
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+      "mode": 384
+    },
+    {
+      "path": "native4-dependency-observation-1.json",
+      "bytes": 5199,
+      "sha256": "58d99bd1408143acc287d6267a2d69d30782b1fd04f333d0f5ba67c57b103cba",
+      "mode": 384
+    },
+    {
+      "path": "native4-session-reconciliation-1.json",
+      "bytes": 3649,
+      "sha256": "1c7f797b47113be72055982e3eba1067c4a124a2b3c0cd923ffad65d0bff1f21",
+      "mode": 384
+    },
+    {
+      "path": "native4-session-reconciliation-2.json",
+      "bytes": 5257,
+      "sha256": "397ba3d856c21bc421d751ac882a2b3efac7e4ade291b0d8fdfb370894e4a0e2",
+      "mode": 384
+    }
+  ],
+  "member_count": 50,
+  "uncompressed_bytes": 13265275,
+  "archive_bytes": 904408,
+  "archive_sha256": "4d56a039b30841d5843f1d526adb1334a25af4b6d1fb27986c814a47fd3949ea",
+  "every_source_rechecked_unchanged": true,
+  "every_member_read_back": true,
+  "owner_wall_seconds": 1.270035084,
+  "parts": [
+    {
+      "path": "original-fixture-snapshot.tar.xz.part000",
+      "bytes": 480000,
+      "sha256": "dc20459853305ec45903945ffe433e0ac6a517fca755a81c466680206c99615c"
+    },
+    {
+      "path": "original-fixture-snapshot.tar.xz.part001",
+      "bytes": 424408,
+      "sha256": "ab3010c206555b0a3c48a2f694b0183c7e6f90497b1791b17fe51dc4dfcab904"
+    }
+  ],
+  "cloud_full_archive_and_all_members_readback": true
+}

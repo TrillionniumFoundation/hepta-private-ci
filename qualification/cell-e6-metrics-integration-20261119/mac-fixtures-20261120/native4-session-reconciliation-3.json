@@ -1,0 +1,59 @@
+{
+  "observed_at_utc": "2026-11-20T08:06:19.605879+00:00",
+  "tool_session_previously": "lost/target_reboot; no duplicate Cargo owner launched",
+  "actual_own_process_rows": [
+    "91954     1 91954 Ss         44:06 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+    "60091 91971 91955 S+         07:29 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/bin/git",
+    "60092 60091 91955 S+         07:29 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+    "60093 60092 91955 S+         07:29 Fri Nov 20 15:58:50 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git-remote-https",
+    "60897 60091 91955 S+         07:22 Fri Nov 20 15:58:57 2026       0.0 /Applications/Xcode.app/Contents/Developer/usr/libexec/git-core/git",
+    "91955 91954 91955 Ss+        44:06 Fri Nov 20 15:22:13 2026       0.0 /Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/Resources/Python.app/Contents/MacOS/Python",
+    "91964 91955 91955 S+         44:05 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/just",
+    "91965 91964 91955 S+         44:05 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "91968 91965 91955 S+         44:05 Fri Nov 20 15:22:14 2026       0.0 /opt/homebrew/bin/cargo-nextest",
+    "91971 91968 91955 S+         44:05 Fri Nov 20 15:22:14 2026       0.0 /Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo"
+  ],
+  "files": [
+    {
+      "path": "native-project.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mtime_ns": "1795159334437880034",
+      "content": "",
+      "tail": null
+    },
+    {
+      "path": "native-project.stderr",
+      "bytes": 1968,
+      "sha256": "02b7d8ae2b0dc3ccb9f3d3f34ab7ea29e950739d81827f27e9b77875e0fab88b",
+      "mtime_ns": "1795161523944909392",
+      "content": "RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py \"$@\"\n    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`\nFrom https://github.com/openai-oss-forks/tungstenite-rs\n * [new ref]         4fffad30fe373adbdcffab9545e9e9bf4f2fc19f -> refs/commit/4fffad30fe373adbdcffab9545e9e9bf4f2fc19f\n    Updating git repository `https://github.com/openai-oss-forks/crossterm`\nfatal: unable to access 'https://github.com/openai-oss-forks/crossterm/': Failed to connect to github.com port 443 after 75003 ms: Couldn't connect to server\nwarning: spurious network error (3 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 5 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (2 tries remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\nerror: RPC failed; curl 92 HTTP/2 stream 3 was not closed cleanly: CANCEL (err 8)\nerror: 4872 bytes of body are still expected\nfetch-pack: unexpected disconnect while reading sideband packet\nfatal: early EOF\nfatal: fetch-pack: invalid index-pack output\nwarning: spurious network error (1 try remaining): process didn't exit successfully: `git fetch --no-tags --force --update-head-ok 'https://github.com/openai-oss-forks/crossterm' '+45fecb9508105988f42fe6ff0441783ed3717f92:refs/commit/45fecb9508105988f42fe6ff0441783ed3717f92'` (exit status: 128)\n",
+      "tail": null
+    },
+    {
+      "path": "native-project.EXIT.json",
+      "observed_missing": true
+    },
+    {
+      "path": "RESULT.json",
+      "observed_missing": true
+    }
+  ],
+  "named_dependency_packs": [
+    {
+      "name": "tmp_pack_deZ82t",
+      "bytes": 6217727,
+      "mtime_ns": "1795161979204643556"
+    },
+    {
+      "name": "tmp_pack_UglHd2",
+      "bytes": 12410879,
+      "mtime_ns": "1795161523934535851"
+    },
+    {
+      "name": "tmp_pack_6mmzTG",
+      "bytes": 12345343,
+      "mtime_ns": "1795160520814565376"
+    }
+  ]
+}

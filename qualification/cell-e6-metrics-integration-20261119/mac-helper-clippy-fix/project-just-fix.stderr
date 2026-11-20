@@ -1,0 +1,6 @@
+cargo clippy --fix --tests --allow-dirty {args}
+error: failed to download `Inflector v0.11.4`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+error: recipe `fix` failed on line 58 with exit code 101

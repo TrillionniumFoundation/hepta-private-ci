@@ -1,0 +1,69 @@
+{
+  "schema": "chain-actual-native-owned-append-controls-v1",
+  "complete": true,
+  "stages": [
+    {
+      "name": "preflight",
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.025480566080659628,
+      "child_user_cpu_seconds": 0.020852,
+      "child_system_cpu_seconds": 0.004575
+    },
+    {
+      "name": "format",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "fmt",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--all"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 7.402709313901141,
+      "child_user_cpu_seconds": 7.329957,
+      "child_system_cpu_seconds": 0.073532
+    },
+    {
+      "name": "original-post-write-and-append-controls",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "test",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--release",
+        "--locked",
+        "--offline",
+        "--lib",
+        "store::native_authenticated::post_write_readback::",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 90.81130026397295,
+      "child_user_cpu_seconds": 411.991935,
+      "child_system_cpu_seconds": 6.158914
+    }
+  ],
+  "production_patch": {
+    "bytes": 20774,
+    "sha256": "80a4dd5bd62a7e6c01be72988b40ba1d57518979e55eacbf841d5a271f4601dc"
+  },
+  "added_production": {
+    "path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/source/trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_append.rs",
+    "bytes": 2222,
+    "sha256": "26c6cfdf3646f88d4f79c7705fb611bcb0273bc5396e04a4b89ede2b36a1abb0"
+  },
+  "added_tests": {
+    "path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/source/trillionnium/crates/trnm-pon-node/src/store/native_authenticated/post_write_readback/append_tests.rs",
+    "bytes": 13170,
+    "sha256": "610c4141afe2638e0e70fa12c48374bf3417818a1b2a4380ef225f34abc674b9"
+  },
+  "native_exit_code": 0
+}

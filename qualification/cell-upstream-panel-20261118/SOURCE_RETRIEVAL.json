@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.upstream-source-retrieval.v1",
+  "sources": [
+    {
+      "file": "requests_utils.py.txt",
+      "bytes": 36061,
+      "sha256": "b879cb3f671cf1c28e8ff9b2b02151bcdb8974b4820a514cfdd1f5a038443cd2",
+      "git_blob": "fff6edf4bee7cdac3e26e41c5888d1bcebcae0db",
+      "url": "https://github.com/psf/requests/blob/3c7baaa05ab4aa49cc819ce3a819d260de19c157/src/requests/utils.py",
+      "transport": "GitHub connector fetch_file exact commit"
+    },
+    {
+      "file": "werkzeug_http.py.txt",
+      "bytes": 53416,
+      "sha256": "23c4822f16064e68c9f176736073e389ee987e2c6167fff56ccc158ddef32de2",
+      "git_blob": "02e9f839f3baa339832bcfc9fb6a8b8a57a49161",
+      "url": "https://github.com/pallets/werkzeug/blob/0f43c6ebd426039e4b99ec22535c2c8a2ec2f69f/src/werkzeug/http.py",
+      "transport": "GitHub connector fetch_file exact commit"
+    },
+    {
+      "file": "click_parser.py.txt",
+      "bytes": 19052,
+      "sha256": "a09f9f53fde6bf1ba022e36d1da0804d9e7a9601261d18208c9892a84818ae30",
+      "git_blob": "4fcbf7caa83a474cee2d3ea25da56b0399dd893a",
+      "url": "https://github.com/pallets/click/blob/08b803cf32ceb2ae6a772c62d5da42757a897d44/src/click/parser.py",
+      "transport": "GitHub connector fetch_file exact commit"
+    },
+    {
+      "file": "requests_LICENSE.txt",
+      "bytes": 10142,
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+      "git_blob": "67db8588217f266eb561f75fae738656325deac9",
+      "url": "https://github.com/psf/requests/blob/3c7baaa05ab4aa49cc819ce3a819d260de19c157/LICENSE",
+      "transport": "GitHub connector fetch_file exact commit"
+    },
+    {
+      "file": "werkzeug_LICENSE.txt",
+      "bytes": 1475,
+      "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b",
+      "git_blob": "c37cae49ec77ad6ebb25568c1605f1fee5313cfb",
+      "url": "https://github.com/pallets/werkzeug/blob/0f43c6ebd426039e4b99ec22535c2c8a2ec2f69f/LICENSE.txt",
+      "transport": "GitHub connector fetch_file exact commit"
+    },
+    {
+      "file": "click_LICENSE.txt",
+      "bytes": 1475,
+      "sha256": "9a8ad106a394e853bfe21f42f4e72d592819a22805d991b5f3275029292b658d",
+      "git_blob": "d12a849186982399c537c5b9a8fd77bf2edd5eab",
+      "url": "https://github.com/pallets/click/blob/08b803cf32ceb2ae6a772c62d5da42757a897d44/LICENSE.txt",
+      "transport": "GitHub connector fetch_file exact commit"
+    }
+  ],
+  "training_allowed_by_protocol": false,
+  "source_origin": "external public repositories",
+  "independent_evaluator": false,
+  "independent_users": 0
+}

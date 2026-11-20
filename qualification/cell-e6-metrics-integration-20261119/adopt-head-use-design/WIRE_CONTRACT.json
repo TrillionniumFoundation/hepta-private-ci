@@ -1,0 +1,560 @@
+{
+  "schema": "hepta-artifact-cold-use-wire-design-v1",
+  "status": "PROPOSED_NOT_IMPLEMENTED_NOT_EXECUTED",
+  "purpose_literal_utf8": "hepta.learning-artifacts.cold-task-use-grant.v1",
+  "mode": "a single new same-model cold task; grants no training, registration, registry publication or Root authority",
+  "encoding": {
+    "signed_preimage": "literal purpose bytes followed by ordered_fields below; no signature bytes in preimage",
+    "signature": "strict Ed25519, exactly 64 bytes; no alternative algorithm or domain fallback",
+    "grant_digest": "SHA256(purpose bytes || complete signing preimage || signature); intentionally separate from original head digest",
+    "fixed_integers": "unsigned big-endian; reject overflow rather than clamp or wrap",
+    "Digest32": "exactly 32 bytes; independently recompute at the actual owner boundary",
+    "StableId": "existing canonical StableId bytes preceded by u64_be byte length, matching original owner_host::push_id; retain existing StableId validation and refuse any ID that exceeds the total record bound",
+    "Option<StableId>": "one byte 0 for None or 1 followed by canonical StableId; all other tags reject",
+    "maximum_record_bytes_including_signature": 16384,
+    "size_limit_source": "codex-rs/hepta-learning-artifacts/src/owner_host.rs::MAX_SMALL_RECORD_BYTES",
+    "text_transport": "if JSON/text is exposed, reject unknown/duplicate fields and require exact typed canonical re-encoding; text hashes are not signature preimages",
+    "digest_zero_rule": "reject zero for required identity/authority/content digests; only protocol-defined genesis values may be zero and must equal actual original genesis semantics",
+    "future_versions": "reject; no permissive skip, conversion to CURRENT V1, or V1 selector compatibility fallback"
+  },
+  "ordered_fields": [
+    {
+      "group": "purpose_policy",
+      "name": "schema_version",
+      "encoding": "u16_be",
+      "check_against": "exactly 1; this is a new protocol, not CURRENT V1",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "operation_kind",
+      "encoding": "u8",
+      "check_against": "exactly ColdSameModelArtifactUse; fixed tag 1",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "policy_id",
+      "encoding": "StableId",
+      "check_against": "the policy installed at the original Artifact owner boundary",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "policy_digest",
+      "encoding": "Digest32",
+      "check_against": "all canonical actual policy fields, never a peer-supplied self-hash",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "policy_generation",
+      "encoding": "u64_be",
+      "check_against": "exact current trusted policy generation, no regression",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "grant_id",
+      "encoding": "StableId",
+      "check_against": "unique grant identity in the actual registry/policy ledger",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "purpose_policy",
+      "name": "nonce",
+      "encoding": "[u8;32]",
+      "check_against": "nonzero independently generated nonce, reservation unique within registry/policy",
+      "authority_source": "independently provisioned actual Artifact authority policy"
+    },
+    {
+      "group": "issuer",
+      "name": "head_signer_id",
+      "encoding": "StableId",
+      "check_against": "present in head_signers and permitted for this new purpose",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "head_signing_key_digest",
+      "encoding": "Digest32",
+      "check_against": "digest of the independently provisioned actual verifying key",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "head_authority_epoch",
+      "encoding": "u64_be",
+      "check_against": "actual head key epoch range and policy floor; never a Root or selector epoch",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "owner_trust_digest",
+      "encoding": "Digest32",
+      "check_against": "the original owner verifier trust, including roles and scope",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "issued_at_unix_ms",
+      "encoding": "u64_be",
+      "check_against": "real issuance time within actual signer and policy validity",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "not_before_unix_ms",
+      "encoding": "u64_be",
+      "check_against": "issued_at <= not_before <= current actual authority time",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "issuer",
+      "name": "expires_at_unix_ms",
+      "encoding": "u64_be",
+      "check_against": "not_before < expires_at; current time <= expiry and policy maximum duration",
+      "authority_source": "actual ArtifactOwnerTrustV1.head_signers and current independently authenticated policy/revocation state"
+    },
+    {
+      "group": "artifact_history",
+      "name": "registry_id",
+      "encoding": "StableId",
+      "check_against": "original ArtifactOwnerTrustV1.registry_id",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "storage_binding_digest",
+      "encoding": "Digest32",
+      "check_against": "original pinned physical storage binding; not path text alone",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "original_signed_head_digest",
+      "encoding": "Digest32",
+      "check_against": "actual original head signing bytes plus its signature",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "historical_chain_tip_digest",
+      "encoding": "Digest32",
+      "check_against": "actual latest unique physical tip; first version requires exact unchanged tip",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "registry_generation",
+      "encoding": "u64_be",
+      "check_against": "actual original witness generation, above original trust/floor",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "registry_head_digest",
+      "encoding": "Digest32",
+      "check_against": "actual head witness and registry receipt agree",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "registry_snapshot_receipt_digest",
+      "encoding": "Digest32",
+      "check_against": "complete actual snapshot receipt, including original record counts and bindings",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "registry_file_digest",
+      "encoding": "Digest32",
+      "check_against": "independently read exact original registry bytes",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_history",
+      "name": "transaction_receipt_digest",
+      "encoding": "Digest32",
+      "check_against": "actual durable original transaction checkpoint; no unfinished/conflicting publication",
+      "authority_source": "pinned actual Artifact owner directories, unique complete history, and durable transaction receipts"
+    },
+    {
+      "group": "artifact_model",
+      "name": "artifact_id",
+      "encoding": "StableId",
+      "check_against": "actual registry manifest and full selected C model",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "artifact_kind",
+      "encoding": "u8",
+      "check_against": "existing ArtifactKind canonical tag and permitted whole-model kind",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "artifact_generation",
+      "encoding": "u64_be",
+      "check_against": "actual selected artifact generation",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "artifact_predecessor_id",
+      "encoding": "Option<StableId>",
+      "check_against": "actual lineage; None is explicit tag 0, not an invented zero digest",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "content_digest",
+      "encoding": "Digest32",
+      "check_against": "complete actual payload bytes, not a selected partial model",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "encoded_size_bytes",
+      "encoding": "u64_be",
+      "check_against": "complete actual payload size",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "artifact_manifest_digest",
+      "encoding": "Digest32",
+      "check_against": "all canonical ArtifactManifest fields, including producer/objective/support/compatibility",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "whole_model_manifest_digest",
+      "encoding": "Digest32",
+      "check_against": "complete actual model manifest, exactly matching completed C and D descriptor",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "artifact_model",
+      "name": "bundle_digest",
+      "encoding": "Digest32",
+      "check_against": "actual canonical whole bundle digest",
+      "authority_source": "actual pinned canonical manifest/payload plus complete C and D model equality"
+    },
+    {
+      "group": "withdrawal",
+      "name": "withdrawal_scope_digest",
+      "encoding": "Digest32",
+      "check_against": "original owner trust and selected model scope",
+      "authority_source": "actual original withdrawal owner/frontier and authenticated current policy status"
+    },
+    {
+      "group": "withdrawal",
+      "name": "withdrawal_frontier_digest",
+      "encoding": "Digest32",
+      "check_against": "actual current frontier at signing and at each effect; exact equality in V1",
+      "authority_source": "actual original withdrawal owner/frontier and authenticated current policy status"
+    },
+    {
+      "group": "withdrawal",
+      "name": "withdrawal_frontier_generation",
+      "encoding": "u64_be",
+      "check_against": "actual monotonically held frontier; no rollback or silent advance",
+      "authority_source": "actual original withdrawal owner/frontier and authenticated current policy status"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_learning_operation_id",
+      "encoding": "StableId",
+      "check_against": "actual completed predecessor operation",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_completed_history_digest",
+      "encoding": "Digest32",
+      "check_against": "full actual completed history record",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_current_head_digest",
+      "encoding": "Digest32",
+      "check_against": "actual completed C CURRENT",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_finalized_successor_record_digest",
+      "encoding": "Digest32",
+      "check_against": "actual original Finalized successor record",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_full_finalized_cut_digest",
+      "encoding": "Digest32",
+      "check_against": "complete original C cut, including version/profile and all original record bindings",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_source_publication_digest",
+      "encoding": "Digest32",
+      "check_against": "actual original source publication represented by the complete cut",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "completed_c_conditions",
+      "name": "c_whole_model_digest",
+      "encoding": "Digest32",
+      "check_against": "the exact complete C model, equal to the allowed artifact and D model",
+      "authority_source": "existing RootFinalizedColdHistoryV1 and RootFinalizedColdCReadV1; a signed condition is not a substitute C attestation"
+    },
+    {
+      "group": "new_d",
+      "name": "d_descriptor_digest",
+      "encoding": "Digest32",
+      "check_against": "canonical pre-selection descriptor; excludes this grant, selector and final UpdateIntent",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_agent_id",
+      "encoding": "StableId",
+      "check_against": "actual registered D agent",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_principal_id",
+      "encoding": "StableId",
+      "check_against": "actual enrolled principal",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_recipient_identity_digest",
+      "encoding": "Digest32",
+      "check_against": "actual full recipient process identity and peer/session binding",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_spawn_generation",
+      "encoding": "u64_be",
+      "check_against": "actual fresh process/spawn generation, not pid text",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_run_id",
+      "encoding": "StableId",
+      "check_against": "actual new D run, distinct from completed C",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_operation_id",
+      "encoding": "StableId",
+      "check_against": "actual original cold operation store key",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_target_owner_binding_digest",
+      "encoding": "Digest32",
+      "check_against": "actual pinned target owner",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_target_generation",
+      "encoding": "u64_be",
+      "check_against": "exact target generation under original CAS",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_target_genesis_digest",
+      "encoding": "Digest32",
+      "check_against": "actual expected empty/genesis target state",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_source_files_digest",
+      "encoding": "Digest32",
+      "check_against": "complete pre-selection original task/runtime/data source manifest and actual byte hashes; separately supplied new grant/selector/final-intent envelopes are excluded only from this acyclic preimage and bound later by the Root full-input manifest",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_target_files_digest",
+      "encoding": "Digest32",
+      "check_against": "complete pre-selection original target-file manifest and bindings; no grant/selector/final-intent self-reference",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_configuration_digest",
+      "encoding": "Digest32",
+      "check_against": "actual canonical pre-selection task configuration; exact mandatory authorization-envelope paths are declared, their future contents are bound by the later Root full-input manifest",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_consumer_kind",
+      "encoding": "u8",
+      "check_against": "only the original cold same-model task consumer",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d",
+      "name": "d_consumer_trust_digest",
+      "encoding": "Digest32",
+      "check_against": "actual original retained consumer trust and current revocation checks",
+      "authority_source": "existing original Root cold registration, pinned D source/target and actual process/session context"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_signing_bytes_digest",
+      "encoding": "Digest32",
+      "check_against": "digest of all actual request signing bytes",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_issuer_id",
+      "encoding": "StableId",
+      "check_against": "actual original authorized issuer",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_signing_key_digest",
+      "encoding": "Digest32",
+      "check_against": "actual issuer key, not the head signer or selector key by substitution",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_authority_epoch",
+      "encoding": "u64_be",
+      "check_against": "actual issuer-specific epoch",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_message_id",
+      "encoding": "StableId",
+      "check_against": "actual original message identity",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_sequence",
+      "encoding": "u64_be",
+      "check_against": "actual original sequence",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_signature_digest",
+      "encoding": "Digest32",
+      "check_against": "actual complete signature bytes",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "authbus_expires_at_unix_ms",
+      "encoding": "u64_be",
+      "check_against": "actual request expiry; scope cannot outlive it",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "runtime_digest",
+      "encoding": "Digest32",
+      "check_against": "definition.runtime.runtime_digest",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "feature_semantic_digest",
+      "encoding": "Digest32",
+      "check_against": "definition.semantic_digest, not bundle.digest",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    },
+    {
+      "group": "new_d_authbus",
+      "name": "artifact_set_digest",
+      "encoding": "Digest32",
+      "check_against": "bundle.digest",
+      "authority_source": "actual independently signed original AuthBus request and Feature configuration"
+    }
+  ],
+  "descriptor_dependency_order": [
+    "freeze original D request/source/target/recipient/operation and C/model conditions",
+    "derive pre-selection D descriptor; exclude grant, selector and final UpdateIntent",
+    "actual head authority signs grant after its independent policy checks",
+    "independent selector signs new cold-use selection over complete old selector fields plus grant_digest and d_descriptor_digest",
+    "Root computes purpose-specific observation and final intent from both signatures and actual original C/D evidence"
+  ],
+  "descriptor_file_boundary": {
+    "preimage_contains": "a closed complete manifest of original D task/runtime/data source, target and pre-selection configuration; mandatory separate authorization-envelope names/roles are declared",
+    "excluded_from_preimage_only": [
+      "the new grant bytes",
+      "the subsequent new selector bytes",
+      "the final Root UpdateIntent bytes"
+    ],
+    "later_binding": "Root full-input manifest binds every actual input including these three envelopes before admission; actual pinned source/target bytes must equal the earlier closed manifest",
+    "no_blanket_exclusion": "arbitrary source fields/files cannot be stripped to make a hash match; canonical typed schemas reject unknown/extra/missing task fields and missing required authorization files"
+  },
+  "selection_domain_proposed": "hepta.learning-artifacts.cold-task-use-selection.v1",
+  "selection_additions": [
+    "new purpose/version",
+    "grant_digest",
+    "d_descriptor_digest",
+    "policy_digest",
+    "policy_generation"
+  ],
+  "selection_existing_fields": "retain every SignedArtifactSelectionV1 field and check; historical witness is a named fact in this new type, never a VerifiedCurrentRegistryViewV1",
+  "effective_expiry": {
+    "minimum_of": [
+      "new grant expiry",
+      "actual current head signer validity",
+      "actual purpose policy validity",
+      "independent selector expiry",
+      "new Root issuer expiry",
+      "new Root writer expiry",
+      "original AuthBus request expiry",
+      "new D original 120-second deadline",
+      "whole-cold original 480-second deadline"
+    ],
+    "not_changed": [
+      "old learning 240-second envelope",
+      "old writer actual 300-second retirement rule",
+      "generic CURRENT expiry",
+      "old V3 publication admission"
+    ],
+    "old_head_expiry": "is still expired and generic interfaces reject; independently authorized historical use does not cap its new permission by the expired old permission",
+    "clock": "actual original authority clock and monotonic held floor; external I/O requires a fresh scoped check"
+  },
+  "production_prerequisites_not_present": [
+    "independent actual Artifact authority provisioning for this new purpose",
+    "real head private-key custody and issuing service",
+    "authenticated current key/policy generation and revocation input",
+    "durable signer reservation/Attempted/Signed journal and recovery",
+    "if issuer policy requires observing completed C itself: an authenticated actual C read/attestation input, not client-provided expected JSON",
+    "new purpose-specific Root/selection/generation/live consumers with original withdrawal checks"
+  ],
+  "executions": {
+    "signatures_issued": 0,
+    "compile": 0,
+    "native": 0,
+    "model": 0,
+    "remote_jobs": 0
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "base": "4d9fc82c1efff45f964d4efdc6155b350e01fd23",
+  "existing_joint": "4283eb76535619d09df8e3fcc4ec5c90110199cd",
+  "sources": [
+    {
+      "name": "E1",
+      "repo": "/workspace/scratch/2e9b5be8e8f8/e123",
+      "head": "992f2b3de51902448abf5743f94179bf40e11b6d",
+      "files": [
+        {
+          "path": "qualification/cell-matched-info-20261118/ENGINEERING.json",
+          "sha": "01dce33353fa4f70bdcabc01f19690f05899d203",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-matched-info-20261118/README.md",
+          "sha": "b9309230c07156e214cbe1afaae28905e37200e6",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/CATALOG.json",
+          "sha": "1843d3128105fe81c3868d177c3b125e17cea9ef",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/PANEL.json",
+          "sha": "7266d70a012db4ab4e6de4fc627f893327390c5c",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/README.md",
+          "sha": "2638cec446e7409175bf331938b4974b3fac212d",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/SOURCE_RETRIEVAL.json",
+          "sha": "e2e8899e4be45be88932c0a467bac06ab8e62e2f",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/build_panel.py",
+          "sha": "e084ed0e0a4b9400d589afe3f86cc0f4660cef9d",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/prepared/REFERENCE_CHECKS.json",
+          "sha": "a2dea8f698575e7942410df218a0f22e23913ecc",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/prepared/records.jsonl",
+          "sha": "fdeb9c0d3606ad96e803970c49f44568c48b4428",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/click_LICENSE.txt",
+          "sha": "d12a849186982399c537c5b9a8fd77bf2edd5eab",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/click_parser.py.txt",
+          "sha": "4fcbf7caa83a474cee2d3ea25da56b0399dd893a",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/requests_LICENSE.txt",
+          "sha": "67db8588217f266eb561f75fae738656325deac9",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/requests_utils.py.txt",
+          "sha": "fff6edf4bee7cdac3e26e41c5888d1bcebcae0db",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/werkzeug_LICENSE.txt",
+          "sha": "c37cae49ec77ad6ebb25568c1605f1fee5313cfb",
+          "status": "added"
+        },
+        {
+          "path": "qualification/cell-upstream-panel-20261118/sources/werkzeug_http.py.txt",
+          "sha": "02e9f839f3baa339832bcfc9fb6a8b8a57a49161",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/matched_info_sft_v4.py",
+          "sha": "daa0935d757e6cd00787397f92f4face110cf52b",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/run_matched_info_v4.py",
+          "sha": "4fa327f1124a0e8ed9a1ebe9bd437b44a78c0a37",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/test_matched_info_sft_v4.py",
+          "sha": "7d88dfdfd1ae0c58b0bc161a73018f156abdee4e",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/test_upstream_panel_v4.py",
+          "sha": "b7e5a6baa90fc22aa50a8d0755220dd9407518ac",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/upstream_panel_v4.py",
+          "sha": "b6be59d234bbfc1d775f72dda3ad323783434023",
+          "status": "added"
+        }
+      ]
+    },
+    {
+      "name": "E4",
+      "repo": "/workspace/scratch/2e9b5be8e8f8/e45",
+      "head": "ad73c100feece91c152a96ba121d2e9494f10607",
+      "files": [
+        {
+          "path": "qualification/cell-native-repair-20261118/README.md",
+          "sha": "b3390be88152ba102137c38beb494a0932fdb22e",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/circuit_repair_study_v4.py",
+          "sha": "c426c1cd42973cb735a58ee852988d332e7f9e94",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/diagnostic_run_v4.py",
+          "sha": "947dd7de3bb987ae143051bb653f124fa64d096f",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/cell_experiments/online_v4/circuit_runtime.py",
+          "sha": "08a2ad72b84c4185de3f1ebe04dfdbaf495372f5",
+          "status": "modified"
+        },
+        {
+          "path": "scripts/cell_experiments/online_v4/test_circuit_native_turn.py",
+          "sha": "284de33ae18670cdcc78bac48198fd79c2f1bb4b",
+          "status": "added"
+        },
+        {
+          "path": "scripts/cell_experiments/test_circuit_repair_study_v4.py",
+          "sha": "fdccad16f435a8149899cbadad81b394802c30ce",
+          "status": "added"
+        }
+      ]
+    }
+  ]
+}

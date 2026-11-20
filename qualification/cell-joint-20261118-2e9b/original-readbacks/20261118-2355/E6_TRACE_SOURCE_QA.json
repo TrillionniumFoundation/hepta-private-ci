@@ -1,0 +1,2005 @@
+{
+  "source_parent": "f2c6677c30f437edfd3b875e5c738f1137736d73",
+  "scope": "isolated read64 diagnostic call-site and original request-sequence observations; unchanged authority, verifier, original physical read limit and all 892 protected rows",
+  "modules": [
+    "test_completed_learning_client_source_closure",
+    "test_current_historical_a_recovery_source_closure",
+    "test_historical_current_trust_client_source_closure",
+    "test_historical_dataset_capability_source_closure",
+    "test_historical_freezer_source_closure",
+    "test_historical_learning_delivery_source_closure",
+    "test_historical_preparation_source_closure",
+    "test_historical_q24_stage_source_closure",
+    "test_historical_task_capacity_source_closure",
+    "test_historical_task_read_source_closure",
+    "test_ordinary_original_callers_source_closure",
+    "test_original_owner_initialization_source_closure",
+    "test_original_owner_operation_source_closure",
+    "test_original_task_data_source_closure",
+    "test_post_a_c_recovery_source_closure",
+    "test_post_a_deadline_source_closure",
+    "test_post_a_owner_files_source_closure",
+    "test_post_a_physical_preparation_source_closure",
+    "test_q24_freeze_identity_source_closure",
+    "test_q24_preparation_shared_checks_source_closure",
+    "test_q24_pure_projection_source_closure",
+    "test_q24_training_plan_source_closure",
+    "test_root_learning_scope_source_closure",
+    "test_training_source_operation_source_closure"
+  ],
+  "protected_file_sweep": {
+    "passed": true,
+    "rows": 892,
+    "wall_seconds": 1.1681923710275441
+  },
+  "before_sha256": {
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs": "60611c2a890736575f1708e668e55e5aa652696f002b295599c77a9e6e38669e",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs": "2e2627c58b178f8db260f1b452093129025b7772abaff6a692eb3b7cdc5bcb1b",
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs": "5fe91ba57055cb897e798c511dfe34b43bf6e3a46ef51003151a266f01bebfb8",
+    "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs": "c5e3140cbaafd6faf38d0c7882b06eedae07322cbd0d4c80472683718b9b20d1",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs": "bdbdeee61b281342d3e799f9df528d8107e895b49521b8d2d16d0faebc57c5d5",
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "c61e054f7fb85f2abc4e149e789a2eba143551dfa04c61a6f3b628baaa48f897",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs": "f31fc10f9502989d13155ae0df0c68901757cbf9d7526edd7cb1cbf34072b477",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs": "4c8695c4327effb30c200ebbd6800c7d4915be320c79df82425eaf53d93ab56f",
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "5d349d7d7a058e77f511f4650037f897ef4650fb53d2d81badf01df60ea5ac13",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "17b31b002d00fe8e102ee89893624d96f2d0750906b3bd6489d712a1849da82b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "12e3b4022a01568cfdb3350ae693ec5c218b475d003142fc819663d62acc6d34",
+    "qa/b4-no-bypass/test_historical_preparation_source_closure.py": "2fa8897f4ab20b010dd6b3a2b1432703b4592ad1296db8183e0febd767405cdd",
+    "qa/b4-no-bypass/test_historical_learning_delivery_source_closure.py": "e3531b8ca28e8dee3cc8be70e04c491bd165a7a077ee83dd6e5764e73e2e12c0",
+    "qa/b4-no-bypass/test_original_task_data_source_closure.py": "45e499d9f44392c872f4c79cf3261a2488cdaffdfde998664f3a865cca08fe4d",
+    "CALLERS.toml": "4e7b2b0be01952c3153c4143a003e26fd91c33c53863a69af47357b662efa2df"
+  },
+  "after_format_sha256": {
+    "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs": "60611c2a890736575f1708e668e55e5aa652696f002b295599c77a9e6e38669e",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs": "2e2627c58b178f8db260f1b452093129025b7772abaff6a692eb3b7cdc5bcb1b",
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs": "5fe91ba57055cb897e798c511dfe34b43bf6e3a46ef51003151a266f01bebfb8",
+    "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs": "c5e3140cbaafd6faf38d0c7882b06eedae07322cbd0d4c80472683718b9b20d1",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs": "bdbdeee61b281342d3e799f9df528d8107e895b49521b8d2d16d0faebc57c5d5",
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "c61e054f7fb85f2abc4e149e789a2eba143551dfa04c61a6f3b628baaa48f897",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs": "f31fc10f9502989d13155ae0df0c68901757cbf9d7526edd7cb1cbf34072b477",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs": "4c8695c4327effb30c200ebbd6800c7d4915be320c79df82425eaf53d93ab56f",
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "5d349d7d7a058e77f511f4650037f897ef4650fb53d2d81badf01df60ea5ac13",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "17b31b002d00fe8e102ee89893624d96f2d0750906b3bd6489d712a1849da82b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "12e3b4022a01568cfdb3350ae693ec5c218b475d003142fc819663d62acc6d34",
+    "qa/b4-no-bypass/test_historical_preparation_source_closure.py": "2fa8897f4ab20b010dd6b3a2b1432703b4592ad1296db8183e0febd767405cdd",
+    "qa/b4-no-bypass/test_historical_learning_delivery_source_closure.py": "e3531b8ca28e8dee3cc8be70e04c491bd165a7a077ee83dd6e5764e73e2e12c0",
+    "qa/b4-no-bypass/test_original_task_data_source_closure.py": "45e499d9f44392c872f4c79cf3261a2488cdaffdfde998664f3a865cca08fe4d",
+    "CALLERS.toml": "4e7b2b0be01952c3153c4143a003e26fd91c33c53863a69af47357b662efa2df"
+  },
+  "just_fmt_exit": 0,
+  "tests_run": 196,
+  "source_tests_successful": true,
+  "targeted_callers": {
+    "passed": true,
+    "rows": [
+      {
+        "id": "agentd_production_writer_host",
+        "symbol": "AgentdProductionWriterHost::open",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_artifact_owner_bootstrap",
+        "symbol": "LearningArtifactOwnerHost::open",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+        ]
+      },
+      {
+        "id": "learning_artifact_verified_current_view",
+        "symbol": "RevalidatingCandidate::with_current",
+        "callPattern": "\\bcandidate\\s*\\.\\s*with_current\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+          "codex-rs/hepta-agentd/src/neuron_generation_update_selection_root.rs",
+          "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"
+        ]
+      },
+      {
+        "id": "provider_effect_coordinator",
+        "symbol": "ProviderEffectCoordinator::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "http_provider_effect_adapter",
+        "symbol": "HttpProviderEffectAdapter::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+        ]
+      },
+      {
+        "id": "final_use_approval_trust",
+        "symbol": "FinalUseApprovalVerifier::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "final_use_approval_verify",
+        "symbol": "FinalUseApprovalVerifier::verify",
+        "callPattern": "approval_verifier\\s*\\.\\s*verify\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+        ]
+      },
+      {
+        "id": "final_use_revocation_feed_trust",
+        "symbol": "FinalUseRevocationFeedVerifier::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "final_use_revocation_convergence_trust",
+        "symbol": "FinalUseRevocationConvergenceVerifier::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "final_use_revocation_convergence_verify",
+        "symbol": "FinalUseRevocationConvergenceVerifier::verify",
+        "callPattern": "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-fleet/src/revocation_control.rs"
+        ]
+      },
+      {
+        "id": "bao_registered_consumer_new",
+        "symbol": "RegisteredBaoConsumer::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "bao_final_use_host_new",
+        "symbol": "BaoFinalUseHost::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "automation_taskflow_provider_effect_bridge",
+        "symbol": "ProviderEffectTaskFlowDriver::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-automation/src/action_skill_driver.rs"
+        ]
+      },
+      {
+        "id": "root_physical_recovery_retirement_admission",
+        "symbol": "PreparedMaterialRecovery::observe",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs"
+        ]
+      },
+      {
+        "id": "root_live_admin_exchange",
+        "symbol": "RootAdminCapability::exchange",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_frozen_update_scope_constructor",
+        "symbol": "FrozenLearningScopeV2::freeze",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_work.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "root_learning_scoped_profile_constructor",
+        "symbol": "HostAuthorityLearningProfileV1::new_scoped_v2",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "learning_evidence_original_owner_readback",
+        "symbol": "LearningIterationEvidenceClientV1::readback",
+        "callPattern": null,
+        "receiverType": "LearningIterationEvidenceClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs"
+        ]
+      },
+      {
+        "id": "learning_original_training_receipt_create",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+        ]
+      },
+      {
+        "id": "learning_original_training_receipt_recover",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+        ]
+      },
+      {
+        "id": "learning_original_training_receipt_readback",
+        "symbol": "OriginalCellQ24TrainingReceiptOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_training_stage_readback",
+        "symbol": "OriginalCellQ24TrainingStageV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingStageV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_material.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_model_material_owner_create",
+        "symbol": "CellQ24ModelProposalOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "CellQ24ModelProposalOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_model_material_owner_recover",
+        "symbol": "CellQ24ModelProposalOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "CellQ24ModelProposalOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_model_material_owner_readback",
+        "symbol": "CellQ24ModelProposalOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "CellQ24ModelProposalOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+        ]
+      },
+      {
+        "id": "learning_original_evaluation_receipt_create",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"
+        ]
+      },
+      {
+        "id": "learning_original_evaluation_receipt_recover",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_evaluation_handoff.rs"
+        ]
+      },
+      {
+        "id": "learning_original_evaluation_receipt_readback",
+        "symbol": "OriginalCellEvaluationReceiptOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellEvaluationReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "cell_q24_original_dataset_batch",
+        "symbol": "CellQ24TrainingBatchV1::from_original_dataset",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_task",
+        "symbol": "CellQ24DatasetTaskV1::capture",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_source.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_revalidation",
+        "symbol": "CellQ24TrainingBatchV1::revalidate_source",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_capability",
+        "symbol": "CellQ24TrainingBatchV1::require_original_dataset_provenance",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_trainer_dataset_capability",
+        "symbol": "CellQ24TrainingOwnerV1::require_original_dataset_provenance",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs",
+          "codex-rs/hepta-agentd/src/root_q24_model_factory.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_freeze_create",
+        "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::create",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_freeze_recover",
+        "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_original_dataset_freeze_readback",
+        "symbol": "OriginalCellQ24DatasetFreezeOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24DatasetFreezeOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_task_ledger.rs"
+        ]
+      },
+      {
+        "id": "root_q24_factory_live_observation",
+        "symbol": "AgentdRootQ24ModelFactoryV1::require_current",
+        "callPattern": null,
+        "receiverType": "AgentdRootQ24ModelFactoryV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs",
+          "codex-rs/hepta-agentd/src/config_root_learning.rs"
+        ]
+      },
+      {
+        "id": "root_q24_factory_original_readback",
+        "symbol": "AgentdRootQ24ModelFactoryV1::readback",
+        "callPattern": null,
+        "receiverType": "AgentdRootQ24ModelFactoryV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_local_decision_owner.rs"
+        ]
+      },
+      {
+        "id": "learning_original_source_create",
+        "symbol": "OriginalCellQ24SourceReceiptOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_source_recover",
+        "symbol": "OriginalCellQ24SourceReceiptOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24SourceReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_source_files_create",
+        "symbol": "OriginalCellQ24SourceFilesV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24SourceFilesV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_source_files_recover",
+        "symbol": "OriginalCellQ24SourceFilesV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24SourceFilesV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "cell_q24_original_native_create",
+        "symbol": "CellQ24TrainingOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "cell_q24_original_native_recover",
+        "symbol": "CellQ24TrainingOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingOwnerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_generation_receipt_create",
+        "symbol": "OriginalGenerationLearningReceiptOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_generation_handoff.rs"
+        ]
+      },
+      {
+        "id": "learning_original_generation_receipt_recover",
+        "symbol": "OriginalGenerationLearningReceiptOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_generation_handoff.rs"
+        ]
+      },
+      {
+        "id": "learning_original_generation_receipt_readback",
+        "symbol": "OriginalGenerationLearningReceiptOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalGenerationLearningReceiptOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_receipts.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
+        ]
+      },
+      {
+        "id": "learning_original_local_policy_create",
+        "symbol": "OriginalCellQ24LocalDecisionOwnerV1::create",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+        ]
+      },
+      {
+        "id": "learning_original_local_policy_recover",
+        "symbol": "OriginalCellQ24LocalDecisionOwnerV1::recover",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
+        ]
+      },
+      {
+        "id": "learning_original_local_policy_readback",
+        "symbol": "OriginalCellQ24LocalDecisionOwnerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LocalDecisionOwnerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
+        ]
+      },
+      {
+        "id": "learning_original_q24_stage_require_current",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::require_current",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      },
+      {
+        "id": "learning_original_q24_stage_prepared",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::prepared",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/circuit_feature_historical_handoff.rs",
+          "codex-rs/hepta-agentd/src/circuit_feature_learning_handoff.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_q24_checkpoint.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_retained_source.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+          "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs"
+        ]
+      },
+      {
+        "id": "learning_original_feature_source_capture",
+        "symbol": "OriginalCircuitFeatureLearningSourcesV1::capture",
+        "callPattern": null,
+        "receiverType": "OriginalCircuitFeatureLearningSourcesV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "learning_original_q24_training_files",
+        "symbol": "OriginalCellQ24TrainingFilesV1::open",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingFilesV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "root_generation_publication_original_stream",
+        "symbol": "RootGenerationCurrentClient::from_original_stream",
+        "callPattern": null,
+        "receiverType": "RootGenerationCurrentClient",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_generation_publication_inputs.rs"
+        ]
+      },
+      {
+        "id": "artifact_original_acknowledged_readback",
+        "symbol": "LearningArtifactOwnerService::read_original_publication",
+        "callPattern": null,
+        "receiverType": "LearningArtifactOwnerService",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs"
+        ]
+      },
+      {
+        "id": "q24_task_original_ledger_open",
+        "symbol": "OriginalCellQ24TaskLedgerProducerV1::open_original",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TaskLedgerProducerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/circuit_q24_task_ledger_install.rs"
+        ]
+      },
+      {
+        "id": "q24_task_original_ledger_readback",
+        "symbol": "OriginalCellQ24TaskLedgerProducerV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TaskLedgerProducerV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "q24_training_original_readback",
+        "symbol": "OriginalCellQ24TrainingReadbackV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingReadbackV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs"
+        ]
+      },
+      {
+        "id": "evaluation_original_trainer_readback",
+        "symbol": "OriginalCellEvaluationTrainerReadbackV1::readback",
+        "callPattern": null,
+        "receiverType": "OriginalCellEvaluationTrainerReadbackV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_evaluation_stage.rs",
+          "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_retained_original_ledger_capability",
+        "symbol": "CellQ24TrainingBatchV1::require_original_ledger_capability",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "q24_retained_prepared_original_ledger",
+        "symbol": "CellQ24PreparedLearningV1::require_original_task_ledger",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_retained_learning_source.rs"
+        ]
+      },
+      {
+        "id": "root_historical_source_request_unconnected",
+        "symbol": "RootHistoricalSourceCaptureCapabilityV1::capture",
+        "callPattern": null,
+        "receiverType": "RootHistoricalSourceCaptureCapabilityV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs"
+        ]
+      },
+      {
+        "id": "root_historical_source_handoff_fence",
+        "symbol": "RootHistoricalSourceHandoffV1::fence",
+        "callPattern": "RootHistoricalSourceHandoffV1::fence(?:\\s*\\(|\\s*\\))",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_source_transport.rs"
+        ]
+      },
+      {
+        "id": "root_initial_artifact_same_session",
+        "symbol": "RootGenerationPublicationConnectionV1::require_same_original_session",
+        "callPattern": null,
+        "receiverType": "RootGenerationPublicationConnectionV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_generation_initial_artifacts.rs",
+          "codex-rs/hepta-agentd/src/root_generation_initial_learning_trust.rs",
+          "codex-rs/hepta-agentd/src/root_generation_initial_source_capture.rs"
+        ]
+      },
+      {
+        "id": "root_historical_source_armed_capture",
+        "symbol": "RootHistoricalSourcePinV1::capture",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_source_pin.rs"
+        ]
+      },
+      {
+        "id": "root_initial_learning_trust_exchange",
+        "symbol": "OriginalLearningTrustExchange::new",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_transport.rs"
+        ]
+      },
+      {
+        "id": "ordinary_initial_q24_original_ledger_files",
+        "symbol": "initial_q24::ledger_files::open",
+        "callPattern": "\\bledger_files\\s*::\\s*open\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_initial_q24.rs"
+        ]
+      },
+      {
+        "id": "root_initial_run_start_original_pin",
+        "symbol": "OriginalInputPin::capture",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_run_start_store.rs"
+        ]
+      },
+      {
+        "id": "root_initial_run_start_original_observe",
+        "symbol": "OriginalInputPin::observe",
+        "callPattern": null,
+        "receiverType": "OriginalInputPin",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_run_start_context.rs",
+          "codex-rs/hepta-agentd/src/authority_host_run_start_store.rs"
+        ]
+      },
+      {
+        "id": "root_initial_run_start_cold_physical",
+        "symbol": "RootRetainedRunStartDataV1::read_original_publication",
+        "callPattern": null,
+        "receiverType": "RootRetainedRunStartDataV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "root_initial_run_start_historical_physical",
+        "symbol": "RootOriginalRunStartReadV1::read_original_publication",
+        "callPattern": null,
+        "receiverType": "RootOriginalRunStartReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_task.rs"
+        ]
+      },
+      {
+        "id": "root_original_ledger_metadata",
+        "symbol": "RootHistoricalLedgerDeploymentV1::open_original",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_ledger_history.rs",
+          "codex-rs/hepta-agentd/src/authority_host_historical_source_deployment.rs"
+        ]
+      },
+      {
+        "id": "ledger_readonly_dataset_records",
+        "symbol": "ReadOnlyLedgerViewV1::read_dataset_records",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "root_historical_task_read_original_session",
+        "symbol": "RootHistoricalTaskReadConnectionV1::require_original_session",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadConnectionV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_completed_learning_history.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+          "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs",
+          "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_same_session",
+        "symbol": "RootHistoricalTaskReadConnectionV1::require_same_original_session",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadConnectionV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_from_stream",
+        "symbol": "RootHistoricalTaskReadClientV1::from_original_stream",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_inputs.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_client_session",
+        "symbol": "RootHistoricalTaskReadClientV1::require_same_original_session",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_launcher.rs",
+          "codex-rs/hepta-agentd/src/production_launcher_late_writer.rs",
+          "codex-rs/hepta-agentd/src/root_completed_learning_history.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_observe",
+        "symbol": "RootHistoricalTaskReadClientV1::observe_original_task",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_receipt_client",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::require_original_client",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+          "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_receipt_read",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::with_current_read",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_provider",
+        "symbol": "HistoricalTaskReadRuntime::open_original",
+        "callPattern": null,
+        "receiverType": "HistoricalTaskReadRuntime",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_read_reply",
+        "symbol": "require_complete_reply",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_recipient_trust_files",
+        "symbol": "RootHistoricalLearningTrustV1::open_original",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_read.rs"
+        ]
+      },
+      {
+        "id": "ledger_snapshot_dataset_records",
+        "symbol": "LedgerSnapshot::read_dataset_records",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_projection.rs"
+        ]
+      },
+      {
+        "id": "q24_dataset_pure_original_projection",
+        "symbol": "project_original_q24_dataset_v1",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_materializer.rs"
+        ]
+      },
+      {
+        "id": "original_task_data_validate",
+        "symbol": "RootHistoricalTaskPublicationDataV1::validate_against",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskPublicationDataV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_task.rs",
+          "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs",
+          "codex-rs/hepta-agentd/src/root_historical_task_read_protocol.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_publication_read",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::read_original_publication",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_task.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_historical_dataset_task_capture",
+        "symbol": "CellQ24DatasetTaskV1::capture_historical",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetTaskV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "cell_q24_historical_dataset_task_receipt",
+        "symbol": "CellQ24DatasetTaskV1::require_historical_receipt",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetTaskV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+        ]
+      },
+      {
+        "id": "root_historical_recipient_trust_reply",
+        "symbol": "require_original_trust_reply",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "q24_dataset_pure_preparation_identity",
+        "symbol": "original_q24_dataset_preparation_identity_v1",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_derive.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_preparation.rs"
+        ]
+      },
+      {
+        "id": "root_historical_current_trust_read",
+        "symbol": "OriginalHistoricalLearningTrustV1::with_current_trust",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs"
+        ]
+      },
+      {
+        "id": "root_historical_current_trust_receipt",
+        "symbol": "OriginalHistoricalLearningTrustV1::require_original_receipt",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+        ]
+      },
+      {
+        "id": "root_historical_fixed_client_exchange",
+        "symbol": "RootHistoricalTaskReadClientV1::exchange",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_completed_learning_history.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs",
+          "codex-rs/hepta-agentd/src/root_post_a_learning_client.rs"
+        ]
+      },
+      {
+        "id": "q24_original_historical_dataset_ledger",
+        "symbol": "HistoricalDatasetLedgerV1::capture_original",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_historical_dataset_read",
+        "symbol": "HistoricalDatasetLedgerV1::with_current",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "q24_original_historical_dataset_batch",
+        "symbol": "CellQ24TrainingBatchV1::from_original_historical_dataset",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "root_historical_ledger_snapshot_data",
+        "symbol": "RootHistoricalLedgerReadDataV1::read_snapshot",
+        "callPattern": null,
+        "receiverType": "RootHistoricalLedgerReadDataV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_historical_preparation",
+        "symbol": "CellQ24DatasetFreezePreparationV1::capture_historical",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "q24_prepared_historical_dataset",
+        "symbol": "CellQ24PreparedLearningV1::from_historical",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+        ]
+      },
+      {
+        "id": "root_historical_current_trust_clock",
+        "symbol": "OriginalHistoricalLearningTrustV1::original_unix_seconds",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalLearningTrustV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_operation.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_dataset_original_clock",
+        "symbol": "HistoricalDatasetLedgerV1::original_unix_seconds",
+        "callPattern": null,
+        "receiverType": "HistoricalDatasetLedgerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_freeze_signing_config",
+        "symbol": "CellQ24DatasetFreezePreparationV1::original_historical_freeze_config",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_freeze_key_admission",
+        "symbol": "CellQ24DatasetFreezePreparationV1::validate_historical_freezer",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs"
+        ]
+      },
+      {
+        "id": "root_post_a_learning_strict_reply",
+        "symbol": "require_post_a_learning_reply",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_post_a_installation_prepare",
+        "symbol": "post_a_worker::prepare",
+        "callPattern": "post_a_worker\\s*::\\s*prepare\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_historical_read_session.rs"
+        ]
+      },
+      {
+        "id": "root_post_a_installation_submit",
+        "symbol": "PostALearningSubmitter::submit",
+        "callPattern": null,
+        "receiverType": "PostALearningSubmitter",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+        ]
+      },
+      {
+        "id": "post_a_original_freeze_files",
+        "symbol": "SigningFilesData::freeze_original",
+        "callPattern": null,
+        "receiverType": "SigningFilesData",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "post_a_original_stage_files",
+        "symbol": "StageFilesData::into_original_inputs",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_capture",
+        "symbol": "RegisteredHistoricalLearningSourceV1::capture_original_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_current",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_current_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_same_prepared",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_prepared_historical_source",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_install",
+        "symbol": "LearningIterationRuntimeBootstrapV1::with_original_historical_source",
+        "callPattern": null,
+        "receiverType": "LearningIterationRuntimeBootstrapV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_dataset_receipt",
+        "symbol": "CellQ24TrainingBatchV1::require_original_historical_dataset_receipt",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_prepared",
+        "symbol": "CellQ24PreparedLearningV1::require_original_historical_source",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_delivery_async_claim",
+        "symbol": "LearningOwnerJournalV1::commit_original_historical_delivery",
+        "callPattern": null,
+        "receiverType": "LearningOwnerJournalV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "root_historical_borrowed_operation",
+        "symbol": "OriginalHistoricalLearningTrustV1::with_original_operation",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+        ]
+      },
+      {
+        "id": "root_historical_borrowed_read",
+        "symbol": "OriginalHistoricalOperationV1::read_for",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs",
+          "codex-rs/hepta-agentd/src/root_historical_learning_trust_client.rs"
+        ]
+      },
+      {
+        "id": "q24_original_dataset_operation",
+        "symbol": "OriginalDatasetLedgerV1::with_original_ledger_operation",
+        "callPattern": null,
+        "receiverType": "OriginalDatasetLedgerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "q24_original_dataset_operation_read",
+        "symbol": "OriginalDatasetOperationV1::read_historical",
+        "callPattern": null,
+        "receiverType": "OriginalDatasetOperationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_batch_operation",
+        "symbol": "CellQ24TrainingBatchV1::with_original_dataset_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24TrainingBatchV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_batch_operation_check",
+        "symbol": "OriginalDatasetOperationV1::require_original_batch",
+        "callPattern": null,
+        "receiverType": "OriginalDatasetOperationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_prepared_operation",
+        "symbol": "CellQ24PreparedLearningV1::with_original_prepared_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      },
+      {
+        "id": "q24_original_prepared_operation_owner",
+        "symbol": "OriginalPreparedReadV1::require_prepared",
+        "callPattern": null,
+        "receiverType": "OriginalPreparedReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_training_material.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_receipt_construction.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_receipt_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      },
+      {
+        "id": "q24_original_freeze_operation",
+        "symbol": "CellQ24DatasetFreezePreparationV1::with_original_freeze_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_original_freeze_operation_owner",
+        "symbol": "OriginalFreezePreparationReadV1::require_original_preparation",
+        "callPattern": null,
+        "receiverType": "OriginalFreezePreparationReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_original_freeze_operation_payload",
+        "symbol": "OriginalFreezePreparationReadV1::original_signing_payload",
+        "callPattern": null,
+        "receiverType": "OriginalFreezePreparationReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_original_freeze_operation_authorization",
+        "symbol": "OriginalFreezePreparationReadV1::validate_original_authorization",
+        "callPattern": null,
+        "receiverType": "OriginalFreezePreparationReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_original_freeze_operation_key",
+        "symbol": "OriginalFreezePreparationReadV1::original_freezer_key",
+        "callPattern": null,
+        "receiverType": "OriginalFreezePreparationReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_freeze_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_freeze_operation_cut",
+        "symbol": "CellQ24DatasetFreezePreparationV1::with_historical_cut_in_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_freezer.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs"
+        ]
+      },
+      {
+        "id": "q24_historical_freeze_operation_verify",
+        "symbol": "CellQ24DatasetFreezePreparationV1::validate_authorization_historical_in_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs"
+        ]
+      },
+      {
+        "id": "q24_dataset_source_provenance_read",
+        "symbol": "OriginalQ24DatasetReadV1::require_original_batch",
+        "callPattern": null,
+        "receiverType": "OriginalQ24DatasetReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs"
+        ]
+      },
+      {
+        "id": "q24_prepared_training_batch_read",
+        "symbol": "OriginalPreparedReadV1::require_training_batch",
+        "callPattern": null,
+        "receiverType": "OriginalPreparedReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_training_source_read.rs"
+        ]
+      },
+      {
+        "id": "root_publication_refusal_binding",
+        "symbol": "PublicationRefusalBinding::from_original",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_publication_registration.rs"
+        ]
+      },
+      {
+        "id": "q24_training_original_operation",
+        "symbol": "OriginalCellQ24TrainingStageV1::with_original_training_operation",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24TrainingStageV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_generation_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_publication_material.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
+        ]
+      },
+      {
+        "id": "root_prepared_publication_context",
+        "symbol": "OriginalPreparedPublicationRoute::require_current",
+        "callPattern": null,
+        "receiverType": "OriginalPreparedPublicationRoute",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_c_recovery.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_c_task.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_continuation.rs"
+        ]
+      },
+      {
+        "id": "post_a_original_late_input_open",
+        "symbol": "OriginalLateInput::open_original",
+        "callPattern": null,
+        "receiverType": "OriginalLateInput",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_c_task.rs"
+        ]
+      },
+      {
+        "id": "post_a_historical_feature_read",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::with_current_feature_read",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/circuit_feature_current_publication.rs"
+        ]
+      },
+      {
+        "id": "root_model_b_actual_initial",
+        "symbol": "OriginalRootBEvaluationBorrowV1::initial_snapshot",
+        "callPattern": null,
+        "receiverType": "OriginalRootBEvaluationBorrowV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_model_b_transport.rs"
+        ]
+      },
+      {
+        "id": "root_current_historical_connection",
+        "symbol": "RootHistoricalTaskReadConnectionV1::require_same_original_publication",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadConnectionV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_current_historical_receipt_connection",
+        "symbol": "OriginalHistoricalTaskReadReceiptV1::require_original_publication_connection",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalTaskReadReceiptV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_generation_current_history.rs"
+        ]
+      },
+      {
+        "id": "post_a_c_explicit_plan",
+        "symbol": "CTaskData::open_original",
+        "callPattern": null,
+        "receiverType": "CTaskData",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "post_a_generation_original_files",
+        "symbol": "GenerationFilesData::open_original",
+        "callPattern": null,
+        "receiverType": "GenerationFilesData",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "post_a_continuation_original_delivery",
+        "symbol": "OriginalPostAContinuationV1::require_original_delivery",
+        "callPattern": null,
+        "receiverType": "OriginalPostAContinuationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "post_a_continuation_supervised_run",
+        "symbol": "OriginalPostAContinuationV1::run",
+        "callPattern": null,
+        "receiverType": "OriginalPostAContinuationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "post_a_continuation_original_install",
+        "symbol": "LearningIterationRuntimeBootstrapV1::with_original_post_a_continuation",
+        "callPattern": null,
+        "receiverType": "LearningIterationRuntimeBootstrapV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "post_a_artifact_original_inputs",
+        "symbol": "OriginalArtifactPlan::open_original",
+        "callPattern": null,
+        "receiverType": "OriginalArtifactPlan",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "post_a_artifact_existing_owner_open",
+        "symbol": "LearningArtifactOwnerService::open",
+        "callPattern": null,
+        "receiverType": "LearningArtifactOwnerService",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_same_aggregate",
+        "symbol": "OriginalHistoricalStageContextV1::require_original_aggregate",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalStageContextV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_current_admission",
+        "symbol": "OriginalHistoricalStageContextV1::require_in_operation",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalStageContextV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_original_source",
+        "symbol": "RegisteredHistoricalLearningSourceV1::require_original_stage_operation",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_context.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_successor.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_prepared_source",
+        "symbol": "CellQ24PreparedLearningV1::require_historical_source_in_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_original_borrow",
+        "symbol": "OriginalQ24StageOperationV1::from_original",
+        "callPattern": null,
+        "receiverType": "OriginalQ24StageOperationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_actual_operation",
+        "symbol": "OriginalQ24StageOperationV1::run",
+        "callPattern": null,
+        "receiverType": "OriginalQ24StageOperationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs"
+        ]
+      },
+      {
+        "id": "post_a_original_training_capacity",
+        "symbol": "StageFilesData::require_original_training_capacity",
+        "callPattern": null,
+        "receiverType": "StageFilesData",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24_deployment.rs"
+        ]
+      },
+      {
+        "id": "historical_stage_original_lane",
+        "symbol": "OriginalCellQ24LearningStageOwnersV1::run_original_historical_stage",
+        "callPattern": null,
+        "receiverType": "OriginalCellQ24LearningStageOwnersV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_runtime.rs"
+        ]
+      },
+      {
+        "id": "root_successor_fixed_custody",
+        "symbol": "RootOriginalSuccessorFilesV1::open_original",
+        "callPattern": null,
+        "receiverType": "RootOriginalSuccessorFilesV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_post_a_publication.rs"
+        ]
+      },
+      {
+        "id": "root_successor_generation_handoff_open",
+        "symbol": "OriginalHistoricalCircuitFeatureLearningHandoffV1::open",
+        "callPattern": null,
+        "receiverType": "OriginalHistoricalCircuitFeatureLearningHandoffV1",
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "root_initial_ready_request",
+        "symbol": "ready::request",
+        "callPattern": "ready\\s*::\\s*request\\s*\\(",
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_generation_initial_peer_ready.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_source_route",
+        "symbol": "OriginalBSourceRoute::prepare",
+        "callPattern": null,
+        "receiverType": "OriginalBSourceRoute",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_route.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_source_peer",
+        "symbol": "OriginalBSourcePeer::capture",
+        "callPattern": null,
+        "receiverType": "OriginalBSourcePeer",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_source_route.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_source_input_open",
+        "symbol": "OriginalBInputs::open",
+        "callPattern": null,
+        "receiverType": "OriginalBInputs",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_provider",
+        "symbol": "OriginalBProvider::new",
+        "callPattern": null,
+        "receiverType": "OriginalBProvider",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_execute.rs"
+        ]
+      },
+      {
+        "id": "q24_prepared_training_material_operation",
+        "symbol": "CellQ24PreparedLearningV1::training_material_in_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_accept_completed",
+        "symbol": "OriginalBEnrollment::retain_original_completed_acceptance",
+        "callPattern": null,
+        "receiverType": "OriginalBEnrollment",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_operation.rs"
+        ]
+      },
+      {
+        "id": "root_post_a_original_file_identity",
+        "symbol": "PostAOriginalFile::require_identity",
+        "callPattern": null,
+        "receiverType": "PostAOriginalFile",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_journal.rs",
+          "codex-rs/hepta-agentd/src/authority_host_post_a_freeze.rs"
+        ]
+      },
+      {
+        "id": "learning_original_receipt_verification",
+        "symbol": "OriginalReceiptVerificationV1::new",
+        "callPattern": null,
+        "receiverType": "OriginalReceiptVerificationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_signatures.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_history.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_receipts.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_auth.rs"
+        ]
+      },
+      {
+        "id": "learning_original_receipt_signature_check",
+        "symbol": "OriginalReceiptVerificationV1::verify",
+        "callPattern": null,
+        "receiverType": "OriginalReceiptVerificationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_signatures.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_history.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_receipts.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_auth.rs"
+        ]
+      },
+      {
+        "id": "root_independent_b_record_open",
+        "symbol": "OriginalBRecord::open",
+        "callPattern": null,
+        "receiverType": "OriginalBRecord",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_history.rs",
+          "codex-rs/hepta-agentd/src/authority_host_q24_evaluation_registration.rs"
+        ]
+      },
+      {
+        "id": "root_completed_accept_reply",
+        "symbol": "require_completed_acceptance_reply",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_completed_history_reply",
+        "symbol": "require_completed_history_reply",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      },
+      {
+        "id": "root_artifact_original_reader_open",
+        "symbol": "LearningArtifactReadViewV1::open_original",
+        "callPattern": null,
+        "receiverType": "LearningArtifactReadViewV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "codex-rs/hepta-agentd/src/authority_host_initial_deployment_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_completed_open.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_deployment_inputs.rs",
+          "codex-rs/hepta-agentd/src/production_initial_q24_load.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_artifacts.rs"
+        ]
+      },
+      {
+        "id": "root_original_final_use_observer_enrollment",
+        "symbol": "RootFinalUseObserverV1::open_original",
+        "callPattern": null,
+        "receiverType": "RootFinalUseObserverV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+          "codex-rs/hepta-agentd/src/authority_host_generation_publication_enrollment.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_completed_open.rs"
+        ]
+      },
+      {
+        "id": "root_completed_publication_observe",
+        "symbol": "OriginalCompletedPublicationReadV1::observe",
+        "callPattern": null,
+        "receiverType": "OriginalCompletedPublicationReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs"
+        ]
+      },
+      {
+        "id": "root_completed_control_existing",
+        "symbol": "OriginalControlRecord::open",
+        "callPattern": null,
+        "receiverType": "OriginalControlRecord",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_checkpoint.rs",
+          "codex-rs/hepta-agentd/src/authority_host_completed_record.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_completed_open.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_completed_refusal.rs",
+          "codex-rs/hepta-agentd/src/authority_host_publication_completed_successor.rs"
+        ]
+      },
+      {
+        "id": "root_completed_record_read",
+        "symbol": "CompletedLearningRecord::read",
+        "callPattern": null,
+        "receiverType": "CompletedLearningRecord",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_provider.rs"
+        ]
+      },
+      {
+        "id": "root_completed_b_observe",
+        "symbol": "OriginalCompletedBReadV1::observe",
+        "callPattern": null,
+        "receiverType": "OriginalCompletedBReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs"
+        ]
+      },
+      {
+        "id": "root_original_complete_task_observation",
+        "symbol": "RootOriginalHistoricalTaskReadV1::observe_original_task",
+        "callPattern": null,
+        "receiverType": "RootOriginalHistoricalTaskReadV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/authority_host_completed_observation.rs",
+          "codex-rs/hepta-agentd/src/authority_host_historical_read.rs",
+          "codex-rs/hepta-agentd/src/authority_host_post_a_provider.rs"
+        ]
+      },
+      {
+        "id": "root_completed_delivery_accept",
+        "symbol": "RegisteredHistoricalLearningSourceV1::accept_original_terminal",
+        "callPattern": null,
+        "receiverType": "RegisteredHistoricalLearningSourceV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "root_completed_retain_acceptance",
+        "symbol": "RootHistoricalTaskReadClientV1::retain_original_completed_acceptance",
+        "callPattern": null,
+        "receiverType": "RootHistoricalTaskReadClientV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs"
+        ]
+      },
+      {
+        "id": "root_historical_task_response_frame_capacity",
+        "symbol": "OriginalPublicationStream::exchange_with_response_bound",
+        "callPattern": null,
+        "receiverType": "OriginalPublicationStream",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/root_historical_task_read_client.rs"
+        ]
+      }
+    ],
+    "failures": [],
+    "expected_boundary_count": 182,
+    "wall_seconds": 30.725073711946607
+  },
+  "full_caller_proof_exit": 0,
+  "full_caller_proof_wall_seconds": 462.93019794486463,
+  "failures": [],
+  "errors": [],
+  "skipped": [],
+  "wall_seconds": 518.7710323289502,
+  "native_tests": 0,
+  "model_calls": 0,
+  "original_executor_mutated": false
+}

@@ -389,7 +389,16 @@ def recover(spec, expected_digest=None):
     admit_d(spec, sys.modules[__name__])
     predictor = load_predictor(spec["manifest"], spec["artifact_root"])
     try:
-        result = prediction(predictor, spec["record"], selected)
+        from .adoption_costs import predict
+
+        result = predict(
+            predictor,
+            spec["record"],
+            selected,
+            Path(spec["database"]).parent,
+            "cold_C_replay",
+            sys.modules[__name__],
+        )
         new_tasks = execute_d(predictor, spec, selected, result, sys.modules[__name__])
         require(
             verify_manifest(spec["manifest"], spec["artifact_root"]) == selected,
@@ -538,7 +547,16 @@ def execute(request, output):
 
         for task in request["c_tasks"]:
             c_started = time.time_ns()
-            result = prediction(predictor, task["record"], selected)
+            from .adoption_costs import predict
+
+            result = predict(
+                predictor,
+                task["record"],
+                selected,
+                root,
+                "hot_C",
+                sys.modules[__name__],
+            )
             outcome = verify_answer(task["record"], result["answer"])
             report["C"].append(
                 dict(
@@ -673,6 +691,11 @@ def execute(request, output):
                     status="FAILED", cleanup_error=f"{type(error).__name__}: {error}"
                 )
         report["wall_seconds"] = time.monotonic() - started
+        if inserted:
+            from .adoption_costs import collect, measured_costs
+
+            report["inference_attempts"] = collect(root, sys.modules[__name__])
+            report["execution_costs"] = measured_costs(report["inference_attempts"])
         if db is not None:
             if inserted:
                 db.execute(

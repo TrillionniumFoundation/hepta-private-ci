@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="a0dc9b9d-a0a4-4448-aef8-8543dc733334" timestamp="2026-11-19T04:46:32.553+08:00" time="60.076">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c" classname="codex-hepta-agentd" timestamp="2026-11-19T04:46:32.560+08:00" time="60.055">
+            <failure message="Error: Permission denied (os error 13)" type="test failure with exit code 101">Error: Permission denied (os error 13)</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 60.05s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-8VTaEM
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-MNl218
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-T1eKow
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73891 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-ab12-noupdate-1/bind/ordinary-q24-PYHmXA
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-yvszAJ
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-ab12-noupdate-1/witness-bind/ordinary-post-a-model-m7F4Jr
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-GfpHAq
+Error: Permission denied (os error 13)
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

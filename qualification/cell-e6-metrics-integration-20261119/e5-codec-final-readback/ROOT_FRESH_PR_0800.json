@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6790",
+    "number": 6790,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "## Result\n\nThe frozen codec reconstructs all 16 historical maintainer corrections exactly (17 changed runtime files), but only 11 targets fit the frozen visible-unit set. All original ordered prefixes **1, 4 and 16 remain unrepresentable** within the original limits. Only attrs at **ordinal 11, the twelfth source**, meets the limited static representation contract and every bound: 1,277 input tokens, 138 complete target tokens, 1,415 full SFT positions. It is not moved into an earlier prefix and is not admitted for training.\n\nFifteen complete prompts and SFT sequences exceed their original limits; five complete targets exceed 384 generation positions. No input, action, fixture or parameter was truncated. These are codec/infrastructure measurements, not learned student success rates.\n\n## Scope and evidence\n\nThis is stage 5 of the Draft stack #6786 → #6787 → #6788 → #6789 → #6790, based on the existing #6783 materials. The full source/input freeze was published at `bbb907067afa97ed61c0df8967de60f3196b683e` before runtime-after target construction. `SOURCE_FREEZE.json` SHA256 remains `9b61e52fb89ff2ec06e9bd75db7c60971196488b79bfb1bd809d0c004f157e0c`; all eleven modules and sixteen before/task contexts remain unchanged. Original task tests/fixtures can contain upstream-after bytes already supplied to the original before native run; runtime-after files do not choose the visible input.\n\nThe fixed prefix remains `9dade6e90f6227dded45afa1c8462758a511a699`. The first four remain loguru, natsort, rich and multimethod. All 290 selected testcase identities and required fixtures/parameters are retained.\n\nRead `qualification/cell-e5-source-codec-20261120/READOUT.md`, `CONCLUSION.md`, `MEASUREMENT_READOUT.json`, `TARGET_READOUT.json` and `TOKENIZER_READOUT.json`. The complete prospective inputs, prototype attempts/failures, all complete targets and actual owner outputs are retained in hash-indexed split archives. The new measurement archive contains 52 members; the verification archive contains 51.\n\n## Actual verification\n\n- Unchanged original `just fmt` and `--check` passed in an isolated desktop clone; all eleven source ASTs were preserved. The 24 combined synthetic boundary/tampering tests passed. They do not prove arbitrary Python semantics.\n- The target phase passed 16 deterministic full-material byte roundtrips, 11 visible-set roundtrips and 32 actual stale-binding/source-tampering checks. Five visible-set failures remain failures.\n- Exact local parent tokenizer, native template and special IDs were used with no truncation. The tokenizer owner took 8.431660 seconds; child wall/CPU times are nested and not additive.\n- The unchanged original 512,000-byte blob gate passed the full five-stage base `63f494553a735bd55a3fef7cfe2e76604cd6db7d` → measurement candidate `0a57d319ee479c820c36618d6c713881829c04cc`: 53 paths, exit 0, 0.520945 seconds. This exact receipt and earlier preparation failures are published here.\n- After adding the verification receipts, the same original gate also passed base `63f494553a735bd55a3fef7cfe2e76604cd6db7d` → **final head `148e37c26586677e83f0e57e100def8805c1a020`**: 58 paths, exit 0, 0.573747 seconds. Its receipt is retained for the next combined checkpoint so the tested head is not recursively changed.\n- Both blob gates ran in a fresh cloud Git object database with exact commit/tree/blob SHA verification and readback. The checker and allowlist were unchanged; no exception was added. HEAD, refs, index and config were unchanged during both gates. This is actual gate execution, not only a size inventory.\n\n## Preserved limits\n\nThe original 4,096 input-token, 3,584 full-SFT-position, 384 generation-position, 65,536 native-message-byte and 32,768 answer-byte bounds remain unchanged. Both original E5 32-unit curves are unchanged. Unit-to-optimizer, compute/verifier, native-candidate and independent future-panel bindings remain null; every training-execution admission remains false.\n\nThere are **zero new model loads, forwards, generations, gradient updates or upstream native task replays**. The E1/E2 56-call NoUpdate decision and both frozen 32-update arms remain separate and unchanged, as does existing E3 evidence. No merge or production adoption occurs in this Draft.\n",
+    "title": "Measure frozen E5 codec: exact repairs, original prefixes rejected",
+    "base": "research/e5-visible-context-20261120-e9e051",
+    "base_sha": "2c49532b04b5170411c863c2d9479c85cafb1d0c",
+    "head": "research/e5-source-codec-freeze-20261120-e9e051",
+    "head_sha": "148e37c26586677e83f0e57e100def8805c1a020",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": "f5b3789b061ed803d0cfbe492ff85ed944461220",
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-20T07:29:50Z",
+    "updated_at": "2026-11-20T07:54:05Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 3,
+    "changed_files": 50,
+    "additions": 979,
+    "deletions": 0,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6790",
+    "display_title": "Measure frozen E5 codec: exact repairs, original prefixes rejected"
+  },
+  "isError": false
+}

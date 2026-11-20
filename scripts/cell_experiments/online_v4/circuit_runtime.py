@@ -65,6 +65,7 @@ def run_graph(
     drop_edge=None,
     drop_cell=None,
     feedback_fn=None,
+    message_style="bundled_v4",
 ):
     """Pay for both live slots; retain earliest business success, else last output.
 
@@ -80,6 +81,10 @@ def run_graph(
         "only the bound stable feedback implementation is supported",
     )
     require(
+        message_style in ("bundled_v4", "native_turn_v1"),
+        "unknown Circuit message style",
+    )
+    require(
         record["task"]["verifier"]["name"] == "repo_patch"
         and record["task"]["verifier"]["version"] == "1",
         "this profile requires the resettable repository-contract verifier",
@@ -88,6 +93,12 @@ def run_graph(
     directory = Path(output_dir)
     directory.mkdir(parents=True, exist_ok=False)
     contract = contract_record(cells, graph, budget)
+    if message_style == "native_turn_v1":
+        contract["message_style"] = message_style
+        contract["shared_history"] = (
+            "The assistant turn is the previous Cell's original output; the next "
+            "Cell receives the same task history and measured tool feedback."
+        )
     write_new(directory / "CONTRACT.json", contract)
     start, cpu, children = time.perf_counter(), time.process_time(), _children_cpu()
     nodes, dispatched, verified = [], 0, 0
@@ -118,14 +129,41 @@ def run_graph(
                         feedback_fn(previous["verification"])
                     )
             if incoming:
-                content = canonical(
-                    {"schema": "hepta.circuit-message.v4", **incoming}
-                ).decode()
+                if message_style == "bundled_v4":
+                    relayed = [
+                        {
+                            "role": "tool",
+                            "content": canonical(
+                                {"schema": "hepta.circuit-message.v4", **incoming}
+                            ).decode(),
+                        }
+                    ]
+                else:
+                    relayed = []
+                    if "answer" in incoming:
+                        relayed.append(
+                            {"role": "assistant", "content": incoming["answer"]}
+                        )
+                    observation = incoming.get(
+                        "feedback",
+                        {
+                            "schema": "hepta.circuit-feedback-omitted.v1",
+                            "instruction": "Continue the original task and return the required complete JSON edit.",
+                        },
+                    )
+                    relayed.append(
+                        {"role": "tool", "content": canonical(observation).decode()}
+                    )
+                relay_bytes = (
+                    len(relayed[0]["content"].encode())
+                    if message_style == "bundled_v4"
+                    else sum(len(message["content"].encode()) for message in relayed)
+                )
                 require(
-                    len(content.encode()) <= budget.max_relay_bytes,
+                    relay_bytes <= budget.max_relay_bytes,
                     "message exceeds frozen relay bound; no truncation",
                 )
-                request["task"]["messages"].append({"role": "tool", "content": content})
+                request["task"]["messages"].extend(relayed)
             call_dir = directory / ("node-" + str(slot))
             call_dir.mkdir(exist_ok=False)
             write_new(call_dir / "REQUEST.json", request)

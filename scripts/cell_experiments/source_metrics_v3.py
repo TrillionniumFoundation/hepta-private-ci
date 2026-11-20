@@ -311,7 +311,7 @@ def adoption_metrics(reports):
                 ),
                 "actual C token counts required",
             )
-            verified_business_row(
+            business_success = verified_business_row(
                 {
                     "raw_answer": prediction["answer"],
                     "success": outcome["success"],
@@ -319,7 +319,17 @@ def adoption_metrics(reports):
                     "semantic_receipt_sha256": outcome["receipt_sha256"],
                 }
             )
+            if terminal:
+                require(
+                    business_success is not None,
+                    "terminal decision missing verified C business evidence",
+                )
         cold = report.get("cold")
+        if terminal:
+            require(
+                bool(c_rows) and cold is not None,
+                "terminal decision requires C use and cold replay",
+            )
         if cold is not None:
             require(
                 cold.get("selected_model_digest") == selected

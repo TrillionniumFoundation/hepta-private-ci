@@ -1,0 +1,387 @@
+{
+  "compile": 0,
+  "design_artifacts": [
+    {
+      "bytes": 22275,
+      "git_blob": "25d338ba2ec7716ccc933fd3066fe36284c838da",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/DESIGN.md",
+      "sha256": "0aff3e8e9bfc1b4a13799d250c11caad02085c73e794320010abe17e95178d8b"
+    },
+    {
+      "bytes": 9974,
+      "git_blob": "c8dbd84688c12454c454dec8aa54ececed2a2e87",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/API_CONTRACT.md",
+      "sha256": "1533a81900e1a5a689859dc1197cd6bc33d61c7259c1e274bfd9bcaa8202c656"
+    },
+    {
+      "bytes": 14246,
+      "git_blob": "b8bcd61727ef6cd326f4a39db108cf74179c9cfc",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/SOURCE_BINDINGS.json",
+      "sha256": "b03c26e2f862dadb52e2801c78c4106b22068c1902f91b6d9ab5804141f39cb7"
+    },
+    {
+      "bytes": 9482,
+      "git_blob": "a856240d26526928cce08eb30b4f1705fcac56ca",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/SOURCE_ANCHORS.json",
+      "sha256": "d4311704124b0bd9ffde13762e6a4e33f26a2b11d340a321ca785e3c1b5add6f"
+    },
+    {
+      "bytes": 26637,
+      "git_blob": "14ba7a862b6218559d03cd0ff8968a43e985aae0",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/WIRE_CONTRACT.json",
+      "sha256": "40d0c4ce4b3acdaeabf636eb86eb34b3a5ce5d980260ca6c2bef26bd094727c8"
+    },
+    {
+      "bytes": 12779,
+      "git_blob": "709a3fdf022825777fa6af2e2924824c2c6169f1",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/PATCH_PLAN.json",
+      "sha256": "f64814123bbd87f50bdf90a0c3b96d78582e2d2b9c162df5517277393b562574"
+    },
+    {
+      "bytes": 23730,
+      "git_blob": "a0645faac27931b5c0bc27b74188cf4c79127ba3",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/REJECTION_CONTROLS.json",
+      "sha256": "432cfec2ccec8020f6e841d33b426f1b7b76328d9c31c29f22a052659b11996c"
+    },
+    {
+      "bytes": 42590,
+      "git_blob": "4b767608ff0ca242a410c17d78f4995995df1ff7",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/build_design_contracts.py",
+      "sha256": "df592f9a0781afde5948f6ec0a52bdfac31259cf6c82f6a602f91878992fb581"
+    },
+    {
+      "bytes": 2569,
+      "git_blob": "c37a840b651d44a6ca72725b7d55758322e3610b",
+      "path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/RESULT.json",
+      "sha256": "ac7d3440c57e962abb5b9882c3c6e53f140c129421cc726dd45ec3aa94b1a79a"
+    }
+  ],
+  "design_author_files_edited": 0,
+  "design_source_bindings": [
+    {
+      "bytes": 7674,
+      "git_blob": "e5ec380f169b95856f3f89d9c91f7cd092a79ace",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs",
+      "public_commit": true,
+      "sha256": "950f4080dd61a1f3507101aa9e97d75879b9b1b8bddda91bf54147e3279f4795",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/authority_host_generation_initial_inputs.rs"
+    },
+    {
+      "bytes": 3353,
+      "git_blob": "a50a0b5044ef6748ead4c1103e115661c0c42b79",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs",
+      "public_commit": true,
+      "sha256": "78f58ce70e6f2a804e188c332fd1c186da71253132dc6ede0bb2c33fd6fcfc6e",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_artifact_readback.rs"
+    },
+    {
+      "bytes": 16000,
+      "git_blob": "8551f057c1d8e779e9b87ab972168285036b36b1",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update.rs",
+      "public_commit": true,
+      "sha256": "4490790a5c558e870148c2512d622b72df80dc609c4c459f91bfb032f8d242d0",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_update.rs"
+    },
+    {
+      "bytes": 6651,
+      "git_blob": "3fc4af827d28eb54dd5ca13e6ded5deaf5612673",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs",
+      "public_commit": true,
+      "sha256": "2b4563a5d0235f5232e4ba9400a524d18537fd11bdbab63a55f76303c02355ee",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_update_cold.rs"
+    },
+    {
+      "bytes": 12716,
+      "git_blob": "8d0a7f2fe8213b7399e0867898b58a59405b1249",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_live.rs",
+      "public_commit": true,
+      "sha256": "465c32100bb7b2002cb9596f36ab44410af96bf4185b1415ec1131a971958d23",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_update_live.rs"
+    },
+    {
+      "bytes": 5253,
+      "git_blob": "3d2966f8d38b9ba011ad135d490485e082dad578",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_support.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_runtime_support.rs",
+      "public_commit": true,
+      "sha256": "aa169b16a31cd48632538f389fb7bd92d8929c13a2eb30138c1a05e62a02faa7",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_update_runtime_support.rs"
+    },
+    {
+      "bytes": 9008,
+      "git_blob": "930fb5bbb0d468170833218f3dd8e330805a003a",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs",
+      "public_commit": true,
+      "sha256": "c352bba5a52e4885f3c4d1d90c054776d89ed16a0a435778e8b532189e8ecdca",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-agentd/src/neuron_generation_update_selection.rs"
+    },
+    {
+      "bytes": 10332,
+      "git_blob": "8e4f8830dbda3f387b54992f297c8d1f8baa329f",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
+      "public_commit": true,
+      "sha256": "3c98a8e22938808bcf272d19789f8ff87a8cc5e19ff3a5d8b98b3daa710d335c",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/admission_v3.rs"
+    },
+    {
+      "bytes": 9024,
+      "git_blob": "b7d864a947cef900fcadd46d02f69438380be0db",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/lib.rs",
+      "public_commit": true,
+      "sha256": "832e41b03f6a182c8dd0dc3af11a3b2144098b9cec9d77ad1a53a3820447aa80",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/lib.rs"
+    },
+    {
+      "bytes": 3213,
+      "git_blob": "8f536bc75cac1a860e244c2708e59f4e39e916ac",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/model.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/model.rs",
+      "public_commit": true,
+      "sha256": "5e914dadd307d0c22f73caa72606018e9885309451270adca073e57f003e35e8",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/model.rs"
+    },
+    {
+      "bytes": 79777,
+      "git_blob": "3d57f5519b10b362e126bf89803d56ee5e2b0539",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "public_commit": true,
+      "sha256": "da91b8d07b8abd9f62f3a42bbee656a258d944af54992d1e0418fbc94c5e555b",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_host.rs"
+    },
+    {
+      "bytes": 6367,
+      "git_blob": "0c4441f0fe2c85addcffc3270a97944edd067684",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs",
+      "public_commit": true,
+      "sha256": "1e2b9905a5c8b9e70887b652d5137d9d42e4ecdf5e17cbf84dc47a4da103c604",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_original_reader.rs"
+    },
+    {
+      "bytes": 10965,
+      "git_blob": "f656d967b28db2aeda47674d15ee3a119a53bebc",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_read_view.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_read_view.rs",
+      "public_commit": true,
+      "sha256": "034ba60cb7cb1da1a53c236426a084be941d106fdb1229d382bba606d205a8a1",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_read_view.rs"
+    },
+    {
+      "bytes": 2388,
+      "git_blob": "bb0b6b333e3c89a99afc9a634ce00f02fdf8e90b",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs",
+      "public_commit": true,
+      "sha256": "01d96d3f2f81622ea6b1b6de1c65c2f71213f7b438bcbc0fb7d6e3ad0e999cbc",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_selection_files.rs"
+    },
+    {
+      "bytes": 26653,
+      "git_blob": "b9ac344032f3f240e7d6f51047819235e2cc458d",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "public_commit": true,
+      "sha256": "fc7c314222f72d91209f45f6acef5f552eed14439e448e0d9cd1c729886f45c5",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_service.rs"
+    },
+    {
+      "bytes": 9881,
+      "git_blob": "6189ccbf3028bb64201536e9dfde77b6201faf47",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/owner_withdrawal_frontier.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_frontier.rs",
+      "public_commit": true,
+      "sha256": "b0ed91d24bbc1a3a67f144b8ccce85fd09ec6e1c3c91061854e49dc82716f902",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/owner_withdrawal_frontier.rs"
+    },
+    {
+      "bytes": 10147,
+      "git_blob": "3a097702ef7294467e2a16b5ae8624b716372c41",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "public_commit": true,
+      "sha256": "bdca616c77008c7b4fb9cdbdc0dd972f912facd3665279d1ede0df15e6654098",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/pinned.rs"
+    },
+    {
+      "bytes": 29173,
+      "git_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "original_bytes_verified": true,
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "public_commit": true,
+      "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df",
+      "source": "2b8125e3f89e83aea90620c94cbc441317d4c3d0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b8125e3f89e83aea90620c94cbc441317d4c3d0/codex-rs/hepta-learning-artifacts/src/selection.rs"
+    },
+    {
+      "bytes": 6868,
+      "git_blob": "be6d53055d15df0b487b5edfa8036a5d339fa082",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_completed_history.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_completed_history.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "b7017d81c5ac7a33ff2cbc00379873c42d4c2cc85403761226ef3905832f51b7",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 4766,
+      "git_blob": "26af3f2e9912445a4dc0ef51d189833cdb06ffa0",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_finalized_c.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_finalized_c.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "6dd4dfcc0cad334bdc6e727e4ef7a5e49ff5b511f61e401289c3faaafa389a08",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 7338,
+      "git_blob": "777aaaae7a0facbbeeb42ef6d427898b0f2db4d6",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_next_task_context.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_context.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "67244ab36e2f221cad3eac0a3520acd6fd3c8153c6c08136a90b930709524237",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 5661,
+      "git_blob": "acb095847b219568753b214fac34a21d6182b851",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_next_task_grant.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_grant.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "3274f9b6a3174c12f8c4c58bb1cc241a459a2f3f1028d03394f2983e0fad7ec4",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 10049,
+      "git_blob": "6935666ceb41cd015382eb27b592e95d1430ced0",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_next_task_enrollment.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_enrollment.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "76ac5fa6fc7ad4a7d68b3509c6870c1cbdcab55e26db63784dc8c918b55eadd4",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 13119,
+      "git_blob": "3e343bbc013f976d0cea1a5429633cdb04c4f55d",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/authority_host_cold_next_task_runtime.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task_runtime.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "760d0365fa959f1c0e099ec84911af27aee3e9d9ddbefb6288a5cc2fd110d9cb",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 8492,
+      "git_blob": "5f81ba6926c0f604d029122d39d9ab03fa68521a",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/production_cold_next_q24.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/production_cold_next_q24.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "ea5c3eaccc65c9ffe4f0c1e8fff059904b9970c80a52a0588f99853e1965beed",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    },
+    {
+      "bytes": 3999,
+      "git_blob": "d6c2163dc4c087b336a90c93153f731dbd11e4cf",
+      "local_path": "/workspace/scratch/e9e051ab0825/e6_head_use_design/source/codex-rs/hepta-agentd/src/production_cold_q24_artifacts.rs",
+      "original_bytes_verified": true,
+      "original_review_source": "504c749622962ab574ddb11d6472adf2a2946982",
+      "path": "codex-rs/hepta-agentd/src/production_cold_q24_artifacts.rs",
+      "provenance": "exact original 504 bytes match independently captured cold673 tree and source preservation map; immutable local source, no public object claim",
+      "public_commit": false,
+      "sha256": "25d57719cb0178223a1ddd2a8cd3514fe8f524f72d524a0cc9278589a1f73602",
+      "source": "6733159bd974ae6558e138112d81ca2f6da830e2"
+    }
+  ],
+  "executed_controls": 0,
+  "findings": [
+    "complete acyclic input and authorization digest dependency graph",
+    "fresh authenticated revocation source after original writer retirement and effect linearization"
+  ],
+  "model_calls": 0,
+  "native_task_children": 0,
+  "product_source_edits": 0,
+  "remote_owners": 0,
+  "review": {
+    "bytes": 7161,
+    "git_blob": "0f70e01537edabc398b032a3d3de5bb94967c9a1",
+    "path": "/workspace/scratch/e9e051ab0825/metrics_gate_work/E6_DESIGN_REVIEW.md",
+    "sha256": "5136bf90460bbf7c680795bfccda943257da5e63679f8bb1a8acab474c625bd0"
+  },
+  "schema": "hepta.e6-cold-use-independent-static-review-bindings.v1",
+  "signatures": 0,
+  "supplementary_source": {
+    "bytes": 17301,
+    "git_blob": "f12ee836565c69ad5b08a146b5ce97b2c7b3dccf",
+    "local_path": "/workspace/scratch/e9e051ab0825/e6_cold_review/remote/source/codex-rs/hepta-agentd/src/authority_host_cold_next_task.rs",
+    "observed_checkout_head": "6733159bd974ae6558e138112d81ca2f6da830e2",
+    "original_504_matches": true,
+    "original_bytes_verified": true,
+    "original_source": "504c749622962ab574ddb11d6472adf2a2946982",
+    "path": "codex-rs/hepta-agentd/src/authority_host_cold_next_task.rs",
+    "public_object_claim": false,
+    "retained_path": "/workspace/scratch/e9e051ab0825/metrics_gate_work/preparation-inputs/authority_host_cold_next_task.rs",
+    "sha256": "d8b7b279629a2c8bb8c504d3c257966f52ec08ff17b9b3886f9947fc7a120c08"
+  },
+  "training_updates": 0
+}

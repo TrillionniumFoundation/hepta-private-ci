@@ -1,0 +1,10 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+error: failed to load source for dependency `tokio-tungstenite`
+
+Caused by:
+  unable to update https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73
+
+Caused by:
+  can't checkout from 'https://github.com/openai-oss-forks/tokio-tungstenite': you are in the offline mode (--offline)
+error: command `/Users/qianqi/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo '--color=auto' test --manifest-path /Users/qianqi/work/hepta-joint-mac-fixtures-20261120-e9e051/source/codex-rs/Cargo.toml --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101

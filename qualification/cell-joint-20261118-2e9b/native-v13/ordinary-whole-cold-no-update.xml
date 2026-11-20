@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="d4fd58f2-22df-4b73-ba25-54c3bb8b587e" timestamp="2026-11-19T00:58:30.605+08:00" time="68.226">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement" classname="codex-hepta-agentd" timestamp="2026-11-19T00:58:30.612+08:00" time="68.181">
+            <failure message="Error: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable" type="test failure with exit code 101">Error: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-VOgp5r
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 129150, start_ticks: 204693230, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_measure=historical.task_reply bytes=19118 bound=28933
+root_stage=post_a.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: &quot;original publication slot closed&quot; }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-meXGYy
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 129151, start_ticks: 204693231, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(25856))) stdout=
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1348 filtered out; finished in 8.11s
+
+ stderr=Error: original B notification ended before its cut
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-cGlxW0
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-ANvT5S
+Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1348 filtered out; finished in 68.17s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-WOX0te
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-tACowh
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-zKWRmO
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73903 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-978719e6-20261118-v13/bind/ordinary-q24-6QgWQn
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-ixgbSO
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-978719e6-20261118-v13/witness-bind/ordinary-post-a-model-2fITH3
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 129152, start_ticks: 204693231, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=daemon_stage=historical_client.read_limit request_id=65 maximum=64
+daemon_stage=historical_client.observe_before_action
+daemon_stage=historical.operation.result
+daemon_stage=historical.operation.fence
+daemon_stage=historical.dataset.operation
+Error: agentd generation fenced: original historical learning source: original training material: original Dataset projection: original Root historical Dataset: original complete historical task read unavailable
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-VOgp5r
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 129150, start_ticks: 204693230, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_measure=historical.task_reply bytes=19118 bound=28933
+root_stage=post_a.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: &quot;original publication slot closed&quot; }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-meXGYy
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 129151, start_ticks: 204693231, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(25856))) stdout=
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_source::original_independent_b_source_child
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1348 filtered out; finished in 8.11s
+
+ stderr=Error: original B notification ended before its cut
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-cGlxW0
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-ANvT5S
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

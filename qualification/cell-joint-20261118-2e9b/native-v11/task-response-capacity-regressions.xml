@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="9" skipped="0" failures="0" errors="0" uuid="a970490b-fe71-445a-b97d-3c70dc0df73f" timestamp="2026-11-19T00:15:46.829+08:00" time="0.556">
+    <testsuite name="codex-hepta-agentd" tests="9" skipped="0" errors="0" failures="0">
+        <testcase name="root_generation_current_client::stream::initial_deadline_tests::initial_frame_default_and_task_caps_reject_prefix_before_body" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.835+08:00" time="0.006"/>
+        <testcase name="root_generation_current_client::stream::initial_deadline_tests::initial_frame_expired_queue_end_sends_no_bytes" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.841+08:00" time="0.005"/>
+        <testcase name="root_generation_current_client::stream::initial_deadline_tests::initial_frame_late_reply_cannot_renew_the_supplied_queue_deadline" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.846+08:00" time="0.128"/>
+        <testcase name="root_generation_current_client::stream::initial_deadline_tests::initial_frame_task_capacity_preserves_request_deadline_and_policy_caps" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.974+08:00" time="0.007"/>
+        <testcase name="root_generation_current_client::stream::initial_deadline_tests::initial_frame_task_capacity_transfers_complete_large_response" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.981+08:00" time="0.005"/>
+        <testcase name="root_historical_task_read_protocol::tests::complete_historical_reply_binds_original_purpose_profile_and_sequence" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:46.987+08:00" time="0.053"/>
+        <testcase name="root_historical_task_read_protocol::tests::complete_historical_wire_refuses_peer_selected_sources_and_raw_authority" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:47.040+08:00" time="0.051"/>
+        <testcase name="root_historical_task_read_protocol::tests::complete_task_accepts_large_original_data_and_retains_refusal_bounds" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:47.091+08:00" time="0.163"/>
+        <testcase name="root_historical_task_read_protocol::tests::task_envelope_matches_actual_serializer_and_other_operations_keep_original_bound" classname="codex-hepta-agentd" timestamp="2026-11-19T00:15:47.254+08:00" time="0.131"/>
+    </testsuite>
+</testsuites>

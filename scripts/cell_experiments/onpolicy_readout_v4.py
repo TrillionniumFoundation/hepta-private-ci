@@ -4,6 +4,7 @@ import copy
 import hashlib
 
 from . import data
+from .circuit_receipts_v3 import verified_business_row
 from .protocol_v3 import execution_summary, require_prepared
 
 
@@ -122,6 +123,26 @@ def summarize_collection(collection, records, expected_model_digest, *, maximum=
                     isinstance(verification, dict)
                     and type(verification.get("success")) is bool,
                     "actual verifier outcome required",
+                )
+                require(
+                    verification.get("record_id") == record["record_id"]
+                    and verification.get("input_sha256")
+                    == hashlib.sha256(record["task"]["input"].encode()).hexdigest()
+                    and verification.get("parameters_sha256")
+                    == data.digest(record["task"]["verifier"]["parameters"]),
+                    "verifier receipt belongs to another task or parameter binding",
+                )
+                measured_success = verified_business_row(
+                    {
+                        "semantic_receipt": verification,
+                        "semantic_receipt_sha256": verification.get("receipt_sha256"),
+                        "raw_answer": output["answer"],
+                        "success": verification["success"],
+                    }
+                )
+                require(
+                    measured_success is verification["success"],
+                    "successful outcome lacks complete business observations",
                 )
                 summary = execution_summary(verification)
                 require(

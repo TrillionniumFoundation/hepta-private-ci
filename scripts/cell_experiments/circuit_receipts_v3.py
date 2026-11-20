@@ -2,8 +2,17 @@
 
 import hashlib
 
-from .composition_core import require, sha
-from .data import digest
+from .data import _require as require, digest
+
+
+def sha(value):
+    """Validate receipt identities without loading numerical model modules."""
+    return (
+        isinstance(value, str)
+        and len(value) == 64
+        and all(c in "0123456789abcdef" for c in value)
+        and value != "0" * 64
+    )
 
 
 def semantic_identity(verification):

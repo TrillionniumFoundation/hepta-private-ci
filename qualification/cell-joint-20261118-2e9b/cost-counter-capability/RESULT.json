@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.cost-counter-capability.v1",
+  "observed_unix_ns": "1795021081099588414",
+  "purpose": "Prospective read-only capability check; no model or verifier execution",
+  "past_experiment_energy_backfilled": false,
+  "host_energy_is_process_energy": false,
+  "system_configuration_changed": false,
+  "rapl": [
+    {
+      "path": "/sys/class/powercap/intel-rapl:0",
+      "name": "package-0",
+      "max_energy_range_uj": "262143328850",
+      "unprivileged_errno": 13,
+      "existing_sudo_read": {
+        "exit_code": 0,
+        "wall_nanoseconds": "55996657",
+        "energy_uj": "197370772561",
+        "error": null
+      }
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:1",
+      "name": "package-1",
+      "max_energy_range_uj": "262143328850",
+      "unprivileged_errno": 13,
+      "existing_sudo_read": {
+        "exit_code": 0,
+        "wall_nanoseconds": "13874597",
+        "energy_uj": "141460922405",
+        "error": null
+      }
+    }
+  ],
+  "nvml": {
+    "library": "libnvidia-ml.so.1",
+    "initialization_return": 0,
+    "device_handle_return": 0,
+    "total_energy_return": 3,
+    "total_energy_api_value": null,
+    "total_energy_return_description": "Not Supported"
+  },
+  "finished_unix_ns": "1795021081239888772"
+}

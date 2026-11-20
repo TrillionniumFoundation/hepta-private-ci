@@ -1,0 +1,33 @@
+{
+  "all_binary": true,
+  "archive_or_dictionary_changes": false,
+  "full_codespell_suite_executed": false,
+  "invocation_count": 3,
+  "original_api_response_sha256": "20f39a536721313808f3eb8db83e2b1a561934d2bee48e1e70c9badb90f6bb59",
+  "original_function": "def is_text_file(filename: str) -> bool:\n    with open(filename, mode=\"rb\") as f:\n        s = f.read(1024)\n    return b\"\\x00\" not in s\n",
+  "original_function_sha256": "b58d627f85daa12f5313f8d407376fa3845d2e40015ddc790ecaa51b70a865bf",
+  "rows": [
+    {
+      "actual_original_is_text_file": false,
+      "bytes": 240000,
+      "first_NUL_offset": 3,
+      "path": "e5_bounded_retrieval_v2/publication/qualification/cell-e5-bounded-retrieval-v2-20261120/COMPLETE_ORIGINALS.tar.gz.part-000",
+      "sha256": "7d9bcb07e5a717220b510ae1fd6fdd46a1082cc5d13ee8c17a3650d8ba4317db"
+    },
+    {
+      "actual_original_is_text_file": false,
+      "bytes": 240000,
+      "first_NUL_offset": 656,
+      "path": "e5_bounded_retrieval_v2/publication/qualification/cell-e5-bounded-retrieval-v2-20261120/COMPLETE_ORIGINALS.tar.gz.part-001",
+      "sha256": "ae83ee2a0f6f5030d3806c2f0ff0cf3017e0766597e8066ed6ae5430a094f8e3"
+    },
+    {
+      "actual_original_is_text_file": false,
+      "bytes": 121985,
+      "first_NUL_offset": 137,
+      "path": "e5_bounded_retrieval_v2/publication/qualification/cell-e5-bounded-retrieval-v2-20261120/COMPLETE_ORIGINALS.tar.gz.part-002",
+      "sha256": "5290d95bfd1998dc8ce10fc3d1eddcc6d153ce2787827c63e6621f093a4371c2"
+    }
+  ],
+  "schema": "hepta.e5.v2.exact-codespell-binary-classification.v1"
+}

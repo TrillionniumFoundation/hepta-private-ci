@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="d3d73c16-3e7d-4cdc-97e2-201fe5f47b8f" timestamp="2026-11-18T21:45:41.343+08:00" time="60.055">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement" classname="codex-hepta-agentd" timestamp="2026-11-18T21:45:41.350+08:00" time="60.047">
+            <failure message="Error: original Observer input custody/size differs" type="test failure with exit code 101">Error: original Observer input custody/size differs</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1341 filtered out; finished in 60.04s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-zSJecd
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-CK99H6
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-VJkgj9
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-74a611ae-20261118-v4/bind/ordinary-q24-WQRqHm
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-b7Bi1r
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-74a611ae-20261118-v4/witness-bind/ordinary-post-a-model-LXhMYe
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-LvDPKx
+Error: original Observer input custody/size differs
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

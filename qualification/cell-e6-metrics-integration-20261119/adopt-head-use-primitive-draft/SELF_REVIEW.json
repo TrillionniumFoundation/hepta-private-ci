@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.cold-use.primitive-static-self-review.v1",
+  "review_kind": "source self-review, not independent compiler/security qualification",
+  "revision": 2,
+  "initial_revision_preserved": "revisions/01",
+  "findings": [
+    {
+      "id": "SR1",
+      "severity": "construction correctness",
+      "finding": "subject_digest previously depended on full validate_shape requiring a policy_digest before the policy digest could be derived",
+      "resolution": "subject_digest now validates only its complete subject; full signing_bytes calls validate_shape which still validates all header fields and then validate_subject",
+      "status": "source_fixed_not_executed"
+    },
+    {
+      "id": "SR2",
+      "severity": "reviewability",
+      "finding": "one-use optional ID helper and spacing in exact argument comments",
+      "resolution": "inline strict optional-ID tag match at its actual field; comments now exactly /*value*/ and /*require_current*/",
+      "status": "source_fixed_not_executed"
+    }
+  ],
+  "remaining_limits": [
+    "source has not been Rust-parsed, compiled, formatted or run",
+    "private RelativeOnly enrollment is only a future test fixture path, no original production policy source",
+    "expected data and current-time arguments are relative inputs, not Root/current-clock evidence",
+    "no real nonce store, physical source reader, custody, Selector or product consumer",
+    "default denied module is deliberately not installed in production"
+  ],
+  "no_gate_waiver": true
+}

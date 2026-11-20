@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="56840f81-f459-409e-8f1e-def3f25598f1" timestamp="2026-11-18T21:57:16.478+08:00" time="60.116">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement" classname="codex-hepta-agentd" timestamp="2026-11-18T21:57:16.485+08:00" time="60.108">
+            <failure message="Error: bootstrap exceeds the fixed descriptor bound" type="test failure with exit code 101">Error: bootstrap exceeds the fixed descriptor bound</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1341 filtered out; finished in 60.10s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-6K4f0x
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-PIuIms
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-pw29QS
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-b17f0643-20261118-v5/bind/ordinary-q24-KGF43h
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-ozqpeC
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-e6-owner-current-b17f0643-20261118-v5/witness-bind/ordinary-post-a-model-QNYo0v
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-gR95YI
+Error: bootstrap exceeds the fixed descriptor bound
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

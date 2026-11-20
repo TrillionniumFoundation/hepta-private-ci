@@ -1,0 +1,51 @@
+{
+  "status": "completed",
+  "native_cases": 0,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "verifier_changed": false,
+  "original_probe_207_failed_retained": true,
+  "format": {
+    "exit": 0,
+    "wall_seconds": 0.49068863899447024,
+    "child_user_seconds": 0.140114,
+    "child_system_seconds": 0.134207
+  },
+  "after_sha256": {
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/CALLERS.toml": "f9e55b6b1434fe3dc02aa8a53f8cf02f04525c551a0fd0954adb0310a42c94ce",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs": "6f7d019196a42162630039377471a94841985af81456ca6e434e357c15b0cf73",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs": "ea5b3e4d918d788f4a69997e50214693d3b25e0666ccac2e9da4c043f9c28476",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "4b298a4f959ecb31086fe30cea0637cced39e3abc36f534768b8aac21898ac2f",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/qa/b4-no-bypass/test_original_task_data_source_closure.py": "f6c4a2333a29a9546196bac74dbdd80afdc628832a71b7b46a07a21fb70604a5",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/qa/b4-no-bypass/test_historical_preparation_source_closure.py": "c1cc5cc5ff5b978c6fb271c2592205f9826bca37a33c03e6724736524e3f0b65",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d523f58e72ee9cd266baaa89ac2afd0ceb38c321757905c46c0455705afb50ea",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/qa/b4-no-bypass/test_historical_learning_delivery_source_closure.py": "be680247e457f5e94dd4ce48b6281700b618004d77e0f0769b1c0dbc39b49c13",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/qa/b4-no-bypass/test_historical_startup_operation_source_closure.py": "0181a76ddb914644cbc60df907d91bafebc9559a5e5264b51d45c9e0ac99c2f9"
+  },
+  "protected_file_sweep": {
+    "rows": 892,
+    "failures": [
+      {
+        "index": 336,
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_successor.rs",
+        "error": "VerificationFailure(\"codex-rs/hepta-agentd/src/learning_iteration_successor.rs:fn prepare_original_successor_context(: required code order missing: ['self.require_identity(identity)?', 'self\\\\n            .original_q24\\\\n            .as_ref()', 'match (&self.retained_source, &self.historical_source)', '(Some(retained), None) if retained.request() == &prepared.initial().request', '(None, Some(historical)) if historical.request() == &prepared.initial().request', '_ => return Err(successor_refused(', 'self\\\\n            .circuit_delivery_registry\\\\n            .as_ref()', 'self.successor.is_some()', '!self.enforce_circuit_admission', 'CircuitLearningSourceV1::OriginalQ24', 'session.identity() != identity', 'self.scope.as_ref() != Some(prepared.scope())', 'self.owners != prepared.initial().owners', 'registry.requests.as_slice()', 'if matches!(&context.source, OriginalSuccessorSourceV1::Historical(_))', 'original\\\\n                .register_original_historical_successor(Arc::clone(&context), slot)', '.await', '.map_err(|error| successor_refused(&error.to_string()))?', 'context.require_current_successor_context().await?', 'original\\\\n            .register_original_successor(', 'self.successor = Some(Arc::clone(slot))']\")"
+      },
+      {
+        "index": 615,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs",
+        "error": "VerificationFailure('codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs: exact function marker required')"
+      },
+      {
+        "index": 678,
+        "path": "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "error": "VerificationFailure(\"codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs:fn run_stage(: required code order missing: ['OriginalHistoricalWorkV1::Restore(mode) => {', 'let submit = matches!(mode, OriginalHistoricalRestoreModeV1::Submit)', 'let mut current = self.restore(mode)?', 'if submit && current.generation_prefix.is_none()', 'let next = LearningIterationCoordinatorV1::from_snapshot(', 'current.snapshot.clone()', '?.next_stage()', 'let Some(', 'stage @ (LearningIterationStageV1::Experience | LearningIterationStageV1::Dataset)', '= next', 'break;', 'current = self.execute(current.snapshot, stage)?', 'Ok(current)', 'OriginalHistoricalWorkV1::ConfirmRecovery(expected)', '.restore_checkpoint(&self.inner.prepared.initial().request)', 'actual.as_ref() != Some(&expected)', 'self.inner.require_snapshot(&expected)?', 'for receipt in &expected.receipts', 'self.authenticate_receipt(&expected, receipt)?', 'OriginalHistoricalWorkV1::Stage { snapshot, stage } => self.execute(snapshot, stage)']\")"
+      }
+    ],
+    "passed": false
+  },
+  "successful": false,
+  "source_patch_sha256": "3859c6e3e3461026a8f4e544836a715e95a39e97c2bf9f92033bfee58b9729e6",
+  "driver_sha256": "79d0131a47ce33ccda1f3d7a6a8587822e29d0fe0a870fef08eb5db4dd85e7a9",
+  "verifier_sha256": "1c2dadc1d631b4004a50c857cd41acd2e6827f775f2efdbd3cbb0d4a47781896",
+  "wall_seconds": 2.097104787128046
+}
