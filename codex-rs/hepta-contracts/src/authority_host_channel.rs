@@ -15,6 +15,18 @@ use std::time::Instant;
 
 const MAX_SESSION_LIFETIME: Duration = Duration::from_secs(300);
 
+// Per-call diagnostic data only. It never changes a deadline or an I/O result,
+// and the peer prints it only after the original stream shutdown.
+#[derive(Default)]
+pub(super) struct ChannelWriteDiagnostic {
+    pub(super) phase: &'static str,
+    pub(super) error_kind: Option<io::ErrorKind>,
+    pub(super) raw_os_error: Option<i32>,
+    pub(super) socket_revents: Option<PollFlags>,
+    pub(super) owner_revents: Option<PollFlags>,
+    pub(super) written: usize,
+}
+
 pub(crate) struct OwnerChannel {
     owner: OwnedFd,
     end: Instant,
@@ -93,16 +105,38 @@ impl OwnerChannel {
         event: PollFlags,
         deadline: Instant,
     ) -> Result<(), HostIssuerTransportError> {
+        self.wait_with_diagnostic(stream, event, deadline, None)
+    }
+
+    fn wait_with_diagnostic(
+        &self,
+        stream: &UnixStream,
+        event: PollFlags,
+        deadline: Instant,
+        mut diagnostic: Option<&mut ChannelWriteDiagnostic>,
+    ) -> Result<(), HostIssuerTransportError> {
         loop {
+            if let Some(detail) = diagnostic.as_deref_mut() {
+                detail.phase = "wait-deadline";
+                detail.socket_revents = None;
+                detail.owner_revents = None;
+            }
             let timeout = Timespec::try_from(remaining(deadline.min(self.end))?)
                 .map_err(|_| HostIssuerTransportError::InvalidConfiguration)?;
             let mut descriptors = [
                 PollFd::new(stream, event),
                 PollFd::new(&self.owner, PollFlags::IN),
             ];
+            if let Some(detail) = diagnostic.as_deref_mut() {
+                detail.phase = "poll";
+            }
             match poll(&mut descriptors, Some(&timeout)) {
                 Ok(0) => return Err(HostIssuerTransportError::DeadlineElapsed),
                 Ok(_) => {
+                    if let Some(detail) = diagnostic.as_deref_mut() {
+                        detail.socket_revents = Some(descriptors[0].revents());
+                        detail.owner_revents = Some(descriptors[1].revents());
+                    }
                     // Owner exit wins even when an inherited stream is also
                     // ready. The pidfd pins the original process instance.
                     if !descriptors[1].revents().is_empty() {
@@ -119,7 +153,14 @@ impl OwnerChannel {
                     }
                 }
                 Err(rustix::io::Errno::INTR) => {}
-                Err(error) => return Err(io_error(error)),
+                Err(error) => {
+                    if let Some(detail) = diagnostic.as_deref_mut() {
+                        detail.error_kind =
+                            Some(io::Error::from_raw_os_error(error.raw_os_error()).kind());
+                        detail.raw_os_error = Some(error.raw_os_error());
+                    }
+                    return Err(io_error(error));
+                }
             }
         }
     }
@@ -162,11 +203,28 @@ impl OwnerChannel {
     pub(crate) fn write_until(
         &self,
         stream: &mut UnixStream,
-        mut bytes: &[u8],
+        bytes: &[u8],
         deadline: Instant,
     ) -> Result<(), HostIssuerTransportError> {
+        self.write_until_with_diagnostic(stream, bytes, deadline, None)
+    }
+
+    pub(super) fn write_until_with_diagnostic(
+        &self,
+        stream: &mut UnixStream,
+        mut bytes: &[u8],
+        deadline: Instant,
+        mut diagnostic: Option<&mut ChannelWriteDiagnostic>,
+    ) -> Result<(), HostIssuerTransportError> {
+        let original_length = bytes.len();
         while !bytes.is_empty() {
-            self.wait(stream, PollFlags::OUT, deadline)?;
+            if let Some(detail) = diagnostic.as_deref_mut() {
+                detail.written = original_length - bytes.len();
+            }
+            self.wait_with_diagnostic(stream, PollFlags::OUT, deadline, diagnostic.as_deref_mut())?;
+            if let Some(detail) = diagnostic.as_deref_mut() {
+                detail.phase = "write";
+            }
             match stream.write(bytes) {
                 Ok(0) => return Err(HostIssuerTransportError::Closed),
                 Ok(count) => bytes = &bytes[count..],
@@ -175,7 +233,13 @@ impl OwnerChannel {
                         error.kind(),
                         io::ErrorKind::Interrupted | io::ErrorKind::WouldBlock
                     ) => {}
-                Err(error) => return Err(io_error(error)),
+                Err(error) => {
+                    if let Some(detail) = diagnostic.as_deref_mut() {
+                        detail.error_kind = Some(error.kind());
+                        detail.raw_os_error = error.raw_os_error();
+                    }
+                    return Err(io_error(error));
+                }
             }
         }
         Ok(())

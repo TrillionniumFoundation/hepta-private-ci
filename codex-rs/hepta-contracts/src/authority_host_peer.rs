@@ -2,6 +2,7 @@
 
 use super::HostIssuerPeer;
 use super::HostIssuerTransportError;
+use super::channel::ChannelWriteDiagnostic;
 use super::channel::OwnerChannel;
 use super::io_error;
 use std::net::Shutdown;
@@ -144,7 +145,13 @@ impl HostAuthorityPeerChannel {
     ) -> Result<bool, HostIssuerTransportError> {
         let mut stream = self.stream.take().ok_or(HostIssuerTransportError::Closed)?;
         let mut failure_stage: &'static str = "peer.exchange.enter";
-        let result = self.exchange_inner(&mut stream, handle, &mut failure_stage);
+        let mut header_diagnostic = ChannelWriteDiagnostic::default();
+        let result = self.exchange_inner(
+            &mut stream,
+            handle,
+            &mut failure_stage,
+            &mut header_diagnostic,
+        );
         match result {
             Ok(true) => {
                 self.stream = Some(stream);
@@ -162,6 +169,21 @@ impl HostAuthorityPeerChannel {
                         std::thread::current().id(),
                     ),
                 );
+                if failure_stage == "peer.response-header-write" {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!(
+                            "root_stage=peer.response-header-detail thread={:?} io_phase={} error_kind={:?} raw_os_error={:?} socket_revents={:?} owner_revents={:?} header_written={}\n",
+                            std::thread::current().id(),
+                            header_diagnostic.phase,
+                            header_diagnostic.error_kind,
+                            header_diagnostic.raw_os_error,
+                            header_diagnostic.socket_revents.map(|flags| flags.bits()),
+                            header_diagnostic.owner_revents.map(|flags| flags.bits()),
+                            header_diagnostic.written,
+                        ),
+                    );
+                }
                 Err(error)
             }
         }
@@ -172,6 +194,7 @@ impl HostAuthorityPeerChannel {
         stream: &mut UnixStream,
         handle: impl FnOnce(&[u8], Instant) -> Result<Vec<u8>, HostIssuerTransportError>,
         failure_stage: &mut &'static str,
+        header_diagnostic: &mut ChannelWriteDiagnostic,
     ) -> Result<bool, HostIssuerTransportError> {
         *failure_stage = "peer.first-byte";
         let mut length = [0; 4];
@@ -204,8 +227,12 @@ impl HostAuthorityPeerChannel {
             return Err(HostIssuerTransportError::Unavailable);
         }
         *failure_stage = "peer.response-header-write";
-        self.owner
-            .write_until(stream, &(response.len() as u32).to_be_bytes(), deadline)?;
+        self.owner.write_until_with_diagnostic(
+            stream,
+            &(response.len() as u32).to_be_bytes(),
+            deadline,
+            Some(header_diagnostic),
+        )?;
         *failure_stage = "peer.response-body-write";
         self.owner.write_until(stream, &response, deadline)?;
         *failure_stage = "peer.post-response-owner";
