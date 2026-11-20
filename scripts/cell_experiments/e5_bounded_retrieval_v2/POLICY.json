@@ -1,0 +1,134 @@
+{
+  "activation": "No model/native/train integration. Explicitly refuse execution admission while original bindings or exact token measurements are absent. All full290 cases/fixtures remain in original verifier.",
+  "budget": {
+    "compute_budget_per_point": null,
+    "extra_model_retrieval_turns": 0,
+    "fixed_per_source_units": 32,
+    "fixed_total_units": 32,
+    "independent_B_C": null,
+    "native_verifier_budget_per_point": null,
+    "one_real_material_per_planned_unit": true,
+    "optimizer_unit_mapping": null,
+    "split_updates": false
+  },
+  "context_binding": "V binds visible identity, all original case/fixture roots, policy, renderer, tokenizer freeze, ordered selected complete units and diagnostic/task byte hashes; D=H(V); render(V,D); outer receipt binds exact prompt hash and counts. No self-hash cycle.",
+  "cost_limits": {
+    "ast_nodes": 250000,
+    "cpu_seconds": 10,
+    "diagnostic_bytes": 1048576,
+    "query_terms": 128,
+    "retrieval_calls": 1,
+    "runtime_bytes": 8388608,
+    "runtime_file_bytes": 4194304,
+    "source_units": 16384,
+    "task_bytes": 33554432,
+    "total_files": 2048,
+    "wall_seconds": 20
+  },
+  "cost_semantics": "Admission checks CPU/wall at bounded work checkpoints and on return; not a hard preemptive deadline. All actual scans, reads and selected bytes recorded. Input loader cost reported separately; no claim existing E5 compute budget is defined.",
+  "exact_tokenizer_required": "ee0b5f244964e7aaa69280310085d46a4a8d971075f3e655c86c6f6d61fe7aca",
+  "input_api": "Exactly identity, identity_sha256, runtime, task, cases; exact v1 sanitized-byte identities. No root/path/store/after argument to selector.",
+  "material_commit": "63f494553a735bd55a3fef7cfe2e76604cd6db7d",
+  "original_limits": {
+    "candidate_prefix_reservation_after_native_template": 3200,
+    "input_tokens": 4096,
+    "native_message_bytes": 65536,
+    "target_tokens": 384,
+    "total_sft_positions": 3584
+  },
+  "packing": {
+    "counterpart": "paired .py/.pyx same qualname/kind, unique complete unit; include as one group or refuse",
+    "mandatory": "identity/header + primary diagnostic + resolved primary test/script + highest-ranked runtime group",
+    "max_prompt_bytes": 12000,
+    "max_runtime_groups": 4,
+    "max_runtime_units": 8,
+    "optional_order": [
+      "up to2 direct same-module helpers of primary test",
+      "first matched non-Python task fixture sorted path",
+      "remaining ranked runtime groups until original fixed limits"
+    ],
+    "overflow": "mandatory item overflow refuses; optional whole item that does not fit is explicitly omitted, never sliced; no answer-driven retry",
+    "primary_diagnostic": "first failed case sorted classname/name, complete text; remaining case identities stay in full trusted manifest",
+    "primary_script": "first matched Python task script sorted path, complete bytes; do not AST unparse",
+    "primary_task": "complete matching original test function if uniquely resolved; generated/unresolved test body marked opaque, original verifier untouched"
+  },
+  "prefix_commit": "9dade6e90f6227dded45afa1c8462758a511a699",
+  "query": {
+    "diagnostic_terms": "case identity plus full original failure text",
+    "failure_cases": "all failed original before cases, sorted by classname/name; no after outcomes",
+    "fixture_names": "task basenames appearing as whole ASCII identifier tokens in original failed case names; this is a relevance hint, not a proven dependency closure",
+    "fixture_query": "complete matched Python task scripts only; AST names/attributes/string constants excluding docstrings; unsupported syntax is recorded, never executed",
+    "mismatch_terms": "only complete before diagnostic lines beginning E then + or -; remove diff prefix, tokenize"
+  },
+  "rank": {
+    "admissible_unit_kinds": "All exact v1 inventory units; no edits to task bytes. Unknown complete runtime boundaries refuse.",
+    "diagnostic_body_weight": 1,
+    "diagnostic_literal_weight": 10000,
+    "fixture_semantic_weight": 32,
+    "frame_bonus": 1000000,
+    "qualified_name_weight": 16,
+    "sets_not_frequency": true,
+    "tie_break": [
+      "path",
+      "start_line",
+      "end_line",
+      "unit_id"
+    ]
+  },
+  "schema": "hepta.e5.bounded-before-retrieval.policy.v2",
+  "source_head": "148e37c26586677e83f0e57e100def8805c1a020",
+  "source_order": "original case-sensitive fixed16 and original1/4/16/64 prefixes unchanged; no substitution",
+  "target_access": "No target encoder in this first layer. Any future one must require immutable all16 input/source freeze before after-byte access and cannot affect retrieval.",
+  "terms": {
+    "limit_order": "descending occurrence count then lexical; no repository-specific rules",
+    "regex": "ASCII identifiers; CamelCase/snake_case split; lowercase; drop tokens shorter than3; plural trailing s removed only when length>4",
+    "stop": [
+      "and",
+      "are",
+      "assert",
+      "assertion",
+      "been",
+      "case",
+      "class",
+      "def",
+      "error",
+      "false",
+      "for",
+      "from",
+      "has",
+      "have",
+      "import",
+      "in",
+      "is",
+      "it",
+      "minimum",
+      "none",
+      "not",
+      "of",
+      "or",
+      "return",
+      "self",
+      "test",
+      "tests",
+      "the",
+      "this",
+      "to",
+      "true",
+      "version",
+      "with"
+    ]
+  },
+  "token_measurement_status": "NOT_EXECUTED; byte-bound views alone are not token/training admission",
+  "wire": {
+    "checks": "exact source/view, original unit intervals, strict integer types, overlap, adjacent insertion, no new/delete files, complete original inventory parse, coupled .py/.pyx; no retrieval retry",
+    "edit": "[visible_runtime_ordinal, operation, start_line, end_line, replacement]",
+    "max_edits": 128,
+    "max_raw_bytes": 32768,
+    "operations": {
+      "0": "replace_lines",
+      "1": "insert_after"
+    },
+    "schema": 2,
+    "top": "[2, view_digest, edits]"
+  }
+}
