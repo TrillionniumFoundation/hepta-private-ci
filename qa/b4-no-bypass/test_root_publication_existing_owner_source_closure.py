@@ -50,8 +50,10 @@ CALLERS = {
         "codex-rs/hepta-agentd/src/cell_q24_publication_driver.rs",
         "codex-rs/hepta-agentd/src/cell_q24_publication_current.rs",
         "codex-rs/hepta-agentd/src/cell_q24_publication_root_stage.rs",
-        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
         "codex-rs/hepta-agentd/src/cell_q24_publication_historical_recovery.rs",
+    ),
+    "q24_original_successor_publication_scope": (
+        "codex-rs/hepta-agentd/src/cell_q24_publication_successor_current.rs",
         "codex-rs/hepta-agentd/src/cell_q24_publication_successor_grant.rs",
     ),
 }

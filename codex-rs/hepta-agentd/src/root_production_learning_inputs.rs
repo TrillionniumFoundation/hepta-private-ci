@@ -230,6 +230,62 @@ impl AgentdRootLearningInputsV1 {
         Ok((handle, bootstrap.with_original_q24_checkpoint(checkpoint)?))
     }
 
+    pub(crate) fn require_prepared_q24_in_operation(
+        &self,
+        prepared: &crate::CellQ24PreparedLearningV1,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<(), AgentdError> {
+        let scope = self
+            .scope
+            .as_ref()
+            .ok_or_else(|| refused("Q24 assembly requires the original scoped Root profile"))?;
+        crate::cell_composed_q24::OriginalPreparedReadV1::require_prepared(read, prepared)
+            .map_err(|error| refused(format!("original Q24 prepared scope: {error}")))?;
+        if &self.initial != prepared.initial() || scope != prepared.scope() {
+            return Err(refused("original empty initial and frozen row scope"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn into_q24_learning_runtime_in_operation(
+        self,
+        stages: Arc<crate::OriginalCellQ24LearningStageOwnersV1>,
+        verifier: LearningEvidenceVerifierV1,
+        capacity: usize,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<
+        (
+            LearningIterationHandleV1,
+            LearningIterationRuntimeBootstrapV1,
+        ),
+        AgentdError,
+    > {
+        self.require_prepared_q24_in_operation(stages.prepared(), read)?;
+        let original = Arc::clone(&stages);
+        let scope = self
+            .scope
+            .ok_or_else(|| refused("original Q24 checkpoint scope absent"))?;
+        let client: AgentdLearningCheckpointClientV1 = self.client;
+        let (ports, checkpoint) = client
+            .with_original_q24_checkpoint(stages)
+            .map_err(|error| refused(error.to_string()))?;
+        let (handle, bootstrap) = crate::learning_iteration_channel_scoped_v2(
+            self.identity.agent_id,
+            self.identity.spawn_generation,
+            self.initial.owners,
+            ports,
+            verifier,
+            capacity,
+            scope,
+        )?;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 = bootstrap;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 =
+            bootstrap.with_original_circuit_learning_delivery(self.initial.request)?;
+        let bootstrap: LearningIterationRuntimeBootstrapV1 =
+            bootstrap.with_original_q24_stage_owners(original)?;
+        Ok((handle, bootstrap.with_original_q24_checkpoint(checkpoint)?))
+    }
+
     pub(crate) fn require_identity(&self, identity: &AgentdIdentity) -> Result<(), AgentdError> {
         if &self.identity != identity {
             return Err(refused(

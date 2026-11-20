@@ -46,7 +46,9 @@ EXPECTED = {
     ),
     "q24_original_publication_material_current": ("cell_q24_publication_driver.rs",),
     "q24_original_successor_source_read": ("learning_iteration_successor.rs",),
-    "q24_original_successor_operation_binding": ("cell_q24_learning_successor.rs",),
+    "q24_original_successor_operation_binding": (
+        "cell_q24_learning_successor.rs", "cell_q24_publication_successor.rs",
+    ),
     "q24_original_successor_operation": ("cell_q24_publication_successor.rs",),
     "q24_original_generation_source_install": ("cell_q24_learning_stage_owners.rs",),
     "q24_original_training_completion_read": ("cell_q24_training_material.rs",),

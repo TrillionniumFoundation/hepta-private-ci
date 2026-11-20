@@ -68,6 +68,18 @@ impl<'read> OriginalDatasetOperationV1<'read> {
 }
 
 impl OriginalDatasetOperationV1<'_> {
+    pub(crate) fn original_stage_authorities(
+        &self,
+        trust: &OriginalHistoricalLearningTrustV1,
+    ) -> std::io::Result<
+        crate::root_historical_task_read_client::OriginalHistoricalStageAuthoritiesV1,
+    > {
+        let DatasetOperationKind::Historical(read) = &self.kind else {
+            return Err(std::io::Error::other("historical operation borrow absent"));
+        };
+        trust.original_stage_authorities_in_operation(read)
+    }
+
     pub(crate) fn read_historical<T>(
         &self,
         ledger: &HistoricalDatasetLedgerV1,

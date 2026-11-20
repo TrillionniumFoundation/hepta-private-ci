@@ -12,6 +12,7 @@ pub(crate) struct OriginalSuccessorPublication {
     pub(crate) bundle: codex_hepta_learning_artifacts::CellCompatibilityBundleV1,
 }
 
+#[derive(Clone)]
 pub(crate) struct OriginalSuccessorProof {
     context: Arc<OriginalQ24SuccessorContext>,
     current: Arc<NeuronGenerationCurrentOwnerV1>,
@@ -21,24 +22,79 @@ pub(crate) struct OriginalSuccessorProof {
 }
 
 impl OriginalSuccessorProof {
+    pub(crate) fn require_original_publication_owners(
+        &self,
+        owners: &OriginalCellQ24LearningStageOwnersV1,
+        decision: &LearningIterationSnapshotV1,
+    ) -> Result<(), Error> {
+        if !std::ptr::eq(owners, self.context.owners().as_ref()) || decision != &self.decision {
+            return Err(Error::Binding(
+                "successor publication belongs to another original aggregate",
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_original_historical_source(&self) -> bool {
+        self.context.has_original_historical_source()
+    }
+
+    fn require_current_bindings(&self) -> Result<(), AgentdError> {
+        let current: &NeuronGenerationCurrentOwnerV1 = self.current.as_ref();
+        current.require_original_root_successor(
+            self.context.session(),
+            self.context.initial(),
+            self.context.scope(),
+        )?;
+        current.require_original_root_selection(&self.decision, &self.operation, self.selection)
+    }
+
+    pub(crate) fn require_original_successor_operation(
+        &self,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<(), AgentdError> {
+        self.context.require_original_successor_operation(read)?;
+        self.require_current_bindings()?;
+        self.context.require_original_successor_operation(read)
+    }
+
     pub(crate) async fn require_current_successor_publication(&self) -> Result<(), Error> {
-        let context = Arc::clone(&self.context);
-        let current = Arc::clone(&self.current);
-        let decision = self.decision.clone();
-        let operation = self.operation.clone();
-        let selection = self.selection;
+        let proof = self.clone();
         self.context
-            .with_current_successor_operation(move || {
-                let current: &NeuronGenerationCurrentOwnerV1 = current.as_ref();
-                current.require_original_root_successor(
-                    context.session(),
-                    context.initial(),
-                    context.scope(),
-                )?;
-                current.require_original_root_selection(&decision, &operation, selection)
-            })
+            .with_current_successor_operation(move || proof.require_current_bindings())
             .await?;
         Ok(())
+    }
+
+    /// The actual channel open is enclosed by this same original source read.
+    /// No borrowed read or checked authority result survives the callback.
+    pub(crate) async fn with_current_successor_publication<T>(
+        &self,
+        work: impl FnOnce() -> Result<T, Error> + Send + 'static,
+    ) -> Result<T, Error>
+    where
+        T: Send + 'static,
+    {
+        use std::sync::atomic::AtomicBool;
+        use std::sync::atomic::Ordering;
+        let proof = self.clone();
+        let started = Arc::new(AtomicBool::new(false));
+        let effect_started = Arc::clone(&started);
+        let result = self
+            .context
+            .with_current_successor_operation(move || {
+                proof.require_current_bindings()?;
+                effect_started.store(true, Ordering::Release);
+                let value = work();
+                proof.require_current_bindings()?;
+                Ok(value)
+            })
+            .await;
+        match result {
+            Ok(value) => value,
+            Err(_) if started.load(Ordering::Acquire) => Err(Error::CommitUncertain),
+            Err(error) => Err(error.into()),
+        }
     }
 }
 
@@ -88,7 +144,6 @@ impl OriginalCellQ24RootPublicationDriverV1 {
             operation: self.driver.original.decision.operation.clone(),
             selection: self.selected.observation().digest(),
         };
-        proof.require_current_successor_publication().await?;
         let model = Arc::clone(&target.model);
         let bundle = self.driver.original.decision.bundle.clone();
         // All existing model, Artifact, predecessor and task checks still run.
@@ -100,12 +155,9 @@ impl OriginalCellQ24RootPublicationDriverV1 {
                 state,
                 proof.context.identity().clone(),
                 slot,
+                proof.clone(),
             )
             .await?;
-        proof
-            .require_current_successor_publication()
-            .await
-            .map_err(crate::circuit_q24_successor::prepared_uncertain)?;
         Ok(OriginalSuccessorPublication {
             prepared,
             proof,

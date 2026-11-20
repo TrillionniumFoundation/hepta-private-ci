@@ -380,54 +380,104 @@ impl OriginalHistoricalLearningDeliveryV1 {
                 return Err(refused("historical delivery deadline"));
             }
         }
-        self.source
-            .require_current_historical_source(state.identity())?;
-        // This supervised future owns the journal across dispatch. Cancellation
-        // or an abort drops that same owner; its witnessed Pending is retained.
-        let reservation = handle.reserve().map_err(refused)?;
-        let existing = self.journal.read(&self.key);
+        let source: Arc<RegisteredHistoricalLearningSourceV1> = Arc::clone(&self.source);
+        // The real witnessed claim and its source postcheck are synchronous.
+        // Only the owned reservation and same-journal claim survive; the read
+        // does not enter the later submit await or its separate completion.
+        let (reservation, existing, claim) = source
+            .prepared
+            .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
+                source.require_original_stage_operation(state.identity(), read)?;
+                let reservation = handle.reserve().map_err(refused)?;
+                let existing = self.journal.read(&self.key);
+                let claim = if matches!(
+                    &existing,
+                    Err(JournalError::Store(
+                        ProductEvaluationExecutionStoreErrorV1::Missing
+                    ))
+                ) {
+                    Some(
+                        self.journal
+                            .prepare_original_historical_delivery(&self.key)
+                            .map_err(refused)?,
+                    )
+                } else {
+                    None
+                };
+                source.require_original_stage_operation(state.identity(), read)?;
+                Ok((reservation, existing, claim))
+            })
+            .map_err(refused)??;
         let snapshot = match existing {
             Ok(saved) => {
+                drop(claim);
                 let snapshot = self.readback(reservation, &cancellation).await?;
                 if saved.as_slice() != snapshot.head_digest.as_array() {
                     return Err(refused("original delivery head differs"));
                 }
+                require_complete(&self.source, &snapshot)?;
+                self.source
+                    .require_current_historical_source(state.identity())?;
                 snapshot
             }
-            Err(JournalError::Pending) => self.readback(reservation, &cancellation).await?,
+            Err(JournalError::Pending) => {
+                drop(claim);
+                let snapshot = self.readback(reservation, &cancellation).await?;
+                require_complete(&self.source, &snapshot)?;
+                self.source
+                    .require_current_historical_source(state.identity())?;
+                snapshot
+            }
             Err(JournalError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {
-                let source = Arc::clone(&self.source);
-                let mut observed = None;
-                let observed_snapshot = &mut observed;
-                let state = Arc::clone(&state);
-                let cancelled = &cancellation;
-                self.journal.commit_original_historical_delivery(&self.key, move || async move {
-                        source.require_current_historical_source(state.identity()).map_err(|_| JournalError::Binding("post-claim historical source"))?;
-                        let result = tokio::select! {
-                                _ = cancelled.cancelled() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
-                                result = tokio::time::timeout_at(source.end.into(), reservation.submit(source.request().clone())) =>
-                                    result.unwrap_or(Err(LearningIterationRuntimeErrorV1::CommitUncertain)),
-                            }.map_err(|error| {
-                                let _ = std::io::Write::write_fmt(
-                                    &mut std::io::stderr(),
-                                    format_args!("daemon_stage=historical.delivery.original_result error={error:?}\n"),
-                                );
-                                JournalError::Pending
+                let claim = match claim {
+                    Some(crate::learning_owner_journal::OriginalHistoricalDeliveryPreparationV1::Claimed(claim)) => claim,
+                    Some(crate::learning_owner_journal::OriginalHistoricalDeliveryPreparationV1::Completed(_)) | None => {
+                        return Err(refused("new delivery did not execute its original claim"));
+                    }
+                };
+                let result = tokio::select! {
+                    _ = cancellation.cancelled() => Err(LearningIterationRuntimeErrorV1::CommitUncertain),
+                    result = tokio::time::timeout_at(source.end.into(), reservation.submit(source.request().clone())) =>
+                        result.unwrap_or(Err(LearningIterationRuntimeErrorV1::CommitUncertain)),
+                }.map_err(|error| {
+                    let _ = std::io::Write::write_fmt(
+                        &mut std::io::stderr(),
+                        format_args!("daemon_stage=historical.delivery.original_result error={error:?}\n"),
+                    );
+                    refused(JournalError::Pending)
+                })?;
+                // Dispatch returned before this fresh source borrow begins.
+                // Its two physical Root observations surround the actual
+                // journal completion and all original completion postchecks.
+                source
+                    .prepared
+                    .with_original_prepared_operation(|read| {
+                        require_complete(&source, &result).map_err(|_| {
+                            JournalError::Binding("original Root delivery is incomplete")
+                        })?;
+                        source
+                            .require_original_stage_operation(state.identity(), read)
+                            .map_err(|_| {
+                                JournalError::Binding("post-dispatch historical source")
                             })?;
-                        require_complete(&source, &result).map_err(|_| JournalError::Binding("original Root delivery is incomplete"))?;
-                        source.require_current_historical_source(state.identity()).map_err(|_| JournalError::Binding("post-dispatch historical source"))?;
-                        let bytes = result.head_digest.as_array().to_vec();
-                        *observed_snapshot = Some(result);
-                        Ok(bytes)
-                    }).await.map_err(refused)?;
-                observed
-                    .ok_or_else(|| refused("new delivery did not execute its original claim"))?
+                        claim
+                            .complete_original_historical_delivery(result.head_digest.as_array())?;
+                        require_complete(&source, &result).map_err(|_| {
+                            JournalError::Binding("original Root delivery is incomplete")
+                        })?;
+                        source
+                            .require_original_stage_operation(state.identity(), read)
+                            .map_err(|_| {
+                                JournalError::Binding("post-complete historical source")
+                            })?;
+                        Ok::<_, JournalError>(result)
+                    })
+                    .map_err(refused)?
+                    .map_err(refused)?
             }
             Err(error) => return Err(refused(error)),
         };
         require_complete(&self.source, &snapshot)?;
-        self.source
-            .require_current_historical_source(state.identity())?;
         self.source
             .accept_original_terminal(&snapshot, &state)
             .await?;

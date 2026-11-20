@@ -71,3 +71,59 @@ pub(super) fn initialize_original_owners(
         })
         .map_err(unavailable)?
 }
+
+/// Same original initialization when the whole Root assembly already owns the
+/// synchronous Prepared borrow. The caller must complete its physical postread.
+pub(super) fn initialize_original_owners_in_operation(
+    prepared: Arc<CellQ24PreparedLearningV1>,
+    sources: crate::OriginalCellQ24SourceInputsV1,
+    verifier: LearningEvidenceVerifierV1,
+    files: OriginalCellQ24TrainingInputsV1,
+    mode: OriginalCellQ24LearningOpenV1,
+    read: &OriginalPreparedReadV1<'_>,
+) -> Result<OriginalInitialOwnersV1, Error> {
+    OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(unavailable)?;
+    let (experience, dataset) = sources.open_original_source_pair_in_operation(
+        Arc::clone(&prepared),
+        verifier,
+        mode,
+        read,
+    )?;
+    let mut experience: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = experience;
+    let mut dataset: OriginalCellQ24SourceReceiptOwnerV1<FileAnchorWitnessStore> = dataset;
+    let completed = match mode {
+        OriginalCellQ24LearningOpenV1::Create => {
+            experience
+                .attest_experience_in_operation(read)
+                .map_err(unavailable)?;
+            dataset
+                .attest_dataset_in_operation(&mut experience, read)
+                .map_err(unavailable)?
+        }
+        OriginalCellQ24LearningOpenV1::Recover => dataset
+            .read_dataset_in_operation(&mut experience, read)
+            .map_err(unavailable)?,
+    };
+    let dataset_cut = completed.snapshot().clone();
+    let (training, receipts) = files.open_original_training_pair_in_operation(
+        &prepared,
+        dataset_cut.clone(),
+        mode,
+        read,
+    )?;
+    let training = OriginalCellQ24TrainingStageV1::from_original_owners_in_operation(
+        training,
+        receipts,
+        &dataset_cut,
+        prepared.scope(),
+        read,
+    )
+    .map_err(unavailable)?;
+    OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(unavailable)?;
+    Ok(OriginalInitialOwnersV1 {
+        experience,
+        dataset,
+        dataset_cut,
+        training,
+    })
+}

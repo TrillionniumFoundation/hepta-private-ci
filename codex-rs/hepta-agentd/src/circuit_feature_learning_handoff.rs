@@ -33,7 +33,7 @@ pub struct OriginalCircuitFeatureLearningHandoffV1 {
 }
 
 impl OriginalCircuitFeatureLearningHandoffV1 {
-    fn open(
+    pub(crate) fn open(
         self,
         initial: LearningIterationSnapshotV1,
         scope: FrozenLearningScopeV2,
@@ -108,6 +108,11 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             .validate_snapshot(&snapshot)
             .map_err(|_| Error::WrongScope)?;
         LearningIterationCoordinatorV1::from_snapshot(snapshot.clone())?;
+        if self.has_original_root_generation_operation()? {
+            return self
+                .install_original_feature_generation(snapshot, original)
+                .await;
+        }
         self.require_current().await?;
         let (selection, next_use) =
             tokio::task::spawn_blocking(move || original.open(initial, scope))

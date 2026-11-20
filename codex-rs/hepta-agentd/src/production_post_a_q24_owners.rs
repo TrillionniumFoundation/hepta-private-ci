@@ -199,6 +199,53 @@ impl SigningFilesData {
 }
 
 impl StageFilesData {
+    /// Admit only the original role keys and descriptors in this read. The
+    /// returned owned files cannot initialize witnesses until a fresh operation.
+    pub(super) fn prepare_original_inputs_in_operation(
+        self,
+        prepared: Arc<crate::CellQ24PreparedLearningV1>,
+        authorities: OriginalHistoricalStageAuthoritiesV1,
+        files: &mut OriginalFiles,
+        queue_capacity: usize,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<OriginalHistoricalStageInputs, AgentdError> {
+        Self::require_original_training_capacity(&self)?;
+        OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(refused)?;
+        let objective = authorities.verifier.objective_digest();
+        let (experience, experience_key) =
+            self.experience
+                .open_original(files, &authorities.experience, objective, self.mode)?;
+        let (dataset, dataset_key) =
+            self.dataset
+                .open_original(files, &authorities.dataset, objective, self.mode)?;
+        let training = JournalData::open(&self.training, files, objective, self.mode)?;
+        let (receipts, receipt_key) = self.training_receipt.open_original(
+            files,
+            &authorities.trainer,
+            objective,
+            self.mode,
+        )?;
+        let (local, local_key) =
+            self.local
+                .open_original(files, &authorities.selector, objective, self.mode)?;
+        OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(refused)?;
+        Ok(OriginalHistoricalStageInputs {
+            prepared,
+            configuration: self,
+            authorities,
+            queue_capacity,
+            experience,
+            experience_key,
+            dataset,
+            dataset_key,
+            training,
+            receipts,
+            receipt_key,
+            local,
+            local_key,
+        })
+    }
+
     pub(super) fn require_original_training_capacity(&self) -> Result<(), AgentdError> {
         // One original header acknowledgement and two actual claim/complete
         // pairs: Training and the Generator's independent B plan signature.
@@ -332,6 +379,117 @@ impl StageFilesData {
             mode: self.mode.original(),
             queue_capacity,
         })
+    }
+}
+
+/// Owned original files and role data only. No Root observation, borrowed
+/// authority, initialized witness, or caller-provided receipt is retained.
+pub(crate) struct OriginalHistoricalStageInputs {
+    prepared: Arc<crate::CellQ24PreparedLearningV1>,
+    configuration: StageFilesData,
+    authorities: OriginalHistoricalStageAuthoritiesV1,
+    queue_capacity: usize,
+    experience: OriginalJournal,
+    experience_key: SigningKey,
+    dataset: OriginalJournal,
+    dataset_key: SigningKey,
+    training: OriginalJournal,
+    receipts: OriginalJournal,
+    receipt_key: SigningKey,
+    local: OriginalJournal,
+    local_key: SigningKey,
+}
+
+impl OriginalHistoricalStageInputs {
+    pub(crate) fn prepared(&self) -> &Arc<crate::CellQ24PreparedLearningV1> {
+        &self.prepared
+    }
+
+    /// Call only after file admission's physical postread succeeded. This fresh
+    /// operation brackets every witness open and all later owner construction.
+    pub(crate) fn open_in_original_operation(
+        self,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<crate::OriginalCellQ24LearningInputsV1, AgentdError> {
+        let Self {
+            prepared,
+            configuration,
+            authorities,
+            queue_capacity,
+            experience,
+            experience_key,
+            dataset,
+            dataset_key,
+            training,
+            receipts,
+            receipt_key,
+            local,
+            local_key,
+        } = self;
+        OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(refused)?;
+        let original = Arc::clone(&prepared);
+        let (experience, experience_witness) = experience.open_witness()?;
+        let (dataset, dataset_witness) = dataset.open_witness()?;
+        let (training, training_witness) = training.open_witness()?;
+        let (receipts, receipt_witness) = receipts.open_witness()?;
+        let (local, local_witness) = local.open_witness()?;
+        let inputs = crate::OriginalCellQ24LearningInputsV1 {
+            prepared,
+            sources: crate::OriginalCellQ24SourceInputsV1::Files(
+                crate::OriginalCellQ24SourceFilesV1 {
+                    experience: crate::OriginalCellQ24SourceJournalV1 {
+                        journal: experience,
+                        witness: experience_witness,
+                        signer: authorities.experience,
+                        key: experience_key,
+                        maximum_signature_lifetime_seconds: configuration
+                            .experience
+                            .signature_lifetime_seconds,
+                    },
+                    dataset: crate::OriginalCellQ24SourceJournalV1 {
+                        journal: dataset,
+                        witness: dataset_witness,
+                        signer: authorities.dataset,
+                        key: dataset_key,
+                        maximum_signature_lifetime_seconds: configuration
+                            .dataset
+                            .signature_lifetime_seconds,
+                    },
+                },
+            ),
+            training: crate::OriginalCellQ24TrainingInputsV1::Files(
+                crate::OriginalCellQ24TrainingFilesV1 {
+                    training,
+                    training_witness,
+                    receipts,
+                    receipt_witness,
+                    signer: authorities.trainer,
+                    key: receipt_key,
+                    verifier: authorities.verifier.clone(),
+                    maximum_signature_lifetime_seconds: configuration
+                        .training_receipt
+                        .signature_lifetime_seconds,
+                },
+            ),
+            local: crate::OriginalCellQ24LocalDecisionFilesV1 {
+                journal: local,
+                witness: local_witness,
+                signer: authorities.selector,
+                key: local_key,
+                policy: match configuration.local_policy {
+                    LocalPolicy::AdoptQualified => crate::CellQ24LocalPolicyV1::AdoptQualified,
+                    LocalPolicy::RetainCurrent => crate::CellQ24LocalPolicyV1::RetainCurrent,
+                    LocalPolicy::DeferQualified => crate::CellQ24LocalPolicyV1::DeferQualified,
+                },
+                maximum_signature_lifetime_seconds: configuration.local.signature_lifetime_seconds,
+                mode: configuration.mode.original(),
+            },
+            verifier: authorities.verifier,
+            mode: configuration.mode.original(),
+            queue_capacity,
+        };
+        OriginalPreparedReadV1::require_prepared(read, &original).map_err(refused)?;
+        Ok(inputs)
     }
 }
 

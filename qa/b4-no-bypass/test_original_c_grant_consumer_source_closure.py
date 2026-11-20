@@ -120,7 +120,7 @@ class OriginalCGrantConsumerSourceTests(unittest.TestCase):
             "Arc::clone(&self.original.owners)",
             "self.original.decision.snapshot.clone()",
             "self.original.manifest.clone()",
-            "with_original_publication(snapshot, manifest, move || {",
+            "with_original_successor_publication(snapshot, manifest, proof, move || {",
             "slot.require_installation_open()",
             "PreparedAgentdGenerationUpdateV1::issue_original_root_final_use(&self.prepared)",
             "Ok((self, issued?))",
@@ -131,7 +131,7 @@ class OriginalCGrantConsumerSourceTests(unittest.TestCase):
         self.reject(AGGREGATE, "require_successor_admission(&state, &identity)?", occurrence=2)
         self.reject(AGGREGATE, "slot.require_installation_open()", occurrence=1)
 
-    def test_worker_rechecks_original_proof_before_unpacking_issuer_result(self):
+    def test_worker_passes_exact_original_proof_to_each_real_effect(self):
         for marker in (
             "let requested = tokio::select!",
             "self.slot.closed.cancelled()",
@@ -148,8 +148,8 @@ class OriginalCGrantConsumerSourceTests(unittest.TestCase):
         ):
             with self.subTest(marker=marker):
                 self.reject(WORKER, marker)
-        self.reject(WORKER, "require_current_successor_publication()", occurrence=0)
-        self.reject(WORKER, "require_current_successor_publication()", occurrence=1)
+        self.reject(WORKER, "original.proof.clone()", occurrence=0)
+        self.reject(WORKER, "original.proof.clone()", occurrence=1)
 
     def test_sole_ordinary_continuation_uses_fixed_root_command(self):
         self.reject(

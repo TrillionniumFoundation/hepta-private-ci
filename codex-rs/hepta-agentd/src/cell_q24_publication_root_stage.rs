@@ -8,6 +8,7 @@ use super::*;
 
 #[path = "cell_q24_publication_successor.rs"]
 mod successor;
+pub(crate) use successor::OriginalSuccessorProof;
 pub(crate) use successor::OriginalSuccessorPublication;
 #[path = "cell_q24_publication_successor_current.rs"]
 mod successor_current;
@@ -228,30 +229,36 @@ impl OriginalCellQ24SelectedArtifactForRootV1 {
         timeout: Duration,
         original_end: Instant,
     ) -> Result<OriginalCellQ24RootPublicationDriverV1, Error> {
-        OriginalDecision::require_current(&self.original).await?;
-        let handoff: crate::RootGenerationPublicationHandoffV1 = handoff;
-        let current: Arc<NeuronGenerationCurrentOwnerV1> =
-            crate::RootGenerationPublicationHandoffV1::connect_until(
-                handoff,
-                connection,
-                timeout,
-                original_end,
-            )
-            .await?;
-        current.require_original_root_selection(
-            &self.original.decision.snapshot,
-            &self.original.decision.operation,
-            self.selected.observation().digest(),
-        )?;
-        OriginalDecision::require_current(&self.original).await?;
-        Ok(OriginalCellQ24RootPublicationDriverV1 {
-            driver: OriginalCellQ24PublicationDriverV1 {
-                original: self.original,
-                current,
-                authorities: self.authorities,
-            },
-            selected: self.selected,
-        })
+        let owners: Arc<OriginalCellQ24LearningStageOwnersV1> = Arc::clone(&self.original.owners);
+        let snapshot = self.original.decision.snapshot.clone();
+        let manifest = self.original.manifest.clone();
+        let runtime = tokio::runtime::Handle::current();
+        owners
+            .with_original_publication(snapshot, manifest, move || {
+                // The bounded original connect is part of this same synchronous
+                // owner action. The Prepared read cannot escape the callback.
+                let current: Arc<NeuronGenerationCurrentOwnerV1> =
+                    runtime.block_on(crate::RootGenerationPublicationHandoffV1::connect_until(
+                        handoff,
+                        connection,
+                        timeout,
+                        original_end,
+                    ))?;
+                current.require_original_root_selection(
+                    &self.original.decision.snapshot,
+                    &self.original.decision.operation,
+                    self.selected.observation().digest(),
+                )?;
+                Ok(OriginalCellQ24RootPublicationDriverV1 {
+                    driver: OriginalCellQ24PublicationDriverV1 {
+                        original: self.original,
+                        current,
+                        authorities: self.authorities,
+                    },
+                    selected: self.selected,
+                })
+            })
+            .await
     }
 }
 
@@ -343,6 +350,40 @@ pub struct OriginalCellQ24RetainedArtifactForRootV1 {
 }
 
 impl OriginalCellQ24RetainedArtifactForRootV1 {
+    /// After the independent selection bytes arrive, construct and select the
+    /// retained result in one authenticated operation. Before that wait the
+    /// caller holds only its original owners and data, never a borrowed read.
+    pub(crate) async fn accept_original_result_selection(
+        owners: Arc<OriginalCellQ24LearningStageOwnersV1>,
+        snapshot: LearningIterationSnapshotV1,
+        authorities: AgentdGenerationUpdateAuthoritiesV1,
+        input: OriginalCellQ24SelectionInputsV1,
+    ) -> Result<OriginalCellQ24SelectedArtifactForRootV1, Error> {
+        let decision = Decision::new(snapshot.clone())?;
+        decision.require_root_publication()?;
+        if decision.adopts() {
+            return Err(Error::Binding(
+                "adopted model requires the actual Artifact publication phase",
+            ));
+        }
+        let original = OriginalDecision {
+            owners: Arc::clone(&owners),
+            decision,
+            manifest: None,
+        };
+        owners
+            .with_original_publication(snapshot, None, move || {
+                original.decision.require_root_publication()?;
+                let selected = original.load_selected(&authorities, input, None)?;
+                Ok(OriginalCellQ24SelectedArtifactForRootV1 {
+                    original,
+                    authorities,
+                    selected,
+                })
+            })
+            .await
+    }
+
     pub async fn from_original_result(
         owners: Arc<OriginalCellQ24LearningStageOwnersV1>,
         snapshot: LearningIterationSnapshotV1,

@@ -19,6 +19,10 @@ enum OriginalSuccessorSourceV1 {
 }
 
 impl OriginalQ24SuccessorContext {
+    pub(crate) fn has_original_historical_source(&self) -> bool {
+        matches!(self.source, OriginalSuccessorSourceV1::Historical(_))
+    }
+
     pub(crate) fn identity(&self) -> &AgentdIdentity {
         &self.identity
     }

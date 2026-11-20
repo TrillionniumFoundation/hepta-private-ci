@@ -35,9 +35,9 @@ class PostAArtifactsSourceTests(unittest.TestCase):
             'Mode::Reserve', 'self.head.wait_original_value(cancelled).await?', 'candidate_manifest()',
             'request::original_request(', 'OriginalCellQ24ArtifactPublicationDriverV1::publish_candidate(',
             'Mode::Recover', 'OriginalCellQ24ArtifactPublicationDriverV1::recover_published(driver)',
-            'OriginalCellQ24RetainedArtifactForRootV1::from_original_result(', 'match (published, retained)',
+            '(None, Some((owners, snapshot, authority.clone())), None)', 'match (published, retained)',
             'OriginalCellQ24PublishedArtifactForRootV1::accept_selection(published, input)',
-            'OriginalCellQ24RetainedArtifactForRootV1::accept_selection(retained, input)', '_ => return Err('))
+            'OriginalCellQ24RetainedArtifactForRootV1::accept_original_result_selection(', '_ => return Err('))
 
     def test_independent_selection_reopens_and_rechecks_the_actual_selected_files(self):
         self.check_markers(ART, 'fn publish_and_select_original(', (

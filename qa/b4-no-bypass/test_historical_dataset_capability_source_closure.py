@@ -115,6 +115,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
                               AGENT + "cell_q24_source_receipt_owner.rs",
                               AGENT + "production_post_a_q24_owners.rs",
                               AGENT + "learning_iteration_historical_source.rs",
+                              AGENT + "root_production_learning_inputs.rs",
+                              AGENT + "cell_q24_learning_stage_owners.rs",
                           ])
         self.check_markers(CONSTRUCTION, "fn require_prepared_in_operation(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",
