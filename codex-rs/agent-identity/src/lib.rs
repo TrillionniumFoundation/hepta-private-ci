@@ -581,9 +581,12 @@ mod tests {
 
     #[test]
     fn agent_identity_timestamp_preserves_rfc3339_utc_seconds() -> anyhow::Result<()> {
-        let timestamp = OffsetDateTime::from_unix_timestamp(1_776_947_696)?
-            .replace_nanosecond(123_456_789)?;
-        assert_eq!(format_agent_identity_timestamp(timestamp)?, "2026-04-23T12:34:56Z");
+        let timestamp =
+            OffsetDateTime::from_unix_timestamp(1_776_947_696)?.replace_nanosecond(123_456_789)?;
+        assert_eq!(
+            format_agent_identity_timestamp(timestamp)?,
+            "2026-04-23T12:34:56Z"
+        );
         Ok(())
     }
 

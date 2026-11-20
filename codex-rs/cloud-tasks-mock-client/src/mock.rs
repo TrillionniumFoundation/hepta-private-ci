@@ -229,14 +229,20 @@ impl CloudBackend for MockClient {
 /// instants before the Unix epoch), without importing Chrono in this crate.
 fn unix_timestamp_millis(now: SystemTime) -> i64 {
     match now.duration_since(UNIX_EPOCH) {
-        Ok(elapsed) => i64::try_from(elapsed.as_millis()).expect("system time fits i64 millis"),
+        Ok(elapsed) => match i64::try_from(elapsed.as_millis()) {
+            Ok(millis) => millis,
+            Err(_) => panic!("system time fits i64 millis"),
+        },
         Err(error) => {
             let elapsed = error.duration();
             let mut millis = elapsed.as_millis();
             if elapsed.subsec_nanos() % 1_000_000 != 0 {
                 millis += 1;
             }
-            -i64::try_from(millis).expect("system time fits i64 millis")
+            match i64::try_from(millis) {
+                Ok(millis) => -millis,
+                Err(_) => panic!("system time fits i64 millis"),
+            }
         }
     }
 }
