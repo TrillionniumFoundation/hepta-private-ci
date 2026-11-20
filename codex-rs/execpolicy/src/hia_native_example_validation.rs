@@ -115,6 +115,36 @@ fn step(mode: u64, total: usize, index: usize, misses: usize, hit: bool) -> Tran
             "HIA returned a terminal event before the final example"
         );
     }
+    if total != 0 {
+        // A well-formed native response must still agree with the actual Rust
+        // policy callback. Fail closed instead of accepting a plausible event
+        // that silently skips a miss or fabricates a negative match.
+        let positive_miss = mode == POSITIVE && !hit;
+        assert_eq!(
+            matches!(event, MISSING | LAST_MISSING),
+            positive_miss,
+            "HIA example-validation miss event disagrees with the policy callback"
+        );
+        assert_eq!(
+            event == NEGATIVE_MATCH,
+            mode == NEGATIVE && hit,
+            "HIA example-validation negative event disagrees with the policy callback"
+        );
+        let expected_misses = misses
+            .checked_add(usize::from(positive_miss))
+            .unwrap_or_else(|| panic!("example-validation miss count overflow"));
+        assert_eq!(
+            new_misses, expected_misses,
+            "HIA example-validation miss count disagrees with callback results"
+        );
+        if mode == POSITIVE && hit && next == total {
+            assert_eq!(
+                event == DONE,
+                misses == 0,
+                "HIA example-validation final event ignored earlier misses"
+            );
+        }
+    }
     Transition {
         event,
         next,
