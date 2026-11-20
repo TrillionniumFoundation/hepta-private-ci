@@ -1,0 +1,898 @@
+{
+  "native_TF": {
+    "nodes": [
+      {
+        "output": {
+          "active_adapter": "cell_2",
+          "active_adapter_sha256": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+          "active_parameters": 1544259072,
+          "answer": "{\"edits\":[{\"new\":\"    assert subject('\\\"C:\\\\foo\\\\bar.txt\\\"') == '\\\"C:\\\\foo\\\\bar.txt\\\"'\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}",
+          "backend_versions": {
+            "safetensors": "0.7.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.9.1+cu128",
+            "transformers": "4.57.3"
+          },
+          "base_load_count": 1,
+          "completed_at_ns": 1795012225124790615,
+          "device": {
+            "compute_capability": [
+              8,
+              9
+            ],
+            "device": "cuda:0",
+            "device_name": "NVIDIA GeForce RTX 4060",
+            "dtype": "bfloat16",
+            "free_bytes_before_load": 6902251520,
+            "total_bytes": 8184135680
+          },
+          "eos_seen": true,
+          "external_effect_executed": false,
+          "finish_reason": "eos_token",
+          "full_system_cost_complete": false,
+          "generation_config_sha256": "e31715a80c7c2d6fb35843583b19931ec955723cba8366472ed48b461514e3eb",
+          "hit_output_limit": false,
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "input_tokens": 507,
+          "loaded_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+          "max_new_tokens": 384,
+          "message_protocol": "native_chat_v2",
+          "messages_sha256": "ffac7231d0428e3620ecfca266676647f3284da428290bf9eaa9f302ace3bc52",
+          "output_token_ids": [
+            4913,
+            291,
+            1199,
+            66582,
+            931,
+            3252,
+            262,
+            2060,
+            3832,
+            492,
+            2105,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            863,
+            621,
+            84849,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            6,
+            2198,
+            813,
+            3252,
+            262,
+            1494,
+            2198,
+            2343,
+            3252,
+            1944,
+            51499,
+            7197,
+            9207,
+            13989,
+            151645
+          ],
+          "output_tokens": 43,
+          "parameter_evidence_digest": "05e43f18306c38da71307f07860a1b80449bb6b995c865995fcebe123d46f1fd",
+          "parameter_source_digest": "05e43f18306c38da71307f07860a1b80449bb6b995c865995fcebe123d46f1fd",
+          "parameter_source_evidence": {
+            "actual_normalized_adapter_hash": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+            "adapter_parameters": 544768,
+            "base_parameters": 1543714304,
+            "model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+            "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+            "training": {
+              "actual_runtime_sources": {
+                "scripts/cell_experiments/causal_probe_v3.py": "1517c622909deb5f8cf9ac65fb738da13cf4987018d5ac211a903a3c95cc8ae6",
+                "scripts/cell_experiments/causal_train_v3.py": "044a9cf8e389073d839342522d3b92556b8de8f7cf6b4ca4a762b8c4d33e7df8",
+                "scripts/cell_experiments/causal_training_contract_v3.py": "6df0d39b6bca702cb9a3018250349970e65221fffea5806d2c4af4e756d45325",
+                "scripts/cell_experiments/chat_protocol.py": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+                "scripts/cell_experiments/coding_sft.py": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+                "scripts/cell_experiments/data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+                "scripts/cell_experiments/matched_info_sft_v4.py": "a4f71acdaa996ff1829a6ef23619fe3b62d0ebb95c58fa76510fd8267699863b"
+              },
+              "admission_source_sha256": "eb5d7d8656291d40533c36dbb4c1294e988b2050ca0e446b593137877170703f",
+              "bytes": 945,
+              "original_source_inventory_digest": "ba62041fac76b6b94e6c5f8f81a69684197194520c25604505f5acaa9466ed5c",
+              "parameter_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+              "parameter_count_source": "hash-admitted saved FP32 tensor shapes; checked again against actual loaded tensors",
+              "path": "research-matched-info-20261118-2e9b/training/all_actions/TRAINING.json",
+              "scope": "same-input same-fixed-compute F/T; C remains an unmatched secondary control",
+              "sha256": "16cf0def1a31802d4255d9f042d1377e26c05f9c06a5a1325bf5f3d88d4fc7de",
+              "trainable_parameters": 544768
+            }
+          },
+          "pid": 3408012,
+          "pool_call_wall_seconds": 3.1475654719979502,
+          "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+          "pool_load_cost_is_shared": true,
+          "rendered_input_sha256": "03249ac29486f1bc42af626d5980f2d89970f0b5098c2ae4f454137506584c51",
+          "rendered_prompt_sha256": "03249ac29486f1bc42af626d5980f2d89970f0b5098c2ae4f454137506584c51",
+          "resident_parameters": 1545348608,
+          "started_at_ns": 1795012222033257326,
+          "time_scope": "render, tokenize, generate and decode; excludes model load and verifier",
+          "wall_seconds": 3.091533703962341
+        },
+        "request": {
+          "record_id": "upstream-requests-unquote-header-value",
+          "task": {
+            "input": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+            "messages": [
+              {
+                "content": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+                "role": "user"
+              }
+            ]
+          }
+        },
+        "slot": 0,
+        "verification": {
+          "answer_sha256": "b3bf732706497c8222c65a5e86a41f548a4682f008e30e3373616fbeadc593c0",
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "parameters_sha256": "e943e4068798118ff17256a283e74b8a13ed4e64efd3b8cb51788e38c68fa424",
+          "production_eligible": false,
+          "receipt_sha256": "7b60a0ce08a7fbe215824d297d6cd4c8fabb365306db3302756bd0ab5eb8c3cc",
+          "record_id": "upstream-requests-unquote-header-value",
+          "result": {
+            "assertions": 1,
+            "controls_rejected": 2,
+            "executed": true,
+            "exit_code": 0,
+            "fixture_sha256": "26a299acdbbc00eca10aa904ddb7bc603cdc1e969de19886429534ae918beefb",
+            "full_repository_integration": false,
+            "independent_user_evidence": false,
+            "planned_subject_calls_per_arm": 1,
+            "reason": "business_tests_failed",
+            "result": {
+              "control_count": 2,
+              "controls_rejected": 2,
+              "observations": [
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txt"
+                    }
+                  ],
+                  "control": "original",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "alpha"
+                    }
+                  ],
+                  "control": "always-alpha",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txtwrong"
+                    }
+                  ],
+                  "control": "suffix",
+                  "error": "AssertionError",
+                  "passed": false
+                }
+              ],
+              "original_passed": false
+            },
+            "stderr": "",
+            "stdout_sha256": "1770cb264771cbfffc66204bc2e33d462631dfda6c263b1734f240608c877cf4",
+            "success": false,
+            "test_sha256": "6154908d4e8665e99242aecc31940fb0f655ce325e174cf58100166a81fa76af",
+            "wall_ns": 191700814
+          },
+          "schema": "hepta.cell-experiments.semantic-receipt.v1",
+          "student_execution_claimed": false,
+          "success": false,
+          "verifier": [
+            "repo_patch",
+            "1"
+          ],
+          "verifier_source_sha256": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+        }
+      },
+      {
+        "output": {
+          "active_adapter": "cell_1",
+          "active_adapter_sha256": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+          "active_parameters": 1544259072,
+          "answer": "{\"edits\":[{\"new\":\"    assert subject('\\\"C:\\\\foo\\\\bar.txt\\\"') == '\\\"C:\\\\foo\\\\bar.txt\\\"'\\n\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}",
+          "backend_versions": {
+            "safetensors": "0.7.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.9.1+cu128",
+            "transformers": "4.57.3"
+          },
+          "base_load_count": 1,
+          "completed_at_ns": 1795012228932869582,
+          "device": {
+            "compute_capability": [
+              8,
+              9
+            ],
+            "device": "cuda:0",
+            "device_name": "NVIDIA GeForce RTX 4060",
+            "dtype": "bfloat16",
+            "free_bytes_before_load": 6902251520,
+            "total_bytes": 8184135680
+          },
+          "eos_seen": true,
+          "external_effect_executed": false,
+          "finish_reason": "eos_token",
+          "full_system_cost_complete": false,
+          "generation_config_sha256": "e31715a80c7c2d6fb35843583b19931ec955723cba8366472ed48b461514e3eb",
+          "hit_output_limit": false,
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "input_tokens": 654,
+          "loaded_model_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+          "max_new_tokens": 384,
+          "message_protocol": "native_chat_v2",
+          "messages_sha256": "136ff36285ca340e297ea6ab8245da27788ee06512f22cf0467ae388ff469b4e",
+          "output_token_ids": [
+            4913,
+            291,
+            1199,
+            66582,
+            931,
+            3252,
+            262,
+            2060,
+            3832,
+            492,
+            2105,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            863,
+            621,
+            84849,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            15777,
+            77,
+            2198,
+            813,
+            3252,
+            262,
+            1494,
+            2198,
+            2343,
+            3252,
+            1944,
+            51499,
+            7197,
+            9207,
+            13989,
+            151645
+          ],
+          "output_tokens": 44,
+          "parameter_evidence_digest": "388b04f18f3ff0315734f860c441159b3ed54ae19fb818c4c57da8e1df1b749b",
+          "parameter_source_digest": "388b04f18f3ff0315734f860c441159b3ed54ae19fb818c4c57da8e1df1b749b",
+          "parameter_source_evidence": {
+            "actual_normalized_adapter_hash": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+            "adapter_parameters": 544768,
+            "base_parameters": 1543714304,
+            "model_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+            "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+            "training": {
+              "actual_runtime_sources": {
+                "scripts/cell_experiments/causal_probe_v3.py": "1517c622909deb5f8cf9ac65fb738da13cf4987018d5ac211a903a3c95cc8ae6",
+                "scripts/cell_experiments/causal_train_v3.py": "044a9cf8e389073d839342522d3b92556b8de8f7cf6b4ca4a762b8c4d33e7df8",
+                "scripts/cell_experiments/causal_training_contract_v3.py": "6df0d39b6bca702cb9a3018250349970e65221fffea5806d2c4af4e756d45325",
+                "scripts/cell_experiments/chat_protocol.py": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+                "scripts/cell_experiments/coding_sft.py": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+                "scripts/cell_experiments/data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+                "scripts/cell_experiments/matched_info_sft_v4.py": "a4f71acdaa996ff1829a6ef23619fe3b62d0ebb95c58fa76510fd8267699863b"
+              },
+              "admission_source_sha256": "eb5d7d8656291d40533c36dbb4c1294e988b2050ca0e446b593137877170703f",
+              "bytes": 939,
+              "original_source_inventory_digest": "ba62041fac76b6b94e6c5f8f81a69684197194520c25604505f5acaa9466ed5c",
+              "parameter_after": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+              "parameter_count_source": "hash-admitted saved FP32 tensor shapes; checked again against actual loaded tensors",
+              "path": "research-matched-info-20261118-2e9b/training/final_only/TRAINING.json",
+              "scope": "same-input same-fixed-compute F/T; C remains an unmatched secondary control",
+              "sha256": "021af9db31632297df6589f131a3bf3b6ef68836cd70cf172798e6d9f1955b7f",
+              "trainable_parameters": 544768
+            }
+          },
+          "pid": 3408012,
+          "pool_call_wall_seconds": 3.5441661489894614,
+          "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+          "pool_load_cost_is_shared": true,
+          "rendered_input_sha256": "1ea980aacfc2e90886a951e129fd8424e8ccdd9340a1602536b8fa44340cbb8f",
+          "rendered_prompt_sha256": "1ea980aacfc2e90886a951e129fd8424e8ccdd9340a1602536b8fa44340cbb8f",
+          "resident_parameters": 1545348608,
+          "started_at_ns": 1795012225444592130,
+          "time_scope": "render, tokenize, generate and decode; excludes model load and verifier",
+          "wall_seconds": 3.4882783310022205
+        },
+        "request": {
+          "record_id": "upstream-requests-unquote-header-value",
+          "task": {
+            "input": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+            "messages": [
+              {
+                "content": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+                "role": "user"
+              },
+              {
+                "content": "{\"edits\":[{\"new\":\"    assert subject('\\\"C:\\\\foo\\\\bar.txt\\\"') == '\\\"C:\\\\foo\\\\bar.txt\\\"'\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}",
+                "role": "assistant"
+              },
+              {
+                "content": "{\"completed_original_calls\":1,\"control_comparison_informative\":false,\"control_count\":null,\"controls_rejected\":null,\"error_code\":null,\"execution_performed\":true,\"instruction\":\"Check subject arguments and assertions against the visible task contract.\",\"next_attempt_resets_template\":true,\"original_error_type\":\"AssertionError\",\"original_passed\":false,\"reason\":\"business_tests_failed\",\"schema\":\"hepta.stable-repository-feedback.v1\",\"success\":false}",
+                "role": "tool"
+              }
+            ]
+          }
+        },
+        "slot": 1,
+        "verification": {
+          "answer_sha256": "ec27586476ee725d6670d260e1c73d4c0b33d685ca04f6d6d8340b239894eb29",
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "parameters_sha256": "e943e4068798118ff17256a283e74b8a13ed4e64efd3b8cb51788e38c68fa424",
+          "production_eligible": false,
+          "receipt_sha256": "374552ff3912f76423141dcfe6cb5b3e6572e17b00ef5dc756c046c30f946943",
+          "record_id": "upstream-requests-unquote-header-value",
+          "result": {
+            "assertions": 1,
+            "controls_rejected": 2,
+            "executed": true,
+            "exit_code": 0,
+            "fixture_sha256": "26a299acdbbc00eca10aa904ddb7bc603cdc1e969de19886429534ae918beefb",
+            "full_repository_integration": false,
+            "independent_user_evidence": false,
+            "planned_subject_calls_per_arm": 1,
+            "reason": "business_tests_failed",
+            "result": {
+              "control_count": 2,
+              "controls_rejected": 2,
+              "observations": [
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txt"
+                    }
+                  ],
+                  "control": "original",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "alpha"
+                    }
+                  ],
+                  "control": "always-alpha",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txtwrong"
+                    }
+                  ],
+                  "control": "suffix",
+                  "error": "AssertionError",
+                  "passed": false
+                }
+              ],
+              "original_passed": false
+            },
+            "stderr": "",
+            "stdout_sha256": "1770cb264771cbfffc66204bc2e33d462631dfda6c263b1734f240608c877cf4",
+            "success": false,
+            "test_sha256": "13cb58cef2998eb061816ec356aa07790abe0d8f837f53ea4b9e9ca90a4d20f0",
+            "wall_ns": 195451165
+          },
+          "schema": "hepta.cell-experiments.semantic-receipt.v1",
+          "student_execution_claimed": false,
+          "success": false,
+          "verifier": [
+            "repo_patch",
+            "1"
+          ],
+          "verifier_source_sha256": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+        }
+      }
+    ],
+    "original_path": "upstream/upstream-requests-unquote-header-value/native_TF",
+    "result_digest": "c23608bfd35f1de2f2b3d2ce8e5608b12efd5072d970293aba0c820990b16312"
+  },
+  "native_TF_no_answer": {
+    "nodes": [
+      {
+        "output": {
+          "active_adapter": "cell_2",
+          "active_adapter_sha256": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+          "active_parameters": 1544259072,
+          "answer": "{\"edits\":[{\"new\":\"    assert subject('\\\"C:\\\\foo\\\\bar.txt\\\"') == '\\\"C:\\\\foo\\\\bar.txt\\\"'\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}",
+          "backend_versions": {
+            "safetensors": "0.7.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.9.1+cu128",
+            "transformers": "4.57.3"
+          },
+          "base_load_count": 1,
+          "completed_at_ns": 1795012249233606529,
+          "device": {
+            "compute_capability": [
+              8,
+              9
+            ],
+            "device": "cuda:0",
+            "device_name": "NVIDIA GeForce RTX 4060",
+            "dtype": "bfloat16",
+            "free_bytes_before_load": 6902251520,
+            "total_bytes": 8184135680
+          },
+          "eos_seen": true,
+          "external_effect_executed": false,
+          "finish_reason": "eos_token",
+          "full_system_cost_complete": false,
+          "generation_config_sha256": "e31715a80c7c2d6fb35843583b19931ec955723cba8366472ed48b461514e3eb",
+          "hit_output_limit": false,
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "input_tokens": 507,
+          "loaded_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+          "max_new_tokens": 384,
+          "message_protocol": "native_chat_v2",
+          "messages_sha256": "ffac7231d0428e3620ecfca266676647f3284da428290bf9eaa9f302ace3bc52",
+          "output_token_ids": [
+            4913,
+            291,
+            1199,
+            66582,
+            931,
+            3252,
+            262,
+            2060,
+            3832,
+            492,
+            2105,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            863,
+            621,
+            84849,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            6,
+            2198,
+            813,
+            3252,
+            262,
+            1494,
+            2198,
+            2343,
+            3252,
+            1944,
+            51499,
+            7197,
+            9207,
+            13989,
+            151645
+          ],
+          "output_tokens": 43,
+          "parameter_evidence_digest": "05e43f18306c38da71307f07860a1b80449bb6b995c865995fcebe123d46f1fd",
+          "parameter_source_digest": "05e43f18306c38da71307f07860a1b80449bb6b995c865995fcebe123d46f1fd",
+          "parameter_source_evidence": {
+            "actual_normalized_adapter_hash": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+            "adapter_parameters": 544768,
+            "base_parameters": 1543714304,
+            "model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+            "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+            "training": {
+              "actual_runtime_sources": {
+                "scripts/cell_experiments/causal_probe_v3.py": "1517c622909deb5f8cf9ac65fb738da13cf4987018d5ac211a903a3c95cc8ae6",
+                "scripts/cell_experiments/causal_train_v3.py": "044a9cf8e389073d839342522d3b92556b8de8f7cf6b4ca4a762b8c4d33e7df8",
+                "scripts/cell_experiments/causal_training_contract_v3.py": "6df0d39b6bca702cb9a3018250349970e65221fffea5806d2c4af4e756d45325",
+                "scripts/cell_experiments/chat_protocol.py": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+                "scripts/cell_experiments/coding_sft.py": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+                "scripts/cell_experiments/data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+                "scripts/cell_experiments/matched_info_sft_v4.py": "a4f71acdaa996ff1829a6ef23619fe3b62d0ebb95c58fa76510fd8267699863b"
+              },
+              "admission_source_sha256": "eb5d7d8656291d40533c36dbb4c1294e988b2050ca0e446b593137877170703f",
+              "bytes": 945,
+              "original_source_inventory_digest": "ba62041fac76b6b94e6c5f8f81a69684197194520c25604505f5acaa9466ed5c",
+              "parameter_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+              "parameter_count_source": "hash-admitted saved FP32 tensor shapes; checked again against actual loaded tensors",
+              "path": "research-matched-info-20261118-2e9b/training/all_actions/TRAINING.json",
+              "scope": "same-input same-fixed-compute F/T; C remains an unmatched secondary control",
+              "sha256": "16cf0def1a31802d4255d9f042d1377e26c05f9c06a5a1325bf5f3d88d4fc7de",
+              "trainable_parameters": 544768
+            }
+          },
+          "pid": 3408012,
+          "pool_call_wall_seconds": 4.377387547981925,
+          "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+          "pool_load_cost_is_shared": true,
+          "rendered_input_sha256": "03249ac29486f1bc42af626d5980f2d89970f0b5098c2ae4f454137506584c51",
+          "rendered_prompt_sha256": "03249ac29486f1bc42af626d5980f2d89970f0b5098c2ae4f454137506584c51",
+          "resident_parameters": 1545348608,
+          "started_at_ns": 1795012245404286127,
+          "time_scope": "render, tokenize, generate and decode; excludes model load and verifier",
+          "wall_seconds": 3.8293202930362895
+        },
+        "request": {
+          "record_id": "upstream-requests-unquote-header-value",
+          "task": {
+            "input": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+            "messages": [
+              {
+                "content": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+                "role": "user"
+              }
+            ]
+          }
+        },
+        "slot": 0,
+        "verification": {
+          "answer_sha256": "b3bf732706497c8222c65a5e86a41f548a4682f008e30e3373616fbeadc593c0",
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "parameters_sha256": "e943e4068798118ff17256a283e74b8a13ed4e64efd3b8cb51788e38c68fa424",
+          "production_eligible": false,
+          "receipt_sha256": "462d25fbdf08a8fef061162d3ebc9a65b18b932cbd5318197fb19dc535ecf859",
+          "record_id": "upstream-requests-unquote-header-value",
+          "result": {
+            "assertions": 1,
+            "controls_rejected": 2,
+            "executed": true,
+            "exit_code": 0,
+            "fixture_sha256": "26a299acdbbc00eca10aa904ddb7bc603cdc1e969de19886429534ae918beefb",
+            "full_repository_integration": false,
+            "independent_user_evidence": false,
+            "planned_subject_calls_per_arm": 1,
+            "reason": "business_tests_failed",
+            "result": {
+              "control_count": 2,
+              "controls_rejected": 2,
+              "observations": [
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txt"
+                    }
+                  ],
+                  "control": "original",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "alpha"
+                    }
+                  ],
+                  "control": "always-alpha",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\""
+                      ],
+                      "output": "C:\foo\bar.txtwrong"
+                    }
+                  ],
+                  "control": "suffix",
+                  "error": "AssertionError",
+                  "passed": false
+                }
+              ],
+              "original_passed": false
+            },
+            "stderr": "",
+            "stdout_sha256": "1770cb264771cbfffc66204bc2e33d462631dfda6c263b1734f240608c877cf4",
+            "success": false,
+            "test_sha256": "6154908d4e8665e99242aecc31940fb0f655ce325e174cf58100166a81fa76af",
+            "wall_ns": 196776937
+          },
+          "schema": "hepta.cell-experiments.semantic-receipt.v1",
+          "student_execution_claimed": false,
+          "success": false,
+          "verifier": [
+            "repo_patch",
+            "1"
+          ],
+          "verifier_source_sha256": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+        }
+      },
+      {
+        "output": {
+          "active_adapter": "cell_1",
+          "active_adapter_sha256": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+          "active_parameters": 1544259072,
+          "answer": "{\"edits\":[{\"new\":\"    assert subject(\\\"\\\\\\\"C:\\\\foo\\\\bar.txt\\\\\\\"\\\", False) == \\\"C:\\\\foo\\\\bar.txt\\\"\",\"old\":\"    pass\",\"path\":\"test_contract.py\"}]}",
+          "backend_versions": {
+            "safetensors": "0.7.0",
+            "tokenizers": "0.22.2",
+            "torch": "2.9.1+cu128",
+            "transformers": "4.57.3"
+          },
+          "base_load_count": 1,
+          "completed_at_ns": 1795012254146148695,
+          "device": {
+            "compute_capability": [
+              8,
+              9
+            ],
+            "device": "cuda:0",
+            "device_name": "NVIDIA GeForce RTX 4060",
+            "dtype": "bfloat16",
+            "free_bytes_before_load": 6902251520,
+            "total_bytes": 8184135680
+          },
+          "eos_seen": true,
+          "external_effect_executed": false,
+          "finish_reason": "eos_token",
+          "full_system_cost_complete": false,
+          "generation_config_sha256": "e31715a80c7c2d6fb35843583b19931ec955723cba8366472ed48b461514e3eb",
+          "hit_output_limit": false,
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "input_tokens": 607,
+          "loaded_model_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+          "max_new_tokens": 384,
+          "message_protocol": "native_chat_v2",
+          "messages_sha256": "2be0a0dd7988e80fbe98a286da30913f91cb40da7977c2558ce5ea1e60123bdc",
+          "output_token_ids": [
+            4913,
+            291,
+            1199,
+            66582,
+            931,
+            3252,
+            262,
+            2060,
+            3832,
+            36014,
+            3422,
+            2105,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            3422,
+            2105,
+            16215,
+            3557,
+            8,
+            621,
+            7245,
+            34,
+            23817,
+            7975,
+            3422,
+            2257,
+            3909,
+            2105,
+            2198,
+            813,
+            3252,
+            262,
+            1494,
+            2198,
+            2343,
+            3252,
+            1944,
+            51499,
+            7197,
+            9207,
+            13989,
+            151645
+          ],
+          "output_tokens": 46,
+          "parameter_evidence_digest": "388b04f18f3ff0315734f860c441159b3ed54ae19fb818c4c57da8e1df1b749b",
+          "parameter_source_digest": "388b04f18f3ff0315734f860c441159b3ed54ae19fb818c4c57da8e1df1b749b",
+          "parameter_source_evidence": {
+            "actual_normalized_adapter_hash": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+            "adapter_parameters": 544768,
+            "base_parameters": 1543714304,
+            "model_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+            "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+            "training": {
+              "actual_runtime_sources": {
+                "scripts/cell_experiments/causal_probe_v3.py": "1517c622909deb5f8cf9ac65fb738da13cf4987018d5ac211a903a3c95cc8ae6",
+                "scripts/cell_experiments/causal_train_v3.py": "044a9cf8e389073d839342522d3b92556b8de8f7cf6b4ca4a762b8c4d33e7df8",
+                "scripts/cell_experiments/causal_training_contract_v3.py": "6df0d39b6bca702cb9a3018250349970e65221fffea5806d2c4af4e756d45325",
+                "scripts/cell_experiments/chat_protocol.py": "53801bf34c0e7ffe2b52d835e766ce15c060553edc5cfa84bafbcb5e1babb57a",
+                "scripts/cell_experiments/coding_sft.py": "23fca4e66e8c08dd5e9907893851e55d36cd8566f169529c2bbe0d3a5e93de2b",
+                "scripts/cell_experiments/data.py": "a6813a60800383b39590dd9e6056a9803f66b038127d052d290cb5df3ce7ea09",
+                "scripts/cell_experiments/matched_info_sft_v4.py": "a4f71acdaa996ff1829a6ef23619fe3b62d0ebb95c58fa76510fd8267699863b"
+              },
+              "admission_source_sha256": "eb5d7d8656291d40533c36dbb4c1294e988b2050ca0e446b593137877170703f",
+              "bytes": 939,
+              "original_source_inventory_digest": "ba62041fac76b6b94e6c5f8f81a69684197194520c25604505f5acaa9466ed5c",
+              "parameter_after": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+              "parameter_count_source": "hash-admitted saved FP32 tensor shapes; checked again against actual loaded tensors",
+              "path": "research-matched-info-20261118-2e9b/training/final_only/TRAINING.json",
+              "scope": "same-input same-fixed-compute F/T; C remains an unmatched secondary control",
+              "sha256": "021af9db31632297df6589f131a3bf3b6ef68836cd70cf172798e6d9f1955b7f",
+              "trainable_parameters": 544768
+            }
+          },
+          "pid": 3408012,
+          "pool_call_wall_seconds": 4.131504536024295,
+          "pool_identity": "bdfb684b34cf79eee4d448ca9aa845654a97f1c7435ef2f3569d12294fb00d4f",
+          "pool_load_cost_is_shared": true,
+          "rendered_input_sha256": "d5d425d898ba4140d3a12601c6aef977b838116b227b8bf4d50d5bca58ebae3a",
+          "rendered_prompt_sha256": "d5d425d898ba4140d3a12601c6aef977b838116b227b8bf4d50d5bca58ebae3a",
+          "resident_parameters": 1545348608,
+          "started_at_ns": 1795012250081759959,
+          "time_scope": "render, tokenize, generate and decode; excludes model load and verifier",
+          "wall_seconds": 4.064389595994726
+        },
+        "request": {
+          "record_id": "upstream-requests-unquote-header-value",
+          "task": {
+            "input": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+            "messages": [
+              {
+                "content": "Write meaningful assertions for the pinned repository function below, exposed as subject. Cover distinct behaviors, including optional arguments and boundaries where present. Use literal arguments only; do not import, define helpers or call the original function name. The assertions must pass the original and detect wrong output controls.\nSource: psf/requests:src/requests/utils.py@3c7baaa05ab4aa49cc819ce3a819d260de19c157\ndef unquote_header_value(value: str, is_filename: bool = False) -> str:\n    r\"\"\"Unquotes a header value.  (Reversal of :func:`quote_header_value`).\n    This does not use the real unquoting but what browsers are actually\n    using for quoting.\n\n    :param value: the header value to unquote.\n    :rtype: str\n    \"\"\"\n    if value and value[0] == value[-1] == '\"':\n        # this is not the real unquoting, but fixing this so that the\n        # RFC is met will result in bugs with internet explorer and\n        # probably some other browsers as well.  IE for example is\n        # uploading files with \"C:\\foo\\bar.txt\" as filename\n        value = value[1:-1]\n\n        # if this is a filename and the starting characters look like\n        # a UNC path, then just return the value without quotes.  Using the\n        # replace sequence below on a UNC path has the effect of turning\n        # the leading double slash into a single slash and then\n        # _fix_ie_filename() doesn't work correctly.  See #458.\n        if not is_filename or value[:2] != \"\\\\\\\\\":\n            return value.replace(\"\\\\\\\\\", \"\\\\\").replace('\\\\\"', '\"')\n    return value\n\nReturn one JSON object with only \"edits\": a one-element array. Its edit has exactly \"path\":\"test_contract.py\", \"old\":\"    pass\", and \"new\": an indented Python test body. Use 1-12 assert statements with literal subject(...) arguments and explicit expected results. JSON-escape quotes and newlines in \"new\"; close both objects and the array. Output JSON only. Each attempt starts from the original template.",
+                "role": "user"
+              },
+              {
+                "content": "{\"completed_original_calls\":1,\"control_comparison_informative\":false,\"control_count\":null,\"controls_rejected\":null,\"error_code\":null,\"execution_performed\":true,\"instruction\":\"Check subject arguments and assertions against the visible task contract.\",\"next_attempt_resets_template\":true,\"original_error_type\":\"AssertionError\",\"original_passed\":false,\"reason\":\"business_tests_failed\",\"schema\":\"hepta.stable-repository-feedback.v1\",\"success\":false}",
+                "role": "tool"
+              }
+            ]
+          }
+        },
+        "slot": 1,
+        "verification": {
+          "answer_sha256": "3141b371056277f8807e5e0f6e1393d45e34b237e4eea89aeaaf724f254f3cd9",
+          "input_sha256": "31921746e4dfdbd515ce0a5374b6bab398dc0599646499f99e2645db228a0480",
+          "parameters_sha256": "e943e4068798118ff17256a283e74b8a13ed4e64efd3b8cb51788e38c68fa424",
+          "production_eligible": false,
+          "receipt_sha256": "c257da0e23e9e69cde280d68212c2f9a27dd99cb6daca34e219778348aa4cdb3",
+          "record_id": "upstream-requests-unquote-header-value",
+          "result": {
+            "assertions": 1,
+            "controls_rejected": 2,
+            "executed": true,
+            "exit_code": 0,
+            "fixture_sha256": "26a299acdbbc00eca10aa904ddb7bc603cdc1e969de19886429534ae918beefb",
+            "full_repository_integration": false,
+            "independent_user_evidence": false,
+            "planned_subject_calls_per_arm": 1,
+            "reason": "business_tests_passed",
+            "result": {
+              "control_count": 2,
+              "controls_rejected": 2,
+              "observations": [
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\"",
+                        false
+                      ],
+                      "output": "C:\foo\bar.txt"
+                    }
+                  ],
+                  "control": "original",
+                  "error": null,
+                  "passed": true
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\"",
+                        false
+                      ],
+                      "output": "alpha"
+                    }
+                  ],
+                  "control": "always-alpha",
+                  "error": "AssertionError",
+                  "passed": false
+                },
+                {
+                  "calls": [
+                    {
+                      "arguments": [
+                        "\"C:\foo\bar.txt\"",
+                        false
+                      ],
+                      "output": "C:\foo\bar.txtwrong"
+                    }
+                  ],
+                  "control": "suffix",
+                  "error": "AssertionError",
+                  "passed": false
+                }
+              ],
+              "original_passed": true
+            },
+            "stderr": "",
+            "stdout_sha256": "bdae2c298ede304bb85a495ac42a50fd9882bf52131b4071357a0af045a9852d",
+            "success": true,
+            "test_sha256": "aba7c5b39e4e92d377cd6eb6874e4696684a8fc156964c82712452e805e3cc7e",
+            "wall_ns": 199903792
+          },
+          "schema": "hepta.cell-experiments.semantic-receipt.v1",
+          "student_execution_claimed": false,
+          "success": true,
+          "verifier": [
+            "repo_patch",
+            "1"
+          ],
+          "verifier_source_sha256": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+        }
+      }
+    ],
+    "original_path": "upstream/upstream-requests-unquote-header-value/native_TF_no_answer",
+    "result_digest": "9c4df501c7a3f5de3dd380eba9e036fe1ee7d88cfed6b701fda3679c0768e05a"
+  },
+  "same_first_output_tokens": true,
+  "schema": "hepta.answer-edge-negative-transfer-case.v1",
+  "scope": "one exposed diagnostic comparison; not a population effect or qualification",
+  "second_input_difference_is_only_previous_assistant_answer": true,
+  "task_id": "test-completion:upstream-requests-unquote-header-value"
+}

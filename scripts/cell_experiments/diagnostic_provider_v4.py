@@ -34,6 +34,7 @@ def main():
     parser.add_argument("--artifact-root", type=Path, required=True)
     parser.add_argument("--module-root", type=Path, required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
+    parser.add_argument("--matched-training-source", type=Path)
     args = parser.parse_args()
     root, modules, run = (
         value.resolve(strict=True)
@@ -82,7 +83,7 @@ def main():
                 )
 
             def inventory():
-                return {
+                result = {
                     "legacy": legacy.sources(),
                     "cell_support": {
                         name: file_hash(path) for name, path in support.items()
@@ -92,6 +93,19 @@ def main():
                         for path in sorted((modules / "online_v4").glob("*.py"))
                     },
                 }
+                if args.matched_training_source is not None:
+                    from cell_experiments import matched_info_sft_v4 as matched
+
+                    result["original_matched_training_source"] = (
+                        matched.source_inventory(
+                            args.matched_training_source.resolve(strict=True)
+                        )
+                    )
+                    result["actual_matched_core"] = {
+                        path.name: file_hash(path)
+                        for path in sorted(modules.glob("*.py"))
+                    }
+                return result
 
             source = inventory()
             modes = {
@@ -108,7 +122,38 @@ def main():
             manifests = {
                 cell: data._parse(path.read_bytes()) for cell, path in paths.items()
             }
-            pool = SharedAdapterPool(manifests, root)
+            calibration = None
+            if args.matched_training_source is None:
+                pool = SharedAdapterPool(manifests, root)
+            else:
+                from cell_experiments.online_v4.matched_pool_v4 import (
+                    MatchedAdapterPool,
+                    MODELS,
+                    admit_matched,
+                    runtime_sources,
+                )
+                from cell_experiments.online_v4.matched_pool_calibration_v4 import (
+                    calibrate_cold,
+                    calibrate_pool,
+                )
+
+                original_manifests = dict(manifests)
+                for cell, (objective, _) in MODELS.items():
+                    paths[cell] = (
+                        root
+                        / "research-matched-info-20261118-2e9b/training"
+                        / objective
+                        / "manifest.json"
+                    )
+                    manifests[cell] = data._parse(paths[cell].read_bytes())
+                    runtime_sources(manifests[cell])
+                training_source = args.matched_training_source.resolve(strict=True)
+                admit_matched(manifests, original_manifests, root, training_source)
+                calibration = calibrate_cold(manifests, root, training_source, run)
+                pool = MatchedAdapterPool(
+                    manifests, original_manifests, root, training_source
+                )
+                calibration = calibrate_pool(pool, calibration, run)
             cells = {}
             for cell, manifest in manifests.items():
                 base, evidence = (
@@ -143,6 +188,11 @@ def main():
                 "interpreter_sha256": file_hash(sys.executable),
                 "evidence_scope": "actual_shared_adapter_pool",
                 "source_gates_unchanged": True,
+                **(
+                    {"matched_setup_calibration": calibration}
+                    if calibration is not None
+                    else {}
+                ),
             }
         )
         for expected_id in range(1, 10001):

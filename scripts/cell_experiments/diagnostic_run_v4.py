@@ -166,6 +166,10 @@ def main():
     parser.add_argument(
         "--study", choices=("fixed_graphs", "repair_retrieval"), default="fixed_graphs"
     )
+    parser.add_argument(
+        "--panel", choices=("diagnostic", "upstream"), default="diagnostic"
+    )
+    parser.add_argument("--matched-training-source", type=Path)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     directory = args.output.resolve()
@@ -182,24 +186,48 @@ def main():
         "--run-dir",
         str(directory),
     ]
+    if args.matched_training_source is not None:
+        if args.panel != "upstream":
+            raise ValueError("matched adapters require the explicit upstream study")
+        command.extend(
+            [
+                "--matched-training-source",
+                str(args.matched_training_source.resolve(strict=True)),
+            ]
+        )
     source = lambda: {
         str(p.relative_to(root)): file_hash(p)
         for p in sorted((root / "scripts/cell_experiments").rglob("*.py"))
     }
     inventory = source()
-    catalog = repo_execution.load_catalog("diagnostic")
-    materials = root / "qualification/cell-diagnostic-panel-20261118"
-    panels = {
-        name: data.load_records(materials / name / "prepared-records.jsonl")
-        for name in ("c", "d")
-    }
+    if args.panel == "upstream":
+        if args.study != "repair_retrieval":
+            raise ValueError(
+                "upstream requires the preregistered repair/retrieval study"
+            )
+        from cell_experiments.upstream_panel_v4 import load_panel
+
+        materials = root / "qualification/cell-upstream-panel-20261118"
+        panels = {"upstream": load_panel(materials)}
+        catalog = data._parse((materials / "CATALOG.json").read_bytes())
+    else:
+        catalog = repo_execution.load_catalog("diagnostic")
+        materials = root / "qualification/cell-diagnostic-panel-20261118"
+        panels = {
+            name: data.load_records(materials / name / "prepared-records.jsonl")
+            for name in ("c", "d")
+        }
     records = [(panel, record) for panel, rows in panels.items() for record in rows]
     if (
-        any(len(rows) != 2 for rows in panels.values())
-        or len({row["task_id"] for _, row in records}) != 4
+        len({row["task_id"] for _, row in records})
+        != (6 if args.panel == "upstream" else 4)
+        or (
+            args.panel == "diagnostic"
+            and any(len(rows) != 2 for rows in panels.values())
+        )
         or any(row["authorization"]["training_allowed"] for _, row in records)
     ):
-        raise ValueError("exactly four evaluation-only diagnostics required")
+        raise ValueError("complete frozen evaluation-only panel required")
     arms = [
         ("FF", Graph("FF", ("F", "F")), {}),
         ("TT", Graph("TT", ("T", "T")), {}),
@@ -219,6 +247,24 @@ def main():
         from cell_experiments.circuit_repair_study_v4 import prepare
 
         arms, augmented, study = prepare(records, root)
+        if args.panel == "upstream":
+            arms = [arm for arm in arms if arm[0].startswith("native_")]
+            for cell, removed in (("F", "T"), ("T", "F")):
+                name = "native_" + cell + "_one_call"
+                arms.append(
+                    (
+                        name,
+                        Graph(name, (cell, removed)),
+                        {"message_style": "native_turn_v1", "drop_cell": removed},
+                    )
+                )
+            study["evaluation_scope"] = (
+                "Six fixed public-source tasks already accessed by E1. "
+                "Development transfer and interaction diagnostics, not a new confirmation."
+            )
+            study["single_call_control"] = (
+                "F or T in slot zero; the other Cell removed before any dispatch"
+            )
         write_new(directory / "RETRIEVAL.json", study)
     budget = Budget(max_output_tokens_per_call=384, max_relay_bytes=2048)
     launch = {
@@ -269,9 +315,17 @@ def main():
                 {"name": name, "graph": asdict(graph), "intervention": intervention}
                 for name, graph, intervention in arms
             ],
-            "order": "c then d; declared task order then declared arm order",
+            "order": (
+                "upstream records in frozen order, then declared arm order"
+                if args.panel == "upstream"
+                else "c then d; declared task order then declared arm order"
+            ),
             "learned_routing_tested": False,
-            "single_call_definition": "F in slot 0; slot 1 T removed before dispatch",
+            "single_call_definition": (
+                "F or T in slot 0; other Cell in slot 1 removed before dispatch"
+                if args.panel == "upstream"
+                else "F in slot 0; slot 1 T removed before dispatch"
+            ),
             "posthoc_selection": False,
             "scientific_confirmation_qualified": False,
             "native_owner_adoption": False,
