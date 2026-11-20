@@ -602,7 +602,8 @@ fn held_journal_observation_preserves_physical_bytes_cursor_and_lock() {
     let mut changed = original;
     changed[0] ^= 1;
     file.rewind().expect("rewind physical fixture");
-    file.write_all(&changed).expect("same-length physical mutation");
+    file.write_all(&changed)
+        .expect("same-length physical mutation");
     file.seek(SeekFrom::Start(3)).expect("changed cursor");
     assert_eq!(held_journal_bytes(&file).expect("changed bytes"), changed);
     assert_eq!(file.stream_position().expect("restored cursor"), 3);
