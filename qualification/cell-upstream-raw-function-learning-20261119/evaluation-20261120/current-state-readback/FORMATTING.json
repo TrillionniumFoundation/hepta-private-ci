@@ -1,0 +1,136 @@
+{
+  "schema": "hepta.offline-repair-format.v1",
+  "model_calls": 0,
+  "training_updates": 0,
+  "upstream_native_executions": 0,
+  "ruff_version": "ruff 0.15.13",
+  "status": "PASS",
+  "source_ast_unchanged": true,
+  "formatter_repository_base": "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+  "formatter_source_git_blobs": {
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/format.py": "d4eabe70b68605933240e9129245f7f4cccbde5d",
+    "scripts/pyproject.toml": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+  },
+  "files": [
+    {
+      "path": "scripts/cell_experiments/e2_current_state_readback.py",
+      "before_sha256": "3ef593ff32ca88a70c7807f0b39a0de1b7414b149f600e524ab01638a2dc3dc0",
+      "sha256": "3b9daa355478483e5e4446ce6d3de84e649cfb9d0aab0a163ae5c80ad27b9f8d",
+      "bytes": 17490
+    }
+  ],
+  "tests_rerun_after_format": false,
+  "records": [
+    {
+      "label": "origin-before",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.06374041398521513,
+      "stdout_sha256": "2c19311f4fbfe4466047c1849a0925e0fcf9ea64013446152abd1ef7bf4027a3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "clone",
+      "argv": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qian-qi/work/hepta-e5-source-codec-20261120-e9e051/format-1/source",
+        "/home/qian-qi/work/e1e6-offline-repairs-20261120-e107/format-e2-1/source"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.02096821798477322,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "40ddb0a18809679423f1535901e1ca3a81080366c7e302ba93f3da80c5f654ce"
+    },
+    {
+      "label": "sparse",
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "/justfile",
+        "/AGENTS.md",
+        "/scripts/format.py",
+        "/scripts/just-shell.py",
+        "/scripts/pyproject.toml",
+        "/scripts/uv.lock"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.004112802911549807,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "checkout",
+      "argv": [
+        "git",
+        "checkout",
+        "--detach",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.06671440601348877,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e123178bf72e04db96c2824120fbfa7fc8d739cb4813975c4674c4893043e0a3"
+    },
+    {
+      "label": "ruff-version",
+      "argv": [
+        "/home/qian-qi/work/e1e6-offline-repairs-20261120-e107/format-e2-1/source/scripts/.venv/bin/ruff",
+        "--version"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.004551074933260679,
+      "stdout_sha256": "0e5c455ef40e6fb922d42f5ea8cd386e3c19cca81ca91d7697a6c81d2583846c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fmt",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.30789283907506615,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "fmt-check",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "fmt",
+        "--base",
+        "e4b4eb5028578be87d5cad0829103632f2bff3a3",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.25917094794567674,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "origin-after",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.002788883983157575,
+      "stdout_sha256": "2c19311f4fbfe4466047c1849a0925e0fcf9ea64013446152abd1ef7bf4027a3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "wall_seconds": 2.0488414430292323
+}
