@@ -56,13 +56,15 @@ WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
 WORKFLOW_REPOSITORY_PREFIX_RE = re.compile(
-    r"""(?:^|(?<=[\s"'`(<\[{]))"""
+    r"""(?:\A|(?<=[\s"'`]))[(\[<]?"""
     r"(?:"
     r"https://github\.com/(?P<url_repository>"
-    r"[A-Za-z0-9][A-Za-z0-9-]*/(?!\.{1,2}/)[A-Za-z0-9_.-]+)/"
+    r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?"
+    r"/(?!\.{1,2}/)[A-Za-z0-9_.-]{1,100})/"
     r"(?:blob/[A-Za-z0-9_][A-Za-z0-9_.-]*/)?"
     r"|(?P<repository>"
-    r"[A-Za-z0-9][A-Za-z0-9-]*/(?!\.{1,2}/)[A-Za-z0-9_.-]+)/"
+    r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?"
+    r"/(?!\.{1,2}/)[A-Za-z0-9_.-]{1,100})/"
     r")\Z",
     re.IGNORECASE | re.ASCII,
 )
