@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.b4-evidence-representations.v1",
+  "baselineLogs": [
+    {
+      "filename": "",
+      "gzip_bytes": 985,
+      "gzip_path": "compressed/baseline-test_original_execution_owner_source_closure.log.gz",
+      "gzip_sha256": "494e38d99c75fcc303857e4435e3d7e8355a26df81cdd4fa8bb307c8312d50d1",
+      "mtime": 0,
+      "raw_bytes": 8100,
+      "raw_path": "baseline-test_original_execution_owner_source_closure.log",
+      "raw_sha256": "c6e278e606351575a957b0cb5cf02bc61a1b53bb8c20ac52a021d165e9989775",
+      "gitBlob": "28c878b5734b17f7e4422120f013717cc98a0246"
+    },
+    {
+      "filename": "",
+      "gzip_bytes": 932,
+      "gzip_path": "compressed/baseline-test_original_material_command_source_closure.log.gz",
+      "gzip_sha256": "4d6372bf1efe5c9fe9fe4ca2504c0702852aa5ecaa94baed3b0b82fa7aee23ed",
+      "mtime": 0,
+      "raw_bytes": 10324,
+      "raw_path": "baseline-test_original_material_command_source_closure.log",
+      "raw_sha256": "9a9356377c37bf6a9c69bfa63e9348697eed25b3e3beeab4d4f351a49a54b459",
+      "gitBlob": "0ba062d72f50df3fb24a9423fe5cbe10629e5ede"
+    },
+    {
+      "filename": "",
+      "gzip_bytes": 1515,
+      "gzip_path": "compressed/baseline-test_original_material_evidence_source_closure.log.gz",
+      "gzip_sha256": "a36dc7a06f333a9736855ae199ae43fced755e383f69f82877cc49efa7114e91",
+      "mtime": 0,
+      "raw_bytes": 34893,
+      "raw_path": "baseline-test_original_material_evidence_source_closure.log",
+      "raw_sha256": "fb15369024c4c213790f46a8c2e32caecc11c8524f2433b9684ee276e64c5789",
+      "gitBlob": "996fd5fa61d7f2208b64f4f51d39a56a4a0a4e23"
+    },
+    {
+      "filename": "",
+      "gzip_bytes": 2209,
+      "gzip_path": "compressed/baseline-test_original_material_owner_source_closure.log.gz",
+      "gzip_sha256": "22c562288a38db2531268bc7a34d39047205f16bc4a632c46269868d2a2d1a11",
+      "mtime": 0,
+      "raw_bytes": 65840,
+      "raw_path": "baseline-test_original_material_owner_source_closure.log",
+      "raw_sha256": "4b1b5be1b9c0e39edaaa1999d1d383702edc391a068821020ea51bb6cab321ff",
+      "gitBlob": "0807915afce8e3cf0f64d2a41d27558935b01b8f"
+    },
+    {
+      "filename": "",
+      "gzip_bytes": 325,
+      "gzip_path": "compressed/baseline-test_positive_circuit_next_use_source_closure.log.gz",
+      "gzip_sha256": "5a504ad1ea18da19403018159f0b95bd832e9a764e078608f66b7b19554c4016",
+      "mtime": 0,
+      "raw_bytes": 824,
+      "raw_path": "baseline-test_positive_circuit_next_use_source_closure.log",
+      "raw_sha256": "1a4b40c81ab8600dcbf982ac868135c4f74acb81b0a6e98db77237478cb0521f",
+      "gitBlob": "820fe5de5ffe1d7b31b971e882150edbadc528f4"
+    }
+  ],
+  "minimalPatch": {
+    "path": "b4/compressed/b4-cardinality-only.patch.gz",
+    "size": 739,
+    "sha256": "fa2545ac3b0f1069bba6cbb73b750d690dabf7403ef282544aa7dea9eb9433d7",
+    "gitBlob": "d96bb1875d1aa6b9a187c30f4c1bab6da8c8502e",
+    "rawSize": 2656,
+    "rawSha256": "2238f3fae241cb81a35b3c010a144bdacc5d4410dfbf3af00eaf3939bfa63d24",
+    "roundtripEqual": true
+  },
+  "scope": "Archive paths are relative to this repair evidence root for the minimal patch, and to b4/ for the baseline-log entries. Standard gzip decompression preserves exact original bytes. The original qualification-summary.json is retained as a historical record; its future-tense formatter note is superseded by ../format-final-result.json."
+}

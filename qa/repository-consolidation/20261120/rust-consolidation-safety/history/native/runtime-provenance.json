@@ -1,0 +1,84 @@
+{
+  "native_job": {
+    "host": "rog",
+    "job_id": "1a1f6b645e3-ffbe-1534",
+    "start": {
+      "audit_recorded": true,
+      "job": {
+        "args": [
+          "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-audit-evidence/full-history-audit.py"
+        ],
+        "created_unix_ms": 1795140503011,
+        "cwd": "/home/qian-qi/hepta-rust-protection-20261120-0cee",
+        "env_keys": [
+          "HEPTA_HISTORY_AUDIT_SCRIPT_SHA256"
+        ],
+        "executable": "/usr/bin/python3",
+        "execution_mode": "operator",
+        "host": "rog",
+        "id": "1a1f6b645e3-ffbe-1534",
+        "idempotency_key": "hepta-rust-protection-0cee-full-history-audit-20261120-v1",
+        "launch_error": null,
+        "launch_state": "launched",
+        "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f6b645e3-ffbe-1534",
+        "request_digest": "56bc1a2882c91b1fb9448402632a29cc57f00753d70e68f81ecbb882b1f809ed",
+        "request_fingerprint": 6249899144178638000,
+        "ssh_target": "rog-ts",
+        "system_jobctl": false,
+        "unit": "hepta-runtime-job-1a1f6b645e3-ffbe-1534"
+      },
+      "launch": {
+        "backend": "systemd",
+        "launcher_pid": null,
+        "ok": true,
+        "unit": "hepta-runtime-job-1a1f6b645e3-ffbe-1534"
+      },
+      "local_record_pending": false,
+      "reused": false
+    },
+    "terminal_status": {
+      "at_unix_ms": 1795140559847,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1f6b645e3-ffbe-1534",
+      "launch_nonce": "d2a0e9d74b9b874115b317f2f0e94248",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 8632,
+          "stored": 8632
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    }
+  },
+  "preflight_v1_preserved_record": {
+    "path": "/home/qian-qi/hepta-rust-protection-20261120-0cee/history-preflight-unknown.json",
+    "reason": "Installed Git help uses --[no-]filter, so original parser rejected it before fetch; corrected preflight succeeded.",
+    "recovered_exit_code": 1,
+    "recovered_job_id": "1a1f6a7093b-ffbe-1523",
+    "sha256": "cbaa201c48d376a7f0a4682a5ddbb60d88dd9331420058b84d24307c9d27cc1b"
+  }
+}

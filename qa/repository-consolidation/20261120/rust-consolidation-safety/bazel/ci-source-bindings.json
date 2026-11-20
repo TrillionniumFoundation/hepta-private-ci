@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.ci-library-source-binding.v1",
+  "base_head": "0cee57ca617e0324e2df8e9447a2c075a6c76952",
+  "source_files": [
+    {
+      "path": "codex-rs/ext/extension-api/BUILD.bazel",
+      "size": 161,
+      "sha256": "24321aabce706f28f8c498be10b50dca5105eafa3fbe7d9699c3024ff1ae0e26",
+      "git_blob_sha1": "037f30c619a54b3bb46b5b080e1ffae5c23d0598"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/BUILD.bazel",
+      "size": 179,
+      "sha256": "0e1fa46c178925ab7c160f82f8708048ad4dfe9e72f5733de136f88456bdd7e2",
+      "git_blob_sha1": "5693595a786d265f819cc15c98654e3e96f264f1"
+    },
+    {
+      "path": "codex-rs/ext/hepta-prompt/BUILD.bazel",
+      "size": 169,
+      "sha256": "661e6abbc064de658fc31ba6842bb95ac49e89e24fd455498e35053399d99249",
+      "git_blob_sha1": "75129eef54403c4632400dff382dc4d56a935e38"
+    },
+    {
+      "path": "defs.bzl",
+      "size": 37838,
+      "sha256": "4721b4acc935c55f5c34c7c38f2648b9f00687cb27df3083df3af5e0562cd576",
+      "git_blob_sha1": "39a06f42c014f0b34f6e59ed3189b030aac4fd59"
+    }
+  ],
+  "source_hashes_unchanged": true,
+  "tracked_changes": [
+    "codex-rs/ext/extension-api/BUILD.bazel",
+    "codex-rs/ext/hepta-prompt/BUILD.bazel",
+    "codex-rs/hepta-context-compiler/BUILD.bazel",
+    "defs.bzl"
+  ],
+  "source_bindings": {
+    "macro": {
+      "path": "defs.bzl",
+      "git_blob": "39a06f42c014f0b34f6e59ed3189b030aac4fd59",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/4a5de714ce95889fca83abd3da33cbd74aaac748/defs.bzl",
+      "lines": {
+        "product_root": 388,
+        "optional_test_library_root": 413,
+        "unit_test_crate": 432
+      },
+      "unit_test_library_selection": "Default is product library name; none of these three BUILD macro calls override unit_test_dependency_replacements, unit_test_features, or unit_test_extra_srcs."
+    },
+    "unit_roots": "All three BUILD files explicitly select src/root.rs. Native CrateInfo query verifies actual provider roots in the tested source projection."
+  },
+  "tree_sha": "f289a1e9c1112d6afae4d9423e7f18c0c7be128a"
+}
