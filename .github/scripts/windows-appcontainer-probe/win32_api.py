@@ -614,7 +614,13 @@ class Api:
         require(not errors, f"close owned child standard handles: {errors}")
 
     def create_suspended(
-        self, package_sid, cwd, lpac, stdio_handles, *, diagnostic_command="original-batch"
+        self,
+        package_sid,
+        cwd,
+        lpac,
+        stdio_handles,
+        *,
+        diagnostic_command="original-batch",
     ):
         require(
             diagnostic_command in CMD_DIAGNOSTIC_COMMANDS,

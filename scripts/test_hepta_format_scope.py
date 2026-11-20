@@ -17,6 +17,18 @@ FMT = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = FMT
 SPEC.loader.exec_module(FMT)
 SOURCE_ROOT = FMT.REPO_ROOT
+RELOCATED_BROKER_PREFIX = (
+    "qualification/main-consolidation/historical-continuations/"
+    "continuation-20261021/os/broker-review"
+)
+RELOCATED_BROKER_RECORDS = tuple(
+    f"{RELOCATED_BROKER_PREFIX}/{name}"
+    for name in (
+        "broker-original.rs",
+        "session-identity.rs",
+        "session_admission_repro.rs",
+    )
+)
 
 
 class FormatterScopeTests(unittest.TestCase):
@@ -31,7 +43,13 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("config", "user.name", "Scope Test")
         self.git("config", "user.email", "scope@localhost")
         # Reproduce the immutable test-input inventory in this real Git fixture.
-        for relative in (*FMT.VERBATIM_FIXTURES, *FMT.ORIGINAL_EVIDENCE_FILES):
+        for relative in dict.fromkeys(
+            (
+                *FMT.VERBATIM_FIXTURES,
+                *FMT.ORIGINAL_EVIDENCE_FILES,
+                *RELOCATED_BROKER_RECORDS,
+            )
+        ):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(SOURCE_ROOT / relative, destination)
@@ -180,6 +198,121 @@ class FormatterScopeTests(unittest.TestCase):
             with patch.object(FMT, "ORIGINAL_EVIDENCE_FILES", {relative: digest}):
                 with self.assertRaisesRegex(ValueError, "fixed prefix"):
                     FMT.verified_original_evidence_paths()
+
+    def test_relocated_records_preserve_bytes_and_keep_neighbors_and_active_rust(self):
+        original = {
+            relative: (self.root / relative).read_bytes()
+            for relative in RELOCATED_BROKER_RECORDS
+        }
+        neighbor = self.write(
+            f"{RELOCATED_BROKER_PREFIX}/active.rs", "fn neighbor(){}\n"
+        )
+        active = self.write("codex-rs/example/src/lib.rs", "fn active(){}\n")
+        paths = [
+            *RELOCATED_BROKER_RECORDS,
+            str(neighbor.relative_to(self.root)),
+            str(active.relative_to(self.root)),
+        ]
+        for check in (False, True):
+            with self.subTest(check=check):
+                groups = FMT.scoped_formatter_groups(paths, check=check)
+                self.assertEqual([group.name for group in groups], ["Rust"])
+                selected = {Path(command.args[-1]) for command in groups[0].commands}
+                self.assertEqual(selected, {neighbor, active})
+        formatter = self.write(
+            "format_probe.py",
+            "from pathlib import Path\nimport sys\np=Path(sys.argv[-1])\np.write_text(p.read_text()+'// formatted\\n')\n",
+        )
+        probe = FMT.FormatterGroup(
+            "observable formatter",
+            tuple(
+                FMT.Command((sys.executable, str(formatter), str(path)), self.root)
+                for path in sorted(selected)
+            ),
+        )
+        self.assertEqual(FMT.run_formatter_group(probe).returncode, 0)
+        for relative, raw in original.items():
+            self.assertEqual((self.root / relative).read_bytes(), raw)
+        for path in (neighbor, active):
+            self.assertTrue(path.read_text().endswith("// formatted\n"))
+
+    def test_relocated_record_byte_drift_fails_before_full_and_scoped_format(self):
+        for relative in RELOCATED_BROKER_RECORDS:
+            with self.subTest(path=relative):
+                source = self.root / relative
+                original = source.read_bytes()
+                source.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+                try:
+                    for check in (False, True):
+                        with self.assertRaisesRegex(
+                            ValueError, "original evidence bytes changed"
+                        ):
+                            FMT.scoped_formatter_groups([], check=check)
+                        with self.assertRaisesRegex(
+                            ValueError, "original evidence bytes changed"
+                        ):
+                            FMT.formatter_groups(check=check)
+                finally:
+                    source.write_bytes(original)
+
+    def test_missing_relocated_record_fails_before_full_and_scoped_format(self):
+        for relative in RELOCATED_BROKER_RECORDS:
+            with self.subTest(path=relative):
+                source = self.root / relative
+                original = source.read_bytes()
+                source.unlink()
+                try:
+                    with self.assertRaisesRegex(ValueError, "cannot verify"):
+                        FMT.scoped_formatter_groups([], check=True)
+                    with self.assertRaisesRegex(ValueError, "cannot verify"):
+                        FMT.formatter_groups(check=False)
+                finally:
+                    source.write_bytes(original)
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_relocated_record_symlink_is_rejected_even_with_identical_bytes(self):
+        for relative in RELOCATED_BROKER_RECORDS:
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as outside:
+                source = self.root / relative
+                original = source.read_bytes()
+                target = Path(outside) / "same.rs"
+                target.write_bytes(original)
+                source.unlink()
+                source.symlink_to(target)
+                try:
+                    with self.assertRaisesRegex(ValueError, "escapes"):
+                        FMT.verified_original_evidence_paths()
+                finally:
+                    source.unlink()
+                    source.write_bytes(original)
+
+    def test_relocated_inventory_rejects_production_and_noncanonical_paths(self):
+        digest = next(iter(FMT.ORIGINAL_EVIDENCE_FILES.values()))
+        for relative in (
+            "codex-rs/core/src/lib.rs",
+            f"{RELOCATED_BROKER_PREFIX}/../active.rs",
+            f"{RELOCATED_BROKER_PREFIX}\\broker-original.rs",
+            str(self.root / RELOCATED_BROKER_RECORDS[0]),
+        ):
+            with self.subTest(path=relative):
+                with patch.object(FMT, "ORIGINAL_EVIDENCE_FILES", {relative: digest}):
+                    with self.assertRaisesRegex(ValueError, "fixed prefix"):
+                        FMT.verified_original_evidence_paths()
+
+    def test_relocated_rust_configuration_keeps_unregistered_neighbors_in_scope(self):
+        neighbor = self.write(
+            f"{RELOCATED_BROKER_PREFIX}/active.rs", "fn neighbor(){}\n"
+        )
+        self.git("add", ".")
+        self.git("commit", "-qm", "unregistered historical neighbor")
+        self.write(f"{RELOCATED_BROKER_PREFIX}/rustfmt.toml", "max_width=88\n")
+        active = self.write("codex-rs/example/src/lib.rs", "fn active(){}\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        self.assertEqual(
+            {Path(command.args[-1]) for command in groups[0].commands},
+            {neighbor, active},
+        )
 
     def test_exact_base_includes_committed_work_and_rejects_unknown_base(self):
         self.write("scripts/first.py")

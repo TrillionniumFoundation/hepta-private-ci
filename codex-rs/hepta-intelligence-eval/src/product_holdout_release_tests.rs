@@ -250,9 +250,9 @@ fn original_holdout_release_corruption_then_restore_never_reaches_fit() {
     let mut provider = case.provider(ReleaseMode::CorruptInside);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Store(crate::FinalHoldoutCasStoreError::Indeterminate)
-        ))
+        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
+            crate::FinalHoldoutCasStoreError::Indeterminate
+        )))
     );
     // The borrowed postcheck latches the original store error before restoration.
     assert!(case.runner.holdout.is_poisoned());
@@ -284,9 +284,9 @@ fn original_holdout_release_postcheck_survives_provider_ignoring_borrow() {
     let mut provider = case.provider(ReleaseMode::CorruptWithoutBorrow);
     assert_eq!(
         case.run(&mut provider).err(),
-        Some(ProductEvaluationError::Holdout(
-            FencedHoldoutError::Store(crate::FinalHoldoutCasStoreError::Indeterminate)
-        ))
+        Some(ProductEvaluationError::Holdout(FencedHoldoutError::Store(
+            crate::FinalHoldoutCasStoreError::Indeterminate
+        )))
     );
     // Physical uncertainty closes reads; execution then reports it before poisoning.
     assert!(case.runner.holdout.is_poisoned());

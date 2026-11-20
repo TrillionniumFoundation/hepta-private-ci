@@ -4,6 +4,9 @@ load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease
 codex_rust_crate(
     name = "hepta-supervisor",
     crate_name = "codex_hepta_supervisor",
+    # The paired process tests strip only their private child image. Declare
+    # that tool so remote executors do not need a host-installed binutils.
+    extra_binaries_non_windows = ["@llvm-project//llvm:llvm-strip"],
     # The projection integration tests compare generated artifacts with the
     # checked-in fixture set. Bazel must place those runtime files in runfiles.
     test_data_extra = glob(["fixtures/robrix-control-v2/**"]),

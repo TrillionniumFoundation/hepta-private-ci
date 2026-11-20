@@ -49,10 +49,14 @@ VERBATIM_FIXTURES = {
 }
 
 
-# These two exact original Rust source records are retained evidence. Their
-# containing publication packages and original Git identities are recorded in
-# HEPTA_VERBATIM_SOURCE_RECORDS.json. Neighboring Rust files remain source inputs.
+# These exact original Rust source records are retained evidence. Their package
+# identities are recorded in HEPTA_VERBATIM_SOURCE_RECORDS.json and the immutable
+# continuation-20261021 relocation record. Neighboring Rust remains source input.
 ORIGINAL_EVIDENCE_PREFIX = "qualification/memory-cell-mem8-ci-followup"
+RELOCATED_BROKER_EVIDENCE_PREFIX = (
+    "qualification/main-consolidation/historical-continuations/"
+    "continuation-20261021/os/broker-review"
+)
 ORIGINAL_EVIDENCE_FILES = {
     "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs": (
         "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177",
@@ -62,21 +66,40 @@ ORIGINAL_EVIDENCE_FILES = {
         "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
         17873,
     ),
+    f"{RELOCATED_BROKER_EVIDENCE_PREFIX}/broker-original.rs": (
+        "bbde2c304566567b9bd12e6214bcf0d52a3f96f3dc889352e14926072617aba5",
+        37712,
+    ),
+    f"{RELOCATED_BROKER_EVIDENCE_PREFIX}/session-identity.rs": (
+        "d815d6235357a57fc40a8fca5b710e46dfd0d273f93bcadd8a61026a59777231",
+        3802,
+    ),
+    f"{RELOCATED_BROKER_EVIDENCE_PREFIX}/session_admission_repro.rs": (
+        "00c6368be54a58ada1fda01d74294c78cd7d415ed24d25f70de295ff7876f87a",
+        1796,
+    ),
 }
 
 
 def verified_original_evidence_paths() -> frozenset[str]:
     """Validate exact archived source bytes before any full or scoped format."""
     root = REPO_ROOT.resolve()
-    prefix = Path(ORIGINAL_EVIDENCE_PREFIX)
+    prefixes = (
+        Path(ORIGINAL_EVIDENCE_PREFIX),
+        Path(RELOCATED_BROKER_EVIDENCE_PREFIX),
+    )
     for relative, (expected_sha256, expected_size) in ORIGINAL_EVIDENCE_FILES.items():
         path = Path(relative)
+        prefix = next(
+            (candidate for candidate in prefixes if path.is_relative_to(candidate)),
+            None,
+        )
         if (
             path.is_absolute()
             or ".." in path.parts
             or "\\" in relative
             or path.as_posix() != relative
-            or not path.is_relative_to(prefix)
+            or prefix is None
         ):
             raise ValueError(
                 f"original evidence path escapes its fixed prefix: {relative!r}"

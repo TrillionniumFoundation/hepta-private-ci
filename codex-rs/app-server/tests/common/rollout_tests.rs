@@ -8,7 +8,8 @@ use super::create_fake_rollout;
 use super::rollout_path;
 
 #[test]
-fn fake_rollout_modification_time_preserves_signed_fractional_and_leap_seconds() -> anyhow::Result<()> {
+fn fake_rollout_modification_time_preserves_signed_fractional_and_leap_seconds()
+-> anyhow::Result<()> {
     let home = tempfile::tempdir()?;
     for (filename_ts, meta_rfc3339, expected) in [
         (
