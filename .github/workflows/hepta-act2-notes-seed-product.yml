@@ -1,0 +1,133 @@
+name: ACT2 original Notes seed executable
+
+on:
+  push:
+    branches: [ci/act2-notes-seed-product-20261112]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: act2-notes-seed-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  TESTED_SHA: ${{ github.sha }}
+  HEPTA_CI_LANE: source-head
+  CARGO_BUILD_JOBS: "2"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  NEXTEST_TEST_THREADS: "1"
+
+jobs:
+  original-seed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Bind exact source and prepare native prerequisites
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/act2-notes-seed"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-notes-seed/source.txt"
+          sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/act2-notes-seed/lock.sha256"
+          git config --global credential.helper '!gh auth git-credential'
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+          components: rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Resolve the existing verified V8 inputs
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+          python3 scripts/hepta_ci_v8.py
+          rustup run 1.96.0 rustc --version --verbose > "$RUNNER_TEMP/act2-notes-seed/rustc.txt"
+      - name: Build both actual executable entries with the original lock
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 3000 \
+            --output "$RUNNER_TEMP/act2-notes-seed/build.json" \
+            -- env --chdir=codex-rs rustup run 1.96.0 cargo build --locked \
+            -p codex-hepta-agentd --bin codex-hepta-agentd --bin hepta-notes-thread-seed
+          sha256sum codex-rs/target/debug/codex-hepta-agentd \
+            codex-rs/target/debug/hepta-notes-thread-seed > "$RUNNER_TEMP/act2-notes-seed/binaries.sha256"
+      - name: Require the exact original launcher integration case
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/act2-notes-seed/seed.json" \
+            -- just test --locked -p codex-hepta-agentd --test notes_thread_seed_product \
+            -E 'test(launcher_seeds_one_unused_original_thread_without_model_contact)' --status-level all
+      - name: Reject filtered-out tests and preserve the named-case receipt
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import re
+          records = Path(os.environ["RUNNER_TEMP"]) / "act2-notes-seed"
+          record = json.loads((records / "seed.json").read_text())
+          source = os.environ["SOURCE_SHA"]
+          assert record["status"] == "passed" and record["exit_code"] == 0
+          assert record["observed_passed_tests"] == 1 and record["observed_failed_tests"] == 0
+          assert record["source_sha"] == record["tested_sha"] == source
+          assert record["before"] == record["after"]
+          assert record["before"]["commit"] == source and not record["before"]["dirty"]
+          log_path = records / record["log_file"]
+          assert log_path.resolve().parent == records.resolve()
+          raw = log_path.read_bytes()
+          assert hashlib.sha256(raw).hexdigest() == record["log_sha256"]
+          text = re.sub(r"\x1b\[[0-9;]*m", "", raw.decode())
+          name = "launcher_seeds_one_unused_original_thread_without_model_contact"
+          binary = "codex-hepta-agentd::notes_thread_seed_product"
+          identity = re.compile(r"PASS\s+\[\s*\d+(?:\.\d+)?s\]\s+" + re.escape(binary) + r"\s+" + re.escape(name))
+          passed = [line for line in text.splitlines() if identity.fullmatch(line.strip())]
+          assert len(passed) == 1, "the exact non-skipping original launcher case did not pass once"
+          receipt = {
+              "status": "ORIGINAL_SEED_EXECUTABLE_TEST_PASSED",
+              "source_sha": source, "source_tree": record["before"]["tree"],
+              "test_binary": "notes_thread_seed_product", "test_binary_id": binary, "test_case": name,
+              "passing_line": passed[0], "log_sha256": record["log_sha256"],
+              "production_authority": False, "full_dynamic_tool_handler_qualified": False,
+              "final_use_qualified": False, "learning_gain_qualified": False,
+          }
+          (records / "named-case-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
+          PY
+          just fmt --base 9db98207bdb1ec36e2ba9ac0cf0356bf243821ab --check > "$RUNNER_TEMP/act2-notes-seed/format.log" 2>&1
+          test -z "$(git status --porcelain)"
+      - name: Retain exact source and failure state
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/act2-notes-seed"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/act2-notes-seed/source-after.txt"
+          git status --porcelain > "$RUNNER_TEMP/act2-notes-seed/source-status-after.txt"
+          git diff --binary > "$RUNNER_TEMP/act2-notes-seed/final-source.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: act2-notes-seed-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/act2-notes-seed
+          if-no-files-found: error
+          retention-days: 30
