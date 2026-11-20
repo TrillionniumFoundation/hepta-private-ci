@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-20T08:30:10.772104Z",
+  "observed_at_utc": "2026-11-20T09:21:57.156673+00:00",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-20T03:30:10.772104-05:00",
+  "observed_at_user_timezone": "2026-11-20T04:21:57.156673-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -4061,6 +4061,344 @@
       },
       "final_head_original_gate_receipts_directory": "qualification/cell-e6-metrics-integration-20261119/e5-codec-final-readback",
       "measurement_candidate_history_retained": "0a57d319ee479c820c36618d6c713881829c04cc"
+    },
+    "latest_before_only_representation_v2": {
+      "original_v1_negative_unchanged": true,
+      "independent_candidate_not_joint_runtime": true,
+      "public_source_PR_at_snapshot": null,
+      "preimplementation_freeze_sha256": "55c13e3a93bd2b42e2ddac756636fe5d305c1d06ba307fcaa9727397caab12ec",
+      "source_freeze_sha256": "d4fe4fb301b3ac68f9ca5bf88ca58d6e378636ec20957d684082007680c56d44",
+      "input_freeze_sha256": "9410edd900e216e1f92e4a20b66ed2648ac7b1cfcbcdeaf4769b4c7be21e3efc",
+      "peer_manifest_sha256": "4b82ead538caf0636a9e1c75f2c3c62e42fa401662d39167cfbd1606d4c3a499",
+      "original_source_order_and_all_290_native_cases_preserved": true,
+      "retrieval_passes_per_original_source": 1,
+      "source_rows_retained": 16,
+      "byte_views": 15,
+      "refused_ordinal": 13,
+      "refusal": "jsonschema highest-ranked complete runtime group exceeds view limits; no truncation, reorder, replacement or second retrieval.",
+      "synthetic_source_controls_passed": 16,
+      "original_formatter_passed_and_10_ASTs_equal": true,
+      "exact_tokenizer_measurement": {
+        "after_runtime_target_content_reads": 0,
+        "cost": {
+          "peak_rss_kib": 705560,
+          "self_cpu_seconds": 5.764092895,
+          "wall_seconds": 6.920589008950628
+        },
+        "created_utc": "2026-11-20T09:18:47.289109+00:00",
+        "full_representation_prefix_1_4_16_admitted": {
+          "1": false,
+          "16": false,
+          "4": false
+        },
+        "independent_B_C": null,
+        "input_freeze_sha256": "9410edd900e216e1f92e4a20b66ed2648ac7b1cfcbcdeaf4769b4c7be21e3efc",
+        "input_only_prefix_1_4_16_fits": {
+          "1": true,
+          "16": false,
+          "4": true
+        },
+        "measured_prefixes": 15,
+        "new_native_model_forward_generation_training": 0,
+        "optimizer_unit_mapping": null,
+        "original_counter_all_rows_static_false_expected": "targets intentionally null; do not replace original RESULT",
+        "original_counter_result_sha256": "37425d89ec98acd24b85b7c4ffcf928bb43605e0fe061c651fb899af2fda1ef5",
+        "owner_result_sha256": "1d4912716048c625da6a4d0cf50248752053556b48a4b429c96bda7ee969965c",
+        "prefixes_fit_3200": 15,
+        "protocol_sha256": "6b44e023bf479733e3ffa44a283166d9f24f2d8308958b84aff9666e17943842",
+        "request_sha256": "e28ad22dda6d47ae376c3efe0d740556d83678034aa83424f5236bf81707a3bc",
+        "retrieval_reruns": 0,
+        "row_count": 16,
+        "rows": [
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "a77de7a41b667a2039809acdfd8e287c04c7815f0cc27b0316c025aad5d5b906",
+            "ordinal": 0,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "7ab43e1b6666259041d9353891626e8d019fc661f71ce1d5c4fc29091516c64a",
+            "prefix_tokens": 2851,
+            "prompt_bytes": 11987,
+            "prompt_sha256": "201aeedc5d644c4952fe703b80df9923ef84a51c0de28e4ab324e0f41b9aef55",
+            "source_id": "github:Delgan/loguru:pull:1541",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "b48c3d1203e08b1996d581b274fb0e9b6e293f272f1d9553d1d5e6398993a07d",
+            "ordinal": 1,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "73225d5efc40dc31b5526260bf7c9659ed39fb42fca7097157fd158fa592a1b1",
+            "prefix_tokens": 2539,
+            "prompt_bytes": 9264,
+            "prompt_sha256": "204226b03dd646ba195f22f8b0d7535017d8d221639fe474e9fd09d5ec3693bf",
+            "source_id": "github:SethMMorton/natsort:pull:196",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "373a3f6e81fa8c3d88c370a07e520ff33c9f5a327dab901e178a31822322a8c1",
+            "ordinal": 2,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "fa62a57af0a481e3fac766b87ba578552cf5d57291e3024a0234685820a4e20a",
+            "prefix_tokens": 1546,
+            "prompt_bytes": 5986,
+            "prompt_sha256": "ce039e7bb0ef23f0fa6c1ed5ff3c78eaf55a2d1fa09981c6a436a1f10bf9f26a",
+            "source_id": "github:Textualize/rich:pull:4006",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "01df9986507376c44d3d0342edf54026691115ae16c6574927b217cbfc909682",
+            "ordinal": 3,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "f8064556f432bfef332839e9c85b1a47aa793a1103f58b280f01378c8de7385e",
+            "prefix_tokens": 1335,
+            "prompt_bytes": 5687,
+            "prompt_sha256": "f3af616a52f40f3eae86ffcaf733322e89cf9c1ef1879cce2fd8b6b67bbcb50e",
+            "source_id": "github:coady/multimethod:pull:157",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "f9aef3abce2a1b14276b06ead095820f4f14539eedbe461fafa3a5d569137bd8",
+            "ordinal": 4,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "4afc45655d3c2aca8e8c433abdd3300e23260bf70d3403c029318146fd78e6d4",
+            "prefix_tokens": 1468,
+            "prompt_bytes": 5676,
+            "prompt_sha256": "8942d4a2e0e996259a61125d71cfc4f5dce4632970a853c3369aefcac15b4650",
+            "source_id": "github:dbader/schedule:pull:569",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "1210a7bc1dfe0f08cae924a7ca9865cb8557e6d5ecb36cb3e41140bf978c6ca0",
+            "ordinal": 5,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "dfe2954d0a2ebb321b11e26e07e3e11afc9e5b056487ab6bcda18cc33266b4dd",
+            "prefix_tokens": 1305,
+            "prompt_bytes": 5312,
+            "prompt_sha256": "0da920bfefa9cb28a9c68c0731cac4fdba32e1cd12218182a8b99edaf51f3709",
+            "source_id": "github:erikrose/parsimonious:pull:250",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "9e0e075dbb6c4fff871bd3ca11bb4ccbeaed410520c6a15d5f64009f7189cd40",
+            "ordinal": 6,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "813a2e8fa4317494cbd5a9920b781ae5acfb86fe006fba68b7d37c33fb69042f",
+            "prefix_tokens": 513,
+            "prompt_bytes": 1823,
+            "prompt_sha256": "d29132b3526fe3448f0f766c5142d23996006e8191f9532ba3ff582df1a16386",
+            "source_id": "github:jaraco/path:pull:237",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "4b9d41046613cf0fded1d3165469637261cd0453cddcf9d9939869559318744d",
+            "ordinal": 7,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "cc29a62b380be2399fd2a3819b1e60263db8fbe0ff14a889de1ea31f57715cac",
+            "prefix_tokens": 2676,
+            "prompt_bytes": 11947,
+            "prompt_sha256": "4a09e34ed7916f6e1c2001dcebe1ed4eadd558ad8cec6c94a84368902f4afd8f",
+            "source_id": "github:jawah/charset_normalizer:pull:823",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "e86a6decc64df5e3e9c230e534b97a92907f4f85f1029db746b590e5bc729a67",
+            "ordinal": 8,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "6729cd63524dfbadc32a39bb46be091c56056fdedf2b78c3959364283c5ba1d6",
+            "prefix_tokens": 2597,
+            "prompt_bytes": 11829,
+            "prompt_sha256": "0fe9f9dbc5388e55326127b97cb4d2ef74e7084ea5ef97d7d46db8ae1504b06d",
+            "source_id": "github:litl/backoff:pull:161",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "d3642201bb9368b75307f510f748b06c9c61d2d6657787f429207b5510d70d43",
+            "ordinal": 9,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "072f980afe321f7a01fee45ae7f107a9d47ad677ed56e43ed07339609dd5e2f3",
+            "prefix_tokens": 1729,
+            "prompt_bytes": 7901,
+            "prompt_sha256": "ff27950ad3f679ca80dc1906dad86f631c74f28f8ca074258e2b8d92ace7b853",
+            "source_id": "github:marshmallow-code/marshmallow:pull:3082",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "e4fe751d0f4c4c82585a6ffc974aa423a3ec9e04dc92bd00621775b389b1f2a6",
+            "ordinal": 10,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "e08a11af9252d5cf79b7c5d1c211ae0f3a7ea452770c1d4e332744156de190ba",
+            "prefix_tokens": 2826,
+            "prompt_bytes": 11967,
+            "prompt_sha256": "ec1f28ce7bcd84ce93cff582a311fc3cf6049fc5c9e51e50b10ed98edcd0739d",
+            "source_id": "github:pyparsing/pyparsing:pull:653",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "e328eec6b9db063714cff9e33543d9415e3b815634231fef3ee700443d54f6be",
+            "ordinal": 11,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "3092109fb27a02c67845a36e42b364fd105b45c8f10cad61ee3998bc615064d4",
+            "prefix_tokens": 2986,
+            "prompt_bytes": 11678,
+            "prompt_sha256": "189208a281716269cdb6eee7b8c4563a98802b25128365f5b5423f55cab989e8",
+            "source_id": "github:python-attrs/attrs:pull:1593",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "319028052b735776509deb20fec12232fd457147e05304dbc5f1168dec60ce74",
+            "ordinal": 12,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "eb512a1523645bda8b915657fa57b41ec525cf9b3e7dc6f77a9cc3b5d76f400a",
+            "prefix_tokens": 2132,
+            "prompt_bytes": 7723,
+            "prompt_sha256": "845641ccd3a7e66ccdbe2e9f4045e5c22d5408991f8aa8d2a4fb4c293c030389",
+            "source_id": "github:python-humanize/humanize:pull:479",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": false,
+            "fits_prefix_reservation_3200": false,
+            "input_row_result_sha256": "15da0c5cb726ea7053dbb0080604a41bf60105e8725af2e49a6f933e805803de",
+            "ordinal": 13,
+            "original_input_status": "SOURCE_REFUSAL",
+            "prefix_tokens": null,
+            "prompt_bytes": null,
+            "reason": "Refusal: highest-ranked complete runtime group exceeds view limits",
+            "source_id": "github:python-jsonschema/jsonschema:pull:1351",
+            "status": "SOURCE_REFUSAL",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "4a10ec80e0ee7c75d3712b48f066d92fd1b41ee7e330bf8ab89b3a209e5c807b",
+            "ordinal": 14,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "93639f8a146c8e1db9261981101a0b0ee4f249ee7519bb7814ca4b3bebc84fbd",
+            "prefix_tokens": 727,
+            "prompt_bytes": 2690,
+            "prompt_sha256": "6865ca6ee1055ec6efd7666cd81269a9e44d31669bbd8696f8d70044d7c15224",
+            "source_id": "github:tkem/cachetools:pull:441",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          },
+          {
+            "complete_sft_positions": null,
+            "fits_original_input_4096": true,
+            "fits_prefix_reservation_3200": true,
+            "input_row_result_sha256": "7b50dd7ee04f940ba9aa3005c38c4897bf1711cd728b84377fda1ff46673c8c6",
+            "ordinal": 15,
+            "original_input_status": "BYTE_VIEW_FROZEN_TOKENS_UNMEASURED",
+            "prefix_ids_sha256": "081cdb95e9f07038a3f904bcd3190bd890e69176a34a46bbb46506964d4a5a65",
+            "prefix_tokens": 1690,
+            "prompt_bytes": 6059,
+            "prompt_sha256": "d5d3a0233fdc320059755f2701edc1b852005304a841999296c3541a82a4b68c",
+            "source_id": "github:tox-dev/platformdirs:pull:721",
+            "status": "PREFIX_FITS_TARGET_UNMEASURED",
+            "target_coverage": null,
+            "target_tokens": null,
+            "training_execution_admitted": false
+          }
+        ],
+        "schema": "hepta.e5.v2.fixed-input-prefix-measurement.v1",
+        "serialization": "exact native Qwen2.5-Coder-1.5B-Instruct revision2e1fd397ee46e1388853d2af2c993145b0f1098a; user frozen prompt; template implicit system retained; add_generation_prompt True; encode add_special_tokens False; no truncation",
+        "source_freeze_sha256": "d4fe4fb301b3ac68f9ca5bf88ca58d6e378636ec20957d684082007680c56d44",
+        "source_refusals": 1,
+        "tokenizer_freeze_sha256": "ee0b5f244964e7aaa69280310085d46a4a8d971075f3e655c86c6f6d61fe7aca",
+        "training_compute_or_verifier_budget": null,
+        "training_prefix_1_4_16_admitted": {
+          "1": false,
+          "16": false,
+          "4": false
+        }
+      },
+      "after_target_contents_read_at_snapshot": false,
+      "complete_representation_or_training_admitted": false,
+      "partial_view_semantic_closure_proved": false,
+      "next_target_measurement": "Separate frozen owner, algorithm and budgets; no input or ranking feedback from after targets. Not yet a result at this snapshot.",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/e5-v2-input-readback"
     }
   },
   "E6": {
@@ -5732,6 +6070,119 @@
         "static_readback_sha256": "3dcc8e9f1a51eba22dddc3e8cc0ae7529498a4318c82c55a98124fd1b356a32c",
         "publication_plan_sha256": "045282aff007bc699115fc4ac9d504c79d5b13bfb7ba221eec021e73fc909908"
       }
+    },
+    "latest_ack_source_continuation": {
+      "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+      "tree": "a32fa7bda6d5bc1cde1ab9755afc0c16e47969ea",
+      "parent": "02d5b32dd81c4fc820d8468c617908c8f2907a50",
+      "public_PR_head_at_previous_read": "02d5b32dd81c4fc820d8468c617908c8f2907a50",
+      "source_commit_object_created_but_branch_not_yet_advanced_at_snapshot": true,
+      "source_inventory_sha256": "fcf5bafbda6cdbc0b6de2fc2dbfd590bf06a8acaa5a60ecadd6b7a79131d6241",
+      "source_gate": {
+        "tests": 433,
+        "modules": 49,
+        "protected_rows": 907,
+        "affected_boundaries": 398,
+        "full_cli_boundaries": 1159,
+        "passed": true,
+        "result_sha256": "d0ae06d0fca137c7eccddf85b16df5061beca66b50535da59822a5a249d7b428",
+        "owner_wall_seconds": 695.5148718371056,
+        "full_cli_wall_seconds": 479.187976508867
+      },
+      "exact_source_blob_freeze_result_sha256": "29dffe1f73ac04741c2d59112ad5e6edc2b3f7361a18175a9d4891325f3b1f27",
+      "component_results": [
+        {
+          "path": "native-validation-7__RESULT.json",
+          "host": "ai395",
+          "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/native-validation-7/RESULT.json",
+          "version": "66306:56367470:8511:1795165721110878294:1795165721110878294",
+          "bytes": 8511,
+          "sha256": "6ab5b3e461099cca80a8eead6525ff9d35eef32d8cd31ba1501418d1788977a1",
+          "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+          "successful": true,
+          "actual_cases": 11
+        },
+        {
+          "path": "retirement-native-validation-5__RESULT.json",
+          "host": "ai395",
+          "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/retirement-native-validation-5/RESULT.json",
+          "version": "66306:57016330:10775:1795165732510759963:1795165732510759963",
+          "bytes": 10775,
+          "sha256": "4c735d47b59bd0f08eaf0348c912341a0d9ca8be6c8b15eb58b8594705ca62cb",
+          "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+          "successful": true,
+          "actual_cases": 16
+        },
+        {
+          "path": "historical-delivery-native-validation-3__RESULT.json",
+          "host": "ai395",
+          "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/historical-delivery-native-validation-3/RESULT.json",
+          "version": "66306:57016345:6576:1795165734050756191:1795165734050756191",
+          "bytes": 6576,
+          "sha256": "e14da7b4de41a1f83871bc19446c57f3374f0d161900730ebcf46f6eddf4d373",
+          "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+          "successful": true,
+          "actual_cases": 5
+        },
+        {
+          "path": "feature-ack-native-validation-1__RESULT.json",
+          "host": "ai395",
+          "original_path": "/home/qq/work/hepta-e6-first-error-20261120-2e9b/feature-ack-native-validation-1/RESULT.json",
+          "version": "66306:57016359:5542:1795165740610377679:1795165740610377679",
+          "bytes": 5542,
+          "sha256": "e3a66e8cea110d0c0faeb5b2cc8fb42e09af0ae65467df374364aacced83a3a6",
+          "source": "d0353abfbf9ac783f0fe842fe313977e9d49bff9",
+          "successful": true,
+          "actual_cases": 2
+        }
+      ],
+      "native_case_sets_passed": [
+        11,
+        16,
+        5,
+        2
+      ],
+      "native_cases_total": 34,
+      "native_failure_error_skip": 0,
+      "root_mechanism_parent_passed": false,
+      "root_mechanism_failure": "StalePrepare child completed both ordering assertions, but libtest joined first success marker to test progress line; exact-line parent assertion failed. Revoked phase and ordinary NoUpdate did not execute.",
+      "pipeline_result_sha256": "f9bf927ccf172c166864704e085309a99cd7652df3c66e6ad574cbe84f4846fa",
+      "pipeline_owner_wall_seconds": 168.5623302697204,
+      "ordinary_NoUpdate_parent_executed": false,
+      "complete_NoUpdate": false,
+      "new_C_completed": false,
+      "cold_new_D_completed": false,
+      "FinalUse_completed": false,
+      "settlement_completed": false,
+      "root_budget": 64,
+      "deadlines_changed": false,
+      "arbitrary_same_run_replay_serialization_proved": false,
+      "next_marker_repair": {
+        "test_source_bytes_changed": 2,
+        "product_bytes_changed": 0,
+        "strict_marker_assertions_preserved": true,
+        "same_source_prior34_guard_preserved": true,
+        "new_head_34_reexecution_required": true,
+        "new_full_cli_owner": "dpty-0a3309c54cefc0ee35511d7acd408a58aa425182dda929858c16e44485f3e554",
+        "new_full_cli_owner_started_utc": "2026-11-20T09:18:54Z",
+        "new_full_cli_result_at_snapshot": null
+      },
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/e6-d035-readback"
+    },
+    "latest_Adopt_authority_addendum": {
+      "original_eight_design_files_unchanged": true,
+      "default_disabled_primitive_still_uncompiled_unwired": true,
+      "four_envelopes": [
+        "artifact-use grant",
+        "selector decision",
+        "final Root intent",
+        "original controller authorization"
+      ],
+      "new_live_revocation_source_is_required_not_supplied": true,
+      "before_after_reads_do_not_prove_atomic_revocation_order": true,
+      "additional_controls_planned": 12,
+      "additional_controls_executed": 0,
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/adopt-authority-addendum"
     }
   },
   "Chain": {
@@ -8526,6 +8977,148 @@
           "original_seed1_result_sha256": "7683cec5f435efafac561bb3685fbdcae086fd9c49fc8d6847ee5a817684d144"
         }
       }
+    },
+    "latest_d1d_workflow_observation": {
+      "source_head": "d1d3896e2a2628977bc466cee1e00aea93971949",
+      "source_tree": "05c2e91d6387b60b07952282a8911ca52dd3d0bd",
+      "actual_merge": "f8aba45bc00865f522cc4e0a78c80078cd8ec062",
+      "actual_merge_base": "061334747ce9d87690c40df48eeedf239156b57d",
+      "old_event_base_metadata": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+      "same_base_name_metadata_refreshed": true,
+      "old_architecture_base_job_remains_failed": true,
+      "blocking_run": 44704388275,
+      "complete_job_count": 37,
+      "terminal_conclusions": {
+        "success": 20,
+        "failure": 12,
+        "cancelled": 1,
+        "skipped": 4
+      },
+      "blocking_result": "failure",
+      "engineering_integrity": "success",
+      "v8_canary": "success",
+      "Windows_private_state_security": "success",
+      "architecture_workflow_at_observation": "in_progress",
+      "new_mac_linux_clippy_regression": {
+        "jobs": [
+          136180423581,
+          136180423696
+        ],
+        "cause": "Two unwrap calls introduced in the fixture helper outside test functions.",
+        "own_regression_not_inherited": true,
+        "original_failure_retained": true,
+        "new_source_lint_passed": false
+      },
+      "mac_arm_bazel": {
+        "job": 136180423580,
+        "whole_job": "failure",
+        "hepta_agentd_unit_tests": {
+          "passed": true,
+          "cached": false,
+          "seconds": 92.1
+        },
+        "hepta_cognitive_write_qualification": {
+          "passed": true,
+          "cached": false,
+          "seconds": 3.3
+        },
+        "failed_targets": [
+          "core-all-test",
+          "app-server-all-test"
+        ],
+        "this_is_older_d1d_merge_not_new_helper_source": true
+      },
+      "contract_gate": "Nine foreign Chain workflow references in four historical JSONs are interpreted as local paths; sampled files occur in merge base, not d1d source. No verifier waiver or historical rewrite.",
+      "cargo_deny_cause": null,
+      "cargo_deny_log_retrieval": "Transport closed",
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/ci-d1d-complete"
+    },
+    "latest_mac_fixture_helper_correction": {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "old_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "new_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+      "change": "Return io::Result, propagate canonicalize error with ?, return tempdir_in Result, unwrap at six original test call sites.",
+      "lint_waiver_added": false,
+      "product_guards_unchanged": true,
+      "other_fixture_unchanged": true,
+      "actual_local_source_scope": "exact 238 source plus the two frozen fixture patches; not the full d1d tree",
+      "actual_result_sha256": "23808e94f0d189cef34e02b11a9f58f9b8d274a6674739c6b10cb6436d102aae",
+      "actual_stages": [
+        {
+          "name": "fmt",
+          "argv": [
+            "/opt/homebrew/bin/just",
+            "fmt",
+            "--base",
+            "238fc48402f786db3d7f2a80b0abad6c0e5322bb"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.2713246669999998,
+          "child_user_cpu_seconds": 0.098135,
+          "child_system_cpu_seconds": 0.15749999999999997,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "fmt-check",
+          "argv": [
+            "/opt/homebrew/bin/just",
+            "fmt",
+            "--base",
+            "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+            "--check"
+          ],
+          "exit_code": 0,
+          "wall_seconds": 0.18092745799999976,
+          "child_user_cpu_seconds": 0.09773099999999998,
+          "child_system_cpu_seconds": 0.138104,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "project-just-fix",
+          "argv": [
+            "/opt/homebrew/bin/just",
+            "fix",
+            "--locked",
+            "--offline",
+            "-p",
+            "codex-hepta-agentd"
+          ],
+          "exit_code": 101,
+          "wall_seconds": 1.062970125,
+          "child_user_cpu_seconds": 0.40874600000000005,
+          "child_system_cpu_seconds": 0.42561899999999997,
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_bytes": 229,
+          "stderr_sha256": "9ecf4c22d52f081d5cc9111cb65d420f3b430d045a2f8fdef8f077a46de29034"
+        }
+      ],
+      "actual_owner_wall_seconds": 4.061429542,
+      "lint_passed": false,
+      "native_cases_executed": 0,
+      "blocker": "Original locked Inflector 0.11.4 registry crate archive absent in offline cache; unpacked source alone does not satisfy Cargo download path.",
+      "five_exact_git_dependency_refs_verified": true,
+      "new_download_or_native7_owner_started": false,
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/mac-helper-clippy-fix"
+    },
+    "checkpoint_d1d_original_blob_validation": {
+      "base": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+      "head": "d1d3896e2a2628977bc466cee1e00aea93971949",
+      "tree": "05c2e91d6387b60b07952282a8911ca52dd3d0bd",
+      "changed_paths": 97,
+      "original_maximum_bytes": 512000,
+      "status": "PASS",
+      "result_sha256": "5b9bb2e5904bf9c3c9fcb0ff8a7d712e5130c4b8ed55131870212bdd30d5b435",
+      "gate_wall_seconds": 0.8263097809976898,
+      "owner_wall_seconds": 2.169731805999618,
+      "initial_preparation_keyerror_tree_retained": true,
+      "evidence_directory": "../cell-e6-metrics-integration-20261119/checkpoint-d1d-readback"
     }
   },
   "environment": {
@@ -8560,7 +9153,7 @@
     "production_eligible": false,
     "full_system_cost_complete": false
   },
-  "interpretation": "The exact #6709 accounting fix and its original controls remain integrated. Original student evaluation remains ResearchNoUpdate (both A students 1/4; future P and both students 0/4); all used call budgets and historical negatives remain. Sixteen public project materials are complete, but source-only bounded codec/token measurements admit no original fixed-prefix training: 15/16 inputs exceed the original limit; growth curves remain null and authenticated users remain zero. E3 bounded material recovery is terminal incomplete. Independent E6 source 640bac3c passes 11+16+5 native components, original source/caller checks and project lint; its original NoUpdate6 parent still fails Invalid(Unavailable) before completed C. Evidence is published at 02d5b32d; precise historical cause remains unknown, with ACK/CURRENT overlap under source-level investigation. Cold composition and default-disabled Adopt primitive remain unqualified. Joint CI at 238 retains real failures and the PR-metadata/base-ref mismatch; two Mac fixture changes are formatted but native attempts remain blocked on exact dependency material. Chain's original liveness and full-system-cost failures remain. All ten joint qualification flags stay false; independent branch evidence is not a joint execution.",
+  "interpretation": "The original #6709 metrics integration and its controls remain unchanged. Original E1/E2 real student results remain ResearchNoUpdate; E3 bounded teacher material remains incomplete; E4 has not beaten strong single-model repair. E5 v1 remains inadmissible at every original prefix. Separate frozen before-only v2 retrieval has 15/16 byte views and exact measured full-template prefixes at most 3200 tokens; jsonschema ordinal13 is refused, target/output coverage remains unmeasured, and every training flag remains false. Independent E6 source d035 passes the original source gates and 34 native components but its Root mechanism parent fails strict log framing before ordinary NoUpdate starts; a marker-only repair is being validated with the original same-source component guard. Previous NoUpdate6 Unavailable, all prior failures, cold-D and Adopt authority gaps remain. The d1d actual Mac merge passed hepta-agentd unit and cognitive-write targets; the complete blocking workflow failed, including this checkpoint's own two helper unwrap regressions. The new Result-propagation correction has actual fmt/check pass; local lint stopped on absent locked registry material, and fresh-source lint/native is not claimed. Chain liveness, original F0 failures and unknown full-system cost remain. All ten joint qualification flags remain false, and independent branch evidence is not a joint execution.",
   "original_native_files": [
     {
       "path": "native-v8/RESULT.json",
@@ -8653,7 +9246,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "previous_evidence_commit": "d1d3896e2a2628977bc466cee1e00aea93971949",
   "next_actual_student_collection": {
     "status": "ORIGINAL_56_CALL_COLLECTION_COMPLETE_NO_UPDATE",
     "evidence_pr": 6778,
@@ -9088,8 +9681,8 @@
   "checkpoint_scope": {
     "historical_joint_execution_source_unchanged": true,
     "independent_branch_passes_are_not_a_joint_execution": true,
-    "previous_current_sha256": "6d56b7f9c89fcfadb56dea8d4d21099974e364fa0d161b03a46b5c4e5dc7a06c",
-    "previous_current_exact_bytes": "checkpoint-20261120/previous-current-238.json.xz",
+    "previous_current_sha256": "172a7975075ff94523c56ee7ed814c9ee81221080250f73867664b777d685d23",
+    "previous_current_exact_bytes": "checkpoint-d1d-successor/previous-current-d1d.json.xz",
     "latest_continuation_fields_take_precedence_over_historical_running_snapshots": true,
     "original_experiment_identities_budgets_and_negative_results_preserved": true,
     "latest_checkpoint_readbacks": {
@@ -9099,7 +9692,9 @@
       "Mac_original_attempts": "../cell-e6-metrics-integration-20261119/mac-fixtures-20261120",
       "Mac_exact_dependency_material": "../cell-e6-metrics-integration-20261119/mac-crossterm-shallow",
       "next_checkpoint_original_blob_gate_preparation": "../cell-e6-metrics-integration-20261119/checkpoint-next-gate-preparation"
-    }
+    },
+    "current_execution_is_not_a_new_joint_run": true,
+    "new_source_change": "Only the fixture helper Result propagation correction; E5/E6 independent source is archived as evidence, not merged into joint runtime."
   },
   "metrics_integration_6709": {
     "pr": 6703,

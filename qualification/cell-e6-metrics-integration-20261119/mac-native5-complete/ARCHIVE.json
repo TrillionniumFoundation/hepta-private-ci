@@ -1,0 +1,544 @@
+{
+  "schema": "hepta.mac-native5-complete-evidence-archive.v1",
+  "archive_bytes": 936948,
+  "archive_sha256": "513579f78e17f1b257946431b35133264a872f36036e24263e25b221069bb314",
+  "actual_remote_original_files": {
+    "crossterm-cache-seed-1": 5,
+    "crossterm-cache-seed-2": 48,
+    "native5": 11
+  },
+  "members": [
+    {
+      "path": "build_native5_archive.py",
+      "bytes": 7072,
+      "sha256": "c06f06e622e3325a92723b1c3493c275ec6f1ad46f2babbd7768c77ef9e76fa3"
+    },
+    {
+      "path": "crossterm-cache-seed-1/FAILURE_READBACK.original-tool.json",
+      "bytes": 3411,
+      "sha256": "989a7c423a29fb398c37ba05004bbdeb189410d0208883f82ab002df067179ff"
+    },
+    {
+      "path": "crossterm-cache-seed-1/LAUNCH_ARGUMENTS.json",
+      "bytes": 22355,
+      "sha256": "8afbec41b5a2e1f598756582bcf1695f27b2424e731d5a39830566c29bf97a3d"
+    },
+    {
+      "path": "crossterm-cache-seed-1/controller.py",
+      "bytes": 10840,
+      "sha256": "0c7cd09f80367bdcb6bd416cdb878965df205fb021666383b3b44d6a75ab9ac3"
+    },
+    {
+      "path": "crossterm-cache-seed-1/remote/CONTROLLER.py",
+      "bytes": 10840,
+      "sha256": "0c7cd09f80367bdcb6bd416cdb878965df205fb021666383b3b44d6a75ab9ac3"
+    },
+    {
+      "path": "crossterm-cache-seed-1/remote/INTENT.json",
+      "bytes": 1461,
+      "sha256": "efaf371f53b55db98082b174f312149b305942459c6840d99f5a777c1e5b6885"
+    },
+    {
+      "path": "crossterm-cache-seed-1/remote/PROCESS_PREFLIGHT.json",
+      "bytes": 454,
+      "sha256": "fbc82f54e04cc5173aa78dda7646fdb4b1d1e4418015cf9101bcb68fe615ee77"
+    },
+    {
+      "path": "crossterm-cache-seed-1/remote/RESULT.json",
+      "bytes": 1165,
+      "sha256": "7683cec5f435efafac561bb3685fbdcae086fd9c49fc8d6847ee5a817684d144"
+    },
+    {
+      "path": "crossterm-cache-seed-1/remote/exception.txt",
+      "bytes": 154,
+      "sha256": "cc72a5e2268589818b2bb80b4a8bcc91d60df2abd40bc659aec776e2850af015"
+    },
+    {
+      "path": "crossterm-cache-seed-2/CONTROLLER_DIFF.patch",
+      "bytes": 4316,
+      "sha256": "3b85892f4f2476dd19c1288cb9e68f8b0390d5fe25bdcbafe1625213fb75ed50"
+    },
+    {
+      "path": "crossterm-cache-seed-2/CORE_READBACK.original-tool.json",
+      "bytes": 39088,
+      "sha256": "c3de0570328bfcd2f21d0ee11814de5bc47c534b1301338dfd1a03c555165aff"
+    },
+    {
+      "path": "crossterm-cache-seed-2/LAUNCH_ARGUMENTS.json",
+      "bytes": 27551,
+      "sha256": "4bcbd8a9ced412955e115e19f5f884fa630334d1a29be7bd8964d1d7c3675f33"
+    },
+    {
+      "path": "crossterm-cache-seed-2/controller.py",
+      "bytes": 13415,
+      "sha256": "178d5161e4d9b6a90733db8a1cf0db0af6323aea1243c4e96309253cd8337c1b"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/CACHE_AFTER.json",
+      "bytes": 1978,
+      "sha256": "b30d3108a83f019d255db47bbe6004539bfde50689ac020242a65c9917683d10"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/CACHE_BEFORE.json",
+      "bytes": 1168,
+      "sha256": "a71dd2bceca4280c2675ec784deec3aab9b3cc091bf23a04711dfe5122c05bd6"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/CONTROLLER.py",
+      "bytes": 13415,
+      "sha256": "178d5161e4d9b6a90733db8a1cf0db0af6323aea1243c4e96309253cd8337c1b"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/INTENT.json",
+      "bytes": 1461,
+      "sha256": "6b233a45e0942fd5a4a12d516d3e5b9d9fab91ce53662648d572bcc436c395d2"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/PROCESS_PREFLIGHT.json",
+      "bytes": 1208,
+      "sha256": "abf1891e2c1084451578c1e22eafd81dea4751bcc619af54ab9122a25d460cf0"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/RESULT.json",
+      "bytes": 8946,
+      "sha256": "6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/SOURCE_AFTER.json",
+      "bytes": 949,
+      "sha256": "8961af193bd3170faef8e85c39ac137eceaa88bf77cbd6c87516e64763eb2a0d"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/SOURCE_BEFORE.json",
+      "bytes": 949,
+      "sha256": "8961af193bd3170faef8e85c39ac137eceaa88bf77cbd6c87516e64763eb2a0d"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/fsck.EXIT.json",
+      "bytes": 572,
+      "sha256": "4be260cc092038487f20cd1573aa35e8e09f2e3d790a21fa25ca412323214a4a"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/fsck.INTENT.json",
+      "bytes": 260,
+      "sha256": "520209efa9befdddb56cfe5ae976feab1eef5827284961457147dcc8243ee131"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/fsck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/fsck.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/local-fetch.EXIT.json",
+      "bytes": 804,
+      "sha256": "7f46d2c8c228813d058ea6570ae8f835c6ba574d598df0296cff1afb3479b083"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/local-fetch.INTENT.json",
+      "bytes": 490,
+      "sha256": "69b704e2661cb34a9c12713e8515ea4400aceb97e3b082af2957ea78a1b63d40"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/local-fetch.stderr",
+      "bytes": 222,
+      "sha256": "fbb0ead9383fdb2917bfa923a898e05d443f02840b782a98ef730a06568be339"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/local-fetch.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-commit.EXIT.json",
+      "bytes": 549,
+      "sha256": "fdaf5ee17b4c82eb8cacc0b81fbac2f8c5619b2b8222f85c048625ed72a5e584"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-commit.INTENT.json",
+      "bytes": 235,
+      "sha256": "34994db7012428c2f8bf628fc54fba19fecb2f21044c2879bfe4af2fdb25c160"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-commit.stdout",
+      "bytes": 296,
+      "sha256": "0f892f25d5722854f0907ba77067b44dddb6f3cee92e04035e9f20b322b33dda"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-root-tree.EXIT.json",
+      "bytes": 550,
+      "sha256": "82636d74636045eed1761ad856e0c020af59653598ee2b42e3cb22a584abe143"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-root-tree.INTENT.json",
+      "bytes": 236,
+      "sha256": "e6b231a7b20880ee8990557a67a75db79944cba49044cf2b405552b012bc357e"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-root-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/read-root-tree.stdout",
+      "bytes": 357,
+      "sha256": "585e43dc8fc813e3efad84d04def5b5aa4280ff700bb4c490fe5eb7cd742ab57"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-after.EXIT.json",
+      "bytes": 561,
+      "sha256": "5b93f5ba237ceac8f9a629dd124d238cb83139e5cc5641e64578c324364435d8"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-after.INTENT.json",
+      "bytes": 248,
+      "sha256": "7331269814c65fc0dc6bbd114c1418bf6c7fd24f77eb0ee56ee03075bd005125"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-after.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-after.stdout",
+      "bytes": 41,
+      "sha256": "9d5ade6cbc530af359e2540ab5244fec97167c7bdffd07d999cc98984126fa31"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-before.EXIT.json",
+      "bytes": 564,
+      "sha256": "5412b0b03c594a4be2db7539cea0876a2bad6d92de1023e37564ae003310a804"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-before.INTENT.json",
+      "bytes": 249,
+      "sha256": "fe49f5c6b84d85ca8716e672ae45b59cc83e00b6b3f4f5f08ba7609d0283b53d"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-before.stderr",
+      "bytes": 32,
+      "sha256": "9b3fab22fc89a33cf7f4e9d08072e43f29c2999ed2af63b6e8417b2ce9d534b4"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/ref-before.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-1.EXIT.json",
+      "bytes": 507,
+      "sha256": "d8d3ced5a785440c93a734497df59efe13f19b65e60c198bab2a661b864c58d5"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-1.INTENT.json",
+      "bytes": 202,
+      "sha256": "083619e582dd0d1a7161d606328fbcf196cfabd365f274fa120a4d24d7f38c24"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-1.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-1.stdout",
+      "bytes": 136,
+      "sha256": "2d3dccb46fe5b72a66e1188417b09b380cf622117b741fb199bd5752045ed3c1"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-9.EXIT.json",
+      "bytes": 516,
+      "sha256": "da280b9cf92287349ee0c219902919dc40a523d2c6e0cdce25f2e42d3dc18a48"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-9.INTENT.json",
+      "bytes": 202,
+      "sha256": "539433caa1d7dc7e72deb9e3016ad1d7c2ded1a300173ddcc2cb2f75c10790f5"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-9.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-diff-9.stdout",
+      "bytes": 136,
+      "sha256": "2d3dccb46fe5b72a66e1188417b09b380cf622117b741fb199bd5752045ed3c1"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-0.EXIT.json",
+      "bytes": 513,
+      "sha256": "cfee1cdc4450cef04ed54143f7a117f2b3305afb796675b1791e918721bf7a1b"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-0.INTENT.json",
+      "bytes": 200,
+      "sha256": "f71f4498af153c06b025a2f5539424be37e0436d30aad7c68253980d71c01bd2"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-0.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-0.stdout",
+      "bytes": 41,
+      "sha256": "3537fa0b6bb1b2474434c4706f30a6ae23711e6293474a200da81ae81be2182f"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-8.EXIT.json",
+      "bytes": 513,
+      "sha256": "c02a13a221c6b4e7a3a52e09f46a17082f9a4c69a49869d68939719677079172"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-8.INTENT.json",
+      "bytes": 200,
+      "sha256": "18063be08a0d781e42116cdcb15a639310cd647797232eed418fae941ad1c6e7"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-8.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "crossterm-cache-seed-2/remote/source-head-8.stdout",
+      "bytes": 41,
+      "sha256": "3537fa0b6bb1b2474434c4706f30a6ae23711e6293474a200da81ae81be2182f"
+    },
+    {
+      "path": "native5/BASELINE_READBACK.original-tool.json",
+      "bytes": 39859,
+      "sha256": "95a109e4dbad1686229fad5339e397d0becbbbae0f11f12ccd8f9d544372768d"
+    },
+    {
+      "path": "native5/CONTROLLER_FREEZE.json",
+      "bytes": 1151,
+      "sha256": "d0ff960021d38dd8fd924621ec7ddb7a7cdacdac71b2cecec10e38a08b78c94c"
+    },
+    {
+      "path": "native5/NATIVE4_TO_NATIVE5.patch",
+      "bytes": 5278,
+      "sha256": "e7303f1992e078d2a2befc9e0f6c81308ac8b70f68cf6e4b795e5ac4822d242f"
+    },
+    {
+      "path": "native5/SOURCE_INVENTORY_IDENTICAL_BYTE_REUSE.json",
+      "bytes": 1275,
+      "sha256": "c15efc0aecccfe7c68c308cc568b454640a066ed8fd4bb4ae9946cbadb3c7999"
+    },
+    {
+      "path": "native5/TERMINAL_CORE.original-tool.json",
+      "bytes": 18202,
+      "sha256": "f5dbaaeff90e31da43d6c901ca42dc8b01ad0d005f9ac1b96a54adfa8e433e9f"
+    },
+    {
+      "path": "native5/baseline/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    },
+    {
+      "path": "native5/baseline/RESULT.json",
+      "bytes": 4047,
+      "sha256": "dd55367752fc4bef8fbd6734f5a98dc586cc71044397b2c7c500dd6f041308c3"
+    },
+    {
+      "path": "native5/baseline/native-project.CHILD.json",
+      "bytes": 229,
+      "sha256": "83404128264bd198d464df4be87c93261a2257da242b4db0df13054a4995288c"
+    },
+    {
+      "path": "native5/baseline/native-project.EXIT.json",
+      "bytes": 676,
+      "sha256": "3e64e5a4d333f4ca96922ab86e6bea3ac3b131940b210ad4f22477bd6bd30b94"
+    },
+    {
+      "path": "native5/baseline/run_native4.py",
+      "bytes": 8314,
+      "sha256": "b8e4d93da2cda3496630aaaf8d38dc1fffa343702676558b22b21a43e8ba3e51"
+    },
+    {
+      "path": "native5/remote/INTENT.json",
+      "bytes": 2791,
+      "sha256": "4ea3dd5fd5af9c255469a4d95f7ec7667e67567c7b12b71b9f638ccfe72d3ceb"
+    },
+    {
+      "path": "native5/remote/RESULT.json",
+      "bytes": 4309,
+      "sha256": "4eb76583bf64b106a94432cbab91a756fae253eb91194b623d3bacc35ca5976f"
+    },
+    {
+      "path": "native5/remote/SOURCE_INVENTORY.json",
+      "bytes": 4379000,
+      "sha256": "60975db166510f721bcae0754d70fe78aaf719155e4c9534c5f7c51560881b3d"
+    },
+    {
+      "path": "native5/remote/candidate.diff",
+      "bytes": 4187,
+      "sha256": "a567b419fb29972664039743e1e5879183aa752d1e882b61eec73741c69e0ba6"
+    },
+    {
+      "path": "native5/remote/circuit_cell_causal_tests.rs",
+      "bytes": 6282,
+      "sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+    },
+    {
+      "path": "native5/remote/error.txt",
+      "bytes": 582,
+      "sha256": "c5d91f392f2ff9cc4877892e7d4c55333a7aba8d225d6fddcf6153352febb3e9"
+    },
+    {
+      "path": "native5/remote/learning_iteration_research_external_material_tests.rs",
+      "bytes": 6857,
+      "sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+    },
+    {
+      "path": "native5/remote/native-project.CHILD.json",
+      "bytes": 242,
+      "sha256": "4a2ac16c349bb0ff85b2cfa569c96caf77cd864416ce71321cb1ade784a1cfce"
+    },
+    {
+      "path": "native5/remote/native-project.EXIT.json",
+      "bytes": 686,
+      "sha256": "cd34ab46e7769df30c967093ec4fcbf429f5591b21d852fa8ea9a4aefdb1a9aa"
+    },
+    {
+      "path": "native5/remote/native-project.stderr",
+      "bytes": 812,
+      "sha256": "9a99fc15d540041793f501c2f79accc7af8fda0a23b59a103b5439272dc80053"
+    },
+    {
+      "path": "native5/remote/native-project.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native5/run_native5.py",
+      "bytes": 10016,
+      "sha256": "7c6d9541d88719544437be4e9723980243660c2e6d3a5b5a911630fe368b52d2"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_cache_seed2_read1.json",
+      "bytes": 25218,
+      "sha256": "3677153fa10e1a5e9177a5f4730fb36f25f957f04c865bf2409c9896c52982ca"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_cache_seed2_start.json",
+      "bytes": 560,
+      "sha256": "a85fab6dbfce2ea973acdf311eb2cd7ac7feba6cd1147b7ba8a2377c24a0ee63"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_cache_seed_args.json",
+      "bytes": 22311,
+      "sha256": "55f9a429d25c4f2479ffc245f08d00069c4df6ff95e8a2ab46725dd4c6ad04ca"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_cache_seed_read1.json",
+      "bytes": 4575,
+      "sha256": "40894cf4ac71091bce11940a2a34981a444847748fa47805230c69f197d1a342"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_cache_seed_start.json",
+      "bytes": 597,
+      "sha256": "00ef36be6b791f6b541bfd419907fab6116b1c093784e9da9f1f65a5bf14e9c8"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_scope_diag_args.json",
+      "bytes": 1758,
+      "sha256": "fa6d77262b70bc9ca7832acde42ebe90cbd107f02e0e08b58ce4813c8b743f0f"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_scope_diag_read.json",
+      "bytes": 3158,
+      "sha256": "5bc32eeabd5e4e35c392b7c497dbad0ef645005cd37ad33e344e34f6104c6c95"
+    },
+    {
+      "path": "session-receipts/mac_crossterm_scope_diag_start.json",
+      "bytes": 595,
+      "sha256": "4fb7f76f0292684f87cfecb851cafdcdb5d85b4a7697eb4f16da3fde5d42da3e"
+    },
+    {
+      "path": "session-receipts/mac_dependency_post5_read_2.json",
+      "bytes": 642,
+      "sha256": "39f4da55672aed469a0fc6446c5c7f668298a110b47720ce9ae58845103bd281"
+    },
+    {
+      "path": "session-receipts/mac_dependency_post5_read_3.json",
+      "bytes": 29155,
+      "sha256": "b28f3ec1953f791a8654e073456827a4368fcf099ffa55ee7625f855bd40a360"
+    },
+    {
+      "path": "session-receipts/mac_native5_launch_args.json",
+      "bytes": 270,
+      "sha256": "7535c62744524de8cea9048ab0380f571e17053089d9b8a49ac81ed7b106cf81"
+    },
+    {
+      "path": "session-receipts/mac_native5_read1.json",
+      "bytes": 4012,
+      "sha256": "a10a8f8cc3d371b7ff2f8d16c14a2b46f9128e2089c2cd9e28511837cc2fd609"
+    },
+    {
+      "path": "session-receipts/mac_native5_start.json",
+      "bytes": 560,
+      "sha256": "3a2d73ff723f27a3ecc1324796648f0e49c9f805047b3c5daaa96ac491bfee7d"
+    },
+    {
+      "path": "session-receipts/mac_native5_upload_result.json",
+      "bytes": 289,
+      "sha256": "f57734a02ae0eb35ff0c8633d15b18df47f621fdbf0f662ed6bf112c2315197f"
+    },
+    {
+      "path": "session-receipts/seed2_steps_0.json",
+      "bytes": 8239,
+      "sha256": "4f539e0f7ff7236f92ca37740805e32f67ff0b177b6e6cbb9e1ff91bafa25e17"
+    },
+    {
+      "path": "session-receipts/seed2_steps_1.json",
+      "bytes": 9151,
+      "sha256": "86f8dadc4b85eb17e18a20af95d94550e7947c07fac2c22377ded8fe70eff5b0"
+    },
+    {
+      "path": "session-receipts/seed2_steps_2.json",
+      "bytes": 7613,
+      "sha256": "36963cd59ac24673f87b2f9eba620dbc498531593667ed8ad1ae09f377b19653"
+    },
+    {
+      "path": "session-receipts/seed2_tree_bytes.json",
+      "bytes": 932,
+      "sha256": "bff227ebe55d489eb90e68c47b4796afddb07fc86715475a14ca47ddedf24c86"
+    },
+    {
+      "path": "session-receipts/seed2_tree_info.json",
+      "bytes": 620,
+      "sha256": "be417f38c5c6863531120b02eddeff6b3f4f4307572eb2db42182f78ea5a8045"
+    }
+  ],
+  "parts": [
+    {
+      "path": "native5-and-cache-originals.tar.xz.part-000",
+      "offset": 0,
+      "bytes": 393216,
+      "sha256": "3f764fc267af022c2e9caa5c2cd6488371794f9072bb42a7f2cca2758cedb46a"
+    },
+    {
+      "path": "native5-and-cache-originals.tar.xz.part-001",
+      "offset": 393216,
+      "bytes": 393216,
+      "sha256": "8674dc4e7ebd07371b104d9c8edc6b9d41c82fd23c292e0e4fd2a54b27b84686"
+    },
+    {
+      "path": "native5-and-cache-originals.tar.xz.part-002",
+      "offset": 786432,
+      "bytes": 150516,
+      "sha256": "6ad85c1eb8adbe0f061f65b097df84b078851a90c495da5163596c540ae8b61c"
+    }
+  ],
+  "all_members_rebuilt_and_sha_verified": true,
+  "original_cache_packs_excluded": "Existing 37MB crossterm partial packs remain on Mac, exact before/after lengths and hashes retained; complete isolated dependency objects are in the separate shallow-1 publication."
+}

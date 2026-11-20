@@ -1,0 +1,9 @@
+# E6 d035 selected original readback
+
+Exact source d0353abfbf9ac783f0fe842fe313977e9d49bff9, tree a32fa7bda6d5bc1cde1ab9755afc0c16e47969ea, parent 02d5b32d. Source-first ACK observation retains original CURRENT checks after durable completion and does not turn Unavailable into pending. It does not serialize arbitrary concurrent same-run replay.
+
+Original source checks passed: 433 tests across 49 modules, 907 protected rows, 398 affected boundaries, and the full original 1159-boundary CLI. Project-scoped just fix passed unchanged. Exact-source original blob policy tests and 512000 gate passed. Actual 11+16+5+2 native case sets passed without failures, errors or skips. Root independently verified all seven selected original files, their bound source/tree, complete case rows and zero-failure fields.
+
+The pipeline then stopped at the real Root mechanism parent. Its child completed both ordering assertions, but libtest attached the first SourceFirst marker to its test-progress line. The strict parent expected one complete matching line and failed. This is a failed mechanism parent, not a passed ordinary NoUpdate parent: the ordinary parent did not execute. The original JUnit, pipeline result and marker-only repair diff are preserved. The next candidate changes only two source bytes to introduce an explicit newline and retains strict exact-line assertions, source-equality preconditions, all deadlines and the 64-read cap. New-source component execution remains separately required.
+
+The pipeline owner cost was 168.5623302697204 seconds. Its original-native11 command cost includes actual recompilation (95.0210749139078 seconds); overlapping command/owner durations must not be summed. Selected readback here does not replace the complete original owner artifacts or its separate publication. Existing NoUpdate6 Unavailable, earlier read65 and identity failures remain intact. No completed C, cold D, FinalUse or settlement is claimed.

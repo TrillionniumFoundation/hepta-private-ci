@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.mac-native5-complete-evidence-readout.v1",
+  "status": "DEPENDENCY_BLOCKED_ZERO_RUST_TESTS",
+  "seed1": {
+    "exit_status": "ERROR",
+    "fetch_attempts": 0,
+    "owner_wall_seconds": 0.014591000000000002
+  },
+  "seed2": {
+    "status": "EXACT_LOCAL_CACHE_REF_READY",
+    "fetch_attempts": 1,
+    "network_fetches": 0,
+    "owner_wall_seconds": 0.276757958,
+    "fsck_exit_code": 0
+  },
+  "native5": {
+    "exit_code": 1,
+    "owner_wall_seconds": 1.0810116250000001,
+    "stage": {
+      "name": "native-project",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--retries",
+        "0",
+        "--test-threads",
+        "2",
+        "--no-tests",
+        "fail",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 0.28980970899999997,
+      "child_user_cpu_seconds": 0.18189,
+      "child_system_cpu_seconds": 0.069278,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 812,
+      "stderr_sha256": "9a99fc15d540041793f501c2f79accc7af8fda0a23b59a103b5439272dc80053"
+    }
+  },
+  "rust_tests_executed": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "new_E6_business_native_calls": 0,
+  "artifact_member_count": 102,
+  "actual_remote_original_count": 64,
+  "archive_sha256": "513579f78e17f1b257946431b35133264a872f36036e24263e25b221069bb314"
+}

@@ -1,0 +1,62 @@
+{
+  "after_target_access": false,
+  "cost_and_trust_addendum": {
+    "path": "e5_bounded_retrieval_v2/COST_AND_TRUST_ADDENDUM_1.md",
+    "sha256": "94a126734ba299cbddfe1a9cd46f6583d727126936ca4d433d6e399fe681a8df"
+  },
+  "findings": [
+    "Digest payload-render-output DAG is acyclic",
+    "Independent expected-view pin is mandatory caller authority",
+    "No runtime-after API in reviewed selector; authentic before provenance depends on frozen material loader",
+    "Complete selected-unit/group packing and strict source edit scope",
+    "250000 AST counter covers lexical walks, not all parse work",
+    "Byte-only selection is not full-template token or training admission"
+  ],
+  "future_B_C_access": false,
+  "independent_test_reruns": 0,
+  "input_freeze": {
+    "path": "e5_bounded_retrieval_v2/inputs-1/INPUT_FREEZE.json",
+    "sha256": "9410edd900e216e1f92e4a20b66ed2648ac7b1cfcbcdeaf4769b4c7be21e3efc"
+  },
+  "model_calls": 0,
+  "review_kind": "read-only source review; no independent execution",
+  "review_sha256": "0802c5ff34b2a271cc9bd0f7cf50aa28d851a269471de92c92c5ca8d23f33676",
+  "reviewed_files": [
+    {
+      "bytes": 7197,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/before_index.py",
+      "sha256": "19e2f548efcc29a59581e625e196ec63d4c1524d99520cc94cd778173c54456f"
+    },
+    {
+      "bytes": 8797,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/retrieve_once.py",
+      "sha256": "5420624a217c7e1a502204ffd2ed1a877fb47012faad946c4ea87c3ac18184bc"
+    },
+    {
+      "bytes": 4026,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/compact_wire.py",
+      "sha256": "1b4b4933cacd37c259979040d22bc9021e0d1ec61783629b3eff6e9a82a63baf"
+    },
+    {
+      "bytes": 2520,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/v2_common.py",
+      "sha256": "efee083bd55d93cdb6b3af49d5e6b47697414b972f51b3c8a510bbc11c8d5eed"
+    },
+    {
+      "bytes": 1139,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/v2_legacy.py",
+      "sha256": "f962c46bc51f7e56af4acb1c272114e98f6304e731eed628023df338e1c240db"
+    },
+    {
+      "bytes": 5969,
+      "path": "e5_bounded_retrieval_v2/source/scripts/cell_experiments/e5_bounded_retrieval_v2/POLICY.json",
+      "sha256": "723eedbec46c40cfd7a770e2667c981aeb23d18ef5892379830c7ec10773bc1d"
+    }
+  ],
+  "reviewer": "research",
+  "schema": "hepta.e5-v2-independent-research-source-review.v1",
+  "source_edits": 0,
+  "training_admission_granted": false,
+  "training_updates": 0,
+  "upstream_native_children": 0
+}

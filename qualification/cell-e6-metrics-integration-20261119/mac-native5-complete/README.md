@@ -1,0 +1,9 @@
+# Exact crossterm cache preparation and native5 negative result
+
+This addendum retains 64 complete remote originals: seed1 (5), seed2 (48), and native5 (11), plus their controllers, launch/read receipts, source diffs and relevant baseline records. Every archive member was independently read back and checked against its SHA256. The 4,379,000-byte native5 source inventory was confirmed by an actual fixed-version remote file-info read; its bytes equal the previously retained native4 inventory and are explicitly marked as reused identical bytes, not a second transfer.
+
+Seed1 stopped before any fetch because its initial process filter included an unrelated old Git process. Its real failure and scoped diagnostic remain. Seed2 refined the check to the exact target cache and existing task owners, then performed the first and only local fetch of locked crossterm commit `45fecb9508105988f42fe6ff0441783ed3717f92`. Native4 was already terminal, the fixture lock was acquired, all preexisting partial packs remained byte-identical, the exact ref/tree and strict fsck passed, and source/protected bytes remained unchanged.
+
+Native5 used the original project `just test` command with `--locked --offline`, two build jobs, two test threads, retries zero and the existing isolated target. It exited at dependency resolution because locked tokio-tungstenite material was absent. **Zero Rust tests ran.** This is not a successful project regression, model result, or E6 business-native result. Later dependency preparation is a separate evidence layer and does not overwrite this failure.
+
+Existing original Cargo partial packs are not duplicated in this archive; their exact before/after hashes and sizes are retained. The earlier crossterm shallow publication contains the separately verified complete immutable dependency object pack. No global configuration, Cargo.lock, source or existing partial-pack cleanup was performed.

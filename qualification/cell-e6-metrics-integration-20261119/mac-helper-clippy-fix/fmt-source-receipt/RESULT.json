@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.joint.mac-fixture-native.v2",
+  "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "source_scope": "exact 238 source plus the two frozen fixture patches; not the full d1d tree",
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "original_E6_parent_runs": 0,
+  "automatic_retry": false,
+  "payload_sha256": "596d0483009434c83e58bf2fa9225a00de2c0ba59da997b9fe49b56eb2048ab8",
+  "previous_payload_sha256": "fe4fced4cf0b7ea6005ecdef212b19a9624c5be7d9179be282c9cd21a6120067",
+  "controller_sha256": "568bf3cb4b580c8aa90a8b6ad93ceb0e9241eec9f88da1d2cdd1bb0230f52a6f",
+  "requested_stages": [
+    "fmt",
+    "fmt-check",
+    "project-just-fix",
+    "project-unwrap-clippy",
+    "native-project"
+  ],
+  "build_jobs": 2,
+  "test_threads": 2,
+  "original_test_retries": 0,
+  "cargo_net_offline": true,
+  "rust_process_timeout_or_kill": false,
+  "fixture_lock_acquired": true,
+  "dependency_receipts": {
+    "dependency-crossterm-cache-seed-2/RESULT.json": "6fc8ef470a73caac73479c7e7eb8f7d40c2968f0aff50ad345ac468bd43ffc70",
+    "dependency-nucleo-cache-seed-1/RESULT.json": "bf8c6142b1fc7cfcf1152196f8b5b95f1f35a7881fb1d2ede5265da7adcd54c0",
+    "dependency-tokio-tungstenite-cache-seed-1/RESULT.json": "16d6db70778f8b99c1797a52d3d569f40ba409629188dbd0fc9c030332b3e8cd",
+    "dependency-rules_rust-cache-seed-1/RESULT.json": "faef80545f0166e44a81cc4a018b84a75153d1aaf88b20fbbf8d6b36de5b0fca"
+  },
+  "verified_cached_git_refs": [
+    [
+      "crossterm-ce0318b92aca4e8d",
+      "45fecb9508105988f42fe6ff0441783ed3717f92"
+    ],
+    [
+      "nucleo-425d994cd74b3654",
+      "4253de9faabb4e5c6d81d946a5e35a90f87347ee"
+    ],
+    [
+      "rules_rust-7226a686fb7656c8",
+      "b56cbaa8465e74127f1ea216f813cd377295ad81"
+    ],
+    [
+      "tokio-tungstenite-ea4445d9acecae62",
+      "0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186"
+    ],
+    [
+      "tungstenite-rs-006aed970da0a0a9",
+      "4fffad30fe373adbdcffab9545e9e9bf4f2fc19f"
+    ]
+  ],
+  "source_inventory_sha256": "946ff0e4730b24dc62338d35c63c91240a741b3a5c3e92ca18246d52c7410805",
+  "protected_before": {
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+    "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+    "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "prior_native5_result_sha256": "4eb76583bf64b106a94432cbab91a756fae253eb91194b623d3bacc35ca5976f",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "original_git_blob": "d05fa2518b039324504b204ec56d25200ff9a54f",
+      "original_sha256": "e4f9bbac3568f09433f1eb07f743bf54a31cac15f60fb33b2636e5271625fb7a",
+      "candidate_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+      "previous_candidate_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell_causal_tests.rs",
+      "original_git_blob": "c5011894ce75799131bdbb5ae83eb5939799fd19",
+      "original_sha256": "08fd75ba5e63a9420f652424e4d0776c54c65a5841722d4548cc1497803b86ca",
+      "candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031",
+      "previous_candidate_sha256": "0c2bcaa9a4133dee4825cbcaca767c7257fa893c9710b959f02206e735d39031"
+    }
+  ],
+  "unmaterialized_tracked_paths": 3813,
+  "materialized_paths": 11751,
+  "protected_after": {
+    "codex-rs/hepta-agentd/src/learning_iteration_research_external_material.rs": "3fe3f36c20137ed4a8d31eefd26008188695474b5a49c5759f50efd81415a7e5",
+    "codex-rs/hepta-agentd/src/circuit_cell_tests.rs": "a3640e9e3cf5157966f52511d648787be8ac8cc0eae4479c458ff8209ec33df7",
+    "codex-rs/Cargo.lock": "48b55c7ff5c23516fd0aeedca7c10a6e7902aeb5dc49fa4cef80971e1ae57d3f",
+    ".github/blob-size-allowlist.txt": "56a9a1cd05a0d81bba73a43c19e1451b213443f631dabacfa5b4e8d145e43d1c"
+  },
+  "protected_unchanged": true,
+  "source_unchanged_during_validation": true,
+  "authorized_source_cas": [
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_research_external_material_tests.rs",
+      "before_sha256": "8bc7dba30f6656fa0f0150ba2502bcd3f2f29e7f4c397c45dbb58a6d7520597f",
+      "after_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+      "under_exclusive_fixture_lock": true
+    }
+  ],
+  "stages": [
+    {
+      "name": "fmt",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt",
+        "--base",
+        "238fc48402f786db3d7f2a80b0abad6c0e5322bb"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.2713246669999998,
+      "child_user_cpu_seconds": 0.098135,
+      "child_system_cpu_seconds": 0.15749999999999997,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fmt-check",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt",
+        "--base",
+        "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.18092745799999976,
+      "child_user_cpu_seconds": 0.09773099999999998,
+      "child_system_cpu_seconds": 0.138104,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "project-just-fix",
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 1.062970125,
+      "child_user_cpu_seconds": 0.40874600000000005,
+      "child_system_cpu_seconds": 0.42561899999999997,
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_bytes": 229,
+      "stderr_sha256": "9ecf4c22d52f081d5cc9111cb65d420f3b430d045a2f8fdef8f077a46de29034"
+    }
+  ],
+  "error": "RuntimeError('project-just-fix exited 101')",
+  "owner_wall_seconds": 4.061429542,
+  "exit_code": 1
+}

@@ -1,0 +1,77 @@
+{
+  "actual_remote_originals": 27,
+  "archive_sha256": "664ae6eecb251cb88d44e893d698da432d6d55ff4e1f1c5e76ba6bb7a6127234",
+  "artifact_members": 80,
+  "explicit_unwrap_clippy_entered": false,
+  "native_project_entered": false,
+  "new_E6_business_native_calls": 0,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "owner_wall_seconds": 4.061429542,
+  "protected_unchanged": true,
+  "result_sha256": "23808e94f0d189cef34e02b11a9f58f9b8d274a6674739c6b10cb6436d102aae",
+  "rust_tests_executed": 0,
+  "schema": "hepta.mac-native6-evidence-readout.v1",
+  "source_inventory_sha256": "946ff0e4730b24dc62338d35c63c91240a741b3a5c3e92ca18246d52c7410805",
+  "source_parent": "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+  "source_scope": "exact 238 source plus the two frozen fixture patches; not the full d1d tree",
+  "source_sha256": "e69d4ccd85f8a38d2720eccdaae57208a3f463951dac8bb5b833f89e89388bca",
+  "source_unchanged_during_validation": true,
+  "stages": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt",
+        "--base",
+        "238fc48402f786db3d7f2a80b0abad6c0e5322bb"
+      ],
+      "child_system_cpu_seconds": 0.15749999999999997,
+      "child_user_cpu_seconds": 0.098135,
+      "exit_code": 0,
+      "name": "fmt",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.2713246669999998
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fmt",
+        "--base",
+        "238fc48402f786db3d7f2a80b0abad6c0e5322bb",
+        "--check"
+      ],
+      "child_system_cpu_seconds": 0.138104,
+      "child_user_cpu_seconds": 0.09773099999999998,
+      "exit_code": 0,
+      "name": "fmt-check",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.18092745799999976
+    },
+    {
+      "argv": [
+        "/opt/homebrew/bin/just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd"
+      ],
+      "child_system_cpu_seconds": 0.42561899999999997,
+      "child_user_cpu_seconds": 0.40874600000000005,
+      "exit_code": 101,
+      "name": "project-just-fix",
+      "stderr_bytes": 229,
+      "stderr_sha256": "9ecf4c22d52f081d5cc9111cb65d420f3b430d045a2f8fdef8f077a46de29034",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1.062970125
+    }
+  ],
+  "status": "FMT_PASS_REGISTRY_BLOCKED_LINT_AND_NATIVE_NOT_ENTERED"
+}
